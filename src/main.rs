@@ -1,5 +1,4 @@
 use crate::parser::parse_cnf;
-use crate::types::*;
 use crate::solver::dpll;
 
 mod parser;

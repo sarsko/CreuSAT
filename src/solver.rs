@@ -1,6 +1,5 @@
 use std::collections::HashSet;
 
-use crate::parser::parse_cnf;
 use crate::types::*;
 
 fn consistent(clauses: &Clauses) -> bool {
@@ -94,9 +93,9 @@ pub fn dpll(clauses: &mut Clauses, clause_counter: i32) -> bool {
     }
     let literal = choose_literal(&clauses, clause_counter);
     let new_counter = clause_counter + 1;
-    let mut clauses1 = clauses.clone();
-    clauses1.push(vec![literal]);
     let mut clauses2 = clauses.clone();
+    let mut clauses = clauses;
+    clauses.push(vec![literal]);
     clauses2.push(vec![-literal]);
-    return dpll(&mut clauses1, new_counter) || dpll(&mut clauses2, new_counter);
+    return dpll(&mut clauses, new_counter) || dpll(&mut clauses2, new_counter);
 }
