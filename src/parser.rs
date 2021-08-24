@@ -18,13 +18,12 @@ pub fn parse_cnf(infile: &str) -> Clauses {
     let mut num_variables = 0;
     let mut num_clauses = 0;
     */
-    println!("{}",infile);
     let mut out_clauses = vec![];
     let mut curr_clause = vec![];
     if let Ok(lines) = read_lines(infile) {
         for line in lines {
             if let Ok(line) = line {
-                let split = line.split(" ").collect::<Vec<_>>();
+                let split = line.split(" ").filter(|e| e != &"").collect::<Vec<_>>();
                 if split.len() > 0 {
                     match split[0] {
                         "c" => {}
