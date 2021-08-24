@@ -1,8 +1,10 @@
 use std::collections::HashSet;
 
-type Literal = i32;
-type Clause = Vec<Literal>;
-type Clauses = Vec<Clause>;
+use crate::parser::parse_cnf;
+use crate::types::*;
+
+mod parser;
+mod types;
 
 fn consistent(clauses: &Clauses) -> bool {
     let mut seen = HashSet::new();
@@ -102,57 +104,6 @@ fn dpll(clauses: &mut Clauses, clause_counter: i32) -> bool {
     return dpll(&mut clauses1, new_counter) || dpll(&mut clauses2, new_counter);
 }
 
-// TODO: Move to separate module
-use std::fs::File;
-use std::io::{self, BufRead};
-use std::path::Path;
-
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where
-    P: AsRef<Path>,
-{
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
-}
-
-fn parse_cnf(infile: &str) -> Clauses {
-    /*
-    let mut problem_type = "";
-    let mut num_variables = 0;
-    let mut num_clauses = 0;
-    */
-    let mut out_clauses = vec![];
-    let mut curr_clause = vec![];
-    if let Ok(lines) = read_lines(infile) {
-        for line in lines {
-            if let Ok(line) = line {
-                let split = line.split(" ").collect::<Vec<_>>();
-                if split.len() > 0 {
-                    match split[0] {
-                        "c" => {}
-                        "p" => {}
-                        _ => {
-                            for e in split {
-                                match e.parse::<i32>() {
-                                    Ok(n) => {
-                                        if n == 0 {
-                                            out_clauses.push(curr_clause);
-                                            curr_clause = vec![];
-                                        } else {
-                                            curr_clause.push(n);
-                                        }
-                                    }
-                                    Err(_) => panic!("Error in input file"),
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return out_clauses;
-}
 
 fn main() {
     /*
@@ -160,10 +111,10 @@ fn main() {
     let mut clauses = parse_cnf("cnfs/empty-clause.cnf");
     let mut clauses = parse_cnf("cnfs/unsat.cnf");
     let mut clauses = parse_cnf("cnfs/uf20-01.cnf");
-    let mut clauses = parse_cnf("cnfs/uf100-010.cnf");
     let mut clauses = parse_cnf("cnfs/unsat-ex01.cnf");
-    */
     let mut clauses = parse_cnf("cnfs/uf250-02.cnf");
+    */
+    let mut clauses = parse_cnf("cnfs/uf100-010.cnf");
     println!("Parse complete");
     let result = dpll(&mut clauses, 1);
     if result {
