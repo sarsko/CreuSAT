@@ -1,12 +1,8 @@
-use crate::parser::parse_cnf;
-use crate::solver::dpll;
+use sat::parser::parse_cnf;
+use sat::solver::dpll;
 
 use clap::{crate_authors, App, AppSettings, Arg};
 
-mod parser;
-mod types;
-mod solver;
-mod test;
 
 fn main() {
     /*

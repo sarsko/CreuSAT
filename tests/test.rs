@@ -1,7 +1,7 @@
 use std::fs::read_dir;
 
-use crate::parser::parse_cnf;
-use crate::solver::dpll;
+use sat::parser::parse_cnf;
+use sat::solver::dpll;
 
 #[test]
 fn test_all_sat() {
