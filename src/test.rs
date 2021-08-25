@@ -6,13 +6,13 @@ use crate::solver::dpll;
 #[test]
 fn test_all_sat() {
     let paths = read_dir("tests/cnf/sat").unwrap();
-    let mut numtests = 20;
+    let mut numtests = 200;
     for path in paths {
         let mut clauses = parse_cnf(path.unwrap().path().to_str().unwrap());
         let result = dpll(&mut clauses, 1);
         assert!(result);
         numtests -= 1;
-        if numtests == 0 {
+        if numtests <= 0 {
             break;
         }
     }
@@ -21,13 +21,13 @@ fn test_all_sat() {
 #[test]
 fn test_all_unsat() {
     let paths = read_dir("tests/cnf/unsat").unwrap();
-    let mut numtests = 5;
+    let mut numtests = 200;
     for path in paths {
         let mut clauses = parse_cnf(path.unwrap().path().to_str().unwrap());
         let result = dpll(&mut clauses, 1);
         assert!(!result);
         numtests -= 1;
-        if numtests == 0 {
+        if numtests <= 0 {
             break;
         }
     }
