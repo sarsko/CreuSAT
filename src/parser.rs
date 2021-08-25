@@ -12,12 +12,12 @@ where
     Ok(io::BufReader::new(file).lines())
 }
 
-pub fn parse_cnf(infile: &str) -> Clauses {
+pub fn parse_cnf(infile: &str) -> (Clauses, i32) {
     /*
     let mut problem_type = "";
-    let mut num_variables = 0;
     let mut num_clauses = 0;
     */
+    let mut num_literals = 0;
     let mut out_clauses = vec![];
     let mut curr_clause = vec![];
     if let Ok(lines) = read_lines(infile) {
@@ -27,7 +27,12 @@ pub fn parse_cnf(infile: &str) -> Clauses {
                 if split.len() > 0 {
                     match split[0] {
                         "c" => {}
-                        "p" => {}
+                        "p" => {
+                            match split[2].parse::<i32>() {
+                                Ok(n) => { num_literals = n },
+                                Err(_) => { panic!("Error in input file"); }
+                            }
+                        }
                         _ => {
                             for e in split {
                                 match e.parse::<i32>() {
@@ -51,5 +56,5 @@ pub fn parse_cnf(infile: &str) -> Clauses {
     else {
         panic!("File not found!");
     }
-    return out_clauses;
+    return (out_clauses, num_literals);
 }

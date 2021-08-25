@@ -86,7 +86,7 @@ fn choose_literal(_clauses: &Clauses, clause_counter: i32) -> Literal {
     return clause_counter;
 }
 
-pub fn dpll(clauses: &mut Clauses, clause_counter: i32) -> bool {
+pub fn dpll(clauses: &mut Clauses, clause_counter: i32, num_literals: i32) -> bool {
     let mut i;
     if contains_empty(clauses) {
         return false;
@@ -109,7 +109,8 @@ pub fn dpll(clauses: &mut Clauses, clause_counter: i32) -> bool {
         }
     }
     let mut pures = vec![];
-    let mut seen = HashSet::new();
+    let mut positives = vec![0; (num_literals + 1) as usize];
+    let mut negatives = vec![0; (num_literals + 1) as usize];
     i = 0;
     let clauses_len = clauses.len();
     while i < clauses_len {
@@ -118,15 +119,23 @@ pub fn dpll(clauses: &mut Clauses, clause_counter: i32) -> bool {
         let clause_len = clause.len();
         while j < clause_len {
             let literal = &clause[j];
-            seen.insert(*literal);
+            if literal < &0 {
+                negatives[(-literal) as usize] = *literal;
+            }
+            else {
+                positives[*(literal) as usize] = *literal;
+            }
             j += 1;
         }
         i += 1;
     }
-    for literal in &seen {
-        if !seen.contains(&-*literal) {
-            pures.push(*literal);
+    i = 0;
+    while i < num_literals as usize {
+        let literal = negatives[i] + positives[i];
+        if literal != 0 {
+            pures.push(literal);
         }
+        i += 1;
     }
     i = 0;
     let pures_len = pures.len();
@@ -141,5 +150,5 @@ pub fn dpll(clauses: &mut Clauses, clause_counter: i32) -> bool {
     let mut clauses = clauses;
     clauses.push(vec![literal]);
     clauses2.push(vec![-literal]);
-    return dpll(&mut clauses, new_counter) || dpll(&mut clauses2, new_counter);
+    return dpll(&mut clauses, new_counter, num_literals) || dpll(&mut clauses2, new_counter, num_literals);
 }
