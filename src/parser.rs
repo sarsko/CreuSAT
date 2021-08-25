@@ -12,7 +12,7 @@ where
     Ok(io::BufReader::new(file).lines())
 }
 
-pub fn parse_cnf(infile: &str) -> (Clauses, i32) {
+pub fn parse_cnf(infile: &str) -> (Clauses, usize) {
     /*
     let mut problem_type = "";
     let mut num_clauses = 0;
@@ -56,5 +56,5 @@ pub fn parse_cnf(infile: &str) -> (Clauses, i32) {
     else {
         panic!("File not found!");
     }
-    return (out_clauses, num_literals);
+    return (out_clauses, num_literals as usize);
 }

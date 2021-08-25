@@ -86,7 +86,7 @@ fn choose_literal(_clauses: &Clauses, clause_counter: i32) -> Literal {
     return clause_counter;
 }
 
-pub fn dpll(clauses: &mut Clauses, clause_counter: i32, num_literals: i32) -> bool {
+pub fn dpll(clauses: &mut Clauses, clause_counter: i32, num_literals: usize) -> bool {
     let mut i;
     if contains_empty(clauses) {
         return false;
@@ -109,8 +109,8 @@ pub fn dpll(clauses: &mut Clauses, clause_counter: i32, num_literals: i32) -> bo
         }
     }
     let mut pures = vec![];
-    let mut positives = vec![0; (num_literals + 1) as usize];
-    let mut negatives = vec![0; (num_literals + 1) as usize];
+    let mut positives = vec![0; num_literals + 1];
+    let mut negatives = vec![0; num_literals + 1];
     i = 0;
     let clauses_len = clauses.len();
     while i < clauses_len {
@@ -130,7 +130,7 @@ pub fn dpll(clauses: &mut Clauses, clause_counter: i32, num_literals: i32) -> bo
         i += 1;
     }
     i = 0;
-    while i < num_literals as usize {
+    while i < num_literals {
         let literal = negatives[i] + positives[i];
         if literal != 0 {
             pures.push(literal);
