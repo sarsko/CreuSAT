@@ -11,8 +11,8 @@ fn consistent(clauses: &Clauses) -> bool {
         let clause = &clauses[i];
         let clause_len = clause.len();
         while j < clause_len {
-            let literal = &clause[j];
-            if seen.contains(&-*literal) {
+            let literal = clause[j];
+            if seen.contains(&-literal) {
                 return false;
             }
             seen.insert(literal);
@@ -47,9 +47,9 @@ fn unit_propagate(clauses: &Clauses, literal: Literal) -> Clauses {
             let mut j = 0;
             let clause_len = clause.len();
             while j < clause_len {
-                let lit = &clause[j];
-                if lit != &-literal {
-                    out_clause.push(*lit);
+                let lit = clause[j];
+                if lit != -literal {
+                    out_clause.push(lit);
                 }
                 j += 1;
             }
@@ -71,8 +71,8 @@ fn pure_literal_assign(clauses: &Clauses, literal: Literal) -> Clauses {
             let mut j = 0;
             let clause_len = clause.len();
             while j < clause_len {
-                let lit = &clause[j];
-                out_clause.push(*lit);
+                let lit = clause[j];
+                out_clause.push(lit);
                 j += 1;
             }
             out_clauses.push(out_clause);
@@ -109,6 +109,34 @@ pub fn dpll(clauses: &mut Clauses, clause_counter: i32, num_literals: usize) -> 
         }
     }
     let mut pures = vec![];
+    let mut seen = HashSet::new();
+    let mut seen_vec = vec![];
+    i = 0;
+    let clauses_len = clauses.len();
+    while i < clauses_len {
+        let mut j = 0;
+        let clause = &clauses[i];
+        let clause_len = clause.len();
+        while j < clause_len {
+            let literal = clause[j];
+            if !seen.contains(&literal) {
+                seen_vec.push(literal);
+                seen.insert(literal);
+            }
+            j += 1;
+        }
+        i += 1;
+    }
+    i = 0;
+    let seen_vec_len = seen_vec.len();
+    while i < seen_vec_len {
+        let literal = seen_vec[i];
+        if !seen.contains(&-literal) {
+            pures.push(literal);
+        }
+        i += 1;
+    }
+    /*
     let mut positives = vec![0; num_literals + 1];
     let mut negatives = vec![0; num_literals + 1];
     i = 0;
@@ -137,6 +165,7 @@ pub fn dpll(clauses: &mut Clauses, clause_counter: i32, num_literals: usize) -> 
         }
         i += 1;
     }
+    */
     i = 0;
     let pures_len = pures.len();
     while i < pures_len {
