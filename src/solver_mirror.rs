@@ -115,11 +115,18 @@ fn compatible(pa: &Pasn, a: Assignment) -> bool {
     }
 }
 
+#[predicate]
+fn formula_invariant(f: &Formula) -> bool {
+    pearlite! {
+        forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
+        vars_in_range(@(f.num_vars), ((@(f.clauses)).index(i)))
+    }
+}
+
 fn complete(pa: &Pasn) -> bool {
     pa.ix == pa.assign.len()
 }
 
-//#[requires(vars_in_range((@(a.0)).len(), *c))]
 #[requires(vars_in_range((@(a.0)).len(), *c))]
 fn interp_clause(a: &Assignment, c: &Clause) -> bool {
     let mut i = 0;
@@ -142,14 +149,9 @@ fn interp_clause(a: &Assignment, c: &Clause) -> bool {
     }
     false
 }
-#[requires(
-    forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
-    vars_in_range(@(f.num_vars), ((@(f.clauses)).index(i)) )
-    )] // formula invariant
-#[ensures(
-    forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
-    vars_in_range(@(f.num_vars), ((@(f.clauses)).index(i)) )
-    )] // formula invariant
+
+#[requires(formula_invariant(f))]
+#[ensures(formula_invariant(f))]
 #[requires((@(a.0)).len() === @f.num_vars)]
 fn interp_formula(a: &Assignment, f: &Formula) -> bool {
     let mut i = 0;
@@ -217,16 +219,10 @@ fn set_false(pa: &Pasn) -> Pasn {
 
 impl WellFounded for usize {}
 
-#[requires(
-    forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
-    vars_in_range(@(f.num_vars), ((@(f.clauses)).index(i)) )
-    )] // formula invariant
-#[ensures(
-    forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
-    vars_in_range(@(f.num_vars), ((@(f.clauses)).index(i)) )
-    )] // formula invariant
+#[requires(formula_invariant(f))]
+#[ensures(formula_invariant(f))]
 #[requires((@(f.clauses)).len() < 1000)] // just to ensure boundedness
-#[requires(@(pa.ix) <= (@(pa.assign)).len())] // should be made type invariant
+#[requires(@(pa.ix) <= (@(pa.assign)).len())]
 #[requires((@(pa.assign)).len() === @f.num_vars)]
 //#[variant((f.num_vars) - (pa.ix))]
 fn inner(f: &Formula, pa: Pasn) -> bool {
@@ -241,14 +237,8 @@ fn inner(f: &Formula, pa: Pasn) -> bool {
     }
 }
 
-#[requires(
-    forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
-    vars_in_range(@(f.num_vars), ((@(f.clauses)).index(i)) )
-    )] // formula invariant
-#[ensures(
-    forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
-    vars_in_range(@(f.num_vars), ((@(f.clauses)).index(i)) )
-    )] // formula invariant
+#[requires(formula_invariant(f))]
+#[ensures(formula_invariant(f))]
 #[requires((@(f.clauses)).len() < 1000)] // just to ensure boundedness
 pub fn solver(f: &Formula) -> bool {
     let assign = Vec(vec![false; f.num_vars]);
