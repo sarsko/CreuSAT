@@ -101,9 +101,9 @@ pub struct Formula { clauses: Vec<Clause>,  num_vars: usize }
 #[predicate]
 fn vars_in_range(n: Int, c: Clause) -> bool {
     pearlite! {
-        forall<i : usize> 0usize <= i && @i <= (@(c.0)).len() ==>
-        @0usize <= @((@(c.0)).index(@i)).var &&
-        @((@(c.0)).index(@i)).var <= n
+        forall<i : Int> 0 <= i && i < (@(c.0)).len() ==>
+        0 <= @((@(c.0)).index(i)).var &&
+        @((@(c.0)).index(i)).var < n
     }
 }
 
@@ -119,6 +119,7 @@ fn complete(pa: &Pasn) -> bool {
     pa.ix == pa.assign.len()
 }
 
+//#[requires(vars_in_range((@(a.0)).len(), *c))]
 #[requires(vars_in_range((@(a.0)).len(), *c))]
 fn interp_clause(a: &Assignment, c: &Clause) -> bool {
     let mut i = 0;
@@ -142,12 +143,12 @@ fn interp_clause(a: &Assignment, c: &Clause) -> bool {
     false
 }
 #[requires(
-    forall<i : usize> 0usize <= i && @i <= (@(f.clauses)).len() ==>
-    vars_in_range(0, ((@(f.clauses)).index(@i)) )
+    forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
+    vars_in_range(@(f.num_vars), ((@(f.clauses)).index(i)) )
     )] // formula invariant
 #[ensures(
-    forall<i : usize> 0usize <= i && @i <= (@(f.clauses)).len() ==>
-    vars_in_range(0, ((@(f.clauses)).index(@i)) )
+    forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
+    vars_in_range(@(f.num_vars), ((@(f.clauses)).index(i)) )
     )] // formula invariant
 #[requires((@(a.0)).len() === @f.num_vars)]
 fn interp_formula(a: &Assignment, f: &Formula) -> bool {
@@ -170,9 +171,9 @@ fn interp_formula(a: &Assignment, f: &Formula) -> bool {
     true
 }
 
-#[requires(@(pa.ix) < (@(pa.assign)).len())] // should be made type invariant
+#[requires(@(pa.ix) < (@(pa.assign)).len())]
 #[requires((@(pa.assign)).len() < 1000)] // just to ensure boundedness
-#[requires(!(@(pa.ix) === (@(pa.assign)).len()))] // not complete
+#[requires(!(@(pa.ix) === (@(pa.assign)).len()))] // !complete
 //#[ensures(compatible(pa, Assignment(result.assign)))]
 fn set_true(pa: &Pasn) -> Pasn {
     let mut new_assign = Vec(vec![false;0]);
@@ -190,6 +191,8 @@ fn set_true(pa: &Pasn) -> Pasn {
 //    *new_assign.index_mut(pa.ix) = true; // doesnt prove
     Pasn { assign: new_assign, ix: pa.ix + 1 }
 }
+
+
 
 
 #[requires((@(pa.assign)).len() < 1000)]
@@ -215,12 +218,12 @@ fn set_false(pa: &Pasn) -> Pasn {
 impl WellFounded for usize {}
 
 #[requires(
-    forall<i : usize> 0usize <= i && @i <= (@(f.clauses)).len() ==>
-    vars_in_range(0, ((@(f.clauses)).index(@i)) )
+    forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
+    vars_in_range(@(f.num_vars), ((@(f.clauses)).index(i)) )
     )] // formula invariant
 #[ensures(
-    forall<i : usize> 0usize <= i && @i <= (@(f.clauses)).len() ==>
-    vars_in_range(0, ((@(f.clauses)).index(@i)) )
+    forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
+    vars_in_range(@(f.num_vars), ((@(f.clauses)).index(i)) )
     )] // formula invariant
 #[requires((@(f.clauses)).len() < 1000)] // just to ensure boundedness
 #[requires(@(pa.ix) <= (@(pa.assign)).len())] // should be made type invariant
@@ -239,12 +242,12 @@ fn inner(f: &Formula, pa: Pasn) -> bool {
 }
 
 #[requires(
-    forall<i : usize> 0usize <= i && @i <= (@(f.clauses)).len() ==>
-    vars_in_range(0, ((@(f.clauses)).index(@i)) )
+    forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
+    vars_in_range(@(f.num_vars), ((@(f.clauses)).index(i)) )
     )] // formula invariant
 #[ensures(
-    forall<i : usize> 0usize <= i && @i <= (@(f.clauses)).len() ==>
-    vars_in_range(0, ((@(f.clauses)).index(@i)) )
+    forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
+    vars_in_range(@(f.num_vars), ((@(f.clauses)).index(i)) )
     )] // formula invariant
 #[requires((@(f.clauses)).len() < 1000)] // just to ensure boundedness
 pub fn solver(f: &Formula) -> bool {
