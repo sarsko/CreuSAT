@@ -88,7 +88,24 @@ impl<T> Vec<T> {
         use std::ops::IndexMut;
         self.0.index_mut(ix)
     }
+
+    // TODO: This makes Vec.clone() unusable in regular Rust
+    #[trusted]
+    #[ensures(
+        forall<i: Int> 0 <= i && i < (@self).len() ==>
+        (@self).index(i) === (@result).index(i)
+    )]
+    #[ensures((@self).len() === (@result).len())]
+    fn clone(&self) -> Self {
+        panic!()
+    }
+
 }
+
+/*
+impl<T: std::clone::Clone> Clone for Vec<T> {
+}
+*/
 
 fn main() {}
 
@@ -97,6 +114,8 @@ struct Lit { var: usize, value: bool }
 struct Clause(Vec<Lit>);
 struct Pasn { assign: Vec<bool>, ix: usize }
 pub struct Formula { clauses: Vec<Clause>,  num_vars: usize }
+
+impl WellFounded for usize {}
 
 #[predicate]
 fn vars_in_range(n: Int, c: Clause) -> bool {
@@ -108,10 +127,11 @@ fn vars_in_range(n: Int, c: Clause) -> bool {
 }
 
 #[predicate]
-fn compatible(pa: &Pasn, a: Assignment) -> bool {
+fn compatible(pa: &Pasn, pa2: Pasn) -> bool {
     pearlite! {
-        (@(pa.assign)).len() === (@(a.0)).len() &&
-        true // pa.assign[..pa.ix] == a[..pa.ix] // AKA deep equality
+        (@(pa.assign)).len() === (@(pa2.assign)).len() &&
+        forall<i: Int> 0 <= i && i < @pa.ix ==>
+        (@(pa.assign)).index(i) === (@(pa2.assign)).index(i)
     }
 }
 
@@ -123,26 +143,61 @@ fn formula_invariant(f: &Formula) -> bool {
     }
 }
 
+#[predicate]
+fn sat_clause(a: &Assignment, c: Clause) -> bool {
+    pearlite! {
+        exists<i: Int> 0 <= i && i < (@(c.0)).len() ==>
+        ((@(a.0)).index(@(((@(c.0)).index(i)).var))) ===
+        (((@(c.0)).index(i)).value)
+    }
+}
+
+#[predicate]
+fn not_sat_clause(a: &Assignment, c: Clause) -> bool {
+    pearlite! {
+        forall<i: Int> 0 <= i && i < (@(c.0)).len() ==>
+        ((@(a.0)).index(@(((@(c.0)).index(i)).var))) !=
+        (((@(c.0)).index(i)).value)
+    }
+}
+
+#[predicate]
+fn sat_formula(a: &Assignment, f: &Formula) -> bool {
+    pearlite! {
+        forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
+        sat_clause(a, (@(f.clauses)).index(i))
+    }
+}
+
 fn complete(pa: &Pasn) -> bool {
     pa.ix == pa.assign.len()
 }
 
+#[trusted]
+#[ensures(result === true ==> (l === r))]
+#[ensures(result === false ==> (l != r))]
+fn eqb(l: bool, r: bool) -> bool {
+//    !(l && r) && !(!l && !r)
+    l == r
+}
+
 #[requires(vars_in_range((@(a.0)).len(), *c))]
+#[ensures(vars_in_range((@(a.0)).len(), *c))]
+#[ensures(result === true ==> sat_clause(a, *c))]
+#[ensures(result === false ==> not_sat_clause(a, *c))]
 fn interp_clause(a: &Assignment, c: &Clause) -> bool {
     let mut i = 0;
     let clause_len = c.0.len();
-    /*
     #[invariant(
-        previous, forall<j: usize> 0usize <= j && j < i ==>
-        (@(a.0)).index((@((@(c.0)).index(@j).var))) !=
-        (@(c.0)).index(@j).value
+        previous, forall<j: Int> 0 <= j && j < @i ==>
+        (@(a.0)).index((@((@(c.0)).index(j).var))) !=
+        (@(c.0)).index(j).value
         )]
-    */
     #[invariant(loop_invariant, 0usize <= i && i <= clause_len)]
     while i < clause_len {
         let l = *a.0.index(c.0.index(i).var);
         let r = c.0.index(i).value;
-        if !(l && r) && !(!l && !r) {
+        if eqb(l, r) {
             return true;
         }
         i += 1;
@@ -159,8 +214,8 @@ fn interp_formula(a: &Assignment, f: &Formula) -> bool {
     /*
     #[invariant(
         previous, forall<j: usize> 0usize <= j && j < i ==>
-        (@(a.0)).index((@((@(c.0)).index(@j).var))) !=
-        (@(c.0)).index(@j).value
+        (@(a.0)).index((@((@(f.clauses)).index(@j).0.var))) !=
+        ((@(f.clauses)).index(@j)).0.value
         )]
     */
     #[invariant(loop_invariant, 0usize <= i && i <= clauses_len)]
@@ -174,74 +229,66 @@ fn interp_formula(a: &Assignment, f: &Formula) -> bool {
 }
 
 #[requires(@(pa.ix) < (@(pa.assign)).len())]
-#[requires((@(pa.assign)).len() < 1000)] // just to ensure boundedness
 #[requires(!(@(pa.ix) === (@(pa.assign)).len()))] // !complete
-//#[ensures(compatible(pa, Assignment(result.assign)))]
+#[ensures(compatible(pa, result))]
+#[ensures(((@(result.assign)).index(@(pa.ix))) === true)]
+#[ensures(result.ix === pa.ix + 1usize)]
+#[ensures((@(pa.assign)).len() === (@(result.assign)).len())] // this should be included in compatible
 fn set_true(pa: &Pasn) -> Pasn {
-    let mut new_assign = Vec(vec![false;0]);
-    let mut i = 0;
     let pa_len = pa.assign.len();
-    #[invariant(loop_invariant, 0usize <= i && i <= pa_len)]
-    while i < pa_len {
-        if i == pa.ix {
-            new_assign.push(true);
-        } else {
-            new_assign.push(*pa.assign.index(i));
-        }
-        i += 1;
-    }
-//    *new_assign.index_mut(pa.ix) = true; // doesnt prove
+    let mut new_assign = pa.assign.clone();
+    *new_assign.index_mut(pa.ix) = true;
     Pasn { assign: new_assign, ix: pa.ix + 1 }
 }
 
-
-
-
-#[requires((@(pa.assign)).len() < 1000)]
 #[requires(@(pa.ix) < (@(pa.assign)).len())]
 #[requires(!(@(pa.ix) === (@(pa.assign)).len()))] // !complete
+#[ensures(((@(result.assign)).index(@(pa.ix))) === false)]
+#[ensures(compatible(pa, result))]
+#[ensures(result.ix === pa.ix + 1usize)]
+#[ensures((@(pa.assign)).len() === (@(result.assign)).len())] // this should be included in compatible
 fn set_false(pa: &Pasn) -> Pasn {
-    let mut new_assign = Vec(vec![false;0]);
-    let mut i = 0;
     let pa_len = pa.assign.len();
-    #[invariant(loop_invariant, 0usize <= i && i <= pa_len)]
-    while i < pa_len {
-        if i == pa.ix {
-            new_assign.push(false);
-        } else {
-            new_assign.push(*pa.assign.index(i));
-        }
-        i += 1;
-    }
-//    *new_assign.index_mut(pa.ix) = false; // doesnt prove
+    let mut new_assign = pa.assign.clone();
+    *new_assign.index_mut(pa.ix) = false;
     Pasn { assign: new_assign, ix: pa.ix + 1 }
 }
 
-impl WellFounded for usize {}
 
 #[requires(formula_invariant(f))]
 #[ensures(formula_invariant(f))]
-#[requires((@(f.clauses)).len() < 1000)] // just to ensure boundedness
+#[requires(0 <= 0)] // Needed cus of #159
 #[requires(@(pa.ix) <= (@(pa.assign)).len())]
 #[requires((@(pa.assign)).len() === @f.num_vars)]
-//#[variant((f.num_vars) - (pa.ix))]
+#[variant((f.num_vars) - (pa.ix))]
 fn inner(f: &Formula, pa: Pasn) -> bool {
-    if complete(&pa) {
+    if pa.ix == pa.assign.len() { // Should be extracted to `complete`
         return interp_formula(&Assignment(pa.assign), f);
     } else {
         if inner(f, set_true(&pa)) {
             return true;
-        } else {
+        }
+        else {
             return inner(f, set_false(&pa));
         }
     }
 }
 
+#[requires((@(f.clauses)).len() < 10000)] // just to ensure boundedness
 #[requires(formula_invariant(f))]
 #[ensures(formula_invariant(f))]
-#[requires((@(f.clauses)).len() < 1000)] // just to ensure boundedness
 pub fn solver(f: &Formula) -> bool {
-    let assign = Vec(vec![false; f.num_vars]);
+    if f.num_vars == 0 {
+        return true;
+    }
+    let mut assign: Vec<bool> = Vec(vec![]);
+    let mut i = 0;
+    #[invariant(loop_invariant, 0usize <= i && i < f.num_vars)]
+    while i < f.num_vars {
+        assign.push(false);
+        i += 1
+    }
+    //let assign = Vec(vec![false; f.num_vars]); // turns out vec! is opaque
     let base = Pasn { assign: assign, ix: 0 };
     inner(f, base)
 }
