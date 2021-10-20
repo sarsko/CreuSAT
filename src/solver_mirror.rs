@@ -180,7 +180,7 @@ fn sat_formula(a: Assignment, f: &Formula) -> bool {
 #[trusted]
 #[ensures(result === true ==> (l === r))]
 #[ensures(result === false ==> (l != r))]
-#[ensures(result === (l == r))]
+#[ensures(result === (l === r))]
 fn eqb(l: bool, r: bool) -> bool {
     l == r
 }
@@ -259,7 +259,6 @@ fn set_false(pa: &Pasn) -> Pasn {
 
 #[requires(formula_invariant(f))]
 #[ensures(formula_invariant(f))]
-#[requires(0 <= 0)] // Needed cus of #159
 #[requires(@(pa.ix) <= (@(pa.assign)).len())]
 #[requires((@(pa.assign)).len() === @f.num_vars)]
 #[variant((f.num_vars) - (pa.ix))]
@@ -269,7 +268,7 @@ fn set_false(pa: &Pasn) -> Pasn {
 )]
 #[ensures(result === true ==> exists<a: Assignment> 0 <= 0 ==> sat_formula(a,f))]
 fn inner(f: &Formula, pa: Pasn) -> bool {
-    if pa.ix == pa.assign.len() { // Should be extracted to `complete`
+    if pa.ix == pa.assign.len() { // Could be extracted to `complete`
         return interp_formula(&Assignment(pa.assign), f);
     } else {
         if inner(f, set_true(&pa)) {
@@ -303,7 +302,6 @@ pub fn solver(f: &Formula) -> bool {
         assign.push(false);
         i += 1
     }
-    //let assign = Vec(vec![false; f.num_vars]); // turns out vec! is opaque
     let base = Pasn { assign: assign, ix: 0 };
     inner(f, base)
 }
