@@ -295,6 +295,15 @@ fn inner(f: &Formula, pa: Pasn) -> bool {
     }
 }
 
+#[ensures(
+    result === false ==> forall<a: Assignment> (@(a.0)).len() === @f.num_vars ==>
+    !sat_formula(a, f)
+)]
+#[ensures(
+    result === true ==> f.num_vars == 0usize || !(forall<a: Assignment> (@(a.0)).len() === @f.num_vars ==>
+    !sat_formula(a, f))
+)]
+//#[ensures(result === true ==> exists<a: Assignment> f.num_vars > 0usize ==> !!sat_formula(a,f))]
 #[requires((@(f.clauses)).len() < 10000)] // just to ensure boundedness
 #[requires(formula_invariant(f))]
 #[ensures(formula_invariant(f))]
