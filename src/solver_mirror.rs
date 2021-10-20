@@ -88,8 +88,9 @@ impl<T> Vec<T> {
         use std::ops::IndexMut;
         self.0.index_mut(ix)
     }
+}
 
-    // TODO: This makes Vec.clone() unusable in regular Rust
+impl Vec<bool> {
     #[trusted]
     #[ensures(
         forall<i: Int> 0 <= i && i < (@self).len() ==>
@@ -97,15 +98,9 @@ impl<T> Vec<T> {
     )]
     #[ensures((@self).len() === (@result).len())]
     fn clone(&self) -> Self {
-        panic!()
+        Vec(self.0.clone())
     }
-
 }
-
-/*
-impl<T: std::clone::Clone> Clone for Vec<T> {
-}
-*/
 
 fn main() {}
 
@@ -303,7 +298,6 @@ fn inner(f: &Formula, pa: Pasn) -> bool {
     result === true ==> f.num_vars == 0usize || !(forall<a: Assignment> (@(a.0)).len() === @f.num_vars ==>
     !sat_formula(a, f))
 )]
-//#[ensures(result === true ==> exists<a: Assignment> f.num_vars > 0usize ==> !!sat_formula(a,f))]
 #[requires((@(f.clauses)).len() < 10000)] // just to ensure boundedness
 #[requires(formula_invariant(f))]
 #[ensures(formula_invariant(f))]
