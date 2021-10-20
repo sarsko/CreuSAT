@@ -130,8 +130,8 @@ fn vars_in_range(n: Int, c: Clause) -> bool {
 fn compatible(pa: Pasn, pa2: Pasn) -> bool {
     pearlite! {
         (@(pa.assign)).len() === (@(pa2.assign)).len() &&
-        forall<i: Int> 0 <= i && i < @(pa.ix) ==>
-        (@(pa.assign)).index(i) === (@(pa2.assign)).index(i)
+        forall<i: usize> 0usize <= i && @i < @(pa.ix) ==>
+        (@(pa.assign)).index(@i) === (@(pa2.assign)).index(@i)
     }
 }
 
@@ -139,16 +139,27 @@ fn compatible(pa: Pasn, pa2: Pasn) -> bool {
 fn compatible_a(pa: Pasn, a: Assignment) -> bool {
     pearlite! {
         (@(pa.assign)).len() === (@(a.0)).len() &&
-        forall<i: Int> 0 <= i && i < @(pa.ix) ==>
-        (@(pa.assign)).index(i) === (@(a.0)).index(i)
+        forall<i: usize> 0usize <= i && @i < @(pa.ix) ==>
+        (@(pa.assign)).index(@i) === (@(a.0)).index(@i)
     }
 }
+
+/*
+#[logic]
+fn lemma_complete_compat() -> bool {
+    pearlite! {
+        forall<pa: Pasn> 0 <= 0 ==>
+            forall<a: Assignment> compatible_a(pa, a) ==>
+            (@pa.ix === (@(pa.assign)).len()) ==> pa.assign === a.0
+    }
+}
+*/
 
 #[predicate]
 fn formula_invariant(f: &Formula) -> bool {
     pearlite! {
-        forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
-        vars_in_range(@(f.num_vars), ((@(f.clauses)).index(i)))
+        forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
+        vars_in_range(@(f.num_vars), ((@(f.clauses)).index(@i)))
     }
 }
 
@@ -166,9 +177,9 @@ fn sat_clause(a: &Assignment, c: Clause) -> bool {
 #[predicate]
 fn not_sat_clause(a: Assignment, c: Clause) -> bool {
     pearlite! {
-        forall<i: Int> 0 <= i && i < (@(c.0)).len() ==>
-        ((@(a.0)).index(@(((@(c.0)).index(i)).var))) !=
-        (((@(c.0)).index(i)).value)
+        forall<i: usize> 0usize <= i && @i < (@(c.0)).len() ==>
+        ((@(a.0)).index(@(((@(c.0)).index(@i)).var))) !=
+        (((@(c.0)).index(@i)).value)
     }
 }
 
@@ -183,11 +194,10 @@ fn sat_formula(a: Assignment, f: &Formula) -> bool {
 #[trusted]
 #[ensures(result === true ==> (l === r))]
 #[ensures(result === false ==> (l != r))]
-//#[ensures(result === (l == r))]
+#[ensures(result === (l == r))]
 fn eqb(l: bool, r: bool) -> bool {
     l == r
 }
-
 
 #[requires(vars_in_range((@(a.0)).len(), *c))]
 #[ensures(vars_in_range((@(a.0)).len(), *c))]
@@ -198,9 +208,9 @@ fn interp_clause(a: &Assignment, c: &Clause) -> bool {
     let mut i = 0;
     let clause_len = c.0.len();
     #[invariant(
-        previous, forall<j: Int> 0 <= j && j < @i ==>
-        (@(a.0)).index((@((@(c.0)).index(j).var))) !=
-        (@(c.0)).index(j).value
+        previous, forall<j: usize> 0usize <= j && j < i ==>
+        (@(a.0)).index((@((@(c.0)).index(@j).var))) !=
+        (@(c.0)).index(@j).value
     )]
     #[invariant(loop_invariant, 0usize <= i && i <= clause_len)]
     while i < clause_len {
@@ -226,13 +236,6 @@ fn interp_formula(a: &Assignment, f: &Formula) -> bool {
         forall<j: usize> 0usize <= j && j < i ==>
         !(not_sat_clause(*a, (@(f.clauses)).index(@j)))
     )]
-    /*
-    // Doesnt prove
-    #[invariant(previous,
-        forall<j: Int> 0 <= j && j < @i ==>
-        !(not_sat_clause(a, (@(f.clauses)).index(j)))
-    )]
-    */
     #[invariant(loop_invariant, 0usize <= i && i <= clauses_len)]
     while i < clauses_len {
         if !interp_clause(a, f.clauses.index(i)) {
@@ -248,7 +251,6 @@ fn interp_formula(a: &Assignment, f: &Formula) -> bool {
 #[ensures(compatible_a(*pa, Assignment(result.assign)))]
 #[ensures(((@(result.assign)).index(@(pa.ix))) === true)]
 #[ensures(result.ix === pa.ix + 1usize)]
-#[ensures((@(pa.assign)).len() === (@(result.assign)).len())] // this should be included in compatible
 fn set_true(pa: &Pasn) -> Pasn {
     let pa_len = pa.assign.len();
     let mut new_assign = pa.assign.clone();
@@ -261,7 +263,6 @@ fn set_true(pa: &Pasn) -> Pasn {
 #[ensures(((@(result.assign)).index(@(pa.ix))) === false)]
 #[ensures(compatible_a(*pa, Assignment(result.assign)))]
 #[ensures(result.ix === pa.ix + 1usize)]
-#[ensures((@(pa.assign)).len() === (@(result.assign)).len())] // this should be included in compatible
 fn set_false(pa: &Pasn) -> Pasn {
     let pa_len = pa.assign.len();
     let mut new_assign = pa.assign.clone();
@@ -276,13 +277,11 @@ fn set_false(pa: &Pasn) -> Pasn {
 #[requires(@(pa.ix) <= (@(pa.assign)).len())]
 #[requires((@(pa.assign)).len() === @f.num_vars)]
 #[variant((f.num_vars) - (pa.ix))]
-/*
 #[ensures(
     result === false ==> forall<a: Assignment> compatible_a(pa, a) ==>
     !sat_formula(a, f)
 )]
 #[ensures(result === true ==> exists<a: Assignment> 0 <= 0 ==> sat_formula(a,f))]
-*/
 fn inner(f: &Formula, pa: Pasn) -> bool {
     if pa.ix == pa.assign.len() { // Should be extracted to `complete`
         return interp_formula(&Assignment(pa.assign), f);
