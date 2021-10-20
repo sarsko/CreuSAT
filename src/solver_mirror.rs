@@ -122,16 +122,7 @@ fn vars_in_range(n: Int, c: Clause) -> bool {
 }
 
 #[predicate]
-fn compatible(pa: Pasn, pa2: Pasn) -> bool {
-    pearlite! {
-        (@(pa.assign)).len() === (@(pa2.assign)).len() &&
-        forall<i: usize> 0usize <= i && @i < @(pa.ix) ==>
-        (@(pa.assign)).index(@i) === (@(pa2.assign)).index(@i)
-    }
-}
-
-#[predicate]
-fn compatible_a(pa: Pasn, a: Assignment) -> bool {
+fn compatible(pa: Pasn, a: Assignment) -> bool {
     pearlite! {
         (@(pa.assign)).len() === (@(a.0)).len() &&
         forall<i: usize> 0usize <= i && @i < @(pa.ix) ==>
@@ -144,7 +135,7 @@ fn compatible_a(pa: Pasn, a: Assignment) -> bool {
 fn lemma_complete_compat() -> bool {
     pearlite! {
         forall<pa: Pasn> 0 <= 0 ==>
-            forall<a: Assignment> compatible_a(pa, a) ==>
+            forall<a: Assignment> compatible(pa, a) ==>
             (@pa.ix === (@(pa.assign)).len()) ==> pa.assign === a.0
     }
 }
@@ -243,7 +234,7 @@ fn interp_formula(a: &Assignment, f: &Formula) -> bool {
 
 #[requires(@(pa.ix) < (@(pa.assign)).len())]
 #[requires(!(@(pa.ix) === (@(pa.assign)).len()))] // !complete
-#[ensures(compatible_a(*pa, Assignment(result.assign)))]
+#[ensures(compatible(*pa, Assignment(result.assign)))]
 #[ensures(((@(result.assign)).index(@(pa.ix))) === true)]
 #[ensures(result.ix === pa.ix + 1usize)]
 fn set_true(pa: &Pasn) -> Pasn {
@@ -256,7 +247,7 @@ fn set_true(pa: &Pasn) -> Pasn {
 #[requires(@(pa.ix) < (@(pa.assign)).len())]
 #[requires(!(@(pa.ix) === (@(pa.assign)).len()))] // !complete
 #[ensures(((@(result.assign)).index(@(pa.ix))) === false)]
-#[ensures(compatible_a(*pa, Assignment(result.assign)))]
+#[ensures(compatible(*pa, Assignment(result.assign)))]
 #[ensures(result.ix === pa.ix + 1usize)]
 fn set_false(pa: &Pasn) -> Pasn {
     let pa_len = pa.assign.len();
@@ -273,7 +264,7 @@ fn set_false(pa: &Pasn) -> Pasn {
 #[requires((@(pa.assign)).len() === @f.num_vars)]
 #[variant((f.num_vars) - (pa.ix))]
 #[ensures(
-    result === false ==> forall<a: Assignment> compatible_a(pa, a) ==>
+    result === false ==> forall<a: Assignment> compatible(pa, a) ==>
     !sat_formula(a, f)
 )]
 #[ensures(result === true ==> exists<a: Assignment> 0 <= 0 ==> sat_formula(a,f))]
