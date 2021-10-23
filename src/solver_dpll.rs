@@ -29,7 +29,7 @@ impl<T> Ghost<T> {
         Ghost::<T>
     }
 }
-
+/*
 
 impl Vec<bool> {
     #[trusted]
@@ -43,7 +43,7 @@ impl Vec<bool> {
         //Vec(self.0.clone()) // .0 has become private
     }
 }
-use std::collections::HashSet;
+*/
 
 fn main() {}
 
@@ -55,15 +55,11 @@ pub struct Formula { clauses: Vec<Clause>, num_vars: usize }
 fn vars_in_range(n: Int, c: Clause) -> bool {
     pearlite! {
         forall<i: usize> 0usize <= i && @i < (@(c.0)).len() ==>
-        0 <= @((@(c.0))[@i]).idx &&
-        @((@(c.0))[@i]).idx < n
+            (0 <= @((@(c.0))[@i]).idx &&
+        @((@(c.0))[@i]).idx < n)
     }
 }
 
-// TODO: Check if first part is needed
-//
-//        (forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
-//         (@((@(f.clauses)).index(@i).0)).len() < 10000) &&
 #[predicate]
 fn formula_invariant(f: &Formula) -> bool {
     pearlite! {
@@ -79,8 +75,15 @@ fn index_invariant(l: Lit, v: Vec<bool>) -> bool {
     }
 }
 
+#[predicate]
+fn clause_invariant(c: Clause, v: Vec<bool>) -> bool {
+    pearlite! {
+        forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
+            index_invariant((@c.0)[@i], v)
+    }
+}
+
 impl WellFounded for usize {}
-// for push: #[ensures((@^self).len() === (@self).len() + 1)]
 
 #[trusted]
 #[ensures(result === true ==> (l === r))]
@@ -90,11 +93,26 @@ fn eqb(l: bool, r: bool) -> bool {
     l == r
 }
 
+// TODO: Reconsider function(i.e. make it generic / move it)
+#[ensures((@result).len() === @n)]
+fn make_vec_of_size(n: usize) -> Vec<bool>{
+    let mut out: Vec<bool> = Vec::new();
+    if n == 0 {
+        return out;
+    }
+    #[invariant(loop_invariant, (@out).len() <= @n)]
+    while out.len() < n {
+        out.push(false);
+    }
+    return out;
+}
 
-#[requires(0 <= 0)] // C
-//#[requires(@(literal.idx) < (@neg).len())] // Why isnt this needed?
-#[requires(@(literal.idx) < (@pos).len())]
 #[requires(index_invariant(*literal, *neg))]
+#[requires(index_invariant(*literal, *pos))]
+#[ensures(index_invariant(*literal, ^neg))]
+#[ensures(index_invariant(*literal, ^pos))]
+#[ensures(index_invariant(*literal, *neg))]
+#[ensures(index_invariant(*literal, *pos))]
 #[ensures((@*pos).len() === (@^pos).len())]
 #[ensures((@*neg).len() === (@^neg).len())]
 fn consistent_literal(literal: &Lit, pos: &mut Vec<bool>, neg: &mut Vec<bool>) -> bool {
@@ -115,46 +133,72 @@ fn consistent_literal(literal: &Lit, pos: &mut Vec<bool>, neg: &mut Vec<bool>) -
 }
 
 
-// Need to ensure these:
-//#[requires(@(literal.idx) < (@neg).len())]
-//#[requires(@(literal.idx) < (@pos).len())]
+/*
+#[requires(vars_in_range((@pos).len(), *c))] // this wont prove higher up ?
+#[requires(vars_in_range((@neg).len(), *c))]
+*/
+#[ensures(vars_in_range((@pos).len(), *c))]
+#[ensures(vars_in_range((@neg).len(), *c))]
+/*
+#[requires((@pos).len() === (@neg).len())]
+#[ensures((@pos).len() === (@neg).len())]
+*/
+#[ensures((@*pos).len() === (@^pos).len())]
+#[ensures((@*neg).len() === (@^neg).len())]
+#[requires(
+    forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
+    index_invariant((@c.0)[@i], *neg))]
+#[requires(
+    forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
+    index_invariant((@c.0)[@i], *pos))]
+// These should probably be ^ ?
+#[ensures(
+    forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
+    index_invariant((@c.0)[@i], *neg))]
+#[ensures(
+    forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
+    index_invariant((@c.0)[@i], *pos))]
+// Doesnt wanna prove for some reason (should be same as above)
+/*
+#[requires(clause_invariant(*c, *pos))]
+#[requires(clause_invariant(*c, *neg))]
+#[ensures(clause_invariant(*c, *pos))]
+#[ensures(clause_invariant(*c, *neg))]
+*/
 
-#[requires(vars_in_range((@pos).len(), Clause(*c)))]
-#[requires(vars_in_range((@neg).len(), Clause(*c)))]
-//#[requires((@pos).len() === (@neg).len())]
-//#[ensures((@pos).len() === (@neg).len())]
-//#[ensures((@*pos).len() === (@^pos).len())]
-//#[ensures((@*neg).len() === (@^neg).len())]
-fn consistent_clause(c: &Vec<Lit>, pos: &mut Vec<bool>, neg: &mut Vec<bool>) -> bool {
+//#[requires(index_invariant(*literal, *pos))]
+fn consistent_clause(c: &Clause, pos: &mut Vec<bool>, neg: &mut Vec<bool>) -> bool {
     let mut i = 0;
-    let clause_len = c.len();
+    let clause_len = c.0.len();
+    let pos_len = pos.len(); // these should be ghost
+    let neg_len = neg.len();
+    let old_p = Ghost::record(&pos);
+    let old_n = Ghost::record(&neg);
+    #[invariant(neg_invariant,
+        forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
+        index_invariant((@c.0)[@i], *neg))]
+    #[invariant(pos_invariant,
+        forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
+        index_invariant((@c.0)[@i], *pos))]
+    /*
+    #[invariant(pos_invariant, clause_invariant((*c), *pos))]
+    #[invariant(neg_invariant, clause_invariant((*c), *neg))]
+    */
+    #[invariant(proph_pos, ^pos === ^@old_p)]
+    #[invariant(proph_neg, ^neg === ^@old_n)]
+    #[invariant(same_pos, (@*pos).len() === (@*@old_p).len())]
+    #[invariant(same_neg, (@*neg).len() === (@*@old_n).len())]
+    #[invariant(same_len, (@*pos).len() === @pos_len)]
+    #[invariant(same_len2, (@*neg).len() === @neg_len)]
     #[invariant(loop_bound, 0usize <= i && i <= clause_len)]
     while i < clause_len {
-        let literal = c.index(i);
+        let literal = c.0.index(i);
         if !consistent_literal(literal, pos, neg) {
             return false;
         }
         i += 1;
     }
     return true;
-}
-
-// TODO: Reconsider function(i.e. make it generic / move it)
-#[requires(@n < @9999usize)]
-#[trusted] // TODO: Remove trusted
-#[ensures((@result).len() === @n)]
-fn make_vec_of_size(n: usize) -> Vec<bool>{
-    let mut out: Vec<bool> = Vec::new();
-    if n == 0 {
-        return out;
-    }
-    let mut i = 0;
-    #[invariant(loop_invariant, 0usize <= i && i <= n)]
-    while i < n {
-        out.push(false);
-        i += 1
-    }
-    return out;
 }
 
 
@@ -166,9 +210,26 @@ fn consistent(f: &Formula) -> bool {
     let mut negatives: Vec<bool> = make_vec_of_size(f.num_vars);
     let clauses_len = f.clauses.len();
     let mut i = 0;
+    /*
+    #[invariant(neg_invariant,
+        forall<i: usize> 0usize <= i && i < clauses_len ==>
+        clause_invariant((@(f.clauses))[@i], negatives))]
+    */
+    #[invariant(neg_invariant,
+        forall<k: usize> 0usize <= k && k < clauses_len ==>
+        forall<j: usize> 0usize <= j && @j < (@(((@(f.clauses))[@k]).0)).len() ==>
+        index_invariant((@(((@(f.clauses))[@k]).0))[@j], negatives))]
+    #[invariant(pos_invariant,
+        forall<k: usize> 0usize <= k && k < clauses_len ==>
+        forall<j: usize> 0usize <= j && @j < (@(((@(f.clauses))[@k]).0)).len() ==>
+        index_invariant((@(((@(f.clauses))[@k]).0))[@j], positives))]
     #[invariant(loop_bound, 0usize <= i && i <= clauses_len)]
+    #[invariant(pos, forall<k: usize> 0usize <= k && k < clauses_len ==>
+        vars_in_range((@positives).len(), (@(f.clauses))[@k]))]
+    #[invariant(neg, forall<k: usize> 0usize <= k && k < clauses_len ==>
+        vars_in_range((@negatives).len(), (@(f.clauses))[@k]))]
     while i < clauses_len {
-        let clause = &f.clauses.index(i).0;
+        let clause = &f.clauses.index(i);
         if !consistent_clause(clause, &mut positives, &mut negatives) {
             return false;
         }
