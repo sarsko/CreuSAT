@@ -137,8 +137,8 @@ fn consistent_literal(literal: &Lit, pos: &mut Vec<bool>, neg: &mut Vec<bool>) -
 #[requires(vars_in_range((@pos).len(), *c))] // this wont prove higher up ?
 #[requires(vars_in_range((@neg).len(), *c))]
 */
-#[ensures(vars_in_range((@pos).len(), *c))]
-#[ensures(vars_in_range((@neg).len(), *c))]
+#[ensures(vars_in_range((@^pos).len(), *c))]
+#[ensures(vars_in_range((@^neg).len(), *c))]
 /*
 #[requires((@pos).len() === (@neg).len())]
 #[ensures((@pos).len() === (@neg).len())]
@@ -148,25 +148,28 @@ fn consistent_literal(literal: &Lit, pos: &mut Vec<bool>, neg: &mut Vec<bool>) -
 #[requires(
     forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
     index_invariant((@c.0)[@i], *neg))]
+/*
+// Adding this makes it not prove higher up, but it is not needed?
 #[requires(
     forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
     index_invariant((@c.0)[@i], *pos))]
-// These should probably be ^ ?
+*/
 #[ensures(
     forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
-    index_invariant((@c.0)[@i], *neg))]
+    index_invariant((@c.0)[@i], ^neg))]
 #[ensures(
     forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
-    index_invariant((@c.0)[@i], *pos))]
+    index_invariant((@c.0)[@i], ^pos))]
 // Doesnt wanna prove for some reason (should be same as above)
 /*
 #[requires(clause_invariant(*c, *pos))]
 #[requires(clause_invariant(*c, *neg))]
-#[ensures(clause_invariant(*c, *pos))]
-#[ensures(clause_invariant(*c, *neg))]
+#[ensures(clause_invariant(*c, ^pos))]
+#[ensures(clause_invariant(*c, ^neg))]
 */
 
 //#[requires(index_invariant(*literal, *pos))]
+//
 fn consistent_clause(c: &Clause, pos: &mut Vec<bool>, neg: &mut Vec<bool>) -> bool {
     let mut i = 0;
     let clause_len = c.0.len();
