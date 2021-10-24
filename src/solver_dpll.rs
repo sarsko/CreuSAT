@@ -83,30 +83,33 @@ impl Clause {
             if lit.idx == l.idx {
                 return true;
             }
+            i += 1;
         }
         return false;
     }
 
     #[ensures(result === false ==>
         forall<i: Int> 0 <= i && i < (@self.0).len() ==>
-        @((@self.0)[i].idx) != @(l.idx) &&
-        ((@self.0)[i].positive) != (l.positive))]
+        (@((@self.0)[i].idx) != @(l.idx) ||
+        ((@self.0)[i].positive) != (l.positive)))]
     #[ensures(result === true ==>
         exists<i: Int> 0 <= i && i < (@self.0).len() ==>
-        @((@self.0)[i].idx) === @(l.idx) &&
-        ((@self.0)[i].positive) === (l.positive))]
+        (@((@self.0)[i].idx) === @(l.idx) &&
+        ((@self.0)[i].positive) === (l.positive)))]
     fn contains(&self, l: &Lit) -> bool {
         let len = self.0.len();
         let mut i = 0;
         #[invariant(loop_bound, i <= len)]
         #[invariant(previous,
             forall<j: Int> 0 <= j && j < @i ==>
-            @((@self.0)[j].idx) != @(l.idx))]
+            @((@self.0)[j].idx) != @(l.idx) ||
+        ((@self.0)[j].positive) != (l.positive))]
         while i < len {
             let lit = self.0.index(i);
             if lit.idx == l.idx && lit.positive == l.positive {
                 return true;
             }
+            i += 1;
         }
         return false;
     }
@@ -135,7 +138,7 @@ fn vars_in_range(n: Int, c: Clause) -> bool {
 }
 
 #[predicate]
-fn formula_invariant(f: &Formula) -> bool {
+fn formula_invariant(f: Formula) -> bool {
     pearlite! {
         (forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
         vars_in_range(@(f.num_vars), ((@(f.clauses))[@i])))
@@ -280,8 +283,8 @@ fn consistent_clause(c: &Clause, pos: &mut Vec<bool>, neg: &mut Vec<bool>) -> bo
 
 
 #[requires((@(f.clauses)).len() < 10000)] // just to ensure boundedness
-#[requires(formula_invariant(f))]
-#[ensures(formula_invariant(f))]
+#[requires(formula_invariant(*f))]
+#[ensures(formula_invariant(*f))]
 fn consistent(f: &Formula) -> bool {
     let mut positives: Vec<bool> = make_vec_of_size(f.num_vars);
     let mut negatives: Vec<bool> = make_vec_of_size(f.num_vars);
@@ -315,9 +318,8 @@ fn consistent(f: &Formula) -> bool {
     return true;
 }
 
-#[requires((@(f.clauses)).len() < 10000)] // just to ensure boundedness
-#[requires(formula_invariant(f))]
-#[ensures(formula_invariant(f))]
+#[requires(formula_invariant(*f))]
+#[ensures(formula_invariant(*f))]
 fn contains_empty(f: &Formula) -> bool {
     let mut i = 0;
     let clauses_len = f.clauses.len();
@@ -332,10 +334,15 @@ fn contains_empty(f: &Formula) -> bool {
     return false;
 }
 
-fn copy_clause_without(clause: &Clause, literal: &Lit) -> Clause {
+#[requires(formula_invariant(*f))]
+#[ensures(formula_invariant(*f))]
+#[requires(vars_in_range(@(f.num_vars), *clause))]
+#[ensures(vars_in_range(@(f.num_vars), result))]
+fn copy_clause_without(f: &Formula, clause: &Clause, literal: &Lit) -> Clause {
     let mut out_clause: Vec<Lit> = Vec::new();
     let mut j = 0;
     let clause_len = clause.0.len();
+    #[invariant(maintain_invariant, vars_in_range(@(f.num_vars), Clause(out_clause)))]
     #[invariant(loop_bound, j <= clause_len)]
     while j < clause_len {
         let lit = clause.0.index(j);
@@ -347,43 +354,66 @@ fn copy_clause_without(clause: &Clause, literal: &Lit) -> Clause {
     return Clause(out_clause);
 }
 
+#[requires(formula_invariant(*f))]
+#[ensures(formula_invariant(*f))]
+#[ensures((forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
+        vars_in_range(@(f.num_vars), ((@(result))[@i]))))]
 fn unit_propagate(f: &Formula, literal: &Lit) -> Vec<Clause> {
     let mut out_clauses: Vec<Clause> = Vec::new();
     let mut i = 0;
-    let clauses_len = f.clauses.len();
-    #[invariant(loop_bound, i <= clauses_len)]
-    while i < clauses_len {
+    #[invariant(loop_bound, @i <= (@f.clauses).len())]
+    #[invariant(maintain_invariant,
+        (forall<j: usize> 0usize < i ==>
+            vars_in_range(@(f.num_vars), ((@(out_clauses))[@j]))))]
+    while i < f.clauses.len() {
         let clause = f.clauses.index(i);
         if !clause.contains(&literal) {
-            out_clauses.push(copy_clause_without(clause, literal));
+            let new_clause = copy_clause_without(f, clause, literal);
+            out_clauses.push(new_clause);
         }
         i += 1;
     }
     return out_clauses;
 }
 
+#[requires(formula_invariant(*f))]
+#[ensures(formula_invariant(^f))]
+fn check_and_propagate(f: &mut Formula) -> bool {
+    let mut i = 0;
+    #[invariant(loop_bound, @i <= (@f.clauses).len())]
+    #[invariant(maintain_invariant, formula_invariant(*f))]
+    while i < f.clauses.len() {
+        if f.clauses.index(i).0.len() == 1 {
+            f.clauses = unit_propagate(f, f.clauses.index(i).0.index(0));
+            return false;
+        }
+        i += 1;
+    }
+    return true;
+}
+
+#[requires(formula_invariant(*f))]
+#[ensures(formula_invariant(^f))]
 fn do_unit_propagation(f: &mut Formula){
     let mut stabilized = false;
     while !stabilized {
-        stabilized = true;
-        let mut i = 0;
-        let clauses_len = f.clauses.len();
-        #[invariant(loop_bound, i <= clauses_len)]
-        while i < clauses_len {
-            if f.clauses.index(i).0.len() == 1 {
-                f.clauses = unit_propagate(f, f.clauses.index(i).0.index(0));
-                stabilized = false;
-                break;
-            }
-            i += 1;
-        }
+        stabilized = check_and_propagate(f);
     }
 }
 
+#[requires(formula_invariant(*f))]
+#[ensures(formula_invariant(^f))]
+#[requires(@f.cntr < 200000000)] // TODO: This shouldnt be needed
+#[requires(@f.cntr < (@(f.clauses)).len())]
+fn next_literal(f: &mut Formula) -> usize {
+    let out = f.cntr;
+    f.cntr = f.cntr + 1;
+    return out;
+}
 
 #[requires((@(f.clauses)).len() < 10000)] // just to ensure boundedness
-#[requires(formula_invariant(f))]
-#[ensures(formula_invariant(f))]
+#[requires(formula_invariant(*f))]
+#[ensures(formula_invariant(^f))]
 fn inner(f: &mut Formula) -> bool {
     if contains_empty(f) {
         return false;
@@ -392,21 +422,23 @@ fn inner(f: &mut Formula) -> bool {
         return true;
     }
     do_unit_propagation(f);
-    return false;
-    /*
-    let literal = choose_literal(&clauses, clause_counter);
-    let new_counter = clause_counter + 1;
-    let mut clauses = set_literals(clauses, literal);
-    let mut clauses2 = set_literals(clauses, literal);
-    set_literals(&mut clauses2, -literal);
-    return inner(&mut clauses, new_counter, num_literals) || innter(&mut clauses2, new_counter, num_literals);
-    */
+    let literal = next_literal(f);
+    let mut f1 = f.clone();
+    let pos_lit = Lit{idx: literal, positive: true};
+    let neg_lit = Lit{idx: literal, positive: false};
+    let mut pos_vec = Vec::new();
+    pos_vec.push(pos_lit);
+    let mut neg_vec = Vec::new();
+    neg_vec.push(neg_lit);
+    f1.clauses.push(Clause(pos_vec));
+    f.clauses.push(Clause(neg_vec));
+    return inner(&mut f1) || inner(f);
 }
 
 #[requires((@(f.clauses)).len() < 10000)] // just to ensure boundedness
 #[requires(@(f.cntr) == 0)]
-#[requires(formula_invariant(f))]
-#[ensures(formula_invariant(f))]
+#[requires(formula_invariant(*f))]
+#[ensures(formula_invariant(^f))]
 pub fn solver(f: &mut Formula) -> bool {
     if f.num_vars == 0 {
         return true;
