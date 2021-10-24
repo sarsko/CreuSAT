@@ -47,9 +47,83 @@ impl Vec<bool> {
 
 fn main() {}
 
+#[derive(Copy)]
 struct Lit { idx: usize, positive: bool }
 struct Clause(Vec<Lit>);
-pub struct Formula { clauses: Vec<Clause>, num_vars: usize }
+pub struct Formula { clauses: Vec<Clause>, num_vars: usize, cntr: usize }
+
+// TODO: Make this actual code
+impl Clause {
+    #[trusted]
+    #[ensures(
+        forall<i: Int> 0 <= i && i < (@self.0).len() ==>
+        (@self.0)[i] === (@result.0)[i]
+    )]
+    #[ensures((@self.0).len() === (@result.0).len())]
+    fn clone(&self) -> Self {
+        panic!();
+        //Clause(self.0.clone())
+    }
+
+    #[ensures(result === false ==>
+        forall<i: Int> 0 <= i && i < (@self.0).len() ==>
+        @((@self.0)[i].idx) != @(l.idx))]
+    #[ensures(result === true ==>
+        exists<i: Int> 0 <= i && i < (@self.0).len() ==>
+        @((@self.0)[i].idx) === @(l.idx))]
+    fn contains_ignore_polarity(&self, l: &Lit) -> bool {
+        let len = self.0.len();
+        let mut i = 0;
+        #[invariant(loop_bound, i <= len)]
+        #[invariant(previous,
+            forall<j: Int> 0 <= j && j < @i ==>
+            @((@self.0)[j].idx) != @(l.idx))]
+        while i < len {
+            let lit = self.0.index(i);
+            if lit.idx == l.idx {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    #[ensures(result === false ==>
+        forall<i: Int> 0 <= i && i < (@self.0).len() ==>
+        @((@self.0)[i].idx) != @(l.idx) &&
+        ((@self.0)[i].positive) != (l.positive))]
+    #[ensures(result === true ==>
+        exists<i: Int> 0 <= i && i < (@self.0).len() ==>
+        @((@self.0)[i].idx) === @(l.idx) &&
+        ((@self.0)[i].positive) === (l.positive))]
+    fn contains(&self, l: &Lit) -> bool {
+        let len = self.0.len();
+        let mut i = 0;
+        #[invariant(loop_bound, i <= len)]
+        #[invariant(previous,
+            forall<j: Int> 0 <= j && j < @i ==>
+            @((@self.0)[j].idx) != @(l.idx))]
+        while i < len {
+            let lit = self.0.index(i);
+            if lit.idx == l.idx && lit.positive == l.positive {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+impl Formula {
+    #[trusted]
+    #[ensures(
+        forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+        (@self.clauses)[i] === (@result.clauses)[i]
+    )]
+    #[ensures((@self.clauses).len() === (@result.clauses).len())]
+    fn clone(&self) -> Self {
+        panic!();
+        //Clause(self.0.clone())
+    }
+}
+
 
 #[predicate]
 fn vars_in_range(n: Int, c: Clause) -> bool {
@@ -258,16 +332,66 @@ fn contains_empty(f: &Formula) -> bool {
     return false;
 }
 
+fn copy_clause_without(clause: &Clause, literal: &Lit) -> Clause {
+    let mut out_clause: Vec<Lit> = Vec::new();
+    let mut j = 0;
+    let clause_len = clause.0.len();
+    #[invariant(loop_bound, j <= clause_len)]
+    while j < clause_len {
+        let lit = clause.0.index(j);
+        if lit.idx != literal.idx {
+            out_clause.push(*lit);
+        }
+        j += 1;
+    }
+    return Clause(out_clause);
+}
+
+fn unit_propagate(f: &Formula, literal: &Lit) -> Vec<Clause> {
+    let mut out_clauses: Vec<Clause> = Vec::new();
+    let mut i = 0;
+    let clauses_len = f.clauses.len();
+    #[invariant(loop_bound, i <= clauses_len)]
+    while i < clauses_len {
+        let clause = f.clauses.index(i);
+        if !clause.contains(&literal) {
+            out_clauses.push(copy_clause_without(clause, literal));
+        }
+        i += 1;
+    }
+    return out_clauses;
+}
+
+fn do_unit_propagation(f: &mut Formula){
+    let mut stabilized = false;
+    while !stabilized {
+        stabilized = true;
+        let mut i = 0;
+        let clauses_len = f.clauses.len();
+        #[invariant(loop_bound, i <= clauses_len)]
+        while i < clauses_len {
+            if f.clauses.index(i).0.len() == 1 {
+                f.clauses = unit_propagate(f, f.clauses.index(i).0.index(0));
+                stabilized = false;
+                break;
+            }
+            i += 1;
+        }
+    }
+}
+
+
 #[requires((@(f.clauses)).len() < 10000)] // just to ensure boundedness
 #[requires(formula_invariant(f))]
 #[ensures(formula_invariant(f))]
-fn inner(f: &Formula) -> bool {
+fn inner(f: &mut Formula) -> bool {
     if contains_empty(f) {
         return false;
     }
     if consistent(f) {
         return true;
     }
+    do_unit_propagation(f);
     return false;
     /*
     let literal = choose_literal(&clauses, clause_counter);
@@ -275,14 +399,15 @@ fn inner(f: &Formula) -> bool {
     let mut clauses = set_literals(clauses, literal);
     let mut clauses2 = set_literals(clauses, literal);
     set_literals(&mut clauses2, -literal);
-    return dpll(&mut clauses, new_counter, num_literals) || dpll(&mut clauses2, new_counter, num_literals);
+    return inner(&mut clauses, new_counter, num_literals) || innter(&mut clauses2, new_counter, num_literals);
     */
 }
 
 #[requires((@(f.clauses)).len() < 10000)] // just to ensure boundedness
+#[requires(@(f.cntr) == 0)]
 #[requires(formula_invariant(f))]
 #[ensures(formula_invariant(f))]
-pub fn solver(f: &Formula) -> bool {
+pub fn solver(f: &mut Formula) -> bool {
     if f.num_vars == 0 {
         return true;
     }
