@@ -9,7 +9,7 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-pub struct Ghost<T>
+pub struct Ghost<T>//(*mut T)
 where
     T: ?Sized;
 
@@ -127,6 +127,15 @@ impl Formula {
     }
 }
 
+impl Lit {
+    #[trusted]
+    #[ensures(@result.idx === @self.idx && result.positive === self.positive)]
+    fn clone(&self) -> Self {
+        panic!();
+        //Clause(self.0.clone())
+    }
+}
+
 
 #[predicate]
 fn vars_in_range(n: Int, c: Clause) -> bool {
@@ -134,6 +143,15 @@ fn vars_in_range(n: Int, c: Clause) -> bool {
         forall<i: usize> 0usize <= i && @i < (@(c.0)).len() ==>
             (0 <= @((@(c.0))[@i]).idx &&
         @((@(c.0))[@i]).idx < n)
+    }
+}
+
+
+#[predicate]
+fn formula_invariant2(c: Vec<Clause>, n: usize) -> bool {
+    pearlite! {
+        (forall<i: usize> 0usize <= i && @i < (@(c)).len() ==>
+        vars_in_range(@(n), ((@(c))[@i])))
     }
 }
 
@@ -334,37 +352,56 @@ fn contains_empty(f: &Formula) -> bool {
     return false;
 }
 
+// TODO: Fix the vars_in range post. No idea why it doesnt prove
 #[requires(formula_invariant(*f))]
 #[ensures(formula_invariant(*f))]
 #[requires(vars_in_range(@(f.num_vars), *clause))]
 #[ensures(vars_in_range(@(f.num_vars), result))]
+/*
+#[ensures(
+        forall<i: usize> 0usize <= i && @i < (@(result.0)).len() ==>
+            (0 <= @((@(result.0))[@i]).idx &&
+        @((@(result.0))[@i]).idx < @f.num_vars))]
+*/
 fn copy_clause_without(f: &Formula, clause: &Clause, literal: &Lit) -> Clause {
-    let mut out_clause: Vec<Lit> = Vec::new();
+    let mut out_clause = Clause(Vec::new());
     let mut j = 0;
-    let clause_len = clause.0.len();
-    #[invariant(maintain_invariant, vars_in_range(@(f.num_vars), Clause(out_clause)))]
-    #[invariant(loop_bound, j <= clause_len)]
-    while j < clause_len {
+    /*
+    #[invariant(maintain2,
+        forall<i: usize> 0usize <= i && @i < (@(out_clause.0)).len() ==>
+            (0 <= @((@(out_clause.0))[@i]).idx &&
+        @((@(out_clause.0))[@i]).idx < @f.num_vars))]
+    */
+    #[invariant(maintain_invariant, vars_in_range(@(f.num_vars), out_clause))]
+    #[invariant(loop_bound, @j <= (@clause.0).len())]
+    while j < clause.0.len() {
         let lit = clause.0.index(j);
         if lit.idx != literal.idx {
-            out_clause.push(*lit);
+            //let new_lit = Lit{idx: lit.idx, positive: lit.positive};
+            let new_lit = lit.clone();
+            //out_clause.0.push(*lit);
+            out_clause.0.push(new_lit);
         }
         j += 1;
     }
-    return Clause(out_clause);
+    return out_clause;
 }
 
 #[requires(formula_invariant(*f))]
 #[ensures(formula_invariant(*f))]
-#[ensures((forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
-        vars_in_range(@(f.num_vars), ((@(result))[@i]))))]
+#[ensures(formula_invariant2(result, f.num_vars))]
+//#[ensures((forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
+//        vars_in_range(@(f.num_vars), ((@(result))[@i]))))]
 fn unit_propagate(f: &Formula, literal: &Lit) -> Vec<Clause> {
     let mut out_clauses: Vec<Clause> = Vec::new();
     let mut i = 0;
     #[invariant(loop_bound, @i <= (@f.clauses).len())]
+    /*
     #[invariant(maintain_invariant,
-        (forall<j: usize> 0usize < i ==>
-            vars_in_range(@(f.num_vars), ((@(out_clauses))[@j]))))]
+        forall<j: usize> j < i ==>
+            vars_in_range(@(f.num_vars), ((@(out_clauses))[@j])))]
+    */
+    #[invariant(mi, formula_invariant2(out_clauses, f.num_vars))]
     while i < f.clauses.len() {
         let clause = f.clauses.index(i);
         if !clause.contains(&literal) {
@@ -424,6 +461,7 @@ fn inner(f: &mut Formula) -> bool {
     do_unit_propagation(f);
     let literal = next_literal(f);
     let mut f1 = f.clone();
+    let mut f2 = f.clone();
     let pos_lit = Lit{idx: literal, positive: true};
     let neg_lit = Lit{idx: literal, positive: false};
     let mut pos_vec = Vec::new();
@@ -431,8 +469,8 @@ fn inner(f: &mut Formula) -> bool {
     let mut neg_vec = Vec::new();
     neg_vec.push(neg_lit);
     f1.clauses.push(Clause(pos_vec));
-    f.clauses.push(Clause(neg_vec));
-    return inner(&mut f1) || inner(f);
+    f2.clauses.push(Clause(neg_vec));
+    return inner(&mut f1) || inner(&mut f2); // TODO: Back to single cloning
 }
 
 #[requires((@(f.clauses)).len() < 10000)] // just to ensure boundedness
