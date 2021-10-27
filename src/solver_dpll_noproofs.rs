@@ -46,11 +46,17 @@ impl<T> Vec<T> {
 }
 
 #[derive(Clone, Copy)]
-struct Lit { idx: usize, polarity: bool }
+struct Lit {
+    idx: usize,
+    polarity: bool,
+}
 struct Clause(Vec<Lit>);
 struct Assignments(Vec<Option<bool>>);
 struct Worklist(Vec<Lit>);
-pub struct Formula { clauses: Vec<Clause>, num_vars: usize }
+pub struct Formula {
+    clauses: Vec<Clause>,
+    num_vars: usize,
+}
 
 impl Worklist {
     fn clone_lit_vector(&self, v: &Vec<Lit>) -> Vec<Lit> {
@@ -58,7 +64,10 @@ impl Worklist {
         let mut i = 0;
         while i < v.len() {
             let lit = v.index(i);
-            let newlit = Lit{idx: lit.idx, polarity: lit.polarity};
+            let newlit = Lit {
+                idx: lit.idx,
+                polarity: lit.polarity,
+            };
             out.push(newlit);
             i += 1;
         }
@@ -85,7 +94,6 @@ impl Assignments {
     }
 }
 
-
 /*
 #[trusted]
 #[ensures(result === true ==> (l === r))]
@@ -109,20 +117,22 @@ fn check_if_unit(c: &Clause, a: &Assignments) -> Option<Lit> {
                 if eqb(lit.polarity, *x) {
                     return None;
                 }
-            },
-            None    => {
+            }
+            None => {
                 if unassigned >= 1 {
                     return None;
                 }
-                outlit = Some(Lit{idx: lit.idx, polarity: lit.polarity}); // TODO fix
+                outlit = Some(Lit {
+                    idx: lit.idx,
+                    polarity: lit.polarity,
+                }); // TODO fix
                 unassigned += 1;
-            },
+            }
         }
         i += 1;
     }
     return outlit;
 }
-
 
 /// Checks if the clause is satisfied.
 /// `true` means the clause is satisfied.
@@ -139,14 +149,13 @@ fn check_sat(clause: &Clause, a: &Assignments) -> bool {
                 if eqb(lit.polarity, *x) {
                     return true;
                 }
-            },
-            None    => { }, // continue
+            }
+            None => {} // continue
         }
         i += 1;
     }
     return false;
 }
-
 
 /// Checks if the clause is empty.
 fn check_empty(clause: &Clause, a: &Assignments) -> bool {
@@ -160,8 +169,10 @@ fn check_empty(clause: &Clause, a: &Assignments) -> bool {
                 if eqb(lit.polarity, *x) {
                     return false;
                 }
-            },
-            None    => { return false; }, // May become SAT
+            }
+            None => {
+                return false;
+            } // May become SAT
         }
         i += 1;
     }
@@ -210,9 +221,16 @@ fn unit_propagate(f: &Formula, a: &mut Assignments, w: &mut Worklist, l: Lit) {
         let clause = f.clauses.index(i);
         match check_if_unit(clause, a) {
             Some(lit) => {
-                add_to_worklist(w, a, Lit{idx: lit.idx, polarity: lit.polarity});
+                add_to_worklist(
+                    w,
+                    a,
+                    Lit {
+                        idx: lit.idx,
+                        polarity: lit.polarity,
+                    },
+                );
             }
-            None      => { },
+            None => {}
         }
         i += 1
     }
@@ -229,8 +247,10 @@ fn find_unassigned(a: &Assignments) -> Option<usize> {
     while i < a.0.len() {
         let curr = a.0.index(i);
         match curr {
-            Some(x) => { }, //continue
-            None    => { return Some(i); },
+            Some(x) => {} //continue
+            None => {
+                return Some(i);
+            }
         }
         i += 1;
     }
@@ -246,15 +266,30 @@ fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
         return false;
     }
     let res = find_unassigned(a);
-    if res == None { // This should not happen
+    if res == None {
+        // This should not happen
         panic!();
         return false;
     } else {
         let unassigned_idx = res.unwrap();
         let mut a_cloned = a.clone();
         let mut w_cloned = w.clone();
-        add_to_worklist(w, a, Lit{idx: unassigned_idx, polarity: true});
-        add_to_worklist(&mut w_cloned, &mut a_cloned, Lit{idx: unassigned_idx, polarity: false});
+        add_to_worklist(
+            w,
+            a,
+            Lit {
+                idx: unassigned_idx,
+                polarity: true,
+            },
+        );
+        add_to_worklist(
+            &mut w_cloned,
+            &mut a_cloned,
+            Lit {
+                idx: unassigned_idx,
+                polarity: false,
+            },
+        );
         return inner(f, a, w) || inner(f, &mut a_cloned, &mut w_cloned);
     }
 }
@@ -262,7 +297,7 @@ fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
 fn init_assignments(f: &Formula) -> Assignments {
     let mut assign: Vec<Option<bool>> = Vec::new();
     let mut i = 0;
-//    #[invariant(loop_invariant, 0usize <= i && i < f.num_vars)]
+    //    #[invariant(loop_invariant, 0usize <= i && i < f.num_vars)]
     while i < f.num_vars {
         assign.push(None);
         i += 1
@@ -276,16 +311,28 @@ fn init_worklist(_f: &Formula) -> Worklist {
 }
 
 /// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
-pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_literals: usize) -> bool{
-    let mut formula = Formula{clauses: Vec::new(), num_vars: num_literals};
+pub fn preproc_and_solve(
+    clauses: &mut std::vec::Vec<std::vec::Vec<i32>>,
+    num_literals: usize,
+) -> bool {
+    let mut formula = Formula {
+        clauses: Vec::new(),
+        num_vars: num_literals,
+    };
     for clause in clauses {
         let mut currclause = Clause(Vec::new());
         for lit in clause {
             if *lit < 0 {
-                let new_lit = Lit{idx: ((lit.abs() - 1) as usize), polarity: false };
+                let new_lit = Lit {
+                    idx: ((lit.abs() - 1) as usize),
+                    polarity: false,
+                };
                 currclause.0.push(new_lit);
             } else {
-                let new_lit = Lit{idx: ((*lit - 1) as usize), polarity: true };
+                let new_lit = Lit {
+                    idx: ((*lit - 1) as usize),
+                    polarity: true,
+                };
                 currclause.0.push(new_lit);
             }
         }
@@ -303,4 +350,3 @@ pub fn solver(f: &Formula) -> bool {
     let mut worklist = init_worklist(f);
     inner(f, &mut assignments, &mut worklist)
 }
-
