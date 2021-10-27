@@ -9,7 +9,7 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-pub struct Ghost<T>//(*mut T)
+pub struct Ghost<T>(*mut T)
 where
     T: ?Sized;
 
@@ -26,7 +26,7 @@ impl<T> Ghost<T> {
     #[trusted]
     #[ensures(@result === *a)]
     fn record(a: &T) -> Ghost<T> {
-        Ghost::<T>
+        panic!()
     }
 }
 /*
@@ -158,6 +158,7 @@ fn formula_invariant2(c: Vec<Clause>, n: usize) -> bool {
 #[predicate]
 fn formula_invariant(f: Formula) -> bool {
     pearlite! {
+        @f.cntr <= (@f.clauses).len() &&
         (forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
         vars_in_range(@(f.num_vars), ((@(f.clauses))[@i])))
     }
@@ -275,9 +276,14 @@ fn consistent_clause(c: &Clause, pos: &mut Vec<bool>, neg: &mut Vec<bool>) -> bo
     #[invariant(neg_invariant,
         forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
         index_invariant((@c.0)[@i], *neg))]
+    /*
     #[invariant(pos_invariant,
         forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
         index_invariant((@c.0)[@i], *pos))]
+    */
+    #[invariant(pos_invariant,
+        forall<i: Int> 0 <= i && i < (@c.0).len() ==>
+        index_invariant((@c.0)[i], *pos))]
     /*
     #[invariant(pos_invariant, clause_invariant((*c), *pos))]
     #[invariant(neg_invariant, clause_invariant((*c), *neg))]
@@ -405,7 +411,8 @@ fn unit_propagate(f: &Formula, literal: &Lit) -> Vec<Clause> {
     while i < f.clauses.len() {
         let clause = f.clauses.index(i);
         if !clause.contains(&literal) {
-            let new_clause = copy_clause_without(f, clause, literal);
+            //let new_clause = copy_clause_without(f, clause, literal);
+            let new_clause = clause.clone();
             out_clauses.push(new_clause);
         }
         i += 1;
@@ -440,7 +447,7 @@ fn do_unit_propagation(f: &mut Formula){
 
 #[requires(formula_invariant(*f))]
 #[ensures(formula_invariant(^f))]
-#[requires(@f.cntr < 200000000)] // TODO: This shouldnt be needed
+#[requires(@f.cntr < 2000_000_000)] // TODO: This shouldnt be needed
 #[requires(@f.cntr < (@(f.clauses)).len())]
 fn next_literal(f: &mut Formula) -> usize {
     let out = f.cntr;
@@ -449,6 +456,7 @@ fn next_literal(f: &mut Formula) -> usize {
 }
 
 #[requires((@(f.clauses)).len() < 10000)] // just to ensure boundedness
+#[requires(@f.cntr < 2000000)] // TODO: This shouldnt be needed
 #[requires(formula_invariant(*f))]
 #[ensures(formula_invariant(^f))]
 fn inner(f: &mut Formula) -> bool {

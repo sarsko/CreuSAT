@@ -3,7 +3,7 @@ use sat::solver::dpll;
 
 use clap::{crate_authors, App, AppSettings, Arg};
 
-use sat::solver_mirror::solver;
+use sat::solver_dpll_noproofs::preproc_and_solve;
 
 fn main() {
     let matches = App::new("\nA minimal SAT solver with no name")
@@ -24,8 +24,11 @@ fn main() {
     let filename = matches.value_of("file").unwrap();
     let (mut clauses, num_literals) = parse_cnf(filename);
     println!("Parse complete");
+    let result = preproc_and_solve(&mut clauses, num_literals);
 
+    /*
     let result = dpll(&mut clauses, 1, num_literals);
+    */
     if result {
         println!("Sat");
     } else {
