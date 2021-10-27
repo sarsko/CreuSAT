@@ -4,9 +4,11 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 */
+/*
 use std::ops::Index;
 use std::ops::IndexMut;
-/*
+*/
+
 pub struct Vec<T>(std::vec::Vec<T>);
 impl<T> Vec<T> {
     pub fn new() -> Self {
@@ -42,10 +44,9 @@ impl<T> Vec<T> {
         self.0.pop()
     }
 }
-*/
 
 #[derive(Clone, Copy)]
-pub struct Lit { idx: usize, polarity: bool }
+struct Lit { idx: usize, polarity: bool }
 struct Clause(Vec<Lit>);
 struct Assignments(Vec<Option<bool>>);
 struct Worklist(Vec<Lit>);
@@ -95,27 +96,6 @@ fn eqb(l: bool, r: bool) -> bool {
     l == r
 }
 
-// Could change to return on 2
-fn get_unassigned_count(c: &Clause, a: &Assignments) -> (usize, Option<Lit>) {
-    let mut i = 0;
-    let mut unassigned = 0;
-    let mut outlit = None;
-    while i < c.0.len() {
-        let lit = c.0.index(i);
-        let res = a.0.index(lit.idx);
-        match res {
-            Some(x) => { }, // continue
-            None    => {
-                outlit = Some(Lit{idx: lit.idx, polarity: lit.polarity}); // TODO fix
-                unassigned += 1;
-            },
-        }
-        i += 1;
-    }
-    return (unassigned, outlit);
-}
-
-
 fn check_if_unit(c: &Clause, a: &Assignments) -> Option<Lit> {
     let mut i = 0;
     let mut unassigned = 0;
@@ -160,7 +140,7 @@ fn check_sat(clause: &Clause, a: &Assignments) -> bool {
                     return true;
                 }
             },
-            None    => {}, // continue
+            None    => { }, // continue
         }
         i += 1;
     }
@@ -226,7 +206,6 @@ fn add_to_worklist(w: &mut Worklist, a: &mut Assignments, l: Lit) {
 // We could jump back if clause is found to be unsat hmm.
 fn unit_propagate(f: &Formula, a: &mut Assignments, w: &mut Worklist, l: Lit) {
     let mut i = 0;
-    set_assignment(a, l);
     while i < f.clauses.len() {
         let clause = f.clauses.index(i);
         match check_if_unit(clause, a) {
@@ -257,7 +236,6 @@ fn find_unassigned(a: &Assignments) -> Option<usize> {
     }
     None
 }
-
 
 fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
     do_unit_propagation(f, a, w);
@@ -296,14 +274,8 @@ fn init_worklist(_f: &Formula) -> Worklist {
     let litvec: Vec<Lit> = Vec::new();
     Worklist(litvec)
 }
-/*
-pub struct Lit { idx: usize, polarity: bool }
-struct Clause(Vec<Lit>);
-struct Assignments(Vec<Option<bool>>);
-struct Worklist(Vec<Lit>);
-pub struct Formula { clauses: Vec<Clause>, num_vars: usize }
-*/
 
+/// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
 pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_literals: usize) -> bool{
     let mut formula = Formula{clauses: Vec::new(), num_vars: num_literals};
     for clause in clauses {
@@ -317,11 +289,8 @@ pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_li
                 currclause.0.push(new_lit);
             }
         }
-        //println!("{:?}", currclause.0.len());
         formula.clauses.push(currclause);
     }
-    //println!("{:?}", formula.num_vars);
-    //println!("{:?}", formula.clauses.len());
     return solver(&formula);
 }
 
