@@ -44,6 +44,7 @@ pub struct Formula {
 
 fn main() {}
 
+
 #[predicate]
 fn vars_in_range(n: Int, c: Clause) -> bool {
     pearlite! {
@@ -76,6 +77,7 @@ fn worklist_invariant(w: Worklist, a: Assignments) -> bool {
     }
 }
 
+
 impl Worklist {
     #[trusted]
     fn clone_lit_vector(&self, v: &Vec<Lit>) -> Vec<Lit> {
@@ -94,6 +96,11 @@ impl Worklist {
         return out;
     }
     #[trusted]
+    #[ensures(
+        forall<i: Int> 0 <= i && i < (@self.0).len() ==>
+        (@self.0)[i] === (@result.0)[i]
+    )]
+    #[ensures((@self.0).len() === (@result.0).len())]
     fn clone(&self) -> Self {
         Worklist(self.clone_lit_vector(&self.0))
     }
@@ -112,6 +119,11 @@ impl Assignments {
         return out;
     }
     #[trusted]
+    #[ensures(
+        forall<i: Int> 0 <= i && i < (@self.0).len() ==>
+        (@self.0)[i] === (@result.0)[i]
+    )]
+    #[ensures((@self.0).len() === (@result.0).len())]
     fn clone(&self) -> Self {
         Assignments(self.clone_assignment_vector(&self.0))
     }
@@ -123,6 +135,28 @@ impl Assignments {
 #[ensures(result === (l === r))]
 fn eqb(l: bool, r: bool) -> bool {
     l == r
+}
+
+#[ensures(assignments_invariant(*f, result))]
+#[requires(formula_invariant(*f))]
+fn init_assignments(f: &Formula) -> Assignments {
+    let mut assign: Vec<Option<bool>> = Vec::new();
+    let mut i = 0;
+    #[invariant(loop_invariant, 0usize <= i && i <= f.num_vars)]
+    #[invariant(length_invariant, (@assign).len() === @i)]
+    while i < f.num_vars {
+        assign.push(None);
+        i += 1
+    }
+    Assignments(assign)
+}
+
+#[ensures((@result.0).len() === 0)]
+#[ensures(worklist_invariant(result, *_a))]
+#[requires(formula_invariant(*_f))]
+fn init_worklist(_f: &Formula, _a: &Assignments) -> Worklist {
+    let litvec: Vec<Lit> = Vec::new();
+    Worklist(litvec)
 }
 
 #[trusted] // TODO REMOVE ME
@@ -340,6 +374,9 @@ fn do_unit_propagation(f: &Formula, a: &mut Assignments, w: &mut Worklist) {
 
 #[requires(assignments_invariant(*f, *a))]
 #[ensures(assignments_invariant(*f, *a))]
+#[ensures(match result {
+    Some(t) => @t < @f.num_vars,
+    None => true })]
 fn find_unassigned(f: &Formula, a: &Assignments) -> Option<usize> {
     let mut i = 0;
     #[invariant(loop_invariant, 0usize <= i && @i <= (@a.0).len())]
@@ -378,7 +415,7 @@ fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
             return false;
         }
         Some(x) => {
-            let unassigned_idx = res.unwrap();
+            let unassigned_idx = x;
             let mut a_cloned = a.clone();
             let mut w_cloned = w.clone();
             add_to_worklist(
@@ -400,28 +437,6 @@ fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
     }
 }
 
-
-#[ensures(assignments_invariant(*f, result))]
-#[requires(formula_invariant(*f))]
-fn init_assignments(f: &Formula) -> Assignments {
-    let mut assign: Vec<Option<bool>> = Vec::new();
-    let mut i = 0;
-    #[invariant(loop_invariant, 0usize <= i && i <= f.num_vars)]
-    #[invariant(length_invariant, (@assign).len() === @i)]
-    while i < f.num_vars {
-        assign.push(None);
-        i += 1
-    }
-    Assignments(assign)
-}
-
-#[ensures((@result.0).len() === 0)]
-#[ensures(worklist_invariant(result, *_a))]
-#[requires(formula_invariant(*_f))]
-fn init_worklist(_f: &Formula, _a: &Assignments) -> Worklist {
-    let litvec: Vec<Lit> = Vec::new();
-    Worklist(litvec)
-}
 
 /// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
 #[trusted]
