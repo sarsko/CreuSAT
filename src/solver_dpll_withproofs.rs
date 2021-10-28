@@ -1,3 +1,7 @@
+#![feature(register_tool, rustc_attrs)]
+#![feature(proc_macro_hygiene, stmt_expr_attributes)]
+#![feature(type_ascription)]
+
 extern crate creusot_contracts;
 
 use creusot_contracts::std::*;
@@ -40,8 +44,39 @@ pub struct Formula {
 
 fn main() {}
 
+#[predicate]
+fn vars_in_range(n: Int, c: Clause) -> bool {
+    pearlite! {
+        forall<i: usize> 0usize <= i && @i < (@(c.0)).len() ==>
+            (0 <= @((@(c.0))[@i]).idx &&
+        @((@(c.0))[@i]).idx < n)
+    }
+}
+
+#[predicate]
+fn formula_invariant(f: Formula) -> bool {
+    pearlite! {
+        (forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
+        vars_in_range(@(f.num_vars), ((@(f.clauses))[@i])))
+    }
+}
+
+#[predicate]
+fn assignments_invariant(f: Formula, a: Assignments) -> bool {
+    pearlite! {
+        @f.num_vars === (@a.0).len()
+    }
+}
+
+#[predicate]
+fn worklist_invariant(w: Worklist, a: Assignments) -> bool {
+    pearlite! {
+        forall<i: Int> 0 <= i && i < (@w.0).len() ==>
+            @((@w.0)[i].idx) < (@a.0).len()
+    }
+}
+
 impl Worklist {
-    // OK(safety)
     #[trusted]
     fn clone_lit_vector(&self, v: &Vec<Lit>) -> Vec<Lit> {
         let mut out = Vec::new();
@@ -64,7 +99,6 @@ impl Worklist {
     }
 }
 impl Assignments {
-    //Lacking pre for .clone()
     #[trusted]
     fn clone_assignment_vector(&self, v: &Vec<Option<bool>>) -> Vec<Option<bool>> {
         let mut out = Vec::new();
@@ -126,7 +160,6 @@ fn check_if_unit(f: &Formula, idx: usize, a: &Assignments) -> Option<Lit> {
     return outlit;
 }
 
-// OK(safety)
 /// Checks if the clause is satisfied.
 /// `true` means the clause is satisfied.
 /// `false` means the clause is unsatisfied(empty clause) or that it contains
@@ -305,8 +338,9 @@ fn do_unit_propagation(f: &Formula, a: &mut Assignments, w: &mut Worklist) {
     }
 }
 
-// OK(safety)
-fn find_unassigned(a: &Assignments) -> Option<usize> {
+#[requires(assignments_invariant(*f, *a))]
+#[ensures(assignments_invariant(*f, *a))]
+fn find_unassigned(f: &Formula, a: &Assignments) -> Option<usize> {
     let mut i = 0;
     #[invariant(loop_invariant, 0usize <= i && @i <= (@a.0).len())]
     while i < a.0.len() {
@@ -328,6 +362,7 @@ fn find_unassigned(a: &Assignments) -> Option<usize> {
 //#[requires(worklist_invariant(*w, *a))]
 //#[ensures(worklist_invariant(^w, ^a))]
 #[requires(formula_invariant(*f))]
+#[ensures(formula_invariant(*f))]
 fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
 //    do_unit_propagation(f, a, w);
     if consistent(f, a) {
@@ -336,11 +371,7 @@ fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
     if contains_empty(f, a) {
         return false;
     }
-    let res = find_unassigned(a);
-    let ex:Option<bool> = None;
-    let none = None;
-    if ex == none {
-    }
+    let res = find_unassigned(f, a);
     match res {
         None => {
             // This should not happen
@@ -369,39 +400,7 @@ fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
     }
 }
 
-#[predicate]
-fn vars_in_range(n: Int, c: Clause) -> bool {
-    pearlite! {
-        forall<i: usize> 0usize <= i && @i < (@(c.0)).len() ==>
-            (0 <= @((@(c.0))[@i]).idx &&
-        @((@(c.0))[@i]).idx < n)
-    }
-}
 
-#[predicate]
-fn formula_invariant(f: Formula) -> bool {
-    pearlite! {
-        (forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
-        vars_in_range(@(f.num_vars), ((@(f.clauses))[@i])))
-    }
-}
-
-#[predicate]
-fn assignments_invariant(f: Formula, a: Assignments) -> bool {
-    pearlite! {
-        @f.num_vars === (@a.0).len()
-    }
-}
-
-#[predicate]
-fn worklist_invariant(w: Worklist, a: Assignments) -> bool {
-    pearlite! {
-        forall<i: Int> 0 <= i && i < (@w.0).len() ==>
-            @((@w.0)[i].idx) < (@a.0).len()
-    }
-}
-
-// OK(safety)
 #[ensures(assignments_invariant(*f, result))]
 #[requires(formula_invariant(*f))]
 fn init_assignments(f: &Formula) -> Assignments {
@@ -416,7 +415,6 @@ fn init_assignments(f: &Formula) -> Assignments {
     Assignments(assign)
 }
 
-// OK(safety)
 #[ensures((@result.0).len() === 0)]
 #[ensures(worklist_invariant(result, *_a))]
 #[requires(formula_invariant(*_f))]
