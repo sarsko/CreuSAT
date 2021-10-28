@@ -276,15 +276,13 @@ fn consistent_clause(c: &Clause, pos: &mut Vec<bool>, neg: &mut Vec<bool>) -> bo
     #[invariant(neg_invariant,
         forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
         index_invariant((@c.0)[@i], *neg))]
-    /*
     #[invariant(pos_invariant,
         forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
         index_invariant((@c.0)[@i], *pos))]
-    */
+    /*
     #[invariant(pos_invariant,
         forall<i: Int> 0 <= i && i < (@c.0).len() ==>
         index_invariant((@c.0)[i], *pos))]
-    /*
     #[invariant(pos_invariant, clause_invariant((*c), *pos))]
     #[invariant(neg_invariant, clause_invariant((*c), *neg))]
     */
