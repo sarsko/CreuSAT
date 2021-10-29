@@ -159,17 +159,23 @@ fn init_worklist(_f: &Formula, _a: &Assignments) -> Worklist {
     Worklist(litvec)
 }
 
-#[trusted] // TODO REMOVE ME
-#[requires(idx < f.num_vars)]
+#[requires(@idx < (@f.clauses).len())]
 #[requires(assignments_invariant(*f, *a))]
+#[requires(formula_invariant(*f))]
+#[ensures(match result {
+    Some(lit) => @lit.idx < (@a.0).len(),
+    None => true })]
 fn check_if_unit(f: &Formula, idx: usize, a: &Assignments) -> Option<Lit> {
-    let c = &f.clauses[idx];
+    let clause = &f.clauses[idx];
     let mut i = 0;
     let mut unassigned = 0;
-    let mut outlit = None;
-    #[invariant(loop_invariant, 0usize <= i && @i <= (@c.0).len())]
-    while i < c.0.len() {
-        let lit = c.0[i];
+    let mut outlit: Option<Lit> = None;
+    #[invariant(loop_invariant, 0usize <= i && @i <= (@clause.0).len())]
+    #[invariant(result_invariant, match outlit {
+        Some(lit) => @lit.idx < (@a.0).len(),
+        None => true })]
+    while i < clause.0.len() {
+        let lit = clause.0[i];
         let res = a.0[lit.idx];
         match res {
             Some(x) => {
@@ -332,7 +338,6 @@ fn add_to_worklist(_f: &Formula, w: &mut Worklist, a: &mut Assignments, idx: usi
 
 // We could jump back if clause is found to be unsat hmm.
 
-#[trusted] // TODO REMOVE ME
 #[requires(assignments_invariant(*f, *a))]
 #[ensures(assignments_invariant(*f, ^a))]
 //#[requires(worklist_invariant(*w, *a))]
@@ -340,7 +345,10 @@ fn add_to_worklist(_f: &Formula, w: &mut Worklist, a: &mut Assignments, idx: usi
 #[requires(formula_invariant(*f))]
 fn unit_propagate(f: &Formula, a: &mut Assignments, w: &mut Worklist, l: Lit) {
     let mut i = 0;
+    let old_a = Ghost::record(&a);
     #[invariant(loop_invariant, 0usize <= i && @i <= (@f.clauses).len())]
+    #[invariant(ai, assignments_invariant(*f, *a))]
+    #[invariant(proph, ^a === ^@old_a)]
     while i < f.clauses.len() {
         match check_if_unit(f, i, a) {
             Some(lit) => {
@@ -358,15 +366,13 @@ fn unit_propagate(f: &Formula, a: &mut Assignments, w: &mut Worklist, l: Lit) {
     }
 }
 
-#[trusted] // TODO REMOVE ME
 #[requires(assignments_invariant(*f, *a))]
 #[ensures(assignments_invariant(*f, ^a))]
-//#[requires(worklist_invariant(*w, *a))]
-//#[ensures(worklist_invariant(^w, ^a))]
 #[requires(formula_invariant(*f))]
 fn do_unit_propagation(f: &Formula, a: &mut Assignments, w: &mut Worklist) {
-    #[invariant(ass, assignments_invariant(*f, *a))]
-    #[invariant(wl, worklist_invariant(*w, *a))]
+    let old_a = Ghost::record(&a);
+    #[invariant(ai, assignments_invariant(*f, *a))]
+    #[invariant(proph, ^a === ^@old_a)]
     while let Some(lit) = w.0.pop() {
         unit_propagate(f, a, w, lit);
     }
@@ -396,12 +402,10 @@ fn find_unassigned(f: &Formula, a: &Assignments) -> Option<usize> {
 
 #[requires(assignments_invariant(*f, *a))]
 #[ensures(assignments_invariant(*f, ^a))]
-//#[requires(worklist_invariant(*w, *a))]
-//#[ensures(worklist_invariant(^w, ^a))]
 #[requires(formula_invariant(*f))]
 #[ensures(formula_invariant(*f))]
 fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
-//    do_unit_propagation(f, a, w);
+    do_unit_propagation(f, a, w);
     if consistent(f, a) {
         return true;
     }
