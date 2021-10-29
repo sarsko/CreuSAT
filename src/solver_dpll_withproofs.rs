@@ -78,6 +78,7 @@ fn worklist_invariant(w: Worklist, a: Assignments) -> bool {
 }
 
 
+// TALK about trusted + implementation of clone
 impl Worklist {
     #[trusted]
     fn clone_lit_vector(&self, v: &Vec<Lit>) -> Vec<Lit> {
@@ -105,6 +106,7 @@ impl Worklist {
         Worklist(self.clone_lit_vector(&self.0))
     }
 }
+// TALK about trusted + implementation of clone
 impl Assignments {
     #[trusted]
     fn clone_assignment_vector(&self, v: &Vec<Option<bool>>) -> Vec<Option<bool>> {
@@ -137,8 +139,8 @@ fn eqb(l: bool, r: bool) -> bool {
     l == r
 }
 
-#[ensures(assignments_invariant(*f, result))]
 #[requires(formula_invariant(*f))]
+#[ensures(assignments_invariant(*f, result))]
 fn init_assignments(f: &Formula) -> Assignments {
     let mut assign: Vec<Option<bool>> = Vec::new();
     let mut i = 0;
@@ -151,14 +153,15 @@ fn init_assignments(f: &Formula) -> Assignments {
     Assignments(assign)
 }
 
+#[requires(formula_invariant(*_f))]
 #[ensures((@result.0).len() === 0)]
 #[ensures(worklist_invariant(result, *_a))]
-#[requires(formula_invariant(*_f))]
 fn init_worklist(_f: &Formula, _a: &Assignments) -> Worklist {
     let litvec: Vec<Lit> = Vec::new();
     Worklist(litvec)
 }
 
+// TALK about the match from None to true
 #[requires(@idx < (@f.clauses).len())]
 #[requires(assignments_invariant(*f, *a))]
 #[requires(formula_invariant(*f))]
@@ -204,9 +207,9 @@ fn check_if_unit(f: &Formula, idx: usize, a: &Assignments) -> Option<Lit> {
 /// `true` means the clause is satisfied.
 /// `false` means the clause is unsatisfied(empty clause) or that it contains
 /// unassigned variables.
-#[requires(@idx < (@f.clauses).len())]
-#[requires(assignments_invariant(*f, *a))]
 #[requires(formula_invariant(*f))]
+#[requires(assignments_invariant(*f, *a))]
+#[requires(@idx < (@f.clauses).len())]
 fn check_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     let clause = &f.clauses[idx];
     let mut i = 0;
@@ -229,9 +232,9 @@ fn check_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 }
 
 /// Checks if the clause is empty.
-#[requires(@idx < (@f.clauses).len())]
-#[requires(assignments_invariant(*f, *a))]
 #[requires(formula_invariant(*f))]
+#[requires(assignments_invariant(*f, *a))]
+#[requires(@idx < (@f.clauses).len())]
 fn check_empty(f: &Formula, idx: usize, a: &Assignments) -> bool {
     let clause = &f.clauses[idx];
     let mut i = 0;
@@ -255,8 +258,8 @@ fn check_empty(f: &Formula, idx: usize, a: &Assignments) -> bool {
     return true;
 }
 
-#[requires(assignments_invariant(*f, *a))]
 #[requires(formula_invariant(*f))]
+#[requires(assignments_invariant(*f, *a))]
 fn contains_empty(f: &Formula, a: &Assignments) -> bool {
     let mut i = 0;
     #[invariant(loop_invariant, 0usize <= i && @i <= (@f.clauses).len())]
@@ -291,8 +294,8 @@ fn contains_empty(f: &Formula, a: &Assignments) -> bool {
     return false;
 }
 
-#[requires(assignments_invariant(*f, *a))]
 #[requires(formula_invariant(*f))]
+#[requires(assignments_invariant(*f, *a))]
 fn consistent(f: &Formula, a: &Assignments) -> bool {
     let mut i = 0;
     #[invariant(loop_invariant, 0usize <= i && @i <= (@f.clauses).len())]
@@ -324,13 +327,13 @@ fn consistent(f: &Formula, a: &Assignments) -> bool {
     return true;
 }
 
-#[requires(assignments_invariant(*_f, *a))]
-#[ensures(assignments_invariant(*_f, ^a))]
-//#[requires(worklist_invariant(*w, *a))]
-//#[ensures(worklist_invariant(^w, ^a))]
-#[requires(@idx < (@a.0).len())]
-#[ensures(@idx < (@a.0).len())]
+// TALK about the passing of _f even though function doesnt use it. Possible
+// to make "ghost"? Is it "ghost" already(will it be compiled away?)
 #[requires(formula_invariant(*_f))]
+#[requires(assignments_invariant(*_f, *a))]
+#[requires(@idx < (@a.0).len())]
+#[ensures(assignments_invariant(*_f, ^a))]
+#[ensures(@idx < (@a.0).len())]
 fn add_to_worklist(_f: &Formula, w: &mut Worklist, a: &mut Assignments, idx: usize, polarity: bool) {
     w.0.push(Lit{idx: idx, polarity: polarity});
     a.0[idx] = Some(polarity);
@@ -338,11 +341,9 @@ fn add_to_worklist(_f: &Formula, w: &mut Worklist, a: &mut Assignments, idx: usi
 
 // We could jump back if clause is found to be unsat hmm.
 
+#[requires(formula_invariant(*f))]
 #[requires(assignments_invariant(*f, *a))]
 #[ensures(assignments_invariant(*f, ^a))]
-//#[requires(worklist_invariant(*w, *a))]
-//#[ensures(worklist_invariant(^w, ^a))]
-#[requires(formula_invariant(*f))]
 fn unit_propagate(f: &Formula, a: &mut Assignments, w: &mut Worklist, l: Lit) {
     let mut i = 0;
     let old_a = Ghost::record(&a);
@@ -366,9 +367,9 @@ fn unit_propagate(f: &Formula, a: &mut Assignments, w: &mut Worklist, l: Lit) {
     }
 }
 
+#[requires(formula_invariant(*f))]
 #[requires(assignments_invariant(*f, *a))]
 #[ensures(assignments_invariant(*f, ^a))]
-#[requires(formula_invariant(*f))]
 fn do_unit_propagation(f: &Formula, a: &mut Assignments, w: &mut Worklist) {
     let old_a = Ghost::record(&a);
     #[invariant(ai, assignments_invariant(*f, *a))]
@@ -378,6 +379,7 @@ fn do_unit_propagation(f: &Formula, a: &mut Assignments, w: &mut Worklist) {
     }
 }
 
+#[requires(formula_invariant(*f))]
 #[requires(assignments_invariant(*f, *a))]
 #[ensures(assignments_invariant(*f, *a))]
 #[ensures(match result {
@@ -400,10 +402,10 @@ fn find_unassigned(f: &Formula, a: &Assignments) -> Option<usize> {
 }
 
 
-#[requires(assignments_invariant(*f, *a))]
-#[ensures(assignments_invariant(*f, ^a))]
 #[requires(formula_invariant(*f))]
+#[requires(assignments_invariant(*f, *a))]
 #[ensures(formula_invariant(*f))]
+#[ensures(assignments_invariant(*f, ^a))]
 fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
     do_unit_propagation(f, a, w);
     if consistent(f, a) {
@@ -442,6 +444,7 @@ fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
 }
 
 
+// This is trusted as it will be moved to the parser
 /// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
 #[trusted]
 pub fn preproc_and_solve(
@@ -474,7 +477,6 @@ pub fn preproc_and_solve(
     return solver(&formula);
 }
 
-#[requires((@(f.clauses)).len() < 10000)] // just to ensure boundedness
 #[requires(formula_invariant(*f))]
 pub fn solver(f: &Formula) -> bool {
     // should do pure literal and identifying unit clauses in preproc
