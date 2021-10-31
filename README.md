@@ -21,7 +21,11 @@ and is currectly in the process of being proven correct - see:
 
 ### How to run
 
-The unverified solver can be tested with:
+The unverified solver can be built with:
+```
+cargo build
+```
+and tested with:
 ```
 cargo test
 ```
@@ -31,3 +35,9 @@ cargo run -- --file [PATH_TO_FILE]
 ```
 where the provided file must be a correctly formatted CNF.
 Error checking is minimal and the parser may panic.
+
+Running the verified versions is currently not supported, as pass-through
+compilation has to be implemented in Creusot first.
+
+For instructions on how to prove the verified solvers, see
+the [Creusot](https://github.com/xldenis/creusot) repository
