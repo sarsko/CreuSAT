@@ -160,15 +160,21 @@ fn unknown2(a: Assignments, c: Clause) -> bool {
     }
 }
 
-
 #[predicate]
 fn sat_formula(a: Assignments, f: Formula) -> bool {
     pearlite! {
-        forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
-        !not_sat_clause(a, (@(f.clauses))[@i])
+        forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
+        sat_clause(a, (@(f.clauses))[i])
     }
 }
 
+#[predicate]
+fn not_sat_formula(a: Assignments, f: Formula) -> bool {
+    pearlite! {
+        exists<i: Int> 0 <= i && i < (@(f.clauses)).len() &&
+        not_sat_clause(a, (@(f.clauses))[i])
+    }
+}
 
 #[trusted]
 #[ensures(result === true ==> (l === r))]
@@ -310,6 +316,24 @@ fn is_clause_unknown2(f: &Formula, idx: usize, a: &Assignments) -> bool {
     }
 }
 
+//#[ensures(result === unknown2(*a, (@f.clauses)[@idx]))]
+#[ensures(result === SatState::Unsat  ==> not_sat_clause(*a, (@f.clauses)[@idx]))]
+#[ensures(result === SatState::Sat  ==> sat_clause(*a, (@f.clauses)[@idx]))]
+#[ensures(result === SatState::Unknown  ==> (!not_sat_clause(*a, (@f.clauses)[@idx]) && !sat_clause(*a, (@f.clauses)[@idx])))]
+#[requires(formula_invariant(*f))]
+#[requires(assignments_invariant(*f, *a))]
+#[requires(@idx < (@f.clauses).len())]
+#[requires((@f.clauses).len() > 0)]
+fn get_clause_state(f: &Formula, idx: usize, a: &Assignments) -> SatState {
+    if is_clause_sat(f, idx, a) {
+        return SatState::Sat;
+    } else if is_clause_unsat(f, idx, a) {
+        return SatState::Unsat;
+    } else {
+        return SatState::Unknown;
+    }
+}
+
 /*
 #[ensures(result  ==> unknown(*a, (@f.clauses)[@idx]))]
 #[requires(formula_invariant(*f))]
@@ -363,7 +387,7 @@ fn is_clause_unknown(f: &Formula, idx: usize, a: &Assignments) -> bool {
 #[requires(formula_invariant(*f))]
 #[requires(assignments_invariant(*f, *a))]
 #[requires(@idx < (@f.clauses).len())]
-fn get_clause_state(f: &Formula, idx: usize, a: &Assignments) -> SatState {
+fn get_clause_state_old(f: &Formula, idx: usize, a: &Assignments) -> SatState {
     let clause = &f.clauses[idx];
     let mut i = 0;
     let mut unknown = 0;
@@ -398,7 +422,7 @@ fn get_clause_state(f: &Formula, idx: usize, a: &Assignments) -> SatState {
 
 #[trusted]
 #[ensures(result === SatState::Sat   ==>  sat_formula(*a, *f))]
-#[ensures(result === SatState::Unsat ==> !sat_formula(*a, *f))]
+#[ensures(result === SatState::Unsat ==> not_sat_formula(*a, *f))]
 #[requires(formula_invariant(*f))]
 #[requires(assignments_invariant(*f, *a))]
 fn get_formula_state(f: &Formula, a: &Assignments) -> SatState {
@@ -418,4 +442,39 @@ fn get_formula_state(f: &Formula, a: &Assignments) -> SatState {
         i += 1
     }
     return outState;
+}
+
+
+#[ensures(result === true   ==>  sat_formula(*a, *f))]
+#[requires(formula_invariant(*f))]
+#[requires(assignments_invariant(*f, *a))]
+fn is_formula_sat(f: &Formula, a: &Assignments) -> bool {
+    let mut i = 0;
+    #[invariant(prev,
+        forall<k: Int> 0 <= k && k < @i ==>
+        sat_clause(*a, (@f.clauses)[k]))]
+    #[invariant(loop_invariant, 0usize <= i && @i <= (@f.clauses).len())]
+    while i < f.clauses.len() {
+        if !is_clause_sat(f, i, a) {
+            return false;
+        }
+    }
+    return true;
+}
+
+#[ensures(result === true ==> not_sat_formula(*a, *f))]
+#[requires(formula_invariant(*f))]
+#[requires(assignments_invariant(*f, *a))]
+fn is_formula_unsat(f: &Formula, a: &Assignments) -> bool {
+    let mut i = 0;
+    #[invariant(prev,
+        forall<k: Int> 0 <= k && k < @i ==>
+        not_sat_clause(*a, (@f.clauses)[k]))]
+    #[invariant(loop_invariant, 0usize <= i && @i <= (@f.clauses).len())]
+    while i < f.clauses.len() {
+        if is_clause_unsat(f, i, a) {
+            return true;
+        }
+    }
+    return false;
 }
