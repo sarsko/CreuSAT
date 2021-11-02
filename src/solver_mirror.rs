@@ -31,8 +31,8 @@ fn vars_in_range(n: Int, c: Clause) -> bool {
 fn compatible(pa: Pasn, a: Assignment) -> bool {
     pearlite! {
         (@(pa.assign)).len() === (@(a.0)).len() &&
-        forall<i: Int> 0 <= i && i < @(pa.ix) ==>
-        (@(pa.assign))[i] === (@(a.0))[i]
+        forall<i: usize> 0usize <= i && @i < @(pa.ix) ==>
+        (@(pa.assign))[@i] === (@(a.0))[@i]
     }
 }
 
@@ -40,8 +40,8 @@ fn compatible(pa: Pasn, a: Assignment) -> bool {
 #[predicate]
 fn formula_invariant(f: &Formula) -> bool {
     pearlite! {
-        forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
-        vars_in_range(@(f.num_vars), ((@(f.clauses))[i]))
+        forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
+        vars_in_range(@(f.num_vars), ((@(f.clauses))[@i]))
     }
 }
 
@@ -49,17 +49,17 @@ fn formula_invariant(f: &Formula) -> bool {
 #[predicate]
 fn not_sat_clause(a: Assignment, c: Clause) -> bool {
     pearlite! {
-        forall<i: Int> 0 <= i && i < (@(c.0)).len() ==>
-        ((@(a.0))[@(((@(c.0))[i]).var)]) !=
-        (((@(c.0))[i]).value)
+        forall<i: usize> 0usize <= i && @i < (@(c.0)).len() ==>
+        ((@(a.0))[@(((@(c.0))[@i]).var)]) !=
+        (((@(c.0))[@i]).value)
     }
 }
 
 #[predicate]
 fn sat_formula(a: Assignment, f: &Formula) -> bool {
     pearlite! {
-        forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
-        !not_sat_clause(a, (@(f.clauses))[i])
+        forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
+        !not_sat_clause(a, (@(f.clauses))[@i])
     }
 }
 
