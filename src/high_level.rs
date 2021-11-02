@@ -354,18 +354,19 @@ fn setnext(f: &Formula, a: &mut Assignments, w: &mut Worklist, p: bool) {
 }
 
 /*
-*/
-/*
+// ONE GOAL CHECKS OUT AFTER SWAPPING TO usize
 #[ensures(
     result === false ==> !exists<a2: Assignments> compatible_complete(*a, a2) &&
     sat_formula(a2, *f)
 )]
 */
-/*
+// ONE GOAL CHECKS OUT AFTER SWAPPING TO usize
 #[ensures(
     result === false ==> forall<a2: Assignments> compatible_complete(*a, a2) ==>
     not_sat_formula(a2, *f)
 )]
+// ONE GOAL CHECKS OUT AFTER SWAPPING TO usize
+/*
 #[ensures(
     result === false ==> forall<a2: Assignments> compatible(*a, a2) ==>
     not_sat_formula(a2, *f)
