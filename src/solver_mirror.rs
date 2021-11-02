@@ -8,104 +8,6 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-/*
-struct Vec<T>(std::vec::Vec<T>);
-
-pub struct Ghost<T>
-where
-    T: ?Sized;
-
-impl<T> Model for Ghost<T> {
-    type ModelTy = T;
-    #[logic]
-    #[trusted]
-    fn model(self) -> Self::ModelTy {
-        panic!()
-    }
-}
-
-impl<T> Ghost<T> {
-    #[trusted]
-    #[ensures(@result === *a)]
-    fn record(a: &T) -> Ghost<T> {
-        Ghost::<T>
-    }
-}
-
-impl<T: ?Sized> Model for Vec<T> {
-    type ModelTy = Seq<T>;
-    #[logic]
-    #[trusted]
-    fn model(self) -> Self::ModelTy {
-        panic!()
-    }
-}
-
-impl<T> Vec<T> {
-    #[trusted]
-    #[ensures(result.into() === (@self).len())]
-    fn len(&self) -> usize {
-        self.0.len()
-    }
-
-    #[trusted]
-    #[ensures(result.into() === (@self).len())]
-    fn len_u32(&self) -> u32 {
-        self.0.len() as u32
-    }
-
-    #[trusted]
-    #[ensures(match result {
-        Some(t) => *t === (@*self).index(ix.into()),
-        None => (@*self).len() <= ix.into(),
-    })]
-    fn get(&self, ix: usize) -> Option<&T> {
-        self.0.get(ix)
-    }
-
-    #[trusted]
-    #[ensures(@^self === (@self).push(v))]
-    fn push(&mut self, v: T) {
-        self.0.push(v)
-    }
-
-    #[trusted]
-    #[requires(@ix < (@self).len())]
-    #[ensures(*result === (@self).index(@ix))]
-    fn index(&self, ix: usize) -> &T {
-        use std::ops::Index;
-        self.0.index(ix)
-    }
-
-    #[trusted]
-    #[requires(@ix < (@*self).len())]
-    #[ensures(*result === (@self).index(ix.into()))]
-    #[ensures(^result === (@^self).index(ix.into()))]
-    #[ensures(forall<j : Int> 0 <= j && j <= (@^self).len() ==>
-        !(j === @ix) ==>
-        (@^self).index(j) === (@*self).index(j))]
-    #[ensures((@*self).len() === (@^self).len())]
-    fn index_mut(&mut self, ix: usize) -> &mut T {
-        use std::ops::IndexMut;
-        self.0.index_mut(ix)
-    }
-}
-*/
-
-/*
-impl Vec<bool> {
-    #[trusted]
-    #[ensures(
-        forall<i: Int> 0 <= i && i < (@self).len() ==>
-        (@self).index(i) === (@result).index(i)
-    )]
-    #[ensures((@self).len() === (@result).len())]
-    fn clone(&self) -> Self {
-        Vec(self.0.clone())
-    }
-}
-*/
-
 fn main() {}
 
 struct Assignment(Vec<bool>);
@@ -119,7 +21,7 @@ impl WellFounded for usize {}
 #[predicate]
 fn vars_in_range(n: Int, c: Clause) -> bool {
     pearlite! {
-        forall<i : Int> 0 <= i && i < (@(c.0)).len() ==>
+        forall<i: Int> 0 <= i && i < (@(c.0)).len() ==>
         0 <= @((@(c.0))[i]).var &&
         @((@(c.0))[i]).var < n
     }
@@ -129,55 +31,35 @@ fn vars_in_range(n: Int, c: Clause) -> bool {
 fn compatible(pa: Pasn, a: Assignment) -> bool {
     pearlite! {
         (@(pa.assign)).len() === (@(a.0)).len() &&
-        forall<i: usize> 0usize <= i && @i < @(pa.ix) ==>
-        (@(pa.assign))[@i] === (@(a.0))[@i]
+        forall<i: Int> 0 <= i && i < @(pa.ix) ==>
+        (@(pa.assign))[i] === (@(a.0))[i]
     }
 }
 
-/*
-#[logic]
-fn lemma_complete_compat() -> bool {
-    pearlite! {
-        forall<pa: Pasn> 0 <= 0 ==>
-            forall<a: Assignment> compatible(pa, a) ==>
-            (@pa.ix === (@(pa.assign)).len()) ==> pa.assign === a.0
-    }
-}
-*/
 
 #[predicate]
 fn formula_invariant(f: &Formula) -> bool {
     pearlite! {
-        forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
-        vars_in_range(@(f.num_vars), ((@(f.clauses))[@i]))
+        forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
+        vars_in_range(@(f.num_vars), ((@(f.clauses))[i]))
     }
 }
 
-/*
-#[predicate]
-fn sat_clause(a: &Assignment, c: Clause) -> bool {
-    pearlite! {
-        exists<i: Int> 0 <= i && i < (@(c.0)).len() ==>
-        ((@(a.0)).index(@(((@(c.0)).index(i)).var))) ===
-        (((@(c.0)).index(i)).value)
-    }
-}
-*/
 
 #[predicate]
 fn not_sat_clause(a: Assignment, c: Clause) -> bool {
     pearlite! {
-        forall<i: usize> 0usize <= i && @i < (@(c.0)).len() ==>
-        ((@(a.0))[@(((@(c.0))[@i]).var)]) !=
-        (((@(c.0))[@i]).value)
+        forall<i: Int> 0 <= i && i < (@(c.0)).len() ==>
+        ((@(a.0))[@(((@(c.0))[i]).var)]) !=
+        (((@(c.0))[i]).value)
     }
 }
 
 #[predicate]
 fn sat_formula(a: Assignment, f: &Formula) -> bool {
     pearlite! {
-        forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
-        !not_sat_clause(a, (@(f.clauses))[@i])
+        forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
+        !not_sat_clause(a, (@(f.clauses))[i])
     }
 }
 
@@ -281,7 +163,7 @@ fn set_false(pa: &Pasn) -> Pasn {
     result === false ==> forall<a: Assignment> compatible(pa, a) ==>
     !sat_formula(a, f)
 )]
-#[ensures(result === true ==> exists<a: Assignment> 0 <= 0 ==> sat_formula(a,f))]
+#[ensures(result === true ==> exists<a: Assignment> sat_formula(a,f))]
 fn inner(f: &Formula, pa: Pasn) -> bool {
     if pa.ix == pa.assign.len() { // Could be extracted to `complete`
         return interp_formula(&Assignment(pa.assign), f);
@@ -300,9 +182,7 @@ fn inner(f: &Formula, pa: Pasn) -> bool {
     !sat_formula(a, f)
 )]
 #[ensures(
-    result === true ==> f.num_vars == 0usize || !(forall<a: Assignment> (@(a.0)).len() === @f.num_vars ==>
-    !sat_formula(a, f))
-)]
+    result === true ==> f.num_vars == 0usize || exists<a: Assignment> sat_formula(a, f))]
 #[requires((@(f.clauses)).len() < 10000)] // just to ensure boundedness
 #[requires(formula_invariant(f))]
 #[ensures(formula_invariant(f))]
@@ -312,7 +192,8 @@ pub fn solver(f: &Formula) -> bool {
     }
     let mut assign: Vec<bool> = Vec::new();
     let mut i = 0;
-    #[invariant(loop_invariant, 0usize <= i && i < f.num_vars)]
+    #[invariant(loop_invariant, 0usize <= i && i <= f.num_vars)]
+    #[invariant(leng_invariant, (@assign).len() === @i)]
     while i < f.num_vars {
         assign.push(false);
         i += 1
