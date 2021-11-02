@@ -32,7 +32,7 @@ struct Lit {
     polarity: bool,
 }
 struct Clause(Vec<Lit>);
-struct Assignments(Vec<Option<bool>>);
+struct Assignments(Vec<AssignedState>);
 struct Worklist(Vec<Lit>);
 
 pub struct Formula {
@@ -47,16 +47,59 @@ pub enum SatState {
     Unsat,
 }
 
+#[derive(Copy, Clone, Eq)]
+pub enum AssignedState {
+    Unset,
+    Positive,
+    Negative,
+}
+
 impl PartialEq for SatState {
     fn eq(&self, other: &Self) -> bool {
-        return match *self {
-            other => true,
+        return match (self, other) {
+            (SatState::Unknown, SatState::Unknown) => true,
+            (SatState::Sat, SatState::Sat) => true,
+            (SatState::Unsat, SatState::Unsat) => true,
+            _ => false,
+        }
+    }
+}
+
+impl PartialEq for AssignedState {
+    fn eq(&self, other: &Self) -> bool {
+        return match (self, other) {
+            (AssignedState::Unset, AssignedState::Unset) => true,
+            (AssignedState::Positive, AssignedState::Positive) => true,
+            (AssignedState::Negative, AssignedState::Negative) => true,
             _ => false,
         }
     }
 }
 
 fn main() {}
+
+#[logic]
+#[requires(0 <= i)]
+#[variant(i)]
+fn unassigned_count_internal(a: Assignments, i: Int) -> Int {
+    pearlite! {
+        if i === 0 {
+            0
+        } else {
+            match (@a.0)[i] {
+            AssignedState::Unset => {1 + unassigned_count_internal(a, i - 1)},
+            _ => unassigned_count_internal(a, i - 1)
+            }
+        }
+    }
+}
+
+#[logic]
+fn unassigned_count(a: Assignments) -> Int {
+    pearlite! {
+        unassigned_count_internal(a, (@a.0).len()-1)
+    }
+}
 
 
 #[predicate]
@@ -87,60 +130,56 @@ fn assignments_invariant(f: Formula, a: Assignments) -> bool {
 fn compatible(a: Assignments, a2: Assignments) -> bool {
     pearlite! {
         (@a.0).len() === (@a2.0).len() &&
-        forall<i: usize> 0usize <= i && @i < (@a.0).len() ==>
-        (@a.0)[@i] === None || (@a.0)[@i] === (@a2.0)[@i]
+        forall<i: Int> 0 <= i && i < (@a.0).len() ==>
+        (@a.0)[i] === AssignedState::Unset || (@a.0)[i] === (@a2.0)[i]
     }
 }
 
-
-// It is not sat if all are unequal
 #[predicate]
 fn not_sat_clause(a: Assignments, c: Clause) -> bool {
     pearlite! {
-        forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
-            match (@a.0)[@(@c.0)[@i].idx] {
-                Some(x) => x != (@c.0)[@i].polarity,
-                None    => false
+        forall<i: Int> 0 <= i && i < (@c.0).len() ==>
+            match (@a.0)[@(@c.0)[i].idx] {
+                AssignedState::Positive => !(@c.0)[i].polarity,
+                AssignedState::Negative => (@c.0)[i].polarity,
+                AssignedState::Unset => false,
             }
+
     }
 }
 
-// It is sat if at least one is equal
 #[predicate]
 fn sat_clause(a: Assignments, c: Clause) -> bool {
     pearlite! {
-        exists<i: Int> 0 <= i && i < (@c.0).len() ==>
+        exists<i: Int> 0 <= i && i < (@c.0).len() &&
             match (@a.0)[@(@c.0)[i].idx] {
-                Some(x) => x == (@c.0)[i].polarity,
-                None    => false
+                AssignedState::Positive => (@c.0)[i].polarity,
+                AssignedState::Negative => !(@c.0)[i].polarity,
+                AssignedState::Unset => !(@c.0)[i].polarity && (@c.0)[i].polarity
             }
     }
 }
 
-// It is unknown if there exists a None, and all the clauses that are some have the wrong polarity
 #[predicate]
 fn unknown(a: Assignments, c: Clause) -> bool {
     pearlite! {
-        exists<i: Int> 0 <= i && i < (@c.0).len() ==>
-            match (@a.0)[@(@c.0)[i].idx] {
-                Some(x) => false,
-                None    => true
-            }
-        &&
-        forall<i: Int> 0 <= i && i < (@c.0).len() ==>
-            match (@a.0)[@(@c.0)[i].idx] {
-                Some(x) => x != (@c.0)[i].polarity,
-                None    => true
-            }
+        !sat_clause(a,c) && !not_sat_clause(a, c)
     }
 }
-
 
 #[predicate]
 fn sat_formula(a: Assignments, f: Formula) -> bool {
     pearlite! {
-        forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
-        !not_sat_clause(a, (@(f.clauses))[@i])
+        forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
+        sat_clause(a, (@(f.clauses))[i])
+    }
+}
+
+#[predicate]
+fn not_sat_formula(a: Assignments, f: Formula) -> bool {
+    pearlite! {
+        exists<i: Int> 0 <= i && i < (@(f.clauses)).len() &&
+        not_sat_clause(a, (@(f.clauses))[i])
     }
 }
 
@@ -174,7 +213,7 @@ impl Worklist {
 
 impl Assignments {
     #[trusted]
-    fn clone_assignment_vector(&self, v: &Vec<Option<bool>>) -> Vec<Option<bool>> {
+    fn clone_assignment_vector(&self, v: &Vec<AssignedState>) -> Vec<AssignedState> {
         let mut out = Vec::new();
         let mut i = 0;
         #[invariant(loop_invariant, 0usize <= i && @i <= (@v).len())]
@@ -198,12 +237,12 @@ impl Assignments {
     #[requires(formula_invariant(*f))]
     #[ensures(assignments_invariant(*f, result))]
     fn new(f: &Formula) -> Self {
-        let mut assign: Vec<Option<bool>> = Vec::new();
+        let mut assign: Vec<AssignedState> = Vec::new();
         let mut i = 0;
         #[invariant(loop_invariant, 0usize <= i && i <= f.num_vars)]
         #[invariant(length_invariant, (@assign).len() === @i)]
         while i < f.num_vars {
-            assign.push(None);
+            assign.push(AssignedState::Unset);
             i += 1
         }
         Assignments(assign)
@@ -245,13 +284,17 @@ fn check_if_unit(f: &Formula, idx: usize, a: &Assignments) -> Option<Lit> {
         let lit = clause.0[i];
         let res = a.0[lit.idx];
         match res {
-            Some(x) => {
-                // false, false || true, true -> clause is SAT
-                if lit.polarity == x {
-                    return None;
+           AssignedState::Positive => {
+                if lit.polarity {
+                    return None
                 }
-            }
-            None => {
+            },
+            AssignedState::Negative => {
+                if !lit.polarity {
+                    return None
+                }
+            },
+            AssignedState::Unset => {
                 if unassigned >= 1 {
                     return None;
                 }
@@ -267,311 +310,36 @@ fn check_if_unit(f: &Formula, idx: usize, a: &Assignments) -> Option<Lit> {
     return outlit;
 }
 
-#[ensures(result === SatState::Sat     ==> match res {
-    Some(x) => x == lit.polarity,
-    None => false})]
-#[ensures(result === SatState::Unknown ==> res === None)]
-#[ensures(result === SatState::Unsat     ==> match res {
-    Some(x) => x != lit.polarity,
-    None => false})]
-fn tmp(lit: Lit, res: Option<bool>) -> SatState {
-    match res {
-        Some(x) => {
-            // false, false || true, true -> clause is SAT
-            if lit.polarity == x {
-                return SatState::Sat;
-            } else {
-                return SatState::Unsat;
-            }
-        },
-        None => {
-            return SatState::Unknown;
-        } // May become SAT
-    }
-}
-
-
-#[logic]
-fn litSat(lit: Lit, res: Option<bool>) -> bool {
-    pearlite! {
-        match res {
-            Some(x) => {
-                lit.polarity === x
-            },
-            None => {
-                false
-            }
-        }
-    }
-}
-
-#[logic]
-fn litUnsat(lit: Lit, res: Option<bool>) -> bool {
-    pearlite! {
-        match res {
-            Some(x) => {
-                x != lit.polarity
-            },
-            None => {
-                false
-            }
-        }
-    }
-}
-
-#[logic]
-fn litUnknown(lit: Lit, res: Option<bool>) -> bool {
-    pearlite! {
-        match res {
-            Some(x) => {
-                false
-            },
-            None => {
-                true
-            }
-        }
-    }
-}
-
-#[logic]
-fn optionEq(lit: Lit, res: Option<bool>, q: SatState) -> bool {
-    pearlite! {
-        match res {
-            Some(x) => {
-                if lit.polarity == x {
-                    eqSat(q)
-                } else {
-                    eqUnsat(q)
-                }
-            },
-            None => {
-                eqUnknown(q)
-            } // May become SAT
-        }
-    }
-}
-
-
-#[logic]
-fn eqUnsat(l: SatState) -> bool {
-    pearlite!{
-        match l {
-            SatState::Unsat => true,
-            _ => false
-        }
-    }
-}
-
-#[logic]
-fn eqSat(l: SatState) -> bool {
-    pearlite!{
-        match l {
-            SatState::Sat => true,
-            _ => false
-        }
-    }
-}
-
-#[logic]
-fn eqUnknown(l: SatState) -> bool {
-    pearlite!{
-        match l {
-            SatState::Unknown => true,
-            _ => false
-        }
-    }
-}
-
-#[trusted]
-#[ensures(result === SatState::Sat     ==>  sat_clause(*a, (@f.clauses)[@idx]))]
-#[ensures(result === SatState::Unknown ==> unknown(*a, (@f.clauses)[@idx]))]
-#[ensures(result === SatState::Unsat   ==>  not_sat_clause(*a, (@f.clauses)[@idx]))]
-#[requires(formula_invariant(*f))]
-#[requires(assignments_invariant(*f, *a))]
-#[requires(@idx < (@f.clauses).len())]
-fn get_clause_state(f: &Formula, idx: usize, a: &Assignments) -> SatState {
-    let clause = &f.clauses[idx];
-    let mut i = 0;
-    let mut out = SatState::Unsat;
-    #[invariant(loop_invariant, 0usize <= i && @i <= (@clause.0).len())]
-    #[invariant(previous,
-        eqUnsat(out) || eqUnknown(out)
-    )]
-    #[invariant(previous2,
-        forall<j: usize> 0usize <= j && j < i ==>
-            (match (@a.0)[@(@clause.0)[@j].idx] {
-                Some(x) => !eqUnknown(out),
-                None => eqUnknown(out)
-            })
-    )]
-    while i < clause.0.len() {
-        let lit = clause.0[i];
-        match a.0[lit.idx]{
-            Some(x) => {
-                // false, false || true, true -> clause is SAT
-                if lit.polarity == x {
-                    return SatState::Sat;
-                } else {
-                }
-            },
-            None => {
-                out = SatState::Unknown;
-            } // May become SAT
-        }
-        i += 1;
-    }
-    return out;
-}
-
-#[trusted]
-#[ensures(result === SatState::Sat   ==>  sat_formula(*a, *f))]
-#[ensures(result === SatState::Unsat ==> !sat_formula(*a, *f))]
-#[requires(formula_invariant(*f))]
-#[requires(assignments_invariant(*f, *a))]
-fn get_formula_state(f: &Formula, a: &Assignments) -> SatState {
-    let mut i = 0;
-    let mut outState = SatState::Sat;
-    #[invariant(prev,
-        forall<k: Int> 0 <= k && k < @i ==>
-        !(not_sat_clause(*a, (@f.clauses)[k])))]
-    #[invariant(loop_invariant, 0usize <= i && @i <= (@f.clauses).len())]
-    while i < f.clauses.len() {
-        let res = get_clause_state(f, i, a);
-        match res {
-            SatState::Unsat => return SatState::Unsat,
-            SatState::Unknown => outState = SatState::Unknown,
-            SatState::Sat => {},
-        }
-        i += 1
-    }
-    return outState;
-}
-
-
-/// Checks if the clause is empty.
-
-#[ensures(result === true ==> not_sat_clause(*a, (@f.clauses)[@idx]))]
-#[requires(formula_invariant(*f))]
-#[requires(assignments_invariant(*f, *a))]
-#[requires(@idx < (@f.clauses).len())]
-fn check_empty(f: &Formula, idx: usize, a: &Assignments) -> bool {
-    let clause = &f.clauses[idx];
-    let mut i = 0;
-    #[invariant(loop_invariant, 0usize <= i && @i <= (@clause.0).len())]
-    #[invariant(previous,
-        forall<j: usize> 0usize <= j && j < i ==>
-        ((match (@a.0)[@(@clause.0)[@j].idx] { Some(x) => x != (@clause.0)[@j].polarity,
-            None => 1 < 0}) &&
-            (match (@a.0)[@(@clause.0)[@j].idx] { Some(x) => true,
-            None => false}))
-    )]
-    while i < clause.0.len() {
-        let lit = clause.0[i];
-        let res = a.0[lit.idx];
-        match res {
-            Some(x) => {
-                // false, false || true, true -> clause is SAT
-                if lit.polarity == x {
-                    return false;
-                }
-            }
-            None => {
-                return false;
-            } // May become SAT
-        }
-        i += 1;
-    }
-    return true;
-}
-
-// Ensures that if true then it may be SAT?
-#[ensures(result === true ==> !sat_formula(*a, *f))]
-#[requires(formula_invariant(*f))]
-#[requires(assignments_invariant(*f, *a))]
-fn contains_empty(f: &Formula, a: &Assignments) -> bool {
-    let mut i = 0;
-    #[invariant(prev,
-        forall<k: usize> 0usize <= k && k < i ==>
-        !(not_sat_clause(*a, (@f.clauses)[@k])))]
-    #[invariant(loop_invariant, 0usize <= i && @i <= (@f.clauses).len())]
-    while i < f.clauses.len() {
-        let res = check_empty(f, i, a);
-        if res {
-            return true;
-        }
-        i += 1
-    }
-    return false;
-}
-
-
-/// Checks if the clause is satisfied.
-/// `true` means the clause is satisfied.
-/// `false` means the clause is unsatisfied(empty clause) or that it contains
-/// unassigned variables.
-// LOOK at not_sat_clause. Do we really care about the false case?
-//#[ensures(result === false ==> not_sat_clause(*a, (@f.clauses)[@idx]))] // I am failing!
-#[ensures(result === true ==> sat_clause(*a, (@f.clauses)[@idx]))] // I am not!
-#[requires(formula_invariant(*f))]
-#[requires(assignments_invariant(*f, *a))]
-#[requires(@idx < (@f.clauses).len())]
-fn check_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
-    let clause = &f.clauses[idx];
-    let mut i = 0;
-    #[invariant(loop_invariant, 0usize <= i && @i <= (@clause.0).len())]
-    #[invariant(previous,
-        forall<j: usize> 0usize <= j && j < i ==>
-            (match (@a.0)[@(@clause.0)[@j].idx] { Some(x) => x != (@clause.0)[@j].polarity,
-            None => true}) // Hmm
-    )]
-    while i < clause.0.len() {
-        let lit = clause.0[i];
-        let res = a.0[lit.idx];
-        match res {
-            Some(x) => {
-                // false, false || true, true -> clause is SAT
-                if lit.polarity == x {
-                    return true;
-                }
-            }
-            None => {} // continue
-        }
-        i += 1;
-    }
-    return false;
-}
-
-#[ensures(result === true ==> sat_formula(*a, *f))]
-#[requires(formula_invariant(*f))]
-#[requires(assignments_invariant(*f, *a))]
-fn consistent(f: &Formula, a: &Assignments) -> bool {
-    let mut i = 0;
-    #[invariant(prev,
-        forall<k: usize> 0usize <= k && k < i ==>
-        !(not_sat_clause(*a, (@f.clauses)[@k])))]
-    #[invariant(loop_invariant, 0usize <= i && @i <= (@f.clauses).len())]
-    while i < f.clauses.len() {
-        let res = check_sat(f, i, a);
-        if !res {
-            return false;
-        }
-        i += 1
-    }
-    return true;
-}
 
 //#[requires(assignments_invariant(*_f, *a))]
 //#[ensures(assignments_invariant(*_f, ^a))]
+//#[requires((@a.0)[@idx] === AssignedState::Unset)] // TODO
+//#[ensures(unassigned_count(^a) < unassigned_count(*a))]
+#[ensures((@(^a).0)[@idx] === AssignedState::Positive || (@(^a).0)[@idx] === AssignedState::Negative)]
 #[requires(formula_invariant(*_f))]
 #[requires(@idx < (@a.0).len())]
 #[ensures((@a.0).len() === (@(^a).0).len())]
 fn add_to_worklist(_f: &Formula, w: &mut Worklist, a: &mut Assignments, idx: usize, polarity: bool) {
     w.0.push(Lit{idx: idx, polarity: polarity});
-    a.0[idx] = Some(polarity);
+    let old_v = Ghost::record(&a);
+    if polarity {
+        a.0[idx] = AssignedState::Positive;
+    } else {
+        a.0[idx] = AssignedState::Negative;
+    }
+
 }
 
 // We could jump back if clause is found to be unsat hmm.
-
+/*
+#[ensures(
+    forall<a2: Assignments> compatible(*a, a2) ==>
+    sat_formula(a2, *f) ==> sat_formula(a, *f)
+)]
+#[ensures(
+    sat_formula(a2, *f) ==> sat_formula(a, *f)
+)]
+*/
 #[requires(formula_invariant(*f))]
 #[requires(assignments_invariant(*f, *a))]
 #[ensures(assignments_invariant(*f, ^a))]
@@ -616,45 +384,169 @@ fn do_unit_propagation(f: &Formula, a: &mut Assignments, w: &mut Worklist) {
 #[ensures(match result {
     Some(t) => @t < @f.num_vars,
     None => true })]
+/*
+#[ensures(match result {
+    Some(t) => 0 < unassigned_count(*a),
+    None => unassigned_count(*a) === 0})]
+*/
 fn find_unassigned(f: &Formula, a: &Assignments) -> Option<usize> {
     let mut i = 0;
     #[invariant(loop_invariant, 0usize <= i && @i <= (@a.0).len())]
+    #[invariant(prev, forall<j: Int> 0 <= j && j < @i ==>
+        match (@a.0)[j] {
+            AssignedState::Unset => false,
+            _ => true,
+        })]
     while i < a.0.len() {
         let curr = a.0[i];
         match curr {
-            Some(x) => {} //continue
-            None => {
+            AssignedState::Unset => {
                 return Some(i);
-            }
+            },
+            _ => {},
         }
         i += 1;
     }
     None
 }
 
+#[ensures(result  === not_sat_clause(*a, (@f.clauses)[@idx]))]
+#[requires(formula_invariant(*f))]
+#[requires(assignments_invariant(*f, *a))]
+#[requires(@idx < (@f.clauses).len())]
+fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
+    let clause = &f.clauses[idx];
+    let mut i = 0;
+    #[invariant(loop_invariant, 0usize <= i && @i <= (@clause.0).len())]
+    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==>
+        match (@a.0)[@(@clause.0)[j].idx] {
+            AssignedState::Positive => !(@clause.0)[j].polarity,
+            AssignedState::Negative => (@clause.0)[j].polarity,
+            AssignedState::Unset => false,
+        }
+    )]
+    while i < clause.0.len() {
+        let lit = clause.0[i];
+        match a.0[lit.idx]{
+           AssignedState::Positive => {
+                if lit.polarity {
+                    return false
+                }
+            },
+            AssignedState::Negative => {
+                if !lit.polarity {
+                    return false
+                }
+            },
+            AssignedState::Unset => {
+                return false;
+            }
+        }
+        i += 1;
+    }
+    return true;
+}
+
+#[ensures(result === true ==> not_sat_formula(*a, *f))]
+#[requires(formula_invariant(*f))]
+#[requires(assignments_invariant(*f, *a))]
+fn formula_is_unsat(f: &Formula, a: &Assignments) -> bool {
+    let mut i = 0;
+    #[invariant(prev,
+        forall<k: Int> 0 <= k && k < @i ==>
+        !not_sat_clause(*a, (@f.clauses)[k]))]
+    #[invariant(loop_invariant, 0usize <= i && @i <= (@f.clauses).len())]
+    while i < f.clauses.len() {
+        if is_clause_unsat(f, i, a) {
+            return true;
+        }
+        i += 1;
+    }
+    return false;
+}
+
+#[ensures(result ==>  sat_clause(*a, (@f.clauses)[@idx]))]
+#[requires(formula_invariant(*f))]
+#[requires(assignments_invariant(*f, *a))]
+#[requires(@idx < (@f.clauses).len())]
+fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
+    let clause = &f.clauses[idx];
+    let mut i = 0;
+    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==>
+        match (@a.0)[@(@clause.0)[j].idx] {
+            AssignedState::Positive => !(@clause.0)[j].polarity,
+            AssignedState::Negative => (@clause.0)[j].polarity,
+            AssignedState::Unset => true,
+        }
+    )]
+    while i < clause.0.len() {
+        let lit = clause.0[i];
+        match a.0[lit.idx]{
+           AssignedState::Positive => {
+                if lit.polarity {
+                    return true
+                }
+            },
+            AssignedState::Negative => {
+                if !lit.polarity {
+                    return true
+                }
+            },
+            AssignedState::Unset => {
+            }
+        }
+        i += 1;
+    }
+    return false;
+}
+
+
+#[ensures(result === true  ==>  sat_formula(*a, *f))]
+#[requires(formula_invariant(*f))]
+#[requires(assignments_invariant(*f, *a))]
+fn formula_is_sat(f: &Formula, a: &Assignments) -> bool {
+    let mut i = 0;
+    #[invariant(prev,
+        forall<k: Int> 0 <= k && k < @i ==>
+        sat_clause(*a, (@f.clauses)[k]))]
+    #[invariant(loop_invariant, 0usize <= i && @i <= (@f.clauses).len())]
+    while i < f.clauses.len() {
+        if !is_clause_sat(f, i, a) {
+            return false;
+        }
+        i += 1
+    }
+    return true;
+}
 
 #[ensures(
     result === false ==> forall<a2: Assignments> compatible(*a, a2) ==>
     !sat_formula(a2, *f)
 )]
-#[ensures(result === true ==> exists<a2: Assignments> 0 <= 0 ==> sat_formula(a2, *f))]
+/*
+#[ensures(
+    result === true ==> exists<a2: Assignments> compatible(*a, a2) && sat_formula(a2, *f)
+)]
+*/
+#[ensures(result === true ==> exists<a2: Assignments> sat_formula(a2, *f))]
 #[requires(formula_invariant(*f))]
 #[requires(assignments_invariant(*f, *a))]
-#[ensures(formula_invariant(*f))]
 #[ensures(assignments_invariant(*f, ^a))]
+//#[variant(unassigned_count(*a))]
 fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
 //    do_unit_propagation(f, a, w);
-    if consistent(f, a) {
+    if formula_is_sat(f, a) {
         return true;
     }
-    if contains_empty(f, a) {
+    if formula_is_unsat(f, a) {
         return false;
     }
     let res = find_unassigned(f, a);
     match res {
         None => {
             // This should not happen
-            return false;
+            return true;
+//            panic!();
         }
         Some(x) => {
             let unassigned_idx = x;
@@ -667,14 +559,18 @@ fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
                 unassigned_idx,
                 true,
             );
-            add_to_worklist(
-                f,
-                &mut w_cloned,
-                &mut a_cloned,
-                unassigned_idx,
-                false,
-            );
-            return inner(f, a, w) || inner(f, &mut a_cloned, &mut w_cloned);
+            if inner(f, a, w) {
+                return true;
+            } else {
+                add_to_worklist(
+                    f,
+                    &mut w_cloned,
+                    &mut a_cloned,
+                    unassigned_idx,
+                    false,
+                );
+             return inner(f, &mut a_cloned, &mut w_cloned);
+            }
         }
     }
 }
@@ -713,13 +609,13 @@ pub fn preproc_and_solve(
     return solver(&formula);
 }
 
+#[trusted]
 #[ensures(
     result === false ==> forall<a2: Assignments> (@a2.0).len() === @f.num_vars ==>
-    !sat_formula(a2, *f)
+    not_sat_formula(a2, *f)
 )]
 #[ensures(
-    result === true ==> f.num_vars == 0usize || !(forall<a2: Assignments> (@a2.0).len() === @f.num_vars ==>
-    !sat_formula(a2, *f))
+    result === true ==> f.num_vars == 0usize || exists<a2: Assignments> sat_formula(a2, *f)
 )]
 #[requires(formula_invariant(*f))]
 pub fn solver(f: &Formula) -> bool {

@@ -56,8 +56,10 @@ pub enum AssignedState {
 
 impl PartialEq for SatState {
     fn eq(&self, other: &Self) -> bool {
-        return match *self {
-            other => true,
+        return match (self, other) {
+            (SatState::Unknown, SatState::Unknown) => true,
+            (SatState::Sat, SatState::Sat) => true,
+            (SatState::Unsat, SatState::Unsat) => true,
             _ => false,
         }
     }
@@ -65,8 +67,10 @@ impl PartialEq for SatState {
 
 impl PartialEq for AssignedState {
     fn eq(&self, other: &Self) -> bool {
-        return match *self {
-            other => true,
+        return match (self, other) {
+            (AssignedState::Unset, AssignedState::Unset) => true,
+            (AssignedState::Positive, AssignedState::Positive) => true,
+            (AssignedState::Negative, AssignedState::Negative) => true,
             _ => false,
         }
     }
@@ -445,22 +449,6 @@ fn get_formula_state(f: &Formula, a: &Assignments) -> SatState {
 }
 
 
-#[ensures(result === true   ==>  sat_formula(*a, *f))]
-#[requires(formula_invariant(*f))]
-#[requires(assignments_invariant(*f, *a))]
-fn is_formula_sat(f: &Formula, a: &Assignments) -> bool {
-    let mut i = 0;
-    #[invariant(prev,
-        forall<k: Int> 0 <= k && k < @i ==>
-        sat_clause(*a, (@f.clauses)[k]))]
-    #[invariant(loop_invariant, 0usize <= i && @i <= (@f.clauses).len())]
-    while i < f.clauses.len() {
-        if !is_clause_sat(f, i, a) {
-            return false;
-        }
-    }
-    return true;
-}
 
 #[ensures(result === true ==> not_sat_formula(*a, *f))]
 #[requires(formula_invariant(*f))]
