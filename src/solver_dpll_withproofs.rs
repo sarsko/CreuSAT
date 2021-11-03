@@ -127,21 +127,41 @@ fn assignments_invariant(f: Formula, a: Assignments) -> bool {
 }
 
 #[predicate]
+fn compatible_complete(a: Assignments, a2: Assignments, f: Formula) -> bool {
+    pearlite! {
+        (@a2.0).len() === @f.num_vars &&
+        forall<i: usize> 0usize <= i && @i < (@a.0).len() ==>
+        ((((@a.0)[@i] === AssignedState::Unset &&
+         !((@a.0)[@i] === AssignedState::Unset))) ||
+         (@a.0)[@i] === (@a2.0)[@i])
+    }
+}
+
+#[predicate]
 fn compatible(a: Assignments, a2: Assignments) -> bool {
     pearlite! {
         (@a.0).len() === (@a2.0).len() &&
-        forall<i: Int> 0 <= i && i < (@a.0).len() ==>
-        (@a.0)[i] === AssignedState::Unset || (@a.0)[i] === (@a2.0)[i]
+        forall<i: usize> 0usize <= i && @i < (@a.0).len() ==>
+        (@a.0)[@i] === AssignedState::Unset || (@a.0)[@i] === (@a2.0)[@i]
+    }
+}
+
+#[predicate]
+fn complete(a: Assignments, f: Formula) -> bool {
+    pearlite! {
+        (@a.0).len() === @f.num_vars &&
+        forall<i: usize> 0usize <= i && @i < (@a.0).len() ==>
+        !((@a.0)[@i] === AssignedState::Unset)
     }
 }
 
 #[predicate]
 fn not_sat_clause(a: Assignments, c: Clause) -> bool {
     pearlite! {
-        forall<i: Int> 0 <= i && i < (@c.0).len() ==>
-            match (@a.0)[@(@c.0)[i].idx] {
-                AssignedState::Positive => !(@c.0)[i].polarity,
-                AssignedState::Negative => (@c.0)[i].polarity,
+        forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
+            match (@a.0)[@(@c.0)[@i].idx] {
+                AssignedState::Positive => !(@c.0)[@i].polarity,
+                AssignedState::Negative => (@c.0)[@i].polarity,
                 AssignedState::Unset => false,
             }
 
@@ -151,11 +171,11 @@ fn not_sat_clause(a: Assignments, c: Clause) -> bool {
 #[predicate]
 fn sat_clause(a: Assignments, c: Clause) -> bool {
     pearlite! {
-        exists<i: Int> 0 <= i && i < (@c.0).len() &&
-            match (@a.0)[@(@c.0)[i].idx] {
-                AssignedState::Positive => (@c.0)[i].polarity,
-                AssignedState::Negative => !(@c.0)[i].polarity,
-                AssignedState::Unset => !(@c.0)[i].polarity && (@c.0)[i].polarity
+        exists<i: usize> 0usize <= i && @i < (@c.0).len() &&
+            match (@a.0)[@(@c.0)[@i].idx] {
+                AssignedState::Positive => (@c.0)[@i].polarity,
+                AssignedState::Negative => !(@c.0)[@i].polarity,
+                AssignedState::Unset => false,
             }
     }
 }
@@ -170,16 +190,16 @@ fn unknown(a: Assignments, c: Clause) -> bool {
 #[predicate]
 fn sat_formula(a: Assignments, f: Formula) -> bool {
     pearlite! {
-        forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
-        sat_clause(a, (@(f.clauses))[i])
+        forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
+        sat_clause(a, (@(f.clauses))[@i])
     }
 }
 
 #[predicate]
 fn not_sat_formula(a: Assignments, f: Formula) -> bool {
     pearlite! {
-        exists<i: Int> 0 <= i && i < (@(f.clauses)).len() &&
-        not_sat_clause(a, (@(f.clauses))[i])
+        exists<i: usize> 0usize <= i && @i < (@(f.clauses)).len() &&
+        not_sat_clause(a, (@(f.clauses))[@i])
     }
 }
 
@@ -202,10 +222,11 @@ impl Worklist {
     }
     #[trusted]
     #[ensures(
-        forall<i: Int> 0 <= i && i < (@self.0).len() ==>
-        (@self.0)[i] === (@result.0)[i]
+        forall<i: usize> 0usize <= i && @i < (@self.0).len() ==>
+        (@self.0)[@i] === (@result.0)[@i]
     )]
     #[ensures((@self.0).len() === (@result.0).len())]
+    #[ensures(*self === result)]
     fn clone(&self) -> Self {
         Worklist(self.clone_lit_vector(&self.0))
     }
@@ -226,10 +247,11 @@ impl Assignments {
     }
     #[trusted]
     #[ensures(
-        forall<i: Int> 0 <= i && i < (@self.0).len() ==>
-        (@self.0)[i] === (@result.0)[i]
+        forall<i: usize> 0usize <= i && @i < (@self.0).len() ==>
+        (@self.0)[@i] === (@result.0)[@i]
     )]
     #[ensures((@self.0).len() === (@result.0).len())]
+    #[ensures(*self === result)]
     fn clone(&self) -> Self {
         Assignments(self.clone_assignment_vector(&self.0))
     }
@@ -248,15 +270,6 @@ impl Assignments {
         Assignments(assign)
     }
 }
-
-#[trusted]
-#[ensures(result === true ==> (l === r))]
-#[ensures(result === false ==> (l != r))]
-#[ensures(result === (l === r))]
-fn eqb(l: bool, r: bool) -> bool {
-    l == r
-}
-
 
 #[requires(formula_invariant(*_f))]
 #[ensures((@result.0).len() === 0)]
@@ -319,9 +332,10 @@ fn check_if_unit(f: &Formula, idx: usize, a: &Assignments) -> Option<Lit> {
 #[requires(formula_invariant(*_f))]
 #[requires(@idx < (@a.0).len())]
 #[ensures((@a.0).len() === (@(^a).0).len())]
+#[ensures(compatible(*a, ^a))]
+#[ensures(unassigned_count(*a) === unassigned_count(^a) + 1)]
 fn add_to_worklist(_f: &Formula, w: &mut Worklist, a: &mut Assignments, idx: usize, polarity: bool) {
     w.0.push(Lit{idx: idx, polarity: polarity});
-    let old_v = Ghost::record(&a);
     if polarity {
         a.0[idx] = AssignedState::Positive;
     } else {
@@ -392,8 +406,8 @@ fn do_unit_propagation(f: &Formula, a: &mut Assignments, w: &mut Worklist) {
 fn find_unassigned(f: &Formula, a: &Assignments) -> Option<usize> {
     let mut i = 0;
     #[invariant(loop_invariant, 0usize <= i && @i <= (@a.0).len())]
-    #[invariant(prev, forall<j: Int> 0 <= j && j < @i ==>
-        match (@a.0)[j] {
+    #[invariant(prev, forall<j: usize> 0usize <= j && j < i ==>
+        match (@a.0)[@j] {
             AssignedState::Unset => false,
             _ => true,
         })]
@@ -418,10 +432,10 @@ fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     let clause = &f.clauses[idx];
     let mut i = 0;
     #[invariant(loop_invariant, 0usize <= i && @i <= (@clause.0).len())]
-    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==>
-        match (@a.0)[@(@clause.0)[j].idx] {
-            AssignedState::Positive => !(@clause.0)[j].polarity,
-            AssignedState::Negative => (@clause.0)[j].polarity,
+    #[invariant(previous, forall<j: usize> 0usize <= j && j < i ==>
+        match (@a.0)[@(@clause.0)[@j].idx] {
+            AssignedState::Positive => !(@clause.0)[@j].polarity,
+            AssignedState::Negative => (@clause.0)[@j].polarity,
             AssignedState::Unset => false,
         }
     )]
@@ -453,8 +467,8 @@ fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 fn formula_is_unsat(f: &Formula, a: &Assignments) -> bool {
     let mut i = 0;
     #[invariant(prev,
-        forall<k: Int> 0 <= k && k < @i ==>
-        !not_sat_clause(*a, (@f.clauses)[k]))]
+        forall<k: usize> 0usize <= k && k < i ==>
+        !not_sat_clause(*a, (@f.clauses)[@k]))]
     #[invariant(loop_invariant, 0usize <= i && @i <= (@f.clauses).len())]
     while i < f.clauses.len() {
         if is_clause_unsat(f, i, a) {
@@ -472,10 +486,10 @@ fn formula_is_unsat(f: &Formula, a: &Assignments) -> bool {
 fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     let clause = &f.clauses[idx];
     let mut i = 0;
-    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==>
-        match (@a.0)[@(@clause.0)[j].idx] {
-            AssignedState::Positive => !(@clause.0)[j].polarity,
-            AssignedState::Negative => (@clause.0)[j].polarity,
+    #[invariant(previous, forall<j: usize> 0usize <= j && j < i ==>
+        match (@a.0)[@(@clause.0)[@j].idx] {
+            AssignedState::Positive => !(@clause.0)[@j].polarity,
+            AssignedState::Negative => (@clause.0)[@j].polarity,
             AssignedState::Unset => true,
         }
     )]
@@ -507,8 +521,8 @@ fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 fn formula_is_sat(f: &Formula, a: &Assignments) -> bool {
     let mut i = 0;
     #[invariant(prev,
-        forall<k: Int> 0 <= k && k < @i ==>
-        sat_clause(*a, (@f.clauses)[k]))]
+        forall<k: usize> 0usize <= k && k < i ==>
+        sat_clause(*a, (@f.clauses)[@k]))]
     #[invariant(loop_invariant, 0usize <= i && @i <= (@f.clauses).len())]
     while i < f.clauses.len() {
         if !is_clause_sat(f, i, a) {
@@ -519,9 +533,15 @@ fn formula_is_sat(f: &Formula, a: &Assignments) -> bool {
     return true;
 }
 
+/*
 #[ensures(
     result === false ==> forall<a2: Assignments> compatible(*a, a2) ==>
     !sat_formula(a2, *f)
+)]
+*/
+#[ensures(
+    result === false ==> forall<a2: Assignments> compatible_complete(*a, a2, *f) ==>
+    not_sat_formula(a2, *f)
 )]
 /*
 #[ensures(
@@ -545,8 +565,7 @@ fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
     match res {
         None => {
             // This should not happen
-            return true;
-//            panic!();
+            panic!(); // TODO: Fix/prove unreachable
         }
         Some(x) => {
             let unassigned_idx = x;
@@ -609,9 +628,9 @@ pub fn preproc_and_solve(
     return solver(&formula);
 }
 
-#[trusted]
+//#[trusted]
 #[ensures(
-    result === false ==> forall<a2: Assignments> (@a2.0).len() === @f.num_vars ==>
+    result === false ==> forall<a2: Assignments> complete(a2, *f)  ==>
     not_sat_formula(a2, *f)
 )]
 #[ensures(
