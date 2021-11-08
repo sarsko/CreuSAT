@@ -5,6 +5,7 @@ use clap::{crate_authors, App, AppSettings, Arg};
 
 use sat::solver_dpll_noproofs::preproc_and_solve;
 
+#[trusted]
 fn main() {
     let matches = App::new("\nA minimal SAT solver with no name")
         .author(crate_authors!("\n"))

@@ -1,7 +1,3 @@
-// WHY3PROVE
-#![feature(register_tool, rustc_attrs)]
-#![register_tool(creusot)]
-#![feature(proc_macro_hygiene, stmt_expr_attributes)]
 #![feature(type_ascription)]
 
 extern crate creusot_contracts;
@@ -29,463 +25,477 @@ impl<T> Ghost<T> {
         panic!()
     }
 }
-/*
 
-impl Vec<bool> {
-    #[trusted]
-    #[ensures(
-        forall<i: Int> 0 <= i && i < (@self).len() ==>
-        (@self)[i] === (@result)[i]
-    )]
-    #[ensures((@self).len() === (@result).len())]
-    fn clone(&self) -> Self {
-        panic!();
-        //Vec(self.0.clone()) // .0 has become private
+#[derive(Clone, Copy)]
+struct Lit {
+    idx: usize,
+    polarity: bool,
+}
+struct Clause(Vec<Lit>);
+struct Assignments(Vec<AssignedState>);
+
+impl Model for Assignments {
+    type ModelTy = Seq<AssignedState>;
+
+    #[logic]
+    fn model(self) -> Self::ModelTy {
+        self.0.model()
     }
 }
-*/
+
+impl Model for Clause {
+    type ModelTy = Seq<Lit>;
+
+    #[logic]
+    fn model(self) -> Self::ModelTy {
+        self.0.model()
+    }
+}
+
+pub struct Formula {
+    clauses: Vec<Clause>,
+    num_vars: usize,
+}
+
+#[derive(Copy, Clone, Eq)]
+pub enum SatState {
+    Unknown,
+    Sat,
+    Unsat,
+}
+
+#[derive(Copy, Eq)]
+pub enum AssignedState {
+    Unset,
+    Positive,
+    Negative,
+}
+
+impl PartialEq for SatState {
+    #[trusted]
+    fn eq(&self, other: &Self) -> bool {
+        return match (self, other) {
+            (SatState::Unknown, SatState::Unknown) => true,
+            (SatState::Sat, SatState::Sat) => true,
+            (SatState::Unsat, SatState::Unsat) => true,
+            _ => false,
+        };
+    }
+}
+
+impl PartialEq for AssignedState {
+    #[trusted]
+    fn eq(&self, other: &Self) -> bool {
+        return match (self, other) {
+            (AssignedState::Unset, AssignedState::Unset) => true,
+            (AssignedState::Positive, AssignedState::Positive) => true,
+            (AssignedState::Negative, AssignedState::Negative) => true,
+            _ => false,
+        };
+    }
+}
 
 fn main() {}
 
-#[derive(Copy)]
-struct Lit { idx: usize, positive: bool }
-struct Clause(Vec<Lit>);
-pub struct Formula { clauses: Vec<Clause>, num_vars: usize, cntr: usize }
-
-// TODO: Make this actual code
-impl Clause {
-    #[trusted]
-    #[ensures(
-        forall<i: Int> 0 <= i && i < (@self.0).len() ==>
-        (@self.0)[i] === (@result.0)[i]
-    )]
-    #[ensures((@self.0).len() === (@result.0).len())]
-    fn clone(&self) -> Self {
-        panic!();
-        //Clause(self.0.clone())
-    }
-
-    #[ensures(result === false ==>
-        forall<i: Int> 0 <= i && i < (@self.0).len() ==>
-        @((@self.0)[i].idx) != @(l.idx))]
-    #[ensures(result === true ==>
-        exists<i: Int> 0 <= i && i < (@self.0).len() ==>
-        @((@self.0)[i].idx) === @(l.idx))]
-    fn contains_ignore_polarity(&self, l: &Lit) -> bool {
-        let len = self.0.len();
-        let mut i = 0;
-        #[invariant(loop_bound, i <= len)]
-        #[invariant(previous,
-            forall<j: Int> 0 <= j && j < @i ==>
-            @((@self.0)[j].idx) != @(l.idx))]
-        while i < len {
-            let lit = self.0.index(i);
-            if lit.idx == l.idx {
-                return true;
-            }
-            i += 1;
-        }
-        return false;
-    }
-
-    #[ensures(result === false ==>
-        forall<i: Int> 0 <= i && i < (@self.0).len() ==>
-        (@((@self.0)[i].idx) != @(l.idx) ||
-        ((@self.0)[i].positive) != (l.positive)))]
-    #[ensures(result === true ==>
-        exists<i: Int> 0 <= i && i < (@self.0).len() ==>
-        (@((@self.0)[i].idx) === @(l.idx) &&
-        ((@self.0)[i].positive) === (l.positive)))]
-    fn contains(&self, l: &Lit) -> bool {
-        let len = self.0.len();
-        let mut i = 0;
-        #[invariant(loop_bound, i <= len)]
-        #[invariant(previous,
-            forall<j: Int> 0 <= j && j < @i ==>
-            @((@self.0)[j].idx) != @(l.idx) ||
-        ((@self.0)[j].positive) != (l.positive))]
-        while i < len {
-            let lit = self.0.index(i);
-            if lit.idx == l.idx && lit.positive == l.positive {
-                return true;
-            }
-            i += 1;
-        }
-        return false;
-    }
-}
-impl Formula {
-    #[trusted]
-    #[ensures(
-        forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
-        (@self.clauses)[i] === (@result.clauses)[i]
-    )]
-    #[ensures((@self.clauses).len() === (@result.clauses).len())]
-    fn clone(&self) -> Self {
-        panic!();
-        //Clause(self.0.clone())
+#[logic]
+#[variant(a.len())]
+fn unassigned_count(a: Seq<AssignedState>) -> Int {
+    if a.len() == 0 {
+        0
+    } else if pearlite! { a[0] === AssignedState::Unset } {
+        1 + unassigned_count(a.tail())
+    } else {
+        unassigned_count(a.tail())
     }
 }
 
-impl Lit {
-    #[trusted]
-    #[ensures(@result.idx === @self.idx && result.positive === self.positive)]
-    fn clone(&self) -> Self {
-        panic!();
-        //Clause(self.0.clone())
+#[predicate]
+fn assignments_equality(a: Assignments, a2: Assignments) -> bool {
+    pearlite! {
+        (@a).len() === (@a2).len() &&
+        forall<i: Int> 0 <= i && i < (@a).len() ==> (@a)[i] === (@a2)[i]
     }
 }
-
 
 #[predicate]
 fn vars_in_range(n: Int, c: Clause) -> bool {
     pearlite! {
-        forall<i: usize> 0usize <= i && @i < (@(c.0)).len() ==>
-            (0 <= @((@(c.0))[@i]).idx &&
-        @((@(c.0))[@i]).idx < n)
-    }
-}
-
-
-#[predicate]
-fn formula_invariant2(c: Vec<Clause>, n: usize) -> bool {
-    pearlite! {
-        (forall<i: usize> 0usize <= i && @i < (@(c)).len() ==>
-        vars_in_range(@(n), ((@(c))[@i])))
+        forall<i: Int> 0 <= i && i < (@c).len() ==>
+            (0 <= @((@c)[i]).idx && @((@c)[i]).idx < n)
     }
 }
 
 #[predicate]
-fn formula_invariant(f: Formula) -> bool {
+fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     pearlite! {
-        @f.cntr <= (@f.clauses).len() &&
-        (forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
-        vars_in_range(@(f.num_vars), ((@(f.clauses))[@i])))
+        a.len() === a2.len() &&
+        forall<i: Int> 0 <= i && i < a.len() ==>
+        (a[i] === AssignedState::Unset) || a[i] === a2[i]
     }
 }
 
 #[predicate]
-fn index_invariant(l: Lit, v: Vec<bool>) -> bool {
+fn complete_inner(a: Seq<AssignedState>) -> bool {
     pearlite! {
-        0 <= 0 && @(l.idx) < (@v).len()
+        forall<i: Int> 0 <= i && i < a.len() ==> !(a[i] === AssignedState::Unset)
     }
 }
 
 #[predicate]
-fn clause_invariant(c: Clause, v: Vec<bool>) -> bool {
+fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     pearlite! {
-        forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
-            index_invariant((@c.0)[@i], v)
+        compatible_inner(a, a2) && complete_inner(a2)
     }
 }
 
-impl WellFounded for usize {}
-
-#[trusted]
-#[ensures(result === true ==> (l === r))]
-#[ensures(result === false ==> (l != r))]
-#[ensures(result === (l === r))]
-fn eqb(l: bool, r: bool) -> bool {
-    l == r
+#[predicate]
+fn not_sat_clause_inner(a: Seq<AssignedState>, c: Clause) -> bool {
+    pearlite! {
+        forall<i: Int> 0 <= i && i < (@c).len() ==>
+            match a[@(@c)[i].idx] {
+                AssignedState::Positive => !(@c)[i].polarity,
+                AssignedState::Negative => (@c)[i].polarity,
+                AssignedState::Unset => false,
+            }
+    }
 }
 
-// TODO: Reconsider function(i.e. make it generic / move it)
-#[ensures((@result).len() === @n)]
-fn make_vec_of_size(n: usize) -> Vec<bool>{
-    let mut out: Vec<bool> = Vec::new();
-    if n == 0 {
-        return out;
-    }
-    #[invariant(loop_invariant, (@out).len() <= @n)]
-    while out.len() < n {
-        out.push(false);
-    }
-    return out;
-}
-
-#[requires(index_invariant(*literal, *neg))]
-#[requires(index_invariant(*literal, *pos))]
-#[ensures(index_invariant(*literal, ^neg))]
-#[ensures(index_invariant(*literal, ^pos))]
-#[ensures(index_invariant(*literal, *neg))]
-#[ensures(index_invariant(*literal, *pos))]
-#[ensures((@*pos).len() === (@^pos).len())]
-#[ensures((@*neg).len() === (@^neg).len())]
-fn consistent_literal(literal: &Lit, pos: &mut Vec<bool>, neg: &mut Vec<bool>) -> bool {
-    if eqb(literal.positive, true) {
-        if eqb(*neg.index(literal.idx), true) {
-            return false;
-        } else {
-            *pos.index_mut(literal.idx) = true;
-        }
-    } else {
-        if eqb(*pos.index(literal.idx), true) {
-            return false;
-        } else {
-            *neg.index_mut(literal.idx) = true;
+impl Clause {
+    #[predicate]
+    fn unsat(self, a: Assignments) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@self).len() ==>
+                match (@a)[@(@self)[i].idx] {
+                    AssignedState::Positive => !(@self)[i].polarity,
+                    AssignedState::Negative => (@self)[i].polarity,
+                    AssignedState::Unset => false,
+                }
         }
     }
-    return true;
+
+    #[predicate]
+    fn sat(self, a: Assignments) -> bool {
+        pearlite! {
+            exists<i: Int> 0 <= i && i < (@self).len() &&
+                match (@a)[@(@self)[i].idx] {
+                    AssignedState::Positive => (@self)[i].polarity,
+                    AssignedState::Negative => !(@self)[i].polarity,
+                    AssignedState::Unset => false
+                }
+        }
+    }
+
+    #[predicate]
+    fn unknown(self, a: Assignments, c: Clause) -> bool {
+        !self.sat(a) && !self.unsat(a)
+    }
 }
 
+#[predicate]
+fn eventually_unsat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
+    pearlite! {
+        forall<a2: Seq<AssignedState>> compatible_complete_inner(a, a2) ==> not_sat_formula_inner(a2, f)
+    }
+}
 
-/*
-#[requires(vars_in_range((@pos).len(), *c))] // this wont prove higher up ?
-#[requires(vars_in_range((@neg).len(), *c))]
-*/
-#[ensures(vars_in_range((@^pos).len(), *c))]
-#[ensures(vars_in_range((@^neg).len(), *c))]
-/*
-#[requires((@pos).len() === (@neg).len())]
-#[ensures((@pos).len() === (@neg).len())]
-*/
-#[ensures((@*pos).len() === (@^pos).len())]
-#[ensures((@*neg).len() === (@^neg).len())]
-#[requires(
-    forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
-    index_invariant((@c.0)[@i], *neg))]
-/*
-// Adding this makes it not prove higher up, but it is not needed?
-#[requires(
-    forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
-    index_invariant((@c.0)[@i], *pos))]
-*/
-#[ensures(
-    forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
-    index_invariant((@c.0)[@i], ^neg))]
-#[ensures(
-    forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
-    index_invariant((@c.0)[@i], ^pos))]
-// Doesnt wanna prove for some reason (should be same as above)
-/*
-#[requires(clause_invariant(*c, *pos))]
-#[requires(clause_invariant(*c, *neg))]
-#[ensures(clause_invariant(*c, ^pos))]
-#[ensures(clause_invariant(*c, ^neg))]
-*/
+#[predicate]
+fn not_sat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
+    pearlite! {
+        exists<i: Int> 0 <= i && i < (@(f.clauses)).len() &&
+        not_sat_clause_inner(a, (@(f.clauses))[i])
+    }
+}
 
-//#[requires(index_invariant(*literal, *pos))]
-//
-fn consistent_clause(c: &Clause, pos: &mut Vec<bool>, neg: &mut Vec<bool>) -> bool {
+#[ensures(result === (@f.clauses)[@idx].sat(*a))]
+#[requires(f.invariant())]
+#[requires(a.invariant(*f))]
+#[requires(@idx < (@f.clauses).len())]
+fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
+    let clause = &f.clauses[idx];
     let mut i = 0;
-    let clause_len = c.0.len();
-    let pos_len = pos.len(); // these should be ghost
-    let neg_len = neg.len();
-    let old_p = Ghost::record(&pos);
-    let old_n = Ghost::record(&neg);
-    #[invariant(neg_invariant,
-        forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
-        index_invariant((@c.0)[@i], *neg))]
-    #[invariant(pos_invariant,
-        forall<i: usize> 0usize <= i && @i < (@c.0).len() ==>
-        index_invariant((@c.0)[@i], *pos))]
-    /*
-    #[invariant(pos_invariant,
-        forall<i: Int> 0 <= i && i < (@c.0).len() ==>
-        index_invariant((@c.0)[i], *pos))]
-    #[invariant(pos_invariant, clause_invariant((*c), *pos))]
-    #[invariant(neg_invariant, clause_invariant((*c), *neg))]
-    */
-    #[invariant(proph_pos, ^pos === ^@old_p)]
-    #[invariant(proph_neg, ^neg === ^@old_n)]
-    #[invariant(same_pos, (@*pos).len() === (@*@old_p).len())]
-    #[invariant(same_neg, (@*neg).len() === (@*@old_n).len())]
-    #[invariant(same_len, (@*pos).len() === @pos_len)]
-    #[invariant(same_len2, (@*neg).len() === @neg_len)]
-    #[invariant(loop_bound, 0usize <= i && i <= clause_len)]
-    while i < clause_len {
-        let literal = c.0.index(i);
-        if !consistent_literal(literal, pos, neg) {
-            return false;
+    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==>
+        match (@a)[@(@clause)[j].idx] {
+            AssignedState::Positive => !(@clause)[j].polarity,
+            AssignedState::Negative => (@clause)[j].polarity,
+            AssignedState::Unset => true,
         }
-        i += 1;
-    }
-    return true;
-}
-
-
-#[requires((@(f.clauses)).len() < 10000)] // just to ensure boundedness
-#[requires(formula_invariant(*f))]
-#[ensures(formula_invariant(*f))]
-fn consistent(f: &Formula) -> bool {
-    let mut positives: Vec<bool> = make_vec_of_size(f.num_vars);
-    let mut negatives: Vec<bool> = make_vec_of_size(f.num_vars);
-    let clauses_len = f.clauses.len();
-    let mut i = 0;
-    /*
-    #[invariant(neg_invariant,
-        forall<i: usize> 0usize <= i && i < clauses_len ==>
-        clause_invariant((@(f.clauses))[@i], negatives))]
-    */
-    #[invariant(neg_invariant,
-        forall<k: usize> 0usize <= k && k < clauses_len ==>
-        forall<j: usize> 0usize <= j && @j < (@(((@(f.clauses))[@k]).0)).len() ==>
-        index_invariant((@(((@(f.clauses))[@k]).0))[@j], negatives))]
-    #[invariant(pos_invariant,
-        forall<k: usize> 0usize <= k && k < clauses_len ==>
-        forall<j: usize> 0usize <= j && @j < (@(((@(f.clauses))[@k]).0)).len() ==>
-        index_invariant((@(((@(f.clauses))[@k]).0))[@j], positives))]
-    #[invariant(loop_bound, 0usize <= i && i <= clauses_len)]
-    #[invariant(pos, forall<k: usize> 0usize <= k && k < clauses_len ==>
-        vars_in_range((@positives).len(), (@(f.clauses))[@k]))]
-    #[invariant(neg, forall<k: usize> 0usize <= k && k < clauses_len ==>
-        vars_in_range((@negatives).len(), (@(f.clauses))[@k]))]
-    while i < clauses_len {
-        let clause = &f.clauses.index(i);
-        if !consistent_clause(clause, &mut positives, &mut negatives) {
-            return false;
-        }
-        i += 1;
-    }
-    return true;
-}
-
-#[requires(formula_invariant(*f))]
-#[ensures(formula_invariant(*f))]
-fn contains_empty(f: &Formula) -> bool {
-    let mut i = 0;
-    let clauses_len = f.clauses.len();
-    #[invariant(loop_bound, i <= clauses_len)]
-    while i < clauses_len {
-        let clause = &f.clauses.index(i).0;
-        if clause.len() == 0 {
-            return true;
+    )]
+    while i < clause.0.len() {
+        let lit = clause.0[i];
+        match a.0[lit.idx]{
+           AssignedState::Positive => {
+                if lit.polarity {
+                    return true
+                }
+            },
+            AssignedState::Negative => {
+                if !lit.polarity {
+                    return true
+                }
+            },
+            AssignedState::Unset => {
+            }
         }
         i += 1;
     }
     return false;
 }
 
-// TODO: Fix the vars_in range post. No idea why it doesnt prove
-#[requires(formula_invariant(*f))]
-#[ensures(formula_invariant(*f))]
-#[requires(vars_in_range(@(f.num_vars), *clause))]
-#[ensures(vars_in_range(@(f.num_vars), result))]
-/*
-#[ensures(
-        forall<i: usize> 0usize <= i && @i < (@(result.0)).len() ==>
-            (0 <= @((@(result.0))[@i]).idx &&
-        @((@(result.0))[@i]).idx < @f.num_vars))]
-*/
-fn copy_clause_without(f: &Formula, clause: &Clause, literal: &Lit) -> Clause {
-    let mut out_clause = Clause(Vec::new());
-    let mut j = 0;
-    /*
-    #[invariant(maintain2,
-        forall<i: usize> 0usize <= i && @i < (@(out_clause.0)).len() ==>
-            (0 <= @((@(out_clause.0))[@i]).idx &&
-        @((@(out_clause.0))[@i]).idx < @f.num_vars))]
-    */
-    #[invariant(maintain_invariant, vars_in_range(@(f.num_vars), out_clause))]
-    #[invariant(loop_bound, @j <= (@clause.0).len())]
-    while j < clause.0.len() {
-        let lit = clause.0.index(j);
-        if lit.idx != literal.idx {
-            //let new_lit = Lit{idx: lit.idx, positive: lit.positive};
-            let new_lit = lit.clone();
-            //out_clause.0.push(*lit);
-            out_clause.0.push(new_lit);
-        }
-        j += 1;
-    }
-    return out_clause;
-}
-
-#[requires(formula_invariant(*f))]
-#[ensures(formula_invariant(*f))]
-#[ensures(formula_invariant2(result, f.num_vars))]
-//#[ensures((forall<i: usize> 0usize <= i && @i < (@(f.clauses)).len() ==>
-//        vars_in_range(@(f.num_vars), ((@(result))[@i]))))]
-fn unit_propagate(f: &Formula, literal: &Lit) -> Vec<Clause> {
-    let mut out_clauses: Vec<Clause> = Vec::new();
+#[ensures(result === (@f.clauses)[@idx].unsat(*a))]
+#[requires(f.invariant())]
+#[requires(a.invariant(*f))]
+#[requires(@idx < (@f.clauses).len())]
+fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
+    let clause = &f.clauses[idx];
     let mut i = 0;
-    #[invariant(loop_bound, @i <= (@f.clauses).len())]
-    /*
-    #[invariant(maintain_invariant,
-        forall<j: usize> j < i ==>
-            vars_in_range(@(f.num_vars), ((@(out_clauses))[@j])))]
-    */
-    #[invariant(mi, formula_invariant2(out_clauses, f.num_vars))]
-    while i < f.clauses.len() {
-        let clause = f.clauses.index(i);
-        if !clause.contains(&literal) {
-            //let new_clause = copy_clause_without(f, clause, literal);
-            let new_clause = clause.clone();
-            out_clauses.push(new_clause);
+    #[invariant(loop_invariant, 0 <= @i && @i <= (@clause).len())]
+    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==>
+        match (@a)[@(@clause)[j].idx] {
+            AssignedState::Positive => !(@clause)[j].polarity,
+            AssignedState::Negative => (@clause)[j].polarity,
+            AssignedState::Unset => false,
         }
-        i += 1;
-    }
-    return out_clauses;
-}
-
-#[requires(formula_invariant(*f))]
-#[ensures(formula_invariant(^f))]
-fn check_and_propagate(f: &mut Formula) -> bool {
-    let mut i = 0;
-    #[invariant(loop_bound, @i <= (@f.clauses).len())]
-    #[invariant(maintain_invariant, formula_invariant(*f))]
-    while i < f.clauses.len() {
-        if f.clauses.index(i).0.len() == 1 {
-            f.clauses = unit_propagate(f, f.clauses.index(i).0.index(0));
-            return false;
+    )]
+    while i < clause.0.len() {
+        let lit = clause.0[i];
+        match a.0[lit.idx]{
+           AssignedState::Positive => {
+                if lit.polarity {
+                    return false
+                }
+            },
+            AssignedState::Negative => {
+                if !lit.polarity {
+                    return false
+                }
+            },
+            AssignedState::Unset => {
+                return false;
+            }
         }
         i += 1;
     }
     return true;
 }
 
-#[requires(formula_invariant(*f))]
-#[ensures(formula_invariant(^f))]
-fn do_unit_propagation(f: &mut Formula){
-    let mut stabilized = false;
-    while !stabilized {
-        stabilized = check_and_propagate(f);
+impl Formula {
+    #[predicate]
+    fn invariant(self) -> bool {
+        pearlite! {
+            (forall<i: Int> 0 <= i && i < (@(self.clauses)).len() ==>
+            vars_in_range(@(self.num_vars), ((@(self.clauses))[i])))
+        }
     }
-}
 
-#[requires(formula_invariant(*f))]
-#[ensures(formula_invariant(^f))]
-#[requires(@f.cntr < 2000_000_000)] // TODO: This shouldnt be needed
-#[requires(@f.cntr < (@(f.clauses)).len())]
-fn next_literal(f: &mut Formula) -> usize {
-    let out = f.cntr;
-    f.cntr = f.cntr + 1;
-    return out;
-}
-
-#[requires((@(f.clauses)).len() < 10000)] // just to ensure boundedness
-#[requires(@f.cntr < 2000000)] // TODO: This shouldnt be needed
-#[requires(formula_invariant(*f))]
-#[ensures(formula_invariant(^f))]
-fn inner(f: &mut Formula) -> bool {
-    if contains_empty(f) {
+    #[requires(self.invariant())]
+    #[requires(a.invariant(*self))]
+    #[ensures(result === self.unsat(*a))]
+    fn is_unsat(&self, a: &Assignments) -> bool {
+        let mut i = 0;
+        #[invariant(prev,
+            forall<k: Int> 0 <= k && k < @i ==>
+            !(@self.clauses)[k].unsat(*a))]
+        #[invariant(loop_invariant, 0 <= @i && @i <= (@self.clauses).len())]
+        while i < self.clauses.len() {
+            if is_clause_unsat(self, i, a) {
+                return true;
+            }
+            i += 1;
+        }
         return false;
     }
-    if consistent(f) {
+
+    #[requires(self.invariant())]
+    #[requires(a.invariant(*self))]
+    #[ensures(result === self.sat(*a))]
+    fn is_sat(&self, a: &Assignments) -> bool {
+        let mut i = 0;
+        #[invariant(prev,
+            forall<k: Int> 0 <= k && k < @i ==>
+            (@self.clauses)[k].sat(*a))]
+        #[invariant(loop_invariant, 0 <= @i && @i <= (@self.clauses).len())]
+        while i < self.clauses.len() {
+            if !is_clause_sat(self, i, a) {
+                return false;
+            }
+            i += 1
+        }
         return true;
     }
-    do_unit_propagation(f);
-    let literal = next_literal(f);
-    let mut f1 = f.clone();
-    let mut f2 = f.clone();
-    let pos_lit = Lit{idx: literal, positive: true};
-    let neg_lit = Lit{idx: literal, positive: false};
-    let mut pos_vec = Vec::new();
-    pos_vec.push(pos_lit);
-    let mut neg_vec = Vec::new();
-    neg_vec.push(neg_lit);
-    f1.clauses.push(Clause(pos_vec));
-    f2.clauses.push(Clause(neg_vec));
-    return inner(&mut f1) || inner(&mut f2); // TODO: Back to single cloning
+
+    #[requires(self.invariant())]
+    #[requires(a.invariant(*self))]
+    #[ensures((result === SatState::Sat) === self.sat(*a))]
+    #[ensures((result === SatState::Unsat) === self.unsat(*a))]
+    #[ensures((result === SatState::Unknown) ==> !a.complete())]
+    fn eval(&self, a: &Assignments) -> SatState {
+        if self.is_sat(a) {
+            return SatState::Sat;
+        } else if self.is_unsat(a) {
+            return SatState::Unsat;
+        } else {
+            return SatState::Unknown;
+        }
+    }
+
+    #[predicate]
+    fn eventually_sat(self, a: Assignments) -> bool {
+        pearlite! {
+            exists<a2 : Assignments> a.compatible(a2) && self.sat(a2)
+        }
+    }
+
+    #[predicate]
+    fn eventually_unsat(self, a: Assignments) -> bool {
+        pearlite! { eventually_unsat_formula_inner(@a, self) }
+    }
+
+    #[predicate]
+    fn sat(self, a: Assignments) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@(self.clauses)).len() ==>
+            (@(self.clauses))[i].sat(a)
+        }
+    }
+
+    #[predicate]
+    fn unsat(self, a: Assignments) -> bool {
+        pearlite! {
+            exists<i: Int> 0 <= i && i < (@(self.clauses)).len() &&
+            (@(self.clauses))[i].unsat(a)
+        }
+    }
 }
 
-#[requires((@(f.clauses)).len() < 10000)] // just to ensure boundedness
-#[requires(@(f.cntr) == 0)]
-#[requires(formula_invariant(*f))]
-#[ensures(formula_invariant(^f))]
-pub fn solver(f: &mut Formula) -> bool {
-    if f.num_vars == 0 {
-        return true;
+impl Assignments {
+    #[predicate]
+    fn invariant(self, f: Formula) -> bool {
+        pearlite! {
+            @f.num_vars === (@self).len()
+        }
     }
-    inner(f)
+
+    #[predicate]
+    fn compatible_complete(self, a2: Assignments) -> bool {
+        self.compatible(a2) && a2.complete()
+    }
+
+    #[predicate]
+    fn complete(self) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@self).len() ==> !((@self)[i] === AssignedState::Unset)
+        }
+    }
+
+    #[trusted]
+    #[ensures(
+        forall<i: Int> 0 <= i && i < (@v).len() ==>
+        (@v)[i] === (@result)[i]
+    )]
+    #[ensures((@v).len() === (@result).len())]
+    #[ensures(*v === result)]
+    fn clone_assignment_vector(&self, v: &Vec<AssignedState>) -> Vec<AssignedState> {
+        let mut out = Vec::new();
+        let mut i = 0;
+        #[invariant(loop_invariant, 0 <= @i && @i <= (@v).len())]
+        #[invariant(equality, forall<j: Int> 0 <= j && j < @i ==> (@out)[j] === (@v)[j])]
+        while i < v.len() {
+            let curr = v[i];
+            out.push(curr.clone());
+            i += 1;
+        }
+        return out;
+    }
+    #[trusted]
+    #[ensures(
+        forall<i: Int> 0 <= i && i < (@self).len() ==>
+        (@self)[i] === (@result)[i]
+    )]
+    #[ensures((@self).len() === (@result).len())]
+    #[ensures(*self === result)]
+    fn clone(&self) -> Self {
+        Assignments(self.clone_assignment_vector(&self.0))
+    }
+
+    #[requires(f.invariant())]
+    #[ensures(result.invariant(*f))]
+    fn new(f: &Formula) -> Self {
+        let mut assign: Vec<AssignedState> = Vec::new();
+        let mut i = 0;
+        #[invariant(loop_invariant, 0 <= @i && @i <= @f.num_vars)]
+        #[invariant(length_invariant, (@assign).len() === @i)]
+        while i < f.num_vars {
+            assign.push(AssignedState::Unset);
+            i += 1
+        }
+        Assignments(assign)
+    }
+
+    #[requires(!self.complete())]
+    #[ensures(@result < (@self).len())]
+    #[ensures((@self)[@result] === AssignedState::Unset)]
+    fn find_unassigned(&self) -> usize {
+        let mut i = 0;
+        #[invariant(loop_invariant, 0 <= @i && @i <= (@self).len())]
+        #[invariant(prev, forall<j: Int> 0 <= j && j < @i ==>
+            !((@self)[j] === AssignedState::Unset)
+        )]
+        while i < self.0.len() {
+            let curr = self.0[i];
+            match curr {
+                AssignedState::Unset => {
+                    return i;
+                },
+                _ => {},
+            }
+            i += 1;
+        }
+        unreachable!()
+    }
+
+    #[predicate]
+    fn compatible(self, a2: Assignments) -> bool {
+        pearlite! { compatible_inner(@self, @a2) }
+    }
+}
+
+#[logic]
+#[requires(0 <= ix && ix < a.len())]
+#[requires(a[ix] === AssignedState::Unset)]
+#[requires(eventually_unsat_formula_inner(a.set(ix, AssignedState::Positive), f))]
+#[requires(eventually_unsat_formula_inner(a.set(ix, AssignedState::Negative), f))]
+#[ensures(eventually_unsat_formula_inner(a, f))]
+fn lemma_eventually_assigned(a: Seq<AssignedState>, ix: Int, f: Formula) {
+    compatible_inner(a, a.set(ix, AssignedState::Positive));
+    compatible_inner(a, a.set(ix, AssignedState::Negative));
+}
+
+#[requires(f.invariant())]
+#[requires(a.invariant(*f))]
+#[ensures(result === true ==> f.eventually_sat(*a))]
+#[ensures(result === false ==> f.eventually_unsat(*a))]
+fn inner(f: &Formula, a: &Assignments) -> bool {
+    match f.eval(a) {
+        SatState::Sat => return true,
+        SatState::Unsat => return false,
+        _ => {}
+    };
+
+    let mut a_cloned = a.clone();
+    let mut a_cloned2 = a.clone();
+
+    let next = a.find_unassigned();
+
+    a_cloned.0[next] = AssignedState::Positive;
+    a_cloned2.0[next] = AssignedState::Negative;
+
+    //proof_assert! { { lemma_eventually_assigned(@a, 0, *f); true }}
+    //proof_assert! { a.compatible(a_cloned) };
+    //proof_assert! { a.compatible(a_cloned2) };
+
+    if inner(f, &a_cloned) {
+        return true;
+    } else {
+        return inner(f, &a_cloned2);
+    }
 }
