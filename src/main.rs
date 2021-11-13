@@ -1,12 +1,20 @@
-use sat::parser::parse_cnf;
-use sat::solver::dpll;
+#![feature(type_ascription)]
 
-use clap::{crate_authors, App, AppSettings, Arg};
+extern crate creusot_contracts;
 
-use sat::solver_dpll_noproofs::preproc_and_solve;
+//use creusot_contracts::std::*;
+//use creusot_contracts::*;
 
-#[trusted]
+//use sat::parser::parse_cnf;
+//use sat::solver::dpll;
+
+//use clap::{crate_authors, App, AppSettings, Arg};
+
+//use sat::solver_dpll_noproofs::preproc_and_solve;
+
+//#[trusted]
 fn main() {
+    /*
     let matches = App::new("\nA minimal SAT solver with no name")
         .author(crate_authors!("\n"))
         .about("A yet unverified SAT solver written in Rust.")
@@ -35,4 +43,5 @@ fn main() {
     } else {
         println!("Unsat");
     }
+    */
 }
