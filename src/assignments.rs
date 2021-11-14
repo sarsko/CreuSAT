@@ -80,6 +80,7 @@ impl Assignments {
         }
         return out;
     }
+
     #[trusted]
     #[ensures(forall<i: Int> 0 <= i && i < (@self).len() ==> (@self)[i] === (@result)[i])]
     #[ensures((@self).len() === (@result).len())]
@@ -113,12 +114,7 @@ impl Assignments {
     #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
         j != @ix ==> (@*self)[j] === (@^self)[j]))]
     pub fn assign(&mut self, ix: usize, s: AssignedState, _f: &Formula) {
-        let old_a = Ghost::record(&self);
-        proof_assert! {  ^self === ^@old_a }
         self.0[ix] = s;
-        proof_assert! { (@self)[@ix] === s }
-        proof_assert! { (forall<j : Int> 0 <= j && j < (@self).len() && 
-            j != @ix ==> (@*@old_a)[j] === (@^self)[j]) }
     }
 
     #[requires(!self.complete())]
@@ -150,8 +146,8 @@ impl Assignments {
     #[ensures((*self).compatible(^self))]
     #[ensures(f.eventually_unsat(*self) ==> f.eventually_unsat(^self))] // Checks out
     #[ensures(f.eventually_sat(^self) ==> f.eventually_sat(*self))] // Checks out
-    //#[ensures(f.eventually_sat(*self) ==> f.eventually_sat(^self))] // TODO
-    //#[ensures(f.eventually_unsat(^self) ==> f.eventually_unsat(*self))] // TODO
+    #[ensures(f.eventually_sat(*self) ==> f.eventually_sat(^self))] // TODO
+    #[ensures(f.eventually_unsat(^self) ==> f.eventually_unsat(*self))] // TODO
     pub fn unit_prop_once(&mut self, i: usize, f: &Formula) -> bool {
         let clause = &f.clauses[i];
         let old_a = Ghost::record(&self);
@@ -167,6 +163,8 @@ impl Assignments {
         }
         return false;
     }
+
+    #[trusted] //TMP
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
     #[ensures((^self).invariant(*f))]
@@ -183,8 +181,8 @@ impl Assignments {
         #[invariant(ai, self.invariant(*f))]
         #[invariant(proph, ^self === ^@old_a)]
         #[invariant(compat, (*@old_a).compatible(*self))]
-        //#[invariant(maintains_sat, f.eventually_sat(*@old_a) ==> f.eventually_sat(*self))]
-        //#[invariant(maintains_unsat2, f.eventually_unsat(*self) ==> f.eventually_unsat(*@old_a))]
+        #[invariant(maintains_sat, f.eventually_sat(*@old_a) ==> f.eventually_sat(*self))]
+        #[invariant(maintains_unsat2, f.eventually_unsat(*self) ==> f.eventually_unsat(*@old_a))]
         #[invariant(maintains_unsat, f.eventually_unsat(*@old_a) ==> f.eventually_unsat(*self))]
         #[invariant(maintains_sat2, f.eventually_sat(*self) ==> f.eventually_sat(*@old_a))]
         while i < f.clauses.len() {
@@ -196,7 +194,7 @@ impl Assignments {
         return out;
     }
 
-
+    #[trusted] //TMP
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
     #[ensures((^self).invariant(*f))]
