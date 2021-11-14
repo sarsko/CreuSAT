@@ -56,15 +56,15 @@ impl Clause {
         !self.sat(a) && !self.unsat(a)
     }
 
-    #[trusted] // REMOVE
+    #[trusted] // TODO
     #[requires(forall<i: Int> 0 <= i && i < (@self).len() ==>
         @(@self)[i].idx < (@a).len())] // TODO: Refactor
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
-    #[ensures(result ==> self.unit(*a))]
-    #[ensures(!result ==> !self.unit(*a))]
-    #[ensures(result ==> !self.unsat(*a))]
-    #[ensures(result ==> !self.sat(*a))]
+    #[ensures(result ==> self.unit(*a))] //TODO
+    #[ensures(!result ==> !self.unit(*a))] // TODO
+    #[ensures(result ==> !self.unsat(*a))] // TODO
+    #[ensures(result ==> !self.sat(*a))] // TODO
     pub fn check_if_unit(&self, a: &Assignments, f: &Formula) -> bool {
         let mut i: usize = 0;
         let mut unassigned: usize = 0;
@@ -101,7 +101,6 @@ impl Clause {
         }
     }
 
-    #[trusted] // PROVING 
     #[requires(forall<i: Int> 0 <= i && i < (@self).len() ==>
         @(@self)[i].idx < (@a).len())] // +requires self in assignments //TODO refactor
     #[requires(self.unit(*a))]
