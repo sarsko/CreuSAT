@@ -59,6 +59,7 @@ impl Clause {
 }
 
 impl Clause {
+    #[trusted] // TMP, PASSES
     #[ensures(result === self.sat(*a))]
     #[requires(self.in_formula(*f))]
     #[requires(f.invariant())]
@@ -93,6 +94,7 @@ impl Clause {
         return false;
     }
 
+    #[trusted] // TMP, PASSES
     #[ensures(result === self.unsat(*a))]
     #[requires(self.in_formula(*f))]
     #[requires(f.invariant())]

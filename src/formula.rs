@@ -73,6 +73,7 @@ impl Formula {
 }
 
 impl Formula {
+    #[trusted] // TMP, PASSES
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[ensures(result === self.sat(*a))]
@@ -90,6 +91,7 @@ impl Formula {
         return true;
     }
 
+    #[trusted] // TMP, PASSES
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[ensures(result === self.unsat(*a))]
@@ -107,6 +109,7 @@ impl Formula {
         return false;
     }
 
+    #[trusted] // TMP, PASSES
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[ensures((result === SatState::Sat) === self.sat(*a))]

@@ -92,6 +92,7 @@ impl Assignments {
         Assignments(self.clone_assignment_vector(&self.0))
     }
 
+    #[trusted] // TMP, PASSES
     #[requires(f.invariant())]
     #[ensures(result.invariant(*f))]
     pub fn new(f: &Formula) -> Self {
@@ -106,6 +107,7 @@ impl Assignments {
         Assignments(assign)
     }
 
+    #[trusted] // TMP, PASSES
     #[requires(_f.invariant())]
     #[requires(self.invariant(*_f))]
     #[requires(0 <= @ix && @ix < (@self).len())]
@@ -119,6 +121,7 @@ impl Assignments {
         self.0[ix] = s;
     }
 
+    #[trusted] // TMP, PASSES
     #[requires(!self.complete())]
     #[ensures(@result < (@self).len())]
     #[ensures((@self)[@result] === AssignedState::Unset)]
