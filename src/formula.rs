@@ -35,63 +35,13 @@ impl PartialEq for SatState {
     }
 }
 
+// Predicates
 impl Formula {
     #[predicate]
     pub fn invariant(self) -> bool {
         pearlite! {
             (forall<i: Int> 0 <= i && i < (@(self.clauses)).len() ==>
             vars_in_range(@(self.num_vars), ((@(self.clauses))[i])))
-        }
-    }
-
-    #[requires(self.invariant())]
-    #[requires(a.invariant(*self))]
-    #[ensures(result === self.unsat(*a))]
-    pub fn is_unsat(&self, a: &Assignments) -> bool {
-        let mut i: usize = 0;
-        #[invariant(prev,
-            forall<k: Int> 0 <= k && k < @i ==>
-            !(@self.clauses)[k].unsat(*a))]
-        #[invariant(loop_invariant, 0 <= @i && @i <= (@self.clauses).len())]
-        while i < self.clauses.len() {
-            if self.clauses[i].is_unsat(self, a) {
-                return true;
-            }
-            i += 1;
-        }
-        return false;
-    }
-
-    #[requires(self.invariant())]
-    #[requires(a.invariant(*self))]
-    #[ensures(result === self.sat(*a))]
-    pub fn is_sat(&self, a: &Assignments) -> bool {
-        let mut i: usize = 0;
-        #[invariant(prev,
-            forall<k: Int> 0 <= k && k < @i ==>
-            (@self.clauses)[k].sat(*a))]
-        #[invariant(loop_invariant, 0 <= @i && @i <= (@self.clauses).len())]
-        while i < self.clauses.len() {
-            if !self.clauses[i].is_sat(self, a) {
-                return false;
-            }
-            i += 1
-        }
-        return true;
-    }
-
-    #[requires(self.invariant())]
-    #[requires(a.invariant(*self))]
-    #[ensures((result === SatState::Sat) === self.sat(*a))]
-    #[ensures((result === SatState::Unsat) === self.unsat(*a))]
-    #[ensures((result === SatState::Unknown) ==> !a.complete())]
-    pub fn eval(&self, a: &Assignments) -> SatState {
-        if self.is_sat(a) {
-            return SatState::Sat;
-        } else if self.is_unsat(a) {
-            return SatState::Unsat;
-        } else {
-            return SatState::Unknown;
         }
     }
 
@@ -118,6 +68,57 @@ impl Formula {
         pearlite! {
             exists<i: Int> 0 <= i && i < (@(self.clauses)).len() &&
             (@(self.clauses))[i].unsat(a)
+        }
+    }
+}
+
+impl Formula {
+    #[requires(self.invariant())]
+    #[requires(a.invariant(*self))]
+    #[ensures(result === self.sat(*a))]
+    pub fn is_sat(&self, a: &Assignments) -> bool {
+        let mut i: usize = 0;
+        #[invariant(prev,
+            forall<k: Int> 0 <= k && k < @i ==>
+            (@self.clauses)[k].sat(*a))]
+        while i < self.clauses.len() {
+            if !self.clauses[i].is_sat(self, a) {
+                return false;
+            }
+            i += 1
+        }
+        return true;
+    }
+
+    #[requires(self.invariant())]
+    #[requires(a.invariant(*self))]
+    #[ensures(result === self.unsat(*a))]
+    pub fn is_unsat(&self, a: &Assignments) -> bool {
+        let mut i: usize = 0;
+        #[invariant(prev,
+            forall<k: Int> 0 <= k && k < @i ==>
+            !(@self.clauses)[k].unsat(*a))]
+        while i < self.clauses.len() {
+            if self.clauses[i].is_unsat(self, a) {
+                return true;
+            }
+            i += 1;
+        }
+        return false;
+    }
+
+    #[requires(self.invariant())]
+    #[requires(a.invariant(*self))]
+    #[ensures((result === SatState::Sat) === self.sat(*a))]
+    #[ensures((result === SatState::Unsat) === self.unsat(*a))]
+    #[ensures((result === SatState::Unknown) ==> !a.complete())]
+    pub fn eval(&self, a: &Assignments) -> SatState {
+        if self.is_sat(a) {
+            return SatState::Sat;
+        } else if self.is_unsat(a) {
+            return SatState::Unsat;
+        } else {
+            return SatState::Unknown;
         }
     }
 }

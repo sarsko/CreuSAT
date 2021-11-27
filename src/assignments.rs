@@ -18,8 +18,8 @@ pub enum AssignedState {
     Negative,
 }
 
+#[trusted] // TMP, PASSES
 impl PartialEq for AssignedState {
-    #[trusted]
     fn eq(&self, other: &Self) -> bool {
         return match (self, other) {
             (AssignedState::Unset, AssignedState::Unset) => true,
@@ -39,7 +39,8 @@ impl Model for Assignments {
     }
 }
 
-impl Assignments {
+// Predicates
+impl Assignments { 
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
@@ -63,7 +64,9 @@ impl Assignments {
     pub fn compatible(self, a2: Assignments) -> bool {
         pearlite! { compatible_inner(@self, @a2) }
     }
+}
 
+impl Assignments {
     #[trusted]
     #[ensures(forall<i: Int> 0 <= i && i < (@v).len() ==> (@v)[i] === (@result)[i])]
     #[ensures((@v).len() === (@result).len())]

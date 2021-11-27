@@ -20,6 +20,7 @@ impl Model for Clause {
     }
 }
 
+// Predicates
 impl Clause {
     #[predicate]
     pub fn unsat(self, a: Assignments) -> bool {
@@ -55,7 +56,9 @@ impl Clause {
     pub fn in_formula(self, f: Formula) -> bool {
         pearlite! { exists<i: Int> 0 <= i && i < (@f.clauses).len() && (@f.clauses)[i] === self }
     }
+}
 
+impl Clause {
     #[ensures(result === self.sat(*a))]
     #[requires(self.in_formula(*f))]
     #[requires(f.invariant())]
@@ -96,7 +99,6 @@ impl Clause {
     #[requires(a.invariant(*f))]
     pub fn is_unsat(&self, f: &Formula, a: &Assignments) -> bool {
         let mut i: usize = 0;
-        //#[invariant(loop_invariant, 0 <= @i && @i <= (@clause).len())]
         #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==>
             match (@a)[@(@self)[j].idx] {
                 AssignedState::Positive => !(@self)[j].polarity,
