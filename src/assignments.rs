@@ -153,16 +153,7 @@ impl Assignments {
         let old_a = Ghost::record(&self);
         proof_assert! { ^self === ^@old_a }
         if clause.check_if_unit(self, f) {
-            let lit = clause.get_unit(self, f);
-            proof_assert! {
-                 eventually_sat_formula_inner(@self, *f) ==>
-                 eventually_sat_formula_inner((@self).set(@lit.idx, bool_to_assignedstate(lit.polarity)), *f)
-            }
-            if lit.polarity {
-                self.0[lit.idx] = AssignedState::Positive;
-            } else {
-                self.0[lit.idx] = AssignedState::Negative;
-            }
+            clause.assign_unit(self, f);
             return true;
         }
         return false;

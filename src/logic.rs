@@ -66,3 +66,37 @@ fn lemma_eventually_assigned(a: Seq<AssignedState>, ix: Int, f: Formula) {
     compatible_inner(a, a.set(ix, AssignedState::Positive));
     compatible_inner(a, a.set(ix, AssignedState::Negative));
 }
+
+#[logic]
+#[trusted]
+#[requires(c.unit(a))]
+#[requires(0 <= i && i < (@c).len())]
+#[variant((@c).len() - i)]
+pub fn unit_get_literal_internal(c: Clause, a: Assignments, i: Int) -> Lit {
+    pearlite! {
+        if (@a.0)[@(@c.0)[i].idx] === AssignedState::Unset {
+            (@c.0)[i]
+        } else {
+            unit_get_literal_internal(c, a, i + 1)
+        }
+    }
+}
+
+#[logic]
+#[requires(c.unit(a))]
+pub fn unit_get_literal(c: Clause, a: Assignments) -> Lit {
+    unit_get_literal_internal(c, a, 0)
+}
+
+#[logic]
+pub fn has_to_assign(c: Clause, a: Assignments) -> bool{
+    pearlite! {
+        c.unit(a) ==> sat_clause_inner((@a).set(@unit_get_literal(c, a).idx, bool_to_assignedstate(unit_get_literal(c, a).polarity)), c)
+    }
+}
+
+#[logic]
+#[ensures(result === !b)]
+pub fn flipbool(b: bool) -> bool {
+    !b
+}

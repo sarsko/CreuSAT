@@ -7,6 +7,7 @@ use crate::assignments::*;
 use crate::formula::*;
 use crate::logic::*;
 use crate::ghost::*;
+use crate::predicates::*;
 
 pub struct Clause(pub Vec<Lit>);
 
@@ -41,6 +42,8 @@ impl Clause {
 
     #[predicate]
     pub fn sat(self, a: Assignments) -> bool {
+        pearlite! { sat_clause_inner(@  a, self) }
+        /*
         pearlite! {
             exists<i: Int> 0 <= i && i < (@self).len() &&
                 match (@a)[@(@self)[i].idx] {
@@ -49,11 +52,81 @@ impl Clause {
                     AssignedState::Unset => false
                 }
         }
+        */
     }
 
     #[predicate]
     pub fn unknown(self, a: Assignments) -> bool {
         !self.sat(a) && !self.unsat(a)
+    }
+
+    #[predicate]
+    pub fn contains(self, l: Lit) -> bool {
+        pearlite! {
+            exists<i: Int> 0 <= i && i < (@self).len() && (@self)[i] === l
+        }
+    }
+
+    #[predicate]
+    pub fn is_unass_in(self, l: Lit, a: Assignments) -> bool {
+        pearlite! {
+            self.contains(l) && (@a)[@l.idx] === AssignedState::Unset && self.unit(a)
+        }
+    }
+
+    #[predicate]
+    pub fn assign_makes_sat(self, l: Lit, a: Assignments) -> bool {
+        pearlite! {
+            self.is_unass_in(l, a) ==> sat_clause_inner((@a).set(@l.idx, bool_to_assignedstate(l.polarity)), self)
+        }
+    }
+
+    #[predicate]
+    pub fn assign_reduces(self, l: Lit, a: Assignments) -> bool {
+        pearlite! {
+            self.is_unass_in(l, a) ==> 
+            unassigned_count_clause(@self, (@a).set(@l.idx, bool_to_assignedstate(l.polarity))) === 0
+        }
+    }
+
+    #[requires(f.invariant())]
+    #[requires(a.invariant(*f))]
+    #[requires(self.unit(*a))]
+    #[requires(forall<i: Int> 0 <= i && i < (@self).len() ==>
+        @(@self)[i].idx < (@a).len())] // +requires self in assignments //TODO refactor
+    #[ensures((^a).invariant(*f))]
+    #[ensures((*a).compatible(^a))]
+    #[ensures(self.sat(^a))]
+    #[ensures(f.eventually_unsat(*a) ==> f.eventually_unsat(^a))] // Checks out
+    #[ensures(f.eventually_sat(^a) ==> f.eventually_sat(*a))] // Checks out
+    #[ensures(f.eventually_sat(*a) ==> f.eventually_sat(^a))] // TODO
+    #[ensures(f.eventually_unsat(^a) ==> f.eventually_unsat(*a))] // TODO
+    pub fn assign_unit(&self, a: &mut Assignments, f: &Formula) {
+        let lit = self.get_unit(a, f);
+        /*
+        proof_assert! {has_to_assign(*self, *a)}
+        proof_assert! {
+                eventually_sat_formula_inner(@a, *f) ==>
+                eventually_sat_formula_inner((@a).set(@lit.idx, bool_to_assignedstate(lit.polarity)), *f)
+        }
+        proof_assert! {
+                eventually_sat_formula_inner(@a, *f) ==>
+                not_sat_formula_inner((@a).set(@lit.idx, bool_to_assignedstate(flipbool(lit.polarity))), *f)
+        }
+        */
+        if lit.polarity {
+            //proof_assert! {not_sat_clause_inner((@a).set(@lit.idx, AssignedState::Negative), *self)}
+            //proof_assert! {!sat_clause_inner((@a).set(@lit.idx, AssignedState::Negative), *self)}
+            proof_assert! {self.is_unass_in(lit, *a)}
+            proof_assert! {self.assign_makes_sat(lit, *a)}
+            proof_assert! {self.assign_reduces(lit, *a)}
+            proof_assert! { (@a)[@lit.idx] === AssignedState::Unset }
+            proof_assert! {unassigned_count_clause(@self, @a) === 1}
+            a.0[lit.idx] = AssignedState::Positive;
+            proof_assert! {unassigned_count_clause(@self, @a) === 0}
+        } else {
+            a.0[lit.idx] = AssignedState::Negative;
+        }
     }
 
     #[trusted] // TODO
@@ -108,6 +181,8 @@ impl Clause {
     #[requires(a.invariant(*f))]
     //#[ensures(@result.idx < (@f.clauses).len())]
     #[ensures(@result.idx < (@a).len())]
+    #[ensures(self.is_unass_in(result, *a))]
+    #[ensures(self.contains(result))]
     #[ensures((@a)[@result.idx] === AssignedState::Unset)]
     pub fn get_unit(&self, a: &Assignments, f: &Formula) -> Lit {
         let mut i: usize = 0;
