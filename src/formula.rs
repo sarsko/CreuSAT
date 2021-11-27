@@ -54,7 +54,7 @@ impl Formula {
             !(@self.clauses)[k].unsat(*a))]
         #[invariant(loop_invariant, 0 <= @i && @i <= (@self.clauses).len())]
         while i < self.clauses.len() {
-            if is_clause_unsat(self, i, a) {
+            if self.clauses[i].is_unsat(self, a) {
                 return true;
             }
             i += 1;
@@ -72,7 +72,7 @@ impl Formula {
             (@self.clauses)[k].sat(*a))]
         #[invariant(loop_invariant, 0 <= @i && @i <= (@self.clauses).len())]
         while i < self.clauses.len() {
-            if !is_clause_sat(self, i, a) {
+            if !self.clauses[i].is_sat(self, a) {
                 return false;
             }
             i += 1

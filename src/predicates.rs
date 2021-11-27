@@ -32,13 +32,6 @@ pub fn not_sat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
         not_sat_clause_inner(a, (@(f.clauses))[i])
     }
 }
-#[predicate]
-pub fn assignments_equality(a: Assignments, a2: Assignments) -> bool {
-    pearlite! {
-        (@a).len() === (@a2).len() &&
-        forall<i: Int> 0 <= i && i < (@a).len() ==> (@a)[i] === (@a2)[i]
-    }
-}
 
 #[predicate]
 pub fn vars_in_range(n: Int, c: Clause) -> bool {
@@ -70,6 +63,7 @@ pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) 
         compatible_inner(a, a2) && complete_inner(a2)
     }
 }
+
 #[predicate]
 pub fn sat_clause_inner(a: Seq<AssignedState>, c: Clause) -> bool {
     pearlite! {

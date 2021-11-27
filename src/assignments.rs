@@ -109,7 +109,6 @@ impl Assignments {
     #[requires((@self)[@ix] === AssignedState::Unset)]
     #[ensures((^self).invariant(*_f))]
     #[ensures((*self).compatible(^self))]
-    //#[ensures(@^self === (@*self).set(@ix, s))]
     #[ensures((@^self)[@ix] === s)]
     #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
         j != @ix ==> (@*self)[j] === (@^self)[j]))]
@@ -137,73 +136,5 @@ impl Assignments {
             i += 1;
         }
         unreachable!()
-    }
-
-    #[requires(f.invariant())]
-    #[requires(self.invariant(*f))]
-    #[requires(0 <= @i && @i < (@f.clauses).len())]
-    #[ensures((^self).invariant(*f))]
-    #[ensures((*self).compatible(^self))]
-    #[ensures(f.eventually_unsat(*self) ==> f.eventually_unsat(^self))] // Checks out
-    #[ensures(f.eventually_sat(^self) ==> f.eventually_sat(*self))] // Checks out
-    #[ensures(f.eventually_sat(*self) ==> f.eventually_sat(^self))] // TODO
-    //#[ensures(f.eventually_unsat(^self) ==> f.eventually_unsat(*self))] // TODO
-    pub fn unit_prop_once(&mut self, i: usize, f: &Formula) -> bool {
-        let clause = &f.clauses[i];
-        let old_a = Ghost::record(&self);
-        proof_assert! { ^self === ^@old_a }
-        if clause.check_if_unit(self, f) {
-            clause.assign_unit(self, f);
-            return true;
-        }
-        return false;
-    }
-
-    #[trusted] //TMP
-    #[requires(f.invariant())]
-    #[requires(self.invariant(*f))]
-    #[ensures((^self).invariant(*f))]
-    #[ensures(f.eventually_unsat(*self) ==> f.eventually_unsat(^self))] // Checks out
-    #[ensures(f.eventually_sat(^self) ==> f.eventually_sat(*self))] // Checks out
-    #[ensures(f.eventually_sat(*self) ==> f.eventually_sat(^self))] // TODO
-    #[ensures(f.eventually_unsat(^self) ==> f.eventually_unsat(*self))] // TODO
-    #[ensures((*self).compatible(^self))]
-    pub fn unit_propagate(&mut self, f: &Formula) -> bool {
-        let old_a = Ghost::record(&self);
-        let mut i: usize = 0;
-        let mut out = false;
-        #[invariant(loop_invariant, 0usize <= i && @i <= (@f.clauses).len())]
-        #[invariant(ai, self.invariant(*f))]
-        #[invariant(proph, ^self === ^@old_a)]
-        #[invariant(compat, (*@old_a).compatible(*self))]
-        #[invariant(maintains_sat, f.eventually_sat(*@old_a) ==> f.eventually_sat(*self))]
-        #[invariant(maintains_unsat2, f.eventually_unsat(*self) ==> f.eventually_unsat(*@old_a))]
-        #[invariant(maintains_unsat, f.eventually_unsat(*@old_a) ==> f.eventually_unsat(*self))]
-        #[invariant(maintains_sat2, f.eventually_sat(*self) ==> f.eventually_sat(*@old_a))]
-        while i < f.clauses.len() {
-            if self.unit_prop_once(i, f) {
-                out = true;
-            }
-            i += 1
-        }
-        return out;
-    }
-
-    #[trusted] //TMP
-    #[requires(f.invariant())]
-    #[requires(self.invariant(*f))]
-    #[ensures((^self).invariant(*f))]
-    #[ensures(f.eventually_sat(*self) ==> f.eventually_sat(^self))] // OK for Inner
-    #[ensures(f.eventually_unsat(*self) === f.eventually_unsat(^self))] // Needs ===
-    #[ensures((*self).compatible(^self))]
-    pub fn do_unit_propagation(&mut self, f: &Formula) {
-        let old_a = Ghost::record(&self);
-        #[invariant(ai, self.invariant(*f))]
-        #[invariant(proph, ^self === ^@old_a)]
-        #[invariant(compat, (*@old_a).compatible(*self))]
-        #[invariant(maintains_sat, f.eventually_sat(*@old_a) ==> f.eventually_sat(*self))]
-        #[invariant(maintains_unsat, f.eventually_unsat(*@old_a) === f.eventually_unsat(*self))]
-        while self.unit_propagate(f) {
-        }
     }
 }
