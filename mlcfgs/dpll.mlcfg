@@ -2269,8 +2269,8 @@ end
 module Lib_Assignments_Impl2_UnitPropagate_Interface
   use prelude.Prelude
   use Type
-  clone Lib_Formula_Impl1_EventuallySat_Interface as EventuallySat0
   clone Lib_Formula_Impl1_EventuallyUnsat_Interface as EventuallyUnsat0
+  clone Lib_Formula_Impl1_EventuallySat_Interface as EventuallySat0
   clone Lib_Assignments_Impl1_Compatible_Interface as Compatible0
   clone Lib_Formula_Impl1_Invariant_Interface as Invariant1
   clone Lib_Assignments_Impl1_Invariant_Interface as Invariant0
@@ -2278,10 +2278,8 @@ module Lib_Assignments_Impl2_UnitPropagate_Interface
     requires {Invariant0.invariant' ( * self) f}
     requires {Invariant1.invariant' f}
     ensures { Compatible0.compatible ( * self) ( ^ self) }
-    ensures { EventuallyUnsat0.eventually_unsat f ( ^ self) -> EventuallyUnsat0.eventually_unsat f ( * self) }
-    ensures { EventuallySat0.eventually_sat f ( * self) -> EventuallySat0.eventually_sat f ( ^ self) }
-    ensures { EventuallySat0.eventually_sat f ( ^ self) -> EventuallySat0.eventually_sat f ( * self) }
-    ensures { EventuallyUnsat0.eventually_unsat f ( * self) -> EventuallyUnsat0.eventually_unsat f ( ^ self) }
+    ensures { EventuallySat0.eventually_sat f ( ^ self) = EventuallySat0.eventually_sat f ( * self) }
+    ensures { EventuallyUnsat0.eventually_unsat f ( * self) = EventuallyUnsat0.eventually_unsat f ( ^ self) }
     ensures { Invariant0.invariant' ( ^ self) f }
     
 end
@@ -2347,10 +2345,8 @@ module Lib_Assignments_Impl2_UnitPropagate
     requires {Invariant0.invariant' ( * self) f}
     requires {Invariant1.invariant' f}
     ensures { Compatible0.compatible ( * self) ( ^ self) }
-    ensures { EventuallyUnsat0.eventually_unsat f ( ^ self) -> EventuallyUnsat0.eventually_unsat f ( * self) }
-    ensures { EventuallySat0.eventually_sat f ( * self) -> EventuallySat0.eventually_sat f ( ^ self) }
-    ensures { EventuallySat0.eventually_sat f ( ^ self) -> EventuallySat0.eventually_sat f ( * self) }
-    ensures { EventuallyUnsat0.eventually_unsat f ( * self) -> EventuallyUnsat0.eventually_unsat f ( ^ self) }
+    ensures { EventuallySat0.eventually_sat f ( ^ self) = EventuallySat0.eventually_sat f ( * self) }
+    ensures { EventuallyUnsat0.eventually_unsat f ( * self) = EventuallyUnsat0.eventually_unsat f ( ^ self) }
     ensures { Invariant0.invariant' ( ^ self) f }
     
    = 
@@ -2526,8 +2522,8 @@ module Lib_Assignments_Impl2_DoUnitPropagation
   clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve0 with type self = borrowed (Type.lib_assignments_assignments)
   clone Lib_Assignments_Impl2_UnitPropagate_Interface as UnitPropagate0 with predicate Invariant0.invariant' = Invariant0.invariant',
   predicate Invariant1.invariant' = Invariant1.invariant', predicate Compatible0.compatible = Compatible0.compatible,
-  predicate EventuallyUnsat0.eventually_unsat = EventuallyUnsat0.eventually_unsat,
-  predicate EventuallySat0.eventually_sat = EventuallySat0.eventually_sat
+  predicate EventuallySat0.eventually_sat = EventuallySat0.eventually_sat,
+  predicate EventuallyUnsat0.eventually_unsat = EventuallyUnsat0.eventually_unsat
   clone CreusotContracts_Logic_Ghost_Impl1_Record_Interface as Record0 with type t = borrowed (Type.lib_assignments_assignments),
   function Model0.model = Model0.model
   let rec cfg do_unit_propagation (self : borrowed (Type.lib_assignments_assignments)) (f : Type.lib_formula_formula) : ()

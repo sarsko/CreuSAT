@@ -79,16 +79,6 @@ impl Clause {
 
     #[predicate]
     pub fn unsat(self, a: Assignments) -> bool {
-        /*
-        pearlite! {
-            forall<i: Int> 0 <= i && i < (@self).len() ==>
-                match (a)[@(@self)[i].idx] {
-                    AssignedState::Positive => !(@self)[i].polarity,
-                    AssignedState::Negative => (@self)[i].polarity,
-                    AssignedState::Unset => false,
-                }
-        }
-        */
         pearlite! { clause_unsat(@self, @a) }
     }
 
@@ -117,14 +107,7 @@ impl Clause {
 
     #[predicate]
     pub fn is_unass_in(self, l: Lit, a: Assignments) -> bool {
-        pearlite! {
-            is_unass_in(@self, l, @a)
-        }
-        /*
-        pearlite! {
-            self.contains(l) && (@a)[@l.idx] === AssignedState::Unset && self.unit(a)
-        }
-        */
+        pearlite! { is_unass_in(@self, l, @a) }
     }
 }
 
@@ -268,7 +251,6 @@ impl Clause {
     #[requires(self.unit(*a))]
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
-    //#[ensures(@result.idx < (@f.clauses).len())]
     #[ensures(@result.idx < (@a).len())]
     #[ensures((@a)[@result.idx] === AssignedState::Unset)]
     pub fn get_unit(&self, a: &Assignments, f: &Formula) -> Lit {
