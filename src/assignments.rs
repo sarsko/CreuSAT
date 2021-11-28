@@ -143,4 +143,150 @@ impl Assignments {
         }
         unreachable!()
     }
+
+    #[requires(f.invariant())]
+    #[requires(self.invariant(*f))]
+    #[requires(0 <= @i && @i < (@f.clauses).len())]
+    #[ensures((^self).invariant(*f))]
+    #[ensures((*self).compatible(^self))]
+    #[ensures(f.eventually_unsat(*self) ==> f.eventually_unsat(^self))] // Checks out
+    #[ensures(f.eventually_sat(^self) ==> f.eventually_sat(*self))] // Checks out
+    #[ensures(f.eventually_sat(*self) ==> f.eventually_sat(^self))] // TODO
+    #[ensures(f.eventually_unsat(^self) ==> f.eventually_unsat(*self))] // TODO
+    pub fn unit_prop_once(&mut self, i: usize, f: &Formula) -> bool {
+        let clause = &f.clauses[i];
+        let old_a = Ghost::record(&self);
+
+        proof_assert! {{ lemma_unsat_implies_not_unit(*clause, *self); true}}
+
+        proof_assert! { ^self === ^@old_a }
+        if clause.check_if_unit(self, f) {
+            let lit = clause.get_unit(self, f);
+            proof_assert! {!lit_sat(lit, @self)}
+            proof_assert! {!clause_sat(@clause, @self)}
+            if lit.polarity {
+                self.0[lit.idx] = AssignedState::Positive;
+            } else {
+                self.0[lit.idx] = AssignedState::Negative;
+            }
+            proof_assert! {lit_sat(lit, @self)}
+            proof_assert! {clause_sat(@clause, @self)}
+            return true;
+        }
+        return false;
+    }
+
+    #[requires(f.invariant())]
+    #[requires(self.invariant(*f))]
+    #[ensures((^self).invariant(*f))]
+    #[ensures(f.eventually_unsat(*self) ==> f.eventually_unsat(^self))] // Checks out
+    #[ensures(f.eventually_sat(^self) ==> f.eventually_sat(*self))] // Checks out
+    #[ensures(f.eventually_sat(*self) ==> f.eventually_sat(^self))] // TODO
+    #[ensures(f.eventually_unsat(^self) ==> f.eventually_unsat(*self))] // TODO
+    #[ensures((*self).compatible(^self))]
+    pub fn unit_propagate(&mut self, f: &Formula) -> bool {
+        let old_a = Ghost::record(&self);
+        let mut i: usize = 0;
+        let mut out = false;
+        #[invariant(loop_invariant, 0usize <= i && @i <= (@f.clauses).len())]
+        #[invariant(ai, self.invariant(*f))]
+        #[invariant(proph, ^self === ^@old_a)]
+        #[invariant(compat, (*@old_a).compatible(*self))]
+        #[invariant(maintains_sat, f.eventually_sat(*@old_a) ==> f.eventually_sat(*self))]
+        #[invariant(maintains_unsat2, f.eventually_unsat(*self) ==> f.eventually_unsat(*@old_a))]
+        #[invariant(maintains_unsat, f.eventually_unsat(*@old_a) ==> f.eventually_unsat(*self))]
+        #[invariant(maintains_sat2, f.eventually_sat(*self) ==> f.eventually_sat(*@old_a))]
+        while i < f.clauses.len() {
+            if self.unit_prop_once(i, f) {
+                out = true;
+            }
+            i += 1
+        }
+        return out;
+    }
+
+    #[requires(f.invariant())]
+    #[requires(self.invariant(*f))]
+    #[ensures((^self).invariant(*f))]
+    #[ensures(f.eventually_sat(*self) === f.eventually_sat(^self))] // OK for Inner
+    #[ensures(f.eventually_unsat(*self) === f.eventually_unsat(^self))] // Needs ===
+    #[ensures((*self).compatible(^self))]
+    pub fn do_unit_propagation(&mut self, f: &Formula) {
+        let old_a = Ghost::record(&self);
+        #[invariant(ai, self.invariant(*f))]
+        #[invariant(proph, ^self === ^@old_a)]
+        #[invariant(compat, (*@old_a).compatible(*self))]
+        #[invariant(maintains_sat, f.eventually_sat(*@old_a) ==> f.eventually_sat(*self))]
+        #[invariant(maintains_unsat, f.eventually_unsat(*@old_a) === f.eventually_unsat(*self))]
+        while self.unit_propagate(f) {
+        }
+    }
 }
+
+/*
+#[logic]
+#[requires(c.unsat(a))]
+#[ensures(forall<i: Int> 0 <= i && i < (@c).len() ==> !((@a)[@(@c)[i].idx] === AssignedState::Unset))]
+fn lemma_unsat_implies_not_unit3(c: Clause, a: Assignments) {}
+
+#[requires(forall<i: Int> 0 <= i && i < (@c).len() ==> !((@a)[@(@c)[i].idx] === AssignedState::Unset))]
+#[ensures(unassigned_count_clause(@c, @a) === 0)]
+fn lemma_unsat_implies_not_unit4(c: Clause, a: Assignments) {}
+*/
+
+#[logic]
+#[requires(c.unsat(a))]
+#[ensures(unassigned_count_clause(@c, @a) === 0)]
+#[ensures(!c.unit(a))]
+fn lemma_unsat_implies_not_unit(c: Clause, a: Assignments) {}
+
+#[logic]
+#[requires(unit_internal(c, a))]
+#[requires(0 <= i && i < c.len())]
+#[ensures(is_unass_in(c, result, a))]
+#[ensures(contains(c, result))]
+#[variant(c.len() - i)]
+pub fn unit_get_literal_internal(c: Seq<Lit>, a: Seq<AssignedState>, i: Int) -> Lit {
+    if pearlite! { a[@c[i].idx] === AssignedState::Unset} {
+        c[i]
+    } else {
+        unit_get_literal_internal(c, a, i + 1)
+    }
+}
+
+
+#[logic]
+#[requires(c.unit(a))]
+pub fn unit_get_literal(c: Clause, a: Assignments) -> Lit {
+    pearlite! { unit_get_literal_internal(@c, @a, 0) }
+}
+
+/*
+#[logic]
+#[requires(c.unit(a))]
+//#[requires(f.eventually_sat(a))]
+#[ensures(sat_clause_inner((@a).set(@unit_get_literal(c, a).idx, 
+    bool_to_assignedstate(unit_get_literal(c, a).polarity)), @c))]
+fn lemma_unit_has_to_assign(c: Clause, f: Formula, a: Assignments) {}
+
+#[logic]
+//#[requires(f.eventually_sat(a))]
+#[ensures(lit_sat(l, (@a).set(@l.idx, bool_to_assignedstate(true))) ||
+lit_sat(l, (@a).set(@l.idx, bool_to_assignedstate(false)))
+)]
+fn lemma_unit_has_to_assign2(l: Lit, f: Formula, a: Assignments) {}
+*/
+
+#[logic]
+#[requires(unit_internal(c, a))]
+//#[ensures(exists<i: Int> 0 <= i && i < (@c).len() ==> (@a)[@(@c)[i].idx] === AssignedState::Unset)]
+#[ensures(exists<i: Int> 0 <= i && i < c.len() ==> a[@c[i].idx] === AssignedState::Unset)]
+fn lemma_unit_implies_unset(c: Seq<Lit>, a: Seq<AssignedState>) {}
+/*
+#[logic]
+pub fn has_to_assign(c: Clause, a: Assignments) -> bool{
+    pearlite! {
+        c.unit(a) ==> sat_clause_inner((@a).set(@unit_get_literal(c, a).idx, bool_to_assignedstate(unit_get_literal(c, a).polarity)), c)
+    }
+}
+*/
