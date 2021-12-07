@@ -356,40 +356,37 @@ predicate remaining_correct (remaining : list var) (pval : pval) =
 
 exception Sat
 
-(*
 let sat (cnf : cnf) : option (array bool) =
   ensures  { forall rho:valuation. result = Some rho -> sat_with rho cnf }
   ensures  { result = None -> unsat cnf }
 
   let pval = {
     get = make cnf.nvars false ;
-    assigned = make cnf.nvars false } in
-
-  let rec choose remaining =
-    variant  { remaining }
-    raises   { Sat -> sat_with pval.get cnf }
-    requires { forall i:int. mem i remaining -> 0 <= i < cnf.nvars }
-    requires { remaining_correct remaining pval }
-    ensures  { forall rho:valuation. compatible pval rho ->
-               not (sat_with rho cnf) }
-    ensures  { pval_eq pval (old pval) }
-
-    match remaining with
-      | Nil -> if eval_cnf pval.get cnf then raise Sat
-      | Cons v vs ->
-        assert { mem v remaining && 0 <= v < cnf.nvars } ;
+    assigned = make cnf.nvars false } 
+    in
+    let rec choose remaining = 
+        variant  { remaining }
+        raises   { Sat -> sat_with pval.get cnf } 
+        requires { forall i:int. mem i remaining -> 0 <= i < cnf.nvars }
+        requires { remaining_correct remaining pval } 
+        ensures  { forall rho:valuation. compatible pval rho ->
+                not (sat_with rho cnf) }
+        ensures  { pval_eq pval (old pval) }
+        match remaining with
+            | Nil -> if eval_cnf pval.get cnf then raise Sat
+            | Cons v vs -> 
+            assert { mem v remaining && 0 <= v < cnf.nvars } ; 
         if pval.assigned[v] then choose vs else
         begin
-
-          let try_value b =
+        let try_value b =
             requires { remaining_correct remaining pval }
             requires { not pval.assigned[v] }
             ensures  { pval_eq pval (old pval) }
             ensures  { forall rho:valuation. compatible pval rho ->
-                       rho[v] = b -> not (sat_with rho cnf) }
+                    rho[v] = b -> not (sat_with rho cnf) } 
             raises   { Sat -> sat_with pval.get cnf }
 
-            (*'L: *)
+            (*'L:*)
             let diff = ref Nil in
             pval.assigned[v] <- true ;
             pval.get[v] <- b ;
@@ -397,27 +394,23 @@ let sat (cnf : cnf) : option (array bool) =
             assert { remaining_correct vs pval } ;
             if propagate pval diff cnf past_pval then
             begin
-              try choose vs with Sat -> raise Sat end ;
+                try choose vs with Sat -> raise Sat end ;
             end ;
             backtrack !diff pval past_pval ;
             pval.assigned[v] <- false ;
-            (* assert { array_eq pval.assigned (at pval.assigned 'L) } in *)
+            (* assert { array_eq pval.assigned (at pval.assigned 'L) } *)
+            in
+        try_value false;
+        try_value true;
+        end
 
-          try_value false ;
-          try_value true ;
-end
-*)
-        (*end *)
-(*    end in *)
-(*
-  let remaining = range 0 cnf.nvars in
-  try
-    choose remaining ;
-    assert { forall i:int. 0 <= i < cnf.nvars -> not pval.assigned[i] } ;
-    None
+        end
+    in
+
+    let remaining = range 0 cnf.nvars in
+    try
+        choose remaining ;
+        assert { forall i:int. 0 <= i < cnf.nvars -> not pval.assigned[i] } ;
+        None
   with Sat -> Some pval.get end
-  *)
-
-(*end *)
-
 end
