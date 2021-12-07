@@ -5,6 +5,7 @@ use creusot_contracts::std::*;
 
 use crate::clause::*;
 use crate::assignments::*;
+use crate::logic::*;
 
 #[derive(Clone, Copy)]
 pub struct Lit {
@@ -13,6 +14,7 @@ pub struct Lit {
 }
 
 #[predicate]
+#[ensures(result === (a[@l.idx] === bool_to_assignedstate(l.polarity)))] // Could just swap body to this
 pub fn lit_sat(l: Lit, a: Seq<AssignedState>) -> bool {
     pearlite! {
         if a[@l.idx] === AssignedState::Unset {

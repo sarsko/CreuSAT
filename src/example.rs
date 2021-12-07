@@ -2,9 +2,7 @@
 
 extern crate creusot_contracts;
 use creusot_contracts::*;
+use creusot_contracts::std::*;
 
-fn main () {
-    #[invariant(end, 0 <= 1)]
-    while true {}
-}
+fn main () {}
 

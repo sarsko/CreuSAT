@@ -35,6 +35,14 @@ impl PartialEq for SatState {
     }
 }
 
+#[predicate]
+pub fn formula_sat(f: Formula, a: Seq<AssignedState>) -> bool {
+    pearlite! {
+        forall<i: Int> 0 <= i && i < (@(f.clauses)).len() ==>
+        clause_sat(@(@(f.clauses))[i], a)
+    }
+}
+
 // Predicates
 impl Formula {
     #[predicate]
@@ -57,10 +65,13 @@ impl Formula {
 
     #[predicate]
     pub fn sat(self, a: Assignments) -> bool {
+        pearlite! { formula_sat(self, @a) }
+        /*
         pearlite! {
             forall<i: Int> 0 <= i && i < (@(self.clauses)).len() ==>
             (@(self.clauses))[i].sat(a)
         }
+        */
     }
 
     #[predicate]
