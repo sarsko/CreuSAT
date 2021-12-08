@@ -19,7 +19,6 @@ pub enum AssignedState {
 }
 
 impl PartialEq for AssignedState {
-    #[trusted]
     fn eq(&self, other: &Self) -> bool {
         return match (self, other) {
             (AssignedState::Unset, AssignedState::Unset) => true,
@@ -80,7 +79,7 @@ impl Assignments {
         }
         return out;
     }
-    #[trusted]
+
     #[ensures(forall<i: Int> 0 <= i && i < (@self).len() ==> (@self)[i] === (@result)[i])]
     #[ensures((@self).len() === (@result).len())]
     #[ensures(*self === result)]
@@ -167,6 +166,7 @@ impl Assignments {
         }
         return false;
     }
+
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
     #[ensures((^self).invariant(*f))]
