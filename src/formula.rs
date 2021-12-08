@@ -8,7 +8,6 @@ use crate::lit::*;
 use crate::clause::*;
 use crate::assignments::*;
 use crate::logic::*;
-use crate::predicates::*;
 use crate::solver_dpll::*;
 
 pub struct Formula {
@@ -31,6 +30,29 @@ impl PartialEq for SatState {
             (SatState::Unsat, SatState::Unsat) => true,
             _ => false,
         };
+    }
+}
+
+#[predicate]
+pub fn eventually_unsat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
+    pearlite! {
+        forall<a2: Seq<AssignedState>> compatible_complete_inner(a, a2) ==> not_sat_formula_inner(a2, f)
+    }
+}
+
+#[predicate]
+pub fn eventually_sat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
+    pearlite! {
+        exists<a2 : Assignments> compatible_inner(a, @a2) && f.sat(a2)
+    }
+}
+
+
+#[predicate]
+pub fn not_sat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
+    pearlite! {
+        exists<i: Int> 0 <= i && i < (@(f.clauses)).len() &&
+        not_sat_clause_inner(a, (@(f.clauses))[i])
     }
 }
 

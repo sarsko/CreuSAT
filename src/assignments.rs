@@ -6,7 +6,6 @@ use crate::ghost;
 use crate::lit::*;
 use crate::clause::*;
 use crate::logic::*;
-use crate::predicates::*;
 use crate::formula::*;
 
 pub struct Assignments(pub Vec<AssignedState>);
@@ -35,6 +34,37 @@ impl Model for Assignments {
     #[logic]
     fn model(self) -> Self::ModelTy {
         self.0.model()
+    }
+}
+
+#[predicate]
+pub fn assignments_equality(a: Assignments, a2: Assignments) -> bool {
+    pearlite! {
+        (@a).len() === (@a2).len() &&
+        forall<i: Int> 0 <= i && i < (@a).len() ==> (@a)[i] === (@a2)[i]
+    }
+}
+
+#[predicate]
+pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
+    pearlite! {
+        a.len() === a2.len() &&
+        forall<i: Int> 0 <= i && i < a.len() ==>
+        (a[i] === AssignedState::Unset) || a[i] === a2[i]
+    }
+}
+
+#[predicate]
+pub fn complete_inner(a: Seq<AssignedState>) -> bool {
+    pearlite! {
+        forall<i: Int> 0 <= i && i < a.len() ==> !(a[i] === AssignedState::Unset)
+    }
+}
+
+#[predicate]
+pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
+    pearlite! {
+        compatible_inner(a, a2) && complete_inner(a2)
     }
 }
 

@@ -19,6 +19,39 @@ impl Model for Clause {
     }
 }
 
+#[predicate]
+pub fn vars_in_range(n: Int, c: Clause) -> bool {
+    pearlite! {
+        forall<i: Int> 0 <= i && i < (@c).len() ==>
+            (0 <= @((@c)[i]).idx && @((@c)[i]).idx < n)
+    }
+}
+
+#[predicate]
+pub fn sat_clause_inner(a: Seq<AssignedState>, c: Clause) -> bool {
+    pearlite! {
+        exists<i: Int> 0 <= i && i < (@c).len() &&
+            match a[@(@c)[i].idx] {
+                AssignedState::Positive => (@c)[i].polarity,
+                AssignedState::Negative => !(@c)[i].polarity,
+                AssignedState::Unset => false,
+            }
+    }
+}
+
+#[predicate]
+pub fn not_sat_clause_inner(a: Seq<AssignedState>, c: Clause) -> bool {
+    pearlite! {
+        forall<i: Int> 0 <= i && i < (@c).len() ==>
+            match a[@(@c)[i].idx] {
+                AssignedState::Positive => !(@c)[i].polarity,
+                AssignedState::Negative => (@c)[i].polarity,
+                AssignedState::Unset => false,
+            }
+    }
+}
+
+
 impl Clause {
     #[predicate]
     pub fn unit(self, a: Assignments) -> bool {

@@ -10,7 +10,6 @@ use crate::clause::*;
 use crate::assignments::*;
 use crate::formula::*;
 use crate::logic::*;
-use crate::predicates::*;
 
 fn main() {}
 
