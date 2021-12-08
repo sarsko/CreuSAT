@@ -14,6 +14,7 @@ use crate::predicates::*;
 
 fn main() {}
 
+#[trusted] //TMP
 #[ensures(result === (@f.clauses)[@idx].sat(*a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
@@ -49,6 +50,7 @@ pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     return false;
 }
 
+#[trusted] //TMP
 #[ensures(result === (@f.clauses)[@idx].unsat(*a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
@@ -86,7 +88,7 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     return true;
 }
 
-
+#[trusted] //TMP
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[ensures((^a).invariant(*f))]
