@@ -24,7 +24,6 @@ pub enum SatState {
 }
 
 impl PartialEq for SatState {
-    #[trusted]
     fn eq(&self, other: &Self) -> bool {
         return match (self, other) {
             (SatState::Unknown, SatState::Unknown) => true,
