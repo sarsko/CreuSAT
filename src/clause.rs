@@ -19,13 +19,6 @@ impl Model for Clause {
     }
 }
 
-#[predicate]
-pub fn vars_in_range(n: Int, c: Clause) -> bool {
-    pearlite! {
-        forall<i: Int> 0 <= i && i < (@c).len() ==>
-            (0 <= @((@c)[i]).idx && @((@c)[i]).idx < n)
-    }
-}
 
 #[predicate]
 pub fn sat_clause_inner(a: Seq<AssignedState>, c: Clause) -> bool {
@@ -50,7 +43,6 @@ pub fn not_sat_clause_inner(a: Seq<AssignedState>, c: Clause) -> bool {
             }
     }
 }
-
 
 impl Clause {
     #[predicate]
@@ -89,6 +81,16 @@ impl Clause {
         !self.sat(a) && !self.unsat(a)
     }
 
+    #[predicate]
+    pub fn vars_in_range(self, n: Int) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@self).len() ==>
+                (0 <= @((@self)[i]).idx && @((@self)[i]).idx < n)
+        }
+    }
+}
+
+impl Clause {
     #[trusted] // TODO
     #[requires(forall<i: Int> 0 <= i && i < (@self).len() ==>
         @(@self)[i].idx < (@a).len())] // TODO: Refactor

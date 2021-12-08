@@ -56,15 +56,43 @@ pub fn not_sat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
     }
 }
 
+// Predicates
 impl Formula {
     #[predicate]
     pub fn invariant(self) -> bool {
         pearlite! {
             (forall<i: Int> 0 <= i && i < (@(self.clauses)).len() ==>
-            vars_in_range(@(self.num_vars), ((@(self.clauses))[i])))
+            ((@(self.clauses))[i]).vars_in_range(@(self.num_vars)))
+        }
+    }
+    #[predicate]
+    pub fn eventually_sat(self, a: Assignments) -> bool {
+        pearlite! { eventually_sat_formula_inner(@a, self)}
+    }
+
+    #[predicate]
+    pub fn eventually_unsat(self, a: Assignments) -> bool {
+        pearlite! { eventually_unsat_formula_inner(@a, self) }
+    }
+
+    #[predicate]
+    pub fn sat(self, a: Assignments) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@(self.clauses)).len() ==>
+            (@(self.clauses))[i].sat(a)
         }
     }
 
+    #[predicate]
+    pub fn unsat(self, a: Assignments) -> bool {
+        pearlite! {
+            exists<i: Int> 0 <= i && i < (@(self.clauses)).len() &&
+            (@(self.clauses))[i].unsat(a)
+        }
+    }
+}
+
+impl Formula {
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[ensures(result === self.unsat(*a))]
@@ -113,32 +141,6 @@ impl Formula {
             return SatState::Unsat;
         } else {
             return SatState::Unknown;
-        }
-    }
-
-    #[predicate]
-    pub fn eventually_sat(self, a: Assignments) -> bool {
-        pearlite! { eventually_sat_formula_inner(@a, self)}
-    }
-
-    #[predicate]
-    pub fn eventually_unsat(self, a: Assignments) -> bool {
-        pearlite! { eventually_unsat_formula_inner(@a, self) }
-    }
-
-    #[predicate]
-    pub fn sat(self, a: Assignments) -> bool {
-        pearlite! {
-            forall<i: Int> 0 <= i && i < (@(self.clauses)).len() ==>
-            (@(self.clauses))[i].sat(a)
-        }
-    }
-
-    #[predicate]
-    pub fn unsat(self, a: Assignments) -> bool {
-        pearlite! {
-            exists<i: Int> 0 <= i && i < (@(self.clauses)).len() &&
-            (@(self.clauses))[i].unsat(a)
         }
     }
 }

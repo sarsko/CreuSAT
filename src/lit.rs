@@ -11,6 +11,7 @@ pub struct Lit {
     pub polarity: bool,
 }
 
+// Predicates
 impl Lit {
     #[predicate]
     pub fn lit_in(self, c: Clause) -> bool {

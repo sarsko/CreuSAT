@@ -67,8 +67,9 @@ pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) 
         compatible_inner(a, a2) && complete_inner(a2)
     }
 }
-
-impl Assignments {
+ 
+// Predicates
+impl Assignments { 
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
@@ -77,8 +78,8 @@ impl Assignments {
     }
 
     #[predicate]
-    pub fn compatible_complete(self, a2: Assignments) -> bool {
-        self.compatible(a2) && a2.complete()
+    pub fn compatible(self, a2: Assignments) -> bool {
+        pearlite! { compatible_inner(@self, @a2) }
     }
 
     #[predicate]
@@ -89,10 +90,12 @@ impl Assignments {
     }
 
     #[predicate]
-    pub fn compatible(self, a2: Assignments) -> bool {
-        pearlite! { compatible_inner(@self, @a2) }
+    pub fn compatible_complete(self, a2: Assignments) -> bool {
+        self.compatible(a2) && a2.complete()
     }
+}
 
+impl Assignments {
     #[trusted]
     #[ensures(forall<i: Int> 0 <= i && i < (@v).len() ==> (@v)[i] === (@result)[i])]
     #[ensures((@v).len() === (@result).len())]
