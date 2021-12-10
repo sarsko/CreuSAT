@@ -1,39 +1,3 @@
-pub struct Vec<T>(std::vec::Vec<T>);
-impl<T> Vec<T> {
-    pub fn new() -> Self {
-        Vec(std::vec::Vec::new())
-    }
-    pub fn len(&self) -> usize {
-        self.0.len()
-    }
-
-    pub fn get(&self, ix: usize) -> Option<&T> {
-        self.0.get(ix)
-    }
-
-    pub fn push(&mut self, v: T) {
-        self.0.push(v)
-    }
-
-    pub fn index(&self, ix: usize) -> &T {
-        use std::ops::Index;
-        self.0.index(ix)
-    }
-
-    pub fn index_mut(&mut self, ix: usize) -> &mut T {
-        use std::ops::IndexMut;
-        self.0.index_mut(ix)
-    }
-
-    pub fn swap(&mut self, i: usize, j: usize) {
-        self.0.swap(i, j)
-    }
-
-    pub fn pop(&mut self) -> Option<T> {
-        self.0.pop()
-    }
-}
-
 #[derive(Clone, Copy)]
 struct Lit {
     idx: usize,
@@ -58,7 +22,7 @@ impl Assignments {
         let mut out = Vec::new();
         let mut i = 0;
         while i < v.len() {
-            let curr = v.index(i);
+            let curr = v[i];
             out.push(curr.clone());
             i += 1;
         }
@@ -75,12 +39,12 @@ fn check_if_unit(c: &Clause, a: &Assignments) -> SatState {
     let mut unassigned = 0;
     let mut outlit = SatState::Unsat;
     while i < c.0.len() {
-        let lit = c.0.index(i);
-        let res = a.0.index(lit.idx);
+        let lit = c.0[i];
+        let res = a.0[lit.idx];
         match res {
             Some(x) => {
                 // false, false || true, true -> clause is SAT
-                if lit.polarity == *x {
+                if lit.polarity == x {
                     return SatState::Sat;
                 }
             }
@@ -106,15 +70,15 @@ fn increase_decision_level(trail: &mut Trail, decisionlevel: &mut usize) {
 }
 
 fn set_assignment(a: &mut Assignments, l: Lit, decisionlevel: usize, trail: &mut Trail) {
-    *a.0.index_mut(l.idx) = Some(l.polarity);
-    trail.0.index_mut(decisionlevel).push(l);
+    a.0[l.idx] = Some(l.polarity);
+    //trail.0.index_mut(decisionlevel).push(l);
 }
 
 fn unit_propagate(f: &Formula, a: &mut Assignments, s: &mut bool, d: &mut usize, trail: &mut Trail) -> SatState {
     let mut i = 0;
     let mut out = SatState::Sat;
     while i < f.clauses.len() {
-        let clause = f.clauses.index(i);
+        let clause = &f.clauses[i];
         match check_if_unit(clause, a) {
             SatState::Unit(lit) => {
                 set_assignment(a, lit, *d, trail);
@@ -145,7 +109,7 @@ fn do_unit_propagation(f: &Formula, a: &mut Assignments, d: &mut usize, trail: &
 fn find_unassigned(a: &Assignments) -> Option<usize> {
     let mut i = 0;
     while i < a.0.len() {
-        let curr = a.0.index(i);
+        let curr = a.0[i];
         match curr {
             Some(_x) => {} //continue
             None => {
@@ -163,8 +127,8 @@ fn cancel_until(a: &mut Assignments, t: &mut Trail, decisionlevel: usize, level:
         let decisions = t.0.pop().unwrap();
         let mut j: usize = 0;
         while j < decisions.len() {
-            let lit = decisions.index(j);
-            *a.0.index_mut(lit.idx) = None;
+            let lit = decisions[j];
+            a.0[lit.idx] = None;
             j += 1;
         }
         i -= 1;
