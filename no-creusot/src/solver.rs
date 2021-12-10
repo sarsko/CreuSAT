@@ -41,7 +41,7 @@ struct Lit {
 }
 struct Clause(Vec<Lit>);
 struct Assignments(Vec<Option<bool>>);
-struct Worklist(Vec<Lit>);
+struct Trail(Vec<Vec<Lit>>);
 pub struct Formula {
     clauses: Vec<Clause>,
     num_vars: usize,
@@ -51,26 +51,6 @@ enum SatState {
     Sat,
     Unknown,
     Unit(Lit),
-}
-
-impl Worklist {
-    fn clone_lit_vector(&self, v: &Vec<Lit>) -> Vec<Lit> {
-        let mut out = Vec::new();
-        let mut i = 0;
-        while i < v.len() {
-            let lit = v.index(i);
-            let newlit = Lit {
-                idx: lit.idx,
-                polarity: lit.polarity,
-            };
-            out.push(newlit);
-            i += 1;
-        }
-        return out;
-    }
-    fn clone(&self) -> Self {
-        Worklist(self.clone_lit_vector(&self.0))
-    }
 }
 
 impl Assignments {
@@ -120,30 +100,25 @@ fn check_if_unit(c: &Clause, a: &Assignments) -> SatState {
     return outlit;
 }
 
-fn set_assignment(a: &mut Assignments, l: Lit) {
+fn increase_decision_level(trail: &mut Trail, decisionlevel: &mut usize) {
+    *decisionlevel += 1;
+    trail.0.push(Vec::new());
+}
+
+fn set_assignment(a: &mut Assignments, l: Lit, decisionlevel: usize, trail: &mut Trail) {
     *a.0.index_mut(l.idx) = Some(l.polarity);
+    trail.0.index_mut(decisionlevel).push(l);
 }
 
-fn add_to_worklist(w: &mut Worklist, a: &mut Assignments, l: Lit) {
-    w.0.push(l);
-    set_assignment(a, l);
-}
-
-fn unit_propagate(f: &Formula, a: &mut Assignments, s: &mut Worklist,) -> SatState {
+fn unit_propagate(f: &Formula, a: &mut Assignments, s: &mut bool, d: &mut usize, trail: &mut Trail) -> SatState {
     let mut i = 0;
     let mut out = SatState::Sat;
     while i < f.clauses.len() {
         let clause = f.clauses.index(i);
         match check_if_unit(clause, a) {
             SatState::Unit(lit) => {
-                add_to_worklist(
-                    s,
-                    a,
-                    Lit {
-                        idx: lit.idx,
-                        polarity: lit.polarity,
-                    },
-                );
+                set_assignment(a, lit, *d, trail);
+                *s = true;
             }
             SatState::Unsat => { return SatState::Unsat; },
             SatState::Unknown => { out = SatState::Unknown; },
@@ -154,9 +129,11 @@ fn unit_propagate(f: &Formula, a: &mut Assignments, s: &mut Worklist,) -> SatSta
     return out;
 }
 
-fn do_unit_propagation(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> SatState {
-    while let Some(_lit) = w.0.pop() {
-        match unit_propagate(f, a, w) {
+fn do_unit_propagation(f: &Formula, a: &mut Assignments, d: &mut usize, trail: &mut Trail) -> SatState {
+    let mut b = true;
+    while b {
+        b = false;
+        match unit_propagate(f, a, &mut b, d, trail) {
             SatState::Unsat => { return SatState::Unsat; },
             SatState::Sat => { return SatState::Sat; },
             _ => {},
@@ -180,8 +157,22 @@ fn find_unassigned(a: &Assignments) -> Option<usize> {
     None
 }
 
-fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
-    match do_unit_propagation(f, a, w) {
+fn cancel_until(a: &mut Assignments, t: &mut Trail, decisionlevel: usize, level: usize) {
+    let mut i: usize = decisionlevel;
+    while i > level {
+        let decisions = t.0.pop().unwrap();
+        let mut j: usize = 0;
+        while j < decisions.len() {
+            let lit = decisions.index(j);
+            *a.0.index_mut(lit.idx) = None;
+            j += 1;
+        }
+        i -= 1;
+    }
+}
+
+fn inner(f: &Formula, a: &mut Assignments, d: &mut usize, trail: &mut Trail) -> bool {
+    match do_unit_propagation(f, a, d, trail) {
         SatState::Unsat => { return false; },
         SatState::Sat => { return true; },
         _ => {},
@@ -193,24 +184,19 @@ fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
     } else {
         let unassigned_idx = res.unwrap();
         let mut a_cloned = a.clone();
-        let mut w_cloned = w.clone();
-        add_to_worklist(
-            w,
-            a,
-            Lit {
-                idx: unassigned_idx,
-                polarity: true,
-            },
+        set_assignment(&mut a_cloned, Lit {
+            idx: unassigned_idx,
+            polarity: true},
+            *d,
+            trail,
+    );
+        set_assignment(a, Lit {
+            idx: unassigned_idx,
+            polarity: false},
+            *d,
+            trail,
         );
-        add_to_worklist(
-            &mut w_cloned,
-            &mut a_cloned,
-            Lit {
-                idx: unassigned_idx,
-                polarity: false,
-            },
-        );
-        return inner(f, a, w) || inner(f, &mut a_cloned, &mut w_cloned);
+        return inner(f, a, d, trail) || inner(f, &mut a_cloned, d, trail);
     }
 }
 
@@ -222,11 +208,6 @@ fn init_assignments(f: &Formula) -> Assignments {
         i += 1
     }
     Assignments(assign)
-}
-
-fn init_worklist(_f: &Formula) -> Worklist {
-    let litvec: Vec<Lit> = Vec::new();
-    Worklist(litvec)
 }
 
 /// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
@@ -265,6 +246,5 @@ pub fn solver(f: &Formula) -> bool {
         return true;
     }
     let mut assignments = init_assignments(f);
-    let mut worklist = init_worklist(f);
-    inner(f, &mut assignments, &mut worklist)
+    inner(f, &mut assignments, &mut 0, &mut Trail(Vec::new()))
 }
