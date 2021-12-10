@@ -46,6 +46,12 @@ pub struct Formula {
     clauses: Vec<Clause>,
     num_vars: usize,
 }
+enum SatState {
+    Unsat,
+    Sat,
+    Unknown,
+    Unit(Lit),
+}
 
 impl Worklist {
     fn clone_lit_vector(&self, v: &Vec<Lit>) -> Vec<Lit> {
@@ -84,10 +90,10 @@ impl Assignments {
 }
 
 
-fn check_if_unit(c: &Clause, a: &Assignments) -> Option<Lit> {
+fn check_if_unit(c: &Clause, a: &Assignments) -> SatState {
     let mut i = 0;
     let mut unassigned = 0;
-    let mut outlit = None;
+    let mut outlit = SatState::Unsat;
     while i < c.0.len() {
         let lit = c.0.index(i);
         let res = a.0.index(lit.idx);
@@ -95,14 +101,14 @@ fn check_if_unit(c: &Clause, a: &Assignments) -> Option<Lit> {
             Some(x) => {
                 // false, false || true, true -> clause is SAT
                 if lit.polarity == *x {
-                    return None;
+                    return SatState::Sat;
                 }
             }
             None => {
                 if unassigned >= 1 {
-                    return None;
+                    return SatState::Unknown;
                 }
-                outlit = Some(Lit {
+                outlit = SatState::Unit(Lit {
                     idx: lit.idx,
                     polarity: lit.polarity,
                 }); // TODO fix
@@ -114,77 +120,6 @@ fn check_if_unit(c: &Clause, a: &Assignments) -> Option<Lit> {
     return outlit;
 }
 
-/// Checks if the clause is satisfied.
-/// `true` means the clause is satisfied.
-/// `false` means the clause is unsatisfied(empty clause) or that it contains
-/// unassigned variables.
-fn check_sat(clause: &Clause, a: &Assignments) -> bool {
-    let mut i = 0;
-    while i < clause.0.len() {
-        let lit = clause.0.index(i);
-        let res = a.0.index(lit.idx);
-        match res {
-            Some(x) => {
-                // false, false || true, true -> clause is SAT
-                if lit.polarity == *x {
-                    return true;
-                }
-            }
-            None => {} // continue
-        }
-        i += 1;
-    }
-    return false;
-}
-
-/// Checks if the clause is empty.
-fn check_empty(clause: &Clause, a: &Assignments) -> bool {
-    let mut i = 0;
-    while i < clause.0.len() {
-        let lit = clause.0.index(i);
-        let res = a.0.index(lit.idx);
-        match res {
-            Some(x) => {
-                // false, false || true, true -> clause is SAT
-                if lit.polarity == *x {
-                    return false;
-                }
-            }
-            None => {
-                return false;
-            } // May become SAT
-        }
-        i += 1;
-    }
-    return true;
-}
-
-fn contains_empty(f: &Formula, a: &Assignments) -> bool {
-    let mut i = 0;
-    while i < f.clauses.len() {
-        let clause = f.clauses.index(i);
-        let res = check_empty(clause, a);
-        if res {
-            return true;
-        }
-        i += 1
-    }
-    return false;
-}
-
-fn consistent(f: &Formula, a: &Assignments) -> bool {
-    let mut i = 0;
-    while i < f.clauses.len() {
-        let clause = f.clauses.index(i);
-        let res = check_sat(clause, a);
-        if !res {
-            return false;
-        }
-        i += 1
-    }
-    return true;
-}
-
 fn set_assignment(a: &mut Assignments, l: Lit) {
     *a.0.index_mut(l.idx) = Some(l.polarity);
 }
@@ -194,15 +129,15 @@ fn add_to_worklist(w: &mut Worklist, a: &mut Assignments, l: Lit) {
     set_assignment(a, l);
 }
 
-// We could jump back if clause is found to be unsat hmm.
-fn unit_propagate(f: &Formula, a: &mut Assignments, w: &mut Worklist) {
+fn unit_propagate(f: &Formula, a: &mut Assignments, s: &mut Worklist,) -> SatState {
     let mut i = 0;
+    let mut out = SatState::Sat;
     while i < f.clauses.len() {
         let clause = f.clauses.index(i);
         match check_if_unit(clause, a) {
-            Some(lit) => {
+            SatState::Unit(lit) => {
                 add_to_worklist(
-                    w,
+                    s,
                     a,
                     Lit {
                         idx: lit.idx,
@@ -210,16 +145,24 @@ fn unit_propagate(f: &Formula, a: &mut Assignments, w: &mut Worklist) {
                     },
                 );
             }
-            None => {}
+            SatState::Unsat => { return SatState::Unsat; },
+            SatState::Unknown => { out = SatState::Unknown; },
+            _ => {}
         }
         i += 1
     }
+    return out;
 }
 
-fn do_unit_propagation(f: &Formula, a: &mut Assignments, w: &mut Worklist) {
+fn do_unit_propagation(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> SatState {
     while let Some(_lit) = w.0.pop() {
-        unit_propagate(f, a, w);
+        match unit_propagate(f, a, w) {
+            SatState::Unsat => { return SatState::Unsat; },
+            SatState::Sat => { return SatState::Sat; },
+            _ => {},
+        }
     }
+    return SatState::Unknown;
 }
 
 fn find_unassigned(a: &Assignments) -> Option<usize> {
@@ -238,12 +181,10 @@ fn find_unassigned(a: &Assignments) -> Option<usize> {
 }
 
 fn inner(f: &Formula, a: &mut Assignments, w: &mut Worklist) -> bool {
-    do_unit_propagation(f, a, w);
-    if consistent(f, a) {
-        return true;
-    }
-    if contains_empty(f, a) {
-        return false;
+    match do_unit_propagation(f, a, w) {
+        SatState::Unsat => { return false; },
+        SatState::Sat => { return true; },
+        _ => {},
     }
     let res = find_unassigned(a);
     if res == None {

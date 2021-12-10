@@ -1,9 +1,7 @@
 use no_creusot::parser::parse_cnf;
 use no_creusot::solver::preproc_and_solve;
-//use sat::solver::dpll;
 
 use clap::{crate_authors, App, AppSettings, Arg};
-
 
 fn main() {
     let matches = App::new("\nA minimal SAT solver with no name")
