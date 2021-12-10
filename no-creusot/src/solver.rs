@@ -1,4 +1,4 @@
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 struct Lit {
     idx: usize,
     polarity: bool,
@@ -71,17 +71,17 @@ fn increase_decision_level(trail: &mut Trail, decisionlevel: &mut usize) {
 
 fn set_assignment(a: &mut Assignments, l: Lit, decisionlevel: usize, trail: &mut Trail) {
     a.0[l.idx] = Some(l.polarity);
-    //trail.0.index_mut(decisionlevel).push(l);
+    trail.0[decisionlevel].push(l);
 }
 
-fn unit_propagate(f: &Formula, a: &mut Assignments, s: &mut bool, d: &mut usize, trail: &mut Trail) -> SatState {
+fn unit_propagate(f: &Formula, a: &mut Assignments, s: &mut bool, d: usize, trail: &mut Trail) -> SatState {
     let mut i = 0;
     let mut out = SatState::Sat;
     while i < f.clauses.len() {
         let clause = &f.clauses[i];
         match check_if_unit(clause, a) {
             SatState::Unit(lit) => {
-                set_assignment(a, lit, *d, trail);
+                set_assignment(a, lit, d, trail);
                 *s = true;
             }
             SatState::Unsat => { return SatState::Unsat; },
@@ -93,7 +93,7 @@ fn unit_propagate(f: &Formula, a: &mut Assignments, s: &mut bool, d: &mut usize,
     return out;
 }
 
-fn do_unit_propagation(f: &Formula, a: &mut Assignments, d: &mut usize, trail: &mut Trail) -> SatState {
+fn do_unit_propagation(f: &Formula, a: &mut Assignments, d: usize, trail: &mut Trail) -> SatState {
     let mut b = true;
     while b {
         b = false;
@@ -121,10 +121,10 @@ fn find_unassigned(a: &Assignments) -> Option<usize> {
     None
 }
 
-fn cancel_until(a: &mut Assignments, t: &mut Trail, decisionlevel: usize, level: usize) {
+fn cancel_until(a: &mut Assignments, trail: &mut Trail, decisionlevel: usize, level: usize) {
     let mut i: usize = decisionlevel;
     while i > level {
-        let decisions = t.0.pop().unwrap();
+        let decisions = trail.0.pop().unwrap();
         let mut j: usize = 0;
         while j < decisions.len() {
             let lit = decisions[j];
@@ -135,7 +135,7 @@ fn cancel_until(a: &mut Assignments, t: &mut Trail, decisionlevel: usize, level:
     }
 }
 
-fn inner(f: &Formula, a: &mut Assignments, d: &mut usize, trail: &mut Trail) -> bool {
+fn inner(f: &Formula, a: &mut Assignments, d: usize, trail: &mut Trail) -> bool {
     match do_unit_propagation(f, a, d, trail) {
         SatState::Unsat => { return false; },
         SatState::Sat => { return true; },
@@ -147,20 +147,26 @@ fn inner(f: &Formula, a: &mut Assignments, d: &mut usize, trail: &mut Trail) -> 
         panic!();
     } else {
         let unassigned_idx = res.unwrap();
-        let mut a_cloned = a.clone();
-        set_assignment(&mut a_cloned, Lit {
-            idx: unassigned_idx,
-            polarity: true},
-            *d,
-            trail,
-    );
+        trail.0.push(Vec::new());
         set_assignment(a, Lit {
             idx: unassigned_idx,
             polarity: false},
-            *d,
+            d+1,
             trail,
         );
-        return inner(f, a, d, trail) || inner(f, &mut a_cloned, d, trail);
+        if inner(f, a, d+1, trail) {
+            return true;
+        }
+        else {
+            cancel_until(a, trail, trail.0.len(), d+1);
+            trail.0.push(Vec::new());
+            set_assignment(a, Lit {
+                idx: unassigned_idx,
+                polarity: true},
+                d+1,
+                trail);
+            return inner(f, a, d+1, trail);
+        }
     }
 }
 
@@ -210,5 +216,7 @@ pub fn solver(f: &Formula) -> bool {
         return true;
     }
     let mut assignments = init_assignments(f);
-    inner(f, &mut assignments, &mut 0, &mut Trail(Vec::new()))
+    let mut t_vec = Vec::new();
+    t_vec.push(Vec::new());
+    inner(f, &mut assignments, 0, &mut Trail(t_vec))
 }
