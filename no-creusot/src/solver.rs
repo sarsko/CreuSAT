@@ -1,13 +1,15 @@
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct Lit {
     idx: usize,
     polarity: bool,
 }
 
 impl Lit {
+    // Gets the index of the literal in the representation used for the watchlist
     pub fn to_watchidx(&self) -> usize {
         self.idx * 2 + if self.polarity { 0 } else { 1 }
     }
+    // Gets the index of the literal of the opposite polarity(-self) in the representation used for the watchlist
     pub fn to_neg_watchidx(&self) -> usize {
         self.idx * 2 + if self.polarity { 1 } else { 0 }
     }
@@ -71,6 +73,7 @@ impl Watches {
     }
 
     // This requires the literal to be watched, otherwise it will panic
+    // This method should be updated as we usually know where to look
     pub fn update_watch(&mut self, old_lit: Lit, new_lit: Lit, cref: usize) {
         use std::mem::take; 
         let mut i = 0;
@@ -157,8 +160,6 @@ fn contains_empty(f: &Formula, a: &Assignments) -> bool {
     return false;
 }
 
-
-
 fn check_if_unit(c: &Clause, a: &Assignments) -> SatState {
     let mut i = 0;
     let mut unassigned = 0;
@@ -204,32 +205,70 @@ fn enq_assignment(a: &mut Assignments, l: Lit, decisionlevel: usize, trail: &mut
     trail.0[decisionlevel].push(l);
 }
 
-fn unit_propagate(f: &Formula, a: &mut Assignments, d: usize, trail: &mut Trail, watches: &mut Watches) -> SatState {
+// This got pretty ugly with the `j+=1` and `continue` stuff.
+// Requires all clauses to be at least binary.
+fn unit_propagate(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Trail, watches: &mut Watches) -> SatState {
     let mut i = 0;
-    let mut out = SatState::Unknown;
-    while true {
+    loop {
         let mut to_enq = Vec::new();
-        //println!("{:?}", trail.0[d]);
-        println!("{:?}", d);
         while i < trail.0[d].len() {
-            //println!("{:?}", i);
             let mut j = 0;
             // Get the enqueued literal
             let lit = trail.0[d][i];
             // Set it as true
             set_assignment(a, lit, d, trail);
             // Find all the clauses that could have become unit(those that watch for this assignment)
-            while j < watches.watches[lit.to_watchidx()].len() {
-                let clause = &f.clauses[watches.watches[lit.to_watchidx()][j].cref];
-                match check_if_unit(clause, a) {
-                    SatState::Unit(lit) => {
-                        // This has now become unit and we need to enqueue it
-                        to_enq.push(lit);
+            'outer: while j < watches.watches[lit.to_watchidx()].len() {
+                let cref = watches.watches[lit.to_watchidx()][j].cref;
+                let first_lit = f.clauses[cref].0[0];
+                if a.0[first_lit.idx] == Some(lit.polarity) {
+                    // First watched literal is sat
+                    j += 1;
+                    continue;
+                }
+                let second_lit = f.clauses[cref].0[1];
+                if a.0[second_lit.idx] == Some(lit.polarity) {
+                    // Second watched literal is sat
+                    // We swap to make it faster the next time
+                    f.clauses[cref].0.swap(0, 1);
+                    j += 1;
+                    continue;
+                }
+                assert!(lit == first_lit || lit == second_lit);
+                // At this point we know that lit is not sat, and that none of the watched literals are sat
+                let mut k = 2;
+                while k < f.clauses[cref].0.len() {
+                    let curr_lit = f.clauses[cref].0[k];
+                    if a.0[curr_lit.idx] == Some(lit.polarity) {
+                        // Some other literal was true -> we swap it to the first place and watch it
+                        f.clauses[cref].0.swap(0, k);
+                        watches.update_watch(lit, curr_lit, cref);
+                        j += 1;
+                        continue 'outer;
                     }
-                    SatState::Unsat => { return SatState::Unsat; },
-                    SatState::Uno(new_lit) => {
-                        watches.update_watch(lit, new_lit, watches.watches[lit.to_watchidx()][j].cref)}, // update watches
-                    _ => {}
+                    else if a.0[curr_lit.idx] == None {
+                        if first_lit == lit {
+                            f.clauses[cref].0.swap(0, k);
+                        }
+                        else {
+                            f.clauses[cref].0.swap(1, k);
+                        }
+                        // Remove the watch on lit and add a watch on the new lit
+                        watches.update_watch(lit, curr_lit, cref);
+                        j += 1;
+                        continue 'outer;
+                    }
+                    k += 1;
+                }
+                // If we have gotten here, the clause is either all false or unit
+                if a.0[second_lit.idx] == None {
+                    to_enq.push(second_lit);
+                }
+                else if a.0[first_lit.idx] == None {
+                    to_enq.push(first_lit);
+                }
+                else {
+                    return SatState::Unsat; // Here we will generate a conflict in the future
                 }
                 j += 1;
             }
@@ -238,18 +277,17 @@ fn unit_propagate(f: &Formula, a: &mut Assignments, d: usize, trail: &mut Trail,
         let mut j = 0;
         // For all of the facts learned, enqueue them
         while j < to_enq.len() {
-            let lit = to_enq[j];
-            enq_assignment(a, lit, d, trail);
+            enq_assignment(a, to_enq[j], d, trail);
             j += 1;
         }
         if j == 0 {
             break;
         }
     }
-    return out;
+    return SatState::Unknown;
 }
 
-fn do_unit_propagation(f: &Formula, a: &mut Assignments, d: usize, trail: &mut Trail, watches: &mut Watches) -> SatState {
+fn do_unit_propagation(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Trail, watches: &mut Watches) -> SatState {
     match unit_propagate(f, a, d, trail, watches) {
         SatState::Unsat => { return SatState::Unsat; },
         SatState::Sat => { return SatState::Sat; },
@@ -285,7 +323,7 @@ fn cancel_until(a: &mut Assignments, trail: &mut Trail, decisionlevel: usize, le
     }
 }
 
-fn inner(f: &Formula, a: &mut Assignments, d: usize, trail: &mut Trail, watches: &mut Watches) -> bool {
+fn inner(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Trail, watches: &mut Watches) -> bool {
     match do_unit_propagation(f, a, d, trail, watches) {
         SatState::Unsat => { return false; },
         SatState::Sat => { return true; },
@@ -360,10 +398,10 @@ pub fn preproc_and_solve(
         }
         formula.clauses.push(currclause);
     }
-    return solver(&formula);
+    return solver(&mut formula);
 }
 
-pub fn solver(f: &Formula) -> bool {
+pub fn solver(f: &mut Formula) -> bool {
     if f.num_vars == 0 {
         return true;
     }
