@@ -1,5 +1,5 @@
-use no_creusot::parser::parse_cnf;
-use no_creusot::solver::preproc_and_solve;
+use no_creusot::parser::{parse_cnf, preproc_and_solve};
+//use no_creusot::solver::preproc_and_solve;
 
 use clap::{crate_authors, App, AppSettings, Arg};
 

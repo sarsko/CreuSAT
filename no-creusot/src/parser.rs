@@ -3,6 +3,10 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 use crate::types::*;
+use crate::solver::*;
+use crate::clause::*;
+use crate::formula::*;
+use crate::lit::*;
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where
@@ -57,4 +61,35 @@ pub fn parse_cnf(infile: &str) -> (Clauses, usize) {
         panic!("File not found!");
     }
     return (out_clauses, num_literals as usize);
+}
+
+/// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
+pub fn preproc_and_solve(
+    clauses: &mut std::vec::Vec<std::vec::Vec<i32>>,
+    num_literals: usize,
+) -> bool {
+    let mut formula = Formula {
+        clauses: Vec::new(),
+        num_vars: num_literals,
+    };
+    for clause in clauses {
+        let mut currclause = Clause(Vec::new());
+        for lit in clause {
+            if *lit < 0 {
+                let new_lit = Lit {
+                    idx: ((lit.abs() - 1) as usize),
+                    polarity: false,
+                };
+                currclause.0.push(new_lit);
+            } else {
+                let new_lit = Lit {
+                    idx: ((*lit - 1) as usize),
+                    polarity: true,
+                };
+                currclause.0.push(new_lit);
+            }
+        }
+        formula.clauses.push(currclause);
+    }
+    return solver(&mut formula);
 }
