@@ -13,6 +13,12 @@ impl Lit {
     pub fn to_neg_watchidx(&self) -> usize {
         self.idx * 2 + if self.polarity { 1 } else { 0 }
     }
+    pub fn is_sat(&self, assignment: &Assignments) -> bool {
+        match assignment.0[self.idx] {
+            Some(val) => val == self.polarity,
+            None => false,
+        }
+    }
 }
 struct Clause(Vec<Lit>);
 struct Assignments(Vec<Option<bool>>);
@@ -45,11 +51,13 @@ struct WatchesO<'a> {
 
 // Lets try this scheme and see how well it fares
 // Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
+#[derive(Debug, Default)]
 struct Watcher {
     cref: usize,
     //blocker: Lit,
 }
 
+#[derive(Debug, Default)]
 struct Watches {
     watches: Vec<Vec<Watcher>>,
 }
@@ -75,16 +83,78 @@ impl Watches {
     // This requires the literal to be watched, otherwise it will panic
     // This method should be updated as we usually know where to look
     pub fn update_watch(&mut self, old_lit: Lit, new_lit: Lit, cref: usize) {
-        use std::mem::take; 
+        //assert!(old_lit != new_lit);
         let mut i = 0;
-        while i < self.watches[old_lit.to_watchidx()].len() {
-            if self.watches[old_lit.to_watchidx()][i].cref == cref {
+        let old_idx = old_lit.to_watchidx();
+        while i < self.watches[old_idx].len() {
+            if self.watches[old_idx][i].cref == cref {
                 break;
             }
             i += 1;
         }
-        assert!(self.watches[old_lit.to_watchidx()][i].cref == cref);
-        self.watches[new_lit.to_neg_watchidx()] = take(&mut self.watches[old_lit.to_watchidx()]);
+        //assert!(self.watches[old_idx][i].cref == cref);
+
+        //self.check_invariant("UPDATE_BEFORE");
+        let old = self.watches[old_idx].remove(i);
+        self.watches[new_lit.to_neg_watchidx()].push(old);
+        //self.check_invariant("UPDATE_AFTER");
+    }
+
+    // Debug function that checks that all the watches are for one of the first two literals of each clause
+    pub fn check_only_first_two_watched(&self, f: &Formula, s: &str) {
+        let mut i = 0;
+        while i < self.watches.len() {
+            let mut j = 0;
+            while j < self.watches[i].len() {
+                let cref = self.watches[i][j].cref;
+                let lit_idx = i / 2;
+                if f.clauses[cref].0[0].idx != lit_idx && f.clauses[cref].0[1].idx != lit_idx {
+                    panic!("{}\n
+                    There exists a watched literal which is not one of the first two literals in the clause!\n
+                    Clause: {:?}\n
+                    Index: {}\n", s, f.clauses[cref].0, lit_idx);
+                }
+                j += 1;
+            }
+            i += 1;
+        }
+    }
+
+    // Debug function to check that the watchlist is correct
+    // Doesnt check that all are watched or that the watched lits are the first in the clause
+    pub fn check_invariant(&self, s: &str) {
+        use std::collections::HashMap;
+        let mut seen = HashMap::new();
+        // Check that each literal only has two watches
+        for i in 0..self.watches.len() {
+            for j in 0..self.watches[i].len() {
+                let cref = self.watches[i][j].cref;
+                if seen.contains_key(&cref) {
+                    if seen[&cref] > 1 {
+                        panic!("{}\nThere exists more than two watched literals for the clause with cref: {:?}", s, cref);
+                    }
+                    seen.insert(cref, seen[&cref] + 1);
+                }
+                else { 
+                    seen.insert(cref, 1);
+                }
+            }
+        }
+        // Check for 2 of the same watched literal for each clause
+        for i in 0..self.watches.len() {
+            let mut seen = HashMap::new();
+            for j in 0..self.watches[i].len() {
+                let cref = self.watches[i][j].cref;
+                if seen.contains_key(&cref) {
+                    panic! ("{}\nThere exists duplicate watching of the same literal for the clause with cref: {:?}", s, cref);
+                }
+                else { 
+                    seen.insert(cref, 1);
+                }
+            }
+        }
+
+        
     }
 
     // The whole org of things should be better to make sure that len 0 and len 1 never occur, and len 2 should be treated as a special case
@@ -106,6 +176,8 @@ impl Watches {
             }
             i += 1;
         }
+        self.check_invariant(&"INIT"); // Debug assertion
+        self.check_only_first_two_watched(f, &"RIGHT AFTER INIT"); // Debug assertion
     }
 }
 
@@ -208,81 +280,80 @@ fn enq_assignment(a: &mut Assignments, l: Lit, decisionlevel: usize, trail: &mut
 // This got pretty ugly with the `j+=1` and `continue` stuff.
 // Requires all clauses to be at least binary.
 fn unit_propagate(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Trail, watches: &mut Watches) -> SatState {
+    //watches.check_only_first_two_watched(f, &"TOP OF UNIT PROP");
     let mut i = 0;
-    loop {
-        let mut to_enq = Vec::new();
-        while i < trail.0[d].len() {
-            let mut j = 0;
-            // Get the enqueued literal
-            let lit = trail.0[d][i];
-            // Set it as true
-            set_assignment(a, lit, d, trail);
-            // Find all the clauses that could have become unit(those that watch for this assignment)
-            'outer: while j < watches.watches[lit.to_watchidx()].len() {
-                let cref = watches.watches[lit.to_watchidx()][j].cref;
-                let first_lit = f.clauses[cref].0[0];
-                if a.0[first_lit.idx] == Some(lit.polarity) {
-                    // First watched literal is sat
-                    j += 1;
-                    continue;
-                }
-                let second_lit = f.clauses[cref].0[1];
-                if a.0[second_lit.idx] == Some(lit.polarity) {
-                    // Second watched literal is sat
-                    // We swap to make it faster the next time
-                    f.clauses[cref].0.swap(0, 1);
-                    j += 1;
-                    continue;
-                }
-                assert!(lit == first_lit || lit == second_lit);
-                // At this point we know that lit is not sat, and that none of the watched literals are sat
-                let mut k = 2;
-                while k < f.clauses[cref].0.len() {
-                    let curr_lit = f.clauses[cref].0[k];
-                    if a.0[curr_lit.idx] == Some(lit.polarity) {
-                        // Some other literal was true -> we swap it to the first place and watch it
-                        f.clauses[cref].0.swap(0, k);
-                        watches.update_watch(lit, curr_lit, cref);
-                        j += 1;
-                        continue 'outer;
-                    }
-                    else if a.0[curr_lit.idx] == None {
-                        if first_lit == lit {
-                            f.clauses[cref].0.swap(0, k);
-                        }
-                        else {
-                            f.clauses[cref].0.swap(1, k);
-                        }
-                        // Remove the watch on lit and add a watch on the new lit
-                        watches.update_watch(lit, curr_lit, cref);
-                        j += 1;
-                        continue 'outer;
-                    }
-                    k += 1;
-                }
-                // If we have gotten here, the clause is either all false or unit
-                if a.0[second_lit.idx] == None {
-                    to_enq.push(second_lit);
-                }
-                else if a.0[first_lit.idx] == None {
-                    to_enq.push(first_lit);
-                }
-                else {
-                    return SatState::Unsat; // Here we will generate a conflict in the future
-                }
-                j += 1;
-            }
-            i += 1;
-        }
+    while i < trail.0[d].len() {
+        //watches.check_only_first_two_watched(f, &"START OF TRAIL LOOP");
         let mut j = 0;
-        // For all of the facts learned, enqueue them
-        while j < to_enq.len() {
-            enq_assignment(a, to_enq[j], d, trail);
+        // Get the enqueued literal
+        let lit = trail.0[d][i];
+        // Set it as true
+        set_assignment(a, lit, d, trail);
+        // Find all the clauses that could have become unit(those that watch for this assignment)
+        'outer: while j <  watches.watches[lit.to_watchidx()].len() {
+            //watches.check_only_first_two_watched(f, &"TOP OF OUTER");
+            let cref = watches.watches[lit.to_watchidx()][j].cref;
+            let first_lit = f.clauses[cref].0[0];
+            if first_lit.is_sat(&a) {
+                // First watched literal is sat
+                j += 1;
+                continue;
+            }
+            let second_lit = f.clauses[cref].0[1];
+            if second_lit.is_sat(&a) {
+                // Second watched literal is sat
+                // We swap to make it faster the next time
+                f.clauses[cref].0.swap(0, 1);
+                j += 1;
+                continue;
+            }
+            //assert!(lit.idx == first_lit.idx || lit.idx == second_lit.idx);
+            // At this point we know that lit is not sat, and that none of the watched literals are sat
+            let mut k = 2;
+            while k < f.clauses[cref].0.len() {
+                let curr_lit = f.clauses[cref].0[k];
+                if curr_lit.is_sat(&a) {
+                    // Some other literal was true -> we swap it to the first place and watch it
+
+                    // Okay this is cumbersome. I'll look at making it better later.
+                    if lit.idx == first_lit.idx {
+                        f.clauses[cref].0.swap(0, k);
+                    } else {
+                        f.clauses[cref].0.swap(1, k);
+                        f.clauses[cref].0.swap(1, 0);
+                    }
+                    watches.update_watch(lit, curr_lit, cref);
+                    //j += 1;
+                    continue 'outer;
+                }
+                else if a.0[curr_lit.idx] == None {
+                    if first_lit.idx == lit.idx {
+                        f.clauses[cref].0.swap(0, k);
+                    }
+                    else {
+                        //assert!(second_lit.idx == lit.idx);
+                        f.clauses[cref].0.swap(1, k);
+                    }
+                    watches.update_watch(lit, curr_lit, cref);
+                    //j += 1;
+                    continue 'outer;
+                }
+                k += 1;
+            }
+            // If we have gotten here, the clause is either all false or unit
+            //assert!(!(a.0[first_lit.idx] == None && a.0[second_lit.idx] == None));
+            if a.0[first_lit.idx] == None {
+                enq_assignment(a, first_lit, d, trail);
+            }
+            else if a.0[second_lit.idx] == None {
+                enq_assignment(a, second_lit, d, trail);
+            }
+            else {
+                return SatState::Unsat; // Here we will generate a conflict in the future
+            }
             j += 1;
         }
-        if j == 0 {
-            break;
-        }
+        i += 1;
     }
     return SatState::Unknown;
 }
@@ -324,6 +395,7 @@ fn cancel_until(a: &mut Assignments, trail: &mut Trail, decisionlevel: usize, le
 }
 
 fn inner(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Trail, watches: &mut Watches) -> bool {
+    //watches.check_only_first_two_watched(f, &"TOP OF INNER"); // DEBUG
     match do_unit_propagation(f, a, d, trail, watches) {
         SatState::Unsat => { return false; },
         SatState::Sat => { return true; },
