@@ -6,6 +6,7 @@ use crate::trail::*;
 pub struct Assignments(pub Vec<Option<bool>>);
 
 impl Assignments {
+    #[allow(dead_code)]
     fn clone_assignment_vector(&self, v: &Vec<Option<bool>>) -> Vec<Option<bool>> {
         let mut out = Vec::new();
         let mut i = 0;
@@ -16,13 +17,14 @@ impl Assignments {
         }
         return out;
     }
+
+    #[allow(dead_code)]
     fn clone(&self) -> Self {
         Assignments(self.clone_assignment_vector(&self.0))
     }
 
-    pub fn set_assignment(&mut self, l: Lit, decisionlevel: usize, trail: &mut Trail) {
+    pub fn set_assignment(&mut self, l: Lit) {
         self.0[l.idx] = Some(l.polarity);
-        //trail.0[decisionlevel].push(l);
     }
 
     pub fn init_assignments(f: &Formula) -> Assignments {
@@ -50,7 +52,6 @@ impl Assignments {
         None
     }
 
-    
     pub fn cancel_until(&mut self, trail: &mut Trail, decisionlevel: usize, level: usize) {
         let mut i: usize = decisionlevel;
         while i > level {

@@ -1,21 +1,20 @@
 use crate::assignments::*;
-use crate::clause::*;
+//use crate::clause::*;
 use crate::formula::*;
 use crate::lit::*;
 use crate::trail::*;
 use crate::watches::*;
 
+#[allow(dead_code)]
 enum SatState {
     Unsat,
     Sat,
     Unknown,
-    Unit(Lit),
 }
 
 // Move unit prop? Dunno where. Is it propagating over the assignments, the formula, or is it its own thing.
 // Currently leaning towards assignments, but it might also be its own thing. Ill have to think some more about it.
 
-// This got pretty ugly with the `j+=1` and `continue` stuff.
 // Requires all clauses to be at least binary.
 fn unit_propagate(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Trail, watches: &mut Watches) -> SatState {
     //watches.check_only_first_two_watched(f, &"TOP OF UNIT PROP");
@@ -26,7 +25,7 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Tr
         // Get the enqueued literal
         let lit = trail.0[d][i];
         // Set it as true
-        a.set_assignment(lit, d, trail);
+        a.set_assignment(lit);
         // Find all the clauses that could have become unit(those that watch for this assignment)
         'outer: while j <  watches.watches[lit.to_watchidx()].len() {
             //watches.check_only_first_two_watched(f, &"TOP OF OUTER");
@@ -53,7 +52,6 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Tr
                 if curr_lit.is_sat(&a) {
                     // Some other literal was true -> we swap it to the first place and watch it
 
-                    // Okay this is cumbersome. I'll look at making it better later.
                     if lit.idx == first_lit.idx {
                         f.clauses[cref].0.swap(0, k);
                     } else {
@@ -79,10 +77,10 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Tr
             // If we have gotten here, the clause is either all false or unit
             //assert!(!(a.0[first_lit.idx] == None && a.0[second_lit.idx] == None));
             if a.0[first_lit.idx] == None {
-                trail.enq_assignment(a, first_lit, d);
+                trail.enq_assignment(first_lit, d);
             }
             else if a.0[second_lit.idx] == None {
-                trail.enq_assignment(a, second_lit, d);
+                trail.enq_assignment(second_lit, d);
             }
             else {
                 return SatState::Unsat; // Here we will generate a conflict in the future
@@ -110,7 +108,7 @@ fn inner(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Trail, watc
     } else {
         let unassigned_idx = res.unwrap();
         trail.0.push(Vec::new());
-        trail.enq_assignment(a, 
+        trail.enq_assignment(
             Lit {
             idx: unassigned_idx,
             polarity: false },
@@ -122,7 +120,7 @@ fn inner(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Trail, watc
         else {
             a.cancel_until(trail, trail.0.len(), d+1);
             trail.0.push(Vec::new());
-            trail.enq_assignment(a, 
+            trail.enq_assignment(
                 Lit {
                 idx: unassigned_idx,
                 polarity: true },
