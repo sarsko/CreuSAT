@@ -1,14 +1,15 @@
 use crate::assignments::*;
-//use crate::clause::*;
+use crate::clause::*;
 use crate::formula::*;
 use crate::lit::*;
 use crate::trail::*;
 use crate::watches::*;
+use crate::conflict_analysis::*;
 
 #[allow(dead_code)]
 enum SatState {
     Unsat,
-    Sat,
+    Sat(Assignments),
     Unknown,
 }
 
@@ -16,20 +17,21 @@ enum SatState {
 // Currently leaning towards assignments, but it might also be its own thing. Ill have to think some more about it.
 
 // Requires all clauses to be at least binary.
-fn unit_propagate(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Trail, watches: &mut Watches) -> SatState {
+// Returns either () if the unit propagation went fine, or a cref if a conflict was found.
+fn unit_propagate(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
     //watches.check_only_first_two_watched(f, &"TOP OF UNIT PROP");
     let mut i = 0;
-    while i < trail.0[d].len() {
+    while i < trail.trail[d].len() {
         //watches.check_only_first_two_watched(f, &"START OF TRAIL LOOP");
         let mut j = 0;
         // Get the enqueued literal
-        let lit = trail.0[d][i];
-        // Set it as true
-        a.set_assignment(lit);
+        let lit = trail.trail[d][i];
+        //println!("Clauses: {:?}", f.clauses);
         // Find all the clauses that could have become unit(those that watch for this assignment)
         'outer: while j <  watches.watches[lit.to_watchidx()].len() {
             //watches.check_only_first_two_watched(f, &"TOP OF OUTER");
             let cref = watches.watches[lit.to_watchidx()][j].cref;
+            //println!("Propagating clause: {:?}", f.clauses[cref].0);
             let first_lit = f.clauses[cref].0[0];
             if first_lit.is_sat(&a) {
                 // First watched literal is sat
@@ -69,6 +71,7 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Tr
                         //assert!(second_lit.idx == lit.idx);
                         f.clauses[cref].0.swap(1, k);
                     }
+                    f.clauses[cref].0.swap(1, 0);
                     watches.update_watch(lit, curr_lit, cref);
                     continue 'outer;
                 }
@@ -77,56 +80,139 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Tr
             // If we have gotten here, the clause is either all false or unit
             //assert!(!(a.0[first_lit.idx] == None && a.0[second_lit.idx] == None));
             if a.0[first_lit.idx] == None {
-                trail.enq_assignment(first_lit, d);
+                //println!("(first)Assigning in unit_propagate: Lit: {:?}, cref: {:?}", first_lit, cref);
+                a.set_assignment(first_lit);
+                trail.enq_assignment(first_lit, d, Reason::Long(cref));
             }
             else if a.0[second_lit.idx] == None {
-                trail.enq_assignment(second_lit, d);
+                //println!("(second)Assigning in unit_propagate: Lit: {:?}, cref: {:?}", second_lit, cref);
+                f.clauses[cref].0.swap(1, 0);
+                a.set_assignment(second_lit);
+                trail.enq_assignment(second_lit, d, Reason::Long(cref));
             }
             else {
-                return SatState::Unsat; // Here we will generate a conflict in the future
+                //println!("{:?}", lit);
+                /*
+                while i < trail.trail[d].len() - 1 {
+                    trail.trail[d].pop();
+                }
+                */
+                //println!("Returning in unit_propagate: {:?}", cref);
+                return Err(cref);
             }
             j += 1;
         }
         i += 1;
     }
-    return SatState::Unknown;
+    Ok(())
 }
 
-fn inner(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Trail, watches: &mut Watches) -> bool {
+enum UnitPropResult {
+    False,
+    Continue,
+    Break,
+}
+
+
+fn inner(f: &mut Formula, a: &mut Assignments, decisionlevel: usize, trail: &mut Trail, watches: &mut Watches) -> bool {
     //watches.check_only_first_two_watched(f, &"TOP OF INNER"); // DEBUG
-    match unit_propagate(f, a, d, trail, watches) {
-        SatState::Unsat => { return false; },
-        SatState::Sat => { return true; },
-        _ => {},
+    let mut dlevel = decisionlevel;
+    loop {
+        let up_res = match unit_propagate(f, a, dlevel, trail, watches) {
+            Ok(_) => { UnitPropResult::Break },
+            Err(cref) => {
+                // We have a conflict
+                if decisionlevel == 0 {
+                    return false;
+                }
+                else {
+                    let res = analyze_conflict(f, a, trail, dlevel, cref);
+                    match res {
+                        Conflict::Ground => {
+                            //println!("{:?}", trail.trail);
+                            //println!("Ground");
+                            return false;
+                        },
+                        Conflict::Unit(lit) => {
+                            //println!("UNIT; LEARNED FACT: {:?}", lit);
+                            //println!("{:?}", trail.trail);
+                            a.cancel_until(trail, trail.trail.len(), 1); // or is it 0?
+                            //trail.trail.push(Vec::new());
+                            a.set_assignment(lit);
+
+                            trail.enq_assignment(
+                                lit,
+                                trail.trail.len()-1,
+                                Reason::Unit,
+                            );
+                            //println!("{:?}", trail.trail);
+                            dlevel = trail.trail.len() - 1 ;
+                        }
+                        Conflict::Learned(level, lit, clause) => {
+                            //println!("{:?}", trail.trail);
+                            a.cancel_until(trail, trail.trail.len(), level); // +- 1?
+                            trail.trail.push(Vec::new());
+                            //println!("{:?}", trail.trail);
+                            a.set_assignment(lit);
+                            let cref = f.add_clause(&Clause(clause), watches);
+
+                            trail.enq_assignment(
+                                lit,
+                                trail.trail.len()-1, // Is this correct?
+                                Reason::Long(cref), // Unsure
+                            );
+                            dlevel = trail.trail.len() - 1;
+                        }
+                    }
+                UnitPropResult::Continue
+                }
+            },
+        };
+        match up_res {
+            UnitPropResult::Continue => {}
+            UnitPropResult::False => {
+                return false;
+            }
+            UnitPropResult::Break => {
+                break;
+            }
+        }
     }
     let res = a.find_unassigned();
     if res == None {
-        if f.contains_empty(a) {
-            return false;
-        }
+        //println!("Doing the check");
+        return !f.contains_empty(a);
         return true;
     } else {
         let unassigned_idx = res.unwrap();
-        trail.0.push(Vec::new());
+        //println!("Assigning in inner: {:?}", unassigned_idx);
+        trail.trail.push(Vec::new());
+        let lit = Lit { idx: unassigned_idx, polarity: false };
+        a.set_assignment(lit);
         trail.enq_assignment(
-            Lit {
-            idx: unassigned_idx,
-            polarity: false },
-            d+1,
+            lit,
+            dlevel+1,
+            Reason::Decision,
         );
-        if inner(f, a, d+1, trail, watches) {
+        if inner(f, a, dlevel+1, trail, watches) {
             return true;
         }
         else {
-            a.cancel_until(trail, trail.0.len(), d+1);
-            trail.0.push(Vec::new());
-            trail.enq_assignment(
-                Lit {
-                idx: unassigned_idx,
-                polarity: true },
-                d+1,
-            );
-            return inner(f, a, d+1, trail, watches);
+            a.cancel_until(trail, trail.trail.len(), dlevel+1);
+            // The assignment may have become a learned unit clause(a fact), so we have to check whether it is assigned after backtracking
+            if a.0[unassigned_idx] == None {
+                //println!("Second assignment in inner: {:?}", unassigned_idx);
+                //println!("Trail is now {:?}", trail.trail);
+                trail.trail.push(Vec::new());
+                let lit = Lit { idx: unassigned_idx, polarity: true };
+                a.set_assignment(lit);
+                trail.enq_assignment(
+                    lit,
+                    trail.trail.len()-1,
+                    Reason::Decision,
+                );
+            }
+            return inner(f, a, trail.trail.len()-1, trail, watches);
         }
     }
 }
@@ -135,10 +221,7 @@ pub fn solver(f: &mut Formula) -> bool {
     if f.num_vars == 0 {
         return true;
     }
-    let mut assignments = Assignments::init_assignments(f);
-    let mut t_vec = Vec::new();
-    t_vec.push(Vec::new());
     let mut watches = Watches::new(f.num_vars);
     watches.init_watches(f);
-    inner(f, &mut assignments, 0, &mut Trail(t_vec), &mut watches)
+    inner(f, &mut Assignments::init_assignments(f), 0, &mut Trail::new(f.num_vars), &mut watches)
 }

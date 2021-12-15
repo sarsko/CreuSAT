@@ -24,6 +24,10 @@ impl Assignments {
     }
 
     pub fn set_assignment(&mut self, l: Lit) {
+        if !self.0[l.idx].is_none() {
+            panic!("Assignment already set. Attepmting to set {:?}", l);
+        }
+        //assert!(self.0[l.idx].is_none());
         self.0[l.idx] = Some(l.polarity);
     }
 
@@ -55,10 +59,11 @@ impl Assignments {
     pub fn cancel_until(&mut self, trail: &mut Trail, decisionlevel: usize, level: usize) {
         let mut i: usize = decisionlevel;
         while i > level {
-            let decisions = trail.0.pop().unwrap();
+            let decisions = trail.trail.pop().unwrap();
             let mut j: usize = 0;
             while j < decisions.len() {
                 let lit = decisions[j];
+                trail.vardata[lit.idx] = (0, Reason::Undefined);
                 self.0[lit.idx] = None;
                 j += 1;
             }

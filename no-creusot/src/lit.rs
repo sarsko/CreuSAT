@@ -1,6 +1,7 @@
+use std::{ops, fmt};
 use crate::assignments::*;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq)]
 pub struct Lit {
     pub idx: usize,
     pub polarity: bool,
@@ -19,6 +20,27 @@ impl Lit {
         match assignment.0[self.idx] {
             Some(val) => val == self.polarity,
             None => false,
+        }
+    }
+}
+
+impl fmt::Debug for Lit {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        if !self.polarity {
+            write!(f, "¬")?;
+        }
+        write!(f, "{:?}", self.idx)
+    }
+}
+
+impl ops::Not for Lit {
+    type Output = Lit;
+
+    #[inline]
+    fn not(self) -> Lit {
+        Lit {
+            idx: self.idx,
+            polarity: !self.polarity,
         }
     }
 }

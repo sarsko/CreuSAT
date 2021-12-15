@@ -17,13 +17,13 @@ use crate::lit::*;
 
 // Lets try this scheme and see how well it fares
 // Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Watcher {
     pub cref: usize,
     //blocker: Lit,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Watches {
     pub watches: Vec<Vec<Watcher>>,
 }

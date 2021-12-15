@@ -1,6 +1,7 @@
 use crate::lit::*;
 use crate::assignments::*;
 
+#[derive(Debug, Clone)]
 pub struct Clause(pub Vec<Lit>);
 
 impl Clause {
