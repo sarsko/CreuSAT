@@ -16,7 +16,6 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, decisionlev
     if decisionlevel == 0 {
         return Conflict::Ground;
     }
-    assert!(decisionlevel > 0);
     // `seen` should be persistent across calls to `analyze_conflict`.
     // Solved by somehow keeping it in `solver`, either as a buffer or by making
     // conflict analysis a struct which is instatiated once and then kept.
@@ -25,22 +24,17 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, decisionlev
 
     let mut path_c = 0;
     let mut confl = cref;
-    //println!("Entry to analyze - curr trail: {:?}", trail.trail);
     let mut i = trail.trail.len() - 1;
     let mut j = trail.trail[i].len();
     loop {
         let base = if confl == cref {0} else {1};
         let mut k = base;
         let clause = &f.clauses[confl].0;
-        //println!("Confl: {:?}, confl0 {:?}", confl, cref);
-        //println!("Clause: {:?}", clause);
         while k < clause.len() {
             let lit = clause[k];
-            //println!("Base: {:?} Lit: {:?}", base, lit);
             assert!(a.0[lit.idx] != None);
             if !seen[lit.idx] {
                 let level = trail.vardata[lit.idx].0;
-                //println!("Level: {:?}, Curr level: {:?}", level, decisionlevel);
                 if level > 0 {
                     seen[lit.idx] = true;
                     if level >= decisionlevel {
@@ -53,42 +47,29 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, decisionlev
             }
             k += 1;
         }
-        //println!("Trail: {:?}", trail.trail);
         let next = {
             loop { 
                 j -= 1;
                 if seen[trail.trail[i][j].idx] {
                     break;
                 }
-                else {
-                    //println!("Seen");
-                }
-
                 if j == 0 {
                     i -= 1;
                     j = trail.trail[i].len();
                 }
-                //println!("{}, {}", i, j);
             }
             trail.trail[i][j]
         };
-        //println!("Current out_learnt {:?}", out_learnt);
         seen[next.idx] = false;
         // now dlevel = i
         path_c -= 1;
         if path_c <= 0 {
             out_learnt[0] = !next;
-            //println!("Final out_learnt {:?}", out_learnt);
-            //println!("Done");
             break;
         }
         match &trail.vardata[(!next).idx].1 {
-            Long(c) => {
-                confl = *c; //println!("Reason: {}", confl);
-            },
-            Other => {
-                panic!("Error - this has reason: {:?}", Other);
-            }
+            Long(c) => confl = *c,
+            other => panic!("Error - this has reason: {:?}", other),
         }
     }
     if out_learnt.len() == 1 {
@@ -107,4 +88,3 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, decisionlev
         return Conflict::Learned(max_level, out_learnt[0], out_learnt);
     }
 }
-

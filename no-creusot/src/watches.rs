@@ -1,20 +1,6 @@
 use crate::formula::*;
 use crate::lit::*;
 
-// I need to figure out a way to actually encode these in a reasonable way within the Rust type system.
-// Varisat implements the watchers inside the Clauses with a ClauseRef, which is a struct containing u32 which is used for indexing
-//struct WatcherO<'a> {
-    //cref : &'a Clause,
-    // blocker : Lit,
-//}
-
-// Watches is indexed on lit.idx due to hashmaps not being available in Creusot
-// Should really take into account polarity somehow, that will be a TODO for now
-// Watches[lit.idx] -> Vec<Watcher> where each watcher watches a clause that contains the literal
-//struct WatchesO<'a> {
-//    watches: Vec<Vec<&'a WatcherO<'a>>>,
-//}
-
 // Lets try this scheme and see how well it fares
 // Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
 #[derive(Debug)]
