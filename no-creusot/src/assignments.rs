@@ -41,20 +41,20 @@ impl Assignments {
         Assignments(assign)
     }
 
-    pub fn find_unassigned(&self) -> Option<usize> {
+    pub fn find_unassigned_lit(&self) -> Option<Lit> {
         let mut i = 0;
         while i < self.0.len() {
             let curr = self.0[i];
             match curr {
                 Some(_) => {} //continue
                 None => {
-                    return Some(i);
+                    return Some(Lit{ idx: i, polarity: true });
                 }
             }
             i += 1;
         }
         None
-    }
+    }   
 
     pub fn cancel_until(&mut self, trail: &mut Trail, decisionlevel: usize, level: usize) {
         let mut i: usize = decisionlevel;

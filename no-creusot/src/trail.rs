@@ -5,7 +5,6 @@ use crate::lit::*;
 pub enum Reason {
     Undefined,
     Decision,
-    Implied,
     Unit,
     Long(usize),
 }
