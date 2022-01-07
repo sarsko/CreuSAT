@@ -12,7 +12,8 @@ pub enum Conflict {
     Learned(usize, Lit, Vec<Lit>),
 }
 
-pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, decisionlevel: usize, cref: usize) -> Conflict {
+pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
+    let decisionlevel = trail.trail.len() - 1;
     if decisionlevel == 0 {
         return Conflict::Ground;
     }

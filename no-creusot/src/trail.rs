@@ -19,9 +19,10 @@ pub struct Trail {
 }
 
 impl Trail {
-    pub fn enq_assignment(&mut self, l: Lit, decisionlevel: usize, reason: Reason) {
-        self.trail[decisionlevel].push(l);
-        self.vardata[l.idx] = (decisionlevel, reason);
+    pub fn enq_assignment(&mut self, l: Lit, reason: Reason) {
+        let dlevel = self.trail.len() - 1;
+        self.trail[dlevel].push(l);
+        self.vardata[l.idx] = (dlevel, reason);
     }
 
     pub fn new(num_vars: usize) -> Trail {

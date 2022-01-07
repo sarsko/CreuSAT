@@ -11,8 +11,9 @@ use crate::conflict_analysis::*;
 
 // Requires all clauses to be at least binary.
 // Returns either () if the unit propagation went fine, or a cref if a conflict was found.
-fn unit_propagate(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
+fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
     let mut i = 0;
+    let d = trail.trail.len() - 1;
     while i < trail.trail[d].len() {
         let mut j = 0;
         let lit = trail.trail[d][i];
@@ -49,12 +50,12 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Tr
             // If we have gotten here, the clause is either all false or unit
             if a.0[first_lit.idx] == None {
                 a.set_assignment(first_lit);
-                trail.enq_assignment(first_lit, d, Reason::Long(cref));
+                trail.enq_assignment(first_lit, Reason::Long(cref));
             }
             else if a.0[second_lit.idx] == None {
                 f.clauses[cref].0.swap(1, 0);
                 a.set_assignment(second_lit);
-                trail.enq_assignment(second_lit, d, Reason::Long(cref));
+                trail.enq_assignment(second_lit, Reason::Long(cref));
             }
             else {
                 return Err(cref);
@@ -69,29 +70,27 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Tr
 pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit) {
     a.cancel_until(trail, trail.trail.len(), 1);
     a.set_assignment(lit);
-    trail.enq_assignment(lit, trail.trail.len()-1, Reason::Unit);
+    trail.enq_assignment(lit, Reason::Unit);
 }
 
 fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) -> bool {
-    let mut decisionlevel = std::cmp::max(trail.trail.len()-1, 0);
     loop {
         loop {
-            match unit_propagate(f, a, decisionlevel, trail, watches) {
+            let dlevel = trail.trail.len() - 1;
+            match unit_propagate(f, a, trail, watches) {
                 Ok(_) => { break; },
                 Err(cref) => {
-                    match analyze_conflict(f, a, trail, decisionlevel, cref) {
+                    match analyze_conflict(f, a, trail, cref) {
                         Conflict::Ground => { return false; },
                         Conflict::Unit(lit) => {
                             learn_unit(a, trail, lit);
-                            decisionlevel = trail.trail.len() - 1 ;
                         }
                         Conflict::Learned(level, lit, clause) => {
                             a.cancel_until(trail, trail.trail.len(), level);
                             trail.trail.push(Vec::new());
                             a.set_assignment(lit);
                             let cref = f.add_clause(&Clause(clause), watches);
-                            trail.enq_assignment(lit, trail.trail.len()-1, Reason::Long(cref));
-                            decisionlevel = trail.trail.len() - 1;
+                            trail.enq_assignment(lit, Reason::Long(cref));
                         }
                     }
                 },
@@ -100,8 +99,7 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
         if let Some(lit) = a.find_unassigned_lit() {
             trail.trail.push(Vec::new());
             a.set_assignment(lit);
-            decisionlevel += 1;
-            trail.enq_assignment(lit, decisionlevel, Reason::Decision);
+            trail.enq_assignment(lit, Reason::Decision);
         } else {
             return true;
         } 
