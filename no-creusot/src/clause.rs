@@ -1,7 +1,7 @@
 use crate::lit::*;
 use crate::assignments::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Clause(pub Vec<Lit>);
 
 impl Clause {

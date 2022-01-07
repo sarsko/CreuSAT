@@ -30,4 +30,11 @@ impl Formula {
         watches.add_watcher(clause.0[1], cref);
         cref
     }
+
+    // Or people could just make correct cnfs
+    pub fn remove_duplicates(&mut self) {
+        use std::collections::HashSet;
+        let mut uniques = HashSet::new();
+        self.clauses.retain(|e| uniques.insert(e.clone()));
+    }
 }

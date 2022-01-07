@@ -1,5 +1,8 @@
 use crate::formula::*;
 use crate::lit::*;
+use crate::assignments::*;
+use crate::trail::*;
+use crate::solver::*; // TODO move
 
 // Lets try this scheme and see how well it fares
 // Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
@@ -107,22 +110,22 @@ impl Watches {
         }
     }
 
-    // The whole org of things should be better to make sure that len 0 and len 1 never occur, and len 2 should be treated as a special case
-    pub fn init_watches(&mut self, f: &Formula) {
+    pub fn init_watches(&mut self, f: &Formula, trail: &mut Trail, a: &mut Assignments) {
         let mut i = 0;
         while i < f.clauses.len() {
             let clause = &f.clauses[i].0;
             if clause.len() == 0 {
-                panic!("Empty clause");
+                panic!("Empty clause"); // f.contains_empty() has to be called before calling init_watches()
             }
             else if clause.len() == 1 {
-                panic!("Unit clause");
-            }
-            let mut j = 0;
-            while j < 2 {
-                let lit = clause[j];
-                self.add_watcher(lit, i);
-                j += 1;
+                learn_unit(a, trail, clause[0]);
+            } else {
+                let mut j = 0;
+                while j < 2 {
+                    let lit = clause[j];
+                    self.add_watcher(lit, i);
+                    j += 1;
+                }
             }
             i += 1;
         }

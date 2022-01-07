@@ -66,8 +66,14 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, d: usize, trail: &mut Tr
     Ok(())
 }
 
+pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit) {
+    a.cancel_until(trail, trail.trail.len(), 1);
+    a.set_assignment(lit);
+    trail.enq_assignment(lit, trail.trail.len()-1, Reason::Unit);
+}
+
 fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) -> bool {
-    let mut decisionlevel = 0;
+    let mut decisionlevel = std::cmp::max(trail.trail.len()-1, 0);
     loop {
         loop {
             match unit_propagate(f, a, decisionlevel, trail, watches) {
@@ -76,9 +82,7 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
                     match analyze_conflict(f, a, trail, decisionlevel, cref) {
                         Conflict::Ground => { return false; },
                         Conflict::Unit(lit) => {
-                            a.cancel_until(trail, trail.trail.len(), 1);
-                            a.set_assignment(lit);
-                            trail.enq_assignment(lit, trail.trail.len()-1, Reason::Unit);
+                            learn_unit(a, trail, lit);
                             decisionlevel = trail.trail.len() - 1 ;
                         }
                         Conflict::Learned(level, lit, clause) => {
@@ -105,10 +109,16 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
 }
 
 pub fn solver(f: &mut Formula) -> bool {
+    f.remove_duplicates();
     if f.num_vars == 0 {
         return true;
     }
+    let mut assignments = Assignments::init_assignments(f);
+    if f.contains_empty(&assignments) {
+        return false;
+    }
+    let mut trail = Trail::new(f.num_vars);
     let mut watches = Watches::new(f.num_vars);
-    watches.init_watches(f);
-    solve(f, &mut Assignments::init_assignments(f), &mut Trail::new(f.num_vars), &mut watches)
+    watches.init_watches(f, &mut trail, &mut assignments);
+    solve(f, &mut assignments, &mut trail, &mut watches)
 }

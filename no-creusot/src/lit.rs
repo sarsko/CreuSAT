@@ -1,7 +1,7 @@
 use std::{ops, fmt};
 use crate::assignments::*;
 
-#[derive(Clone, Copy, Eq, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq, Hash)]
 pub struct Lit {
     pub idx: usize,
     pub polarity: bool,
