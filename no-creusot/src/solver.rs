@@ -112,11 +112,10 @@ pub fn solver(f: &mut Formula) -> bool {
         return true;
     }
     let mut assignments = Assignments::init_assignments(f);
-    if f.contains_empty(&assignments) {
-        return false;
-    }
     let mut trail = Trail::new(f.num_vars);
     let mut watches = Watches::new(f.num_vars);
-    watches.init_watches(f, &mut trail, &mut assignments);
+    if !watches.init_watches(f, &mut trail, &mut assignments) {
+        return false; 
+    }
     solve(f, &mut assignments, &mut trail, &mut watches)
 }

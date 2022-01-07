@@ -25,7 +25,7 @@ impl Assignments {
 
     pub fn set_assignment(&mut self, l: Lit) {
         if !self.0[l.idx].is_none() {
-            panic!("Assignment already set. Attepmting to set {:?}", l);
+            panic!("Assignment already set. Attempting to set {:?}", l);
         }
         //assert!(self.0[l.idx].is_none());
         self.0[l.idx] = Some(l.polarity);

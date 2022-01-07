@@ -44,7 +44,6 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
                         out_learnt.push(lit);
                     }
                 }
-
             }
             k += 1;
         }
