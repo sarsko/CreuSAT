@@ -44,11 +44,19 @@ pub fn not_sat_clause_inner(a: Seq<AssignedState>, c: Clause) -> bool {
     }
 }
 
+#[predicate]
+pub fn unit_inner(a: Seq<AssignedState>, c: Clause) -> bool {
+    pearlite! {
+        unassigned_count_clause(@c, a) === 1 && !sat_clause_inner(a, c)
+    }
+}
+
 impl Clause {
     #[predicate]
+    #[ensures(result === unit_inner(@a, self))]
     pub fn unit(self, a: Assignments) -> bool {
         pearlite! {
-            unassigned_count_clause(@self, @a) === 1 && !self.sat(a) && !self.unsat(a) // This should be redundant
+            unassigned_count_clause(@self, @a) === 1 && !self.sat(a)
         }
     }
 
@@ -142,6 +150,8 @@ impl Clause {
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
     //#[ensures(@result.idx < (@f.clauses).len())]
+
+    #[ensures(exists<j: Int> 0 <= j && j < (@self).len() && (@self)[j] === result)]
     #[ensures(@result.idx < (@a).len())]
     #[ensures((@a)[@result.idx] === AssignedState::Unset)]
     pub fn get_unit(&self, a: &Assignments, f: &Formula) -> Lit {

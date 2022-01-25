@@ -51,8 +51,8 @@ pub fn eventually_sat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
 #[predicate]
 pub fn not_sat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
     pearlite! {
-        exists<i: Int> 0 <= i && i < (@(f.clauses)).len() &&
-        not_sat_clause_inner(a, (@(f.clauses))[i])
+        exists<i: Int> 0 <= i && i < (@f.clauses).len() &&
+        not_sat_clause_inner(a, (@f.clauses)[i])
     }
 }
 

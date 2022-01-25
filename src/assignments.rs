@@ -95,6 +95,70 @@ impl Assignments {
     }
 }
 
+#[logic]
+#[ensures(result === !b)]
+fn lnot(b: bool) -> bool {
+    !b
+}
+
+/*
+#[logic]
+#[requires(!eventually_sat_formula_inner(a, f))]
+#[ensures(eventually_unsat_formula_inner(a, f))]
+fn lemma_either_or(f: Formula, a: Seq<AssignedState>) {}
+
+#[logic]
+#[requires(!eventually_unsat_formula_inner(a, f))]
+#[ensures(eventually_sat_formula_inner(a, f))]
+fn lemma_either_or2(f: Formula, a: Seq<AssignedState>) {}
+*/
+
+#[logic]
+#[requires(f.invariant())]
+#[requires(@f.num_vars === a.len())]
+#[requires(0 <= i && i < a.len())]
+#[requires(a[i] === AssignedState::Unset)]
+#[requires(unit_inner(a, c))]
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === i && bool_to_assignedstate(lnot((@c)[j].polarity)) === v)]
+#[ensures(eventually_unsat_formula_inner(a.set(i, v), f))]
+#[ensures(!eventually_sat_formula_inner(a.set(i, v), f))]
+#[ensures(not_sat_formula_inner(a.set(i, v), f))]
+fn lemma_unitClauseLiteralFalse_tauNotSatisfiable(c: Clause, f: Formula, a: Seq<AssignedState>, i: Int, v: AssignedState) {}
+
+#[logic]
+#[requires(f.invariant())]
+#[requires(@f.num_vars === a.len())]
+#[requires(0 <= i && i < a.len())]
+#[requires(a[i] === AssignedState::Unset)]
+#[requires(unit_inner(a, c))]
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === i && bool_to_assignedstate(((@c)[j].polarity)) === v)]
+#[requires(eventually_sat_formula_inner(a, f))]
+#[ensures(eventually_sat_formula_inner(a.set(i, v), f))]
+fn lemma_unitClauseLiteralTrue_tauSat(c: Clause, f: Formula, a: Seq<AssignedState>, i: Int, v: AssignedState) {}
+
+
+// Strictly speaking the same as lemma_eventually assigned(which is poorly named)
+#[logic]
+#[requires(f.invariant())]
+#[requires(@f.num_vars === a.len())]
+#[requires(0 <= i && i < a.len())]
+#[requires(eventually_unsat_formula_inner(a.set(i, AssignedState::Positive), f))]
+#[requires(eventually_unsat_formula_inner(a.set(i, AssignedState::Negative), f))]
+#[ensures(eventually_unsat_formula_inner(a, f))]
+fn lemma_forVariableNotSatisfiableExtend_notSatisfiableExtend(f: Formula, a: Seq<AssignedState>, i: Int) {}
+
+#[logic]
+#[requires(f.invariant())]
+#[requires(@f.num_vars === a.len())]
+#[requires(0 <= i && i < a.len())]
+#[requires(a[i] === AssignedState::Unset)]
+#[requires(eventually_sat_formula_inner(a.set(i, v), f))]
+#[requires(v === AssignedState::Positive || v === AssignedState::Negative)]
+#[ensures(eventually_sat_formula_inner(a, f))]
+fn lemma_extensionSat_baseSat(f: Formula, a: Seq<AssignedState>, i: Int, v: AssignedState) {}
+
+
+
 impl Assignments {
     #[trusted]
     #[ensures(forall<i: Int> 0 <= i && i < (@v).len() ==> (@v)[i] === (@result)[i])]
@@ -134,13 +198,14 @@ impl Assignments {
         Assignments(assign)
     }
 
+    #[trusted] // TODO: REMOVE!! NOT GOOD !! BECAUSE OF THE .set ensures
     #[requires(_f.invariant())]
     #[requires(self.invariant(*_f))]
     #[requires(0 <= @ix && @ix < (@self).len())]
     #[requires((@self)[@ix] === AssignedState::Unset)]
     #[ensures((^self).invariant(*_f))]
     #[ensures((*self).compatible(^self))]
-    //#[ensures(@^self === (@*self).set(@ix, s))]
+    #[ensures(@^self === (@*self).set(@ix, s))]
     #[ensures((@^self)[@ix] === s)]
     #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
         j != @ix ==> (@*self)[j] === (@^self)[j]))]
@@ -185,15 +250,45 @@ impl Assignments {
         proof_assert! { ^self === ^@old_a }
         if clause.check_if_unit(self, f) {
             let lit = clause.get_unit(self, f);
+            /*
             proof_assert! {
                  eventually_sat_formula_inner(@self, *f) ==>
                  eventually_sat_formula_inner((@self).set(@lit.idx, bool_to_assignedstate(lit.polarity)), *f)
             }
-            if lit.polarity {
-                self.0[lit.idx] = AssignedState::Positive;
-            } else {
-                self.0[lit.idx] = AssignedState::Negative;
+            */
+            /*
+            proof_assert! {
+                eventually_unsat_formula_inner((@self).set(@lit.idx, bool_to_assignedstate(lit.polarity)), *f) ==>
+                eventually_unsat_formula_inner(@self, *f)
             }
+            */
+            if lit.polarity {
+                proof_assert! { f.invariant() }
+                proof_assert! { @f.num_vars === (@self).len() }
+                proof_assert! { 0 <= @lit.idx && @lit.idx < (@self).len() }
+                proof_assert! { (@self)[@lit.idx] === AssignedState::Unset }
+                proof_assert! { unit_inner(@self, *clause) }
+                proof_assert! {(exists<j: Int> 0 <= j && j < (@clause).len() && @(@clause)[j].idx === @lit.idx && bool_to_assignedstate(lnot((@clause)[j].polarity)) === AssignedState::Negative) }
+                //proof_assert! {{lemma_unitClauseLiteralFalse_tauNotSatisfiable(*clause, *f, @self, @lit.idx, AssignedState::Negative); true}}
+                proof_assert! {{lemma_unitClauseLiteralTrue_tauSat(*clause, *f, @self, @lit.idx, AssignedState::Positive); true}}
+                //self.0[lit.idx] = AssignedState::Positive;
+                self.assign(lit.idx, AssignedState::Positive, f);
+            } else {
+                proof_assert! { f.invariant() }
+                proof_assert! { @f.num_vars === (@self).len() }
+                proof_assert! { 0 <= @lit.idx && @lit.idx < (@self).len() }
+                proof_assert! { (@self)[@lit.idx] === AssignedState::Unset }
+                proof_assert! { unit_inner(@self, *clause) }
+                proof_assert! {(exists<j: Int> 0 <= j && j < (@clause).len() && @(@clause)[j].idx === @lit.idx && bool_to_assignedstate(lnot((@clause)[j].polarity)) === AssignedState::Positive) }
+                //proof_assert! {{lemma_unitClauseLiteralFalse_tauNotSatisfiable(*clause, *f, @self, @lit.idx, AssignedState::Positive); true}}
+                proof_assert! {{lemma_unitClauseLiteralTrue_tauSat(*clause, *f, @self, @lit.idx, AssignedState::Negative); true}}
+                //self.0[lit.idx] = AssignedState::Negative;
+                self.assign(lit.idx, AssignedState::Negative, f);
+            }
+            proof_assert! { @^self === (@@old_a).set(@lit.idx, bool_to_assignedstate(lit.polarity)) }
+            proof_assert! {{ lemma_extensionSat_baseSat(*f, @@old_a, @lit.idx, bool_to_assignedstate(lit.polarity)); true }}
+            proof_assert! {{lemma_forVariableNotSatisfiableExtend_notSatisfiableExtend(*f, @@old_a, @lit.idx); true}}
+            proof_assert! { ^self === ^@old_a }
             return true;
         }
         return false;

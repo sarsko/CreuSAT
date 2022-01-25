@@ -59,192 +59,6 @@ impl Clause {
     }
 }
 
-// Okay screw unass, true and false is where it is at
-
-#[logic]
-#[variant(c.len())]
-pub fn false_count(a: Seq<Option<bool>>, c: Seq<Lit>) -> Int {
-    if pearlite! { c.len() === 0 }{
-        0
-    } else if pearlite! { a[@c[0].idx] === Some(c[0].polarity) ||
-    a[@c[0].idx] === None } {
-        1 + false_count(a, c.tail())
-    } else {
-        false_count(a, c.tail())
-    }
-}
-
-#[logic]
-#[variant(c.len())]
-#[requires(vars_in_range_internal(c, a.len()))]
-#[ensures(0 <= result && result <= c.len())]
-pub fn true_count(a: Seq<Option<bool>>, c: Seq<Lit>) -> Int {
-    if pearlite! { c.len() === 0 }{
-        0
-    } else if pearlite! { a[@c[0].idx] === Some(c[0].polarity) } {
-        1 + true_count(a, c.tail())
-    } else {
-        true_count(a, c.tail())
-    }
-}
-
-#[logic]
-#[variant(c.len())]
-#[requires(vars_in_range_internal(c, a.len()))]
-#[ensures(0 <= result && result <= c.len())]
-#[ensures(result === true_count(a, c))]
-fn true_count2(a: Seq<Option<bool>>, c: Seq<Lit>) -> Int {
-    if pearlite! { c.len() === 0 }{
-        0
-    } else {
-        pearlite! { match (a[@c[0].idx], c[0].polarity) {
-        (Some(true), true) => 1 + true_count2(a, c.tail()),
-        (Some(false), false) => 1 + true_count2(a, c.tail()),
-        _ => true_count2(a, c.tail())
-        }
-    }
-    }
-}
-
-#[logic]
-#[variant(c.len() - i)]
-#[requires(0 <= i && i <= c.len())]
-#[requires(vars_in_range_internal(c, a.len()))]
-#[ensures(0 <= result )]
-#[ensures(result <= c.len())]
-//#[ensures(result <= i)]
-//#[ensures(result === true_count(a, c))]
-fn true_count_with_idx(a: Seq<Option<bool>>, c: Seq<Lit>, i: Int) -> Int {
-    if pearlite! { i === c.len() }{
-        0
-    } else {
-         match pearlite! {(a[@c[i].idx], c[i].polarity)} {
-            (Some(true), true) => 1 + true_count_with_idx(a, c, i + 1),
-            (Some(false), false) => 1 + true_count_with_idx(a, c, i + 1),
-            _ => true_count_with_idx(a, c, i + 1)
-        }
-
-    }
-}
-
-#[logic]
-#[variant(c.len() - from)]
-#[requires(0 <= from && from <= c.len())]
-#[requires(0 <= end && end <= c.len())]
-#[requires(from <= end)]
-#[requires(vars_in_range_internal(c, a.len()))]
-#[ensures(0 <= result)]
-#[ensures(result <= c.len())]
-//#[ensures(result <= i)]
-//#[ensures(result === true_count(a, c))]
-fn true_count_range(a: Seq<Option<bool>>, c: Seq<Lit>, from: Int, end: Int) -> Int {
-    if pearlite! { from === end }{
-        0
-    } else {
-         match pearlite! {(a[@c[from].idx], c[from].polarity)} {
-            (Some(true), true) => 1 + true_count_range(a, c, from + 1, end),
-            (Some(false), false) => 1 + true_count_range(a, c, from + 1, end),
-            _ => true_count_range(a, c, from + 1, end)
-        }
-
-    }
-}
-
-
-#[logic]
-#[variant(c.len() - from)]
-#[requires(0 <= from && from <= c.len())]
-#[requires(0 <= end && end <= c.len())]
-#[requires(from <= end)]
-#[requires(vars_in_range_internal(c, a.len()))]
-#[ensures(0 <= result)]
-//#[ensures(result <= c.len())]
-//#[ensures(result <= end)]
-fn length(a: Seq<Option<bool>>, c: Seq<Lit>, from: Int, end: Int) -> Int {
-    if pearlite! { from >= end }{
-        0
-    } else {
-        1 + length(a, c, from + 1, end)
-    }
-}
-
-#[logic]
-#[ensures(result === length(a, c, 0, c.len()))]
-fn length_log(a: Seq<Option<bool>>, c: Seq<Lit>) -> Int {
-    pearlite! { c.len() }
-}
-
-#[logic]
-fn filter_true(a: Seq<Option<bool>>, c: Seq<Lit>) -> Seq<Lit> {
-    if pearlite! { c.len() === 0 }{
-        panic!()
-    } else {
-        pearlite! {
-            match (a[@c[0].idx], c[0].polarity) {
-                    (Some(true), true) => Seq::cons(c[0], filter_true(a, c.tail())),
-                    (Some(false), false) => Seq::cons(c[0], filter_true(a, c.tail())),
-                    _ => filter_true(a, c.tail())
-            }
-        }
-    }
-}
-
-//#[ensures(@result === length(@a, @c, 0, (@c).len()))]
-#[ensures(@result === length_log(@a, @c))]
-fn length_rs(a: &Assignments, c: &Clause) -> usize {
-    return c.0.len()
-}
-
-#[requires(c.vars_in_range((@a).len()))]
-//#[ensures(@result === true_count(@a, @c))]
-//#[ensures(@result === true_count2(@a, @c))]
-#[ensures(@result === true_count_range(@a, @c, 0, (@c).len()))]
-fn count_trues(a: &Assignments, c: &Clause) -> usize {
-    let mut out: usize = 0;
-    let mut i: usize = 0;
-    #[invariant(loop_invariant, 0 <= @i && @i <= (@c).len())]
-    #[invariant(still_in, c.vars_in_range((@a).len()))]
-    #[invariant(out_less, @out <= @i)]
-    #[invariant(in_sync, @out === true_count_range(@a, @c, 0, @i))]
-    while i < c.0.len() {
-        let res = a.0[c.0[i].idx];
-        match res {
-            Some(b) => {
-                if b == c.0[i].polarity {
-                    out += 1;
-                }
-            }
-            None => {}
-        }
-        i += 1;
-    }
-    out
-}
-
-
-#[logic]
-#[variant(c.len())]
-pub fn unassigned_count_clause_partial(c: Seq<Lit>, a: Seq<Option<bool>>, i: Int) -> Int {
-    if c.len() == 0 || i == 0 {
-        0
-    } else if pearlite! { a[@c[0].idx] === None } {
-        1 + unassigned_count_clause_partial(c.tail(), a, i - 1)
-    } else {
-        unassigned_count_clause_partial(c.tail(), a, i - 1)
-    }
-}
-
-#[logic]
-#[variant(c.len())]
-pub fn unassigned_count_clause(a: Seq<Option<bool>>, c: Seq<Lit>) -> Int {
-    if pearlite! { c.len() === 0 }{
-        0
-    } else if pearlite! { a[@c[0].idx] === None } {
-        1 + unassigned_count_clause(a, c.tail())
-    } else {
-        unassigned_count_clause(a, c.tail())
-    }
-}
 
 #[predicate]
 pub fn sat_clause_inner(a: Seq<Option<bool>>, c: Seq<Lit>) -> bool {
@@ -258,16 +72,17 @@ pub fn sat_clause_inner(a: Seq<Option<bool>>, c: Seq<Lit>) -> bool {
 }
 
 #[predicate]
-fn clause_unit2(a: Seq<Option<bool>>, c: Seq<Lit>) -> bool {
+fn clause_unit(a: Seq<Option<bool>>, c: Seq<Lit>) -> bool {
     pearlite! {
-        unassigned_count_clause(a, c) === 1 && !sat_clause_inner(a, c)
+        count_v(None, c, a, 0) === 1 && !sat_clause_inner(a, c)
     }
 }
 
 #[predicate]
-fn clause_unit(a: Seq<Option<bool>>, c: Seq<Lit>) -> bool {
+fn clause_unit2(a: Seq<Option<bool>>, c: Seq<Lit>) -> bool {
     pearlite! {
-        false_count(a, c) + 1 === c.len() && true_count(a, c) === 0
+        true // TODO
+        //false_count(a, c) + 1 === c.len() && true_count(a, c) === 0
     }
 }
 
@@ -282,7 +97,7 @@ impl Clause {
         pearlite! {
             exists<i: Int> 0 <= i && i < (@self).len() &&
                 match (@a)[@(@self)[i].idx] {
-                    Some(b) => (@self)[i].polarity == b,
+                    Some(b) => (@self)[i].polarity === b,
                     None => false,
                 }
         }
@@ -370,27 +185,155 @@ fn unit_prop(f: &Formula, a: &mut Assignments) -> bool {
 #[ensures(clause_unit2(a, c))]
 fn lemma_unit_defs_are_equal(a: Seq<Option<bool>>, c: Seq<Lit>) {
 }
+
+        forall<k: Option<bool>, c: Seq<Lit>, s: Seq<Option<bool>>, x: Option<bool>>
+*/
+// Not correct
+#[logic]
+fn lemma_count_v_cons() -> bool{
+    pearlite! {
+        forall<l: Lit, c: Seq<Lit>, s: Seq<Option<bool>>, x: Option<bool>>
+        count_v(x, c, s, 0) === count_v(x, c.push(l), s, 0)
+    }
+}
+
+        //count_v(k, c, s.push(k), 0) === 0
+/*
+#[logic]
+fn count_v(v: Option<bool>, c: Seq<Lit>, a: Seq<Option<bool>>, j: Int) -> Int {
+*/
+/*
+  lemma occ_cons:
+    forall k: 'a, s: seq 'a, x: 'a.
+    (occ_all k (cons x s) =
+    if k = x then 1 + occ_all k s else occ_all k s
+    ) by (cons x s == (cons x empty) ++ s)
+
+  lemma occ_snoc:
+    forall k: 'a, s: seq 'a, x: 'a.
+    occ_all k (snoc s x) =
+    if k = x then 1 + occ_all k s else occ_all k s
+
+  lemma occ_tail:
+    forall k: 'a, s: seq 'a.
+    length s > 0 ->
+    (occ_all k s[1..] =
+    if k = s[0] then (occ_all k s) - 1 else occ_all k s
+    ) by (s == cons s[0] s[1..])
+
+  lemma append_num_occ:
+    forall x: 'a, s1 s2: seq 'a.
+    occ_all x (s1 ++ s2) =
+    occ_all x s1 + occ_all x s2
 */
 
 #[logic]
-#[requires(clause_unit(a, c))]
-#[requires(a[i] === None)]
-#[ensures(clause_unit(a, c))]
-fn lemma_unit_imples(a: Seq<Option<bool>>, c: Seq<Lit>, i: Int) {
+#[requires(forall<i: Int> 0 <= i && i < c.len() ==> @c[i].idx < a.len())]
+#[requires(0 <= j && j <= c.len())]
+#[variant(c.len() - j)]
+fn count_v(v: Option<bool>, c: Seq<Lit>, a: Seq<Option<bool>>, j: Int) -> Int {
+    if pearlite! { j === c.len() } {
+        0
+    } else if pearlite! { a[@c[j].idx] === v } {
+       count_v(v, c, a, j+1) + 1
+    } else {
+       count_v(v, c, a, j+1)
+    }
+}
+
+#[predicate]
+fn idx_in(i: Int, c: Seq<Lit>) -> bool {
+    pearlite! {
+        exists<j: Int> 0 <= j && j < c.len() &&
+            @c[j].idx === i
+    }
 }
 
 #[logic]
-//#[requires(false_count(a, c) + 1 === c.len())]
-#[requires(true_count(a, c) === 0)]
+// Duplis from lemma_unit_implies
+#[requires(c.len() === c2.len())]
+#[requires(0 <= i && i <= c.len())]
+#[requires(forall<k: Int> 0 <= k && k < c.len() ==> @c[k].idx < a.len())]
+#[requires(forall<k: Int> 0 <= k && k < c2.len() ==> @c2[k].idx < a.len())]
+#[requires(a[@c[i].idx] === None && !(a[@c2[i].idx] === None))]
+#[requires(c[i].idx != c2[i].idx)]
+#[requires(forall<k: Int> 0 <= k && k < c.len() ==> k != i ==> c[k] === c2[k])]
+
+#[variant(c.len() - j)]
+#[requires(0 <= j && j <= c.len())]
+#[ensures(result === count_v(None, c, a, j))]
+#[ensures((j <= i) ==> count_v(None, c2, a, j) === (result - 1))] // Not checking out
+#[ensures( (j > i) ==>  count_v(None, c2, a, j) === result)]
+fn unit_aux(a: Seq<Option<bool>>, c: Seq<Lit>, c2: Seq<Lit>, i: Int, j: Int) -> Int {
+    if pearlite! { j === c2.len() } {
+        0
+    } else if pearlite! { j === i } {
+        unit_aux(a, c, c2, i, j+1) + 1
+    } else if pearlite! { a[@c[j].idx] === None } {
+        unit_aux(a, c, c2, i, j+1) + 1
+    } else {
+        unit_aux(a, c, c2, i, j+1)
+    }
+}
+
+#[logic]
+#[requires(c.len() === c2.len())]
+#[requires(0 <= i && i <= c.len())]
+#[requires(forall<k: Int> 0 <= k && k < c.len() ==> @c[k].idx < a.len())]
+#[requires(forall<k: Int> 0 <= k && k < c2.len() ==> @c2[k].idx < a.len())]
+#[requires(a[@c[i].idx] === None && !(a[@c2[i].idx] === None))]
+#[requires(c[i].idx != c2[i].idx)]
+#[requires(forall<k: Int> 0 <= k && k < c.len() ==> k != i ==> c[k] === c2[k])]
+#[ensures(count_v(None, c2, a, 0) === count_v(None, c, a, 0) - 1)]
+fn lemma_unit_implies(a: Seq<Option<bool>>, c: Seq<Lit>, c2: Seq<Lit>, i: Int) {
+    pearlite! { unit_aux(a, c, c2, i, 0) };
+}
+
+#[logic]
 #[requires(0 <= i && i < a.len())]
 #[requires(a[i] === None)]
 #[requires(@c[j].idx === i)]
-#[ensures(
-    true_count(a.set(i, Some(true)), c) === true_count(a, c) + 1
-)]
+#[ensures(occ_all(None, a.set(i, Some(true))) <= occ_all(None, a))] // Why isnt < OK?
 #[ensures(a.set(i, Some(false))[i] === Some(false))]
-fn false_assign_decreases(a: Seq<Option<bool>>, c: Seq<Lit>, i: Int, j: Int) {
+fn false_assign_decreases(a: Seq<Option<bool>>, c: Seq<Lit>, i: Int, j: Int) {}
+
+#[logic]
+// Duplis from lemma_decreases_numof
+#[requires(t.len() === t2.len())]
+#[requires(0 <= i && i < t.len())]
+#[requires(t[i] === v && !(t2[i] === v))]
+#[requires(forall<k: Int> 0 <= k && k < t.len() ==> k != i ==> t[k] === t2[k])]
+
+#[variant(t.len() - j)]
+#[requires(0 <= j && j <= t.len())]
+#[ensures(result === occ(v, t, j, t.len()))]
+#[ensures( (j <= i) ==> occ(v, t2, j, t2.len()) === (result - 1))]
+#[ensures( (j > i) ==> occ(v, t2, j, t2.len()) === result)]
+fn numof_aux(v: Option<bool>, t: Seq<Option<bool>>, t2: Seq<Option<bool>>, i: Int, j: Int) -> Int {
+    if pearlite! { j === t.len() } {
+        0
+    } else if pearlite! { j === i } {
+        numof_aux(v, t, t2, i, j+1) + 1
+    } else if pearlite! { t[j] === v } {
+        numof_aux(v, t, t2, i, j+1) + 1
+    } else {
+        numof_aux(v, t, t2, i, j+1)
+    }
 }
+
+#[logic]
+#[requires(t.len() === t2.len())]
+#[requires(0 <= i && i < t.len())]
+#[requires(t[i] === v && !(t2[i] === v))]
+#[requires(forall<j: Int> 0 <= j && j < t.len() ==> j != i ==> t[j] === t2[j])]
+#[ensures(occ(v, t2, 0, t2.len()) === occ(v, t, 0, t.len()) - 1)]
+fn lemma_decreases_numof(v: Option<bool>, t: Seq<Option<bool>>, t2: Seq<Option<bool>>, i: Int) {
+    pearlite! { numof_aux(v, t, t2, i, 0) };
+}
+
+#[logic]
+fn lemma_unitlemma(a: Seq<Option<bool>>, i: Int) {}
+
 
 
 
