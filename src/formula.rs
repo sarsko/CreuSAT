@@ -40,14 +40,12 @@ pub fn eventually_unsat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool
     }
 }
 
-/*
 #[predicate]
-pub fn eventually_unsat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
+pub fn eventually_unsat_formula_inner_alt(a: Seq<AssignedState>, f: Formula) -> bool {
     pearlite! {
-        forall<a2 : Assignments> compatible_inner(a, @a2) && !f.sat(a2)
+        forall<a2 : Seq<AssignedState>> compatible_complete_inner(a, a2) ==> !sat_formula_inner(a2, f)
     }
 }
-*/
 
 /*
 #[predicate]
@@ -82,13 +80,21 @@ pub fn clause_in_formula(c: Clause, f: Formula) -> bool {
     }
 }
 
+#[predicate]
+pub fn sat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
+    pearlite! {
+            forall<i: Int> 0 <= i && i < (@f.clauses).len() ==>
+            sat_clause_inner(a, @(f.clauses)[i])
+    }
+}
+
 // Predicates
 impl Formula {
     #[predicate]
     pub fn invariant(self) -> bool {
         pearlite! {
-            (forall<i: Int> 0 <= i && i < (@(self.clauses)).len() ==>
-            ((@(self.clauses))[i]).vars_in_range(@(self.num_vars)))
+            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+            (@self.clauses)[i].invariant(@self.num_vars)
         }
     }
     #[predicate]
@@ -103,10 +109,14 @@ impl Formula {
 
     #[predicate]
     pub fn sat(self, a: Assignments) -> bool {
+        pearlite! { sat_formula_inner(@a, self) }
+        /*
         pearlite! {
             forall<i: Int> 0 <= i && i < (@(self.clauses)).len() ==>
-            (@(self.clauses))[i].sat(a)
+            sat_clause_inner(@a, (@(self.clauses))[i])
+            //(@(self.clauses))[i].sat(a)
         }
+        */
     }
 
     #[predicate]

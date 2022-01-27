@@ -102,12 +102,13 @@ fn lnot(b: bool) -> bool {
     !b
 }
 
-// TODO
+// Seem to not need 1 (or either 1 or 2?)
 #[logic]
 #[trusted] // TMP REMOVE
 #[requires(!eventually_sat_formula_inner(a, f))]
 #[ensures(eventually_unsat_formula_inner(a, f))]
-fn lemma_either_or(f: Formula, a: Seq<AssignedState>) {}
+fn lemma_either_or1(f: Formula, a: Seq<AssignedState>) {
+}
 
 // TODO
 #[logic]
@@ -138,15 +139,36 @@ fn lemma_either_or4(f: Formula, a: Seq<AssignedState>) {}
 #[ensures(!eventually_sat_formula_inner(a, f))]
 fn lemma_not_sat_formula_implies_unsat_formula(f: Formula, a: Seq<AssignedState>) {}
 
-
 #[logic]
 fn lemma_mutually_exclusive(f: Formula, a: Seq<AssignedState>) {
-    lemma_either_or(f, a);
+    lemma_either_or1(f, a);
     lemma_either_or2(f, a);
     lemma_either_or3(f, a);
     lemma_either_or4(f, a);
     lemma_not_sat_formula_implies_unsat_formula(f, a);
 }
+
+#[logic]
+#[requires(eventually_unsat_formula_inner(a, f))]
+#[ensures(eventually_unsat_formula_inner_alt(a, f))]
+fn lemma_formula_unsat_definitions_are_equivalent(a: Seq<AssignedState>, f: Formula) {}
+
+#[logic]
+#[requires(eventually_unsat_formula_inner_alt(a, f))]
+#[ensures(eventually_unsat_formula_inner(a, f))]
+fn lemma_formula_unsat_definitions_are_equivalent2(a: Seq<AssignedState>, f: Formula) {
+    //lemma_clause_sat_opposites
+}
+
+#[logic]
+#[requires(sat_clause_inner(a, c))]
+#[ensures(!not_sat_clause_inner(a, c))]
+fn lemma_clause_sat_opposites(a: Seq<AssignedState>, c: Clause){}
+
+#[logic]
+#[requires(not_sat_clause_inner(a, c))]
+#[ensures(!sat_clause_inner(a, c))]
+fn lemma_clause_sat_opposites2(a: Seq<AssignedState>, c: Clause){}
 
 #[logic]
 #[requires(not_sat_clause_inner(a, c))]
@@ -157,40 +179,35 @@ fn lemma_not_sat_clause_implies_unsat_formula(f: Formula, c: Clause, a: Seq<Assi
 #[logic]
 #[requires(f.invariant())]
 #[requires(@f.num_vars === a.len())]
-#[requires(0 <= i && i < a.len())]
-#[requires(a[i] === AssignedState::Unset)]
+#[requires(0 <= ix && ix < a.len() && a[ix] === AssignedState::Unset)]
 #[requires(v === AssignedState::Positive || v === AssignedState::Negative)]
 #[requires(eventually_sat_formula_inner(a, f))]
-#[requires(eventually_unsat_formula_inner(a.set(i, flip_v(v)), f))]
-#[ensures(eventually_sat_formula_inner(a.set(i, v), f))]
-fn lemma_unit_forces(c: Clause, f: Formula, a: Seq<AssignedState>, i: Int, v: AssignedState) {
+#[requires(eventually_unsat_formula_inner(a.set(ix, flip_v(v)), f))]
+#[ensures(eventually_sat_formula_inner(a.set(ix, v), f))]
+fn lemma_unit_forces(c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState) {
     lemma_mutually_exclusive(f, a);
 }
 
 #[logic]
 #[requires(f.invariant())]
 #[requires(@f.num_vars === a.len())]
-#[requires(0 <= i && i < a.len())]
-#[requires(a[i] === AssignedState::Unset)]
+#[requires(0 <= ix && ix < a.len() && a[ix] === AssignedState::Unset)]
 #[requires(v === AssignedState::Positive || v === AssignedState::Negative)]
 #[requires(unit_inner(a, c))]
 #[requires(clause_in_formula(c, f))]
 #[requires(forall<j: Int> 0 <= j && j < (@c).len() ==> 0 <= @(@c)[j].idx && @(@c)[j].idx < a.len())]
-#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === i && bool_to_assignedstate(((@c)[j].polarity)) === v)]
-#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === i) ==> !(a[@(@c)[j].idx] === AssignedState::Unset))]
-
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === ix && bool_to_assignedstate(((@c)[j].polarity)) === v)]
+#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === ix) ==> !(a[@(@c)[j].idx] === AssignedState::Unset))]
 #[requires(forall<j: Int, k: Int> 0 <= j && j < (@c).len() && k < j ==> !(@(@c)[k].idx === @(@c)[j].idx))]
-#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === i) ==> !(a[@(@c)[j].idx] === bool_to_assignedstate((@c)[j].polarity)))]
-
-//#[requires(not_sat_clause_inner(a.set(i, flip_v(v)), c))] 
-#[ensures(eventually_unsat_formula_inner(a.set(i, flip_v(v)), f))]
-#[ensures(!eventually_sat_formula_inner(a.set(i, flip_v(v)), f))]
-#[ensures(not_sat_formula_inner(a.set(i, flip_v(v)), f))]
-fn lemma_unitClauseLiteralFalse_tauNotSatisfiable(c: Clause, f: Formula, a: Seq<AssignedState>, i: Int, v: AssignedState) {
+#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === ix) ==> !(a[@(@c)[j].idx] === bool_to_assignedstate((@c)[j].polarity)))]
+#[ensures(eventually_unsat_formula_inner(a.set(ix, flip_v(v)), f))]
+#[ensures(!eventually_sat_formula_inner(a.set(ix, flip_v(v)), f))]
+#[ensures(not_sat_formula_inner(a.set(ix, flip_v(v)), f))]
+fn lemma_unitClauseLiteralFalse_tauNotSatisfiable(c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState) {
     lemma_mutually_exclusive(f, a);
-    lemma_correctPolarityMakesClauseSat(c, a, i, v);
-    lemma_incorrectPolarityMakesClauseUnsat(c, a, i, v);
-    lemma_not_sat_clause_implies_unsat_formula(f, c, a.set(i, flip_v(v)));
+    lemma_correctPolarityMakesClauseSat(c, a, ix, v);
+    lemma_incorrectPolarityMakesClauseUnsat(c, a, ix, v);
+    lemma_not_sat_clause_implies_unsat_formula(f, c, a.set(ix, flip_v(v)));
 }
 
 /*
@@ -213,33 +230,28 @@ fn lemma_unitClauseLiteralTrue_tauSat(c: Clause, f: Formula, a: Seq<AssignedStat
 */
 
 #[logic]
-#[requires(0 <= i && i < a.len())]
-#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === i && bool_to_assignedstate((@c)[j].polarity) === v)]
-#[ensures(sat_clause_inner(a.set(i, v), c))]
-fn lemma_correctPolarityMakesClauseSat(c: Clause, a: Seq<AssignedState>, i: Int, v: AssignedState) {}
+#[requires(0 <= ix && ix < a.len())]
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === ix && bool_to_assignedstate((@c)[j].polarity) === v)]
+#[ensures(sat_clause_inner(a.set(ix, v), c))]
+fn lemma_correctPolarityMakesClauseSat(c: Clause, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 
 #[logic]
-#[requires(0 <= i && i < a.len())]
-#[requires(a[i] === AssignedState::Unset)]
+#[requires(0 <= ix && ix < a.len() && a[ix] === AssignedState::Unset)]
 #[requires(unit_inner(a, c))]
 #[requires(!sat_clause_inner(a, c))]
-#[requires(v === AssignedState::Positive || v === AssignedState::Negative)] // remove?
-#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === i && bool_to_assignedstate((@c)[j].polarity) === v)]
+#[requires(v === AssignedState::Positive || v === AssignedState::Negative)] 
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === ix && bool_to_assignedstate((@c)[j].polarity) === v)]
 #[requires(forall<j: Int> 0 <= j && j < (@c).len() ==> 0 <= @(@c)[j].idx && @(@c)[j].idx < a.len())]
 #[requires(forall<j: Int, k: Int> 0 <= j && j < (@c).len() && k < j ==> !(@(@c)[k].idx === @(@c)[j].idx))]
-#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === i) ==> !(a[@(@c)[j].idx] === AssignedState::Unset))]
-#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === i) ==> !(a[@(@c)[j].idx] === bool_to_assignedstate((@c)[j].polarity)))]
-#[ensures(forall<j: Int> 0 <= j && j < (@c).len()  ==> !((a.set(i, v))[@(@c)[j].idx] === AssignedState::Unset))]
-#[ensures(!(a.set(i, flip_v(v))[i] === AssignedState::Unset))]
-#[ensures(not_sat_clause_inner(a.set(i, flip_v(v)), c))]
-#[ensures(!sat_clause_inner(a.set(i, flip_v(v)), c))]
-fn lemma_incorrectPolarityMakesClauseUnsat(c: Clause, a: Seq<AssignedState>, i: Int, v: AssignedState) {}
+#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === ix) ==> !(a[@(@c)[j].idx] === AssignedState::Unset))]
+#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === ix) ==> !(a[@(@c)[j].idx] === bool_to_assignedstate((@c)[j].polarity)))]
+#[ensures(forall<j: Int> 0 <= j && j < (@c).len()  ==> !((a.set(ix, v))[@(@c)[j].idx] === AssignedState::Unset))]
+#[ensures(!(a.set(ix, flip_v(v))[ix] === AssignedState::Unset))]
+#[ensures(not_sat_clause_inner(a.set(ix, flip_v(v)), c))]
+#[ensures(!sat_clause_inner(a.set(ix, flip_v(v)), c))]
+fn lemma_incorrectPolarityMakesClauseUnsat(c: Clause, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 
 #[logic]
-#[trusted] // CHECKS OUT (are these needed anyways?)
-#[ensures(v === AssignedState::Positive ==> result === AssignedState::Negative)]
-#[ensures(v === AssignedState::Negative ==> result === AssignedState::Positive)]
-#[ensures(v === AssignedState::Unset ==> result === AssignedState::Unset)]
 fn flip_v(v: AssignedState) -> AssignedState {
     match v {
         AssignedState::Unset => AssignedState::Unset,
@@ -248,22 +260,14 @@ fn flip_v(v: AssignedState) -> AssignedState {
     }
 }
 
-
-
 #[logic]
-#[requires(f.invariant())]
-#[requires(@f.num_vars === a.len())]
-#[requires(0 <= i && i < a.len())]
-#[requires(a[i] === AssignedState::Unset)]
-#[requires(eventually_sat_formula_inner(a.set(i, v), f))]
-#[requires(v === AssignedState::Positive || v === AssignedState::Negative)]
+#[requires(0 <= ix && ix < a.len() && a[ix] === AssignedState::Unset)]
+#[requires(eventually_sat_formula_inner(a.set(ix, v), f))]
 #[ensures(eventually_sat_formula_inner(a, f))]
-fn lemma_extensionSat_baseSat(f: Formula, a: Seq<AssignedState>, i: Int, v: AssignedState) {}
-
+fn lemma_extensionSat_baseSat(f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 
 #[logic]
-#[requires(0 <= ix && ix < a.len())]
-#[requires(a[ix] === AssignedState::Unset)]
+#[requires(0 <= ix && ix < a.len() && a[ix] === AssignedState::Unset)]
 #[requires(eventually_unsat_formula_inner(a.set(ix, AssignedState::Positive), f))]
 #[requires(eventually_unsat_formula_inner(a.set(ix, AssignedState::Negative), f))]
 #[ensures(eventually_unsat_formula_inner(a, f))]
@@ -271,7 +275,6 @@ fn lemma_extensionsUnsat_baseUnsat(a: Seq<AssignedState>, ix: Int, f: Formula) {
     compatible_inner(a, a.set(ix, AssignedState::Positive));
     compatible_inner(a, a.set(ix, AssignedState::Negative));
 }
-
 
 
 impl Assignments {
@@ -361,6 +364,11 @@ impl Assignments {
         let clause = &f.clauses[i];
         let old_a = Ghost::record(&self);
         proof_assert! { ^self === ^@old_a }
+        // Somehow fails without his ..?
+        proof_assert! { sat_formula_inner(@self, *f) ===
+            (forall<i: Int> 0 <= i && i < (@((*f).clauses)).len() ==>
+            sat_clause_inner(@self, (@((*f).clauses))[i]))
+        }
         if clause.check_if_unit(self, f) {
             let lit = clause.get_unit(self, f);
             proof_assert! {{ lemma_mutually_exclusive(*f, @self); true}}
