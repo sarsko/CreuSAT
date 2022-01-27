@@ -54,14 +54,3 @@ pub fn bool_to_assignedstate(b: bool) -> AssignedState {
         AssignedState::Negative
     }
 }
-
-#[logic]
-#[requires(0 <= ix && ix < a.len())]
-#[requires(a[ix] === AssignedState::Unset)]
-#[requires(eventually_unsat_formula_inner(a.set(ix, AssignedState::Positive), f))]
-#[requires(eventually_unsat_formula_inner(a.set(ix, AssignedState::Negative), f))]
-#[ensures(eventually_unsat_formula_inner(a, f))]
-fn lemma_eventually_assigned(a: Seq<AssignedState>, ix: Int, f: Formula) {
-    compatible_inner(a, a.set(ix, AssignedState::Positive));
-    compatible_inner(a, a.set(ix, AssignedState::Negative));
-}
