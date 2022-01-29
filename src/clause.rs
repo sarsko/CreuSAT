@@ -24,6 +24,10 @@ impl Model for Clause {
 pub fn sat_clause_inner(a: Seq<AssignedState>, c: Clause) -> bool {
     pearlite! {
         exists<i: Int> 0 <= i && i < (@c).len() &&
+                /*
+            (!(a[@(@c)[i].idx] === AssignedState::Unset) &&
+                (a[@(@c)[i].idx] === bool_to_assignedstate((@c)[i].polarity)))
+                */
             match a[@(@c)[i].idx] {
                 AssignedState::Positive => (@c)[i].polarity,
                 AssignedState::Negative => !(@c)[i].polarity,
