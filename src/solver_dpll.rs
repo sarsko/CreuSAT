@@ -13,40 +13,6 @@ use crate::logic::*;
 
 fn main() {}
 
-#[logic]
-// Duplis from lemma_decreases_numof
-#[requires(t.len() === t2.len())]
-#[requires(0 <= i && i < t.len())]
-#[requires(t[i] === v && !(t2[i] === v))]
-#[requires(forall<j: Int> 0 <= i && i < t.len() ==> j != i ==> t[j] === t2[j])]
-
-#[variant(t.len() - j)]
-#[requires(0 <= j && j <= t.len())]
-#[ensures(result === occ(v, t, j, t.len()))]
-#[ensures( (j <= i) ==> occ(v, t2, j, t2.len()) === (result - 1))]
-#[ensures( (j > i) ==> occ(v, t2, j, t2.len()) === result)]
-fn numof_aux(v: Option<bool>, t: Seq<Option<bool>>, t2: Seq<Option<bool>>, i: Int, j: Int) -> Int {
-    if pearlite! { j === t.len() } {
-        0
-    } else if pearlite! { j === i } {
-        numof_aux(v, t, t2, i, j+1) + 1
-    } else if pearlite! { t[j] === v } {
-        numof_aux(v, t, t2, i, j+1) + 1
-    } else {
-        numof_aux(v, t, t2, i, j+1)
-    }
-}
-
-#[logic]
-#[requires(t.len() === t2.len())]
-#[requires(0 <= i && i < t.len())]
-#[requires(t[i] === v && !(t2[i] === v))]
-#[requires(forall<j: Int> 0 <= i && i < t.len() ==> j != i ==> t[j] === t2[j])]
-#[ensures(occ(v, t2, 0, t2.len()) === occ(v, t, 0, t.len()) - 1)]
-fn lemma_decreases_numof(v: Option<bool>, t: Seq<Option<bool>>, t2: Seq<Option<bool>>, i: Int) {
-    pearlite! { numof_aux(v, t, t2, i, 0) };
-}
-
 #[ensures(result === (@f.clauses)[@idx].sat(*a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]

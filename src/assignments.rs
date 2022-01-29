@@ -423,7 +423,6 @@ impl Assignments {
         #[invariant(compat, (*@old_a).compatible(*self))]
         #[invariant(maintains_sat, f.eventually_sat(*@old_a) ==> f.eventually_sat(*self))]
         #[invariant(maintains_unsat, f.eventually_unsat(*@old_a) === f.eventually_unsat(*self))]
-        while self.unit_propagate(f) {
-        }
+        while self.unit_propagate(f) {}
     }
 }
