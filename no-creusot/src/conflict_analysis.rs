@@ -3,7 +3,7 @@ use crate::assignments::*;
 use crate::formula::*;
 use crate::lit::*;
 use crate::trail::*;
-use crate::watches::*;
+//use crate::watches::*;
 use crate::trail::{Reason::*};
 
 pub enum Conflict {

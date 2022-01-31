@@ -53,6 +53,9 @@ impl Formula {
     // Or people could just make correct cnfs
     // TODO add a remove_duplis for each clause as well + remove A or not A-clauses
     #[trusted]
+    #[requires(self.invariant())]
+    #[ensures((^self).invariant())]
+    #[ensures(@(^self).num_vars === @self.num_vars)]
     pub fn remove_duplicates(&mut self) {
         panic!()
         /*

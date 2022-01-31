@@ -74,11 +74,13 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
 }
 
 #[trusted]
-#[requires((@trail.trail).len() > 0)] // This is partially wrong
+//#[requires((@trail.trail).len() > 0)] // This is partially wrong
 #[requires(0 <= @lit.idx && @lit.idx < (@trail.vardata).len())]
 #[requires(0 <= @lit.idx && @lit.idx < (@a).len())]
 #[requires(trail.invariant((@trail.vardata).len()))]
 #[requires(a.invariant((@trail.vardata).len()))]
+#[ensures((^a).invariant((@trail.vardata).len()))]
+#[ensures((^trail).invariant((@trail.vardata).len()))]
 pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit) {
     a.cancel_until(trail, 1);
     // Postcond for cancel_until has to be updated so that the entry is guaranteed to be none.
@@ -88,6 +90,11 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit) {
 }
 
 #[trusted]
+#[requires(f.invariant())]
+#[requires(a.invariant(@f.num_vars))]
+#[requires(trail.invariant(@f.num_vars))]
+#[requires(watches.invariant(@f.num_vars))]
+#[requires(@f.num_vars < @usize::MAX/2)]
 fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) -> bool {
     loop {
         loop {
@@ -121,6 +128,8 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
     }
 }
 
+#[requires(f.invariant())]
+#[requires(@f.num_vars < @usize::MAX/2)]
 pub fn solver(f: &mut Formula) -> bool {
     f.remove_duplicates();
     if f.num_vars == 0 {

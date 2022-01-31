@@ -7,11 +7,11 @@ pub struct Assignments(pub Vec<Option<bool>>);
 
 impl Assignments {
     #[allow(dead_code)]
-    fn clone_assignment_vector(&self, v: &Vec<Option<bool>>) -> Vec<Option<bool>> {
+    fn clone_assignment_vector(&self) -> Vec<Option<bool>> {
         let mut out = Vec::new();
         let mut i = 0;
-        while i < v.len() {
-            let curr = v[i];
+        while i < self.0.len() {
+            let curr = self.0[i];
             out.push(curr.clone());
             i += 1;
         }
@@ -20,7 +20,7 @@ impl Assignments {
 
     #[allow(dead_code)]
     fn clone(&self) -> Self {
-        Assignments(self.clone_assignment_vector(&self.0))
+        Assignments(self.clone_assignment_vector())
     }
 
     pub fn set_assignment(&mut self, l: Lit) {
@@ -46,7 +46,7 @@ impl Assignments {
         while i < self.0.len() {
             let curr = self.0[i];
             match curr {
-                Some(_) => {} //continue
+                Some(_) => {} // continue
                 None => {
                     return Some(Lit{ idx: i, polarity: true });
                 }

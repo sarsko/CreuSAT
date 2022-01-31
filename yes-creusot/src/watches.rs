@@ -154,47 +154,52 @@ impl Watches {
 
     /*
     */
+    // Requires duplicates to be removed
     // Returns false if there exists an empty clause or two unit clauses of the same
-    // literal with opposite polarity(exists a clause [[-l]] and [[l]] for some l)
+    // literal with opposite polarity(exists a clause [[-l]] and [[l]] for some l) (this is true only when duplicates are removed)
+    // Also returns false if there exists an empty clause
+    // #[requires(no_duplicates)] // TODO
+    #[trusted] // REMOVE
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(self.invariant(@f.num_vars))]
     #[requires(f.invariant())]
     #[requires(a.invariant(@f.num_vars))]
-    //#[ensures((^self).invariant(@f.num_vars))]
-    //#[ensures((@self.watches).len() === (@(^self).watches).len())]
+    #[requires(trail.invariant(@f.num_vars))]
+    #[ensures((^trail).invariant(@f.num_vars))]
+    #[ensures((^self).invariant(@f.num_vars))]
+    #[ensures((^a).invariant(@f.num_vars))]
+    #[ensures((@self.watches).len() === (@(^self).watches).len())]
     pub fn init_watches(&mut self, f: &Formula, trail: &mut Trail, a: &mut Assignments) -> bool {
         let mut i = 0;
         let old_self = Ghost::record(&self);
-        proof_assert! { ^self === ^@old_self }
-        //#[invariant(same_len, (@(*self).watches).len() === (@(*@old_self).watches).len())]
-        #[invariant(maintains_invariant, (^self).invariant(@f.num_vars))]
+        #[invariant(same_len, (@(*self).watches).len() === (@(*@old_self).watches).len())]
+        #[invariant(maintains_invariant, self.invariant(@f.num_vars))]
+        #[invariant(intact, ^self === ^@old_self)]
         while i < f.clauses.len() {
             let clause = &f.clauses[i].0;
             if clause.len() == 0 {
                 return false;
-            } 
-            else if clause.len() == 1 {
+            } else if clause.len() == 1 {
                 let bing = a.0[clause[0].idx];
                 match bing {
-                    Some(_) => { return false; },
+                Some(_) => { return false; },
                     None => { 
-
-                        /*
-                        #[requires((@trail.trail).len() > 0)] // This is partially wrong
-                        #[requires(0 <= @lit.idx && @lit.idx < (@trail.vardata).len())]
-                        #[requires(0 <= @lit.idx && @lit.idx < (@a).len())]
-                        #[requires(trail.invariant((@trail.vardata).len()))]
-                        #[requires(a.invariant((@trail.vardata).len()))]
-*/
-                        //learn_unit(a, trail, clause[0]);
+                        let lit = clause[0];
+                        //proof_assert! { ((@trail.trail).len() > 0) } // This is partially wrong
+                        proof_assert! { (0 <= @lit.idx && @lit.idx < (@trail.vardata).len()) }
+                        proof_assert! { (0 <= @lit.idx && @lit.idx < (@a).len()) }
+                        proof_assert! { (trail.invariant((@trail.vardata).len())) }
+                        proof_assert! { (a.invariant((@trail.vardata).len())) }
+                        //learn_unit(a, trail, lit);
                     }
                 }
             } else {
                 let mut j = 0;
+                #[invariant(maintains_invariant, self.invariant(@f.num_vars))]
+                #[invariant(same_len, (@(*self).watches).len() === (@(*@old_self).watches).len())]
+                #[invariant(intact, ^self === ^@old_self)]
                 while j < 2 {
                     let lit = clause[j];
-                    proof_assert! { @lit.idx < @f.num_vars}
-                    proof_assert! { @f.num_vars * 2 === (@self.watches).len()}
                     self.add_watcher(lit, i);
                     j += 1;
                 }

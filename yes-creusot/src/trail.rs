@@ -48,7 +48,7 @@ impl Trail {
 }
 
 impl Trail {
-    #[requires(self.invariant((@self.vardata).len()))]
+    #[requires(self.invariant((@self.vardata).len()))] // (@self.vardata).len() === (@self.vardata).len() lol 
     #[requires(0 <= @lit.idx && @lit.idx < (@self.vardata).len())]
     #[requires((@self.trail).len() > 0)]
     #[ensures(self.invariant((@self.vardata).len()))]
