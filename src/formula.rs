@@ -33,42 +33,18 @@ impl PartialEq for SatState {
     }
 }
 
-#[predicate]
-pub fn eventually_unsat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
-    pearlite! {
-        forall<a2: Seq<AssignedState>> compatible_complete_inner(a, a2) ==> not_sat_formula_inner(a2, f)
-    }
-}
-
-#[predicate]
-pub fn eventually_unsat_formula_inner_alt(a: Seq<AssignedState>, f: Formula) -> bool {
-    pearlite! {
-        forall<a2 : Seq<AssignedState>> compatible_complete_inner(a, a2) ==> !sat_formula_inner(a2, f)
-    }
-}
-
-/*
-#[predicate]
-pub fn eventually_unsat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
-    pearlite! {
-        !(exists<a2 : Assignments> compatible_inner(a, @a2) && f.sat(a2))
-    }
-}
-*/
-
-#[predicate]
-pub fn eventually_sat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
-    pearlite! {
-        //exists<a2 : Assignments> compatible_inner(a, @a2) && f.sat(a2)
-        exists<a2 : Seq<AssignedState>> compatible_inner(a, a2) && sat_formula_inner(a2, f)
-    }
-}
 
 #[predicate]
 pub fn eventually_sat_complete_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
     pearlite! {
-        //exists<a2 : Assignments> compatible_complete_inner(a, @a2) && f.sat(a2)
-        exists<a2 : Seq<AssignedState>> compatible_complete_inner(a, a2) && sat_formula_inner(a2, f)
+        exists<a2 : Seq<AssignedState>> a2.len() === @f.num_vars && compatible_complete_inner(a, a2) && sat_formula_inner(a2, f)
+    }
+}
+
+#[predicate]
+pub fn eventually_sat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
+    pearlite! {
+        exists<a2 : Seq<AssignedState>> a2.len() === @f.num_vars && compatible_inner(a, a2) && sat_formula_inner(a2, f)
     }
 }
 
@@ -106,14 +82,15 @@ impl Formula {
             (@self.clauses)[i].invariant(@self.num_vars)
         }
     }
+
     #[predicate]
-    pub fn eventually_sat(self, a: Assignments) -> bool {
-        pearlite! { eventually_sat_formula_inner(@a, self)}
+    pub fn eventually_sat_complete(self, a: Assignments) -> bool {
+        pearlite! { eventually_sat_complete_formula_inner(@a, self)}
     }
 
     #[predicate]
-    pub fn eventually_unsat(self, a: Assignments) -> bool {
-        pearlite! { eventually_unsat_formula_inner(@a, self) }
+    pub fn eventually_sat(self, a: Assignments) -> bool {
+        pearlite! { eventually_sat_formula_inner(@a, self)}
     }
 
     #[predicate]
