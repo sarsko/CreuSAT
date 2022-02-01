@@ -236,20 +236,6 @@ impl Assignments {
         Assignments(assign)
     }
 
-    #[requires(_f.invariant())]
-    #[requires(self.invariant(*_f))]
-    #[requires(0 <= @ix && @ix < (@self).len())]
-    #[requires((@self)[@ix] === AssignedState::Unset)]
-    #[ensures((^self).invariant(*_f))]
-    #[ensures((*self).compatible(^self))]
-    #[ensures(@^self === (@*self).set(@ix, s))]
-    #[ensures((@^self)[@ix] === s)]
-    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
-        j != @ix ==> (@*self)[j] === (@^self)[j]))]
-    pub fn assign(&mut self, ix: usize, s: AssignedState, _f: &Formula) {
-        self.0[ix] = s;
-    }
-
     #[requires(!self.complete())]
     #[ensures(@result < (@self).len())]
     #[ensures((@self)[@result] === AssignedState::Unset)]
@@ -290,12 +276,11 @@ impl Assignments {
             proof_assert! { (forall<j: Int, k: Int> 0 <= j && j < (@clause).len() && k < j ==> !(@(@clause)[k].idx === @(@clause)[j].idx)) }
             proof_assert! {{lemma_unit_forces(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true}}
             if lit.polarity {
-                //self.0[lit.idx] = AssignedState::Positive;
-                self.assign(lit.idx, AssignedState::Positive, f);
+                self.0[lit.idx] = AssignedState::Positive;
             } else {
-                //self.0[lit.idx] = AssignedState::Negative;
-                self.assign(lit.idx, AssignedState::Negative, f);
+                self.0[lit.idx] = AssignedState::Negative;
             }
+            proof_assert! { @^self == (@*@old_a).set(@lit.idx, bool_to_assignedstate(lit.polarity)) }
             proof_assert! {{ lemma_extensionSat_baseSat(*f, @@old_a, @lit.idx, bool_to_assignedstate(lit.polarity)); true }}
             proof_assert! {{ lemma_extensionsUnsat_baseUnsat(@@old_a, @lit.idx, *f); true }}
             proof_assert! { ^self === ^@old_a }
