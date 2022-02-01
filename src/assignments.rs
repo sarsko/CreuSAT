@@ -2,7 +2,6 @@ extern crate creusot_contracts;
 
 use creusot_contracts::*;
 use creusot_contracts::std::*;
-use crate::ghost;
 use crate::lit::*;
 use crate::clause::*;
 use crate::logic::*;
@@ -49,8 +48,8 @@ pub fn assignments_equality(a: Assignments, a2: Assignments) -> bool {
 pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     pearlite! {
         a.len() === a2.len() &&
-        forall<i: Int> 0 <= i && i < a.len() ==>
-        (a[i] === AssignedState::Unset) || a[i] === a2[i]
+        (forall<i: Int> 0 <= i && i < a.len() ==>
+        ((a[i] === AssignedState::Unset) || a[i] === a2[i]))
     }
 }
 
@@ -65,6 +64,18 @@ pub fn complete_inner(a: Seq<AssignedState>) -> bool {
 pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     pearlite! {
         compatible_inner(a, a2) && complete_inner(a2)
+        /*
+        a.len() === a2.len() &&
+        (forall<i: Int> 0 <= i && i < a.len() ==>
+        ((a[i] === AssignedState::Unset) || a[i] === a2[i]) && !((a2)[i] === AssignedState::Unset))
+        */
+    }
+}
+
+#[predicate]
+pub fn assignments_invariant(a: Seq<AssignedState>, f: Formula) -> bool {
+    pearlite! {
+        @f.num_vars === a.len()
     }
 }
  
@@ -95,29 +106,117 @@ impl Assignments {
     }
 }
 
+#[logic] 
+#[requires(f.invariant())]
+#[requires(assignments_invariant(a, f))]
+#[requires(not_sat_formula_inner(a, f))]
+#[ensures(!eventually_sat_complete_formula_inner(a, f))]
+fn lemma_not_sat_formula_implies_unsat_formula(f: Formula, a: Seq<AssignedState>) {}
+
+#[logic]
+#[requires(not_sat_clause_inner(a, c))]
+#[requires(clause_in_formula(c, f))]
+#[ensures(not_sat_formula_inner(a, f))]
+fn lemma_not_sat_clause_implies_unsat_formula(f: Formula, c: Clause, a: Seq<AssignedState>) {}
+
+
+#[logic]
+#[requires(f.invariant())]
+#[requires(@f.num_vars === a.len())]
+#[requires(0 <= ix && ix < a.len() && a[ix] === AssignedState::Unset)]
+#[requires(v === AssignedState::Positive || v === AssignedState::Negative)]
+#[requires(eventually_sat_complete_formula_inner(a, f))]
+#[requires(!eventually_sat_complete_formula_inner(a.set(ix, flip_v(v)), f))]
+#[ensures(eventually_sat_complete_formula_inner(a.set(ix, v), f))]
+fn lemma_unit_forces(c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState) {
+    lemma_not_sat_formula_implies_unsat_formula(f, a);
+}
+
+#[logic]
+#[requires(f.invariant())]
+#[requires(@f.num_vars === a.len())]
+#[requires(0 <= ix && ix < a.len() && a[ix] === AssignedState::Unset)]
+#[requires(v === AssignedState::Positive || v === AssignedState::Negative)]
+#[requires(unit_inner(a, c))]
+#[requires(clause_in_formula(c, f))]
+#[requires(forall<j: Int> 0 <= j && j < (@c).len() ==> 0 <= @(@c)[j].idx && @(@c)[j].idx < a.len())]
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === ix && bool_to_assignedstate(((@c)[j].polarity)) === v)]
+#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === ix) ==> !(a[@(@c)[j].idx] === AssignedState::Unset))]
+#[requires(forall<j: Int, k: Int> 0 <= j && j < (@c).len() && k < j ==> !(@(@c)[k].idx === @(@c)[j].idx))]
+#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === ix) ==> !(a[@(@c)[j].idx] === bool_to_assignedstate((@c)[j].polarity)))]
+#[ensures(!eventually_sat_complete_formula_inner(a.set(ix, flip_v(v)), f))]
+#[ensures(not_sat_formula_inner(a.set(ix, flip_v(v)), f))]
+fn lemma_unitClauseLiteralFalse_tauNotSatisfiable(c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState) {
+    lemma_not_sat_formula_implies_unsat_formula(f, a);
+    lemma_correctPolarityMakesClauseSat(c, a, ix, v);
+    lemma_incorrectPolarityMakesClauseUnsat(c, a, ix, v);
+    lemma_not_sat_clause_implies_unsat_formula(f, c, a.set(ix, flip_v(v)));
+}
+
+#[logic]
+#[requires(0 <= ix && ix < a.len())]
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === ix && bool_to_assignedstate((@c)[j].polarity) === v)]
+#[ensures(sat_clause_inner(a.set(ix, v), c))]
+fn lemma_correctPolarityMakesClauseSat(c: Clause, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
+
+#[logic]
+#[requires(0 <= ix && ix < a.len() && a[ix] === AssignedState::Unset)]
+#[requires(unit_inner(a, c))]
+#[requires(!sat_clause_inner(a, c))]
+#[requires(v === AssignedState::Positive || v === AssignedState::Negative)] 
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === ix && bool_to_assignedstate((@c)[j].polarity) === v)]
+#[requires(forall<j: Int> 0 <= j && j < (@c).len() ==> 0 <= @(@c)[j].idx && @(@c)[j].idx < a.len())]
+#[requires(forall<j: Int, k: Int> 0 <= j && j < (@c).len() && k < j ==> !(@(@c)[k].idx === @(@c)[j].idx))]
+#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === ix) ==> !(a[@(@c)[j].idx] === AssignedState::Unset))]
+#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === ix) ==> !(a[@(@c)[j].idx] === bool_to_assignedstate((@c)[j].polarity)))]
+#[ensures(forall<j: Int> 0 <= j && j < (@c).len()  ==> !((a.set(ix, v))[@(@c)[j].idx] === AssignedState::Unset))]
+#[ensures(!(a.set(ix, flip_v(v))[ix] === AssignedState::Unset))]
+#[ensures(not_sat_clause_inner(a.set(ix, flip_v(v)), c))]
+#[ensures(!sat_clause_inner(a.set(ix, flip_v(v)), c))]
+fn lemma_incorrectPolarityMakesClauseUnsat(c: Clause, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
+
+#[logic]
+fn flip_v(v: AssignedState) -> AssignedState {
+    match v {
+        AssignedState::Unset => AssignedState::Unset,
+        AssignedState::Positive => AssignedState::Negative,
+        AssignedState::Negative => AssignedState::Positive,
+    }
+}
+
+#[logic]
+#[requires(0 <= ix && ix < a.len() && a[ix] === AssignedState::Unset)]
+#[requires(eventually_sat_complete_formula_inner(a.set(ix, v), f))]
+#[ensures(eventually_sat_complete_formula_inner(a, f))]
+fn lemma_extensionSat_baseSat(f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
+
+#[logic]
+#[requires(0 <= ix && ix < a.len() && a[ix] === AssignedState::Unset)]
+#[requires(!eventually_sat_complete_formula_inner(a.set(ix, AssignedState::Positive), f))]
+#[requires(!eventually_sat_complete_formula_inner(a.set(ix, AssignedState::Negative), f))]
+#[ensures(!eventually_sat_complete_formula_inner(a, f))]
+fn lemma_extensionsUnsat_baseUnsat(a: Seq<AssignedState>, ix: Int, f: Formula) {
+    compatible_inner(a, a.set(ix, AssignedState::Positive));
+    compatible_inner(a, a.set(ix, AssignedState::Negative));
+}
+
+
 impl Assignments {
-    #[trusted]
-    #[ensures(forall<i: Int> 0 <= i && i < (@v).len() ==> (@v)[i] === (@result)[i])]
-    #[ensures((@v).len() === (@result).len())]
-    #[ensures(*v === result)]
-    pub fn clone_assignment_vector(&self, v: &Vec<AssignedState>) -> Vec<AssignedState> {
+    #[ensures(forall<i: Int> 0 <= i && i < (@self).len() ==> (@self)[i] === (@result)[i])]
+    #[ensures((@self).len() === (@result).len())]
+    #[ensures(@*self == @result)]
+    pub fn clone(&self) -> Self {
         let mut out = Vec::new();
         let mut i: usize = 0;
-        #[invariant(loop_invariant, 0 <= @i && @i <= (@v).len())]
-        #[invariant(equality, forall<j: Int> 0 <= j && j < @i ==> (@out)[j] === (@v)[j])]
-        while i < v.len() {
-            let curr = v[i];
+        #[invariant(loop_invariant, 0 <= @i && @i <= (@self).len())]
+        #[invariant(equality, forall<j: Int> 0 <= j && j < @i ==> (@out)[j] === (@self)[j])]
+        #[invariant(len, (@out).len() === @i)]
+        while i < self.0.len() {
+            let curr = self.0[i];
             out.push(curr.clone());
             i += 1;
         }
-        return out;
-    }
-
-    #[ensures(forall<i: Int> 0 <= i && i < (@self).len() ==> (@self)[i] === (@result)[i])]
-    #[ensures((@self).len() === (@result).len())]
-    #[ensures(*self === result)]
-    pub fn clone(&self) -> Self {
-        Assignments(self.clone_assignment_vector(&self.0))
+        Assignments(out)
     }
 
     #[requires(f.invariant())]
@@ -132,20 +231,6 @@ impl Assignments {
             i += 1
         }
         Assignments(assign)
-    }
-
-    #[requires(_f.invariant())]
-    #[requires(self.invariant(*_f))]
-    #[requires(0 <= @ix && @ix < (@self).len())]
-    #[requires((@self)[@ix] === AssignedState::Unset)]
-    #[ensures((^self).invariant(*_f))]
-    #[ensures((*self).compatible(^self))]
-    //#[ensures(@^self === (@*self).set(@ix, s))]
-    #[ensures((@^self)[@ix] === s)]
-    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
-        j != @ix ==> (@*self)[j] === (@^self)[j]))]
-    pub fn assign(&mut self, ix: usize, s: AssignedState, _f: &Formula) {
-        self.0[ix] = s;
     }
 
     #[requires(!self.complete())]
@@ -175,25 +260,27 @@ impl Assignments {
     #[requires(0 <= @i && @i < (@f.clauses).len())]
     #[ensures((^self).invariant(*f))]
     #[ensures((*self).compatible(^self))]
-    #[ensures(f.eventually_unsat(*self) ==> f.eventually_unsat(^self))] // Checks out
-    #[ensures(f.eventually_sat(^self) ==> f.eventually_sat(*self))] // Checks out
-    #[ensures(f.eventually_sat(*self) ==> f.eventually_sat(^self))] // TODO
-    //#[ensures(f.eventually_unsat(^self) ==> f.eventually_unsat(*self))] // TODO
+    #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))] 
     pub fn unit_prop_once(&mut self, i: usize, f: &Formula) -> bool {
         let clause = &f.clauses[i];
         let old_a = Ghost::record(&self);
         proof_assert! { ^self === ^@old_a }
         if clause.check_if_unit(self, f) {
             let lit = clause.get_unit(self, f);
-            proof_assert! {
-                 eventually_sat_formula_inner(@self, *f) ==>
-                 eventually_sat_formula_inner((@self).set(@lit.idx, bool_to_assignedstate(lit.polarity)), *f)
-            }
+            proof_assert! { (forall<j: Int> 0 <= j && j < (@clause).len() ==> 0 <= @(@clause)[j].idx && @(@clause)[j].idx < (@self).len()) }
+            proof_assert! {{lemma_unitClauseLiteralFalse_tauNotSatisfiable(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true}}
+            proof_assert! { (forall<j: Int> 0 <= j && j < (@clause).len() && !(@(@clause)[j].idx === @lit.idx) ==> !((@self)[@(@clause)[j].idx] === AssignedState::Unset)) }
+            proof_assert! { (forall<j: Int, k: Int> 0 <= j && j < (@clause).len() && k < j ==> !(@(@clause)[k].idx === @(@clause)[j].idx)) }
+            proof_assert! {{lemma_unit_forces(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true}}
             if lit.polarity {
                 self.0[lit.idx] = AssignedState::Positive;
             } else {
                 self.0[lit.idx] = AssignedState::Negative;
             }
+            proof_assert! { @^self == (@*@old_a).set(@lit.idx, bool_to_assignedstate(lit.polarity)) }
+            proof_assert! {{ lemma_extensionSat_baseSat(*f, @@old_a, @lit.idx, bool_to_assignedstate(lit.polarity)); true }}
+            proof_assert! {{ lemma_extensionsUnsat_baseUnsat(@@old_a, @lit.idx, *f); true }}
+            proof_assert! { ^self === ^@old_a }
             return true;
         }
         return false;
@@ -202,10 +289,7 @@ impl Assignments {
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
     #[ensures((^self).invariant(*f))]
-    #[ensures(f.eventually_unsat(*self) ==> f.eventually_unsat(^self))] // Checks out
-    #[ensures(f.eventually_sat(^self) ==> f.eventually_sat(*self))] // Checks out
-    #[ensures(f.eventually_sat(*self) ==> f.eventually_sat(^self))] // TODO
-    #[ensures(f.eventually_unsat(^self) ==> f.eventually_unsat(*self))] // TODO
+    #[ensures(f.eventually_sat_complete(^self) === f.eventually_sat_complete(*self))]
     #[ensures((*self).compatible(^self))]
     pub fn unit_propagate(&mut self, f: &Formula) -> bool {
         let old_a = Ghost::record(&self);
@@ -215,10 +299,7 @@ impl Assignments {
         #[invariant(ai, self.invariant(*f))]
         #[invariant(proph, ^self === ^@old_a)]
         #[invariant(compat, (*@old_a).compatible(*self))]
-        #[invariant(maintains_sat, f.eventually_sat(*@old_a) ==> f.eventually_sat(*self))]
-        #[invariant(maintains_unsat2, f.eventually_unsat(*self) ==> f.eventually_unsat(*@old_a))]
-        #[invariant(maintains_unsat, f.eventually_unsat(*@old_a) ==> f.eventually_unsat(*self))]
-        #[invariant(maintains_sat2, f.eventually_sat(*self) ==> f.eventually_sat(*@old_a))]
+        #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) === f.eventually_sat_complete(*self))]
         while i < f.clauses.len() {
             if self.unit_prop_once(i, f) {
                 out = true;
@@ -231,17 +312,14 @@ impl Assignments {
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
     #[ensures((^self).invariant(*f))]
-    #[ensures(f.eventually_sat(*self) ==> f.eventually_sat(^self))] // OK for Inner
-    #[ensures(f.eventually_unsat(*self) === f.eventually_unsat(^self))] // Needs ===
+    #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))] // OK for Inner
     #[ensures((*self).compatible(^self))]
     pub fn do_unit_propagation(&mut self, f: &Formula) {
         let old_a = Ghost::record(&self);
         #[invariant(ai, self.invariant(*f))]
         #[invariant(proph, ^self === ^@old_a)]
         #[invariant(compat, (*@old_a).compatible(*self))]
-        #[invariant(maintains_sat, f.eventually_sat(*@old_a) ==> f.eventually_sat(*self))]
-        #[invariant(maintains_unsat, f.eventually_unsat(*@old_a) === f.eventually_unsat(*self))]
-        while self.unit_propagate(f) {
-        }
+        #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) ==> f.eventually_sat_complete(*self))]
+        while self.unit_propagate(f) {}
     }
 }
