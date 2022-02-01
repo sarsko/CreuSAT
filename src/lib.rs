@@ -7,7 +7,6 @@ extern crate creusot_contracts;
 use creusot_contracts::*;
 use creusot_contracts::std::*;
 
-pub mod ghost;
 pub mod lit;
 pub mod clause;
 pub mod assignments;

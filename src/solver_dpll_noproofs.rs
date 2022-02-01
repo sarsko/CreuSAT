@@ -94,12 +94,6 @@ impl Assignments {
     }
 }
 
-/*
-#[trusted]
-#[ensures(result === true ==> (l === r))]
-#[ensures(result === false ==> (l != r))]
-#[ensures(result === (l === r))]
-*/
 fn eqb(l: bool, r: bool) -> bool {
     l == r
 }

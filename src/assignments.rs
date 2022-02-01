@@ -2,7 +2,6 @@ extern crate creusot_contracts;
 
 use creusot_contracts::*;
 use creusot_contracts::std::*;
-use crate::ghost;
 use crate::lit::*;
 use crate::clause::*;
 use crate::logic::*;
@@ -107,12 +106,6 @@ impl Assignments {
     }
 }
 
-#[logic]
-#[ensures(result === !b)]
-fn lnot(b: bool) -> bool {
-    !b
-}
-
 #[logic] 
 #[requires(f.invariant())]
 #[requires(assignments_invariant(a, f))]
@@ -191,13 +184,6 @@ fn flip_v(v: AssignedState) -> AssignedState {
     }
 }
 
-/*
-#[logic]
-#[requires(eventually_sat_complete_formula_inner(a, f))]
-#[ensures(eventually_sat_formula_inner(a, f))]
-fn lemma_eventually_sat_complete_implies_eventually_sat(a: Seq<AssignedState>, f: Formula) {}
-*/
-
 #[logic]
 #[requires(0 <= ix && ix < a.len() && a[ix] === AssignedState::Unset)]
 #[requires(eventually_sat_complete_formula_inner(a.set(ix, v), f))]
@@ -217,27 +203,23 @@ fn lemma_extensionsUnsat_baseUnsat(a: Seq<AssignedState>, ix: Int, f: Formula) {
 
 impl Assignments {
     #[trusted]
-    #[ensures(forall<i: Int> 0 <= i && i < (@v).len() ==> (@v)[i] === (@result)[i])]
-    #[ensures((@v).len() === (@result).len())]
-    #[ensures(*v === result)]
-    pub fn clone_assignment_vector(&self, v: &Vec<AssignedState>) -> Vec<AssignedState> {
-        let mut out = Vec::new();
-        let mut i: usize = 0;
-        #[invariant(loop_invariant, 0 <= @i && @i <= (@v).len())]
-        #[invariant(equality, forall<j: Int> 0 <= j && j < @i ==> (@out)[j] === (@v)[j])]
-        while i < v.len() {
-            let curr = v[i];
-            out.push(curr.clone());
-            i += 1;
-        }
-        return out;
-    }
-
     #[ensures(forall<i: Int> 0 <= i && i < (@self).len() ==> (@self)[i] === (@result)[i])]
     #[ensures((@self).len() === (@result).len())]
-    #[ensures(*self === result)]
+    #[ensures(@*self === @result)]
     pub fn clone(&self) -> Self {
-        Assignments(self.clone_assignment_vector(&self.0))
+        let mut out = Vec::new();
+        let mut i: usize = 0;
+        #[invariant(loop_invariant, 0 <= @i && @i <= (@self).len())]
+        #[invariant(equality, forall<j: Int> 0 <= j && j < @i ==> (@out)[j] === (@self)[j])]
+        #[invariant(len, (@out).len() === @i)]
+        while i < self.0.len() {
+            let curr = self.0[i];
+            let cl = curr.clone();
+            //proof_assert! { cl == curr}
+            out.push(cl);
+            i += 1;
+        }
+        Assignments(out)
     }
 
     #[requires(f.invariant())]
@@ -300,13 +282,6 @@ impl Assignments {
         let clause = &f.clauses[i];
         let old_a = Ghost::record(&self);
         proof_assert! { ^self === ^@old_a }
-        // Somehow fails without his ..?
-        /*
-        proof_assert! { sat_formula_inner(@self, *f) ===
-            (forall<i: Int> 0 <= i && i < (@((*f).clauses)).len() ==>
-            sat_clause_inner(@self, (@((*f).clauses))[i]))
-        }
-        */
         if clause.check_if_unit(self, f) {
             let lit = clause.get_unit(self, f);
             proof_assert! { (forall<j: Int> 0 <= j && j < (@clause).len() ==> 0 <= @(@clause)[j].idx && @(@clause)[j].idx < (@self).len()) }

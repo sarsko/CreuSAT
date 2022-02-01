@@ -6,7 +6,6 @@ use crate::lit::*;
 use crate::assignments::*;
 use crate::formula::*;
 use crate::logic::*;
-use crate::ghost::*;
 
 pub struct Clause(pub Vec<Lit>);
 
