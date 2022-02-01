@@ -5,19 +5,7 @@ Overview of the repository: \
 [/cnfs](/cnfs/) - Some example cnf files which are not used in the tests.\
 [/tests](/tests/) - Directory for tests. Currently tests on 1000 unsat instances
 and 1000 sat instances. \
-[/mlws](/mlws/) - Formally verified(and naïve) WhyML solver which
-[solver_mirror.rs](/src/solver_mirror.rs) is based on.
-
-### Current status
-
-[solver_mirror.rs](/src/solver_mirror.rs) is verified to be correct. \
-Work was started on [solver_dpll.rs](/src/solver_dpll.rs), but this work was
-abandoned when I realized the approach was flawed. This led to
-[solver_dpll_noproofs.rs](/src/solver_dpll_noproofs.rs), which is proven safe,
-and is currectly in the process of being proven correct - see:
-[solver_dpll_withproofs.rs](/src/solver_dpll_withproofs.rs) and
-[formula_state.rs](/src/formula_state.rs)
-
+[/mlws](/mlws/) - Some WhyML files, among them two verified solvers.
 
 ### How to run
 
@@ -39,5 +27,13 @@ Error checking is minimal and the parser may panic.
 Running the verified versions is currently not supported, as pass-through
 compilation has to be implemented in Creusot first.
 
-For instructions on how to prove the verified solvers, see
-the [Creusot](https://github.com/xldenis/creusot) repository
+### How to prove the solver
+
+1. Follow the installation procedure for [Creusot](https://github.com/xldenis/creusot#installing)
+2. Clone this repo
+3. Run:
+```
+~/[PATH_TO_CREUSOT]/creusot/mlcfg ~/[PATH_TO_THIS_REPO]/sat/src/lib.rs > ~/[PATH_TO_THIS_REPO]/sat/mlcfgs/lib.mlcfg && ~/[PATH_TO_CREUSOT]/creusot/ide ~/[PATH_TO_THIS_REPO]/sat/mlcfgs/lib.mlcfg
+```
+4. Prove the solver in the Why3 IDE. It should work to select the lib.mlcfg node and press <kbd>3</kbd>
+
