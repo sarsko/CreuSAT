@@ -202,10 +202,9 @@ fn lemma_extensionsUnsat_baseUnsat(a: Seq<AssignedState>, ix: Int, f: Formula) {
 
 
 impl Assignments {
-    #[trusted]
     #[ensures(forall<i: Int> 0 <= i && i < (@self).len() ==> (@self)[i] === (@result)[i])]
     #[ensures((@self).len() === (@result).len())]
-    #[ensures(@*self === @result)]
+    #[ensures(@*self == @result)]
     pub fn clone(&self) -> Self {
         let mut out = Vec::new();
         let mut i: usize = 0;
@@ -214,9 +213,7 @@ impl Assignments {
         #[invariant(len, (@out).len() === @i)]
         while i < self.0.len() {
             let curr = self.0[i];
-            let cl = curr.clone();
-            //proof_assert! { cl == curr}
-            out.push(cl);
+            out.push(curr.clone());
             i += 1;
         }
         Assignments(out)

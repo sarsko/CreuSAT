@@ -2138,39 +2138,6 @@ module Lib_Assignments_LemmaExtensionsUnsatBaseUnsat_Impl
    = 
     let _ = CompatibleInner0.compatible_inner a (Seq.set a ix (Type.Lib_Assignments_AssignedState_Positive)) in let _ = CompatibleInner0.compatible_inner a (Seq.set a ix (Type.Lib_Assignments_AssignedState_Negative)) in ()
 end
-module Lib_Assignments_Impl3_Clone_Interface
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use prelude.Prelude
-  use Type
-  clone Lib_Assignments_Impl1_ModelTy as ModelTy0
-  clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model1 with type t = Type.lib_assignments_assignments,
-  type ModelTy0.modelTy = ModelTy0.modelTy
-  clone Lib_Assignments_Impl1_Model_Interface as Model0
-  val clone' [@cfg:stackify] (self : Type.lib_assignments_assignments) : Type.lib_assignments_assignments
-    ensures { Model0.model self = Model0.model result }
-    ensures { Seq.length (Model1.model self) = Seq.length (Model0.model result) }
-    ensures { forall i : (int) . 0 <= i && i < Seq.length (Model1.model self) -> Seq.get (Model1.model self) i = Seq.get (Model0.model result) i }
-    
-end
-module Lib_Assignments_Impl3_Clone
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use prelude.Prelude
-  use Type
-  clone Lib_Assignments_Impl1_ModelTy as ModelTy0
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.lib_assignments_assignedstate
-  clone Lib_Assignments_Impl1_Model as Model0 with function Model0.model = Model2.model
-  clone CreusotContracts_Logic_Model_Impl0_Model as Model1 with type t = Type.lib_assignments_assignments,
-  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model0.model
-  val clone' [@cfg:stackify] (self : Type.lib_assignments_assignments) : Type.lib_assignments_assignments
-    ensures { Model0.model self = Model0.model result }
-    ensures { Seq.length (Model1.model self) = Seq.length (Model0.model result) }
-    ensures { forall i : (int) . 0 <= i && i < Seq.length (Model1.model self) -> Seq.get (Model1.model self) i = Seq.get (Model0.model result) i }
-    
-end
 module CreusotContracts_Std1_Vec_Impl1_New_Interface
   type t   
   use seq.Seq
@@ -2192,6 +2159,39 @@ module CreusotContracts_Std1_Vec_Impl1_New
   val new [@cfg:stackify] () : Type.creusotcontracts_std1_vec_vec t
     ensures { Seq.length (Model0.model result) = 0 }
     
+end
+module CreusotContracts_Std1_Clone_Clone_Clone_Interface
+  type self   
+  use prelude.Prelude
+  val clone' [@cfg:stackify] (self : self) : self
+    ensures { result = self }
+    
+end
+module CreusotContracts_Std1_Clone_Clone_Clone
+  type self   
+  use prelude.Prelude
+  val clone' [@cfg:stackify] (self : self) : self
+    ensures { result = self }
+    
+end
+module CreusotContracts_Std1_Clone_Impl0_Clone_Interface
+  type t   
+  use prelude.Prelude
+  val clone' [@cfg:stackify] (self : t) : t
+    ensures { result = self }
+    
+end
+module CreusotContracts_Std1_Clone_Impl0_Clone
+  type t   
+  use prelude.Prelude
+  val clone' [@cfg:stackify] (self : t) : t
+    ensures { result = self }
+    
+end
+module CreusotContracts_Std1_Clone_Impl0
+  type t   
+  clone CreusotContracts_Std1_Clone_Impl0_Clone_Interface as Clone0 with type t = t
+  clone CreusotContracts_Std1_Clone_Clone_Clone_Interface as Clone1 with type self = t, val clone' = Clone0.clone'
 end
 module CreusotContracts_Logic_Model_Impl1_ModelTy
   type t   
@@ -2252,6 +2252,166 @@ module CreusotContracts_Std1_Vec_Impl1_Push
   val push [@cfg:stackify] (self : borrowed (Type.creusotcontracts_std1_vec_vec t)) (v : t) : ()
     ensures { Model0.model ( ^ self) = Seq.snoc (Model1.model self) v }
     
+end
+module Lib_Assignments_Impl3_Clone_Interface
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.Int32
+  use prelude.Prelude
+  use Type
+  clone Lib_Assignments_Impl1_ModelTy as ModelTy0
+  clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model1 with type t = Type.lib_assignments_assignments,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  clone Lib_Assignments_Impl1_Model_Interface as Model0
+  val clone' [@cfg:stackify] (self : Type.lib_assignments_assignments) : Type.lib_assignments_assignments
+    ensures { Seq.(==) (Model0.model self) (Model0.model result) }
+    ensures { Seq.length (Model1.model self) = Seq.length (Model0.model result) }
+    ensures { forall i : (int) . 0 <= i && i < Seq.length (Model1.model self) -> Seq.get (Model1.model self) i = Seq.get (Model0.model result) i }
+    
+end
+module Lib_Assignments_Impl3_Clone
+  use mach.int.Int
+  use mach.int.Int32
+  use mach.int.UInt64
+  use seq.Seq
+  use prelude.Prelude
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.lib_assignments_assignedstate
+  clone Lib_Assignments_Impl1_Model as Model2 with function Model0.model = Model1.model
+  clone Lib_Assignments_Impl1_ModelTy as ModelTy0
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.lib_assignments_assignments,
+  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model2.model
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve5 with type self = Type.creusotcontracts_std1_vec_vec (Type.lib_assignments_assignedstate)
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve4 with type self = Type.lib_assignments_assignments
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve3 with type self = ()
+  clone CreusotContracts_Std1_Clone_Impl0_Clone_Interface as Clone0 with type t = Type.lib_assignments_assignedstate
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve2 with type self = Type.lib_assignments_assignedstate
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve1 with type self = Type.lib_assignments_assignedstate
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy1 with type t = Type.lib_assignments_assignedstate
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve0 with type self = usize
+  clone CreusotContracts_Logic_Model_Impl1_Model as Model4 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_assignments_assignedstate),
+  type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model1.model
+  clone CreusotContracts_Std1_Vec_Impl1_Push_Interface as Push0 with type t = Type.lib_assignments_assignedstate,
+  function Model0.model = Model1.model, function Model1.model = Model4.model
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model3 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_assignments_assignedstate),
+  type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model1.model
+  clone CreusotContracts_Std1_Vec_Impl3_Index_Interface as Index0 with type t = Type.lib_assignments_assignedstate,
+  function Model0.model = Model3.model
+  clone CreusotContracts_Std1_Vec_Impl1_Len_Interface as Len0 with type t = Type.lib_assignments_assignedstate,
+  function Model0.model = Model3.model
+  clone CreusotContracts_Std1_Vec_Impl1_New_Interface as New0 with type t = Type.lib_assignments_assignedstate,
+  function Model0.model = Model1.model
+  let rec cfg clone' [@cfg:stackify] (self : Type.lib_assignments_assignments) : Type.lib_assignments_assignments
+    ensures { Seq.(==) (Model2.model self) (Model2.model result) }
+    ensures { Seq.length (Model0.model self) = Seq.length (Model2.model result) }
+    ensures { forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> Seq.get (Model0.model self) i = Seq.get (Model2.model result) i }
+    
+   = 
+  var _0 : Type.lib_assignments_assignments;
+  var self_1 : Type.lib_assignments_assignments;
+  var out_2 : Type.creusotcontracts_std1_vec_vec (Type.lib_assignments_assignedstate);
+  var i_3 : usize;
+  var _4 : ();
+  var _5 : ();
+  var _6 : bool;
+  var _7 : usize;
+  var _8 : usize;
+  var _9 : Type.creusotcontracts_std1_vec_vec (Type.lib_assignments_assignedstate);
+  var curr_10 : Type.lib_assignments_assignedstate;
+  var _11 : Type.lib_assignments_assignedstate;
+  var _12 : Type.creusotcontracts_std1_vec_vec (Type.lib_assignments_assignedstate);
+  var _13 : usize;
+  var _14 : ();
+  var _15 : borrowed (Type.creusotcontracts_std1_vec_vec (Type.lib_assignments_assignedstate));
+  var _16 : Type.lib_assignments_assignedstate;
+  var _17 : Type.lib_assignments_assignedstate;
+  var _18 : ();
+  var _19 : ();
+  var _20 : ();
+  var _21 : Type.creusotcontracts_std1_vec_vec (Type.lib_assignments_assignedstate);
+  {
+    self_1 <- self;
+    goto BB0
+  }
+  BB0 {
+    out_2 <- New0.new ();
+    goto BB1
+  }
+  BB1 {
+    i_3 <- (0 : usize);
+    goto BB2
+  }
+  BB2 {
+    goto BB3
+  }
+  BB3 {
+    goto BB4
+  }
+  BB4 {
+    invariant loop_invariant { 0 <= UInt64.to_int i_3 && UInt64.to_int i_3 <= Seq.length (Model0.model self_1) };
+    invariant equality { forall j : (int) . 0 <= j && j < UInt64.to_int i_3 -> Seq.get (Model1.model out_2) j = Seq.get (Model0.model self_1) j };
+    invariant len { Seq.length (Model1.model out_2) = UInt64.to_int i_3 };
+    goto BB5
+  }
+  BB5 {
+    assume { Resolve0.resolve _7 };
+    _7 <- i_3;
+    _9 <- Type.lib_assignments_assignments_Assignments_0 self_1;
+    _8 <- Len0.len _9;
+    goto BB6
+  }
+  BB6 {
+    _6 <- _7 < _8;
+    switch (_6)
+      | False -> goto BB11
+      | _ -> goto BB7
+      end
+  }
+  BB7 {
+    _12 <- Type.lib_assignments_assignments_Assignments_0 self_1;
+    assume { Resolve0.resolve _13 };
+    _13 <- i_3;
+    _11 <- Index0.index _12 _13;
+    goto BB8
+  }
+  BB8 {
+    assume { Resolve1.resolve curr_10 };
+    curr_10 <- _11;
+    assume { Resolve2.resolve _11 };
+    _15 <- borrow_mut out_2;
+    out_2 <-  ^ _15;
+    _17 <- curr_10;
+    assume { Resolve1.resolve curr_10 };
+    _16 <- Clone0.clone' _17;
+    goto BB9
+  }
+  BB9 {
+    _14 <- Push0.push _15 _16;
+    goto BB10
+  }
+  BB10 {
+    i_3 <- i_3 + (1 : usize);
+    _5 <- ();
+    assume { Resolve3.resolve _5 };
+    goto BB4
+  }
+  BB11 {
+    assume { Resolve4.resolve self_1 };
+    assume { Resolve0.resolve i_3 };
+    _4 <- ();
+    assume { Resolve3.resolve _4 };
+    assume { Resolve5.resolve _21 };
+    _21 <- out_2;
+    _0 <- Type.Lib_Assignments_Assignments _21;
+    goto BB12
+  }
+  BB12 {
+    goto BB13
+  }
+  BB13 {
+    return _0
+  }
+  
 end
 module Lib_Assignments_Impl3_New_Interface
   use prelude.Prelude
