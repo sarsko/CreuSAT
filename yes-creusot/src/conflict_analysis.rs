@@ -18,6 +18,11 @@ pub enum Conflict {
 }
 
 #[trusted]
+#[ensures(match result {
+    Conflict::Ground => true,
+    Conflict::Unit(lit) => 0 <= @lit.idx && @lit.idx < @f.num_vars,
+    Conflict::Learned(level, lit, reason) => 0 <= @lit.idx && @lit.idx < @f.num_vars, 
+})]
 pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.trail.len() - 1;
     if decisionlevel == 0 {

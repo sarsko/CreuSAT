@@ -17,6 +17,17 @@ use crate::conflict_analysis::*;
 // Requires all clauses to be at least binary.
 // Returns either () if the unit propagation went fine, or a cref if a conflict was found.
 #[trusted]
+#[requires(f.invariant())]
+#[requires(a.invariant(@f.num_vars))]
+#[requires(trail.invariant(@f.num_vars))]
+#[requires(watches.invariant(@f.num_vars))]
+#[requires(@f.num_vars < @usize::MAX/2)]
+#[ensures(@(^f).num_vars === @f.num_vars)]
+#[ensures((^f).invariant())]
+#[ensures((^a).invariant(@f.num_vars))]
+#[ensures((^trail).invariant(@f.num_vars))]
+#[ensures((^watches).invariant(@f.num_vars))]
+#[ensures(@f.num_vars < @usize::MAX/2)]
 fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
     let mut i = 0;
     let d = trail.trail.len() - 1;
@@ -89,24 +100,45 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit) {
     trail.enq_assignment(lit, Reason::Unit);
 }
 
-#[trusted]
+//#[trusted]
 #[requires(f.invariant())]
 #[requires(a.invariant(@f.num_vars))]
 #[requires(trail.invariant(@f.num_vars))]
 #[requires(watches.invariant(@f.num_vars))]
 #[requires(@f.num_vars < @usize::MAX/2)]
+//#[ensures(result ==> f.eventually_sat(*a))]
+//#[ensures(result === false ==> !f.eventually_sat_complete(*a))]
 fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) -> bool {
+    #[invariant(maintains_f, f.invariant())]
+    #[invariant(maintains_a, a.invariant(@f.num_vars))]
+    #[invariant(maintains_t, trail.invariant(@f.num_vars))]
+    #[invariant(maintains_w, watches.invariant(@f.num_vars))]
+    #[invariant(num_vars, @f.num_vars < @usize::MAX/2)]
     loop {
+        #[invariant(maintains_f2, f.invariant())]
+        #[invariant(maintains_a2, a.invariant(@f.num_vars))]
+        #[invariant(maintains_t2, trail.invariant(@f.num_vars))]
+        #[invariant(maintains_w2, watches.invariant(@f.num_vars))]
+        #[invariant(num_vars2, @f.num_vars < @usize::MAX/2)]
         loop {
-            let dlevel = trail.trail.len() - 1;
             match unit_propagate(f, a, trail, watches) {
+                //_ => return false,
                 Ok(_) => { break; },
                 Err(cref) => {
                     match analyze_conflict(f, a, trail, cref) {
                         Conflict::Ground => { return false; },
                         Conflict::Unit(lit) => {
+
+                            /*
+                            #[requires(0 <= @lit.idx && @lit.idx < (@trail.vardata).len())]
+                            #[requires(0 <= @lit.idx && @lit.idx < (@a).len())]
+                            #[requires(trail.invariant((@trail.vardata).len()))]
+                            #[requires(a.invariant((@trail.vardata).len()))]
+                            */
                             learn_unit(a, trail, lit);
                         }
+                        _ => {}
+                        /*
                         Conflict::Learned(level, lit, clause) => {
                             a.cancel_until(trail, level);
                             trail.trail.push(Vec::new());
@@ -114,11 +146,13 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
                             let cref = f.add_clause(&Clause(clause), watches);
                             trail.enq_assignment(lit, Reason::Long(cref));
                         }
+                    */
                     }
                 },
             }
         }
         if let Some(lit) = a.find_unassigned_lit() {
+            let lit = lit; // Due to issue #273
             trail.trail.push(Vec::new());
             a.set_assignment(lit);
             trail.enq_assignment(lit, Reason::Decision);

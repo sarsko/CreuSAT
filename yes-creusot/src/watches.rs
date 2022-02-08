@@ -169,6 +169,7 @@ impl Watches {
     #[ensures((^self).invariant(@f.num_vars))]
     #[ensures((^a).invariant(@f.num_vars))]
     #[ensures((@self.watches).len() === (@(^self).watches).len())]
+    #[ensures((@(^trail).trail).len() === 1)]
     pub fn init_watches(&mut self, f: &Formula, trail: &mut Trail, a: &mut Assignments) -> bool {
         let mut i = 0;
         let old_self = Ghost::record(&self);

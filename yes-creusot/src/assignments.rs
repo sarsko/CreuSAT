@@ -48,10 +48,16 @@ impl Assignments {
     }
     */
 
+    //#[requires(self.invariant(n))]
+    //#[requires(self.invariant(n))]
+    //#[ensures(self.compatible(^self))]
+    //#[ensures((@^self)[@lit.idx] === Some(lit.polarity))]
+    //#[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
+    //j != @ix ==> (@*self)[j] === (@^self)[j]))]
     #[requires((@self)[@lit.idx] === None)]
     #[requires(0 <= @lit.idx && @lit.idx < (@self).len())]
     #[ensures((@^self)[@lit.idx] === Some(lit.polarity))]
-    //#[ensures(@^self === (@*self).set(@lit.idx, Some(lit.polarity)))]
+    #[ensures(@^self == (@*self).set(@lit.idx, Some(lit.polarity)))]
     /*
     #[ensures((*self).compatible(^self))]
     #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
@@ -79,8 +85,20 @@ impl Assignments {
         Assignments(assign)
     }
 
+    #[ensures(match result {
+        Some(lit) => (@self)[@lit.idx] === None,
+        None => forall<i : Int> 0 <= i && i < (@self).len() ==> 
+                !((@self)[i] === None)
+    })]
+    #[ensures(match result {
+        Some(lit) => 0 <= @lit.idx && @lit.idx < (@self).len(),
+        None => true
+    })]
     pub fn find_unassigned_lit(&self) -> Option<Lit> {
-        let mut i = 0;
+        let mut i: usize = 0;
+        #[invariant(i_less, 0 <= @i && @i <= (@self).len())]
+        #[invariant(all_set, forall<j : Int> 0 <= j && j < @i ==> 
+            !((@self)[j] === None))]
         while i < self.0.len() {
             let curr = self.0[i];
             match curr {
