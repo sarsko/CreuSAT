@@ -26,30 +26,46 @@ pub struct Watches {
 #[predicate]
 pub fn watches_invariant_internal(w: Seq<Vec<Watcher>>, n: Int) -> bool {
     pearlite! {
-        2 * n === w.len()
+        2 * n === w.len() 
+    }
+}
+
+#[predicate]
+fn watches_invariant_internal2(w: Seq<Vec<Watcher>>, n: Int, f: Formula) -> bool {
+    pearlite! {
+        2 * n === w.len() &&
+        forall<i: Int> 0 <= i && i < w.len() ==>
+        forall<j: Int> 0 <= j && j < (@w[i]).len() ==>
+            @(@w[i])[j].cref < (@f.clauses).len() && 
+            (@(@f.clauses)[@(@w[i])[j].cref]).len() > 1
     }
 }
 
 impl Watches {
     #[predicate]
     //#[ensures(result === watches_invariant_internal(@self.watches, n))]
-    pub fn invariant(self, n: Int) -> bool {
+    pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
             //watches_invariant_internal(@self.watches, n)
-            2 * n === (@self.watches).len()
+            2 * @f.num_vars === (@self.watches).len() &&
+            forall<i: Int> 0 <= i && i < (@self.watches).len() ==>
+            forall<j: Int> 0 <= j && j < (@(@self.watches)[i]).len() ==>
+                @(@(@self.watches)[i])[j].cref < (@f.clauses).len() &&
+                (@(@f.clauses)[@(@(@self.watches)[i])[j].cref]).len() > 1
         }
     }
 }
 
 impl Watches {
     // The way clauses are made and added should really be changed - builder pattern?
-    #[ensures(result.invariant(@num_vars))]
-    pub fn new(num_vars: usize) -> Watches {
+    #[trusted] // TMP (should check out)
+    #[ensures(result.invariant(*f))]
+    pub fn new(f: &Formula) -> Watches {
         let mut i: usize = 0;
         let mut watches = Vec::new();
-        #[invariant(maintains_inv, watches_invariant_internal(@watches, @i))]
-        #[invariant(i_less, @i <= @num_vars)]
-        while i < num_vars {
+        #[invariant(i_less, @i <= @f.num_vars)]
+        #[invariant(maintains_inv, watches_invariant_internal2(@watches, @i, *f))]
+        while i < f.num_vars {
             watches.push(Vec::new());
             watches.push(Vec::new());
             i += 1;
@@ -70,11 +86,14 @@ impl Watches {
 
     // This requires the literal to be watched, otherwise it will panic
     // This method should be updated as we usually know where to look
-    #[requires(!(old_lit === new_lit))]
+    #[trusted] // TMP(became broken from formula invariant)
+    #[requires(self.invariant(*_f))]
+    #[ensures((^self).invariant(*_f))]
+    //#[requires(!(old_lit === new_lit))] // Strictly speaking correctness ?
     #[requires(@old_lit.idx < @usize::MAX/2)]
     #[requires(@new_lit.idx < @usize::MAX/2)]
     #[requires(old_lit.to_watchidx_logic() < (@self.watches).len())]
-    pub fn update_watch(&mut self, old_lit: Lit, new_lit: Lit, cref: usize) {
+    pub fn update_watch(&mut self, old_lit: Lit, new_lit: Lit, cref: usize, _f: &Formula) {
         //assert!(old_lit != new_lit);
         let mut i = 0;
         let old_idx = old_lit.to_watchidx();
@@ -161,12 +180,12 @@ impl Watches {
     // #[requires(no_duplicates)] // TODO
     #[trusted] // REMOVE
     #[requires(@f.num_vars < @usize::MAX/2)]
-    #[requires(self.invariant(@f.num_vars))]
+    #[requires(self.invariant(*f))]
     #[requires(f.invariant())]
     #[requires(a.invariant(@f.num_vars))]
     #[requires(trail.invariant(@f.num_vars))]
     #[ensures((^trail).invariant(@f.num_vars))]
-    #[ensures((^self).invariant(@f.num_vars))]
+    #[ensures((^self).invariant(*f))]
     #[ensures((^a).invariant(@f.num_vars))]
     #[ensures((@self.watches).len() === (@(^self).watches).len())]
     #[ensures((@(^trail).trail).len() === 1)]
@@ -174,7 +193,7 @@ impl Watches {
         let mut i = 0;
         let old_self = Ghost::record(&self);
         #[invariant(same_len, (@(*self).watches).len() === (@(*@old_self).watches).len())]
-        #[invariant(maintains_invariant, self.invariant(@f.num_vars))]
+        #[invariant(maintains_invariant, self.invariant(*f))]
         #[invariant(intact, ^self === ^@old_self)]
         while i < f.clauses.len() {
             let clause = &f.clauses[i].0;
@@ -191,12 +210,12 @@ impl Watches {
                         proof_assert! { (0 <= @lit.idx && @lit.idx < (@a).len()) }
                         proof_assert! { (trail.invariant((@trail.vardata).len())) }
                         proof_assert! { (a.invariant((@trail.vardata).len())) }
-                        //learn_unit(a, trail, lit);
+                        //learn_unit(a, trail, lit, f);
                     }
                 }
             } else {
                 let mut j = 0;
-                #[invariant(maintains_invariant, self.invariant(@f.num_vars))]
+                #[invariant(maintains_invariant, self.invariant(*f))]
                 #[invariant(same_len, (@(*self).watches).len() === (@(*@old_self).watches).len())]
                 #[invariant(intact, ^self === ^@old_self)]
                 while j < 2 {

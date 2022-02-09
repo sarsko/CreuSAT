@@ -48,13 +48,15 @@ impl Assignments {
     }
     */
 
-    //#[requires(self.invariant(n))]
+    #[trusted] // TMP
+    #[requires(self.invariant(@_f.num_vars))]
+    #[ensures((^self).invariant(@_f.num_vars))]
     //#[requires(self.invariant(n))]
     //#[ensures(self.compatible(^self))]
     //#[ensures((@^self)[@lit.idx] === Some(lit.polarity))]
     //#[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
     //j != @ix ==> (@*self)[j] === (@^self)[j]))]
-    #[requires((@self)[@lit.idx] === None)]
+    //#[requires((@self)[@lit.idx] === None)] // This is a correctness req
     #[requires(0 <= @lit.idx && @lit.idx < (@self).len())]
     #[ensures((@^self)[@lit.idx] === Some(lit.polarity))]
     #[ensures(@^self == (@*self).set(@lit.idx, Some(lit.polarity)))]
@@ -63,7 +65,8 @@ impl Assignments {
     #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
         j != @ix ==> (@*self)[j] === (@^self)[j]))]
         */
-    pub fn set_assignment(&mut self, lit: Lit) {
+    #[ensures((@^self).len() === (@self).len())]
+    pub fn set_assignment(&mut self, lit: Lit, _f: &Formula) {
         /*
         if !self.0[l.idx].is_none() {
             panic!("Assignment already set.");
@@ -85,6 +88,7 @@ impl Assignments {
         Assignments(assign)
     }
 
+    #[trusted] // TMP
     #[ensures(match result {
         Some(lit) => (@self)[@lit.idx] === None,
         None => forall<i : Int> 0 <= i && i < (@self).len() ==> 
@@ -112,14 +116,15 @@ impl Assignments {
         None
     }   
 
-    #[requires(@level >= (@trail.trail).len())]
+    #[trusted] // TMP
+    #[requires(@level <= (@trail.trail).len())]
     #[requires(trail.invariant((@trail.vardata).len()))]
     #[requires(self.invariant((@trail.vardata).len()))]
     #[ensures(trail.invariant((@trail.vardata).len()))]
     #[ensures((^self).invariant((@trail.vardata).len()))]
     #[ensures((^trail).invariant((@trail.vardata).len()))]
     #[ensures((@(^trail).vardata).len() === (@trail.vardata).len())]
-    //#[ensures((@(^trail).trail).len() === @level)]
+    #[ensures((@(^trail).trail).len() === @level)]
     pub fn cancel_until(&mut self, trail: &mut Trail, level: usize) {
         let mut i: usize = trail.trail.len();
         let old_self = Ghost::record(&self);

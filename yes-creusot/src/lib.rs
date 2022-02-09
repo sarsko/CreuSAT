@@ -1,3 +1,4 @@
+#![recursion_limit = "256"]
 extern crate creusot_contracts;
 
 use creusot_contracts::*;
@@ -13,6 +14,3 @@ pub mod formula;
 pub mod lit;
 pub mod trail;
 pub mod watches;
-
-
-pub mod ghost;

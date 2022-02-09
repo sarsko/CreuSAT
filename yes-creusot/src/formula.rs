@@ -42,6 +42,11 @@ impl Formula {
     */
     // TODO FIX
     #[trusted]
+    #[requires(self.invariant())]
+    #[ensures(watches.invariant(*self))]
+    #[ensures((^self).invariant())]
+    #[ensures((^watches).invariant(*self))]
+    #[ensures(@(^self).num_vars === @self.num_vars)]
     pub fn add_clause(&mut self, clause: &Clause, watches: &mut Watches) -> usize {
         //self.clauses.push(clause.clone());
         let cref = self.clauses.len() - 1;

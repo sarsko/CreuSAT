@@ -52,6 +52,9 @@ impl Trail {
     #[requires(0 <= @lit.idx && @lit.idx < (@self.vardata).len())]
     #[requires((@self.trail).len() > 0)]
     #[ensures((^self).invariant((@self.vardata).len()))]
+    #[ensures((@(^self).trail).len() === (@self.trail).len())]
+    #[ensures((@(^self).vardata).len() === (@self.vardata).len())]
+    //#[ensures((@(^self).vardata)[@lit.idx] === (self.trail.len() - 1usize, reason))]
     pub fn enq_assignment(&mut self, lit: Lit, reason: Reason) {
         let dlevel = self.trail.len() - 1;
         self.trail[dlevel].push(lit);
@@ -59,6 +62,7 @@ impl Trail {
     }
 
     #[ensures(result.invariant(@num_vars))]
+    #[ensures((@result.trail).len() === 1)]
     pub fn new(num_vars: usize) -> Trail {
         let mut vardata: Vec<(usize, Reason)> = Vec::new();
         let mut i: usize = 0;
@@ -68,7 +72,8 @@ impl Trail {
             vardata.push((0, Reason::Undefined));
             i += 1;
         }
-        let trail: Vec<Vec<Lit>> = Vec::new();
+        let mut trail: Vec<Vec<Lit>> = Vec::new();
+        trail.push(Vec::new());
         Trail {
             trail: trail,
             vardata: vardata,
