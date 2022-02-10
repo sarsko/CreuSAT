@@ -3,7 +3,7 @@ extern crate creusot_contracts;
 use creusot_contracts::*;
 use creusot_contracts::std::*;
 
-use crate::assignments::*;
+//use crate::assignments::*;
 use crate::clause::*;
 use crate::watches::*;
 
@@ -50,8 +50,8 @@ impl Formula {
     pub fn add_clause(&mut self, clause: &Clause, watches: &mut Watches) -> usize {
         //self.clauses.push(clause.clone());
         let cref = self.clauses.len() - 1;
-        //watches.add_watcher(clause.0[0], cref);
-        //watches.add_watcher(clause.0[1], cref);
+        //watches.add_watcher(clause.0[0], cref, self);
+        //watches.add_watcher(clause.0[1], cref, self);
         cref
     }
 

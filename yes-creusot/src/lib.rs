@@ -1,8 +1,8 @@
 #![recursion_limit = "256"]
 extern crate creusot_contracts;
 
-use creusot_contracts::*;
-use creusot_contracts::std::*;
+//use creusot_contracts::*;
+//use creusot_contracts::std::*;
 //pub mod parser;
 //pub mod types;
 pub mod solver;

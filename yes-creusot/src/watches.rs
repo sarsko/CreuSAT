@@ -7,7 +7,7 @@ use crate::formula::*;
 use crate::lit::*;
 use crate::assignments::*;
 use crate::trail::*;
-use crate::solver::*; // TODO move
+//use crate::solver::*; // TODO move
 
 
 //use crate::ghost;
@@ -58,7 +58,7 @@ impl Watches {
 
 impl Watches {
     // The way clauses are made and added should really be changed - builder pattern?
-    #[trusted] // TMP (should check out)
+    #[trusted] // TMP (checks out)
     #[ensures(result.invariant(*f))]
     pub fn new(f: &Formula) -> Watches {
         let mut i: usize = 0;
@@ -74,29 +74,37 @@ impl Watches {
     }
 
     // We watch the negated literal for updates
-    //#[trusted] // TODO
-    //#[requires(self.invariant(TODO))]
-    //#[ensures((^self).invariant(TODO))]
+    //#[trusted]
+    #[requires(@cref < (@_f.clauses).len())]
+    #[requires((@(@_f.clauses)[@cref]).len() > 1)] // really unsure of whether this should be in formula or in watcher
+    #[requires(self.invariant(*_f))]
+    #[ensures((^self).invariant(*_f))]
     #[requires(@lit.idx < @usize::MAX/2)]
     #[requires(lit.to_neg_watchidx_logic() < (@self.watches).len())]
     #[ensures((@self.watches).len() === (@(^self).watches).len())]
-    pub fn add_watcher(&mut self, lit: Lit, cref: usize) {
+    pub fn add_watcher(&mut self, lit: Lit, cref: usize, _f: &Formula) {
         self.watches[lit.to_neg_watchidx()].push(Watcher { cref });
     }
 
     // This requires the literal to be watched, otherwise it will panic
     // This method should be updated as we usually know where to look
-    #[trusted] // TMP(became broken from formula invariant)
+    #[requires(exists<j: Int> 0 <= j && j < (@(@self.watches)[old_lit.to_watchidx_logic()]).len() && 
+    (@(@(@self.watches)[old_lit.to_watchidx_logic()])[j].cref) === @cref)]
     #[requires(self.invariant(*_f))]
     #[ensures((^self).invariant(*_f))]
     //#[requires(!(old_lit === new_lit))] // Strictly speaking correctness ?
     #[requires(@old_lit.idx < @usize::MAX/2)]
     #[requires(@new_lit.idx < @usize::MAX/2)]
     #[requires(old_lit.to_watchidx_logic() < (@self.watches).len())]
+    #[requires(new_lit.to_neg_watchidx_logic() < (@self.watches).len())]
     pub fn update_watch(&mut self, old_lit: Lit, new_lit: Lit, cref: usize, _f: &Formula) {
         //assert!(old_lit != new_lit);
-        let mut i = 0;
+        let mut i: usize = 0;
         let old_idx = old_lit.to_watchidx();
+        proof_assert!((*self).invariant(*_f));
+        #[invariant(i_less, @i <= (@(@self.watches)[@old_idx]).len())]
+        #[invariant(not_found, forall<j: Int> 0 <= j && j < @i ==>
+            !((@(@(@self.watches)[@old_idx])[j].cref) === @cref))]
         while i < self.watches[old_idx].len() {
             if self.watches[old_idx][i].cref == cref {
                 break;
@@ -104,14 +112,42 @@ impl Watches {
             i += 1;
         }
         //assert!(self.watches[old_idx][i].cref == cref);
-
         //self.check_invariant("UPDATE_BEFORE");
 
-        // TODO !
+        // Both of these are better than the swap + pop
         //let old = self.watches[old_idx].remove(i);
-        //self.watches[new_lit.to_neg_watchidx()].push(old);
+        //let old = self.watches[old_idx].swap_remove(i);
+
+        // Workaround for remove.
+
+        // Okay so I for some reason had to to it like this to make the proof pass
+        // I'll look at undoing it later, but it may be useful when proving correctness
+        self.remove(old_idx, i, new_lit, _f);
+        match self.watches[old_idx].pop() {
+            Some(w) => {
+                //proof_assert!(@w.cref < (@_f.clauses).len());
+                //proof_assert!((@(@_f.clauses)[@w.cref]).len() > 1);
+                self.watches[new_lit.to_neg_watchidx()].push(w);
+            },
+            None => {
+                panic!("Impossible");
+            }
+        }
+
 
         //self.check_invariant("UPDATE_AFTER");
+    }
+
+    #[requires(self.invariant(*_f))]
+    #[requires(@new_lit.idx < @usize::MAX/2)]
+    #[requires(new_lit.to_neg_watchidx_logic() < (@self.watches).len())]
+    #[requires(@old_idx < (@self.watches).len())]
+    #[requires(@old_pos < (@(@self.watches)[@old_idx]).len())]
+    #[ensures((^self).invariant(*_f))]
+    #[ensures((@(@(^self).watches)[@old_idx]).len() === ((@(@self.watches)[@old_idx]).len()))]
+    fn remove(&mut self, old_idx: usize, old_pos: usize, new_lit: Lit, _f: &Formula) {
+        let end = self.watches[old_idx].len() - 1;
+        self.watches[old_idx].swap(old_pos, end);
     }
 
     /*
@@ -220,7 +256,7 @@ impl Watches {
                 #[invariant(intact, ^self === ^@old_self)]
                 while j < 2 {
                     let lit = clause[j];
-                    self.add_watcher(lit, i);
+                    self.add_watcher(lit, i, f);
                     j += 1;
                 }
             }
