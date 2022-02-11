@@ -145,12 +145,12 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
 #[requires((@trail.trail).len() > 0)]
 #[requires(0 <= @lit.idx && @lit.idx < (@trail.vardata).len())]
 #[requires(0 <= @lit.idx && @lit.idx < (@a).len())]
-#[requires(trail.invariant((@trail.vardata).len()))]
-#[requires(a.invariant((@trail.vardata).len()))]
-#[ensures((^a).invariant((@trail.vardata).len()))]
-#[ensures((^trail).invariant((@trail.vardata).len()))]
+#[requires(trail.invariant(@_f.num_vars))]
+#[requires(a.invariant(@_f.num_vars))]
+#[ensures((^a).invariant(@_f.num_vars))]
+#[ensures((^trail).invariant(@_f.num_vars))]
 #[ensures((@(^trail).trail).len() === 1)]
-pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, _f: &mut Formula) {
+pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, _f: &Formula) {
     a.cancel_until(trail, 1);
     // Postcond for cancel_until has to be updated so that the entry is guaranteed to be none.
     //proof_assert! {(@a)[@lit.idx] === None }

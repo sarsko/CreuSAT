@@ -7,7 +7,7 @@ use crate::formula::*;
 use crate::lit::*;
 use crate::assignments::*;
 use crate::trail::*;
-//use crate::solver::*; // TODO move
+use crate::solver::*; // TODO move
 
 
 //use crate::ghost;
@@ -58,7 +58,7 @@ impl Watches {
 
 impl Watches {
     // The way clauses are made and added should really be changed - builder pattern?
-    #[trusted] // TMP (checks out)
+    // #[trusted] // Checks out
     #[ensures(result.invariant(*f))]
     pub fn new(f: &Formula) -> Watches {
         let mut i: usize = 0;
@@ -74,7 +74,7 @@ impl Watches {
     }
 
     // We watch the negated literal for updates
-    //#[trusted]
+    // #[trusted] // Checks out
     #[requires(@cref < (@_f.clauses).len())]
     #[requires((@(@_f.clauses)[@cref]).len() > 1)] // really unsure of whether this should be in formula or in watcher
     #[requires(self.invariant(*_f))]
@@ -88,6 +88,7 @@ impl Watches {
 
     // This requires the literal to be watched, otherwise it will panic
     // This method should be updated as we usually know where to look
+    // #[trusted] // Checks out
     #[requires(exists<j: Int> 0 <= j && j < (@(@self.watches)[old_lit.to_watchidx_logic()]).len() && 
     (@(@(@self.watches)[old_lit.to_watchidx_logic()])[j].cref) === @cref)]
     #[requires(self.invariant(*_f))]
@@ -134,10 +135,10 @@ impl Watches {
             }
         }
 
-
         //self.check_invariant("UPDATE_AFTER");
     }
 
+    // #[trusted] // Checks out
     #[requires(self.invariant(*_f))]
     #[requires(@new_lit.idx < @usize::MAX/2)]
     #[requires(new_lit.to_neg_watchidx_logic() < (@self.watches).len())]
@@ -214,12 +215,13 @@ impl Watches {
     // literal with opposite polarity(exists a clause [[-l]] and [[l]] for some l) (this is true only when duplicates are removed)
     // Also returns false if there exists an empty clause
     // #[requires(no_duplicates)] // TODO
-    #[trusted] // REMOVE
+    // #[trusted] // Checks out
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(self.invariant(*f))]
     #[requires(f.invariant())]
     #[requires(a.invariant(@f.num_vars))]
     #[requires(trail.invariant(@f.num_vars))]
+    #[requires((@trail.trail).len() === 1)]
     #[ensures((^trail).invariant(@f.num_vars))]
     #[ensures((^self).invariant(*f))]
     #[ensures((^a).invariant(@f.num_vars))]
@@ -228,25 +230,25 @@ impl Watches {
     pub fn init_watches(&mut self, f: &Formula, trail: &mut Trail, a: &mut Assignments) -> bool {
         let mut i = 0;
         let old_self = Ghost::record(&self);
+        let old_a = Ghost::record(&a);
+        let old_trail = Ghost::record(&trail);
         #[invariant(same_len, (@(*self).watches).len() === (@(*@old_self).watches).len())]
         #[invariant(maintains_invariant, self.invariant(*f))]
         #[invariant(intact, ^self === ^@old_self)]
+        #[invariant(intact2, ^a === ^@old_a)]
+        #[invariant(intact3, ^trail === ^@old_trail)]
+        #[invariant(trail_len, (@trail.trail).len() === 1)]
+        #[invariant(maintains_ass_inv, a.invariant(@f.num_vars))]
+        #[invariant(maintains_trail_inv, trail.invariant(@f.num_vars))]
         while i < f.clauses.len() {
             let clause = &f.clauses[i].0;
             if clause.len() == 0 {
                 return false;
             } else if clause.len() == 1 {
-                let bing = a.0[clause[0].idx];
-                match bing {
-                Some(_) => { return false; },
+                match a.0[clause[0].idx]{
+                    Some(_) => { return false; },
                     None => { 
-                        let lit = clause[0];
-                        //proof_assert! { ((@trail.trail).len() > 0) } // This is partially wrong
-                        proof_assert! { (0 <= @lit.idx && @lit.idx < (@trail.vardata).len()) }
-                        proof_assert! { (0 <= @lit.idx && @lit.idx < (@a).len()) }
-                        proof_assert! { (trail.invariant((@trail.vardata).len())) }
-                        proof_assert! { (a.invariant((@trail.vardata).len())) }
-                        //learn_unit(a, trail, lit, f);
+                        learn_unit(a, trail, clause[0], f);
                     }
                 }
             } else {
