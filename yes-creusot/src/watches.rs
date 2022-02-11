@@ -58,7 +58,7 @@ impl Watches {
 
 impl Watches {
     // The way clauses are made and added should really be changed - builder pattern?
-    // #[trusted] // Checks out
+    #[trusted] // Checks out
     #[ensures(result.invariant(*f))]
     pub fn new(f: &Formula) -> Watches {
         let mut i: usize = 0;
@@ -74,7 +74,7 @@ impl Watches {
     }
 
     // We watch the negated literal for updates
-    // #[trusted] // Checks out
+    #[trusted] // Checks out
     #[requires(@cref < (@_f.clauses).len())]
     #[requires((@(@_f.clauses)[@cref]).len() > 1)] // really unsure of whether this should be in formula or in watcher
     #[requires(self.invariant(*_f))]
@@ -88,7 +88,7 @@ impl Watches {
 
     // This requires the literal to be watched, otherwise it will panic
     // This method should be updated as we usually know where to look
-    // #[trusted] // Checks out
+    #[trusted] // Checks out
     #[requires(exists<j: Int> 0 <= j && j < (@(@self.watches)[old_lit.to_watchidx_logic()]).len() && 
     (@(@(@self.watches)[old_lit.to_watchidx_logic()])[j].cref) === @cref)]
     #[requires(self.invariant(*_f))]
@@ -138,7 +138,7 @@ impl Watches {
         //self.check_invariant("UPDATE_AFTER");
     }
 
-    // #[trusted] // Checks out
+    #[trusted] // Checks out
     #[requires(self.invariant(*_f))]
     #[requires(@new_lit.idx < @usize::MAX/2)]
     #[requires(new_lit.to_neg_watchidx_logic() < (@self.watches).len())]
@@ -215,7 +215,7 @@ impl Watches {
     // literal with opposite polarity(exists a clause [[-l]] and [[l]] for some l) (this is true only when duplicates are removed)
     // Also returns false if there exists an empty clause
     // #[requires(no_duplicates)] // TODO
-    // #[trusted] // Checks out
+    #[trusted] // Checks out
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(self.invariant(*f))]
     #[requires(f.invariant())]

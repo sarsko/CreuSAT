@@ -8,7 +8,7 @@ use crate::assignments::*;
 use crate::formula::*;
 use crate::lit::*;
 use crate::trail::*;
-//use crate::watches::*;
+use crate::watches::*;
 use crate::trail::{Reason::*};
 
 pub enum Conflict {
@@ -22,9 +22,14 @@ pub enum Conflict {
     Conflict::Ground => true,
     Conflict::Unit(lit) => 0 <= @lit.idx && @lit.idx < @f.num_vars,
     Conflict::Learned(level, lit, reason) => 0 <= @lit.idx && @lit.idx < @f.num_vars
-    && @level > 0 && @level <= (@trail.trail).len(), // Watch out
+    && @level > 0 && @level <= (@trail.trail).len() && (@reason).len() > 1 &&
+    (forall<i: Int> 0 <= i && i < (@reason).len() ==>
+        (@(@reason)[i].idx < @f.num_vars &&
+        (((@reason)[i])).to_neg_watchidx_logic() < (@_w.watches).len() 
+        ))
+    , // Watch out
 })]
-pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
+pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize, _w: &Watches) -> Conflict {
     let decisionlevel = trail.trail.len() - 1;
     if decisionlevel == 0 {
         return Conflict::Ground;

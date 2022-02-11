@@ -16,24 +16,23 @@ use crate::conflict_analysis::*;
 
 // Requires all clauses to be at least binary.
 // Returns either () if the unit propagation went fine, or a cref if a conflict was found.
-#[trusted] // Ill come back to swap and enq_assignment later
+//#[trusted] // Ill come back to swap and enq_assignment later
 #[requires(f.invariant())]
 #[requires(a.invariant(@f.num_vars))]
 #[requires(trail.invariant(@f.num_vars))]
 #[requires(watches.invariant(*f))]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires((@trail.trail).len() > 0)]
-#[ensures(@(^f).num_vars === @f.num_vars)]
 #[ensures((^f).invariant())]
 #[ensures((^a).invariant(@f.num_vars))]
 #[ensures((^trail).invariant(@f.num_vars))]
-#[ensures((^watches).invariant(*f))]
+#[ensures((^watches).invariant(^f))]
 #[ensures(@f.num_vars === @(^f).num_vars)]
+#[ensures((@(^f).clauses).len() === (@f.clauses).len())]
 #[ensures((@(^trail).trail).len() === (@trail.trail).len())]
 fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
     let mut i = 0;
     let d = trail.trail.len() - 1;
-    let none: Option<bool> = None; // Due to issue #163
     let old_f = Ghost::record(&f);
     let old_a = Ghost::record(&a);
     let old_w = Ghost::record(&watches);
@@ -141,7 +140,7 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
     Ok(())
 }
 
-#[trusted]// TMP(should check out)
+#[trusted]// Checks out
 #[requires((@trail.trail).len() > 0)]
 #[requires(0 <= @lit.idx && @lit.idx < (@trail.vardata).len())]
 #[requires(0 <= @lit.idx && @lit.idx < (@a).len())]
@@ -158,7 +157,8 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, _f: &Formula
     trail.enq_assignment(lit, Reason::Unit);
 }
 
-#[trusted] // TMP(used to check out)
+#[trusted] // Checks out
+#[requires((@f.clauses).len() > 0)]
 #[requires(f.invariant())]
 #[requires(a.invariant(@f.num_vars))]
 #[requires(trail.invariant(@f.num_vars))]
@@ -168,24 +168,35 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, _f: &Formula
 //#[ensures(result ==> f.eventually_sat(*a))]
 //#[ensures(result === false ==> !f.eventually_sat_complete(*a))]
 fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) -> bool {
+    let old_f = Ghost::record(&f);
+    let old_a = Ghost::record(&a);
+    let old_w = Ghost::record(&watches);
     #[invariant(maintains_f, f.invariant())]
     #[invariant(maintains_a, a.invariant(@f.num_vars))]
     #[invariant(maintains_t, trail.invariant(@f.num_vars))]
     #[invariant(maintains_w, watches.invariant(*f))]
     #[invariant(num_vars, @f.num_vars < @usize::MAX/2)]
+    #[invariant(clauses, (@f.clauses).len() > 0)]
     #[invariant(trail_len, (@trail.trail).len() > 0)]
+    #[invariant(propha, ^a === ^@old_a)]
+    #[invariant(prophw, ^watches === ^@old_w)]
+    #[invariant(prophf, ^f === ^@old_f)]
     loop {
         #[invariant(maintains_f2, f.invariant())]
         #[invariant(maintains_a2, a.invariant(@f.num_vars))]
         #[invariant(maintains_t2, trail.invariant(@f.num_vars))]
         #[invariant(maintains_w2, watches.invariant(*f))]
         #[invariant(num_vars2, @f.num_vars < @usize::MAX/2)]
+        #[invariant(clauses2, (@f.clauses).len() > 0)]
         #[invariant(trail_len2, (@trail.trail).len() > 0)]
+        #[invariant(propha2, ^a === ^@old_a)]
+        #[invariant(prophw2, ^watches === ^@old_w)]
+        #[invariant(prophf2, ^f === ^@old_f)]
         loop {
             match unit_propagate(f, a, trail, watches) {
                 Ok(_) => { break; },
                 Err(cref) => {
-                    match analyze_conflict(f, a, trail, cref) {
+                    match analyze_conflict(f, a, trail, cref, watches) {
                         Conflict::Ground => { return false; },
                         Conflict::Unit(lit) => {
                             learn_unit(a, trail, lit, f);
@@ -217,7 +228,7 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
 #[requires(@f.num_vars < @usize::MAX/2)]
 pub fn solver(f: &mut Formula) -> bool {
     f.remove_duplicates();
-    if f.num_vars == 0 {
+    if f.num_vars == 0 || f.clauses.len() == 0 {
         return true;
     }
     let mut assignments = Assignments::init_assignments(f);

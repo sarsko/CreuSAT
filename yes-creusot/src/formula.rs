@@ -40,23 +40,34 @@ impl Formula {
     }
 
     */
-    // TODO FIX
+    // TODO FIX. Should really only be lacking a proper clone
     #[trusted]
+    #[requires(@self.num_vars < @usize::MAX/2)]
     #[requires(self.invariant())]
-    #[ensures(watches.invariant(*self))]
+    #[requires(watches.invariant(*self))]
+    #[requires((@self.clauses).len() > 0)]
+    #[requires(forall<i: Int> 0 <= i && i < (@clause).len() ==>
+                @((@clause)[i]).idx < @self.num_vars &&
+                (((@clause)[i])).to_neg_watchidx_logic() < (@watches.watches).len()
+            )]
+    #[requires((@clause).len() > 1)]
     #[ensures((^self).invariant())]
-    #[ensures((^watches).invariant(*self))]
+    #[ensures((^watches).invariant(^self))]
     #[ensures(@(^self).num_vars === @self.num_vars)]
+    #[ensures((@(^self).clauses).len() === (@self.clauses).len() + 1)]
+//    #[ensures((@watches.watches).len() === (@(^watches).watches).len())]
     pub fn add_clause(&mut self, clause: &Clause, watches: &mut Watches) -> usize {
+        // TODO understand this clone stuff
         //self.clauses.push(clause.clone());
         let cref = self.clauses.len() - 1;
-        //watches.add_watcher(clause.0[0], cref, self);
-        //watches.add_watcher(clause.0[1], cref, self);
+        watches.add_watcher(clause.0[0], cref, self);
+        watches.add_watcher(clause.0[1], cref, self);
         cref
     }
 
     // Or people could just make correct cnfs
     // TODO add a remove_duplis for each clause as well + remove A or not A-clauses
+    // TODO FIX
     #[trusted]
     #[requires(self.invariant())]
     #[ensures((^self).invariant())]

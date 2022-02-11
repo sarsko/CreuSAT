@@ -37,7 +37,6 @@ impl Clause {
 
     #[predicate]
     pub fn invariant(self, n: Int) -> bool {
-        // Should remove the possibility of empty clauses
         pearlite! { self.vars_in_range(n) && self.no_duplicate_indexes() && (@self).len() > 0 }
     }
 }
