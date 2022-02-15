@@ -39,49 +39,6 @@ fn swap_lits(f: &mut Formula, cref: usize, i: usize, j: usize) {
     f.clauses[cref].0.swap(i, j);
     proof_assert!(lemma_swap_ok(((@f.clauses)[@cref]), @old_c, @i, @j, *f);true);
 }
-#[trusted]
-#[requires(f.invariant())]
-#[requires(a.invariant(@f.num_vars))]
-#[requires(trail.invariant(@f.num_vars))]
-#[requires(watches.invariant(*f))]
-#[requires(@f.num_vars < @usize::MAX/2)]
-#[requires((@trail.trail).len() > 0)]
-/*
-#[ensures((^f).invariant())]
-#[ensures((^a).invariant(@f.num_vars))]
-#[ensures((^trail).invariant(@f.num_vars))]
-#[ensures((^watches).invariant(^f))]
-#[ensures(@f.num_vars === @(^f).num_vars)]
-#[ensures((@(^f).clauses).len() === (@f.clauses).len())]
-#[ensures((@(^trail).trail).len() === (@trail.trail).len())]
-*/
-fn tst(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) {
-
-    let mut i:usize = 0;
-    let d: usize = trail.trail.len() - 1;
-    /*
-    #[invariant(maintains_f, f.invariant())]
-    #[invariant(f_len, (@f.clauses).len() === (@(@old_f).clauses).len())]
-    #[invariant(maintains_a, a.invariant(@f.num_vars))]
-    #[invariant(maintains_t, trail.invariant(@f.num_vars))]
-    #[invariant(maintains_w, watches.invariant(*f))]
-    #[invariant(num_vars, @f.num_vars === @(@old_f).num_vars)]
-    #[invariant(trail_len, (@trail.trail).len() > 0)]
-    #[invariant(propha, ^a === ^@old_a)]
-    #[invariant(prophw, ^watches === ^@old_w)]
-    #[invariant(prophf, ^f === ^@old_f)]
-    #[invariant(propht, ^trail === ^@old_t)]
-    */
-    #[invariant(dless, @d < (@trail.trail).len())]
-    #[invariant(iless, 0 <= @i && @i <= (@(@trail.trail)[@d]).len())]
-    while i < trail.trail[d].len() {
-        let lit: Lit = trail.trail[d][i];
-
-        let reason = Reason::Long(0);
-        trail.enq_assignment(lit, reason, f);
-        i += 1;
-    }
-}
 
 // Move unit prop? Dunno where. Is it propagating over the assignments, the formula, or is it its own thing.
 // Currently leaning towards assignments, but it might also be its own thing. Ill have to think some more about it.
@@ -156,7 +113,7 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
                 continue;
             }
             // At this point we know that none of the watched literals are sat
-            let mut k:usize = 2;
+            let mut k: usize = 2;
             #[invariant(maintains_f3, f.invariant())]
             #[invariant(f_len2, (@f.clauses).len() === (@(@old_f).clauses).len())]
             #[invariant(maintains_a3, a.invariant(@f.num_vars))]
@@ -218,8 +175,7 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
                 k += 1;
             }
             // If we have gotten here, the clause is either all false or unit
-            let first_res = a.0[first_lit.idx];
-            match first_res {
+            match a.0[first_lit.idx]{
                 None => {
                     a.set_assignment(first_lit, f);
                     trail.enq_assignment(first_lit, Reason::Long(cref), f);
