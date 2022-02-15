@@ -92,12 +92,12 @@ impl Watches {
     #[requires(exists<j: Int> 0 <= j && j < (@(@self.watches)[old_lit.to_watchidx_logic()]).len() && 
     (@(@(@self.watches)[old_lit.to_watchidx_logic()])[j].cref) === @cref)]
     #[requires(self.invariant(*_f))]
-    #[ensures((^self).invariant(*_f))]
     //#[requires(!(old_lit === new_lit))] // Strictly speaking correctness ?
     #[requires(@old_lit.idx < @usize::MAX/2)]
     #[requires(@new_lit.idx < @usize::MAX/2)]
     #[requires(old_lit.to_watchidx_logic() < (@self.watches).len())]
     #[requires(new_lit.to_neg_watchidx_logic() < (@self.watches).len())]
+    #[ensures((^self).invariant(*_f))]
     pub fn update_watch(&mut self, old_lit: Lit, new_lit: Lit, cref: usize, _f: &Formula) {
         //assert!(old_lit != new_lit);
         let mut i: usize = 0;
@@ -123,7 +123,7 @@ impl Watches {
 
         // Okay so I for some reason had to to it like this to make the proof pass
         // I'll look at undoing it later, but it may be useful when proving correctness
-        self.remove(old_idx, i, new_lit, _f);
+        self.move_to_end(old_idx, i, new_lit, _f);
         match self.watches[old_idx].pop() {
             Some(w) => {
                 //proof_assert!(@w.cref < (@_f.clauses).len());
@@ -146,7 +146,7 @@ impl Watches {
     #[requires(@old_pos < (@(@self.watches)[@old_idx]).len())]
     #[ensures((^self).invariant(*_f))]
     #[ensures((@(@(^self).watches)[@old_idx]).len() === ((@(@self.watches)[@old_idx]).len()))]
-    fn remove(&mut self, old_idx: usize, old_pos: usize, new_lit: Lit, _f: &Formula) {
+    fn move_to_end(&mut self, old_idx: usize, old_pos: usize, new_lit: Lit, _f: &Formula) {
         let end = self.watches[old_idx].len() - 1;
         self.watches[old_idx].swap(old_pos, end);
     }

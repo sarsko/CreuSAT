@@ -6,6 +6,8 @@ use creusot_contracts::std::*;
 //use crate::assignments::*;
 use crate::lit::*;
 
+use crate::formula::*;
+
 //#[derive(Debug, Clone, PartialEq, Eq)]
 #[derive(Copy, Clone)]
 pub enum Reason {
@@ -48,14 +50,20 @@ impl Trail {
 }
 
 impl Trail {
-    #[requires(self.invariant((@self.vardata).len()))] // (@self.vardata).len() === (@self.vardata).len() lol 
-    #[requires(0 <= @lit.idx && @lit.idx < (@self.vardata).len())]
+    #[requires(self.invariant(@_f.num_vars))]
+    #[requires(0 <= @lit.idx && @lit.idx < @_f.num_vars)]
     #[requires((@self.trail).len() > 0)]
-    #[ensures((^self).invariant((@self.vardata).len()))]
+    #[ensures((^self).invariant(@_f.num_vars))]
     #[ensures((@(^self).trail).len() === (@self.trail).len())]
     #[ensures((@(^self).vardata).len() === (@self.vardata).len())]
-    //#[ensures((@(^self).vardata)[@lit.idx] === (self.trail.len() - 1usize, reason))]
-    pub fn enq_assignment(&mut self, lit: Lit, reason: Reason) {
+    #[ensures((@(@((^self).trail))[(@(self).trail).len()-1]) === (@(@(self.trail))[(@(self).trail).len()-1]).push(lit))]
+    #[ensures(forall<i: Int> 0 <= i && i < (@self.trail).len() - 1 ==>
+        (@self.trail)[i] === (@(^self).trail)[i])]
+    #[ensures(forall<i: Int> 0 <= i && i < (@self.vardata).len() && i != @lit.idx ==>
+        (@self.vardata)[i] === (@(^self).vardata)[i])]
+    #[ensures(@((@((^self).vardata))[@lit.idx]).0 === (@self.trail).len()-1)]
+    #[ensures(((@((^self).vardata))[@lit.idx]).1 === reason)]
+    pub fn enq_assignment(&mut self, lit: Lit, reason: Reason, _f: &Formula) {
         let dlevel = self.trail.len() - 1;
         self.trail[dlevel].push(lit);
         self.vardata[lit.idx] = (dlevel, reason);

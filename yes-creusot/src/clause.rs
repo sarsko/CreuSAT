@@ -27,11 +27,17 @@ impl Clause {
         }
     }
 
+    // Swapped the implementation to the one for distinct from why3 stdlib. Might require reinit
+    // Ok I was lacking 0 <= k might not need reinit after all
     #[predicate]
     pub fn no_duplicate_indexes(self) -> bool {
         pearlite! {
+            /*
             forall<j: Int, k: Int> 0 <= j && j < (@self).len() &&
-                 k < j ==> !(@(@self)[k].idx === @(@self)[j].idx)
+                 0 <= k && k < j ==> !(@(@self)[k].idx === @(@self)[j].idx)
+                 */
+            forall<j: Int, k: Int> 0 <= j && j < (@self).len() ==>
+                 0 <= k && k < (@self).len() ==> j != k ==> !(@((@self)[k]).idx === @((@self)[j]).idx)
         }
     }
 
