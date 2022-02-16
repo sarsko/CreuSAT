@@ -118,19 +118,18 @@ impl Assignments {
 
     #[trusted] // TMP
     #[requires(@level <= (@trail.trail).len())]
-    #[requires(trail.invariant((@trail.vardata).len()))]
+    #[requires(trail.invariant(*_f))]
     #[requires(self.invariant((@trail.vardata).len()))]
-    #[ensures(trail.invariant((@trail.vardata).len()))]
+    #[ensures((^trail).invariant(*_f))]
     #[ensures((^self).invariant((@trail.vardata).len()))]
-    #[ensures((^trail).invariant((@trail.vardata).len()))]
     #[ensures((@(^trail).vardata).len() === (@trail.vardata).len())]
     #[ensures((@(^trail).trail).len() === @level)]
-    pub fn cancel_until(&mut self, trail: &mut Trail, level: usize) {
+    pub fn cancel_until(&mut self, trail: &mut Trail, level: usize, _f: &Formula) {
         let mut i: usize = trail.trail.len();
         let old_self = Ghost::record(&self);
         let old_trail = Ghost::record(&trail);
         #[invariant(i_is_trail_len, @i === (@trail.trail).len())]
-        #[invariant(maintains_trail_inv, trail.invariant((@trail.vardata).len()))]
+        #[invariant(maintains_trail_inv, trail.invariant(*_f))]
         #[invariant(maintains_ass_inv, self.invariant((@trail.vardata).len()))]
         #[invariant(intact, ^self === ^@old_self)]
         #[invariant(intact_trail, ^trail === ^@old_trail)]
@@ -139,7 +138,7 @@ impl Assignments {
             match decisions {
                 Some(decisions) => {
                     let mut j: usize = 0;
-                    #[invariant(maintains_trail_inv2, trail.invariant((@trail.vardata).len()))]
+                    #[invariant(maintains_trail_inv2, trail.invariant(*_f))]
                     #[invariant(maintains_ass_inv2, self.invariant((@trail.vardata).len()))]
                     #[invariant(same_len_trail, (@trail.vardata).len() === (@(@old_trail).vardata).len())]
                     #[invariant(intact_self2, ^self === ^@old_self)]

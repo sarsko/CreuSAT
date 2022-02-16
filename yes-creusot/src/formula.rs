@@ -18,6 +18,7 @@ impl Formula {
     #[predicate]
     pub fn invariant(self) -> bool {
         pearlite! {
+            @self.num_vars > 0 && // Added, watch out
             forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
                 (@self.clauses)[i].invariant(@self.num_vars)
         }

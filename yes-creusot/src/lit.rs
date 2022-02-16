@@ -68,6 +68,8 @@ impl ops::Not for Lit {
     type Output = Lit;
 
     #[inline]
+    #[ensures(@result.idx === @self.idx)]
+    #[ensures(result.polarity === !self.polarity)]
     fn not(self) -> Lit {
         Lit {
             idx: self.idx,

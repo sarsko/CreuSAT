@@ -220,9 +220,9 @@ impl Watches {
     #[requires(self.invariant(*f))]
     #[requires(f.invariant())]
     #[requires(a.invariant(@f.num_vars))]
-    #[requires(trail.invariant(@f.num_vars))]
+    #[requires(trail.invariant(*f))]
     #[requires((@trail.trail).len() === 1)]
-    #[ensures((^trail).invariant(@f.num_vars))]
+    #[ensures((^trail).invariant(*f))]
     #[ensures((^self).invariant(*f))]
     #[ensures((^a).invariant(@f.num_vars))]
     #[ensures((@self.watches).len() === (@(^self).watches).len())]
@@ -239,7 +239,7 @@ impl Watches {
         #[invariant(intact3, ^trail === ^@old_trail)]
         #[invariant(trail_len, (@trail.trail).len() === 1)]
         #[invariant(maintains_ass_inv, a.invariant(@f.num_vars))]
-        #[invariant(maintains_trail_inv, trail.invariant(@f.num_vars))]
+        #[invariant(maintains_trail_inv, trail.invariant(*f))]
         while i < f.clauses.len() {
             let clause = &f.clauses[i].0;
             if clause.len() == 0 {

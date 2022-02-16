@@ -29,7 +29,9 @@ pub struct Trail {
 impl Trail {
     #[predicate]
     pub fn vardata_invariant(self, n: Int) -> bool {
-        pearlite! { (@self.vardata).len() === n }
+        pearlite! { (@self.vardata).len() === n && 
+            forall<i: Int> 0 <= i && i < (@self.vardata).len() ==>
+        @(@self.vardata)[i].0 < (@self.trail).len() }
     }
 
     #[predicate]
@@ -42,18 +44,32 @@ impl Trail {
     }
 
     #[predicate]
-    pub fn invariant(self, n: Int) -> bool {
+    pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
-            self.vardata_invariant(n) && self.trail_invariant(n)   
+            self.vardata_invariant(@f.num_vars) && self.trail_invariant(@f.num_vars) &&  
+            forall<j: Int> 0 <= j && j < (@self.vardata).len() ==>
+            match (@self.vardata)[j].1 {
+                Reason::Undefined => true,
+                Reason::Decision => true,
+                Reason::Unit => true,
+                Reason::Long(k) => @k < (@f.clauses).len(),
+            }
         }
     }
 }
 
 impl Trail {
-    #[requires(self.invariant(@_f.num_vars))]
+    #[trusted] // Checks out
+    #[requires(self.invariant(*_f))]
     #[requires(0 <= @lit.idx && @lit.idx < @_f.num_vars)]
     #[requires((@self.trail).len() > 0)]
-    #[ensures((^self).invariant(@_f.num_vars))]
+    #[requires(match reason {
+        Reason::Undefined => true,
+        Reason::Decision => true,
+        Reason::Unit => true,
+        Reason::Long(k) => @k < (@_f.clauses).len()
+    })]
+    #[ensures((^self).invariant(*_f))]
     #[ensures((@(^self).trail).len() === (@self.trail).len())]
     #[ensures((@(^self).vardata).len() === (@self.vardata).len())]
     #[ensures((@(@((^self).trail))[(@(self).trail).len()-1]) === (@(@(self.trail))[(@(self).trail).len()-1]).push(lit))]
@@ -69,14 +85,19 @@ impl Trail {
         self.vardata[lit.idx] = (dlevel, reason);
     }
 
-    #[ensures(result.invariant(@num_vars))]
+    #[trusted] // Checks out
+    #[ensures(result.invariant(*f))]
     #[ensures((@result.trail).len() === 1)]
-    pub fn new(num_vars: usize) -> Trail {
+    pub fn new(f: &Formula) -> Trail {
         let mut vardata: Vec<(usize, Reason)> = Vec::new();
         let mut i: usize = 0;
-        #[invariant(i_less, @i <= @num_vars)]
+        #[invariant(i_less, @i <= @f.num_vars)]
         #[invariant(len_correct, (@vardata).len() === @i)]
-        while i < num_vars {
+        #[invariant(all_undef, 
+            forall<j: Int> 0 <= j && j < @i ==>
+            @(@vardata)[j].0 === 0 &&
+            (@vardata)[j].1 === Reason::Undefined)]
+        while i < f.num_vars {
             vardata.push((0, Reason::Undefined));
             i += 1;
         }
