@@ -19,22 +19,24 @@ use crate::conflict_analysis::*;
 #[requires((@c2)[j] === (@c)[i])]
 #[requires(forall<k: Int> 0 <= k && k < (@c).len() && k != j && k != i ==>
     (@c2)[k] === (@c)[k])]
-#[requires(c2.invariant(@f.num_vars))]
-#[ensures(c.invariant(@f.num_vars))]
+#[requires(c2.invariant(f))]
+#[ensures(c.invariant(f))]
 fn lemma_swap_ok(c: Clause, c2: Clause, i: Int, j: Int, f: Formula) {}
 
-//#[trusted]
+#[trusted] // Checks out(but the trail invariant takes some time)
 #[requires(@cref < (@f.clauses).len())]
 //#[requires(@i < @j)]
 #[requires(@j < (@(@f.clauses)[@cref]).len() && @i < (@(@f.clauses)[@cref]).len())]
 #[requires(f.invariant())]
+#[requires(_t.invariant(*f))]
 #[ensures((^f).invariant())]
+#[ensures(_t.invariant(^f))]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((@(^f).clauses).len() === (@f.clauses).len())]
 #[ensures(forall<i: Int> 0 <= i && i < (@(^f).clauses).len() ==>
     (@(@(^f).clauses)[i]).len() === (@(@f.clauses)[i]).len())] // Needed for watches, can be rewritten
 #[ensures((@(@(^f).clauses)[@cref]).exchange(@(@f.clauses)[@cref], @i, @j))]
-fn swap_lits(f: &mut Formula, cref: usize, i: usize, j: usize) {
+fn swap_lits(f: &mut Formula, cref: usize, i: usize, j: usize, _t: &Trail) {
     let old_c = Ghost::record(&f.clauses[cref]);
     f.clauses[cref].0.swap(i, j);
     proof_assert!(lemma_swap_ok(((@f.clauses)[@cref]), @old_c, @i, @j, *f);true);
@@ -45,7 +47,7 @@ fn swap_lits(f: &mut Formula, cref: usize, i: usize, j: usize) {
 
 // Requires all clauses to be at least binary.
 // Returns either () if the unit propagation went fine, or a cref if a conflict was found.
-#[trusted] // Checks out
+//#[trusted] // Checks out
 #[requires(f.invariant())]
 #[requires(a.invariant(@f.num_vars))]
 #[requires(trail.invariant(*f))]
@@ -54,7 +56,7 @@ fn swap_lits(f: &mut Formula, cref: usize, i: usize, j: usize) {
 #[requires((@trail.trail).len() > 0)]
 #[ensures((^f).invariant())]
 #[ensures((^a).invariant(@f.num_vars))]
-#[ensures((^trail).invariant(*f))]
+#[ensures((^trail).invariant(^f))]
 #[ensures((^watches).invariant(^f))]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((@(^f).clauses).len() === (@f.clauses).len())]
@@ -77,12 +79,15 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
     #[invariant(prophw, ^watches === ^@old_w)]
     #[invariant(prophf, ^f === ^@old_f)]
     #[invariant(propht, ^trail === ^@old_t)]
-    #[invariant(dless, @d < (@trail.trail).len())]
+    #[invariant(dless, 0<= @d && @d < (@trail.trail).len())]
     #[invariant(iless, 0 <= @i && @i <= (@(@trail.trail)[@d]).len())]
     while i < trail.trail[d].len() {
         let mut j = 0;
         let lit: Lit = trail.trail[d][i];
         let old_trail_end = Ghost::record(&(trail.trail[d]));
+        proof_assert!((@watches.watches).len() === 2 * @f.num_vars);
+        proof_assert!(@f.num_vars > @lit.idx);
+        proof_assert!(lemma_watchidx_less(lit, @f.num_vars);(@watches.watches).len() > lit.to_watchidx_logic());
 
         #[invariant(maintains_f2, f.invariant())]
         #[invariant(f_len2, (@f.clauses).len() === (@(@old_f).clauses).len())]
@@ -99,16 +104,21 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
         #[invariant(iless2, 0 <= @i && @i <= (@(@trail.trail)[@d]).len())]
         #[invariant(trail_end_same, (@(@trail.trail)[@d]).len() >= (@@old_trail_end).len())]
         'outer: while j < watches.watches[lit.to_watchidx()].len() {
+            proof_assert!((@watches.watches).len() === 2 * @f.num_vars);
+            proof_assert!(@f.num_vars > @lit.idx);
+            proof_assert!(lemma_watchidx_less(lit, @f.num_vars);(@watches.watches).len() > lit.to_watchidx_logic());
             let cref = watches.watches[lit.to_watchidx()][j].cref;
             let first_lit = f.clauses[cref].0[0];
+            proof_assert!(@first_lit.idx < (@a).len());
             if first_lit.is_sat(&a) {
                 j += 1;
                 continue;
             }
             let second_lit = f.clauses[cref].0[1];
+            proof_assert!(@second_lit.idx < (@a).len());
             if second_lit.is_sat(&a) {
                 // We swap to make it faster the next time
-                swap_lits(f, cref, 0, 1);
+                swap_lits(f, cref, 0, 1, trail);
                 j += 1;
                 continue;
             }
@@ -136,10 +146,10 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
                     Some(polarity) => {
                         if polarity == curr_lit.polarity {
                             if first_lit.idx == lit.idx {
-                                swap_lits(f, cref, 0, k);
+                                swap_lits(f, cref, 0, k, trail);
                             } else {
-                                swap_lits(f, cref, 1, k);
-                                swap_lits(f, cref, 1, 0);
+                                swap_lits(f, cref, 1, k, trail);
+                                swap_lits(f, cref, 1, 0, trail);
                             }
                             proof_assert!(@cref === @(@(@watches.watches)[lit.to_watchidx_logic()])[@j].cref);
 
@@ -155,10 +165,10 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
                     },
                     None => {
                         if first_lit.idx == lit.idx {
-                            swap_lits(f, cref, 0, k);
+                            swap_lits(f, cref, 0, k, trail);
                         } else {
-                            swap_lits(f, cref, 1, k);
-                            swap_lits(f, cref, 1, 0);
+                            swap_lits(f, cref, 1, k, trail);
+                            swap_lits(f, cref, 1, 0, trail);
                         }
                         proof_assert!(@cref === @(@(@watches.watches)[lit.to_watchidx_logic()])[@j].cref);
 
@@ -183,7 +193,7 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
                 _ => {
                     match a.0[second_lit.idx] {
                         None => {
-                            swap_lits(f, cref, 1, 0);
+                            swap_lits(f, cref, 1, 0, trail);
                             a.set_assignment(second_lit, f);
                             trail.enq_assignment(second_lit, Reason::Long(cref), f);
                         },
@@ -218,7 +228,8 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, _f: &Formula
     trail.enq_assignment(lit, Reason::Unit, _f);
 }
 
-#[trusted] // Checks out
+#[trusted] // Used to check out(doesnt anymore)
+//#[requires(@f.num_vars < @usize::MAX/2)]
 #[requires((@f.clauses).len() > 0)]
 #[requires(f.invariant())]
 #[requires(a.invariant(@f.num_vars))]

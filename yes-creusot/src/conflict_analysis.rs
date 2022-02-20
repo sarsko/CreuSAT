@@ -115,7 +115,7 @@ fn lemma_count_all_false_eq_zero(s: Seq<bool>) {
 }
 */
 
-//#[trusted]
+#[trusted]
 #[requires(f.invariant())]
 #[requires(a.invariant(@f.num_vars))]
 #[requires(trail.invariant(*f))]
@@ -196,7 +196,7 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
         let clause = &f.clauses[confl];
         #[invariant(kbound, 0 <= @k && @k <= (@clause).len())]
         #[invariant(seen_same_len2, (@seen).len() === @f.num_vars)]
-        #[invariant(clause_inv_ok, clause.invariant(@f.num_vars))]
+        #[invariant(clause_inv_ok, clause.invariant(*f))]
         #[invariant(out_learnt_len2, (@out_learnt).len() >= 1)]
         #[invariant(out_learnt_ok2, forall<m: Int> 0 <= m && m < (@out_learnt).len() ==>
             @(@out_learnt)[m].idx < @f.num_vars

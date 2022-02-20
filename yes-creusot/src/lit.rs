@@ -13,6 +13,12 @@ pub struct Lit {
     pub polarity: bool,
 }
 
+#[logic]
+#[requires(0 <= n && @l.idx < n)]
+#[ensures(l.to_neg_watchidx_logic() < 2 * n)]
+#[ensures(l.to_watchidx_logic() < 2 * n)]
+pub fn lemma_watchidx_less(l: Lit, n: Int) {}
+
 impl Lit {
     #[logic]
     pub fn to_watchidx_logic(&self) -> Int {

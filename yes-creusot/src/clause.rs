@@ -6,6 +6,7 @@ use creusot_contracts::std::*;
 use crate::lit::*;
 use crate::assignments::*;
 
+use crate::formula::*;
 //#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Clause(pub Vec<Lit>);
 
@@ -42,14 +43,15 @@ impl Clause {
     }
 
     #[predicate]
-    pub fn invariant(self, n: Int) -> bool {
-        pearlite! { self.vars_in_range(n) && self.no_duplicate_indexes() && (@self).len() > 0 }
+    pub fn invariant(self, f: Formula) -> bool {
+        pearlite! { self.vars_in_range(@f.num_vars) && self.no_duplicate_indexes() && (@self).len() > 0 }
     }
 }
 
 impl Clause {
-    #[requires(self.invariant((@a).len()))]
-    pub fn is_unsat(&self, a: &Assignments) -> bool {
+    #[requires(a.invariant(@_f.num_vars))]
+    #[requires(self.invariant(*_f))]
+    pub fn is_unsat(&self, a: &Assignments, _f: &Formula) -> bool {
         let mut i = 0;
         while i < self.0.len() {
             let lit = self.0[i];
