@@ -35,18 +35,18 @@ impl Trail {
     }
 
     #[predicate]
-    pub fn trail_invariant(self, n: Int) -> bool {
+    pub fn trail_invariant(self, f: Formula) -> bool {
         pearlite! { 
-            forall<i: Int> 0 <= i && i < (@self.trail).len() ==>
+            forall<i: Int> 0 <= i && i < (@self.trail).len() ==> (
             forall<j: Int> 0 <= j && j < (@(@self.trail)[i]).len() ==>
-                @(@(@self.trail)[i])[j].idx < n 
+                0 <= @(@(@self.trail)[i])[j].idx && @(@(@self.trail)[i])[j].idx < @f.num_vars )
             }
     }
 
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
-            self.vardata_invariant(@f.num_vars) && self.trail_invariant(@f.num_vars) &&  
+            self.vardata_invariant(@f.num_vars) && self.trail_invariant(f) &&  
             forall<j: Int> 0 <= j && j < (@self.vardata).len() ==>
             match (@self.vardata)[j].1 {
                 Reason::Undefined => true,
@@ -107,5 +107,17 @@ impl Trail {
             trail: trail,
             vardata: vardata,
         }
+    }
+
+    #[trusted] // new
+    #[requires(self.invariant(*_f))]
+    #[ensures((^self).invariant(*_f))] // Doesn't check out. Cant understand what I'm missing
+    #[ensures((@self.vardata) === (@(^self).vardata))]
+    #[ensures(forall<i: Int> 0 <= i && i < (@self.trail).len() ==>
+        (@self.trail)[i] === (@(^self).trail)[i])]
+    #[ensures((@(^self).trail).len() === (@self.trail).len() + 1)]
+    #[ensures((@(@(^self).trail)[(@self.trail).len()]).len() === 0)]
+    pub fn add_level(&mut self, _f: &Formula) {
+        self.trail.push(Vec::new());
     }
 }

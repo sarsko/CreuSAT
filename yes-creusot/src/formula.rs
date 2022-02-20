@@ -56,6 +56,7 @@ impl Formula {
     #[ensures((^watches).invariant(^self))]
     #[ensures(@(^self).num_vars === @self.num_vars)]
     #[ensures((@(^self).clauses).len() === (@self.clauses).len() + 1)]
+    #[ensures(@result === (@(^self).clauses).len() - 1)] // new
 //    #[ensures((@watches.watches).len() === (@(^watches).watches).len())]
     pub fn add_clause(&mut self, clause: &Clause, watches: &mut Watches) -> usize {
         // TODO understand this clone stuff

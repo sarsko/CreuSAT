@@ -119,11 +119,13 @@ impl Assignments {
     #[trusted] // TMP
     #[requires(@level <= (@trail.trail).len())]
     #[requires(trail.invariant(*_f))]
-    #[requires(self.invariant((@trail.vardata).len()))]
+    #[requires(self.invariant(@_f.num_vars))]
     #[ensures((^trail).invariant(*_f))]
-    #[ensures((^self).invariant((@trail.vardata).len()))]
+    #[ensures((^self).invariant(@_f.num_vars))]
     #[ensures((@(^trail).vardata).len() === (@trail.vardata).len())]
     #[ensures((@(^trail).trail).len() === @level)]
+    #[ensures(forall<j: Int> 0 <= j && j < @level ==> 
+        (@(^trail).trail)[j] === (@trail.trail)[j])] // new
     pub fn cancel_until(&mut self, trail: &mut Trail, level: usize, _f: &Formula) {
         let mut i: usize = trail.trail.len();
         let old_self = Ghost::record(&self);

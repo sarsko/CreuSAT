@@ -47,7 +47,7 @@ fn swap_lits(f: &mut Formula, cref: usize, i: usize, j: usize, _t: &Trail) {
 
 // Requires all clauses to be at least binary.
 // Returns either () if the unit propagation went fine, or a cref if a conflict was found.
-//#[trusted] // Checks out
+#[trusted] // Checks out
 #[requires(f.invariant())]
 #[requires(a.invariant(@f.num_vars))]
 #[requires(trail.invariant(*f))]
@@ -61,6 +61,10 @@ fn swap_lits(f: &mut Formula, cref: usize, i: usize, j: usize, _t: &Trail) {
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((@(^f).clauses).len() === (@f.clauses).len())]
 #[ensures((@(^trail).trail).len() === (@trail.trail).len())]
+#[ensures(match result {
+    Ok(()) => true,
+    Err(cref) => @cref < (@(^f).clauses).len() 
+})]
 fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
     let mut i: usize = 0;
     let d: usize = trail.trail.len() - 1;
@@ -228,7 +232,7 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, _f: &Formula
     trail.enq_assignment(lit, Reason::Unit, _f);
 }
 
-#[trusted] // Used to check out(doesnt anymore)
+#[trusted] // Checks out. A couple of the preconds are super slow, should add better assertions
 //#[requires(@f.num_vars < @usize::MAX/2)]
 #[requires((@f.clauses).len() > 0)]
 #[requires(f.invariant())]
@@ -243,27 +247,32 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
     let old_f = Ghost::record(&f);
     let old_a = Ghost::record(&a);
     let old_w = Ghost::record(&watches);
+    let old_t = Ghost::record(&trail);
     #[invariant(maintains_f, f.invariant())]
     #[invariant(maintains_a, a.invariant(@f.num_vars))]
     #[invariant(maintains_t, trail.invariant(*f))]
     #[invariant(maintains_w, watches.invariant(*f))]
-    #[invariant(num_vars, @f.num_vars < @usize::MAX/2)]
+    #[invariant(vardata_unchanged, (@trail.vardata).len() === (@(@old_t).vardata).len())]
+    #[invariant(num_vars, @f.num_vars === @(@old_f).num_vars)]
     #[invariant(clauses, (@f.clauses).len() > 0)]
     #[invariant(trail_len, (@trail.trail).len() > 0)]
     #[invariant(propha, ^a === ^@old_a)]
     #[invariant(prophw, ^watches === ^@old_w)]
     #[invariant(prophf, ^f === ^@old_f)]
+    #[invariant(propht, ^trail === ^@old_t)]
     loop {
         #[invariant(maintains_f2, f.invariant())]
         #[invariant(maintains_a2, a.invariant(@f.num_vars))]
         #[invariant(maintains_t2, trail.invariant(*f))]
         #[invariant(maintains_w2, watches.invariant(*f))]
-        #[invariant(num_vars2, @f.num_vars < @usize::MAX/2)]
+        #[invariant(vardata_unchanged2, (@trail.vardata).len() === (@(@old_t).vardata).len())]
+        #[invariant(num_vars2, @f.num_vars === @(@old_f).num_vars)]
         #[invariant(clauses2, (@f.clauses).len() > 0)]
         #[invariant(trail_len2, (@trail.trail).len() > 0)]
         #[invariant(propha2, ^a === ^@old_a)]
         #[invariant(prophw2, ^watches === ^@old_w)]
         #[invariant(prophf2, ^f === ^@old_f)]
+        #[invariant(propht2, ^trail === ^@old_t)]
         loop {
             match unit_propagate(f, a, trail, watches) {
                 Ok(_) => { break; },
@@ -274,12 +283,22 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
                             learn_unit(a, trail, lit, f);
                         }
                         Conflict::Learned(level, lit, clause) => {
+                            proof_assert!(trail.invariant(*f));
                             a.cancel_until(trail, level, f);
-                            trail.trail.push(Vec::new());
+                            proof_assert!(trail.invariant(*f));
+                            trail.add_level(f);
+                            proof_assert!((@trail.trail).len() === @level + 1);
+                            proof_assert!((@(@trail.trail)[@level]).len() === 0);
+                            proof_assert!(
+                                forall<j: Int> 0 <= j && j < (@(@trail.trail)[@level]).len() ==>
+                                    @(@(@trail.trail)[@level])[j].idx < @f.num_vars); 
+                            proof_assert!(trail.invariant(*f));
                             //proof_assert! {(@a)[@lit.idx] === None } // Only thing missing. Needs to be ensured by cancel_until
                             a.set_assignment(lit, f);
+                            proof_assert!(trail.invariant(*f));
                             let cref = f.add_clause(&Clause(clause), watches);
                             trail.enq_assignment(lit, Reason::Long(cref), f);
+                            proof_assert!(trail.invariant(*f));
                         }
                     }
                 },
@@ -287,8 +306,12 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
         }
         if let Some(lit) = a.find_unassigned_lit() {
             let lit = lit; // Due to issue #273
-            trail.trail.push(Vec::new());
+            //trail.trail.push(Vec::new());
+            proof_assert!(trail.invariant(*f));
+            trail.add_level(f);
+            proof_assert!(trail.invariant(*f));
             a.set_assignment(lit, f);
+            proof_assert!(trail.invariant(*f));
             trail.enq_assignment(lit, Reason::Decision, f);
         } else {
             return true;
