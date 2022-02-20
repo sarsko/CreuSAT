@@ -52,14 +52,14 @@ impl Trail {
                 Reason::Undefined => true,
                 Reason::Decision => true,
                 Reason::Unit => true,
-                Reason::Long(k) => @k < (@f.clauses).len(),
+                Reason::Long(k) => 0 <= @k && @k < (@f.clauses).len(),
             }
         }
     }
 }
 
 impl Trail {
-    #[trusted] // Checks out
+    #[trusted] // Seems like the match reason makes it not check out. Talk to Xavier about it?
     #[requires(self.invariant(*_f))]
     #[requires(0 <= @lit.idx && @lit.idx < @_f.num_vars)]
     #[requires((@self.trail).len() > 0)]
@@ -67,7 +67,7 @@ impl Trail {
         Reason::Undefined => true,
         Reason::Decision => true,
         Reason::Unit => true,
-        Reason::Long(k) => @k < (@_f.clauses).len()
+        Reason::Long(k) => 0 <= @k && @k < (@_f.clauses).len()
     })]
     #[ensures((^self).invariant(*_f))]
     #[ensures((@(^self).trail).len() === (@self.trail).len())]

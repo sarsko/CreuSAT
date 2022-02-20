@@ -33,6 +33,16 @@ fn count_true(s: Seq<bool>, i: Int) -> Int {
     */
 }
 */
+// Try with arr of usize instead of bool
+#[logic]
+#[variant(s.len()-i)]
+#[requires(i >= 0 && i <= s.len())]
+fn sum(s: Seq<usize>, i: Int) -> Int {
+    pearlite! {
+        if i == s.len() { 0 }
+        else { @s[i] + sum(s, i+1) }
+    }
+}
 
 #[logic]
 #[variant(j-i)]
@@ -58,11 +68,15 @@ fn lemma_count_increases_with_true(s: Seq<bool>, i: Int) {}
 #[ensures(count_true_range(s, 0, i) === count_true_range(s, 0, i+1))]
 fn lemma_count_does_not_increase_with_false(s: Seq<bool>, i: Int) {}
 
+
+/*
 #[logic]
 //#[requires(0 <= i && i < s.len())]
 #[requires(forall<i: Int> 0 <= i && i < s.len() ==> !s[i])]
 #[ensures(count_true_range(s, 0, s.len()) === 0)]
 fn lemma_count_all_false_eq_zero(s: Seq<bool>) {
+    lemma_count_does_not_increase_with_false(s, 0);
+    lemma_count_increases_with_true(s, 0);
 }
 
 #[logic]
@@ -73,20 +87,66 @@ fn lemma_zero_implies_all_false(s: Seq<bool>, i: Int) {
     lemma_count_does_not_increase_with_false(s, 0);
     lemma_count_increases_with_true(s, 0);
 }
+*/
 
-/*
 #[logic]
 #[requires(j <= k)]
-#[ensures(count_true_range(i,j,s) <= count_true_range(i,k,s))]
+#[ensures(count_true_range(s,i,j) <= count_true_range(s,i,k))]
 #[variant(k-j)]
 fn lemma_num_of_pos_increasing(i: Int, j: Int, k: Int, s: Seq<bool>) {
     pearlite! {
         if j < k {
-            lemma_num_of_pos_increasing(i,j+1,k,t)
+            lemma_num_of_pos_increasing(i,j+1,k,s)
         }
     }
 }
-*/
+
+#[logic]
+// Duplis from lemma_decreases_numof
+#[requires(t.len() === t2.len())]
+#[requires(0 <= i && i < t.len())]
+#[requires(t[i] === v && !(t2[i] === v))]
+#[requires(forall<j: Int> 0 <= i && i < t.len() ==> j != i ==> t[j] === t2[j])]
+
+#[variant(t.len() - j)]
+#[requires(0 <= j && j <= t.len())]
+#[ensures(result === occ(v, t, j, t.len()))]
+#[ensures( (j <= i) ==> occ(v, t2, j, t2.len()) === (result - 1))]
+#[ensures( (j > i) ==> occ(v, t2, j, t2.len()) === result)]
+fn numof_aux(v: bool, t: Seq<bool>, t2: Seq<bool>, i: Int, j: Int) -> Int {
+    if pearlite! { j === t.len() } {
+        0
+    } else if pearlite! { j === i } {
+        numof_aux(v, t, t2, i, j+1) + 1
+    } else if pearlite! { t[j] === v } {
+        numof_aux(v, t, t2, i, j+1) + 1
+    } else {
+        numof_aux(v, t, t2, i, j+1)
+    }
+}
+
+#[logic]
+#[requires(t.len() === t2.len())]
+#[requires(0 <= i && i < t.len())]
+#[requires(t[i] === v && !(t2[i] === v))]
+#[requires(forall<j: Int> 0 <= i && i < t.len() ==> j != i ==> t[j] === t2[j])]
+#[ensures(occ(v, t2, 0, t2.len()) === occ(v, t, 0, t.len()) - 1)]
+fn lemma_decreases_numof(v: bool, t: Seq<bool>, t2: Seq<bool>, i: Int) {
+    pearlite! { numof_aux(v, t, t2, i, 0) };
+}
+
+#[logic]
+#[requires(0 <= i && i < s.len())]
+#[requires(s[i] != v)]
+#[ensures(occ(v, s, i, s.len()) === occ(v, s, i+1, s.len()))]
+fn lemma_occ(v: bool, s: Seq<bool>, i: Int){}
+
+#[logic]
+#[requires(0 <= i && i < s.len())]
+#[requires(s[i] === v)]
+#[ensures(occ(v, s, i, s.len()) === occ(v, s, i+1, s.len()) + 1)]
+fn lemma_occ2(v: bool, s: Seq<bool>, i: Int){}
+
 
 /*
 
@@ -115,6 +175,13 @@ fn lemma_count_all_false_eq_zero(s: Seq<bool>) {
 }
 */
 
+/*
+Hmm, proving the remaining properties is a struggle. Talking about the number of occurrences of true in seen
+is not something Why3 seems to like(or I'm doing something stupid), and path_c being bounded number of trues in
+seen is what enables both path_c to not overflow, and the search for next to not panic. I see that varisat does
+conflict analysis somewhat differently, so I'm most likely going to leave this as a black box and then reimplement
+it later.
+*/
 #[trusted]
 #[requires(f.invariant())]
 #[requires(a.invariant(@f.num_vars))]
@@ -143,31 +210,7 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
     // `seen` should be persistent across calls to `analyze_conflict`.
     // Solved by somehow keeping it in `solver`, either as a buffer or by making
     // conflict analysis a struct which is instatiated once and then kept.
-    //let mut num_true: usize = 0;
-    //let mut seen: Vec<bool> = Vec::new();
-    //slet mut k: usize = 0;
-    /*
-    #[invariant(seen_len, (@seen).len() === @k)]
-    #[invariant(kbound, 0 <= @k && @k <= (@f.num_vars))]
-    #[invariant(no_trues, 0 === count_true_range(@seen, 0, @k))]
-    #[invariant(all_false, forall<i: Int> 0 <= i && i < @k ==> !(@seen)[i])]
-    while k < f.num_vars {
-        seen.push(false);
-        k += 1;
-        /*
-        proof_assert! {
-            lemma_count_does_not_increase_with_false(@seen, @k);
-            count_true(@seen, @k) === count_true(@seen, @k - 1) &&
-            count_true(@seen, 0) === 0
-        }
-        */
-    }
-    */
     let mut seen: Vec<bool> = vec::from_elem(false, f.num_vars);
-    proof_assert! {
-        lemma_count_all_false_eq_zero(@seen);
-        count_true_range(@seen, 0, (@seen).len()) === 0
-    }
     let mut out_learnt = Vec::new();
     out_learnt.push(Lit{idx: 0, polarity: false}); // I really don't like this way of reserving space.
 
@@ -176,9 +219,8 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
     let mut i = trail.trail.len() - 1;
     let mut j = trail.trail[i].len();
     #[invariant(seen_same_len, (@seen).len() === @f.num_vars)]
-    //#[invariant(pathc, @path_c <= @f.num_vars)]
-    //#[invariant(pathc, @path_c <= count_true(@seen, 0))]
-    #[invariant(pathc, @path_c <= count_true_range(@seen, 0, (@seen).len()))]
+    #[invariant(pathc, @path_c <= occ(true, @seen, 0, (@seen).len()))]
+    #[invariant(pathc_, @path_c <= @f.num_vars)]
     #[invariant(iless, 0 <= @i && @i < (@trail.trail).len())]
     #[invariant(jless, 0 <= @j && @j <= (@(@trail.trail)[@i]).len())]
     #[invariant(out_learnt_len, (@out_learnt).len() >= 1)]
@@ -190,6 +232,7 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
     )]
     #[invariant(confl_ok, @confl < (@f.clauses).len())]
     #[invariant(trail_ok, trail.invariant(*f))]
+    #[invariant(seen_len_same, (@seen).len() === @f.num_vars)]
     loop {
         let base = if confl == cref {0} else {1};
         let mut k: usize = base;
@@ -204,36 +247,48 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
         #[invariant(out_learnt_ok_trail2, forall<m: Int> 0 <= m && m < (@out_learnt).len() ==>
             @(@trail.vardata)[@(@out_learnt)[m].idx].0 < (@trail.trail).len()
         )]
-        //#[invariant(pathc2, @path_c <= count_true(@seen, 0))]
-        #[invariant(pathc2, @path_c <= count_true_range(@seen, 0, (@seen).len()))]
-        //#[invariant(pathc2, @path_c <= @f.num_vars)]
+        #[invariant(pathc2_, @path_c <= occ(true, @seen, 0, (@seen).len()))]
+        #[invariant(pathc_2, @path_c <= @f.num_vars)]
+        #[invariant(seen_len_same, (@seen).len() === @f.num_vars)]
         while k < clause.0.len() {
             let lit = clause.0[k];
-            let old_seen = Ghost::record(&seen);
+            proof_assert!(@lit.idx < @f.num_vars);
             if !seen[lit.idx] {
                 let level = trail.vardata[lit.idx].0;
                 if level > 0 {
+                    let old_seen = Ghost::record(&seen);
+                    proof_assert!(@@old_seen === @seen);
                     seen[lit.idx] = true;
-                    proof_assert! {
-                        lemma_count_increases_with_true(@seen, @lit.idx);
-                        count_true_range(@seen, 0, @lit.idx) === count_true_range(@seen, 0, @lit.idx-1) + 1
-                    }
-                    /*
-                    proof_assert! {
-                        lemma_count_increases_with_true(@seen, @lit.idx);
-                        count_true(@seen, @lit.idx) === count_true(@seen, @lit.idx+1) + 1
-                    }
-                    */
+                    proof_assert!(lemma_occ(true, @seen, @lit.idx); true);
+                    proof_assert!(lemma_occ2(true, @seen, @lit.idx); true);
+
+                    //#[requires(t.len() === t2.len())]
+                    proof_assert!((@seen).len() === (@@old_seen).len());
+                    //#[requires(0 <= i && i < t.len())]
+                    proof_assert!(0 <= @lit.idx && @lit.idx < (@seen).len());
+                    //#[requires(t[i] === v && !(t2[i] === v))]
+                    proof_assert!((@seen)[@lit.idx] === true && !((@@old_seen)[@lit.idx] === true));
+                    //proof_assert!((@seen)[@lit.idx] === true);
+                    //#[requires(forall<j: Int> 0 <= i && i < t.len() ==> j != i ==> t[j] === t2[j])]
+                    proof_assert!(forall<m: Int> 0 <= m && m < (@seen).len() ==> m != @lit.idx ==>
+                        (@seen)[m] === (@@old_seen)[m]
+                    );
+                    //fn lemma_decreases_numof(v: bool, t: Seq<bool>, t2: Seq<bool>, i: Int) {
+                    //proof_assert!(lemma_decreases_numof(true, @seen, @@old_seen, @lit.idx); true);
+                    //#[ensures(occ(v, t2, 0, t2.len()) === occ(v, t, 0, t.len()) - 1)]
+                    //proof_assert!(occ(true, @@old_seen, 0, (@@old_seen).len()) === occ(true, @seen, 0, (@seen).len()) - 1 );
+                    proof_assert!(lemma_decreases_numof(true, @seen, @@old_seen, @lit.idx); occ(true, @@old_seen, 0, (@@old_seen).len()) === occ(true, @seen, 0, (@seen).len()) - 1 );
                     if level >= decisionlevel {
                         path_c += 1;
                     } else {
+                        
+                        proof_assert!(@lit.idx < @f.num_vars);
                         out_learnt.push(lit);
                     }
                 }
             }
             k += 1;
         }
-        /*
         let next = {
             #[invariant(iless2, 0 <= @i && @i < (@trail.trail).len())]
             #[invariant(jless2, 0 <= @j && @j <= (@(@trail.trail)[@i]).len())]
@@ -251,10 +306,14 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
             }
             trail.trail[i][j]
         };
-        //proof_assert!(@next.idx < @f.num_vars);
+        proof_assert!(@next.idx < @f.num_vars);
+        let old_seen = Ghost::record(&seen);
         seen[next.idx] = false;
+        proof_assert!(lemma_decreases_numof(true, @seen, @@old_seen, @next.idx); occ(true, @@old_seen, 0, (@@old_seen).len()) === occ(true, @seen, 0, (@seen).len()) + 1 );
         // now dlevel = i
         if path_c <= 1 {
+            let not_next = !next;
+            proof_assert!(@not_next.idx < @f.num_vars);
             out_learnt[0] = !next;
             break;
         }
@@ -266,9 +325,7 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
                 confl = *c},
             other => panic!(),
         }
-        */
     }   
-    /*
     if out_learnt.len() == 1 {
         let lit = out_learnt[0];
         return Conflict::Unit(lit);
@@ -292,6 +349,4 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
         out_learnt.swap(1, max_i);
         return Conflict::Learned(max_level, out_learnt[0], out_learnt);
     }
-    */
-    return Conflict::Ground;
 }
