@@ -79,6 +79,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
     Ok((out_clauses, num_literals as usize))
 }
 
+// TODO, fix it so that 0 and 1 len clauses are supported
 /// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
 pub fn preproc_and_solve(
     clauses: &mut std::vec::Vec<std::vec::Vec<i32>>,

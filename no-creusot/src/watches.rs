@@ -32,7 +32,7 @@ impl Watches {
     }
 
     // This requires the literal to be watched, otherwise it will panic
-    // This method should be updated as we usually know where to look
+    // This method is never called(and if it were to, one should pass i)
     pub fn update_watch(&mut self, old_lit: Lit, new_lit: Lit, cref: usize) {
         //assert!(old_lit != new_lit);
         let mut i = 0;

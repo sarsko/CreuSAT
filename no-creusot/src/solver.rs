@@ -47,7 +47,17 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
                         f.clauses[cref].rest[k] = second_lit;
                         f.clauses[cref].second = first_lit;
                     }
-                    watches.update_watch(lit, curr_lit, cref);
+                    // Update watch inlined
+                    let end = watches.watches[watchidx].len() - 1;
+                    watches.watches[watchidx].swap(j, end);
+                    match watches.watches[watchidx].pop() {
+                        Some(w) => {
+                            watches.watches[curr_lit.to_neg_watchidx()].push(w);
+                        },
+                        None => {
+                            unreachable!();
+                        }
+                    }
                     continue 'outer;
                 }
                 k += 1;
