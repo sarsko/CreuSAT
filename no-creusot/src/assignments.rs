@@ -2,7 +2,7 @@ use crate::formula::*;
 use crate::lit::*;
 use crate::trail::*;
 
-// 2 eq unassigned
+// 4 is unassigned, 0 is false, 1 is true, 2 is phase saved false and 3 is phase saved true
 #[derive(Debug, Eq, PartialEq)]
 pub struct Assignments(pub Vec<u8>);
 
@@ -22,17 +22,23 @@ impl Assignments {
         //let mut assign: Vec<Option<bool>> = Vec::from_elem(None, f.num_vars);
         //let assign: Vec<Option<bool>> = vec![None; f.num_vars];
         //Assignments(assign)
-        Assignments(vec![2; f.num_vars])
+        Assignments(vec![4; f.num_vars])
     }
 
     pub fn find_unassigned_lit(&self) -> Option<Lit> {
         let mut i = 0;
-        use rand::Rng;
-        let mut rng = rand::thread_rng();
-        let b: bool = rng.gen::<f64>() < 0.5;
         while i < self.0.len() {
             let curr = self.0[i];
-            if curr == 2 {
+            if curr >= 2 {
+                /*
+                let b = if curr == 4 {
+                    use rand::Rng;
+                    let mut rng = rand::thread_rng();
+                    rng.gen::<f64>() < 0.5
+                } else { curr != 2 };
+                */
+                let b = curr != 2;
+                // 3 -> 1 and 2 -> 0
                 return Some(Lit{ idx: i, polarity: b });
             }
             i += 1;
@@ -77,7 +83,7 @@ impl Assignments {
             while j < decisions.len() {
                 let lit = decisions[j];
                 //trail.vardata[lit.idx] = (0, Reason::Undefined); // Might as well not wipe it
-                self.0[lit.idx] = 2;
+                self.0[lit.idx] += 2;
                 j += 1;
             }
             i -= 1;

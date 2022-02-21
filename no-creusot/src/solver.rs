@@ -38,7 +38,7 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
             let clause_len = f.clauses[cref].rest.len();
             while k < clause_len {
                 let curr_lit = f.clauses[cref].rest[k];
-                if a.0[curr_lit.idx] == 2 || a.0[curr_lit.idx] == curr_lit.polarity as u8 { // Todo change
+                if a.0[curr_lit.idx] >= 2 || a.0[curr_lit.idx] == curr_lit.polarity as u8 { // Todo change
                     if first_lit.idx == lit.idx {
                         f.clauses[cref].first = curr_lit;
                         f.clauses[cref].rest[k] = first_lit;
@@ -63,10 +63,10 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
                 k += 1;
             }
             // If we have gotten here, the clause is either all false or unit
-            if a.0[first_lit.idx] == 2 {
+            if a.0[first_lit.idx] >= 2 {
                 a.set_assignment(first_lit);
                 trail.enq_assignment(first_lit, Reason::Long(cref));
-            } else if a.0[second_lit.idx] == 2 {
+            } else if a.0[second_lit.idx] >= 2 {
                 f.clauses[cref].first = second_lit;
                 f.clauses[cref].second = first_lit;
                 a.set_assignment(second_lit);

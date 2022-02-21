@@ -18,10 +18,7 @@ impl Clause {
         }
     }
     pub fn is_unsat(&self, a: &Assignments) -> bool {
-        if self.first.polarity as u8 != a.0[self.first.idx] {
-            return false;
-        }
-        if self.second.polarity as u8 != a.0[self.second.idx] {
+        if self.first.polarity as u8 != a.0[self.first.idx] || self.second.polarity as u8 != a.0[self.second.idx] {
             return false;
         }
         let mut i = 0;
