@@ -3,6 +3,8 @@ use no_creusot::parser::{parse_cnf, preproc_and_solve};
 
 use clap::{crate_authors, App, AppSettings, Arg};
 
+//#[global_allocator]
+//static GLOBAL: jemallocator::Jemalloc = jemallocator::Jemalloc;
 fn main() {
     let matches = App::new("\nA minimal SAT solver with no name")
         .author(crate_authors!("\n"))
@@ -20,13 +22,21 @@ fn main() {
         )
         .get_matches();
     let filename = matches.value_of("file").unwrap();
-    let (mut clauses, num_literals) = parse_cnf(filename);
-    println!("Parse complete");
-    let result = preproc_and_solve(&mut clauses, num_literals);
+    println!("c Reading file '{}'", filename);
+    let res = parse_cnf(filename);
+    match res {
+        Ok((mut clauses, num_literals)) => {
+            println!("c Parse complete");
+            let result = preproc_and_solve(&mut clauses, num_literals);
 
-    if result {
-        println!("Sat");
-    } else {
-        println!("Unsat");
+            if result {
+                println!("c SAT");
+            } else {
+                println!("c UNSAT");
+            }
+        },
+        Err(e) => {
+            println!("c Parser errored with message: {}", e);
+        }
     }
 }

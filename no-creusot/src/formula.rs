@@ -24,7 +24,7 @@ impl Formula {
     }
 
     pub fn add_clause(&mut self, clause: &Clause, watches: &mut Watches) -> usize {
-        self.clauses.push(clause.clone());
+        self.clauses.push(clause.to_owned());
         let cref = self.clauses.len() - 1;
         watches.add_watcher(clause.0[0], cref);
         watches.add_watcher(clause.0[1], cref);

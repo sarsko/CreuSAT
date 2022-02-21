@@ -6,7 +6,7 @@ use crate::solver::*; // TODO move
 
 // Lets try this scheme and see how well it fares
 // Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Watcher {
     pub cref: usize,
     //blocker: Lit,
@@ -19,18 +19,14 @@ pub struct Watches {
 
 impl Watches {
     // The way clauses are made and added should really be changed - builder pattern?
+    #[inline]
     pub fn new(num_vars: usize) -> Watches {
-        let mut i = 0;
-        let mut watches = Vec::new();
-        while i < num_vars {
-            watches.push(Vec::new());
-            watches.push(Vec::new());
-            i += 1;
-        }
-        Watches {watches}
+        let watches = vec![vec![]; 2 * num_vars];
+        Watches { watches }
     }
 
     // We watch the negated literal for updates
+    #[inline]
     pub fn add_watcher(&mut self, lit: Lit, cref: usize) {
         self.watches[lit.to_neg_watchidx()].push(Watcher {cref});
     }
@@ -50,8 +46,21 @@ impl Watches {
         //assert!(self.watches[old_idx][i].cref == cref);
 
         //self.check_invariant("UPDATE_BEFORE");
-        let old = self.watches[old_idx].remove(i);
-        self.watches[new_lit.to_neg_watchidx()].push(old);
+        // Okay so it seems like the swap and pop is actually marginally faster than both the remove and the swap_remove. Nice
+        let end = self.watches[old_idx].len() - 1;
+        self.watches[old_idx].swap(i, end);
+        match self.watches[old_idx].pop() {
+            Some(w) => {
+                self.watches[new_lit.to_neg_watchidx()].push(w);
+            },
+            None => {
+                unreachable!();
+            }
+        }
+        //let old = self.watches[old_idx].swap_remove(i);
+        //self.watches[new_lit.to_neg_watchidx()].push(old);
+        //let old = self.watches[old_idx].remove(i);
+        //self.watches[new_lit.to_neg_watchidx()].push(old);
         //self.check_invariant("UPDATE_AFTER");
     }
 
@@ -119,22 +128,20 @@ impl Watches {
             if clause.len() == 0 {
                 return false;
             } else if clause.len() == 1 {
-                if a.0[clause[0].idx] != None {
-                    return false;
+                match a.0[clause[0].idx] {
+                    Some(_) => { return false; },
+                    None => { 
+                        learn_unit(a, trail, clause[0]);
+                    }
                 }
-                learn_unit(a, trail, clause[0]);
             } else {
-                let mut j = 0;
-                while j < 2 {
-                    let lit = clause[j];
-                    self.add_watcher(lit, i);
-                    j += 1;
-                }
+                self.add_watcher(clause[0], i);
+                self.add_watcher(clause[1], i);
             }
             i += 1;
         }
-        self.check_invariant(&"INIT"); // Debug assertion
-        self.check_only_first_two_watched(f, &"RIGHT AFTER INIT"); // Debug assertion
+        //self.check_invariant(&"INIT"); // Debug assertion
+        //self.check_only_first_two_watched(f, &"RIGHT AFTER INIT"); // Debug assertion
         return true;
     }
 }

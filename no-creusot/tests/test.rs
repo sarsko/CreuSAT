@@ -24,7 +24,7 @@ fn test_all_path(paths_in: &str, expected: bool, verbosity: usize) {
     let mut out = StandardStream::stdout(ColorChoice::Always);
     out.set_color(ColorSpec::new().set_fg(Some(Color::Green))).ok();
     let mut i = 0;
-    let mut start = Instant::now();
+    let start = Instant::now();
     for path in paths {
         let tmp = path.unwrap().path();
         let path = tmp.to_str().unwrap();

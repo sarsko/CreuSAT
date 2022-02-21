@@ -9,8 +9,7 @@ impl Clause {
         let mut i = 0;
         while i < self.0.len() {
             let lit = self.0[i];
-            let res = a.0[lit.idx];
-            match res {
+            match a.0[lit.idx] {
                 Some(x) => {
                     // false, false || true, true -> clause is SAT
                     if lit.polarity == x {
