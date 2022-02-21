@@ -6,10 +6,14 @@ use no_creusot::parser::parse_cnf;
 fn test_parser() {
     let mut paths = read_dir("../tests/cnf/sat").unwrap();
     for path in paths {
-        let (mut _clauses, _num_literals) = parse_cnf(path.unwrap().path().to_str().unwrap());
+        let tmp = path.unwrap().path();
+        let path = tmp.to_str().unwrap();
+        let _res = parse_cnf(path);
     }
     paths = read_dir("../tests/cnf/unsat").unwrap();
     for path in paths {
-        let (mut _clauses, _num_literals) = parse_cnf(path.unwrap().path().to_str().unwrap());
+        let tmp = path.unwrap().path();
+        let path = tmp.to_str().unwrap();
+        let _res = parse_cnf(path);
     }
 }

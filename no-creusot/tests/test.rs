@@ -9,11 +9,20 @@ use no_creusot::parser::{parse_cnf, preproc_and_solve};
 fn test_all_sat() {
     let paths = read_dir("../tests/cnf/sat").unwrap();
     for path in paths {
-        let (mut clauses, num_literals) = parse_cnf(path.unwrap().path().to_str().unwrap());
+        let tmp = path.unwrap().path();
+        let path = tmp.to_str().unwrap();
+        let res = parse_cnf(path);
+        match res {
+            Ok((mut clauses, num_literals)) => {
+                let result = preproc_and_solve(&mut clauses, num_literals);
+                assert!(result);
+            },
+            Err(e) => {
+                panic!("Parser errored with message: {}", e);
+            }
+        }
         //let mut out = StandardStream::stdout(ColorChoice::Always);
         //write!(&mut out, "Testing sat ...");
-        let result = preproc_and_solve(&mut clauses, num_literals);
-        assert!(result);
     }
 }
 
@@ -21,10 +30,19 @@ fn test_all_sat() {
 fn test_all_unsat() {
     let paths = read_dir("../tests/cnf/unsat").unwrap();
     for path in paths {
-        let (mut clauses, num_literals) = parse_cnf(path.unwrap().path().to_str().unwrap());
+        let tmp = path.unwrap().path();
+        let path = tmp.to_str().unwrap();
+        let res = parse_cnf(path);
+        match res {
+            Ok((mut clauses, num_literals)) => {
+                let result = preproc_and_solve(&mut clauses, num_literals);
+                assert!(!result);
+            },
+            Err(e) => {
+                panic!("Parser errored with message: {}", e);
+            }
+        }
         //let mut out = StandardStream::stdout(ColorChoice::Always);
-        //write!(&mut out, "Testing unsat ...");
-        let result = preproc_and_solve(&mut clauses, num_literals);
-        assert!(!result);
+        //write!(&mut out, "Testing sat ...");
     }
 }
