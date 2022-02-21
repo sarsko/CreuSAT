@@ -93,13 +93,13 @@ pub fn preproc_and_solve(
             if *lit < 0 {
                 let new_lit = Lit {
                     idx: ((lit.abs() - 1) as usize),
-                    polarity: false,
+                    polarity: 0,
                 };
                 currclause.0.push(new_lit);
             } else {
                 let new_lit = Lit {
                     idx: ((*lit - 1) as usize),
-                    polarity: true,
+                    polarity: 1,
                 };
                 currclause.0.push(new_lit);
             }

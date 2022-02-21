@@ -9,8 +9,7 @@ impl Clause {
         let mut i = 0;
         while i < self.0.len() {
             let lit = self.0[i];
-            let ass = a.0[lit.idx];
-            if ass == 2 || lit.polarity as u8 == ass {
+            if lit.polarity as u8 != a.0[lit.idx] {
                 return false;
             }
             i += 1;

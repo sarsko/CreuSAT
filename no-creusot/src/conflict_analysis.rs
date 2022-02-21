@@ -12,7 +12,7 @@ pub enum Conflict {
     Learned(usize, Lit, Vec<Lit>),
 }
 
-pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
+pub fn analyze_conflict(f: &Formula, _a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.trail.len() - 1;
     if decisionlevel == 0 {
         return Conflict::Ground;
@@ -21,7 +21,7 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
     // Solved by somehow keeping it in `solver`, either as a buffer or by making
     // conflict analysis a struct which is instatiated once and then kept.
     let mut seen = vec![false; f.num_vars]; 
-    let mut out_learnt = vec![Lit{idx: 999999, polarity: false}; 1]; // I really don't like this way of reserving space.
+    let mut out_learnt = vec![Lit{idx: 999999, polarity: 0}; 1]; // I really don't like this way of reserving space.
 
     let mut path_c = 0;
     let mut confl = cref;
