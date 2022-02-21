@@ -20,10 +20,7 @@ impl Lit {
     }
     #[inline]
     pub fn is_sat(&self, assignment: &Assignments) -> bool {
-        match assignment.0[self.idx] {
-            Some(val) => val == self.polarity,
-            None => false,
-        }
+        assignment.0[self.idx] == self.polarity as u8
     }
 }
 

@@ -9,16 +9,9 @@ impl Clause {
         let mut i = 0;
         while i < self.0.len() {
             let lit = self.0[i];
-            match a.0[lit.idx] {
-                Some(x) => {
-                    // false, false || true, true -> clause is SAT
-                    if lit.polarity == x {
-                        return false;
-                    }
-                }
-                None => {
-                    return false;
-                } // May become SAT
+            let ass = a.0[lit.idx];
+            if ass == 2 || lit.polarity as u8 == ass {
+                return false;
             }
             i += 1;
         }

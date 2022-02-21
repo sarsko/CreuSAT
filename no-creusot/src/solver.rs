@@ -6,8 +6,6 @@ use crate::trail::*;
 use crate::watches::*;
 use crate::conflict_analysis::*;
 
-use std::time::Instant;
-
 // Move unit prop? Dunno where. Is it propagating over the assignments, the formula, or is it its own thing.
 // Currently leaning towards assignments, but it might also be its own thing. Ill have to think some more about it.
 
@@ -39,7 +37,7 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
             let clause_len = f.clauses[cref].0.len();
             while k < clause_len {
                 let curr_lit = f.clauses[cref].0[k];
-                if a.0[curr_lit.idx] == None || a.0[curr_lit.idx] == Some(curr_lit.polarity) {
+                if a.0[curr_lit.idx] == 2 || a.0[curr_lit.idx] == curr_lit.polarity as u8 { // Todo change
                     if first_lit.idx == lit.idx {
                         f.clauses[cref].0.swap(0, k);
                     } else {
@@ -52,10 +50,10 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
                 k += 1;
             }
             // If we have gotten here, the clause is either all false or unit
-            if a.0[first_lit.idx] == None {
+            if a.0[first_lit.idx] == 2 {
                 a.set_assignment(first_lit);
                 trail.enq_assignment(first_lit, Reason::Long(cref));
-            } else if a.0[second_lit.idx] == None {
+            } else if a.0[second_lit.idx] == 2 {
                 f.clauses[cref].0.swap(1, 0);
                 a.set_assignment(second_lit);
                 trail.enq_assignment(second_lit, Reason::Long(cref));
@@ -76,20 +74,13 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit) {
 }
 
 fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) -> bool {
-    let mut cntr = 0;
     loop {
         loop {
-        let start = Instant::now();
             match unit_propagate(f, a, trail, watches) {
-                Ok(_) => { 
-        cntr += start.elapsed().as_nanos();
-                    break; },
+                Ok(_) => { break; },
                 Err(cref) => {
-        cntr += start.elapsed().as_nanos();
                     match analyze_conflict(f, a, trail, cref) {
-                        Conflict::Ground => { 
-                            println!("{}", cntr as f64 /1000000000.0);
-                            return false; },
+                        Conflict::Ground => { return false; },
                         Conflict::Unit(lit) => {
                             learn_unit(a, trail, lit);
                         }
@@ -109,7 +100,6 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
             a.set_assignment(lit);
             trail.enq_assignment(lit, Reason::Decision);
         } else {
-            println!("{}", cntr as f64 /1000000000.0);
             return true;
         } 
     }

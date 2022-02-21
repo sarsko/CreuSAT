@@ -128,11 +128,10 @@ impl Watches {
             if clause.len() == 0 {
                 return false;
             } else if clause.len() == 1 {
-                match a.0[clause[0].idx] {
-                    Some(_) => { return false; },
-                    None => { 
-                        learn_unit(a, trail, clause[0]);
-                    }
+                if a.0[clause[0].idx] == 2 {
+                    learn_unit(a, trail, clause[0]);
+                } else {
+                    return false;
                 }
             } else {
                 self.add_watcher(clause[0], i);

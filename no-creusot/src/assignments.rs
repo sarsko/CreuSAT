@@ -2,27 +2,11 @@ use crate::formula::*;
 use crate::lit::*;
 use crate::trail::*;
 
+// 2 eq unassigned
 #[derive(Debug, Eq, PartialEq)]
-pub struct Assignments(pub Vec<Option<bool>>);
+pub struct Assignments(pub Vec<u8>);
 
 impl Assignments {
-    #[allow(dead_code)]
-    fn clone_assignment_vector(&self) -> Vec<Option<bool>> {
-        let mut out = Vec::new();
-        let mut i = 0;
-        while i < self.0.len() {
-            let curr = self.0[i];
-            out.push(curr.clone());
-            i += 1;
-        }
-        return out;
-    }
-
-    #[allow(dead_code)]
-    fn clone(&self) -> Self {
-        Assignments(self.clone_assignment_vector())
-    }
-
     #[inline]
     pub fn set_assignment(&mut self, l: Lit) {
         /*
@@ -31,14 +15,14 @@ impl Assignments {
         }
         */
         //assert!(self.0[l.idx].is_none());
-        self.0[l.idx] = Some(l.polarity);
+        self.0[l.idx] = l.polarity as u8;
     }
 
     pub fn init_assignments(f: &Formula) -> Assignments {
         //let mut assign: Vec<Option<bool>> = Vec::from_elem(None, f.num_vars);
         //let assign: Vec<Option<bool>> = vec![None; f.num_vars];
         //Assignments(assign)
-        Assignments(vec![None; f.num_vars])
+        Assignments(vec![2; f.num_vars])
     }
 
     pub fn find_unassigned_lit(&self) -> Option<Lit> {
@@ -48,11 +32,8 @@ impl Assignments {
         let b: bool = rng.gen::<f64>() < 0.5;
         while i < self.0.len() {
             let curr = self.0[i];
-            match curr {
-                Some(_) => {} // continue
-                None => {
-                    return Some(Lit{ idx: i, polarity: b });
-                }
+            if curr == 2 {
+                return Some(Lit{ idx: i, polarity: b });
             }
             i += 1;
         }
@@ -96,7 +77,7 @@ impl Assignments {
             while j < decisions.len() {
                 let lit = decisions[j];
                 //trail.vardata[lit.idx] = (0, Reason::Undefined); // Might as well not wipe it
-                self.0[lit.idx] = None;
+                self.0[lit.idx] = 2;
                 j += 1;
             }
             i -= 1;

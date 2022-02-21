@@ -33,7 +33,6 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
         let clause = &f.clauses[confl].0;
         while k < clause.len() {
             let lit = clause[k];
-            assert!(a.0[lit.idx] != None);
             if !seen[lit.idx] {
                 let level = trail.vardata[lit.idx].0;
                 if level > 0 {
