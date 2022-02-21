@@ -64,6 +64,7 @@ impl Watches {
         //self.check_invariant("UPDATE_AFTER");
     }
 
+    /*
     // Debug function that checks that all the watches are for one of the first two literals of each clause
     pub fn check_only_first_two_watched(&self, f: &Formula, s: &str) {
         let mut i = 0;
@@ -118,25 +119,16 @@ impl Watches {
             }
         }
     }
+    */
 
     // Returns false if there exists an empty clause or two unit clauses of the same
     // literal with opposite polarity(exists a clause [[-l]] and [[l]] for some l)
     pub fn init_watches(&mut self, f: &Formula, trail: &mut Trail, a: &mut Assignments) -> bool {
         let mut i = 0;
         while i < f.clauses.len() {
-            let clause = &f.clauses[i].0;
-            if clause.len() == 0 {
-                return false;
-            } else if clause.len() == 1 {
-                if a.0[clause[0].idx] == 2 {
-                    learn_unit(a, trail, clause[0]);
-                } else {
-                    return false;
-                }
-            } else {
-                self.add_watcher(clause[0], i);
-                self.add_watcher(clause[1], i);
-            }
+            let clause = &f.clauses[i];
+            self.add_watcher(clause.first, i);
+            self.add_watcher(clause.second, i);
             i += 1;
         }
         //self.check_invariant(&"INIT"); // Debug assertion

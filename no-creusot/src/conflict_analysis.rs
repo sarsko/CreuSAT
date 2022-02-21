@@ -28,11 +28,36 @@ pub fn analyze_conflict(f: &Formula, _a: &Assignments, trail: &Trail, cref: usiz
     let mut i = trail.trail.len() - 1;
     let mut j = trail.trail[i].len();
     loop {
-        let base = if confl == cref {0} else {1};
-        let mut k = base;
-        let clause = &f.clauses[confl].0;
-        while k < clause.len() {
-            let lit = clause[k];
+        let clause = &f.clauses[confl];
+        if confl == cref {
+            let lit = clause.first;
+            if !seen[lit.idx] {
+                let level = trail.vardata[lit.idx].0;
+                if level > 0 {
+                    seen[lit.idx] = true;
+                    if level >= decisionlevel {
+                        path_c += 1;
+                    } else {
+                        out_learnt.push(lit);
+                    }
+                }
+            }
+        }
+        let lit = clause.second;
+        if !seen[lit.idx] {
+            let level = trail.vardata[lit.idx].0;
+            if level > 0 {
+                seen[lit.idx] = true;
+                if level >= decisionlevel {
+                    path_c += 1;
+                } else {
+                    out_learnt.push(lit);
+                }
+            }
+        }
+        let mut k = 0;
+        while k < clause.rest.len() {
+            let lit = clause.rest[k];
             if !seen[lit.idx] {
                 let level = trail.vardata[lit.idx].0;
                 if level > 0 {

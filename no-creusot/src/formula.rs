@@ -1,6 +1,7 @@
 use crate::assignments::*;
 use crate::clause::*;
 use crate::watches::*;
+use crate::lit::*;
 
 
 #[derive(Debug)]
@@ -23,11 +24,12 @@ impl Formula {
         return false;
     }
 
-    pub fn add_clause(&mut self, clause: &Clause, watches: &mut Watches) -> usize {
-        self.clauses.push(clause.to_owned());
-        let cref = self.clauses.len() - 1;
-        watches.add_watcher(clause.0[0], cref);
-        watches.add_watcher(clause.0[1], cref);
+    pub fn add_clause(&mut self, clause: &Vec<Lit>, watches: &mut Watches) -> usize {
+        let clause = Clause::clause_from_vec(clause);
+        let cref = self.clauses.len();
+        watches.add_watcher(clause.first, cref);
+        watches.add_watcher(clause.second, cref);
+        self.clauses.push(clause);
         cref
     }
 

@@ -6,7 +6,8 @@ use crate::types::*;
 use crate::solver::*;
 use crate::clause::*;
 use crate::formula::*;
-use crate::lit::*;
+use crate::lit::Lit as Lit2;
+use crate::clause::Clause as Clause2;
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where
@@ -88,23 +89,24 @@ pub fn preproc_and_solve(
         num_vars: num_literals,
     };
     for clause in clauses {
-        let mut currclause = Clause(Vec::new());
+        let mut currclause: Vec<Lit2> = vec![];
         for lit in clause {
             if *lit < 0 {
-                let new_lit = Lit {
+                let new_lit = Lit2 {
                     idx: ((lit.abs() - 1) as usize),
                     polarity: false,
                 };
-                currclause.0.push(new_lit);
+                currclause.push(new_lit);
             } else {
-                let new_lit = Lit {
+                let new_lit = Lit2 {
                     idx: ((*lit - 1) as usize),
                     polarity: true,
                 };
-                currclause.0.push(new_lit);
+                currclause.push(new_lit);
             }
         }
-        formula.clauses.push(currclause);
+        let clause2: Clause2 = Clause2::clause_from_vec(&currclause);
+        formula.clauses.push(clause2);
     }
     return solver(&mut formula);
 }

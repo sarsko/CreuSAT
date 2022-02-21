@@ -20,29 +20,32 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
         let watchidx = lit.to_watchidx();
         'outer: while j < watches.watches[watchidx].len() {
             let cref = watches.watches[watchidx][j].cref;
-            let first_lit = f.clauses[cref].0[0];
+            let first_lit = f.clauses[cref].first;
             if first_lit.is_sat(&a) {
                 j += 1;
                 continue;
             }
-            let second_lit = f.clauses[cref].0[1];
+            let second_lit = f.clauses[cref].second;
             if second_lit.is_sat(&a) {
                 // We swap to make it faster the next time
-                f.clauses[cref].0.swap(0, 1);
+                f.clauses[cref].first = second_lit;
+                f.clauses[cref].second = first_lit;
                 j += 1;
                 continue;
             }
             // At this point we know that none of the watched literals are sat
-            let mut k = 2;
-            let clause_len = f.clauses[cref].0.len();
+            let mut k = 0;
+            let clause_len = f.clauses[cref].rest.len();
             while k < clause_len {
-                let curr_lit = f.clauses[cref].0[k];
+                let curr_lit = f.clauses[cref].rest[k];
                 if a.0[curr_lit.idx] == 2 || a.0[curr_lit.idx] == curr_lit.polarity as u8 { // Todo change
                     if first_lit.idx == lit.idx {
-                        f.clauses[cref].0.swap(0, k);
+                        f.clauses[cref].first = curr_lit;
+                        f.clauses[cref].rest[k] = first_lit;
                     } else {
-                        f.clauses[cref].0.swap(1, k);
-                        f.clauses[cref].0.swap(1, 0);
+                        f.clauses[cref].first = curr_lit;
+                        f.clauses[cref].rest[k] = second_lit;
+                        f.clauses[cref].second = first_lit;
                     }
                     watches.update_watch(lit, curr_lit, cref);
                     continue 'outer;
@@ -54,7 +57,8 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
                 a.set_assignment(first_lit);
                 trail.enq_assignment(first_lit, Reason::Long(cref));
             } else if a.0[second_lit.idx] == 2 {
-                f.clauses[cref].0.swap(1, 0);
+                f.clauses[cref].first = second_lit;
+                f.clauses[cref].second = first_lit;
                 a.set_assignment(second_lit);
                 trail.enq_assignment(second_lit, Reason::Long(cref));
             } else {
@@ -88,7 +92,7 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
                             a.cancel_until(trail, trail.trail.len(), level);
                             trail.trail.push(Vec::new());
                             a.set_assignment(lit);
-                            let cref = f.add_clause(&Clause(clause), watches);
+                            let cref = f.add_clause(&clause, watches);
                             trail.enq_assignment(lit, Reason::Long(cref));
                         }
                     }
