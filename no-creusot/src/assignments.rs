@@ -27,15 +27,13 @@ impl Assignments {
 
     pub fn find_unassigned_lit(&self) -> Option<Lit> {
         let mut i = 0;
-        /*
         use rand::Rng;
         let mut rng = rand::thread_rng();
-        let b: bool = rng.gen::<f64>() < 0.5;
-        */
+        let b: u8 = if rng.gen::<f64>() < 0.5 { 1 } else { 0 };
         while i < self.0.len() {
             let curr = self.0[i];
             if curr == 2 {
-                return Some(Lit{ idx: i, polarity: 0 });
+                return Some(Lit{ idx: i, polarity: b });
             }
             i += 1;
         }
