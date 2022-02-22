@@ -1,6 +1,7 @@
 use crate::formula::*;
 use crate::lit::*;
 use crate::trail::*;
+use crate::decision::*;
 
 // 4 is unassigned, 0 is false, 1 is true, 2 is phase saved false and 3 is phase saved true
 #[derive(Debug, Eq, PartialEq)]
@@ -25,10 +26,13 @@ impl Assignments {
         Assignments(vec![4; f.num_vars], 0)
     }
 
-    pub fn find_unassigned_lit(&mut self) -> Option<Lit> {
+    pub fn find_unassigned_lit(&mut self, d: &Decisions) -> Option<Lit> {
         let mut i = self.1;
-        while i < self.0.len() {
-            let curr = self.0[i];
+        //let mut i = 0;
+        while i < d.lit_order.len() {
+            //let curr = self.0[i];
+            let curr = self.0[d.lit_order[i]];
+            println!("{}", i);
             if curr >= 2 {
                 /*
                 let b = if curr == 4 {
@@ -40,6 +44,9 @@ impl Assignments {
                 let b = curr != 2;
                 // 3 -> 1 and 2 -> 0
                 self.1 = i + 1;
+                //self.1 = 0;
+                //return Some(Lit{ idx: d.lit_order[i], polarity: b });
+                return Some(Lit{ idx: d.lit_order[i], polarity: b });
                 return Some(Lit{ idx: i, polarity: b });
             }
             i += 1;
@@ -76,16 +83,18 @@ impl Assignments {
         */
     }   
 
-    pub fn cancel_until(&mut self, trail: &mut Trail, decisionlevel: usize, level: usize) {
-        let mut i: usize = decisionlevel;
-        while i > level {
+    // Surprised that this isnt faster
+    pub fn cancel_long(&mut self, trail: &mut Trail) {
+        let mut i: usize = trail.trail.len();
+        //let mut minseen = self.1;
+        while i > 1 {
             let decisions = trail.trail.pop().unwrap();
             let mut j: usize = 0;
             while j < decisions.len() {
                 let lit = decisions[j];
                 //trail.vardata[lit.idx] = (0, Reason::Undefined); // Might as well not wipe it
-                //if lit.idx < self.1 {
-                //    self.1 = lit.idx;
+                //if lit.idx < minseen {
+                //    minseen = lit.idx;
                 //}
                 self.0[lit.idx] += 2;
                 j += 1;
@@ -93,5 +102,27 @@ impl Assignments {
             i -= 1;
         }
         self.1 = 0;
+        //self.1 = minseen;
+    }
+
+    pub fn cancel_until(&mut self, trail: &mut Trail, decisionlevel: usize, level: usize) {
+        let mut i: usize = decisionlevel;
+        let mut minseen = self.1;
+        while i > level {
+            let decisions = trail.trail.pop().unwrap();
+            let mut j: usize = 0;
+            while j < decisions.len() {
+                let lit = decisions[j];
+                //trail.vardata[lit.idx] = (0, Reason::Undefined); // Might as well not wipe it
+                if lit.idx < minseen {
+                    minseen = lit.idx;
+                }
+                self.0[lit.idx] += 2;
+                j += 1;
+            }
+            i -= 1;
+        }
+        self.1 = 0;
+        //self.1 = minseen;
     }
 }

@@ -9,3 +9,4 @@ pub mod formula;
 pub mod lit;
 pub mod trail;
 pub mod watches;
+pub mod decision;

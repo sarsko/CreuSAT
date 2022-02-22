@@ -11,6 +11,7 @@ pub struct Formula {
 }
 
 impl Formula {
+    /*
     #[allow(dead_code)]
     pub fn contains_empty(&self, a: &Assignments) -> bool {
         let mut i = 0;
@@ -23,6 +24,7 @@ impl Formula {
         }
         return false;
     }
+    */
 
     pub fn add_clause(&mut self, clause: &Vec<Lit>, watches: &mut Watches) -> usize {
         let clause = Clause::clause_from_vec(clause);

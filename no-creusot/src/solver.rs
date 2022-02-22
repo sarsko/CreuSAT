@@ -5,6 +5,7 @@ use crate::lit::*;
 use crate::trail::*;
 use crate::watches::*;
 use crate::conflict_analysis::*;
+use crate::decision::*;
 
 // Move unit prop? Dunno where. Is it propagating over the assignments, the formula, or is it its own thing.
 // Currently leaning towards assignments, but it might also be its own thing. Ill have to think some more about it.
@@ -83,11 +84,12 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
 
 pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit) {
     a.cancel_until(trail, trail.trail.len(), 1);
+    //a.cancel_long(trail);
     a.set_assignment(lit);
     trail.enq_assignment(lit, Reason::Unit);
 }
 
-fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) -> bool {
+fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches, decisions: &mut Decisions) -> bool {
     loop {
         loop {
             match unit_propagate(f, a, trail, watches) {
@@ -109,7 +111,7 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
                 },
             }
         }    
-        if let Some(lit) = a.find_unassigned_lit() {
+        if let Some(lit) = a.find_unassigned_lit(decisions) {
             trail.trail.push(Vec::new());
             a.set_assignment(lit);
             trail.enq_assignment(lit, Reason::Decision);
@@ -130,5 +132,6 @@ pub fn solver(f: &mut Formula) -> bool {
     if !watches.init_watches(f, &mut trail, &mut assignments) {
         return false; 
     }
-    solve(f, &mut assignments, &mut trail, &mut watches)
+    let mut decisions = Decisions::new(f);
+    solve(f, &mut assignments, &mut trail, &mut watches, &mut decisions)
 }
