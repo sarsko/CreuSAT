@@ -6,6 +6,7 @@ use crate::trail::*;
 use crate::watches::*;
 use crate::conflict_analysis::*;
 use crate::decision::*;
+use crate::luby::*;
 
 // Move unit prop? Dunno where. Is it propagating over the assignments, the formula, or is it its own thing.
 // Currently leaning towards assignments, but it might also be its own thing. Ill have to think some more about it.
@@ -90,17 +91,28 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, decisions: &
 }
 
 fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches, decisions: &mut Decisions) -> bool {
+    let mut restart_delay = 10000;
+    let mut num_conflicts = 0;
+    let scale = 128;
+    let mut luby = Luby::default();
     loop {
         loop {
+            if num_conflicts == restart_delay {
+                num_conflicts = 0;
+                restart_delay += scale * luby.advance();
+                a.cancel_until(trail, trail.trail.len(), 1, decisions);
+            }
             match unit_propagate(f, a, trail, watches) {
                 Ok(_) => { break; },
                 Err(cref) => {
                     match analyze_conflict(f, a, trail, cref) {
                         Conflict::Ground => { return false; },
                         Conflict::Unit(lit) => {
+                            num_conflicts += 1;
                             learn_unit(a, trail, lit, decisions);
                         }
                         Conflict::Learned(level, lit, clause) => {
+                            num_conflicts += 1;
                             let cref = f.add_clause(&clause, watches);
                             decisions.increment_and_move(f, cref);
                             a.cancel_until(trail, trail.trail.len(), level, decisions);
