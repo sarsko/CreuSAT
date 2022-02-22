@@ -26,7 +26,39 @@ impl Assignments {
         Assignments(vec![4; f.num_vars], 0)
     }
 
-    pub fn find_unassigned_lit(&mut self, d: &Decisions) -> Option<Lit> {
+    pub fn find_unassigned_lit(&mut self, d: &mut Decisions) -> Option<Lit> {
+        match d.get_next(self) {
+            Some(l) => {
+                return Some(Lit { idx: l, polarity: true }); // TODO swap to b
+            },
+            None => {
+                return None;
+            }
+        }
+        /*
+        let mut i = d.head;
+        while i < d.lit_order.len() {
+            let curr = self.0[d.lit_order[i]];
+            if curr >= 2 {
+                let b = curr != 2;
+                d.head = i;
+                return Some(Lit{ idx: d.lit_order[i], polarity: b });
+            }
+            i += 1;
+        }
+        i = 0;
+        while i < d.head {
+            let curr = self.0[d.lit_order[i]];
+            if curr >= 2 {
+                let b = curr != 2;
+                d.head = i;
+                return Some(Lit{ idx: d.lit_order[i], polarity: b });
+            }
+            i += 1;
+        }
+        return None
+        */
+        /*
         let mut i = self.1;
         //let mut i = 0;
         while i < d.lit_order.len() {
@@ -52,6 +84,7 @@ impl Assignments {
             i += 1;
         }
         None
+        */
         // Ok wow random gives 7 x slowdown
         // Super simple (and slow) random then linear search
         /*
@@ -105,24 +138,27 @@ impl Assignments {
         //self.1 = minseen;
     }
 
-    pub fn cancel_until(&mut self, trail: &mut Trail, decisionlevel: usize, level: usize) {
+    pub fn cancel_until(&mut self, trail: &mut Trail, decisionlevel: usize, level: usize, d: &mut Decisions) {
         let mut i: usize = decisionlevel;
-        let mut minseen = self.1;
+        //let mut minseen = self.1;
         while i > level {
             let decisions = trail.trail.pop().unwrap();
             let mut j: usize = 0;
             while j < decisions.len() {
                 let lit = decisions[j];
                 //trail.vardata[lit.idx] = (0, Reason::Undefined); // Might as well not wipe it
+                /*
                 if lit.idx < minseen {
                     minseen = lit.idx;
                 }
+                */
                 self.0[lit.idx] += 2;
                 j += 1;
             }
             i -= 1;
         }
-        self.1 = 0;
+        //self.1 = 0;
+        //d.head = 0;
         //self.1 = minseen;
     }
 }

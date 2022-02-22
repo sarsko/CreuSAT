@@ -82,8 +82,8 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
     Ok(())
 }
 
-pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit) {
-    a.cancel_until(trail, trail.trail.len(), 1);
+pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, decisions: &mut Decisions) {
+    a.cancel_until(trail, trail.trail.len(), 1, decisions);
     //a.cancel_long(trail);
     a.set_assignment(lit);
     trail.enq_assignment(lit, Reason::Unit);
@@ -98,13 +98,14 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
                     match analyze_conflict(f, a, trail, cref) {
                         Conflict::Ground => { return false; },
                         Conflict::Unit(lit) => {
-                            learn_unit(a, trail, lit);
+                            learn_unit(a, trail, lit, decisions);
                         }
                         Conflict::Learned(level, lit, clause) => {
-                            a.cancel_until(trail, trail.trail.len(), level);
+                            a.cancel_until(trail, trail.trail.len(), level, decisions);
                             trail.trail.push(Vec::new());
                             a.set_assignment(lit);
                             let cref = f.add_clause(&clause, watches);
+                            decisions.increment_and_move(f, cref);
                             trail.enq_assignment(lit, Reason::Long(cref));
                         }
                     }
