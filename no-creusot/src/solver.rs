@@ -101,11 +101,11 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
                             learn_unit(a, trail, lit, decisions);
                         }
                         Conflict::Learned(level, lit, clause) => {
+                            let cref = f.add_clause(&clause, watches);
+                            decisions.increment_and_move(f, cref);
                             a.cancel_until(trail, trail.trail.len(), level, decisions);
                             trail.trail.push(Vec::new());
                             a.set_assignment(lit);
-                            let cref = f.add_clause(&clause, watches);
-                            decisions.increment_and_move(f, cref);
                             trail.enq_assignment(lit, Reason::Long(cref));
                         }
                     }

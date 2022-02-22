@@ -141,23 +141,26 @@ impl Assignments {
     pub fn cancel_until(&mut self, trail: &mut Trail, decisionlevel: usize, level: usize, d: &mut Decisions) {
         let mut i: usize = decisionlevel;
         //let mut minseen = self.1;
+        let mut min_timestamp = d.linked_list[d.head].ts;
+        let mut new_head = d.head;
         while i > level {
             let decisions = trail.trail.pop().unwrap();
             let mut j: usize = 0;
             while j < decisions.len() {
                 let lit = decisions[j];
                 //trail.vardata[lit.idx] = (0, Reason::Undefined); // Might as well not wipe it
-                /*
-                if lit.idx < minseen {
-                    minseen = lit.idx;
+                let curr_timestamp = d.linked_list[lit.idx].ts;
+                if  curr_timestamp > min_timestamp {
+                    min_timestamp = curr_timestamp;
+                    new_head = lit.idx;
                 }
-                */
                 self.0[lit.idx] += 2;
                 j += 1;
             }
             i -= 1;
         }
         //self.1 = 0;
+        d.head = new_head;
         //d.head = 0;
         //self.1 = minseen;
     }

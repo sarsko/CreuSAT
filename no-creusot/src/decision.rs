@@ -6,14 +6,16 @@ use crate::assignments::*;
 pub struct Node {
     pub next: Option<usize>,
     pub prev: Option<usize>,
-    //pub pos: usize
+    pub ts: usize,
 }
 
+// Todo add bounds check for timestamp
 pub struct Decisions {
     pub lit_order: Vec<usize>,
     pub loc_of_lit: Vec<usize>,
     pub linked_list: Vec<Node>,
-    
+    timestamp: usize,
+    pub start: usize,
     pub head: usize
 }
 
@@ -42,7 +44,7 @@ impl Decisions {
         counts_with_index.sort_by_key(|k| -k.0);
         let mut loc_of_lit = vec![0; f.num_vars];
         i = 0;
-        let mut linked_list = vec![Node{ next: None, prev: None }; f.num_vars];
+        let mut linked_list = vec![Node{ next: None, prev: None, ts: 0 }; f.num_vars];
         while i < f.num_vars {
             lit_order[i] = counts_with_index[i].1;
             loc_of_lit[counts_with_index[i].1] = i;
@@ -63,31 +65,26 @@ impl Decisions {
                 linked_list[j].next = Some(lit_order[i + 1]);
                 linked_list[j].prev = Some(lit_order[i - 1]);
             }
+            linked_list[j].ts = f.num_vars - i;
             i += 1;
         }
-        Decisions{
+        Decisions {
             lit_order: lit_order,
             loc_of_lit: loc_of_lit,
             linked_list: linked_list,
+            timestamp: f.num_vars + 1,
+            start: head,
             head: head,
         }
     }
-    
-    fn move_to_front(&mut self, tomove: usize, front: usize) {
-        let old_head = front;
-        let new_loc = self.loc_of_lit[tomove];
-        self.lit_order.swap(self.loc_of_lit[tomove], front);
-        self.loc_of_lit[tomove] = front;
-        self.loc_of_lit[old_head] = new_loc;
-    }
 
-    fn move_to_front2(&mut self, tomove: usize) {
+    fn move_to_front(&mut self, tomove: usize) {
         let old_next = self.linked_list[tomove].next;
         match self.linked_list[tomove].prev {
             Some(prev) => {
                 self.linked_list[prev].next = self.linked_list[tomove].next;
             }
-            None => {assert!(tomove == self.head); return;}, // We are already head
+            None => {assert!(tomove == self.start); return;}, // We are already head
         }
         match old_next {
             Some(next) => {
@@ -96,22 +93,20 @@ impl Decisions {
             None => {},
         }
         self.linked_list[tomove].prev = None;
-        self.linked_list[self.head].prev = Some(tomove);
-        self.linked_list[tomove].next = Some(self.head);
-        self.head = tomove;
+        self.linked_list[self.start].prev = Some(tomove);
+        self.linked_list[tomove].next = Some(self.start);
+        self.linked_list[tomove].ts = self.timestamp;
+        self.timestamp += 1;
+        self.start = tomove;
     }
 
     pub fn increment_and_move(&mut self, f: &Formula, cref: usize) {
         let clause = &f.clauses[cref];
-        //self.lit_order[clause.first.idx] += 1;
-        //self.lit_order[clause.second.idx] += 1;
-        //self.move_to_front(clause.first.idx, self.head);
-        //self.move_to_front(clause.second.idx, self.head+1);
-        self.move_to_front2(clause.first.idx);
-        self.move_to_front2(clause.second.idx);
+        self.move_to_front(clause.first.idx);
+        self.move_to_front(clause.second.idx);
         let mut i = 0;
         while i < clause.rest.len() && i < 3 {
-            self.move_to_front2(clause.rest[i].idx);
+            self.move_to_front(clause.rest[i].idx);
             i += 1;
         }
     }
@@ -120,6 +115,7 @@ impl Decisions {
         let mut head = Some(self.head);
         while head != None {
             if a.0[head.unwrap()] >= 2 {
+                self.head = head.unwrap();
                 return head;
             }
             head = self.linked_list[head.unwrap()].next;
