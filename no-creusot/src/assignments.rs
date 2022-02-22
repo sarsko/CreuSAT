@@ -4,7 +4,7 @@ use crate::trail::*;
 
 // 4 is unassigned, 0 is false, 1 is true, 2 is phase saved false and 3 is phase saved true
 #[derive(Debug, Eq, PartialEq)]
-pub struct Assignments(pub Vec<u8>);
+pub struct Assignments(pub Vec<u8>, usize);
 
 impl Assignments {
     #[inline]
@@ -22,11 +22,11 @@ impl Assignments {
         //let mut assign: Vec<Option<bool>> = Vec::from_elem(None, f.num_vars);
         //let assign: Vec<Option<bool>> = vec![None; f.num_vars];
         //Assignments(assign)
-        Assignments(vec![4; f.num_vars])
+        Assignments(vec![4; f.num_vars], 0)
     }
 
-    pub fn find_unassigned_lit(&self) -> Option<Lit> {
-        let mut i = 0;
+    pub fn find_unassigned_lit(&mut self) -> Option<Lit> {
+        let mut i = self.1;
         while i < self.0.len() {
             let curr = self.0[i];
             if curr >= 2 {
@@ -39,6 +39,7 @@ impl Assignments {
                 */
                 let b = curr != 2;
                 // 3 -> 1 and 2 -> 0
+                self.1 = i + 1;
                 return Some(Lit{ idx: i, polarity: b });
             }
             i += 1;
@@ -83,10 +84,14 @@ impl Assignments {
             while j < decisions.len() {
                 let lit = decisions[j];
                 //trail.vardata[lit.idx] = (0, Reason::Undefined); // Might as well not wipe it
+                //if lit.idx < self.1 {
+                //    self.1 = lit.idx;
+                //}
                 self.0[lit.idx] += 2;
                 j += 1;
             }
             i -= 1;
         }
+        self.1 = 0;
     }
 }
