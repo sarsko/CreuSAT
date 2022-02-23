@@ -12,6 +12,10 @@ use crate::watches::*;
 use crate::conflict_analysis::*;
 
 #[logic]
+#[requires(c.first_two_ok(@f.num_vars))]
+#[requires(c2.first_two_ok(@f.num_vars))]
+#[requires(c.first === c2.first)]
+#[requires(c.second === c2.second)]
 #[requires(0 <= i && i < (@c).len())]
 #[requires(0 <= j && j < (@c).len())]
 #[requires((@c).len() === (@c2).len())]
@@ -23,6 +27,7 @@ use crate::conflict_analysis::*;
 #[ensures(c.invariant(f))]
 fn lemma_swap_ok(c: Clause, c2: Clause, i: Int, j: Int, f: Formula) {}
 
+// FIX
 #[trusted] // Checks out(but the trail invariant takes some time)
 #[requires(@cref < (@f.clauses).len())]
 //#[requires(@i < @j)]
@@ -38,7 +43,7 @@ fn lemma_swap_ok(c: Clause, c2: Clause, i: Int, j: Int, f: Formula) {}
 #[ensures((@(@(^f).clauses)[@cref]).exchange(@(@f.clauses)[@cref], @i, @j))]
 fn swap_lits(f: &mut Formula, cref: usize, i: usize, j: usize, _t: &Trail) {
     let old_c = Ghost::record(&f.clauses[cref]);
-    f.clauses[cref].0.swap(i, j);
+    f.clauses[cref].rest.swap(i, j);
     proof_assert!(lemma_swap_ok(((@f.clauses)[@cref]), @old_c, @i, @j, *f);true);
 }
 
@@ -47,7 +52,7 @@ fn swap_lits(f: &mut Formula, cref: usize, i: usize, j: usize, _t: &Trail) {
 
 // Requires all clauses to be at least binary.
 // Returns either () if the unit propagation went fine, or a cref if a conflict was found.
-#[trusted] // Checks out
+//#[trusted] // Checks out
 #[requires(f.invariant())]
 #[requires(a.invariant(@f.num_vars))]
 #[requires(trail.invariant(*f))]
@@ -66,6 +71,7 @@ fn swap_lits(f: &mut Formula, cref: usize, i: usize, j: usize, _t: &Trail) {
     Err(cref) => @cref < (@(^f).clauses).len() 
 })]
 fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
+    /*
     let mut i: usize = 0;
     let d: usize = trail.trail.len() - 1;
     let old_f = Ghost::record(&f);
@@ -112,22 +118,24 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
             proof_assert!(@f.num_vars > @lit.idx);
             proof_assert!(lemma_watchidx_less(lit, @f.num_vars);(@watches.watches).len() > lit.to_watchidx_logic());
             let cref = watches.watches[lit.to_watchidx()][j].cref;
-            let first_lit = f.clauses[cref].0[0];
+            let first_lit = f.clauses[cref].first;
             proof_assert!(@first_lit.idx < (@a).len());
             if first_lit.is_sat(&a) {
                 j += 1;
                 continue;
             }
-            let second_lit = f.clauses[cref].0[1];
+            let second_lit = f.clauses[cref].second;
             proof_assert!(@second_lit.idx < (@a).len());
             if second_lit.is_sat(&a) {
                 // We swap to make it faster the next time
-                swap_lits(f, cref, 0, 1, trail);
+                //swap_lits(f, cref, 0, 1, trail);
+                f.clauses[cref].first = second_lit;
+                f.clauses[cref].second = first_lit;
                 j += 1;
                 continue;
             }
             // At this point we know that none of the watched literals are sat
-            let mut k: usize = 2;
+            let mut k: usize = 0;
             #[invariant(maintains_f3, f.invariant())]
             #[invariant(f_len2, (@f.clauses).len() === (@(@old_f).clauses).len())]
             #[invariant(maintains_a3, a.invariant(@f.num_vars))]
@@ -143,17 +151,22 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
             #[invariant(dless3, @d < (@trail.trail).len())]
             #[invariant(iless3, 0 <= @i && @i <= (@(@trail.trail)[@d]).len())]
             #[invariant(trail_end_same2, (@(@trail.trail)[@d]).len() >= (@@old_trail_end).len())]
-            while k < f.clauses[cref].0.len() {
-                let curr_lit = f.clauses[cref].0[k];
+            while k < f.clauses[cref].rest.len() {
+                let curr_lit = f.clauses[cref].rest[k];
                 // WARNING !!! DUPLICATED CODE !!! CREUSOT QUIRK
                 match a.0[curr_lit.idx] {
                     Some(polarity) => {
                         if polarity == curr_lit.polarity {
                             if first_lit.idx == lit.idx {
-                                swap_lits(f, cref, 0, k, trail);
+                                //swap_lits(f, cref, 0, k, trail);
+                                f.clauses[cref].first = curr_lit;
+                                f.clauses[cref].rest[k] = first_lit;
                             } else {
-                                swap_lits(f, cref, 1, k, trail);
-                                swap_lits(f, cref, 1, 0, trail);
+                                f.clauses[cref].first = curr_lit;
+                                f.clauses[cref].rest[k] = second_lit;
+                                f.clauses[cref].second = first_lit;
+                                //swap_lits(f, cref, 1, k, trail);
+                                //swap_lits(f, cref, 1, 0, trail);
                             }
                             proof_assert!(@cref === @(@(@watches.watches)[lit.to_watchidx_logic()])[@j].cref);
 
@@ -169,10 +182,15 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
                     },
                     None => {
                         if first_lit.idx == lit.idx {
-                            swap_lits(f, cref, 0, k, trail);
+                            f.clauses[cref].first = curr_lit;
+                            f.clauses[cref].rest[k] = first_lit;
+                            //swap_lits(f, cref, 0, k, trail);
                         } else {
-                            swap_lits(f, cref, 1, k, trail);
-                            swap_lits(f, cref, 1, 0, trail);
+                            f.clauses[cref].first = curr_lit;
+                            f.clauses[cref].rest[k] = second_lit;
+                            f.clauses[cref].second = first_lit;
+                            //swap_lits(f, cref, 1, k, trail);
+                            //swap_lits(f, cref, 1, 0, trail);
                         }
                         proof_assert!(@cref === @(@(@watches.watches)[lit.to_watchidx_logic()])[@j].cref);
 
@@ -212,6 +230,7 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
         }
         i += 1;
     }
+    */
     Ok(())
 }
 
@@ -296,7 +315,7 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
                             //proof_assert! {(@a)[@lit.idx] === None } // Only thing missing. Needs to be ensured by cancel_until
                             a.set_assignment(lit, f);
                             proof_assert!(trail.invariant(*f));
-                            let cref = f.add_clause(&Clause(clause), watches);
+                            let cref = f.add_clause(&clause, watches);
                             trail.enq_assignment(lit, Reason::Long(cref), f);
                             proof_assert!(trail.invariant(*f));
                         }

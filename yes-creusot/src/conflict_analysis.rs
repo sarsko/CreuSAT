@@ -203,6 +203,8 @@ it later.
     , // Watch out
 })]
 pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize, _w: &Watches) -> Conflict {
+    return Conflict::Ground;
+    /*
     let decisionlevel = trail.trail.len() - 1;
     if decisionlevel == 0 {
         return Conflict::Ground;
@@ -349,4 +351,5 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
         out_learnt.swap(1, max_i);
         return Conflict::Learned(max_level, out_learnt[0], out_learnt);
     }
+    */
 }

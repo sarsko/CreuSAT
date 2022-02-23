@@ -6,11 +6,12 @@ use crate::formula::*;
 use crate::lit::*;
 use crate::trail::*;
 
+// OK using u32s temporarily, should be u8. Gotta add u8s to Creusot
 //#[derive(Eq, PartialEq)]
-pub struct Assignments(pub Vec<Option<bool>>);
+pub struct Assignments(pub Vec<u8>);
 
 impl Model for Assignments {
-    type ModelTy = Seq<Option<bool>>;
+    type ModelTy = Seq<u8>;
 
     #[logic]
     fn model(self) -> Self::ModelTy {
@@ -58,8 +59,8 @@ impl Assignments {
     //j != @ix ==> (@*self)[j] === (@^self)[j]))]
     //#[requires((@self)[@lit.idx] === None)] // This is a correctness req
     #[requires(0 <= @lit.idx && @lit.idx < (@self).len())]
-    #[ensures((@^self)[@lit.idx] === Some(lit.polarity))]
-    #[ensures(@^self == (@*self).set(@lit.idx, Some(lit.polarity)))]
+    //#[ensures((@^self)[@lit.idx] === Some(lit.polarity))]
+    //#[ensures(@^self == (@*self).set(@lit.idx, Some(lit.polarity)))]
     /*
     #[ensures((*self).compatible(^self))]
     #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
@@ -72,27 +73,29 @@ impl Assignments {
             panic!("Assignment already set.");
         }
         */
-        self.0[lit.idx] = Some(lit.polarity);
+        self.0[lit.idx] = lit.polarity as u8;
+        //self.0[lit.idx] = Some(lit.polarity);
     }
 
     #[ensures(result.invariant(@f.num_vars))]
     pub fn init_assignments(f: &Formula) -> Assignments {
-        let mut assign: Vec<Option<bool>> = Vec::new();
-        let mut i: usize = 0;
-        #[invariant(len_correct, (@assign).len() === @i)]
-        #[invariant(i_less, @i <= @f.num_vars)]
+        let assign = vec::from_elem(2u8, f.num_vars);
+        /*
+        let mut i = 0;
+        let mut assign = Vec::new();
         while i < f.num_vars {
-            assign.push(None);
-            i += 1
+            assign.push(2);
+            i += 1;
         }
+        */
         Assignments(assign)
     }
 
-    #[trusted] // TMP
+    //#[trusted] // TMP
     #[ensures(match result {
-        Some(lit) => (@self)[@lit.idx] === None,
+        Some(lit) => @(@self)[@lit.idx] >= 2,
         None => forall<i : Int> 0 <= i && i < (@self).len() ==> 
-                !((@self)[i] === None)
+                !(@(@self)[i] >= 2)
     })]
     #[ensures(match result {
         Some(lit) => 0 <= @lit.idx && @lit.idx < (@self).len(),
@@ -100,6 +103,13 @@ impl Assignments {
     })]
     pub fn find_unassigned_lit(&self) -> Option<Lit> {
         let mut i: usize = 0;
+        while i < self.0.len() {
+            if self.0[i] >= 2 {
+                return Some(Lit{ idx: i, polarity: true }); // TODO change
+            }
+            i += 1;
+        }
+        /*
         #[invariant(i_less, 0 <= @i && @i <= (@self).len())]
         #[invariant(all_set, forall<j : Int> 0 <= j && j < @i ==> 
             !((@self)[j] === None))]
@@ -113,6 +123,7 @@ impl Assignments {
             }
             i += 1;
         }
+        */
         None
     }   
 

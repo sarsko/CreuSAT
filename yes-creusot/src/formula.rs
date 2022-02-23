@@ -6,6 +6,7 @@ use creusot_contracts::std::*;
 //use crate::assignments::*;
 use crate::clause::*;
 use crate::watches::*;
+use crate::lit::*;
 
 
 //#[derive(Debug)]
@@ -42,6 +43,7 @@ impl Formula {
 
     */
     // TODO FIX. Should really only be lacking a proper clone
+    /*
     #[trusted]
     #[requires(@self.num_vars < @usize::MAX/2)]
     #[requires(self.invariant())]
@@ -62,8 +64,18 @@ impl Formula {
         // TODO understand this clone stuff
         //self.clauses.push(clause.clone());
         let cref = self.clauses.len() - 1;
-        watches.add_watcher(clause.0[0], cref, self);
-        watches.add_watcher(clause.0[1], cref, self);
+        watches.add_watcher(clause.first, cref, self);
+        watches.add_watcher(clause.second, cref, self);
+        cref
+    }
+    */
+    #[trusted]
+    pub fn add_clause(&mut self, clause: &Vec<Lit>, watches: &mut Watches) -> usize {
+        let clause = Clause::clause_from_vec(clause);
+        let cref = self.clauses.len();
+        watches.add_watcher(clause.first, cref, self);
+        watches.add_watcher(clause.second, cref, self);
+        self.clauses.push(clause);
         cref
     }
 

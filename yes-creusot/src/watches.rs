@@ -229,6 +229,16 @@ impl Watches {
     #[ensures((@(^trail).trail).len() === 1)]
     pub fn init_watches(&mut self, f: &Formula, trail: &mut Trail, a: &mut Assignments) -> bool {
         let mut i = 0;
+        while i < f.clauses.len() {
+            let clause = &f.clauses[i];
+            self.add_watcher(clause.first, i, f);
+            self.add_watcher(clause.second, i, f);
+            i += 1;
+        }
+        return true;
+    }
+        /*
+        let mut i = 0;
         let old_self = Ghost::record(&self);
         let old_a = Ghost::record(&a);
         let old_trail = Ghost::record(&trail);
@@ -268,4 +278,5 @@ impl Watches {
         //self.check_only_first_two_watched(f, &"RIGHT AFTER INIT"); // Debug assertion
         return true;
     }
+    */
 }

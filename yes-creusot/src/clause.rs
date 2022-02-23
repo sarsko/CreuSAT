@@ -8,18 +8,29 @@ use crate::assignments::*;
 
 use crate::formula::*;
 //#[derive(Debug, Clone, Eq, PartialEq, Hash)]
-pub struct Clause(pub Vec<Lit>);
+pub struct Clause{
+    pub first: Lit,
+    pub second: Lit,
+    pub rest: Vec<Lit>,
+}
 
+// Remove this
 impl Model for Clause {
     type ModelTy = Seq<Lit>;
 
     #[logic]
     fn model(self) -> Self::ModelTy {
-        self.0.model()
+        self.rest.model()
     }
 }
 
 impl Clause {
+    #[predicate]
+    pub fn first_two_ok(self, n: Int) -> bool {
+        pearlite! {
+            0 <= @self.first.idx && @self.first.idx < n && 0 <= @self.second.idx && @self.second.idx < n
+        }
+    }
     #[predicate]
     pub fn vars_in_range(self, n: Int) -> bool {
         pearlite! {
@@ -37,38 +48,34 @@ impl Clause {
             forall<j: Int, k: Int> 0 <= j && j < (@self).len() &&
                  0 <= k && k < j ==> !(@(@self)[k].idx === @(@self)[j].idx)
                  */
+            !(@self.first.idx === @self.second.idx) &&
             forall<j: Int, k: Int> 0 <= j && j < (@self).len() ==>
-                 0 <= k && k < (@self).len() ==> j != k ==> !(@((@self)[k]).idx === @((@self)[j]).idx)
+                 0 <= k && k < (@self).len() ==> j != k ==> !(@((@self)[k]).idx === @((@self)[j]).idx) && 
+                 !(@((@self)[j]).idx === @self.first.idx) &&
+                 !(@((@self)[j]).idx === @self.second.idx)
         }
     }
 
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
-        pearlite! { self.vars_in_range(@f.num_vars) && self.no_duplicate_indexes() && (@self).len() > 0 }
+        pearlite! { self.first_two_ok(@f.num_vars) && self.vars_in_range(@f.num_vars) && self.no_duplicate_indexes() }
     }
 }
 
 impl Clause {
-    #[requires(a.invariant(@_f.num_vars))]
-    #[requires(self.invariant(*_f))]
-    pub fn is_unsat(&self, a: &Assignments, _f: &Formula) -> bool {
-        let mut i = 0;
-        while i < self.0.len() {
-            let lit = self.0[i];
-            let res = a.0[lit.idx];
-            match res {
-                Some(x) => {
-                    // false, false || true, true -> clause is SAT
-                    if lit.polarity == x {
-                        return false;
-                    }
-                }
-                None => {
-                    return false;
-                } // May become SAT
-            }
+    #[trusted] // Todo look at
+    #[inline]
+    pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
+        let mut rest_vec = Vec::new();
+        let mut i = 2;
+        while i < vec.len() {
+            rest_vec.push(vec[i]);
             i += 1;
         }
-        return true;
+        Clause {
+            first: vec[0],
+            second: vec[1],
+            rest: rest_vec,
+        }
     }
 }

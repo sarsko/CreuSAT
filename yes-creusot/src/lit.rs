@@ -47,12 +47,11 @@ impl Lit {
         self.idx * 2 + if self.polarity { 1 } else { 0 }
     }
 
+    #[trusted]
+    //#[inline]
     #[requires(@self.idx < (@assignment).len())]
     pub fn is_sat(&self, assignment: &Assignments) -> bool {
-        match assignment.0[self.idx] {
-            Some(val) => val == self.polarity,
-            None => false,
-        }
+        assignment.0[self.idx] == self.polarity as u8
     }
 }
 
