@@ -123,7 +123,7 @@ impl Watches {
 
     // Returns false if there exists an empty clause or two unit clauses of the same
     // literal with opposite polarity(exists a clause [[-l]] and [[l]] for some l)
-    pub fn init_watches(&mut self, f: &Formula, trail: &mut Trail, a: &mut Assignments) -> bool {
+    pub fn init_watches(&mut self, f: &Formula) {
         let mut i = 0;
         while i < f.clauses.len() {
             let clause = &f.clauses[i];
@@ -131,8 +131,5 @@ impl Watches {
             self.add_watcher(clause.second, i);
             i += 1;
         }
-        //self.check_invariant(&"INIT"); // Debug assertion
-        //self.check_only_first_two_watched(f, &"RIGHT AFTER INIT"); // Debug assertion
-        return true;
     }
 }

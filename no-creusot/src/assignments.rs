@@ -14,11 +14,22 @@ impl Assignments {
         self.0[l.idx] = l.polarity as u8;
     }
 
+    // Seeding with random values seem to be quite a bit better(10-20% speedup)
     pub fn init_assignments(f: &Formula) -> Assignments {
         //let mut assign: Vec<Option<bool>> = Vec::from_elem(None, f.num_vars);
         //let assign: Vec<Option<bool>> = vec![None; f.num_vars];
         //Assignments(assign)
-        Assignments(vec![4; f.num_vars], 0)
+        let mut i = 0;
+        use rand::Rng;
+        let mut assign = vec![3; f.num_vars];
+        let mut rng = rand::thread_rng();
+        while i < f.num_vars {
+            if rng.gen_bool(0.5) {
+                assign[i] = 2
+            }
+            i += 1;
+        }
+        Assignments(assign, 0)
     }
 
     pub fn find_unassigned_lit(&mut self, d: &mut Decisions) -> Option<Lit> {

@@ -1,4 +1,4 @@
-// Pretty much verbatim from Versat
+// Pretty much verbatim from Varisat
 
 pub struct Luby {
     u: u64,

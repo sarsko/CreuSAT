@@ -89,6 +89,7 @@ pub fn preproc_and_solve(
         clauses: Vec::new(),
         num_vars: num_literals,
     };
+    let mut units = vec![];
     for clause in clauses {
         let mut currclause: Vec<Lit2> = vec![];
         for lit in clause {
@@ -106,8 +107,14 @@ pub fn preproc_and_solve(
                 currclause.push(new_lit);
             }
         }
-        let clause2: Clause2 = Clause2::clause_from_vec(&currclause);
-        formula.clauses.push(clause2);
+        if currclause.len() == 0 {
+            return false;
+        } else if currclause.len() == 1 {
+            units.push(currclause[0]);
+        } else {
+            let clause2: Clause2 = Clause2::clause_from_vec(&currclause);
+            formula.clauses.push(clause2);
+        }
     }
-    return solver(&mut formula);
+    return solver(&mut formula, &units);
 }

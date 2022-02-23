@@ -97,18 +97,14 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
     let mut luby = Luby::default();
     loop {
         loop {
-            if num_conflicts == restart_delay {
-                num_conflicts = 0;
-                restart_delay += scale * luby.advance();
-                a.cancel_until(trail, trail.trail.len(), 1, decisions);
-            }
             match unit_propagate(f, a, trail, watches) {
                 Ok(_) => { break; },
                 Err(cref) => {
                     match analyze_conflict(f, a, trail, cref) {
                         Conflict::Ground => { return false; },
                         Conflict::Unit(lit) => {
-                            num_conflicts += 1;
+                            //num_conflicts += 1;
+                            num_conflicts = 0;
                             learn_unit(a, trail, lit, decisions);
                         }
                         Conflict::Learned(level, lit, clause) => {
@@ -124,6 +120,11 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
                 },
             }
         }    
+        if num_conflicts >= restart_delay {
+            num_conflicts = 0;
+            restart_delay += scale * luby.advance();
+            a.cancel_until(trail, trail.trail.len(), 1, decisions);
+        }
         if let Some(lit) = a.find_unassigned_lit(decisions) {
             trail.trail.push(Vec::new());
             a.set_assignment(lit);
@@ -134,17 +135,19 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
     }
 }
 
-pub fn solver(f: &mut Formula) -> bool {
+// Because all clauses are at least binary, we supply unit separately
+pub fn solver(f: &mut Formula, units: &Vec<Lit>) -> bool {
     f.remove_duplicates();
-    if f.num_vars == 0 {
+    if f.num_vars == 0 || f.clauses.len() == 0 {
         return true;
     }
     let mut assignments = Assignments::init_assignments(f);
     let mut trail = Trail::new(f.num_vars);
     let mut watches = Watches::new(f.num_vars);
-    if !watches.init_watches(f, &mut trail, &mut assignments) {
-        return false; 
-    }
+    watches.init_watches(f);
     let mut decisions = Decisions::new(f);
+    for unit in units {
+        learn_unit(&mut assignments, &mut trail, *unit, &mut decisions);
+    }
     solve(f, &mut assignments, &mut trail, &mut watches, &mut decisions)
 }
