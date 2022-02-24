@@ -230,11 +230,11 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
         }
         i += 1;
     }
-    */
+*/
     Ok(())
 }
 
-#[trusted]// Checks out
+//#[trusted]// Checks out
 #[requires((@trail.trail).len() > 0)]
 #[requires(0 <= @lit.idx && @lit.idx < (@trail.vardata).len())]
 #[requires(0 <= @lit.idx && @lit.idx < (@a).len())]
@@ -251,6 +251,7 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, _f: &Formula
     trail.enq_assignment(lit, Reason::Unit, _f);
 }
 
+// Seems to be lacking one precond now
 #[trusted] // Checks out. A couple of the preconds are super slow, should add better assertions
 //#[requires(@f.num_vars < @usize::MAX/2)]
 #[requires((@f.clauses).len() > 0)]
@@ -299,7 +300,9 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
                     match analyze_conflict(f, a, trail, cref, watches) {
                         Conflict::Ground => { return false; },
                         Conflict::Unit(lit) => {
+                            proof_assert!(trail.invariant(*f));
                             learn_unit(a, trail, lit, f);
+                            proof_assert!(trail.invariant(*f));
                         }
                         Conflict::Learned(level, lit, clause) => {
                             proof_assert!(trail.invariant(*f));
@@ -323,6 +326,8 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
                 },
             }
         }
+
+        proof_assert!(trail.invariant(*f));
         if let Some(lit) = a.find_unassigned_lit() {
             let lit = lit; // Due to issue #273
             //trail.trail.push(Vec::new());
@@ -332,6 +337,8 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
             a.set_assignment(lit, f);
             proof_assert!(trail.invariant(*f));
             trail.enq_assignment(lit, Reason::Decision, f);
+
+            proof_assert!(trail.invariant(*f));
         } else {
             return true;
         } 
@@ -348,8 +355,6 @@ pub fn solver(f: &mut Formula) -> bool {
     let mut assignments = Assignments::init_assignments(f);
     let mut trail = Trail::new(f);
     let mut watches = Watches::new(f);
-    if !watches.init_watches(f, &mut trail, &mut assignments) {
-        return false; 
-    }
+    watches.init_watches(f);
     solve(f, &mut assignments, &mut trail, &mut watches)
 }

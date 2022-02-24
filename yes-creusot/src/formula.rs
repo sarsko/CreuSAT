@@ -15,6 +15,19 @@ pub struct Formula {
     pub num_vars: usize,
 }
 
+/*
+#[logic]
+#[requires(c.vars_in_range(n))]
+#[ensures(c.idxs_in_range(2*n))]
+pub fn lemma_vars_in_range_implies_watchidx_in_range(c: Clause, n: Int) {}
+*/
+
+#[logic]
+#[requires(f.vars_in_range())]
+#[ensures(f.idxs_in_range())]
+pub fn lemma_vars_in_range_implies_watchidx_in_range_formula(f: Formula) {}
+
+
 impl Formula {
     #[predicate]
     pub fn invariant(self) -> bool {
@@ -24,58 +37,52 @@ impl Formula {
                 (@self.clauses)[i].invariant(self)
         }
     }
+
+    #[predicate]
+    pub fn vars_in_range(self) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+                (@self.clauses)[i].vars_in_range(@self.num_vars)
+        }
+    }
+
+    #[predicate]
+    pub fn idxs_in_range(self) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+                (@self.clauses)[i].idxs_in_range(2 * @self.num_vars)
+        }
+    }
 }
 
 impl Formula {
-    /*
-    #[allow(dead_code)]
-    pub fn contains_empty(&self, a: &Assignments) -> bool {
-        let mut i = 0;
-        while i < self.clauses.len() {
-            let clause = &self.clauses[i];
-            if clause.is_unsat(a) {
-                return true;
-            }
-            i += 1
-        }
-        return false;
-    }
-
-    */
-    // TODO FIX. Should really only be lacking a proper clone
-    /*
-    #[trusted]
+    #[trusted] // OK
+    #[requires((@self.clauses).len() > 0)]
     #[requires(@self.num_vars < @usize::MAX/2)]
     #[requires(self.invariant())]
     #[requires(watches.invariant(*self))]
-    #[requires((@self.clauses).len() > 0)]
+    #[requires(invariant(@clause, *self))]
     #[requires(forall<i: Int> 0 <= i && i < (@clause).len() ==>
                 @((@clause)[i]).idx < @self.num_vars &&
                 (((@clause)[i])).to_neg_watchidx_logic() < (@watches.watches).len()
             )]
     #[requires((@clause).len() > 1)]
-    #[ensures((^self).invariant())]
+    #[ensures((^self).invariant())] // TODO
     #[ensures((^watches).invariant(^self))]
     #[ensures(@(^self).num_vars === @self.num_vars)]
     #[ensures((@(^self).clauses).len() === (@self.clauses).len() + 1)]
     #[ensures(@result === (@(^self).clauses).len() - 1)] // new
-//    #[ensures((@watches.watches).len() === (@(^watches).watches).len())]
-    pub fn add_clause(&mut self, clause: &Clause, watches: &mut Watches) -> usize {
-        // TODO understand this clone stuff
-        //self.clauses.push(clause.clone());
-        let cref = self.clauses.len() - 1;
-        watches.add_watcher(clause.first, cref, self);
-        watches.add_watcher(clause.second, cref, self);
-        cref
-    }
-    */
-    #[trusted]
+    #[ensures((@watches.watches).len() === (@(^watches).watches).len())]
     pub fn add_clause(&mut self, clause: &Vec<Lit>, watches: &mut Watches) -> usize {
-        let clause = Clause::clause_from_vec(clause);
+        let clause = Clause::clause_from_vec(clause, self);   
+        let first = clause.first;
+        let second = clause.second;
         let cref = self.clauses.len();
-        watches.add_watcher(clause.first, cref, self);
-        watches.add_watcher(clause.second, cref, self);
         self.clauses.push(clause);
+        //watches.watches[first.to_neg_watchidx()].push(Watcher { cref });
+        //watches.watches[second.to_neg_watchidx()].push(Watcher { cref });
+        watches.add_watcher(first, cref, self);
+        watches.add_watcher(second, cref, self);
         cref
     }
 

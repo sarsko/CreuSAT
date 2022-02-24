@@ -33,6 +33,7 @@ impl Lit {
 
 impl Lit {
     // Gets the index of the literal in the representation used for the watchlist
+    #[trusted] // OK
     #[requires(@self.idx < @usize::MAX/2)]
     #[ensures(@result === self.to_watchidx_logic())]
     #[ensures(@result === @self.idx * 2 + if self.polarity { 0 } else { 1 })]
@@ -40,6 +41,7 @@ impl Lit {
         self.idx * 2 + if self.polarity { 0 } else { 1 }
     }
     // Gets the index of the literal of the opposite polarity(-self) in the representation used for the watchlist
+    #[trusted] // OK
     #[requires(@self.idx < @usize::MAX/2)]
     #[ensures(@result === self.to_neg_watchidx_logic())]
     #[ensures(@result === @self.idx * 2 + if self.polarity { 1 } else { 0 })]
@@ -47,11 +49,30 @@ impl Lit {
         self.idx * 2 + if self.polarity { 1 } else { 0 }
     }
 
-    #[trusted]
     //#[inline]
-    #[requires(@self.idx < (@assignment).len())]
-    pub fn is_sat(&self, assignment: &Assignments) -> bool {
-        assignment.0[self.idx] == self.polarity as u8
+    #[trusted] // OK
+    #[requires(@self.idx < (@assignments).len())]
+    #[ensures(result === ((@(@assignments)[@self.idx] === 1 && self.polarity) || (@(@assignments)[@self.idx] === 0 && !self.polarity)))]
+    /*
+    #[ensures(match ((@(@assignments)[@self.idx]), self.polarity) {
+                (1, true) => result,
+                (0, false) => result,
+                _ => !result,
+    })]
+    */
+    pub fn is_sat(&self, assignments: &Assignments) -> bool {
+        /*
+        if self.polarity {
+            return assignments.0[self.idx] == 1;
+        } else {
+            return assignments.0[self.idx] == 0;
+        }
+        */
+        match (assignments.0[self.idx], self.polarity) {
+            (1, true) => true,
+            (0, false) => true,
+            _ => false,
+        }
     }
 }
 
@@ -73,6 +94,7 @@ impl ops::Not for Lit {
     type Output = Lit;
 
     #[inline]
+    #[trusted] // OK
     #[ensures(@result.idx === @self.idx)]
     #[ensures(result.polarity === !self.polarity)]
     fn not(self) -> Lit {

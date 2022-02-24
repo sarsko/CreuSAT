@@ -7,10 +7,9 @@ use crate::formula::*;
 use crate::lit::*;
 use crate::assignments::*;
 use crate::trail::*;
-use crate::solver::*; // TODO move
+//use crate::solver::*; // TODO move
+use crate::clause::*;
 
-
-//use crate::ghost;
 
 // Lets try this scheme and see how well it fares
 // Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
@@ -50,15 +49,20 @@ impl Watches {
             2 * @f.num_vars === (@self.watches).len() &&
             forall<i: Int> 0 <= i && i < (@self.watches).len() ==>
             forall<j: Int> 0 <= j && j < (@(@self.watches)[i]).len() ==>
-                @(@(@self.watches)[i])[j].cref < (@f.clauses).len() &&
-                (@(@f.clauses)[@(@(@self.watches)[i])[j].cref]).len() > 1
+                @(@(@self.watches)[i])[j].cref < (@f.clauses).len() 
+                /*&&
+                ((@f.clauses)[@(@(@self.watches)[i])[j].cref].first.to_neg_watchidx_logic() === i ||
+                (@f.clauses)[@(@(@self.watches)[i])[j].cref].second.to_neg_watchidx_logic() === i )
+                */
+                // Harder invariant, but might be needed
+
         }
     }
 }
 
 impl Watches {
     // The way clauses are made and added should really be changed - builder pattern?
-    #[trusted] // Checks out
+    #[trusted] // OK
     #[ensures(result.invariant(*f))]
     pub fn new(f: &Formula) -> Watches {
         let mut i: usize = 0;
@@ -73,10 +77,11 @@ impl Watches {
         Watches { watches }
     }
 
+    // This whole should be updated/merged with formula add_clause
     // We watch the negated literal for updates
-    #[trusted] // Checks out
+    #[trusted] // OK
     #[requires(@cref < (@_f.clauses).len())]
-    #[requires((@(@_f.clauses)[@cref]).len() > 1)] // really unsure of whether this should be in formula or in watcher
+    //#[requires((@self)[@cref].first === lit] // Should have an assertion that the watched lit is either first or second
     #[requires(self.invariant(*_f))]
     #[ensures((^self).invariant(*_f))]
     #[requires(@lit.idx < @usize::MAX/2)]
@@ -88,7 +93,7 @@ impl Watches {
 
     // This requires the literal to be watched, otherwise it will panic
     // This method should be updated as we usually know where to look
-    #[trusted] // Checks out
+    #[trusted] // OK // TODO REMOVE; USELESS FUNCTION
     #[requires(exists<j: Int> 0 <= j && j < (@(@self.watches)[old_lit.to_watchidx_logic()]).len() && 
     (@(@(@self.watches)[old_lit.to_watchidx_logic()])[j].cref) === @cref)]
     #[requires(self.invariant(*_f))]
@@ -112,33 +117,20 @@ impl Watches {
             }
             i += 1;
         }
-        //assert!(self.watches[old_idx][i].cref == cref);
-        //self.check_invariant("UPDATE_BEFORE");
-
-        // Both of these are better than the swap + pop
-        //let old = self.watches[old_idx].remove(i);
-        //let old = self.watches[old_idx].swap_remove(i);
-
-        // Workaround for remove.
-
-        // Okay so I for some reason had to to it like this to make the proof pass
-        // I'll look at undoing it later, but it may be useful when proving correctness
         self.move_to_end(old_idx, i, new_lit, _f);
+        //let end = self.watches[old_idx].len() - 1;
+        //self.watches[old_idx].swap(old_pos, end);
         match self.watches[old_idx].pop() {
             Some(w) => {
-                //proof_assert!(@w.cref < (@_f.clauses).len());
-                //proof_assert!((@(@_f.clauses)[@w.cref]).len() > 1);
                 self.watches[new_lit.to_neg_watchidx()].push(w);
             },
             None => {
                 panic!("Impossible");
             }
         }
-
-        //self.check_invariant("UPDATE_AFTER");
     }
 
-    #[trusted] // Checks out
+    #[trusted] // OK
     #[requires(self.invariant(*_f))]
     #[requires(@new_lit.idx < @usize::MAX/2)]
     #[requires(new_lit.to_neg_watchidx_logic() < (@self.watches).len())]
@@ -151,132 +143,28 @@ impl Watches {
         self.watches[old_idx].swap(old_pos, end);
     }
 
-    /*
-    // Debug function that checks that all the watches are for one of the first two literals of each clause
-    pub fn check_only_first_two_watched(&self, f: &Formula, s: &str) {
-        let mut i = 0;
-        while i < self.watches.len() {
-            let mut j = 0;
-            while j < self.watches[i].len() {
-                let cref = self.watches[i][j].cref;
-                let lit_idx = i / 2;
-                if f.clauses[cref].0[0].idx != lit_idx && f.clauses[cref].0[1].idx != lit_idx {
-                    panic!("{}\n
-                    There exists a watched literal which is not one of the first two literals in the clause!\n
-                    Clause: {:?}\n
-                    Index: {}\n", s, f.clauses[cref].0, lit_idx);
-                }
-                j += 1;
-            }
-            i += 1;
-        }
-    }
-
-    // Debug function to check that the watchlist is correct
-    // Doesnt check that all are watched or that the watched lits are the first in the clause
-    pub fn check_invariant(&self, s: &str) {
-        use std::collections::HashMap;
-        let mut seen = HashMap::new();
-        // Check that each literal only has two watches
-        for i in 0..self.watches.len() {
-            for j in 0..self.watches[i].len() {
-                let cref = self.watches[i][j].cref;
-                if seen.contains_key(&cref) {
-                    if seen[&cref] > 1 {
-                        panic!("{}\nThere exists more than two watched literals for the clause with cref: {:?}", s, cref);
-                    }
-                    seen.insert(cref, seen[&cref] + 1);
-                }
-                else { 
-                    seen.insert(cref, 1);
-                }
-            }
-        }
-        // Check for 2 of the same watched literal for each clause
-        for i in 0..self.watches.len() {
-            let mut seen = HashMap::new();
-            for j in 0..self.watches[i].len() {
-                let cref = self.watches[i][j].cref;
-                if seen.contains_key(&cref) {
-                    panic! ("{}\nThere exists duplicate watching of the same literal for the clause with cref: {:?}", s, cref);
-                }
-                else { 
-                    seen.insert(cref, 1);
-                }
-            }
-        }
-    }
-    */
-
-    /*
-    */
     // Requires duplicates to be removed
     // Returns false if there exists an empty clause or two unit clauses of the same
     // literal with opposite polarity(exists a clause [[-l]] and [[l]] for some l) (this is true only when duplicates are removed)
     // Also returns false if there exists an empty clause
     // #[requires(no_duplicates)] // TODO
-    #[trusted] // Checks out
+    #[trusted] // OK
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(self.invariant(*f))]
     #[requires(f.invariant())]
-    #[requires(a.invariant(@f.num_vars))]
-    #[requires(trail.invariant(*f))]
-    #[requires((@trail.trail).len() === 1)]
-    #[ensures((^trail).invariant(*f))]
     #[ensures((^self).invariant(*f))]
-    #[ensures((^a).invariant(@f.num_vars))]
-    #[ensures((@self.watches).len() === (@(^self).watches).len())]
-    #[ensures((@(^trail).trail).len() === 1)]
-    pub fn init_watches(&mut self, f: &Formula, trail: &mut Trail, a: &mut Assignments) -> bool {
+    pub fn init_watches(&mut self, f: &Formula) {
+        let old_w = Ghost::record(&self); 
         let mut i = 0;
+        #[invariant(watchidx, f.idxs_in_range())] 
+        #[invariant(watch_inv, self.invariant(*f))]
+        #[invariant(same_len, (@self.watches).len() === 2 * @f.num_vars)]
+        #[invariant(proph, ^self === ^@old_w)]
         while i < f.clauses.len() {
             let clause = &f.clauses[i];
             self.add_watcher(clause.first, i, f);
             self.add_watcher(clause.second, i, f);
             i += 1;
         }
-        return true;
     }
-        /*
-        let mut i = 0;
-        let old_self = Ghost::record(&self);
-        let old_a = Ghost::record(&a);
-        let old_trail = Ghost::record(&trail);
-        #[invariant(same_len, (@(*self).watches).len() === (@(*@old_self).watches).len())]
-        #[invariant(maintains_invariant, self.invariant(*f))]
-        #[invariant(intact, ^self === ^@old_self)]
-        #[invariant(intact2, ^a === ^@old_a)]
-        #[invariant(intact3, ^trail === ^@old_trail)]
-        #[invariant(trail_len, (@trail.trail).len() === 1)]
-        #[invariant(maintains_ass_inv, a.invariant(@f.num_vars))]
-        #[invariant(maintains_trail_inv, trail.invariant(*f))]
-        while i < f.clauses.len() {
-            let clause = &f.clauses[i].0;
-            if clause.len() == 0 {
-                return false;
-            } else if clause.len() == 1 {
-                match a.0[clause[0].idx]{
-                    Some(_) => { return false; },
-                    None => { 
-                        learn_unit(a, trail, clause[0], f);
-                    }
-                }
-            } else {
-                let mut j = 0;
-                #[invariant(maintains_invariant, self.invariant(*f))]
-                #[invariant(same_len, (@(*self).watches).len() === (@(*@old_self).watches).len())]
-                #[invariant(intact, ^self === ^@old_self)]
-                while j < 2 {
-                    let lit = clause[j];
-                    self.add_watcher(lit, i, f);
-                    j += 1;
-                }
-            }
-            i += 1;
-        }
-        //self.check_invariant(&"INIT"); // Debug assertion
-        //self.check_only_first_two_watched(f, &"RIGHT AFTER INIT"); // Debug assertion
-        return true;
-    }
-    */
 }

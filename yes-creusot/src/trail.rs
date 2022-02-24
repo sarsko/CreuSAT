@@ -3,7 +3,7 @@ extern crate creusot_contracts;
 use creusot_contracts::*;
 use creusot_contracts::std::*;
 
-//use crate::assignments::*;
+use crate::assignments::*;
 use crate::lit::*;
 
 use crate::formula::*;
@@ -28,13 +28,18 @@ pub struct Trail {
 
 impl Trail {
     #[predicate]
+    // Just the length bound atm
     pub fn vardata_invariant(self, n: Int) -> bool {
-        pearlite! { (@self.vardata).len() === n && 
-            forall<i: Int> 0 <= i && i < (@self.vardata).len() ==>
-        @(@self.vardata)[i].0 < (@self.trail).len() }
+        pearlite! { (@self.vardata).len() === n 
+            // This used to be correct, but isnt after we stopped wiping
+            //&& 
+            //forall<i: Int> 0 <= i && i < (@self.vardata).len() ==>
+        //@(@self.vardata)[i].0 < (@self.trail).len()
+        }
     }
 
     #[predicate]
+    // All the indexes in trail are less than f.num_vars
     pub fn trail_invariant(self, f: Formula) -> bool {
         pearlite! { 
             forall<i: Int> 0 <= i && i < (@self.trail).len() ==> (
@@ -44,22 +49,38 @@ impl Trail {
     }
 
     #[predicate]
+    // All the long clauses carry a cref which is inside the formula
+    pub fn crefs_in_range(self, f: Formula) -> bool {
+        pearlite! {
+            forall<j: Int> 0 <= j && j < (@self.vardata).len() ==>
+            match (@self.vardata)[j].1 {
+                Reason::Long(k) => 0 <= @k && @k < (@f.clauses).len(),
+                _ => true,
+            }
+        }
+    }
+
+    #[predicate]
+    pub fn trail_entries_are_assigned(self, a: Assignments) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@self.trail).len() ==>
+            forall<j: Int> 0 <= j && j < (@(@self.trail)[i]).len() ==>
+                @(@a)[@(@(@self.trail)[i])[j].idx] < 2
+        }
+    }
+
+
+    #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
             self.vardata_invariant(@f.num_vars) && self.trail_invariant(f) &&  
-            forall<j: Int> 0 <= j && j < (@self.vardata).len() ==>
-            match (@self.vardata)[j].1 {
-                Reason::Undefined => true,
-                Reason::Decision => true,
-                Reason::Unit => true,
-                Reason::Long(k) => 0 <= @k && @k < (@f.clauses).len(),
-            }
+            self.crefs_in_range(f)
         }
     }
 }
 
 impl Trail {
-    #[trusted] // Seems like the match reason makes it not check out. Talk to Xavier about it?
+    #[trusted] // OK
     #[requires(self.invariant(*_f))]
     #[requires(0 <= @lit.idx && @lit.idx < @_f.num_vars)]
     #[requires((@self.trail).len() > 0)]
@@ -85,7 +106,7 @@ impl Trail {
         self.vardata[lit.idx] = (dlevel, reason);
     }
 
-    #[trusted] // Checks out
+    #[trusted] // OK
     #[ensures(result.invariant(*f))]
     #[ensures((@result.trail).len() === 1)]
     pub fn new(f: &Formula) -> Trail {
@@ -109,9 +130,9 @@ impl Trail {
         }
     }
 
-    #[trusted] // new
+    #[trusted] // OK
     #[requires(self.invariant(*_f))]
-    #[ensures((^self).invariant(*_f))] // Doesn't check out. Cant understand what I'm missing
+    #[ensures((^self).invariant(*_f))]
     #[ensures((@self.vardata) === (@(^self).vardata))]
     #[ensures(forall<i: Int> 0 <= i && i < (@self.trail).len() ==>
         (@self.trail)[i] === (@(^self).trail)[i])]
@@ -119,5 +140,39 @@ impl Trail {
     #[ensures((@(@(^self).trail)[(@self.trail).len()]).len() === 0)]
     pub fn add_level(&mut self, _f: &Formula) {
         self.trail.push(Vec::new());
+    }
+
+    // OK I cbf. Why isnt this stuff checking out?
+    #[requires(self.invariant(*_f))]
+    #[requires((@self.trail).len() > 0)]
+    #[ensures((^self).invariant(*_f))]
+    #[ensures(forall<j : Int> 0 <= j && j < (@(^self).trail).len() ==> 
+        ((@(^self).trail)[j] === (@self.trail)[j]))]
+    #[ensures((@(^self).vardata).len() === (@self.vardata).len())]
+    #[ensures((@(^self).vardata) === (@self.vardata))]
+    #[ensures((@(^self).trail).len() === (@self.trail).len() - 1)]
+    pub fn pop_trail(self: &mut Trail, _f: &Formula) {
+        let old_t = Ghost::record(&self);
+        proof_assert! (
+            forall<i: Int> 0 <= i && i < (@self.trail).len() ==> (
+            forall<j: Int> 0 <= j && j < (@(@self.trail)[i]).len() ==>
+                0 <= @(@(@self.trail)[i])[j].idx && @(@(@self.trail)[i])[j].idx < @_f.num_vars )
+            );
+        let decisions = self.trail.pop();
+        match decisions {
+            Some(decisions) => {
+            }
+            None => {
+                panic!();
+            }
+        }
+        proof_assert! (
+            forall<i: Int> 0 <= i && i < (@self.trail).len() ==> (
+            forall<j: Int> 0 <= j && j < (@(@self.trail)[i]).len() ==>
+                0 <= @(@(@self.trail)[i])[j].idx && @(@(@self.trail)[i])[j].idx < @_f.num_vars )
+            );
+        proof_assert!(self.vardata_invariant(@_f.num_vars));
+        proof_assert!(self.trail_invariant(*_f));
+        proof_assert! (^@old_t === ^self);
     }
 }
