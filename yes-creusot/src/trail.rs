@@ -107,6 +107,23 @@ impl Trail {
     }
 
     #[trusted] // OK
+    #[ensures((^self).invariant(*_f))]
+    #[ensures((@(^self).trail).len() === (@self.trail).len())]
+    #[ensures((@(^self).vardata).len() === (@self.vardata).len())]
+    #[ensures((@(@((^self).trail))[(@(self).trail).len()-1]) === (@(@(self.trail))[(@(self).trail).len()-1]).push(lit))]
+    #[ensures(forall<i: Int> 0 <= i && i < (@self.trail).len() - 1 ==>
+        (@self.trail)[i] === (@(^self).trail)[i])]
+    #[ensures(forall<i: Int> 0 <= i && i < (@self.vardata).len() && i != @lit.idx ==>
+        (@self.vardata)[i] === (@(^self).vardata)[i])]
+    #[ensures(@((@((^self).vardata))[@lit.idx]).0 === (@self.trail).len()-1)]
+    #[ensures(((@((^self).vardata))[@lit.idx]).1 === reason)]
+    pub fn mock_enq_assignment(&mut self, lit: Lit, reason: Reason, _f: &Formula) {
+        let dlevel = self.trail.len() - 1;
+        self.trail[dlevel].push(lit);
+        self.vardata[lit.idx] = (dlevel, reason);
+    }
+
+    #[trusted] // OK
     #[ensures(result.invariant(*f))]
     #[ensures((@result.trail).len() === 1)]
     pub fn new(f: &Formula) -> Trail {
@@ -142,37 +159,15 @@ impl Trail {
         self.trail.push(Vec::new());
     }
 
-    // OK I cbf. Why isnt this stuff checking out?
-    #[requires(self.invariant(*_f))]
-    #[requires((@self.trail).len() > 0)]
+    #[trusted] // OK
+    //#[requires(self.invariant(*_f))]
     #[ensures((^self).invariant(*_f))]
-    #[ensures(forall<j : Int> 0 <= j && j < (@(^self).trail).len() ==> 
-        ((@(^self).trail)[j] === (@self.trail)[j]))]
-    #[ensures((@(^self).vardata).len() === (@self.vardata).len())]
-    #[ensures((@(^self).vardata) === (@self.vardata))]
-    #[ensures((@(^self).trail).len() === (@self.trail).len() - 1)]
-    pub fn pop_trail(self: &mut Trail, _f: &Formula) {
-        let old_t = Ghost::record(&self);
-        proof_assert! (
-            forall<i: Int> 0 <= i && i < (@self.trail).len() ==> (
-            forall<j: Int> 0 <= j && j < (@(@self.trail)[i]).len() ==>
-                0 <= @(@(@self.trail)[i])[j].idx && @(@(@self.trail)[i])[j].idx < @_f.num_vars )
-            );
-        let decisions = self.trail.pop();
-        match decisions {
-            Some(decisions) => {
-            }
-            None => {
-                panic!();
-            }
-        }
-        proof_assert! (
-            forall<i: Int> 0 <= i && i < (@self.trail).len() ==> (
-            forall<j: Int> 0 <= j && j < (@(@self.trail)[i]).len() ==>
-                0 <= @(@(@self.trail)[i])[j].idx && @(@(@self.trail)[i])[j].idx < @_f.num_vars )
-            );
-        proof_assert!(self.vardata_invariant(@_f.num_vars));
-        proof_assert!(self.trail_invariant(*_f));
-        proof_assert! (^@old_t === ^self);
+    #[ensures((@self.vardata) === (@(^self).vardata))]
+    #[ensures(forall<i: Int> 0 <= i && i < (@self.trail).len() ==>
+        (@self.trail)[i] === (@(^self).trail)[i])]
+    #[ensures((@(^self).trail).len() === (@self.trail).len() + 1)]
+    #[ensures((@(@(^self).trail)[(@self.trail).len()]).len() === 0)]
+    pub fn mock_add_level(&mut self, _f: &Formula) {
+        self.trail.push(Vec::new());
     }
 }

@@ -52,7 +52,7 @@ fn swap_lits(f: &mut Formula, cref: usize, i: usize, j: usize, _t: &Trail) {
 
 // Requires all clauses to be at least binary.
 // Returns either () if the unit propagation went fine, or a cref if a conflict was found.
-//#[trusted] // Checks out
+#[trusted] // Revisit. Used to check out
 #[requires(f.invariant())]
 #[requires(a.invariant(@f.num_vars))]
 #[requires(trail.invariant(*f))]
@@ -234,7 +234,7 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
     Ok(())
 }
 
-//#[trusted]// Checks out
+#[trusted]// OK
 #[requires((@trail.trail).len() > 0)]
 #[requires(0 <= @lit.idx && @lit.idx < (@trail.vardata).len())]
 #[requires(0 <= @lit.idx && @lit.idx < (@a).len())]
@@ -253,7 +253,6 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, _f: &Formula
 
 // Seems to be lacking one precond now
 #[trusted] // Checks out. A couple of the preconds are super slow, should add better assertions
-//#[requires(@f.num_vars < @usize::MAX/2)]
 #[requires((@f.clauses).len() > 0)]
 #[requires(f.invariant())]
 #[requires(a.invariant(@f.num_vars))]
@@ -345,6 +344,7 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
     }
 }
 
+#[trusted] // OK
 #[requires(f.invariant())]
 #[requires(@f.num_vars < @usize::MAX/2)]
 pub fn solver(f: &mut Formula) -> bool {

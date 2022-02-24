@@ -86,6 +86,38 @@ impl Formula {
         cref
     }
 
+    #[trusted] // OK
+    /*
+    #[requires((@self.clauses).len() > 0)]
+    #[requires(@self.num_vars < @usize::MAX/2)]
+    #[requires(self.invariant())]
+    #[requires(watches.invariant(*self))]
+    #[requires(invariant(@clause, *self))]
+    #[requires(forall<i: Int> 0 <= i && i < (@clause).len() ==>
+                @((@clause)[i]).idx < @self.num_vars &&
+                (((@clause)[i])).to_neg_watchidx_logic() < (@watches.watches).len()
+            )]
+    #[requires((@clause).len() > 1)]
+    */
+    #[ensures((^self).invariant())] // TODO
+    #[ensures((^watches).invariant(^self))]
+    #[ensures(@(^self).num_vars === @self.num_vars)]
+    #[ensures((@(^self).clauses).len() === (@self.clauses).len() + 1)]
+    #[ensures(@result === (@(^self).clauses).len() - 1)] // new
+    #[ensures((@watches.watches).len() === (@(^watches).watches).len())]
+    pub fn mock_add_clause(&mut self, clause: &Vec<Lit>, watches: &mut Watches) -> usize {
+        let clause = Clause::clause_from_vec(clause, self);   
+        let first = clause.first;
+        let second = clause.second;
+        let cref = self.clauses.len();
+        self.clauses.push(clause);
+        //watches.watches[first.to_neg_watchidx()].push(Watcher { cref });
+        //watches.watches[second.to_neg_watchidx()].push(Watcher { cref });
+        watches.add_watcher(first, cref, self);
+        watches.add_watcher(second, cref, self);
+        cref
+    }
+
     // Or people could just make correct cnfs
     // TODO add a remove_duplis for each clause as well + remove A or not A-clauses
     // TODO FIX
