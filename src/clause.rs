@@ -11,25 +11,12 @@ impl Clause {
         let mut k: usize = 0;
         while i < self.0.len() {
             let lit = self.0[i];
-            let res = &a.0[lit.idx];
-            match res {
-                AssignedState::Positive => {
-                    if lit.polarity {
-                        return false;
-                    }
-                },
-                AssignedState::Negative => {
-                    if !lit.polarity {
-                        return false;
-                    }
-                },
-                AssignedState::Unset => {
-                    if unassigned >= 1 {
-                        return false;
-                    }
-                    k = i;
-                    unassigned += 1;
-                },
+            let res = a.0[lit.idx];
+            if lit.polarity as u8 == res {
+                return false;
+            } else if res == 2 {
+                unassigned += 1;
+                k = i;
             }
             i += 1;
         }
@@ -44,11 +31,9 @@ impl Clause {
         let mut i: usize = 0;
         while i < self.0.len() {
             let lit = self.0[i];
-            let res = &a.0[lit.idx];
-            match res {
-                AssignedState::Positive => {},
-                AssignedState::Negative => {},
-                AssignedState::Unset => { return lit; },
+            let res = a.0[lit.idx];
+            if res >= 2 {
+                return lit;
             }
             i += 1;
         }

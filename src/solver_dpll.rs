@@ -10,19 +10,8 @@ pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     let mut i: usize = 0;
     while i < clause.0.len() {
         let lit = clause.0[i];
-        match a.0[lit.idx]{
-           AssignedState::Positive => {
-                if lit.polarity {
-                    return true
-                }
-            },
-            AssignedState::Negative => {
-                if !lit.polarity {
-                    return true
-                }
-            },
-            AssignedState::Unset => {
-            }
+        if lit.polarity as u8 == a.0[lit.idx] {
+            return true;
         }
         i += 1;
     }
@@ -34,20 +23,10 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     let mut i: usize = 0;
     while i < clause.0.len() {
         let lit = clause.0[i];
-        match a.0[lit.idx]{
-           AssignedState::Positive => {
-                if lit.polarity {
-                    return false
-                }
-            },
-            AssignedState::Negative => {
-                if !lit.polarity {
-                    return false
-                }
-            },
-            AssignedState::Unset => {
-                return false;
-            }
+        if lit.polarity as u8 == a.0[lit.idx] {
+            return false;
+        } else if a.0[lit.idx] >= 2 {
+            return false;
         }
         i += 1;
     }
@@ -63,8 +42,8 @@ fn inner(f: &Formula, a: &mut Assignments) -> bool {
     };
     let mut a_cloned = a.clone();
     let next = a.find_unassigned();
-    a.0[next] = AssignedState::Positive;
-    a_cloned.0[next] = AssignedState::Negative;
+    a.0[next] = 1;
+    a_cloned.0[next] = 0;
 
     if inner(f, a) {
         return true;

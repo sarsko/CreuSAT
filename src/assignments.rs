@@ -2,25 +2,7 @@ use crate::lit::*;
 use crate::clause::*;
 use crate::formula::*;
 
-pub struct Assignments(pub Vec<AssignedState>);
-
-#[derive(Clone, Copy, Eq)]
-pub enum AssignedState {
-    Unset,
-    Positive,
-    Negative,
-}
-
-impl PartialEq for AssignedState {
-    fn eq(&self, other: &Self) -> bool {
-        return match (self, other) {
-            (AssignedState::Unset, AssignedState::Unset) => true,
-            (AssignedState::Positive, AssignedState::Positive) => true,
-            (AssignedState::Negative, AssignedState::Negative) => true,
-            _ => false,
-        };
-    }
-}
+pub struct Assignments(pub Vec<u8>);
 
 
 impl Assignments {
@@ -36,10 +18,10 @@ impl Assignments {
     }
 
     pub fn new(f: &Formula) -> Self {
-        let mut assign: Vec<AssignedState> = Vec::new();
+        let mut assign: Vec<u8> = Vec::new();
         let mut i: usize = 0;
         while i < f.num_vars {
-            assign.push(AssignedState::Unset);
+            assign.push(2);
             i += 1
         }
         Assignments(assign)
@@ -48,12 +30,9 @@ impl Assignments {
     pub fn find_unassigned(&self) -> usize {
         let mut i: usize = 0;
         while i < self.0.len() {
-            let curr = &self.0[i];
-            match curr {
-                AssignedState::Unset => {
-                    return i;
-                },
-                _ => {},
+            let curr = self.0[i];
+            if curr >= 2 {
+                return i;
             }
             i += 1;
         }
@@ -65,9 +44,9 @@ impl Assignments {
         if clause.check_if_unit(self, f) {
             let lit = clause.get_unit(self, f);
             if lit.polarity {
-                self.0[lit.idx] = AssignedState::Positive;
+                self.0[lit.idx] = 1;
             } else {
-                self.0[lit.idx] = AssignedState::Negative;
+                self.0[lit.idx] = 0;
             }
             return true;
         }
