@@ -53,7 +53,7 @@ impl Clause {
     pub fn get_unit(&self, a: &Assignments, f: &Formula) -> Lit {
         let mut i: usize = 0;
         let res = a.0[self.first.idx];
-        if res >= 2{
+        if res >= 2 {
             return self.first;
         }         
         let res = a.0[self.second.idx];

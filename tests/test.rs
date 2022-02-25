@@ -11,12 +11,12 @@ use sat::parser::preproc_and_solve;
 
 #[test]
 fn test_all_sat() {
-    test_all_path("tests/cnf/sat", true, 1);
+    test_all_path("tests/cnf/sat", true, 500);
 }
 
 #[test]
 fn test_all_unsat() {
-    test_all_path("tests/cnf/unsat", false, 1);
+    test_all_path("tests/cnf/unsat", false, 500);
 }
 
 // paths: Path to directory to be read, 
@@ -32,9 +32,11 @@ fn test_all_path(paths_in: &str, expected: bool, verbosity: usize) {
         let tmp = path.unwrap().path();
         let path = tmp.to_str().unwrap();
         let res = parse_cnf(path);
+        //writeln!(&mut out, "parse ok").ok();
         match res {
             Ok((mut clauses, num_literals)) => {
                 let result = preproc_and_solve(&mut clauses, num_literals);
+                //writeln!(&mut out, "Result = {}", result).ok();
                 assert!(result == expected);
             },
             Err(e) => {
