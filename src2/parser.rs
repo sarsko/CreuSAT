@@ -2,9 +2,7 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
-pub type Literal = i32;
-pub type Clause = Vec<Literal>;
-pub type Clauses = Vec<Clause>;
+use crate::types::*;
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where

@@ -1,13 +1,31 @@
+#![feature(type_ascription)]
+
+extern crate creusot_contracts;
+
+use creusot_contracts::std::*;
+use creusot_contracts::*;
 use crate::lit::*;
 use crate::clause::*;
 use crate::assignments::*;
 use crate::formula::*;
+use crate::logic::*;
 
 fn main() {}
 
+#[ensures(result === (@f.clauses)[@idx].sat(*a))]
+#[requires(f.invariant())]
+#[requires(a.invariant(*f))]
+#[requires(@idx < (@f.clauses).len())]
 pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     let clause = &f.clauses[idx];
     let mut i: usize = 0;
+    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==>
+        match (@a)[@(@clause)[j].idx] {
+            AssignedState::Positive => !(@clause)[j].polarity,
+            AssignedState::Negative => (@clause)[j].polarity,
+            AssignedState::Unset => true,
+        }
+    )]
     while i < clause.0.len() {
         let lit = clause.0[i];
         match a.0[lit.idx]{
@@ -29,9 +47,21 @@ pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     return false;
 }
 
+#[ensures(result === (@f.clauses)[@idx].unsat(*a))]
+#[requires(f.invariant())]
+#[requires(a.invariant(*f))]
+#[requires(@idx < (@f.clauses).len())]
 pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     let clause = &f.clauses[idx];
     let mut i: usize = 0;
+    #[invariant(loop_invariant, 0 <= @i && @i <= (@clause).len())]
+    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==>
+        match (@a)[@(@clause)[j].idx] {
+            AssignedState::Positive => !(@clause)[j].polarity,
+            AssignedState::Negative => (@clause)[j].polarity,
+            AssignedState::Unset => false,
+        }
+    )]
     while i < clause.0.len() {
         let lit = clause.0[i];
         match a.0[lit.idx]{
@@ -54,6 +84,11 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     return true;
 }
 
+#[requires(f.invariant())]
+#[requires(a.invariant(*f))]
+#[ensures((^a).invariant(*f))]
+#[ensures(result === true ==> f.eventually_sat(*a))]
+#[ensures(result === false ==> !f.eventually_sat_complete(*a))]
 fn inner(f: &Formula, a: &mut Assignments) -> bool {
     a.do_unit_propagation(f);
     match f.eval(a) {
@@ -71,44 +106,4 @@ fn inner(f: &Formula, a: &mut Assignments) -> bool {
     } else {
         return inner(f, &mut a_cloned);
     }
-}
-
-pub fn solver(f: &Formula) -> bool {
-    // should do pure literal and identifying unit clauses in preproc
-    if f.num_vars == 0 {
-        return true;
-    }
-    let mut assignments = Assignments::new(f);
-    inner(f, &mut assignments)
-}
-
-/// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
-pub fn preproc_and_solve(
-    clauses: &mut std::vec::Vec<std::vec::Vec<i32>>,
-    num_literals: usize,
-) -> bool {
-    let mut formula = Formula {
-        clauses: Vec::new(),
-        num_vars: num_literals,
-    };
-    for clause in clauses {
-        let mut currclause = Clause(Vec::new());
-        for lit in clause {
-            if *lit < 0 {
-                let new_lit = Lit {
-                    idx: ((lit.abs() - 1) as usize),
-                    polarity: false,
-                };
-                currclause.0.push(new_lit);
-            } else {
-                let new_lit = Lit {
-                    idx: ((*lit - 1) as usize),
-                    polarity: true,
-                };
-                currclause.0.push(new_lit);
-            }
-        }
-        formula.clauses.push(currclause);
-    }
-    return solver(&formula);
 }

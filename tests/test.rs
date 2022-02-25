@@ -1,8 +1,8 @@
 use std::fs::read_dir;
 
 use sat::parser::parse_cnf;
-use sat::solver::dpll;
-use sat::solver_dpll_noproofs::preproc_and_solve;
+use sat::solver_dpll::*;
+//use sat::solver_dpll_noproofs::preproc_and_solve;
 
 #[test]
 fn test_all_sat() {
