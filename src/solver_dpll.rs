@@ -7,9 +7,12 @@ fn main() {}
 
 pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     let clause = &f.clauses[idx];
+    if clause.first.polarity as u8 == a.0[clause.first.idx] || clause.second.polarity as u8 == a.0[clause.second.idx] {
+        return true;
+    }
     let mut i: usize = 0;
-    while i < clause.0.len() {
-        let lit = clause.0[i];
+    while i < clause.rest.len() {
+        let lit = clause.rest[i];
         if lit.polarity as u8 == a.0[lit.idx] {
             return true;
         }
@@ -20,12 +23,13 @@ pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 
 pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     let clause = &f.clauses[idx];
+    if clause.first.polarity as u8 != a.0[clause.first.idx] || clause.second.polarity as u8 != a.0[clause.second.idx] {
+        return false;
+    }
     let mut i: usize = 0;
-    while i < clause.0.len() {
-        let lit = clause.0[i];
-        if lit.polarity as u8 == a.0[lit.idx] {
-            return false;
-        } else if a.0[lit.idx] >= 2 {
+    while i < clause.rest.len() {
+        let lit = clause.rest[i];
+        if lit.polarity as u8 != a.0[lit.idx] {
             return false;
         }
         i += 1;
@@ -34,7 +38,7 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 }
 
 fn inner(f: &Formula, a: &mut Assignments) -> bool {
-    a.do_unit_propagation(f);
+    //a.do_unit_propagation(f);
     match f.eval(a) {
         SatState::Sat => return true,
         SatState::Unsat => return false,
@@ -52,7 +56,7 @@ fn inner(f: &Formula, a: &mut Assignments) -> bool {
     }
 }
 
-pub fn solver(f: &Formula) -> bool {
+pub fn solver(f: &Formula, units: &Vec<Lit>) -> bool {
     // should do pure literal and identifying unit clauses in preproc
     if f.num_vars == 0 {
         return true;
@@ -61,33 +65,3 @@ pub fn solver(f: &Formula) -> bool {
     inner(f, &mut assignments)
 }
 
-/// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
-pub fn preproc_and_solve(
-    clauses: &mut std::vec::Vec<std::vec::Vec<i32>>,
-    num_literals: usize,
-) -> bool {
-    let mut formula = Formula {
-        clauses: Vec::new(),
-        num_vars: num_literals,
-    };
-    for clause in clauses {
-        let mut currclause = Clause(Vec::new());
-        for lit in clause {
-            if *lit < 0 {
-                let new_lit = Lit {
-                    idx: ((lit.abs() - 1) as usize),
-                    polarity: false,
-                };
-                currclause.0.push(new_lit);
-            } else {
-                let new_lit = Lit {
-                    idx: ((*lit - 1) as usize),
-                    polarity: true,
-                };
-                currclause.0.push(new_lit);
-            }
-        }
-        formula.clauses.push(currclause);
-    }
-    return solver(&formula);
-}
