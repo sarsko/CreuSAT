@@ -7,28 +7,16 @@ use crate::clause::*;
 use crate::logic::*;
 use crate::formula::*;
 
-pub struct Assignments(pub Vec<AssignedState>);
+pub struct Assignments(pub Vec<u8>);
 
-//#[derive(Copy, Eq)]
 pub enum AssignedState {
     Unset,
-    Positive,
     Negative,
-}
-
-impl PartialEq for AssignedState {
-    fn eq(&self, other: &Self) -> bool {
-        return match (self, other) {
-            (AssignedState::Unset, AssignedState::Unset) => true,
-            (AssignedState::Positive, AssignedState::Positive) => true,
-            (AssignedState::Negative, AssignedState::Negative) => true,
-            _ => false,
-        };
-    }
+    Positive,
 }
 
 impl Model for Assignments {
-    type ModelTy = Seq<AssignedState>;
+    type ModelTy = Seq<u8>;
 
     #[logic]
     fn model(self) -> Self::ModelTy {
@@ -45,23 +33,23 @@ pub fn assignments_equality(a: Assignments, a2: Assignments) -> bool {
 }
 
 #[predicate]
-pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
+pub fn compatible_inner(a: Seq<u8>, a2: Seq<u8>) -> bool {
     pearlite! {
         a.len() === a2.len() &&
         (forall<i: Int> 0 <= i && i < a.len() ==>
-        ((a[i] === AssignedState::Unset) || a[i] === a2[i]))
+        ((@a[i] >= 2) || a[i] === a2[i]))
     }
 }
 
 #[predicate]
-pub fn complete_inner(a: Seq<AssignedState>) -> bool {
+pub fn complete_inner(a: Seq<u8>) -> bool {
     pearlite! {
-        forall<i: Int> 0 <= i && i < a.len() ==> !(a[i] === AssignedState::Unset)
+        forall<i: Int> 0 <= i && i < a.len() ==> @a[i] < 2
     }
 }
 
 #[predicate]
-pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
+pub fn compatible_complete_inner(a: Seq<u8>, a2: Seq<u8>) -> bool {
     pearlite! {
         compatible_inner(a, a2) && complete_inner(a2)
         /*
@@ -73,7 +61,7 @@ pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) 
 }
 
 #[predicate]
-pub fn assignments_invariant(a: Seq<AssignedState>, f: Formula) -> bool {
+pub fn assignments_invariant(a: Seq<u8>, f: Formula) -> bool {
     pearlite! {
         @f.num_vars === a.len()
     }
@@ -96,7 +84,7 @@ impl Assignments {
     #[predicate]
     pub fn complete(self) -> bool {
         pearlite! {
-            forall<i: Int> 0 <= i && i < (@self).len() ==> !((@self)[i] === AssignedState::Unset)
+            forall<i: Int> 0 <= i && i < (@self).len() ==> @(@self)[i] < 2
         }
     }
 
@@ -105,43 +93,44 @@ impl Assignments {
         self.compatible(a2) && a2.complete()
     }
 }
+/*
 
 #[logic] 
 #[requires(f.invariant())]
 #[requires(assignments_invariant(a, f))]
 #[requires(not_sat_formula_inner(a, f))]
 #[ensures(!eventually_sat_complete_formula_inner(a, f))]
-fn lemma_not_sat_formula_implies_unsat_formula(f: Formula, a: Seq<AssignedState>) {}
+fn lemma_not_sat_formula_implies_unsat_formula(f: Formula, a: Seq<u8>) {}
 
 #[logic]
 #[requires(not_sat_clause_inner(a, c))]
 #[requires(clause_in_formula(c, f))]
 #[ensures(not_sat_formula_inner(a, f))]
-fn lemma_not_sat_clause_implies_unsat_formula(f: Formula, c: Clause, a: Seq<AssignedState>) {}
+fn lemma_not_sat_clause_implies_unsat_formula(f: Formula, c: Clause, a: Seq<u8>) {}
 
 
 #[logic]
 #[requires(f.invariant())]
 #[requires(@f.num_vars === a.len())]
-#[requires(0 <= ix && ix < a.len() && a[ix] === AssignedState::Unset)]
-#[requires(v === AssignedState::Positive || v === AssignedState::Negative)]
+#[requires(0 <= ix && ix < a.len() && a[ix] >= 2)]
+#[requires(v < 2)]
 #[requires(eventually_sat_complete_formula_inner(a, f))]
 #[requires(!eventually_sat_complete_formula_inner(a.set(ix, flip_v(v)), f))]
 #[ensures(eventually_sat_complete_formula_inner(a.set(ix, v), f))]
-fn lemma_unit_forces(c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState) {
+fn lemma_unit_forces(c: Clause, f: Formula, a: Seq<u8>, ix: Int, v: u8) {
     lemma_not_sat_formula_implies_unsat_formula(f, a);
 }
 
 #[logic]
 #[requires(f.invariant())]
 #[requires(@f.num_vars === a.len())]
-#[requires(0 <= ix && ix < a.len() && a[ix] === AssignedState::Unset)]
-#[requires(v === AssignedState::Positive || v === AssignedState::Negative)]
+#[requires(0 <= ix && ix < a.len() && a[ix] >= 2)]
+#[requires(v < 2)]
 #[requires(unit_inner(a, c))]
 #[requires(clause_in_formula(c, f))]
 #[requires(forall<j: Int> 0 <= j && j < (@c).len() ==> 0 <= @(@c)[j].idx && @(@c)[j].idx < a.len())]
 #[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === ix && bool_to_assignedstate(((@c)[j].polarity)) === v)]
-#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === ix) ==> !(a[@(@c)[j].idx] === AssignedState::Unset))]
+#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === ix) ==> a[@(@c)[j].idx] < 2)]
 #[requires(forall<j: Int, k: Int> 0 <= j && j < (@c).len() && k < j ==> !(@(@c)[k].idx === @(@c)[j].idx))]
 #[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === ix) ==> !(a[@(@c)[j].idx] === bool_to_assignedstate((@c)[j].polarity)))]
 #[ensures(!eventually_sat_complete_formula_inner(a.set(ix, flip_v(v)), f))]
@@ -176,15 +165,6 @@ fn lemma_correctPolarityMakesClauseSat(c: Clause, a: Seq<AssignedState>, ix: Int
 fn lemma_incorrectPolarityMakesClauseUnsat(c: Clause, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 
 #[logic]
-fn flip_v(v: AssignedState) -> AssignedState {
-    match v {
-        AssignedState::Unset => AssignedState::Unset,
-        AssignedState::Positive => AssignedState::Negative,
-        AssignedState::Negative => AssignedState::Positive,
-    }
-}
-
-#[logic]
 #[requires(0 <= ix && ix < a.len() && a[ix] === AssignedState::Unset)]
 #[requires(eventually_sat_complete_formula_inner(a.set(ix, v), f))]
 #[ensures(eventually_sat_complete_formula_inner(a, f))]
@@ -199,6 +179,7 @@ fn lemma_extensionsUnsat_baseUnsat(a: Seq<AssignedState>, ix: Int, f: Formula) {
     compatible_inner(a, a.set(ix, AssignedState::Positive));
     compatible_inner(a, a.set(ix, AssignedState::Negative));
 }
+*/
 
 
 impl Assignments {
@@ -223,12 +204,12 @@ impl Assignments {
     #[requires(f.invariant())]
     #[ensures(result.invariant(*f))]
     pub fn new(f: &Formula) -> Self {
-        let mut assign: Vec<AssignedState> = Vec::new();
+        let mut assign: Vec<u8> = Vec::new();
         let mut i: usize = 0;
         #[invariant(loop_invariant, 0 <= @i && @i <= @f.num_vars)]
         #[invariant(length_invariant, (@assign).len() === @i)]
         while i < f.num_vars {
-            assign.push(AssignedState::Unset);
+            assign.push(2);
             i += 1
         }
         Assignments(assign)
@@ -236,20 +217,17 @@ impl Assignments {
 
     #[requires(!self.complete())]
     #[ensures(@result < (@self).len())]
-    #[ensures((@self)[@result] === AssignedState::Unset)]
+    #[ensures(@(@self)[@result] >= 2)]
     pub fn find_unassigned(&self) -> usize {
         let mut i: usize = 0;
         #[invariant(loop_invariant, 0 <= @i && @i <= (@self).len())]
         #[invariant(prev, forall<j: Int> 0 <= j && j < @i ==>
-            !((@self)[j] === AssignedState::Unset)
+            @(@self)[j] < 2
         )]
         while i < self.0.len() {
-            let curr = &self.0[i];
-            match curr {
-                AssignedState::Unset => {
-                    return i;
-                },
-                _ => {},
+            let curr = self.0[i];
+            if curr >= 2 {
+                return i;
             }
             i += 1;
         }
@@ -263,6 +241,8 @@ impl Assignments {
     #[ensures((*self).compatible(^self))]
     #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))] 
     pub fn unit_prop_once(&mut self, i: usize, f: &Formula) -> bool {
+        true
+        /*
         let clause = &f.clauses[i];
         let old_a = Ghost::record(&self);
         proof_assert! { ^self === ^@old_a }
@@ -285,6 +265,7 @@ impl Assignments {
             return true;
         }
         return false;
+        */
     }
 
     #[requires(f.invariant())]
@@ -296,7 +277,7 @@ impl Assignments {
         let old_a = Ghost::record(&self);
         let mut i: usize = 0;
         let mut out = false;
-        #[invariant(loop_invariant, 0usize <= i && @i <= (@f.clauses).len())]
+        #[invariant(loop_invariant, 0 <= @i && @i <= (@f.clauses).len())]
         #[invariant(ai, self.invariant(*f))]
         #[invariant(proph, ^self === ^@old_a)]
         #[invariant(compat, (*@old_a).compatible(*self))]

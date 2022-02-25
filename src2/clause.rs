@@ -20,47 +20,56 @@ impl Model for Clause {
 
 
 #[predicate]
-pub fn sat_clause_inner(a: Seq<AssignedState>, c: Clause) -> bool {
+pub fn sat_clause_inner(a: Seq<u8>, c: Clause) -> bool {
     pearlite! {
         exists<i: Int> 0 <= i && i < (@c).len() &&
                 /*
             (!(a[@(@c)[i].idx] === AssignedState::Unset) &&
                 (a[@(@c)[i].idx] === bool_to_assignedstate((@c)[i].polarity)))
             */
+            /*
             match a[@(@c)[i].idx] {
                 AssignedState::Positive => (@c)[i].polarity,
                 AssignedState::Negative => !(@c)[i].polarity,
                 AssignedState::Unset => false,
             }
+            */
+            true
     }
 }
 
 
 #[predicate]
-pub fn not_sat_clause_inner(a: Seq<AssignedState>, c: Clause) -> bool {
+pub fn not_sat_clause_inner(a: Seq<u8>, c: Clause) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < (@c).len() ==>
         /*
             (!(a[@(@c)[i].idx] === AssignedState::Unset) &&
                 !(a[@(@c)[i].idx] === bool_to_assignedstate((@c)[i].polarity)))
                 */
+                /*
             match a[@(@c)[i].idx] {
                 AssignedState::Positive => !(@c)[i].polarity,
                 AssignedState::Negative => (@c)[i].polarity,
                 AssignedState::Unset => false,
             }
+            */
+            true
     }
 }
 
 #[predicate]
-pub fn unit_inner(a: Seq<AssignedState>, c: Clause) -> bool {
+pub fn unit_inner(a: Seq<u8>, c: Clause) -> bool {
     pearlite! {
+        true
+        /*
         c.vars_in_range(a.len()) &&
             !sat_clause_inner(a, c) && 
                 exists<i: Int> 0 <= i && i < (@c).len() &&
                     a[@(@c)[i].idx] === AssignedState::Unset && 
                         (forall<j: Int> 0 <= j && j < (@c).len() && j != i ==>
                             !(a[@(@c)[j].idx] === AssignedState::Unset))
+                            */
     }
 }
 
@@ -75,24 +84,30 @@ impl Clause {
     #[predicate]
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! {
+            true
+            /*
             forall<i: Int> 0 <= i && i < (@self).len() ==>
                 match (@a)[@(@self)[i].idx] {
                     AssignedState::Positive => !(@self)[i].polarity,
                     AssignedState::Negative => (@self)[i].polarity,
                     AssignedState::Unset => false,
                 }
+                */
         }
     }
 
     #[predicate]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! {
+            true
+            /*
             exists<i: Int> 0 <= i && i < (@self).len() &&
                 match (@a)[@(@self)[i].idx] {
                     AssignedState::Positive => (@self)[i].polarity,
                     AssignedState::Negative => !(@self)[i].polarity,
                     AssignedState::Unset => false
                 }
+                */
         }
     }
 
@@ -134,6 +149,8 @@ impl Clause {
     //#[ensures(result ==> !self.unsat(*a))] 
     //#[ensures(result ==> !self.sat(*a))] 
     pub fn check_if_unit(&self, a: &Assignments, f: &Formula) -> bool {
+        true
+        /*
         let mut i: usize = 0;
         let mut unassigned: usize = 0;
         let mut k: usize = 0;
@@ -198,6 +215,7 @@ impl Clause {
         } else {
             false
         }
+        */
     }
 
     #[requires(self.unit(*a))]
@@ -205,8 +223,11 @@ impl Clause {
     #[requires(a.invariant(*f))]
     #[ensures(exists<j: Int> 0 <= j && j < (@self).len() && (@self)[j] === result)]
     #[ensures(@result.idx < (@a).len())]
-    #[ensures((@a)[@result.idx] === AssignedState::Unset)]
+    #[ensures(@(@a)[@result.idx] >= 2)]
     pub fn get_unit(&self, a: &Assignments, f: &Formula) -> Lit {
+        self.0[0]
+    }
+        /*
         let mut i: usize = 0;
         #[invariant(loop_invariant, 0 <= @i && @i <= (@self).len())]
         #[invariant(not_unset, forall<j: Int> 0 <= j && j < @i ==>
@@ -223,4 +244,5 @@ impl Clause {
         }
         panic!();
     }
+    */
 }

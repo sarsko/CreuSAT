@@ -34,22 +34,22 @@ impl PartialEq for SatState {
 
 
 #[predicate]
-pub fn eventually_sat_complete_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
+pub fn eventually_sat_complete_formula_inner(a: Seq<u8>, f: Formula) -> bool {
     pearlite! {
-        exists<a2 : Seq<AssignedState>> a2.len() === @f.num_vars && compatible_complete_inner(a, a2) && sat_formula_inner(a2, f)
+        exists<a2 : Seq<u8>> a2.len() === @f.num_vars && compatible_complete_inner(a, a2) && sat_formula_inner(a2, f)
     }
 }
 
 #[predicate]
-pub fn eventually_sat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
+pub fn eventually_sat_formula_inner(a: Seq<u8>, f: Formula) -> bool {
     pearlite! {
-        exists<a2 : Seq<AssignedState>> a2.len() === @f.num_vars && compatible_inner(a, a2) && sat_formula_inner(a2, f)
+        exists<a2 : Seq<u8>> a2.len() === @f.num_vars && compatible_inner(a, a2) && sat_formula_inner(a2, f)
     }
 }
 
 
 #[predicate]
-pub fn not_sat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
+pub fn not_sat_formula_inner(a: Seq<u8>, f: Formula) -> bool {
     pearlite! {
         exists<i: Int> 0 <= i && i < (@f.clauses).len() &&
         not_sat_clause_inner(a, (@f.clauses)[i])
@@ -65,7 +65,7 @@ pub fn clause_in_formula(c: Clause, f: Formula) -> bool {
 }
 
 #[predicate]
-pub fn sat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
+pub fn sat_formula_inner(a: Seq<u8>, f: Formula) -> bool {
     pearlite! {
             forall<i: Int> 0 <= i && i < (@f.clauses).len() ==>
             sat_clause_inner(a, (@f.clauses)[i])

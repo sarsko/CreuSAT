@@ -10,40 +10,37 @@ use crate::assignments::*;
 use crate::formula::*;
 use crate::logic::*;
 
-fn main() {}
-
 #[ensures(result === (@f.clauses)[@idx].sat(*a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(@idx < (@f.clauses).len())]
 pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
+    /*
     let clause = &f.clauses[idx];
+    if clause.first.polarity && a.0[clause.first.idx] == 1 {
+        return true;
+    }
+    if clause.second.polarity && a.0[clause.second.idx] == 1 {
+        return true;
+    }
+    if !clause.first.polarity && a.0[clause.first.idx] == 0 {
+        return true;
+    }
+    if !clause.second.polarity && a.0[clause.second.idx] == 0 {
+        return true;
+    }
     let mut i: usize = 0;
-    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==>
-        match (@a)[@(@clause)[j].idx] {
-            AssignedState::Positive => !(@clause)[j].polarity,
-            AssignedState::Negative => (@clause)[j].polarity,
-            AssignedState::Unset => true,
+    while i < clause.rest.len() {
+        let lit = clause.rest[i];
+        if lit.polarity && a.0[lit.idx] == 1 {
+            return true;
         }
-    )]
-    while i < clause.0.len() {
-        let lit = clause.0[i];
-        match a.0[lit.idx]{
-           AssignedState::Positive => {
-                if lit.polarity {
-                    return true
-                }
-            },
-            AssignedState::Negative => {
-                if !lit.polarity {
-                    return true
-                }
-            },
-            AssignedState::Unset => {
-            }
+        if !lit.polarity && a.0[lit.idx] == 0 {
+            return true;
         }
         i += 1;
     }
+    */
     return false;
 }
 
@@ -52,35 +49,26 @@ pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 #[requires(a.invariant(*f))]
 #[requires(@idx < (@f.clauses).len())]
 pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
+    /*
     let clause = &f.clauses[idx];
+    if clause.first.polarity as u8 == a.0[clause.first.idx] || clause.second.polarity as u8 == a.0[clause.second.idx] {
+        return false;
+    }
+    if a.0[clause.first.idx] >= 2 || a.0[clause.second.idx] >= 2 {
+        return false;
+    }
     let mut i: usize = 0;
-    #[invariant(loop_invariant, 0 <= @i && @i <= (@clause).len())]
-    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==>
-        match (@a)[@(@clause)[j].idx] {
-            AssignedState::Positive => !(@clause)[j].polarity,
-            AssignedState::Negative => (@clause)[j].polarity,
-            AssignedState::Unset => false,
+    while i < clause.rest.len() {
+        let lit = clause.rest[i];
+        if lit.polarity as u8 == a.0[lit.idx] {
+            return false;
         }
-    )]
-    while i < clause.0.len() {
-        let lit = clause.0[i];
-        match a.0[lit.idx]{
-           AssignedState::Positive => {
-                if lit.polarity {
-                    return false
-                }
-            },
-            AssignedState::Negative => {
-                if !lit.polarity {
-                    return false
-                }
-            },
-            AssignedState::Unset => {
-                return false;
-            }
+        if a.0[lit.idx] >= 2 {
+            return false;
         }
         i += 1;
     }
+    */
     return true;
 }
 
@@ -98,8 +86,8 @@ fn inner(f: &Formula, a: &mut Assignments) -> bool {
     };
     let mut a_cloned = a.clone();
     let next = a.find_unassigned();
-    a.0[next] = AssignedState::Positive;
-    a_cloned.0[next] = AssignedState::Negative;
+    a.0[next] = 1;
+    a_cloned.0[next] = 0;
 
     if inner(f, a) {
         return true;
