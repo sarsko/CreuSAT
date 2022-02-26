@@ -36,14 +36,21 @@ impl PartialEq for SatState {
 #[predicate]
 pub fn eventually_sat_complete_formula_inner(a: Seq<u8>, f: Formula) -> bool {
     pearlite! {
-        exists<a2 : Seq<u8>> a2.len() === @f.num_vars && compatible_complete_inner(a, a2) && sat_formula_inner(a2, f)
+        exists<a2 : Seq<u8>> a2.len() === @f.num_vars && compatible_complete_inner(a, a2) && f.sat_u8(a2)//sat_formula_inner(a2, f)
+    }
+}
+
+#[predicate]
+pub fn eventually_sat_formula_inner_old(a: Seq<u8>, f: Formula) -> bool {
+    pearlite! {
+        exists<a2 : Seq<u8>> a2.len() === @f.num_vars && compatible_inner(a, a2) && sat_formula_inner(a2, f)
     }
 }
 
 #[predicate]
 pub fn eventually_sat_formula_inner(a: Seq<u8>, f: Formula) -> bool {
     pearlite! {
-        exists<a2 : Seq<u8>> a2.len() === @f.num_vars && compatible_inner(a, a2) && sat_formula_inner(a2, f)
+        exists<a2 : Seq<u8>> a2.len() === @f.num_vars && compatible_inner(a, a2) && f.sat_u8(a2)
     }
 }
 
@@ -52,7 +59,8 @@ pub fn eventually_sat_formula_inner(a: Seq<u8>, f: Formula) -> bool {
 pub fn not_sat_formula_inner(a: Seq<u8>, f: Formula) -> bool {
     pearlite! {
         exists<i: Int> 0 <= i && i < (@f.clauses).len() &&
-        not_sat_clause_inner(a, (@f.clauses)[i])
+        //not_sat_clause_inner(a, (@f.clauses)[i])
+        !(@f.clauses)[i].sat_u8(a)
     }
 }
 
@@ -68,7 +76,8 @@ pub fn clause_in_formula(c: Clause, f: Formula) -> bool {
 pub fn sat_formula_inner(a: Seq<u8>, f: Formula) -> bool {
     pearlite! {
             forall<i: Int> 0 <= i && i < (@f.clauses).len() ==>
-            sat_clause_inner(a, (@f.clauses)[i])
+            (@f.clauses)[i].sat_u8(a)
+            //sat_clause_inner(a, (@f.clauses)[i])
     }
 }
 
@@ -94,21 +103,33 @@ impl Formula {
 
     #[predicate]
     pub fn sat(self, a: Assignments) -> bool {
-        pearlite! { sat_formula_inner(@a, self) }
-        /*
-        pearlite! {
-            forall<i: Int> 0 <= i && i < (@(self.clauses)).len() ==>
-            sat_clause_inner(@a, (@(self.clauses))[i])
-            //(@(self.clauses))[i].sat(a)
+        pearlite! { 
+            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+                (@self.clauses)[i].sat(a)
         }
-        */
     }
 
     #[predicate]
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! {
-            exists<i: Int> 0 <= i && i < (@(self.clauses)).len() &&
-            (@(self.clauses))[i].unsat(a)
+            exists<i: Int> 0 <= i && i < (@self.clauses).len() &&
+                (@self.clauses)[i].unsat(a)
+        }
+    }
+
+    #[predicate]
+    pub fn sat_u8(self, a: Seq<u8>) -> bool {
+        pearlite! { 
+            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+                (@self.clauses)[i].sat_u8(a)
+        }
+    }
+
+    #[predicate]
+    pub fn unsat_u8(self, a: Seq<u8>) -> bool {
+        pearlite! {
+            exists<i: Int> 0 <= i && i < (@self.clauses).len() &&
+                (@self.clauses)[i].unsat_u8(a)
         }
     }
 }
@@ -139,8 +160,8 @@ impl Formula {
         let mut i: usize = 0;
         #[invariant(prev,
             forall<k: Int> 0 <= k && k < @i ==>
-            (@self.clauses)[k].sat(*a))]
-        #[invariant(loop_invariant, 0 <= @i && @i <= (@self.clauses).len())]
+                (@self.clauses)[k].sat(*a)
+        )]
         while i < self.clauses.len() {
             if !is_clause_sat(self, i, a) {
                 return false;
