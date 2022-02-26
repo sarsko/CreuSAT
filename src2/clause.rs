@@ -19,8 +19,8 @@ impl Model for Clause {
 
     #[logic]
     fn model(self) -> Self::ModelTy {
-        //self.rest.model().push(self.first).push(self.second)
-        self.rest.model()
+        self.rest.model().push(self.first).push(self.second)
+        //self.rest.model()
     }
 }
 
@@ -28,10 +28,14 @@ impl Clause {
     #[predicate]
     pub fn vars_in_range(self, n: Int) -> bool {
         pearlite! {
+            forall<i: Int> 0 <= i && i < (@self).len() ==> 
+            (@self)[i].invariant(n)
+            /*
             self.first.invariant(n) &&
             self.second.invariant(n) &&
             forall<i: Int> 0 <= i && i < (@self.rest).len() ==> 
             (@self.rest)[i].invariant(n)
+            */
         }
     }
     
@@ -47,14 +51,23 @@ impl Clause {
     }
     */
 
+    /*
     #[predicate]
     pub fn no_duplicate_indexes(self) -> bool {
         pearlite! {
             !(@self.first.idx === @self.second.idx) &&
-            forall<j: Int, k: Int> 0 <= j && j < (@self).len() ==>
-                 0 <= k && k < (@self).len() ==> j != k ==> !(@((@self)[k]).idx === @((@self)[j]).idx) && 
-                 !(@((@self)[j]).idx === @self.first.idx) &&
-                 !(@((@self)[j]).idx === @self.second.idx)
+            forall<j: Int, k: Int> 0 <= j && j < (@self.rest).len() ==>
+                 0 <= k && k < (@self.rest).len() ==> j != k ==> !(@((@self.rest)[k]).idx === @((@self.rest)[j]).idx) && 
+                 !(@((@self.rest)[j]).idx === @self.first.idx) &&
+                 !(@((@self.rest)[j]).idx === @self.second.idx)
+        }
+    }
+    */
+    #[predicate]
+    pub fn no_duplicate_indexes(self) -> bool {
+        pearlite! {
+            forall<j: Int, k: Int> 0 <= j && j < (@self).len() &&
+                 k < j ==> !(@(@self)[k].idx === @(@self)[j].idx)
         }
     }
 
@@ -88,7 +101,7 @@ impl Clause {
     pub fn unit_in_rest(self, a: Seq<u8>) -> bool {
         pearlite! {
             self.first.unsat_u8(a) && self.second.unsat_u8(a) &&
-            exists<i: Int> 0 <= i && i < (@self).len() &&
+            exists<i: Int> 0 <= i && i < (@self.rest).len() &&
                 ((@self.rest)[i].unset_u8(a) &&
                 forall<j: Int> 0 <= j && j < (@self.rest).len() && j != i ==>
                     (@self.rest)[j].unsat_u8(a))
@@ -100,7 +113,11 @@ impl Clause {
         pearlite! {
             !self.sat_u8(a) && // This shouldnt be needed tbh
             self.vars_in_range(a.len()) &&
-                (self.first_unit(a) || self.second_unit(a) || self.unit_in_rest(a))
+                //(self.first_unit(a) || self.second_unit(a) || self.unit_in_rest(a))
+                exists<i: Int> 0 <= i && i < (@self).len() &&
+                @a[@(@self)[i].idx] >= 2 && 
+                    (forall<j: Int> 0 <= j && j < (@self).len() && j != i ==>
+                        !(@a[@(@self)[j].idx] >= 2))
         }
     }
     #[predicate]
@@ -127,18 +144,26 @@ impl Clause {
     #[predicate]
     pub fn sat_u8(self, a: Seq<u8>) -> bool {
         pearlite! {
+            (exists<i: Int> 0 <= i && i < (@self).len() &&
+                (@self)[i].sat_u8(a))
+            /*
             self.first.sat_u8(a) || self.second.sat_u8(a) ||
             (exists<i: Int> 0 <= i && i < (@self.rest).len() &&
                 (@self.rest)[i].sat_u8(a))
+                */
         }
     }
 
     #[predicate]
     pub fn unsat_u8(self, a: Seq<u8>) -> bool {
         pearlite! {
+            (forall<i: Int> 0 <= i && i < (@self).len() ==>
+                (@self)[i].unsat_u8(a))
+            /*
             self.first.unsat_u8(a) && self.second.unsat_u8(a) &&
             (forall<i: Int> 0 <= i && i < (@self.rest).len() ==>
                 (@self.rest)[i].unsat_u8(a))
+                */
         }
     }
 
@@ -151,7 +176,7 @@ impl Clause {
 
 impl Clause {
     // Can be made to a complete eval function if I like
-    //#[trusted]
+    #[trusted] // OK
     #[requires(self.invariant((@a).len()))]
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
@@ -196,8 +221,8 @@ impl Clause {
                 forall<k: Int> 0 <= k && k < @i ==>
                     (@self.rest)[k].unsat(*a))
         )]
-        #[invariant(loop_invariant, 0 <= @i && @i <= (@self).len())]
-        #[invariant(not_sat, forall<j: Int> 0 <= j && j < @i ==> !(@self)[j].sat(*a))]
+        #[invariant(loop_invariant, 0 <= @i && @i <= (@self.rest).len())]
+        #[invariant(not_sat, forall<j: Int> 0 <= j && j < @i ==> !(@self.rest)[j].sat(*a))]
         while i < self.rest.len() {
             let lit = self.rest[i];
             if lit.lit_sat(a) {
@@ -221,26 +246,23 @@ impl Clause {
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
     #[ensures(self.first === result || self.second === result ||
-        exists<j: Int> 0 <= j && j < (@self).len() && (@self)[j] === result)] // Change to lit in
+        exists<j: Int> 0 <= j && j < (@self.rest).len() && (@self.rest)[j] === result)] // Change to lit in
     #[ensures(@result.idx < (@a).len())]
     #[ensures(@(@a)[@result.idx] >= 2)]
     pub fn get_unit(&self, a: &Assignments, f: &Formula) -> Lit {
         let mut i: usize = 0;
-        let res = a.0[self.first.idx];
-        if res >= 2 {
+        if self.first.lit_unset(a) {
             return self.first;
         }         
-        let res = a.0[self.second.idx];
-        if res >= 2 {
+        if self.second.lit_unset(a) {
             return self.second;
         } 
-        #[invariant(loop_invariant, 0 <= @i && @i <= (@self).len())]
+        #[invariant(loop_invariant, 0 <= @i && @i <= (@self.rest).len())]
         #[invariant(not_unset, forall<j: Int> 0 <= j && j < @i ==>
-            @(@a)[@(@self)[j].idx] < 2)]
+            !(@self.rest)[j].unset(*a))]
         while i < self.rest.len() {
             let lit = self.rest[i];
-            let res = a.0[lit.idx];
-            if res >= 2 {
+            if lit.lit_unset(a) {
                 return lit;
             }
             i += 1;

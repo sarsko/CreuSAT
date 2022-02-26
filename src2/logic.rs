@@ -17,3 +17,14 @@ pub fn bool_to_assignedstate(b: bool) -> AssignedState {
         AssignedState::Negative
     }
 }
+
+#[logic]
+#[ensures(b ==> @result === 1)]
+#[ensures(!b ==> @result === 0)]
+pub fn bool_to_u8(b: bool) -> u8 {
+    if b {
+        1u8
+    } else {
+        0u8
+    }
+}

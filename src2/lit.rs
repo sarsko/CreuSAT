@@ -32,10 +32,7 @@ impl Lit {
     #[predicate]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! {
-            match self.polarity {
-                true =>  (@(@a)[@self.idx] == 1),
-                false =>  (@(@a)[@self.idx] == 0),
-            }
+            self.sat_u8(@a)
         }
     }
 
@@ -49,10 +46,7 @@ impl Lit {
     #[predicate]
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! {
-            match self.polarity {
-                true =>  (@(@a)[@self.idx] == 0),
-                false =>  (@(@a)[@self.idx] == 1),
-            }
+            self.unsat_u8(@a)
         }
     }
 
@@ -89,6 +83,12 @@ impl Lit {
     #[ensures(result === self.sat(*a))]
     pub fn lit_sat(self, a: &Assignments) -> bool {
         bool_to_u8(self.polarity) == a.0[self.idx]
+    }
+    #[inline]
+    #[requires(self.invariant((@a).len()))]
+    #[ensures(result === self.unsat(*a))]
+    pub fn lit_unsat(self, a: &Assignments) -> bool {
+        bool_to_u8(!self.polarity) == a.0[self.idx]
     }
     #[inline]
     #[requires(self.invariant((@a).len()))]
