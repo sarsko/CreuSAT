@@ -16,6 +16,7 @@ pub enum AssignedState {
     Negative,
 }
 
+
 impl PartialEq for AssignedState {
     fn eq(&self, other: &Self) -> bool {
         return match (self, other) {
@@ -40,7 +41,7 @@ impl Model for Assignments {
 pub fn assignments_equality(a: Assignments, a2: Assignments) -> bool {
     pearlite! {
         (@a).len() === (@a2).len() &&
-        forall<i: Int> 0 <= i && i < (@a).len() ==> (@a)[i] === (@a2)[i]
+            forall<i: Int> 0 <= i && i < (@a).len() ==> (@a)[i] === (@a2)[i]
     }
 }
 
@@ -48,14 +49,14 @@ pub fn assignments_equality(a: Assignments, a2: Assignments) -> bool {
 pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     pearlite! {
         a.len() === a2.len() && (forall<i: Int> 0 <= i && i < a.len() ==>
-            ((a[i] === AssignedState::Unset) || a[i] === a2[i]))
+            (unset(a[i]) || a[i] === a2[i]))
     }
 }
 
 #[predicate]
 pub fn complete_inner(a: Seq<AssignedState>) -> bool {
     pearlite! {
-        forall<i: Int> 0 <= i && i < a.len() ==> !(a[i] === AssignedState::Unset)
+        forall<i: Int> 0 <= i && i < a.len() ==> !unset(a[i])
     }
 }
 
@@ -90,7 +91,7 @@ impl Assignments {
     #[predicate]
     pub fn complete(self) -> bool {
         pearlite! {
-            forall<i: Int> 0 <= i && i < (@self).len() ==> !((@self)[i] === AssignedState::Unset)
+            forall<i: Int> 0 <= i && i < (@self).len() ==> !unset((@self)[i])
         }
     }
 

@@ -38,7 +38,7 @@ fn neg() -> AssignedState {
 }
 
 #[predicate]
-fn unset(v: AssignedState) -> bool {
+pub fn unset(v: AssignedState) -> bool {
     match v {
         AssignedState::Unset => true,
         _ => false,
