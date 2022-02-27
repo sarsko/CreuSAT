@@ -56,8 +56,6 @@ fn inner(f: &Formula, a: &mut Assignments) -> bool {
     };
     let mut a_cloned = a.clone();
     let next = a.find_unassigned();
-    //a.0[next] = AssignedState::Positive;
-    //a_cloned.0[next] = AssignedState::Negative;
     a.0[next] = 1;
     a_cloned.0[next] = 0;
 

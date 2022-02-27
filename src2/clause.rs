@@ -1,7 +1,7 @@
 extern crate creusot_contracts;
-
 use creusot_contracts::*;
 use creusot_contracts::std::*;
+
 use crate::lit::*;
 use crate::assignments::*;
 use crate::formula::*;

@@ -7,32 +7,9 @@ use crate::clause::*;
 use crate::logic::*;
 use crate::formula::*;
 
-pub struct Assignments(pub Vec<AssignedState>);
-
-/*
-//#[derive(Copy, Eq)]
-pub enum AssignedState {
-    Unset,
-    Positive,
-    Negative,
-}
-*/
-
 pub type AssignedState = u8;
 
-
-/*
-impl PartialEq for AssignedState {
-    fn eq(&self, other: &Self) -> bool {
-        return match (self, other) {
-            (AssignedState::Unset, AssignedState::Unset) => true,
-            (AssignedState::Positive, AssignedState::Positive) => true,
-            (AssignedState::Negative, AssignedState::Negative) => true,
-            _ => false,
-        };
-    }
-}
-*/
+pub struct Assignments(pub Vec<AssignedState>);
 
 impl Model for Assignments {
     type ModelTy = Seq<AssignedState>;
@@ -108,7 +85,7 @@ impl Assignments {
 }
 
 impl Assignments {
-    #[trusted]
+    #[trusted] // Broken atm, fix later
     #[ensures(forall<i: Int> 0 <= i && i < (@self).len() ==> (@self)[i] === (@result)[i])]
     #[ensures((@self).len() === (@result).len())]
     #[ensures(@*self == @result)]
@@ -126,44 +103,34 @@ impl Assignments {
         Assignments(out)
     }
 
-    #[trusted]
     #[requires(f.invariant())]
     #[ensures(result.invariant(*f))]
     pub fn new(f: &Formula) -> Self {
-        //Assignments(vec::from_elem(AssignedState::Unset, f.num_vars))
+        //Assignments(vec::from_elem(2, f.num_vars))
         let mut assign: Vec<AssignedState> = Vec::new();
-        /*
         let mut i: usize = 0;
         #[invariant(loop_invariant, 0 <= @i && @i <= @f.num_vars)]
         #[invariant(length_invariant, (@assign).len() === @i)]
         while i < f.num_vars {
-            assign.push(AssignedState::Unset);
+            assign.push(2);
             i += 1
         }
-        */
         Assignments(assign)
     }
 
-    #[trusted]
     #[requires(!self.complete())]
     #[ensures(@result < (@self).len())]
     #[ensures(unset((@self)[@result]))]
     pub fn find_unassigned(&self) -> usize {
-        0
-        /*
         let mut i: usize = 0;
         #[invariant(prev, forall<j: Int> 0 <= j && j < @i ==> !unset((@self)[j]))]
         while i < self.0.len() {
-            match &self.0[i] {
-                AssignedState::Unset => {
-                    return i;
-                },
-                _ => {},
+            if self.0[i] >= 2 {
+                return i;
             }
             i += 1;
         }
         unreachable!()
-        */
     }
 
     #[requires(f.invariant())]
@@ -178,18 +145,13 @@ impl Assignments {
         proof_assert!(^self === ^@old_a);
         if clause.check_if_unit(self, f) {
             let lit = clause.get_unit(self, f);
-            //proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() ==> 0 <= @(@clause)[j].idx && @(@clause)[j].idx < (@self).len());
-            //proof_assert!(forall<j: Int, k: Int> 0 <= j && j < (@clause).len() && k < j ==> !(@(@clause)[k].idx === @(@clause)[j].idx));
             proof_assert!(clause.invariant((@self).len()));
             proof_assert!(lemma_unitClauseLiteralFalse_tauNotSatisfiable(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
-            //proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() && !(@(@clause)[j].idx === @lit.idx) ==> (@clause)[j].unsat(*self));
             proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() && !(@(@clause)[j].idx === @lit.idx) ==> !((@clause)[j].unset(*self)));
             proof_assert!(lemma_unit_forces(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
             if lit.polarity {
-                //self.0[lit.idx] = AssignedState::Positive;
                 self.0[lit.idx] = 1;
             } else {
-                //self.0[lit.idx] = AssignedState::Negative;
                 self.0[lit.idx] = 0;
             }
             proof_assert!(@^self == (@*@old_a).set(@lit.idx, bool_to_assignedstate(lit.polarity)));
