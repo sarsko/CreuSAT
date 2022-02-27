@@ -1,98 +1,82 @@
-//extern crate creusot_contracts;
-
+extern crate creusot_contracts;
 use creusot_contracts::*;
 use creusot_contracts::std::*;
+
 use crate::lit::*;
 use crate::assignments::*;
 use crate::formula::*;
 use crate::logic::*;
 
-pub struct Clause(pub Vec<Lit>);
+pub struct Clause {
+    //pub first: Lit,
+    //pub second: Lit,
+    pub rest: Vec<Lit>
+}
 
+#[cfg(contracts)]
 impl Model for Clause {
     type ModelTy = Seq<Lit>;
 
     #[logic]
     fn model(self) -> Self::ModelTy {
-        self.0.model()
-    }
-}
-
-
-#[predicate]
-pub fn sat_clause_inner(a: Seq<AssignedState>, c: Clause) -> bool {
-    pearlite! {
-        exists<i: Int> 0 <= i && i < (@c).len() &&
-                /*
-            (!(a[@(@c)[i].idx] === AssignedState::Unset) &&
-                (a[@(@c)[i].idx] === bool_to_assignedstate((@c)[i].polarity)))
-            */
-            match a[@(@c)[i].idx] {
-                AssignedState::Positive => (@c)[i].polarity,
-                AssignedState::Negative => !(@c)[i].polarity,
-                AssignedState::Unset => false,
-            }
-    }
-}
-
-
-#[predicate]
-pub fn not_sat_clause_inner(a: Seq<AssignedState>, c: Clause) -> bool {
-    pearlite! {
-        forall<i: Int> 0 <= i && i < (@c).len() ==>
-        /*
-            (!(a[@(@c)[i].idx] === AssignedState::Unset) &&
-                !(a[@(@c)[i].idx] === bool_to_assignedstate((@c)[i].polarity)))
-                */
-            match a[@(@c)[i].idx] {
-                AssignedState::Positive => !(@c)[i].polarity,
-                AssignedState::Negative => (@c)[i].polarity,
-                AssignedState::Unset => false,
-            }
-    }
-}
-
-#[predicate]
-pub fn unit_inner(a: Seq<AssignedState>, c: Clause) -> bool {
-    pearlite! {
-        c.vars_in_range(a.len()) &&
-            !sat_clause_inner(a, c) && 
-                exists<i: Int> 0 <= i && i < (@c).len() &&
-                    a[@(@c)[i].idx] === AssignedState::Unset && 
-                        (forall<j: Int> 0 <= j && j < (@c).len() && j != i ==>
-                            !(a[@(@c)[j].idx] === AssignedState::Unset))
+        self.rest.model()//.push(self.first)//.push(self.second)
     }
 }
 
 impl Clause {
     #[predicate]
+    pub fn in_formula(self, f: Formula) -> bool {
+        pearlite! {
+            exists<i: Int> 0 <= i && i < (@f.clauses).len() &&
+                (@f.clauses)[i] === self
+        }
+    }
+
+    #[predicate]
+    pub fn unit_inner(self, a: Seq<AssignedState>) -> bool {
+        pearlite! {
+            self.vars_in_range(a.len()) &&
+                !self.sat_inner(a) && 
+                    exists<i: Int> 0 <= i && i < (@self).len() &&
+                        (@self)[i].unset_inner(a) && 
+                            (forall<j: Int> 0 <= j && j < (@self).len() && j != i ==>
+                                !(@self)[j].unset_inner(a))
+        }
+    }
+    #[predicate]
     pub fn unit(self, a: Assignments) -> bool {
         pearlite! {
-            unit_inner(@a, self)
+            self.unit_inner(@a)
+        }
+    }
+
+    #[predicate]
+    pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@self).len() ==>
+                (@self)[i].unsat_inner(a)
         }
     }
 
     #[predicate]
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! {
-            forall<i: Int> 0 <= i && i < (@self).len() ==>
-                match (@a)[@(@self)[i].idx] {
-                    AssignedState::Positive => !(@self)[i].polarity,
-                    AssignedState::Negative => (@self)[i].polarity,
-                    AssignedState::Unset => false,
-                }
+            self.unsat_inner(@a)
+        }
+    }
+
+    #[predicate]
+    pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
+        pearlite! {
+            exists<i: Int> 0 <= i && i < (@self).len() &&
+                (@self)[i].sat_inner(a)
         }
     }
 
     #[predicate]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! {
-            exists<i: Int> 0 <= i && i < (@self).len() &&
-                match (@a)[@(@self)[i].idx] {
-                    AssignedState::Positive => (@self)[i].polarity,
-                    AssignedState::Negative => !(@self)[i].polarity,
-                    AssignedState::Unset => false
-                }
+            self.sat_inner(@a)
         }
     }
 
@@ -103,9 +87,9 @@ impl Clause {
 
     #[predicate]
     pub fn vars_in_range(self, n: Int) -> bool {
-        pearlite! {
-            forall<i: Int> 0 <= i && i < (@self).len() ==>
-                (0 <= @((@self)[i]).idx && @((@self)[i]).idx < n)
+        pearlite! {            
+            forall<i: Int> 0 <= i && i < (@self).len() ==> 
+                (@self)[i].invariant(n)
         }
     }
 
@@ -125,6 +109,18 @@ impl Clause {
 }
 
 impl Clause {
+    #[inline]
+    #[trusted]
+    pub fn clause_from_vec(vec: &std::vec::Vec<Lit>) -> Clause {
+        Clause { rest: vec.clone() }
+        /*
+        Clause {
+            first: vec[0],
+            second: vec[1],
+            rest: vec[2..].to_vec()
+        }
+        */
+    }
     // Can be made to a complete eval function if I like
     #[requires(self.invariant((@a).len()))]
     #[requires(f.invariant())]
@@ -139,61 +135,28 @@ impl Clause {
         let mut k: usize = 0;
         #[invariant(loop_invariant, 0 <= @i && @i <= (@self).len())]
         #[invariant(unass, @unassigned < 2)] 
-        #[invariant(k_is_unass, (@unassigned === 0 || (@a)[@(@self)[@k].idx] === AssignedState::Unset))]
-        #[invariant(kk, @unassigned > 0 ==> 
-                ((@a)[@(@self)[@k].idx] === AssignedState::Unset))]
+        #[invariant(k_is_unass, (@unassigned === 0 || (@self)[@k].unset(*a)))]
+        #[invariant(kk, @unassigned > 0 ==> (@self)[@k].unset(*a))]
         #[invariant(not_sat, forall<j: Int> 0 <= j && j < @i ==>
-            match (@a)[@(@self)[j].idx] {
-                AssignedState::Positive => !(@self)[j].polarity,
-                AssignedState::Negative => (@self)[j].polarity,
-                AssignedState::Unset => @unassigned === 1,
-            }
-        )]
+            ((@self)[j].unsat(*a) || ((@self)[j].unset(*a) && @unassigned === 1)))]
         #[invariant(k_in_bounds, @unassigned === 0 || 0 <= @k && @k < (@self).len())]
-        #[invariant(k_only, @unassigned === 1 ==>
-                        (forall<j: Int> 0 <= j && j < @i && j != @k ==>
-                            !((@a)[@(@self)[j].idx] === AssignedState::Unset))
-        )]
+        #[invariant(k_only, @unassigned === 1 ==> 
+            (forall<j: Int> 0 <= j && j < @i && j != @k ==> !(@self)[j].unset(*a)))]
         #[invariant(k_unset, @unassigned === 0 ==> @k === 0)]
-        while i < self.0.len() {
-            let lit = self.0[i];
-            let res = a.0[lit.idx];
-            match res {
-                AssignedState::Positive => {
-                    if lit.polarity {
-                        proof_assert! { sat_clause_inner(@a, *self) }
-                        return false;
-                    }
-                },
-                AssignedState::Negative => {
-                    if !lit.polarity {
-                        proof_assert! { sat_clause_inner(@a, *self) }
-                        return false;
-                    }
-                },
-                AssignedState::Unset => {
-                    if unassigned >= 1 {
-                        return false;
-                    }
-                    k = i;
-                    unassigned += 1;
-                },
+        while i < self.rest.len() {
+            let lit = self.rest[i];
+            if lit.lit_sat(a) {
+                return false;
+            } else if lit.lit_unset(a) {
+                if unassigned > 0 {
+                    return false;
+                }
+                k = i;
+                unassigned += 1;
             }
             i += 1;
         }
         if unassigned == 1 {
-            proof_assert! { !sat_clause_inner(@a, *self) }
-                    proof_assert! { (@a)[@(@self)[@k].idx] === AssignedState::Unset }
-            proof_assert! {
-                 0 <= @k && @k < (@self).len() &&
-                    (@a)[@(@self)[@k].idx] === AssignedState::Unset
-            }
-            proof_assert! {
-                 0 <= @k && @k < (@self).len() &&
-                    (@a)[@(@self)[@k].idx] === AssignedState::Unset && 
-                        (forall<j: Int> 0 <= j && j < (@self).len() && j != @k ==>
-                            !((@a)[@(@self)[j].idx] === AssignedState::Unset))
-            }
             true
         } else {
             false
@@ -205,19 +168,14 @@ impl Clause {
     #[requires(a.invariant(*f))]
     #[ensures(exists<j: Int> 0 <= j && j < (@self).len() && (@self)[j] === result)]
     #[ensures(@result.idx < (@a).len())]
-    #[ensures((@a)[@result.idx] === AssignedState::Unset)]
+    #[ensures(unset((@a)[@result.idx]))]
     pub fn get_unit(&self, a: &Assignments, f: &Formula) -> Lit {
         let mut i: usize = 0;
-        #[invariant(loop_invariant, 0 <= @i && @i <= (@self).len())]
-        #[invariant(not_unset, forall<j: Int> 0 <= j && j < @i ==>
-            !((@a)[@(@self)[j].idx] === AssignedState::Unset))]
-        while i < self.0.len() {
-            let lit = self.0[i];
-            let res = a.0[lit.idx];
-            match res {
-                AssignedState::Positive => {},
-                AssignedState::Negative => {},
-                AssignedState::Unset => { return lit; },
+        #[invariant(not_unset, forall<j: Int> 0 <= j && j < @i ==> !(@self)[j].unset(*a))]
+        while i < self.rest.len() {
+            let lit = self.rest[i];
+            if lit.lit_unset(a) {
+                return lit;
             }
             i += 1;
         }

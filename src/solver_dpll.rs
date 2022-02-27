@@ -1,16 +1,12 @@
-#![feature(type_ascription)]
-
-//extern crate creusot_contracts;
-
+extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
+
 use crate::lit::*;
 use crate::clause::*;
 use crate::assignments::*;
 use crate::formula::*;
 use crate::logic::*;
-
-fn main() {}
 
 #[ensures(result === (@f.clauses)[@idx].sat(*a))]
 #[requires(f.invariant())]
@@ -19,28 +15,10 @@ fn main() {}
 pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     let clause = &f.clauses[idx];
     let mut i: usize = 0;
-    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==>
-        match (@a)[@(@clause)[j].idx] {
-            AssignedState::Positive => !(@clause)[j].polarity,
-            AssignedState::Negative => (@clause)[j].polarity,
-            AssignedState::Unset => true,
-        }
-    )]
-    while i < clause.0.len() {
-        let lit = clause.0[i];
-        match a.0[lit.idx]{
-           AssignedState::Positive => {
-                if lit.polarity {
-                    return true
-                }
-            },
-            AssignedState::Negative => {
-                if !lit.polarity {
-                    return true
-                }
-            },
-            AssignedState::Unset => {
-            }
+    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==> !(@clause)[j].sat(*a))]
+    while i < clause.rest.len() {
+        if clause.rest[i].lit_sat(a) {
+            return true;
         }
         i += 1;
     }
@@ -54,30 +32,10 @@ pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     let clause = &f.clauses[idx];
     let mut i: usize = 0;
-    #[invariant(loop_invariant, 0 <= @i && @i <= (@clause).len())]
-    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==>
-        match (@a)[@(@clause)[j].idx] {
-            AssignedState::Positive => !(@clause)[j].polarity,
-            AssignedState::Negative => (@clause)[j].polarity,
-            AssignedState::Unset => false,
-        }
-    )]
-    while i < clause.0.len() {
-        let lit = clause.0[i];
-        match a.0[lit.idx]{
-           AssignedState::Positive => {
-                if lit.polarity {
-                    return false
-                }
-            },
-            AssignedState::Negative => {
-                if !lit.polarity {
-                    return false
-                }
-            },
-            AssignedState::Unset => {
-                return false;
-            }
+    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==> (@clause)[j].unsat(*a))]
+    while i < clause.rest.len() {
+        if !clause.rest[i].lit_unsat(a) {
+            return false;
         }
         i += 1;
     }
@@ -98,12 +56,25 @@ fn inner(f: &Formula, a: &mut Assignments) -> bool {
     };
     let mut a_cloned = a.clone();
     let next = a.find_unassigned();
-    a.0[next] = AssignedState::Positive;
-    a_cloned.0[next] = AssignedState::Negative;
+    a.0[next] = 1;
+    a_cloned.0[next] = 0;
 
     if inner(f, a) {
         return true;
     } else {
         return inner(f, &mut a_cloned);
     }
+}
+
+#[trusted]
+pub fn solver(f: &Formula, units: &std::vec::Vec<Lit>) -> bool {
+    // should do pure literal and identifying unit clauses in preproc
+    if units.len() > 0 {
+        panic!();
+    }
+    if f.num_vars == 0 {
+        return true;
+    }
+    let mut assignments = Assignments::new(f);
+    inner(f, &mut assignments)
 }

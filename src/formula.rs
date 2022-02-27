@@ -1,4 +1,4 @@
-//extern crate creusot_contracts;
+extern crate creusot_contracts;
 
 use creusot_contracts::*;
 use creusot_contracts::std::*;
@@ -32,83 +32,67 @@ impl PartialEq for SatState {
     }
 }
 
-
-#[predicate]
-pub fn eventually_sat_complete_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
-    pearlite! {
-        exists<a2 : Seq<AssignedState>> a2.len() === @f.num_vars && compatible_complete_inner(a, a2) && sat_formula_inner(a2, f)
-    }
-}
-
-#[predicate]
-pub fn eventually_sat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
-    pearlite! {
-        exists<a2 : Seq<AssignedState>> a2.len() === @f.num_vars && compatible_inner(a, a2) && sat_formula_inner(a2, f)
-    }
-}
-
-
-#[predicate]
-pub fn not_sat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
-    pearlite! {
-        exists<i: Int> 0 <= i && i < (@f.clauses).len() &&
-        not_sat_clause_inner(a, (@f.clauses)[i])
-    }
-}
-
-#[predicate]
-pub fn clause_in_formula(c: Clause, f: Formula) -> bool {
-    pearlite! {
-        exists<i: Int> 0 <= i && i < (@f.clauses).len() &&
-        (@f.clauses)[i] === c
-    }
-}
-
-#[predicate]
-pub fn sat_formula_inner(a: Seq<AssignedState>, f: Formula) -> bool {
-    pearlite! {
-            forall<i: Int> 0 <= i && i < (@f.clauses).len() ==>
-            sat_clause_inner(a, (@f.clauses)[i])
-    }
-}
-
 // Predicates
 impl Formula {
     #[predicate]
     pub fn invariant(self) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
-            (@self.clauses)[i].invariant(@self.num_vars)
+                (@self.clauses)[i].invariant(@self.num_vars)
+        }
+    }
+
+    #[predicate]
+    pub fn eventually_sat_inner(self, a: Seq<AssignedState>) -> bool {
+        pearlite! {
+            exists<a2 : Seq<AssignedState>> a2.len() === @self.num_vars && compatible_inner(a, a2) && self.sat_inner(a2)
+        }
+    }
+
+    #[predicate]
+    pub fn eventually_sat_complete_inner(self, a: Seq<AssignedState>) -> bool {
+        pearlite! {
+            exists<a2 : Seq<AssignedState>> a2.len() === @self.num_vars && compatible_complete_inner(a, a2) && self.sat_inner(a2)
         }
     }
 
     #[predicate]
     pub fn eventually_sat_complete(self, a: Assignments) -> bool {
-        pearlite! { eventually_sat_complete_formula_inner(@a, self)}
+        pearlite! { self.eventually_sat_complete_inner(@a)}
     }
 
     #[predicate]
     pub fn eventually_sat(self, a: Assignments) -> bool {
-        pearlite! { eventually_sat_formula_inner(@a, self)}
+        pearlite! { self.eventually_sat_inner(@a)}
+    }
+
+    #[predicate]
+    pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+                (@self.clauses)[i].sat_inner(a)
+        }
     }
 
     #[predicate]
     pub fn sat(self, a: Assignments) -> bool {
-        pearlite! { sat_formula_inner(@a, self) }
-        /*
-        pearlite! {
-            forall<i: Int> 0 <= i && i < (@(self.clauses)).len() ==>
-            sat_clause_inner(@a, (@(self.clauses))[i])
-            //(@(self.clauses))[i].sat(a)
+        pearlite! { 
+            self.sat_inner(@a)
         }
-        */
+    }
+
+    #[predicate]
+    pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
+        pearlite! {
+            exists<i: Int> 0 <= i && i < (@(self.clauses)).len() &&
+                (@(self.clauses))[i].unsat_inner(a)
+        }
     }
 
     #[predicate]
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! {
-            exists<i: Int> 0 <= i && i < (@(self.clauses)).len() &&
-            (@(self.clauses))[i].unsat(a)
+            self.unsat_inner(@a)
         }
     }
 }
@@ -122,7 +106,6 @@ impl Formula {
         #[invariant(prev,
             forall<k: Int> 0 <= k && k < @i ==>
             !(@self.clauses)[k].unsat(*a))]
-        #[invariant(loop_invariant, 0 <= @i && @i <= (@self.clauses).len())]
         while i < self.clauses.len() {
             if is_clause_unsat(self, i, a) {
                 return true;
@@ -140,7 +123,6 @@ impl Formula {
         #[invariant(prev,
             forall<k: Int> 0 <= k && k < @i ==>
             (@self.clauses)[k].sat(*a))]
-        #[invariant(loop_invariant, 0 <= @i && @i <= (@self.clauses).len())]
         while i < self.clauses.len() {
             if !is_clause_sat(self, i, a) {
                 return false;
