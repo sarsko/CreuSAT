@@ -137,13 +137,12 @@ impl Assignments {
 
     #[requires(!self.complete())]
     #[ensures(@result < (@self).len())]
-    #[ensures((@self)[@result] === AssignedState::Unset)]
+    #[ensures(unset((@self)[@result]))]
     pub fn find_unassigned(&self) -> usize {
         let mut i: usize = 0;
-        #[invariant(prev, forall<j: Int> 0 <= j && j < @i ==> !((@self)[j] === AssignedState::Unset))]
+        #[invariant(prev, forall<j: Int> 0 <= j && j < @i ==> !unset((@self)[j]))]
         while i < self.0.len() {
-            let curr = &self.0[i];
-            match curr {
+            match &self.0[i] {
                 AssignedState::Unset => {
                     return i;
                 },
@@ -166,10 +165,11 @@ impl Assignments {
         proof_assert!(^self === ^@old_a);
         if clause.check_if_unit(self, f) {
             let lit = clause.get_unit(self, f);
-            proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() ==> 0 <= @(@clause)[j].idx && @(@clause)[j].idx < (@self).len());
+            //proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() ==> 0 <= @(@clause)[j].idx && @(@clause)[j].idx < (@self).len());
+            //proof_assert!(forall<j: Int, k: Int> 0 <= j && j < (@clause).len() && k < j ==> !(@(@clause)[k].idx === @(@clause)[j].idx));
+            proof_assert!(clause.invariant((@self).len()));
             proof_assert!(lemma_unitClauseLiteralFalse_tauNotSatisfiable(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
-            proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() && !(@(@clause)[j].idx === @lit.idx) ==> !((@self)[@(@clause)[j].idx] === AssignedState::Unset));
-            proof_assert!(forall<j: Int, k: Int> 0 <= j && j < (@clause).len() && k < j ==> !(@(@clause)[k].idx === @(@clause)[j].idx));
+            proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() && !(@(@clause)[j].idx === @lit.idx) ==> (@clause)[j].unsat(*self));
             proof_assert!(lemma_unit_forces(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
             if lit.polarity {
                 self.0[lit.idx] = AssignedState::Positive;
