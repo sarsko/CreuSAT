@@ -13,11 +13,34 @@ use crate::logic::*;
 #[requires(a.invariant(*f))]
 #[requires(@idx < (@f.clauses).len())]
 pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
+    /*
     let clause = &f.clauses[idx];
     let mut i: usize = 0;
     #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==> !(@clause)[j].sat(*a))]
     while i < clause.rest.len() {
         if clause.rest[i].lit_sat(a) {
+            return true;
+        }
+        i += 1;
+    }
+    return false;
+    */
+    let clause = &f.clauses[idx];
+    proof_assert!(lemma_alt_equi(*clause, *a);true);
+    proof_assert!(lemma_alt_sat_equi(*clause, *a);true);
+    proof_assert!(lemma_alt_sat_equi_opp(*clause, *a);true);
+    if clause.first.lit_sat(a) || clause.second.lit_sat(a) {
+        proof_assert!(clause.sat(*a));
+        return true;
+    }
+    let mut i: usize = 0;
+    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==>
+        !(@clause.rest)[j].sat(*a)
+    )]
+    while i < clause.rest.len() {
+        let lit = clause.rest[i];
+        if lit.lit_sat(a) {
+            proof_assert!(clause.sat(*a));
             return true;
         }
         i += 1;
@@ -30,11 +53,35 @@ pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 #[requires(a.invariant(*f))]
 #[requires(@idx < (@f.clauses).len())]
 pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
+    /*
     let clause = &f.clauses[idx];
     let mut i: usize = 0;
     #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==> (@clause)[j].unsat(*a))]
     while i < clause.rest.len() {
         if !clause.rest[i].lit_unsat(a) {
+            return false;
+        }
+        i += 1;
+    }
+    return true;
+    */
+    let clause = &f.clauses[idx];
+    proof_assert!(lemma_alt_equi(*clause, *a);true);
+    proof_assert!(lemma_alt_unsat_equi(*clause, *a);true);
+    proof_assert!(lemma_alt_unsat_equi_opp(*clause, *a);true);
+    if clause.first.lit_sat(a) || clause.second.lit_sat(a) {
+        return false;
+    }
+    if a.0[clause.first.idx] >= 2 || a.0[clause.second.idx] >= 2 {
+        return false;
+    }
+    let mut i: usize = 0;
+    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==>
+        (@clause.rest)[j].unsat(*a)
+    )]
+    while i < clause.rest.len() {
+        let lit = clause.rest[i];
+        if !lit.lit_unsat(a){
             return false;
         }
         i += 1;
