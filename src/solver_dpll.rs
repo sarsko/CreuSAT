@@ -1,6 +1,6 @@
 #![feature(type_ascription)]
 
-extern crate creusot_contracts;
+//extern crate creusot_contracts;
 
 use creusot_contracts::std::*;
 use creusot_contracts::*;
