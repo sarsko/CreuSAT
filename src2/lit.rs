@@ -80,16 +80,6 @@ impl Lit {
 
 }
 
-#[ensures(b === (result === AssignedState::Positive))]
-#[ensures(!b === (result === AssignedState::Negative))]
-pub fn bool_to_assignedstat(b: bool) -> AssignedState {
-    if b {
-        AssignedState::Positive
-    } else {
-        AssignedState::Negative
-    }
-}
-
 impl Lit {
     #[inline]
     #[requires(self.invariant((@a).len()))]

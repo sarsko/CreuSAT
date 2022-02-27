@@ -124,21 +124,13 @@ impl Clause {
         let mut k: usize = 0;
         #[invariant(loop_invariant, 0 <= @i && @i <= (@self).len())]
         #[invariant(unass, @unassigned < 2)] 
-        #[invariant(k_is_unass, (@unassigned === 0 || (@a)[@(@self)[@k].idx] === AssignedState::Unset))]
-        #[invariant(kk, @unassigned > 0 ==> 
-                ((@a)[@(@self)[@k].idx] === AssignedState::Unset))]
+        #[invariant(k_is_unass, (@unassigned === 0 || (@self)[@k].unset(*a)))]
+        #[invariant(kk, @unassigned > 0 ==> (@self)[@k].unset(*a))]
         #[invariant(not_sat, forall<j: Int> 0 <= j && j < @i ==>
-            match (@a)[@(@self)[j].idx] {
-                AssignedState::Positive => !(@self)[j].polarity,
-                AssignedState::Negative => (@self)[j].polarity,
-                AssignedState::Unset => @unassigned === 1,
-            }
-        )]
+            ((@self)[j].unsat(*a) || ((@self)[j].unset(*a) && @unassigned === 1)))]
         #[invariant(k_in_bounds, @unassigned === 0 || 0 <= @k && @k < (@self).len())]
-        #[invariant(k_only, @unassigned === 1 ==>
-                        (forall<j: Int> 0 <= j && j < @i && j != @k ==>
-                            !((@a)[@(@self)[j].idx] === AssignedState::Unset))
-        )]
+        #[invariant(k_only, @unassigned === 1 ==> 
+            (forall<j: Int> 0 <= j && j < @i && j != @k ==> !(@self)[j].unset(*a)))]
         #[invariant(k_unset, @unassigned === 0 ==> @k === 0)]
         while i < self.rest.len() {
             let lit = self.rest[i];
@@ -165,11 +157,10 @@ impl Clause {
     #[requires(a.invariant(*f))]
     #[ensures(exists<j: Int> 0 <= j && j < (@self).len() && (@self)[j] === result)]
     #[ensures(@result.idx < (@a).len())]
-    #[ensures((@a)[@result.idx] === AssignedState::Unset)]
+    #[ensures(unset((@a)[@result.idx]))]
     pub fn get_unit(&self, a: &Assignments, f: &Formula) -> Lit {
         let mut i: usize = 0;
-        #[invariant(not_unset, forall<j: Int> 0 <= j && j < @i ==>
-            !((@a)[@(@self)[j].idx] === AssignedState::Unset))]
+        #[invariant(not_unset, forall<j: Int> 0 <= j && j < @i ==> !(@self)[j].unset(*a))]
         while i < self.rest.len() {
             let lit = self.rest[i];
             if lit.lit_unset(a) {
