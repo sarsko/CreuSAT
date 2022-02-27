@@ -9,14 +9,19 @@ use crate::formula::*;
 
 pub struct Assignments(pub Vec<AssignedState>);
 
+/*
 //#[derive(Copy, Eq)]
 pub enum AssignedState {
     Unset,
     Positive,
     Negative,
 }
+*/
+
+pub type AssignedState = u8;
 
 
+/*
 impl PartialEq for AssignedState {
     fn eq(&self, other: &Self) -> bool {
         return match (self, other) {
@@ -27,6 +32,7 @@ impl PartialEq for AssignedState {
         };
     }
 }
+*/
 
 impl Model for Assignments {
     type ModelTy = Seq<AssignedState>;
@@ -120,11 +126,13 @@ impl Assignments {
         Assignments(out)
     }
 
+    #[trusted]
     #[requires(f.invariant())]
     #[ensures(result.invariant(*f))]
     pub fn new(f: &Formula) -> Self {
         //Assignments(vec::from_elem(AssignedState::Unset, f.num_vars))
         let mut assign: Vec<AssignedState> = Vec::new();
+        /*
         let mut i: usize = 0;
         #[invariant(loop_invariant, 0 <= @i && @i <= @f.num_vars)]
         #[invariant(length_invariant, (@assign).len() === @i)]
@@ -132,13 +140,17 @@ impl Assignments {
             assign.push(AssignedState::Unset);
             i += 1
         }
+        */
         Assignments(assign)
     }
 
+    #[trusted]
     #[requires(!self.complete())]
     #[ensures(@result < (@self).len())]
     #[ensures(unset((@self)[@result]))]
     pub fn find_unassigned(&self) -> usize {
+        0
+        /*
         let mut i: usize = 0;
         #[invariant(prev, forall<j: Int> 0 <= j && j < @i ==> !unset((@self)[j]))]
         while i < self.0.len() {
@@ -151,6 +163,7 @@ impl Assignments {
             i += 1;
         }
         unreachable!()
+        */
     }
 
     #[requires(f.invariant())]
@@ -169,12 +182,15 @@ impl Assignments {
             //proof_assert!(forall<j: Int, k: Int> 0 <= j && j < (@clause).len() && k < j ==> !(@(@clause)[k].idx === @(@clause)[j].idx));
             proof_assert!(clause.invariant((@self).len()));
             proof_assert!(lemma_unitClauseLiteralFalse_tauNotSatisfiable(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
-            proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() && !(@(@clause)[j].idx === @lit.idx) ==> (@clause)[j].unsat(*self));
+            //proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() && !(@(@clause)[j].idx === @lit.idx) ==> (@clause)[j].unsat(*self));
+            proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() && !(@(@clause)[j].idx === @lit.idx) ==> !((@clause)[j].unset(*self)));
             proof_assert!(lemma_unit_forces(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
             if lit.polarity {
-                self.0[lit.idx] = AssignedState::Positive;
+                //self.0[lit.idx] = AssignedState::Positive;
+                self.0[lit.idx] = 1;
             } else {
-                self.0[lit.idx] = AssignedState::Negative;
+                //self.0[lit.idx] = AssignedState::Negative;
+                self.0[lit.idx] = 0;
             }
             proof_assert!(@^self == (@*@old_a).set(@lit.idx, bool_to_assignedstate(lit.polarity)));
             proof_assert!(lemma_extensionSat_baseSat(*f, @@old_a, @lit.idx, bool_to_assignedstate(lit.polarity)); true);

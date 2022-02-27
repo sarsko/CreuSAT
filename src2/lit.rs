@@ -31,29 +31,42 @@ impl Lit {
     #[predicate]
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
+            match self.polarity {
+                true =>  (@a[@self.idx] == 1),
+                false =>  (@a[@self.idx] == 0),
+            }
+            /*
             match a[@self.idx] {
                 AssignedState::Positive => self.polarity,
                 AssignedState::Negative => !self.polarity,
                 AssignedState::Unset => false
             }
+            */
         }
     }
 
     #[predicate]
     pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
+            match self.polarity {
+                true =>  (@a[@self.idx] == 0),
+                false =>  (@a[@self.idx] == 1),
+            }
+            /*
             match a[@self.idx] {
                 AssignedState::Positive => !self.polarity,
                 AssignedState::Negative => self.polarity,
                 AssignedState::Unset => false
             }
+            */
         }
     }
 
     #[predicate]
     pub fn unset_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
-            a[@self.idx] === AssignedState::Unset
+            @(a)[@self.idx] >= 2 // partially wrong
+            //a[@self.idx] === AssignedState::Unset
         }
     }
 
@@ -85,31 +98,46 @@ impl Lit {
     #[requires(self.invariant((@a).len()))]
     #[ensures(result === self.sat(*a))]
     pub fn lit_sat(self, a: &Assignments) -> bool {
+        match self.polarity {
+            true =>  (a.0[self.idx] == 1),
+            false =>  (a.0[self.idx] == 0),
+        }
+        /*
         match a.0[self.idx] {
             AssignedState::Positive => self.polarity,
             AssignedState::Negative => !self.polarity,
             AssignedState::Unset => false
         }
+        */
     }
 
     #[inline]
     #[requires(self.invariant((@a).len()))]
     #[ensures(result === self.unsat(*a))]
     pub fn lit_unsat(self, a: &Assignments) -> bool {
+        match self.polarity {
+            true =>  (a.0[self.idx] == 0),
+            false =>  (a.0[self.idx] == 1),
+        }
+        /*
         match a.0[self.idx] {
             AssignedState::Positive => !self.polarity,
             AssignedState::Negative => self.polarity,
             AssignedState::Unset => false
         }
+        */
     }
 
     #[inline]
     #[requires(self.invariant((@a).len()))]
     #[ensures(result === self.unset(*a))]
     pub fn lit_unset(self, a: &Assignments) -> bool {
+    a.0[self.idx] >= 2
+        /*
         match a.0[self.idx] {
             AssignedState::Unset => true,
             _ => false
         }
+        */
     }
 }

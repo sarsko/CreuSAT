@@ -7,6 +7,7 @@ use crate::clause::*;
 use crate::assignments::*;
 use crate::formula::*;
 
+/*
 #[logic]
 #[ensures(b ==> result === AssignedState::Positive)]
 #[ensures(!b ==> result === AssignedState::Negative)]
@@ -17,7 +18,20 @@ pub fn bool_to_assignedstate(b: bool) -> AssignedState {
         AssignedState::Negative
     }
 }
+*/
 
+#[logic]
+#[ensures(b ==> @result === 1)]
+#[ensures(!b ==> @result === 0)]
+pub fn bool_to_assignedstate(b: bool) -> AssignedState {
+    if b {
+        1u8
+    } else {
+        0u8
+    }
+}
+
+/*
 #[logic]
 fn flip_v(v: AssignedState) -> AssignedState {
     match v {
@@ -26,7 +40,50 @@ fn flip_v(v: AssignedState) -> AssignedState {
         AssignedState::Negative => AssignedState::Positive,
     }
 }
+*/
 
+#[logic]
+fn flip_v(v: AssignedState) -> AssignedState {
+    pearlite! {
+        if @v === 0 {
+            1u8
+        } else if @v === 1 {
+            0u8
+        } else {
+            v
+        }
+    }
+}
+
+#[logic]
+fn pos() -> AssignedState {
+    1u8
+}
+
+#[logic]
+fn neg() -> AssignedState {
+    0u8
+}
+
+#[predicate]
+pub fn unset(v: AssignedState) -> bool {
+    pearlite! {
+    if @v >= 2 {
+        true
+    } else {
+        false
+    }
+}
+    /*
+    match v {
+        0u8 => false,
+        1u8 => false,
+        _ => true,
+    }
+    */
+}
+
+/*
 #[logic]
 fn pos() -> AssignedState {
     AssignedState::Positive
@@ -44,6 +101,7 @@ pub fn unset(v: AssignedState) -> bool {
         _ => false,
     }
 }
+*/
 
 #[logic] 
 #[requires(f.invariant())]
