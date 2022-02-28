@@ -8,6 +8,7 @@ use crate::assignments::*;
 use crate::formula::*;
 use crate::logic::*;
 use crate::decision::*;
+use crate::trail::*;
 
 #[ensures(result === (@f.clauses)[@idx].sat(*a))]
 #[requires(f.invariant())]
@@ -50,22 +51,28 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 //#[ensures((^d).invariant())]
 #[ensures(result === true ==> f.eventually_sat(*a))]
 #[ensures(result === false ==> !f.eventually_sat_complete(*a))]
-fn inner(f: &Formula, a: &mut Assignments, d: &Decisions) -> bool {
+fn inner(f: &Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail) -> bool {
     a.do_unit_propagation(f);
     match f.eval(a) {
         SatState::Sat => return true,
         SatState::Unsat => return false,
         _ => {}
     };
-    let mut a_cloned = a.clone();
     let next = a.find_unassigned(d, f);
+    let dlevel = t.trail.len();
+    t.add_level(f);
+    a.0[next] = 1;
+    let lit = Lit{ idx: next, polarity: true };
+    t.enq_assignment(lit, Reason::Decision, f);
+    let mut a_cloned = a.clone();
     a.0[next] = 1;
     a_cloned.0[next] = 0;
 
-    if inner(f, a, d) {
+    if inner(f, a, d, t) {
         return true;
     } else {
-        return inner(f, &mut a_cloned, d);
+        a.cancel_until(t, dlevel, f);
+        return inner(f, &mut a_cloned, d, t);
     }
 }
 
@@ -80,5 +87,6 @@ pub fn solver(f: &Formula, units: &std::vec::Vec<Lit>) -> bool {
     }
     let mut assignments = Assignments::new(f);
     let decisions = Decisions::new(f);
-    inner(f, &mut assignments, &decisions)
+    let mut trail = Trail::new(f);
+    inner(f, &mut assignments, &decisions, &mut trail)
 }

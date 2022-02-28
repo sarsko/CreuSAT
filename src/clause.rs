@@ -110,7 +110,7 @@ impl Clause {
 
 impl Clause {
     #[inline]
-    #[trusted]
+    #[trusted] // TMP
     pub fn clause_from_vec(vec: &std::vec::Vec<Lit>) -> Clause {
         Clause { rest: vec.clone() }
         /*
@@ -122,6 +122,7 @@ impl Clause {
         */
     }
     // Can be made to a complete eval function if I like
+    #[trusted] // OK
     #[requires(self.invariant((@a).len()))]
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
@@ -163,6 +164,7 @@ impl Clause {
         }
     }
 
+    #[trusted] // OK
     #[requires(self.unit(*a))]
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]

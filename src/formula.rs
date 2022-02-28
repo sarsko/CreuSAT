@@ -22,6 +22,7 @@ pub enum SatState {
 }
 
 impl PartialEq for SatState {
+    #[trusted] // OK
     fn eq(&self, other: &Self) -> bool {
         return match (self, other) {
             (SatState::Unknown, SatState::Unknown) => true,
@@ -98,6 +99,7 @@ impl Formula {
 }
 
 impl Formula {
+    #[trusted] // OK
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[ensures(result === self.unsat(*a))]
@@ -115,6 +117,7 @@ impl Formula {
         return false;
     }
 
+    #[trusted] // OK
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[ensures(result === self.sat(*a))]
@@ -132,6 +135,7 @@ impl Formula {
         return true;
     }
 
+    #[trusted] // OK
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[ensures((result === SatState::Sat) === self.sat(*a))]
