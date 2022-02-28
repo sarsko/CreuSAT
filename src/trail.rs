@@ -6,8 +6,8 @@ use crate::assignments::*;
 use crate::lit::*;
 use crate::formula::*;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-//#[derive(Copy, Clone)]
+//#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Copy, Clone)]
 pub enum Reason {
     Undefined,
     Decision,
@@ -19,7 +19,7 @@ impl Default for Reason {
     fn default() -> Self { Reason::Undefined }
 }
 
-#[derive(Debug)]
+//#[derive(Debug)]
 pub struct Trail {
     pub trail: Vec<Vec<Lit>>,
     pub vardata: Vec<(usize, Reason)>,
