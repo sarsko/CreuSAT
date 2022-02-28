@@ -5,16 +5,12 @@ use termcolor::*;
 
 use sat::parser::parse_cnf;
 use sat::parser::preproc_and_solve;
-//use sat::solver_dpll::dpll;
-//use sat::solver_dpll_noproofs::preproc_and_solve;
 
-//#[cfg(no_contracts)]
 #[test]
 fn test_all_sat() {
     test_all_path("tests/cnf/sat", true, 500);
 }
 
-//#[cfg(no_contracts)]
 #[test]
 fn test_all_unsat() {
     test_all_path("tests/cnf/unsat", false, 500);
@@ -23,7 +19,6 @@ fn test_all_unsat() {
 // paths: Path to directory to be read, 
 // expected: expected value for the assertion,
 // verbosity: 0 for no prints, else every nth test will result in a print
-//#[cfg(no_contracts)]
 fn test_all_path(paths_in: &str, expected: bool, verbosity: usize) {
     let paths = read_dir(paths_in).unwrap();
     let mut out = StandardStream::stdout(ColorChoice::Always);

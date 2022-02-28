@@ -6,10 +6,11 @@ use crate::lit::*;
 use crate::clause::*;
 use crate::logic::*;
 use crate::formula::*;
+use crate::decision::*;
 
 pub type AssignedState = u8;
 
-pub struct Assignments(pub Vec<AssignedState>);
+pub struct Assignments(pub Vec<AssignedState>, usize);
 
 #[cfg(contracts)]
 impl Model for Assignments {
@@ -63,7 +64,7 @@ impl Assignments {
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
-            @f.num_vars === (@self).len()
+            @f.num_vars === (@self).len() && @self.1 <= @f.num_vars
         }
     }
 
@@ -89,6 +90,7 @@ impl Assignments {
     #[trusted] // Broken atm, fix later
     #[ensures(forall<i: Int> 0 <= i && i < (@self).len() ==> (@self)[i] === (@result)[i])]
     #[ensures((@self).len() === (@result).len())]
+    #[ensures(@result.1 === @self.1)]
     #[ensures(@*self == @result)]
     pub fn clone(&self) -> Self {
         let mut out = Vec::new();
@@ -102,7 +104,7 @@ impl Assignments {
             out.push(curr);
             i += 1;
         }
-        Assignments(out)
+        Assignments(out, self.1)
     }
 
     #[requires(f.invariant())]
@@ -117,14 +119,37 @@ impl Assignments {
             assign.push(2);
             i += 1
         }
-        Assignments(assign)
+        Assignments(assign, 0)
     }
 
+    #[requires(self.invariant(*_f))]
     #[requires(!self.complete())]
+    #[requires(d.invariant((@self).len()))]
     #[ensures(@result < (@self).len())]
     #[ensures(unset((@self)[@result]))]
-    pub fn find_unassigned(&self) -> usize {
-        let mut i: usize = 0;
+    #[ensures(@self === @^self)]
+    #[ensures((^self).invariant(*_f))]
+    //#[ensures(@(^self).1 <= (@d.lit_order).len())]
+    pub fn find_unassigned(&mut self, d: &Decisions, _f: &Formula) -> usize {
+        let mut i: usize = self.1;
+        //let mut i: usize = 0;
+        //let mut i = 0;
+        #[invariant(i_bound, @i <= (@d.lit_order).len())]
+        //#[invariant(prev, forall<j: Int> 0 <= j && j < @i ==> !unset((@self)[@(@d.lit_order)[j]]))]
+        while i < d.lit_order.len() {
+            //let curr = self.0[i];
+            let curr = self.0[d.lit_order[i]];
+            if curr >= 2 {
+                //let b = curr != 2;
+                // 3 -> 1 and 2 -> 0
+                self.1 = i + 1;
+                //self.1 = 0;
+                //return Some(Lit{ idx: d.lit_order[i], polarity: b });
+                return d.lit_order[i];//Some(Lit{ idx: d.lit_order[i], polarity: b });
+            }
+            i += 1;
+        }
+        i = 0;
         #[invariant(prev, forall<j: Int> 0 <= j && j < @i ==> !unset((@self)[j]))]
         while i < self.0.len() {
             if self.0[i] >= 2 {
