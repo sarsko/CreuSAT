@@ -161,6 +161,10 @@ impl Assignments {
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
     #[requires(0 <= @i && @i < (@f.clauses).len())]
+    #[requires(t.invariant(*f))]
+    #[requires((@t.trail).len() > 0)]
+    #[ensures((@(^t).trail).len() === (@t.trail).len())]
+    #[ensures((^t).invariant(*f))]
     #[ensures((^self).invariant(*f))]
     #[ensures((*self).compatible(^self))]
     #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))] 
@@ -176,11 +180,10 @@ impl Assignments {
             proof_assert!(lemma_unit_forces(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
             if lit.polarity {
                 self.0[lit.idx] = 1;
-                t.enq_assignment(lit, Reason::Unit, f);
             } else {
                 self.0[lit.idx] = 0;    
-                t.enq_assignment(lit, Reason::Unit, f);
             }
+            t.enq_assignment(lit, Reason::Unit, f);
             proof_assert!(@^self == (@*@old_a).set(@lit.idx, bool_to_assignedstate(lit.polarity)));
             proof_assert!(lemma_extensionSat_baseSat(*f, @@old_a, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
             proof_assert!(lemma_extensionsUnsat_baseUnsat(@@old_a, @lit.idx, *f); true);
@@ -192,15 +195,23 @@ impl Assignments {
 
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
+    #[requires(t.invariant(*f))]
+    #[requires((@t.trail).len() > 0)]
+    #[ensures((@(^t).trail).len() === (@t.trail).len())]
+    #[ensures((^t).invariant(*f))]
     #[ensures((^self).invariant(*f))]
     #[ensures(f.eventually_sat_complete(^self) === f.eventually_sat_complete(*self))]
     #[ensures((*self).compatible(^self))]
     pub fn unit_propagate(&mut self, f: &Formula, t: &mut Trail) -> bool {
         let old_a = Ghost::record(&self);
+        let old_t = Ghost::record(&t);
         let mut i: usize = 0;
         let mut out = false;
+        #[invariant(ti, t.invariant(*f))]
         #[invariant(ai, self.invariant(*f))]
+        #[invariant(t_len, (@(@old_t).trail).len() === (@t.trail).len())]
         #[invariant(proph, ^self === ^@old_a)]
+        #[invariant(proph_t, ^t === ^@old_t)]
         #[invariant(compat, (*@old_a).compatible(*self))]
         #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) === f.eventually_sat_complete(*self))]
         while i < f.clauses.len() {
@@ -214,12 +225,20 @@ impl Assignments {
 
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
+    #[requires(t.invariant(*f))]
+    #[requires((@t.trail).len() > 0)]
+    #[ensures((@(^t).trail).len() === (@t.trail).len())]
+    #[ensures((^t).invariant(*f))]
     #[ensures((^self).invariant(*f))]
     #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))]
     #[ensures((*self).compatible(^self))]
     pub fn do_unit_propagation(&mut self, f: &Formula, t: &mut Trail) {
         let old_a = Ghost::record(&self);
+        let old_t = Ghost::record(&t);
+        #[invariant(ti, t.invariant(*f))]
         #[invariant(ai, self.invariant(*f))]
+        #[invariant(t_len, (@(@old_t).trail).len() === (@t.trail).len())]
+        #[invariant(proph_t, ^t === ^@old_t)]
         #[invariant(proph, ^self === ^@old_a)]
         #[invariant(compat, (*@old_a).compatible(*self))]
         #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) ==> f.eventually_sat_complete(*self))]
