@@ -5532,10 +5532,10 @@ module Lib_Decision_Impl1_New
   predicate Invariant0.invariant' = Invariant2.invariant'
   clone Lib_Util_SortedRangeRev as SortedRangeRev0
   clone Lib_Util_SortedRev as SortedRev0 with predicate SortedRangeRev0.sorted_range_rev = SortedRangeRev0.sorted_range_rev
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve11 with type self = Type.creusotcontracts_std1_vec_vec usize
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve10 with type self = Type.lib_formula_formula
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve9 with type self = (usize, usize)
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve8 with type self = Type.creusotcontracts_std1_vec_vec (usize, usize)
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve11 with type self = Type.creusotcontracts_std1_vec_vec (usize, usize)
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve10 with type self = Type.creusotcontracts_std1_vec_vec usize
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve9 with type self = Type.lib_formula_formula
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve8 with type self = (usize, usize)
   clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve7 with type t = Type.creusotcontracts_std1_vec_vec (usize, usize)
   clone CreusotContracts_Logic_Seq_Impl1_PermutationOf as PermutationOf0 with type t = (usize, usize)
   clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve6 with type t = (usize, usize)
@@ -5655,23 +5655,21 @@ module Lib_Decision_Impl1_New
   var _63 : ();
   var _64 : borrowed (Type.creusotcontracts_std1_vec_vec (usize, usize));
   var _65 : borrowed (Type.creusotcontracts_std1_vec_vec (usize, usize));
-  var counts_with_index_66 : Type.creusotcontracts_std1_vec_vec (usize, usize);
-  var _67 : ();
-  var _68 : bool;
+  var _66 : ();
+  var _67 : bool;
+  var _68 : usize;
   var _69 : usize;
   var _70 : usize;
-  var _71 : usize;
-  var _72 : (usize, usize);
-  var _73 : Type.creusotcontracts_std1_vec_vec (usize, usize);
-  var _74 : usize;
-  var _75 : borrowed usize;
-  var _76 : borrowed (Type.creusotcontracts_std1_vec_vec usize);
-  var _77 : usize;
+  var _71 : (usize, usize);
+  var _72 : Type.creusotcontracts_std1_vec_vec (usize, usize);
+  var _73 : usize;
+  var _74 : borrowed usize;
+  var _75 : borrowed (Type.creusotcontracts_std1_vec_vec usize);
+  var _76 : usize;
+  var _77 : ();
   var _78 : ();
   var _79 : ();
-  var _80 : ();
-  var _81 : ();
-  var _82 : Type.creusotcontracts_std1_vec_vec usize;
+  var _80 : Type.creusotcontracts_std1_vec_vec usize;
   {
     f_1 <- f;
     goto BB0
@@ -5835,31 +5833,27 @@ module Lib_Decision_Impl1_New
     goto BB24
   }
   BB24 {
-    goto BB25
-  }
-  BB25 {
     invariant i_bound { UInt64.to_int i_9 <= UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f_1) };
     invariant counts_with_idx_len { Seq.length (Model3.model counts_with_index_6) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f_1) };
     invariant second_ok { forall j : (int) . 0 <= j && j < UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f_1) -> UInt64.to_int (let (_, a) = Seq.get (Model3.model counts_with_index_6) j in a) < UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f_1) };
-    invariant inv2 { forall k : (int) . 0 <= k && k < UInt64.to_int i_9 -> UInt64.to_int (let (_, a) = Seq.get (Model3.model counts_with_index_6) k in a) = k };
     assume { Resolve0.resolve _50 };
     _50 <- i_9;
     assume { Resolve0.resolve _51 };
     _51 <- Type.lib_formula_formula_Formula_num_vars f_1;
     _49 <- _50 < _51;
     switch (_49)
-      | False -> goto BB29
-      | _ -> goto BB26
+      | False -> goto BB28
+      | _ -> goto BB25
       end
   }
-  BB26 {
+  BB25 {
     _54 <- counts_4;
     assume { Resolve0.resolve _55 };
     _55 <- i_9;
     _53 <- Index2.index _54 _55;
-    goto BB27
+    goto BB26
   }
-  BB27 {
+  BB26 {
     assume { Resolve0.resolve _52 };
     _52 <- _53;
     assume { Resolve3.resolve _53 };
@@ -5870,17 +5864,17 @@ module Lib_Decision_Impl1_New
     assume { Resolve0.resolve _59 };
     _59 <- i_9;
     _57 <- IndexMut1.index_mut _58 _59;
-    goto BB28
+    goto BB27
   }
-  BB28 {
+  BB27 {
     _57 <- { _57 with current = (_52, _56) };
     assume { Resolve6.resolve _57 };
     i_9 <- i_9 + (1 : usize);
     _11 <- ();
     assume { Resolve5.resolve _11 };
-    goto BB25
+    goto BB24
   }
-  BB29 {
+  BB28 {
     assume { Resolve0.resolve i_9 };
     _48 <- ();
     assume { Resolve5.resolve _48 };
@@ -5889,101 +5883,82 @@ module Lib_Decision_Impl1_New
     _64 <- borrow_mut ( * _65);
     _65 <- { _65 with current = ( ^ _64) };
     _63 <- SortReverse0.sort_reverse _64;
+    goto BB29
+  }
+  BB29 {
+    assume { Resolve7.resolve _65 };
+    i_9 <- (0 : usize);
     goto BB30
   }
   BB30 {
-    assume { Resolve7.resolve _65 };
-    assume { Resolve8.resolve counts_with_index_66 };
-    counts_with_index_66 <- counts_with_index_6;
-    i_9 <- (0 : usize);
     goto BB31
   }
   BB31 {
     goto BB32
   }
   BB32 {
-    goto BB33
+    invariant i_bound { 0 <= UInt64.to_int i_9 && UInt64.to_int i_9 <= UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f_1) };
+    invariant lit_order_len { Seq.length (Model1.model lit_order_2) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f_1) };
+    invariant second_ok { forall j : (int) . 0 <= j && j < UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f_1) -> UInt64.to_int (Seq.get (Model1.model lit_order_2) j) < UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f_1) };
+    assume { Resolve0.resolve _68 };
+    _68 <- i_9;
+    assume { Resolve0.resolve _69 };
+    _69 <- Type.lib_formula_formula_Formula_num_vars f_1;
+    _67 <- _68 < _69;
+    switch (_67)
+      | False -> goto BB36
+      | _ -> goto BB33
+      end
   }
   BB33 {
+    _72 <- counts_with_index_6;
+    assume { Resolve0.resolve _73 };
+    _73 <- i_9;
+    _71 <- Index3.index _72 _73;
     goto BB34
   }
   BB34 {
+    assume { Resolve0.resolve _70 };
+    _70 <- (let (_, a) = _71 in a);
+    assume { Resolve8.resolve _71 };
+    _75 <- borrow_mut lit_order_2;
+    lit_order_2 <-  ^ _75;
+    assume { Resolve0.resolve _76 };
+    _76 <- i_9;
+    _74 <- IndexMut0.index_mut _75 _76;
     goto BB35
   }
   BB35 {
-    invariant i_bound { 0 <= UInt64.to_int i_9 && UInt64.to_int i_9 <= UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f_1) };
-    invariant counts_with_idx_len { Seq.length (Model3.model counts_with_index_66) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f_1) };
-    invariant lit_order_len { Seq.length (Model1.model lit_order_2) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f_1) };
-    invariant second_ok { forall j : (int) . 0 <= j && j < UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f_1) -> UInt64.to_int (Seq.get (Model1.model lit_order_2) j) < UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f_1) };
-    invariant inv2 { forall k : (int) . 0 <= k && k < UInt64.to_int i_9 -> UInt64.to_int (Seq.get (Model1.model lit_order_2) k) = UInt64.to_int (let (_, a) = Seq.get (Model3.model counts_with_index_66) k in a) };
-    assume { Resolve0.resolve _69 };
-    _69 <- i_9;
-    assume { Resolve0.resolve _70 };
-    _70 <- Type.lib_formula_formula_Formula_num_vars f_1;
-    _68 <- _69 < _70;
-    switch (_68)
-      | False -> goto BB39
-      | _ -> goto BB36
-      end
-  }
-  BB36 {
-    _73 <- counts_with_index_66;
-    assume { Resolve0.resolve _74 };
-    _74 <- i_9;
-    _72 <- Index3.index _73 _74;
-    goto BB37
-  }
-  BB37 {
-    assume { Resolve0.resolve _71 };
-    _71 <- (let (_, a) = _72 in a);
-    assume { Resolve9.resolve _72 };
-    _76 <- borrow_mut lit_order_2;
-    lit_order_2 <-  ^ _76;
-    assume { Resolve0.resolve _77 };
-    _77 <- i_9;
-    _75 <- IndexMut0.index_mut _76 _77;
-    goto BB38
-  }
-  BB38 {
-    assume { Resolve0.resolve ( * _75) };
-    _75 <- { _75 with current = _71 };
-    assume { Resolve4.resolve _75 };
+    assume { Resolve0.resolve ( * _74) };
+    _74 <- { _74 with current = _70 };
+    assume { Resolve4.resolve _74 };
     i_9 <- i_9 + (1 : usize);
     _11 <- ();
     assume { Resolve5.resolve _11 };
-    goto BB35
+    goto BB32
+  }
+  BB36 {
+    assume { Resolve9.resolve f_1 };
+    assume { Resolve0.resolve i_9 };
+    _66 <- ();
+    assume { Resolve5.resolve _66 };
+    assume { Resolve10.resolve _80 };
+    _80 <- lit_order_2;
+    _0 <- Type.Lib_Decision_Decisions _80;
+    goto BB37
+  }
+  BB37 {
+    goto BB38
+  }
+  BB38 {
+    assume { Resolve11.resolve counts_with_index_6 };
+    goto BB39
   }
   BB39 {
-    assume { Resolve10.resolve f_1 };
-    assume { Resolve0.resolve i_9 };
-    _67 <- ();
-    assume { Resolve5.resolve _67 };
-    assert { forall i : (int) . 0 <= i && i < Seq.length (Model3.model counts_with_index_66) -> UInt64.to_int (Seq.get (Model1.model lit_order_2) i) = UInt64.to_int (let (_, a) = Seq.get (Model3.model counts_with_index_66) i in a) };
+    assume { Resolve10.resolve counts_4 };
     goto BB40
   }
   BB40 {
-    _81 <- ();
-    assume { Resolve5.resolve _81 };
-    assume { Resolve11.resolve _82 };
-    _82 <- lit_order_2;
-    _0 <- Type.Lib_Decision_Decisions _82;
-    goto BB41
-  }
-  BB41 {
-    goto BB42
-  }
-  BB42 {
-    assume { Resolve8.resolve counts_with_index_66 };
-    goto BB43
-  }
-  BB43 {
-    goto BB44
-  }
-  BB44 {
-    assume { Resolve11.resolve counts_4 };
-    goto BB45
-  }
-  BB45 {
     return _0
   }
   

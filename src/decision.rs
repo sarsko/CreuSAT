@@ -64,39 +64,24 @@ impl Decisions {
             i += 1;
         }
         i = 0;
-        // Way too much proof stuff, but might need it later
         #[invariant(i_bound, @i <= @f.num_vars)]
         #[invariant(counts_with_idx_len, (@counts_with_index).len() == @f.num_vars)]
         #[invariant(second_ok, forall<j: Int> 0 <= j && j < @f.num_vars ==> 
             @(@counts_with_index)[j].1 < @f.num_vars)]
-        #[invariant(inv2,
-            forall<k: Int> 0 <= k && k < @i ==>
-                @(@counts_with_index)[k].1 === k
-        )]
         while i < f.num_vars {
             counts_with_index[i] = (counts[i], i);
             i += 1;
         }
         sort_reverse(&mut counts_with_index);
-        let counts_with_index = counts_with_index;
         i = 0;
         #[invariant(i_bound, 0 <= @i && @i <= @f.num_vars)]
-        #[invariant(counts_with_idx_len, (@counts_with_index).len() == @f.num_vars)]
         #[invariant(lit_order_len, (@lit_order).len() == @f.num_vars)]
         #[invariant(second_ok, forall<j: Int> 0 <= j && j < @f.num_vars ==> 
             @(@lit_order)[j] < @f.num_vars)]
-        #[invariant(inv2,
-            forall<k: Int> 0 <= k && k < @i ==>
-                @(@lit_order)[k] === @(@counts_with_index)[k].1
-        )]
         while i < f.num_vars {
             lit_order[i] = counts_with_index[i].1;
             i += 1;
         }
-        proof_assert!(
-            forall<i: Int> 0 <= i && i < (@counts_with_index).len() ==>
-                    @(@lit_order)[i] === @(@counts_with_index)[i].1
-        );
         Decisions{lit_order: lit_order}
     }
     /*

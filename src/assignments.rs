@@ -129,26 +129,21 @@ impl Assignments {
     #[ensures(unset((@self)[@result]))]
     #[ensures(@self === @^self)]
     #[ensures((^self).invariant(*_f))]
-    //#[ensures(@(^self).1 <= (@d.lit_order).len())]
     pub fn find_unassigned(&mut self, d: &Decisions, _f: &Formula) -> usize {
         let mut i: usize = self.1;
-        //let mut i: usize = 0;
-        //let mut i = 0;
         #[invariant(i_bound, @i <= (@d.lit_order).len())]
-        //#[invariant(prev, forall<j: Int> 0 <= j && j < @i ==> !unset((@self)[@(@d.lit_order)[j]]))]
         while i < d.lit_order.len() {
-            //let curr = self.0[i];
             let curr = self.0[d.lit_order[i]];
             if curr >= 2 {
                 //let b = curr != 2;
-                // 3 -> 1 and 2 -> 0
                 self.1 = i + 1;
-                //self.1 = 0;
                 //return Some(Lit{ idx: d.lit_order[i], polarity: b });
-                return d.lit_order[i];//Some(Lit{ idx: d.lit_order[i], polarity: b });
+                return d.lit_order[i];
             }
             i += 1;
         }
+        // Strictly speaking this is an unecessary runtime check, but it only gets run at most once and it
+        // greatly simplifies the proof.
         i = 0;
         #[invariant(prev, forall<j: Int> 0 <= j && j < @i ==> !unset((@self)[j]))]
         while i < self.0.len() {
