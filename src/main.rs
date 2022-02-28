@@ -1,18 +1,12 @@
-extern crate creusot_contracts;
+use sat::parser::{parse_cnf, preproc_and_solve};
+//use no_creusot::solver::preproc_and_solve;
 
-//use creusot_contracts::std::*;
-//use creusot_contracts::*;
+use clap::{crate_authors, App, AppSettings, Arg};
 
-//use sat::parser::parse_cnf;
-//use sat::solver::dpll;
-
-//use clap::{crate_authors, App, AppSettings, Arg};
-
-//use sat::solver_dpll_noproofs::preproc_and_solve;
-
-//#[trusted]
+//#[global_allocator]
+//static GLOBAL: jemallocator::Jemalloc = jemallocator::Jemalloc;
+#[cfg(not(contracts))]
 fn main() {
-    /*
     let matches = App::new("\nA minimal SAT solver with no name")
         .author(crate_authors!("\n"))
         .about("A yet unverified SAT solver written in Rust.")
@@ -29,17 +23,21 @@ fn main() {
         )
         .get_matches();
     let filename = matches.value_of("file").unwrap();
-    let (mut clauses, num_literals) = parse_cnf(filename);
-    println!("Parse complete");
-    let result = preproc_and_solve(&mut clauses, num_literals);
+    println!("c Reading file '{}'", filename);
+    let res = parse_cnf(filename);
+    match res {
+        Ok((mut clauses, num_literals)) => {
+            println!("c Parsed formula with {} clauses and {} literals", clauses.len(), num_literals);
+            let result = preproc_and_solve(&mut clauses, num_literals);
 
-    /*
-    let result = dpll(&mut clauses, 1, num_literals);
-    */
-    if result {
-        println!("Sat");
-    } else {
-        println!("Unsat");
+            if result {
+                println!("c SAT");
+            } else {
+                println!("c UNSAT");
+            }
+        },
+        Err(e) => {
+            println!("c Parser errored with message: {}", e);
+        }
     }
-    */
 }

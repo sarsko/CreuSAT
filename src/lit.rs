@@ -5,7 +5,8 @@ use creusot_contracts::std::*;
 use crate::clause::*;
 use crate::assignments::*;
 
-#[derive(Clone, Copy)]
+//#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Lit {
     pub idx: usize,
     pub polarity: bool,

@@ -52,7 +52,7 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 #[ensures(result === true ==> f.eventually_sat(*a))]
 #[ensures(result === false ==> !f.eventually_sat_complete(*a))]
 fn inner(f: &Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail) -> bool {
-    a.do_unit_propagation(f);
+    a.do_unit_propagation(f, t);
     match f.eval(a) {
         SatState::Sat => return true,
         SatState::Unsat => return false,
@@ -64,15 +64,18 @@ fn inner(f: &Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail) -> bool
     a.0[next] = 1;
     let lit = Lit{ idx: next, polarity: true };
     t.enq_assignment(lit, Reason::Decision, f);
-    let mut a_cloned = a.clone();
-    a.0[next] = 1;
-    a_cloned.0[next] = 0;
+    let old_a1 = a.1;
 
     if inner(f, a, d, t) {
         return true;
     } else {
         a.cancel_until(t, dlevel, f);
-        return inner(f, &mut a_cloned, d, t);
+        t.add_level(f);
+        a.0[next] = 0;
+        a.1 = old_a1;
+        let lit = Lit{ idx: next, polarity: false };
+        t.enq_assignment(lit, Reason::Decision, f);
+        return inner(f, a, d, t);
     }
 }
 

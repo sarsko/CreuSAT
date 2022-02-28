@@ -11,7 +11,7 @@ use crate::trail::*;
 
 pub type AssignedState = u8;
 
-pub struct Assignments(pub Vec<AssignedState>, usize);
+pub struct Assignments(pub Vec<AssignedState>, pub usize);
 
 #[cfg(contracts)]
 impl Model for Assignments {
@@ -164,7 +164,7 @@ impl Assignments {
     #[ensures((^self).invariant(*f))]
     #[ensures((*self).compatible(^self))]
     #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))] 
-    pub fn unit_prop_once(&mut self, i: usize, f: &Formula) -> bool {
+    pub fn unit_prop_once(&mut self, i: usize, f: &Formula, t: &mut Trail) -> bool {
         let clause = &f.clauses[i];
         let old_a = Ghost::record(&self);
         proof_assert!(^self === ^@old_a);
@@ -176,8 +176,10 @@ impl Assignments {
             proof_assert!(lemma_unit_forces(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
             if lit.polarity {
                 self.0[lit.idx] = 1;
+                t.enq_assignment(lit, Reason::Unit, f);
             } else {
-                self.0[lit.idx] = 0;
+                self.0[lit.idx] = 0;    
+                t.enq_assignment(lit, Reason::Unit, f);
             }
             proof_assert!(@^self == (@*@old_a).set(@lit.idx, bool_to_assignedstate(lit.polarity)));
             proof_assert!(lemma_extensionSat_baseSat(*f, @@old_a, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
@@ -193,7 +195,7 @@ impl Assignments {
     #[ensures((^self).invariant(*f))]
     #[ensures(f.eventually_sat_complete(^self) === f.eventually_sat_complete(*self))]
     #[ensures((*self).compatible(^self))]
-    pub fn unit_propagate(&mut self, f: &Formula) -> bool {
+    pub fn unit_propagate(&mut self, f: &Formula, t: &mut Trail) -> bool {
         let old_a = Ghost::record(&self);
         let mut i: usize = 0;
         let mut out = false;
@@ -202,7 +204,7 @@ impl Assignments {
         #[invariant(compat, (*@old_a).compatible(*self))]
         #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) === f.eventually_sat_complete(*self))]
         while i < f.clauses.len() {
-            if self.unit_prop_once(i, f) {
+            if self.unit_prop_once(i, f, t) {
                 out = true;
             }
             i += 1
@@ -215,13 +217,13 @@ impl Assignments {
     #[ensures((^self).invariant(*f))]
     #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))]
     #[ensures((*self).compatible(^self))]
-    pub fn do_unit_propagation(&mut self, f: &Formula) {
+    pub fn do_unit_propagation(&mut self, f: &Formula, t: &mut Trail) {
         let old_a = Ghost::record(&self);
         #[invariant(ai, self.invariant(*f))]
         #[invariant(proph, ^self === ^@old_a)]
         #[invariant(compat, (*@old_a).compatible(*self))]
         #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) ==> f.eventually_sat_complete(*self))]
-        while self.unit_propagate(f) {}
+        while self.unit_propagate(f, t) {}
     }
 
     //#[trusted] // OK
@@ -284,6 +286,7 @@ impl Assignments {
             }
             i -= 1;
         }
+        //self.1 = 0; // ADDED
     }
 
     /*
