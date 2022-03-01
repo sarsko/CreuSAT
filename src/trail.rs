@@ -108,7 +108,7 @@ impl Trail {
 }
 
 impl Trail {
-    //#[trusted] // OK
+    #[trusted] // OK
     #[requires(self.invariant(*_f))]
     #[requires(0 <= @lit.idx && @lit.idx < @_f.num_vars)]
     #[requires((@self.trail).len() > 0)]
@@ -134,7 +134,7 @@ impl Trail {
         self.vardata[lit.idx] = (dlevel, reason);
     }
 
-    //#[trusted] // OK
+    #[trusted] // OK
     #[ensures(result.invariant(*f))]
     #[ensures((@result.trail).len() === 1)]
     pub fn new(f: &Formula) -> Trail {
@@ -158,7 +158,7 @@ impl Trail {
         }
     }
 
-    //#[trusted] // OK
+    #[trusted] // OK
     #[requires(self.invariant(*_f))]
     #[ensures((^self).invariant(*_f))]
     #[ensures((@self.vardata) === (@(^self).vardata))]

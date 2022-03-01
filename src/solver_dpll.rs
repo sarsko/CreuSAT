@@ -57,9 +57,8 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 //#[ensures((^d).invariant())]
 #[ensures(result === true ==> f.eventually_sat(*a))]
 #[ensures(result === false ==> !f.eventually_sat_complete(*a))]
-fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> bool {
-    a.do_unit_propagation(f, t);
-    match f.eval(a) {
+fn inner(f: &Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> bool {
+   match a.do_unit_propagation(f, t) {
         SatState::Sat => return true,
         SatState::Unsat => return false,
         _ => {}

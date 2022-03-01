@@ -13,6 +13,7 @@ pub type AssignedState = u8;
 
 pub struct Assignments(pub Vec<AssignedState>, pub usize);
 
+
 #[cfg(contracts)]
 impl Model for Assignments {
     type ModelTy = Seq<AssignedState>;
@@ -170,6 +171,7 @@ impl Assignments {
         unreachable!()
     }
 
+    //#[trusted] // OK
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
     #[requires(0 <= @i && @i < (@f.clauses).len())]
@@ -180,13 +182,15 @@ impl Assignments {
     #[ensures((^self).invariant(*f))]
     #[ensures((*self).compatible(^self))]
     #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))] 
+    #[ensures((result === ClauseState::Unit) ==> (@f.clauses)[@i].unit(*self))]
+    #[ensures((result === ClauseState::Sat) ==> (@f.clauses)[@i].sat(^self) && @self === @^self)]
+    #[ensures((result === ClauseState::Unsat) ==> (@f.clauses)[@i].unsat(^self) && @self === @^self)]
+    #[ensures((result === ClauseState::Unknown) ==> (@f.clauses)[@i].unknown(^self) && @self === @^self)]
     pub fn unit_prop_once(&mut self, i: usize, f: &Formula, t: &mut Trail) -> ClauseState {
         let clause = &f.clauses[i];
         let old_a = Ghost::record(&self);
         proof_assert!(^self === ^@old_a);
         match clause.check_if_unit(self, f) {
-            ClauseState::Sat => { return ClauseState::Sat; },
-            ClauseState::Unsat => { return ClauseState::Unsat; },
             ClauseState::Unit => { 
                 let lit = clause.get_unit(self, f);
                 proof_assert!(clause.invariant((@self).len()));
@@ -205,12 +209,11 @@ impl Assignments {
                 proof_assert!(^self === ^@old_a);
                 return ClauseState::Unit;
             },
-            ClauseState::Unknown => {
-                return ClauseState::Unknown;
-            }
+            o => return o
         }
     }
 
+    // This is returning an option because extending SatState makes the precondition in inner fail
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
     #[requires(t.invariant(*f))]
@@ -220,11 +223,17 @@ impl Assignments {
     #[ensures((^self).invariant(*f))]
     #[ensures(f.eventually_sat_complete(^self) === f.eventually_sat_complete(*self))]
     #[ensures((*self).compatible(^self))]
-    pub fn unit_propagate(&mut self, f: &Formula, t: &mut Trail) -> bool {
+    #[ensures(match result {
+        Some(SatState::Sat) => f.sat(^self),
+        Some(SatState::Unsat) => f.unsat(^self),
+        Some(SatState::Unknown) => !(^self).complete(),
+        None => true,
+    })]
+    pub fn unit_propagate(&mut self, f: &Formula, t: &mut Trail) -> Option<SatState> {
         let old_a = Ghost::record(&self);
         let old_t = Ghost::record(&t);
         let mut i: usize = 0;
-        let mut out = false;
+        let mut out = Some(SatState::Sat);
         #[invariant(ti, t.invariant(*f))]
         #[invariant(ai, self.invariant(*f))]
         #[invariant(t_len, (@(@old_t).trail).len() === (@t.trail).len())]
@@ -232,18 +241,28 @@ impl Assignments {
         #[invariant(proph_t, ^t === ^@old_t)]
         #[invariant(compat, (*@old_a).compatible(*self))]
         #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) === f.eventually_sat_complete(*self))]
+        #[invariant(out_not_unsat, !(out === Some(SatState::Unsat)))]
+        #[invariant(out_is, match out {
+            Some(SatState::Sat) => forall<j: Int> 0 <= j && j < @i ==> (@f.clauses)[j].sat(*self),
+            Some(SatState::Unknown) => !self.complete(),
+            _ => true
+        })]
         while i < f.clauses.len() {
             match self.unit_prop_once(i, f, t) {
-                ClauseState::Sat => {
-                    
-                },
+                ClauseState::Sat => {},
                 ClauseState::Unsat => {
-                    return false;
+                    return Some(SatState::Unsat);
                 },
                 ClauseState::Unit => {
-                    out = true;
+                    out = None;
                 },
                 ClauseState::Unknown => {
+                    match out {
+                        None => {},
+                        _ => {
+                            out = Some(SatState::Unknown);
+                        },
+                    }
                 }
             }
             i += 1
@@ -260,7 +279,10 @@ impl Assignments {
     #[ensures((^self).invariant(*f))]
     #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))]
     #[ensures((*self).compatible(^self))]
-    pub fn do_unit_propagation(&mut self, f: &Formula, t: &mut Trail) {
+    #[ensures((result === SatState::Sat) ==> f.sat(^self))]
+    #[ensures((result === SatState::Unsat) ==> f.unsat(^self))]
+    #[ensures((result === SatState::Unknown) ==> !(^self).complete())]
+    pub fn do_unit_propagation(&mut self, f: &Formula, t: &mut Trail) -> SatState {
         let old_a = Ghost::record(&self);
         let old_t = Ghost::record(&t);
         #[invariant(ti, t.invariant(*f))]
@@ -270,7 +292,14 @@ impl Assignments {
         #[invariant(proph, ^self === ^@old_a)]
         #[invariant(compat, (*@old_a).compatible(*self))]
         #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) ==> f.eventually_sat_complete(*self))]
-        while self.unit_propagate(f, t) {}
+        loop {
+            match self.unit_propagate(f, t) {
+                Some(x) => {
+                    return x;
+                }
+                None => {}
+            }
+        } 
     }
 
     #[trusted] // TMP

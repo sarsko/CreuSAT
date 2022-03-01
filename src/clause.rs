@@ -129,24 +129,28 @@ impl Clause {
         */
     }
     // Can be made to a complete eval function if I like
-    #[trusted] // TMP, come back
+    //#[trusted] // TMP, come back
     #[requires(self.invariant((@a).len()))]
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
+    #[ensures((result === ClauseState::Sat) ===     self.sat(*a))]
+    #[ensures((result === ClauseState::Unsat) ===   self.unsat(*a))]
+    #[ensures((result === ClauseState::Unit) ==>    self.unit(*a))]
+    #[ensures((result === ClauseState::Unknown) ==> self.unknown(*a))]
     //#[ensures(result ==> self.unit(*a))]  //TODO FIX
     //#[ensures(!result ==> !self.unit(*a))]
     //#[ensures(result ==> !self.unsat(*a))] 
     //#[ensures(result ==> !self.sat(*a))] 
     pub fn check_if_unit(&self, a: &Assignments, f: &Formula) -> ClauseState {
         let mut i: usize = 0;
-        let mut unassigned: usize = 0;
         let mut k: usize = 0;
-        #[invariant(loop_invariant, 0 <= @i && @i <= (@self).len())]
-        #[invariant(unass, @unassigned < 2)] 
+        let mut unassigned: usize = 0;
+        #[invariant(loop_invariant, 0 <= @i && @i <= (@self.rest).len())]
+        #[invariant(unass, @unassigned <= @i)] 
         #[invariant(k_is_unass, (@unassigned === 0 || (@self)[@k].unset(*a)))]
         #[invariant(kk, @unassigned > 0 ==> (@self)[@k].unset(*a))]
         #[invariant(not_sat, forall<j: Int> 0 <= j && j < @i ==>
-            ((@self)[j].unsat(*a) || ((@self)[j].unset(*a) && @unassigned === 1)))]
+            ((@self)[j].unsat(*a) || ((@self)[j].unset(*a) && @unassigned >= 1)))]
         #[invariant(k_in_bounds, @unassigned === 0 || 0 <= @k && @k < (@self).len())]
         #[invariant(k_only, @unassigned === 1 ==> 
             (forall<j: Int> 0 <= j && j < @i && j != @k ==> !(@self)[j].unset(*a)))]
@@ -155,19 +159,18 @@ impl Clause {
             let lit = self.rest[i];
             if lit.lit_sat(a) {
                 return ClauseState::Sat;
-            } else if lit.lit_unset(a) {
-                if unassigned > 0 {
-                    return ClauseState::Unknown;
-                }
+            } else if lit.lit_unset(a) { // Could make two different check_if_unit functions, one for pre_sat_possible and one for after
                 k = i;
                 unassigned += 1;
             }
             i += 1;
         }
-        if unassigned == 1 {
+        if unassigned == 0 {
+            ClauseState::Unsat
+        } else if unassigned == 1 {
             ClauseState::Unit
         } else {
-            ClauseState::Unsat
+            ClauseState::Unknown
         }
     }
 

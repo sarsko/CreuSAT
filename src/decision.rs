@@ -38,6 +38,7 @@ impl Decisions {
 }
 
 impl Decisions {
+    #[trusted] // OK
     #[requires(f.invariant())]
     #[ensures(result.invariant(@f.num_vars))]
     pub fn new(f: &Formula) -> Decisions {
@@ -54,6 +55,8 @@ impl Decisions {
             #[invariant(j_bound, @j <= (@curr_clause.rest).len())]
             #[invariant(counts_len, (@counts).len() == @f.num_vars)]
             while j < curr_clause.rest.len() {
+                // Okay this is obviously provable, a vector cannot be longer than usize, and we don't allow duplicates, so we will
+                // never overflow, even if every clause contains a literal, 
                 // "ugly" runtime check. No way that a formula ever has more than 2^64 instances of a variable, but no way to guarantee
                 // that it doesn't either. Runtime is not dominated by this function anyways, and it doesn't affect correctness.
                 if counts[curr_clause.rest[j].idx] < usize::MAX - 1 {
