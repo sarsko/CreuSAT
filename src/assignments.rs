@@ -108,6 +108,18 @@ impl Assignments {
         Assignments(out, self.1)
     }
 
+    #[inline]
+    #[cfg(not(contracts))]
+    pub fn set_assignment(&mut self, l: Lit) {
+        /*
+        if !self.0[l.idx].is_none() {
+            panic!("Assignment already set. Attempting to set {:?}", l);
+        }
+        */
+        //assert!(self.0[l.idx].is_none());
+        self.0[l.idx] = l.polarity as u8;
+    }
+
     #[trusted] // OK
     #[requires(f.invariant())]
     #[ensures(result.invariant(*f))]
@@ -168,29 +180,35 @@ impl Assignments {
     #[ensures((^self).invariant(*f))]
     #[ensures((*self).compatible(^self))]
     #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))] 
-    pub fn unit_prop_once(&mut self, i: usize, f: &Formula, t: &mut Trail) -> bool {
+    pub fn unit_prop_once(&mut self, i: usize, f: &Formula, t: &mut Trail) -> ClauseState {
         let clause = &f.clauses[i];
         let old_a = Ghost::record(&self);
         proof_assert!(^self === ^@old_a);
-        if clause.check_if_unit(self, f) {
-            let lit = clause.get_unit(self, f);
-            proof_assert!(clause.invariant((@self).len()));
-            proof_assert!(lemma_unitClauseLiteralFalse_tauNotSatisfiable(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
-            proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() && !(@(@clause)[j].idx === @lit.idx) ==> !((@clause)[j].unset(*self)));
-            proof_assert!(lemma_unit_forces(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
-            if lit.polarity {
-                self.0[lit.idx] = 1;
-            } else {
-                self.0[lit.idx] = 0;    
+        match clause.check_if_unit(self, f) {
+            ClauseState::Sat => { return ClauseState::Sat; },
+            ClauseState::Unsat => { return ClauseState::Unsat; },
+            ClauseState::Unit => { 
+                let lit = clause.get_unit(self, f);
+                proof_assert!(clause.invariant((@self).len()));
+                proof_assert!(lemma_unitClauseLiteralFalse_tauNotSatisfiable(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
+                proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() && !(@(@clause)[j].idx === @lit.idx) ==> !((@clause)[j].unset(*self)));
+                proof_assert!(lemma_unit_forces(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
+                if lit.polarity {
+                    self.0[lit.idx] = 1;
+                } else {
+                    self.0[lit.idx] = 0;    
+                }
+                t.enq_assignment(lit, Reason::Unit, f);
+                proof_assert!(@^self == (@*@old_a).set(@lit.idx, bool_to_assignedstate(lit.polarity)));
+                proof_assert!(lemma_extensionSat_baseSat(*f, @@old_a, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
+                proof_assert!(lemma_extensionsUnsat_baseUnsat(@@old_a, @lit.idx, *f); true);
+                proof_assert!(^self === ^@old_a);
+                return ClauseState::Unit;
+            },
+            ClauseState::Unknown => {
+                return ClauseState::Unknown;
             }
-            t.enq_assignment(lit, Reason::Unit, f);
-            proof_assert!(@^self == (@*@old_a).set(@lit.idx, bool_to_assignedstate(lit.polarity)));
-            proof_assert!(lemma_extensionSat_baseSat(*f, @@old_a, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
-            proof_assert!(lemma_extensionsUnsat_baseUnsat(@@old_a, @lit.idx, *f); true);
-            proof_assert!(^self === ^@old_a);
-            return true;
         }
-        return false;
     }
 
     #[requires(f.invariant())]
@@ -215,8 +233,18 @@ impl Assignments {
         #[invariant(compat, (*@old_a).compatible(*self))]
         #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) === f.eventually_sat_complete(*self))]
         while i < f.clauses.len() {
-            if self.unit_prop_once(i, f, t) {
-                out = true;
+            match self.unit_prop_once(i, f, t) {
+                ClauseState::Sat => {
+                    
+                },
+                ClauseState::Unsat => {
+                    return false;
+                },
+                ClauseState::Unit => {
+                    out = true;
+                },
+                ClauseState::Unknown => {
+                }
             }
             i += 1
         }
@@ -245,7 +273,7 @@ impl Assignments {
         while self.unit_propagate(f, t) {}
     }
 
-    //#[trusted] // OK
+    #[trusted] // TMP
     //#[requires(trail.trail_entries_are_assigned(*self))] // Gonna need this at some point
     #[requires(@level <= (@trail.trail).len())]
     #[requires(trail.invariant(*_f))]
@@ -257,6 +285,13 @@ impl Assignments {
     #[ensures((@(^trail).trail).len() === @level)]
     #[ensures(forall<j: Int> 0 <= j && j < @level ==> 
         (@(^trail).trail)[j] === (@trail.trail)[j])] // new
+        /*
+    #[ensures((^trail).assignments_invariant(^self))]
+    #[ensures(forall<j: Int> @level <= j && j < (@trail.trail).len() ==> 
+        forall<i: Int> 0 <= i && i < (@(@trail.trail)[j]).len() ==> 
+            @(@(^self))[@(@(@trail.trail)[j])[i].idx] === 2)]
+        //(@(^trail).trail)[j].assigned(^self))]
+        */
     pub fn cancel_until(&mut self, trail: &mut Trail, level: usize, _f: &Formula) {
         let mut i: usize = trail.trail.len();
         let old_self = Ghost::record(&self);

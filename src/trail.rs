@@ -5,6 +5,7 @@ use creusot_contracts::std::*;
 use crate::assignments::*;
 use crate::lit::*;
 use crate::formula::*;
+use crate::logic::*;
 
 //#[derive(Debug, Clone, PartialEq, Eq)]
 #[derive(Copy, Clone)]
@@ -60,11 +61,39 @@ impl Trail {
     }
 
     #[predicate]
-    pub fn trail_entries_are_assigned(self, a: Assignments) -> bool {
+    pub fn old_trail_entries_are_assigned(self, a: Assignments) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < (@self.trail).len() ==>
             forall<j: Int> 0 <= j && j < (@(@self.trail)[i]).len() ==>
                 @(@a)[@(@(@self.trail)[i])[j].idx] < 2
+        }
+    }
+
+    #[predicate]
+    pub fn trail_entries_are_assigned(self, a: Assignments) -> bool {
+        pearlite! {
+            forall<j: Int> 0 <= j && j < (@self.trail).len() ==>
+                forall<k: Int> 0 <= k && k < (@(@self.trail)[j]).len() ==>
+                    (@a)[@(@(@self.trail)[j])[k].idx] === bool_to_assignedstate((@(@self.trail)[j])[k].polarity)
+        }
+    }
+
+    #[predicate]
+    pub fn unassigned_not_in_trail(self, a: Assignments) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@a).len() ==>
+                @(@a)[i] >= 2 ==>
+                forall<j: Int> 0 <= j && j < (@self.trail).len() ==>
+                    forall<k: Int> 0 <= k && k < (@(@self.trail)[j]).len() ==>
+                        !(@(@(@self.trail)[j])[k].idx === i)
+        }
+    }
+
+    #[predicate]
+    pub fn assignments_invariant(self, a: Assignments) -> bool {
+        pearlite! {
+            self.trail_entries_are_assigned(a) &&
+            self.unassigned_not_in_trail(a)
         }
     }
 

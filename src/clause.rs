@@ -108,6 +108,13 @@ impl Clause {
     }
 }
 
+pub enum ClauseState {
+    Sat,
+    Unsat,
+    Unit,
+    Unknown
+}
+
 impl Clause {
     #[inline]
     #[trusted] // TMP
@@ -122,15 +129,15 @@ impl Clause {
         */
     }
     // Can be made to a complete eval function if I like
-    #[trusted] // OK
+    #[trusted] // TMP, come back
     #[requires(self.invariant((@a).len()))]
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
-    #[ensures(result ==> self.unit(*a))] 
+    //#[ensures(result ==> self.unit(*a))]  //TODO FIX
     //#[ensures(!result ==> !self.unit(*a))]
     //#[ensures(result ==> !self.unsat(*a))] 
     //#[ensures(result ==> !self.sat(*a))] 
-    pub fn check_if_unit(&self, a: &Assignments, f: &Formula) -> bool {
+    pub fn check_if_unit(&self, a: &Assignments, f: &Formula) -> ClauseState {
         let mut i: usize = 0;
         let mut unassigned: usize = 0;
         let mut k: usize = 0;
@@ -147,10 +154,10 @@ impl Clause {
         while i < self.rest.len() {
             let lit = self.rest[i];
             if lit.lit_sat(a) {
-                return false;
+                return ClauseState::Sat;
             } else if lit.lit_unset(a) {
                 if unassigned > 0 {
-                    return false;
+                    return ClauseState::Unknown;
                 }
                 k = i;
                 unassigned += 1;
@@ -158,9 +165,9 @@ impl Clause {
             i += 1;
         }
         if unassigned == 1 {
-            true
+            ClauseState::Unit
         } else {
-            false
+            ClauseState::Unsat
         }
     }
 
