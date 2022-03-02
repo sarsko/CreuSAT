@@ -58,23 +58,22 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 #[ensures(result === true ==> f.eventually_sat(*a))]
 #[ensures(result === false ==> !f.eventually_sat_complete(*a))]
 fn inner(f: &Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> bool {
-   match a.do_unit_propagation(f, t) {
-        SatState::Sat => return true,
-        SatState::Unsat => return false,
-        _ => {}
-    };
-    let next = a.find_unassigned(d, f);
-    let dlevel = t.trail.len();
-    let old_a = Ghost::record(&a);
-    t.add_level(f);
-    a.0[next] = 1;
-    let lit = Lit{ idx: next, polarity: true };
-    t.enq_assignment(lit, Reason::Decision, f);
-    let old_a1 = a.1;
+    match a.do_unit_propagation(f, t) {
+        Some(n) => { return n; },
+        _ => {},
+    }
+    if let Some(next) = a.find_unassigned(d, f) {
+        let dlevel = t.trail.len();
+        let old_a = Ghost::record(&a);
+        t.add_level(f);
+        a.0[next] = 1;
+        let lit = Lit{ idx: next, polarity: true };
+        t.enq_assignment(lit, Reason::Decision, f);
+        let old_a1 = a.1;
 
-    if inner(f, a, d, t, w) {
-        return true;
-    } else {
+        if inner(f, a, d, t, w) {
+            return true;
+        }
         a.cancel_until(t, dlevel, f);
         proof_assert!(@a === @@old_a); // Todo on post for cancel_until
         t.add_level(f);
@@ -83,6 +82,11 @@ fn inner(f: &Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut
         let lit = Lit{ idx: next, polarity: false };
         t.enq_assignment(lit, Reason::Decision, f);
         return inner(f, a, d, t, w);
+    } else {
+        //proof_assert!(a.complete());
+        //proof_assert!(!f.unsat(*a)); 
+        //proof_assert!(lemma_complete_and_not_unsat_implies_sat(*f, @a); f.sat(*a));
+        return true;
     }
 }
 

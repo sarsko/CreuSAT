@@ -137,15 +137,17 @@ impl Assignments {
         Assignments(assign, 0)
     }
 
-    #[trusted] // OK
-    #[requires(self.invariant(*_f))]
+    //#[trusted] // OK
     #[requires(!self.complete())]
+    #[requires(self.invariant(*_f))]
     #[requires(d.invariant((@self).len()))]
-    #[ensures(@result < (@self).len())]
-    #[ensures(unset((@self)[@result]))]
+    #[ensures(match result {
+        Some(n) => @n < (@self).len() && unset((@self)[@n]) && !(^self).complete(),
+        None => (^self).complete() && (^self) === (*self)
+    })]
     #[ensures(@self === @^self)]
     #[ensures((^self).invariant(*_f))]
-    pub fn find_unassigned(&mut self, d: &Decisions, _f: &Formula) -> usize {
+    pub fn find_unassigned(&mut self, d: &Decisions, _f: &Formula) -> Option<usize> {
         let mut i: usize = self.1;
         #[invariant(i_bound, @i <= (@d.lit_order).len())]
         while i < d.lit_order.len() {
@@ -154,7 +156,7 @@ impl Assignments {
                 //let b = curr != 2;
                 self.1 = i + 1;
                 //return Some(Lit{ idx: d.lit_order[i], polarity: b });
-                return d.lit_order[i];
+                return Some(d.lit_order[i]);
             }
             i += 1;
         }
@@ -164,11 +166,11 @@ impl Assignments {
         #[invariant(prev, forall<j: Int> 0 <= j && j < @i ==> !unset((@self)[j]))]
         while i < self.0.len() {
             if self.0[i] >= 2 {
-                return i;
+                return Some(i);
             }
             i += 1;
         }
-        unreachable!()
+        None
     }
 
     //#[trusted] // OK
@@ -182,10 +184,11 @@ impl Assignments {
     #[ensures((^self).invariant(*f))]
     #[ensures((*self).compatible(^self))]
     #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))] 
-    #[ensures((result === ClauseState::Unit) ==> (@f.clauses)[@i].unit(*self))]
-    #[ensures((result === ClauseState::Sat) ==> (@f.clauses)[@i].sat(^self) && @self === @^self)]
-    #[ensures((result === ClauseState::Unsat) ==> (@f.clauses)[@i].unsat(^self) && @self === @^self)]
-    #[ensures((result === ClauseState::Unknown) ==> (@f.clauses)[@i].unknown(^self) && @self === @^self)]
+    #[ensures((result === ClauseState::Unit)    ==> (@f.clauses)[@i].unit(*self) && !(self).complete())]
+    #[ensures((result === ClauseState::Sat)     ==> (@f.clauses)[@i].sat(^self) && @self === @^self)]
+    #[ensures((result === ClauseState::Unsat)   ==> (@f.clauses)[@i].unsat(^self) && @self === @^self)]
+    #[ensures((result === ClauseState::Unknown) ==> @self === @^self && !(^self).complete())]
+    #[ensures((self).complete() ==> *self === ^self && ((result === ClauseState::Unsat) || (result === ClauseState::Sat)))]
     pub fn unit_prop_once(&mut self, i: usize, f: &Formula, t: &mut Trail) -> ClauseState {
         let clause = &f.clauses[i];
         let old_a = Ghost::record(&self);
@@ -213,7 +216,6 @@ impl Assignments {
         }
     }
 
-    // This is returning an option because extending SatState makes the precondition in inner fail
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
     #[requires(t.invariant(*f))]
@@ -223,17 +225,18 @@ impl Assignments {
     #[ensures((^self).invariant(*f))]
     #[ensures(f.eventually_sat_complete(^self) === f.eventually_sat_complete(*self))]
     #[ensures((*self).compatible(^self))]
-    #[ensures(match result {
-        Some(SatState::Sat) => f.sat(^self),
-        Some(SatState::Unsat) => f.unsat(^self),
-        Some(SatState::Unknown) => !(^self).complete(),
-        None => true,
+    #[ensures(match result { 
+        ClauseState::Sat => f.sat(^self),
+        ClauseState::Unsat => f.unsat(^self),
+        ClauseState::Unknown => !(^self).complete(),
+        ClauseState::Unit => !self.complete(),
     })]
-    pub fn unit_propagate(&mut self, f: &Formula, t: &mut Trail) -> Option<SatState> {
+    #[ensures((self).complete() ==> *self === (^self) && ((result === ClauseState::Unsat) || f.sat(*self)))]
+    pub fn unit_propagate(&mut self, f: &Formula, t: &mut Trail) -> ClauseState {
         let old_a = Ghost::record(&self);
         let old_t = Ghost::record(&t);
         let mut i: usize = 0;
-        let mut out = Some(SatState::Sat);
+        let mut out = ClauseState::Sat;
         #[invariant(ti, t.invariant(*f))]
         #[invariant(ai, self.invariant(*f))]
         #[invariant(t_len, (@(@old_t).trail).len() === (@t.trail).len())]
@@ -241,27 +244,33 @@ impl Assignments {
         #[invariant(proph_t, ^t === ^@old_t)]
         #[invariant(compat, (*@old_a).compatible(*self))]
         #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) === f.eventually_sat_complete(*self))]
-        #[invariant(out_not_unsat, !(out === Some(SatState::Unsat)))]
-        #[invariant(out_is, match out {
-            Some(SatState::Sat) => forall<j: Int> 0 <= j && j < @i ==> (@f.clauses)[j].sat(*self),
-            Some(SatState::Unknown) => !self.complete(),
-            _ => true
-        })]
+        #[invariant(out_not_unsat, !(out === ClauseState::Unsat))]
+        #[invariant(inv, (@old_a).complete() ==> 
+            *@old_a === *self && forall<j: Int> 0 <= j && j < @i ==>
+             !(@f.clauses)[j].unknown(*self) && !(@f.clauses)[j].unit(*self) && (@f.clauses)[j].sat(*self)
+        )]
+        #[invariant(inv2,
+            out === ClauseState::Sat ==> forall<j: Int> 0 <= j && j < @i ==>
+             !(@f.clauses)[j].unsat(*self) && !(@f.clauses)[j].unknown(*self) && !(@f.clauses)[j].unit(*self) && (@f.clauses)[j].sat(*self)
+        )]
+        #[invariant(inv3,
+            out === ClauseState::Unit ==> !(*@old_a).complete() 
+            //&& exists<j: Int> 0 <= j && j < @i && (@f.clauses)[j].unit(*@old_a)
+        )]
+        #[invariant(inv4,
+            out === ClauseState::Unknown ==> !self.complete()//exists<j: Int> 0 <= j && j < @i ==>
+             //(@f.clauses)[j].unknown(*self)
+        )]
         while i < f.clauses.len() {
             match self.unit_prop_once(i, f, t) {
                 ClauseState::Sat => {},
-                ClauseState::Unsat => {
-                    return Some(SatState::Unsat);
-                },
-                ClauseState::Unit => {
-                    out = None;
-                },
+                ClauseState::Unsat => { return ClauseState::Unsat; },
+                ClauseState::Unit => { out = ClauseState::Unit; },
                 ClauseState::Unknown => {
                     match out {
-                        None => {},
-                        _ => {
-                            out = Some(SatState::Unknown);
-                        },
+                        ClauseState::Sat =>
+                            { out = ClauseState::Unknown; },
+                        _ => {},
                     }
                 }
             }
@@ -279,10 +288,10 @@ impl Assignments {
     #[ensures((^self).invariant(*f))]
     #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))]
     #[ensures((*self).compatible(^self))]
-    #[ensures((result === SatState::Sat) ==> f.sat(^self))]
-    #[ensures((result === SatState::Unsat) ==> f.unsat(^self))]
-    #[ensures((result === SatState::Unknown) ==> !(^self).complete())]
-    pub fn do_unit_propagation(&mut self, f: &Formula, t: &mut Trail) -> SatState {
+    #[ensures(result === Some(false) ==> f.unsat(^self))]
+    #[ensures(result === Some(true) ==> f.sat(^self))]
+    #[ensures(result === None ==> !(^self).complete())]
+    pub fn do_unit_propagation(&mut self, f: &Formula, t: &mut Trail) -> Option<bool> {
         let old_a = Ghost::record(&self);
         let old_t = Ghost::record(&t);
         #[invariant(ti, t.invariant(*f))]
@@ -294,10 +303,10 @@ impl Assignments {
         #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) ==> f.eventually_sat_complete(*self))]
         loop {
             match self.unit_propagate(f, t) {
-                Some(x) => {
-                    return x;
-                }
-                None => {}
+                ClauseState::Sat     => { return Some(true); },
+                ClauseState::Unsat   => { return Some(false); },
+                ClauseState::Unknown => { return None; }
+                ClauseState::Unit    => { }, // Continue
             }
         } 
     }

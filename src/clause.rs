@@ -108,6 +108,7 @@ impl Clause {
     }
 }
 
+//#[derive(Copy, Clone, Eq)]
 pub enum ClauseState {
     Sat,
     Unsat,
@@ -128,25 +129,20 @@ impl Clause {
         }
         */
     }
-    // Can be made to a complete eval function if I like
-    //#[trusted] // TMP, come back
+    //#[trusted] // OK
     #[requires(self.invariant((@a).len()))]
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
-    #[ensures((result === ClauseState::Sat) ===     self.sat(*a))]
-    #[ensures((result === ClauseState::Unsat) ===   self.unsat(*a))]
-    #[ensures((result === ClauseState::Unit) ==>    self.unit(*a))]
-    #[ensures((result === ClauseState::Unknown) ==> self.unknown(*a))]
-    //#[ensures(result ==> self.unit(*a))]  //TODO FIX
-    //#[ensures(!result ==> !self.unit(*a))]
-    //#[ensures(result ==> !self.unsat(*a))] 
-    //#[ensures(result ==> !self.sat(*a))] 
+    #[ensures((result === ClauseState::Sat)     ==> self.sat(*a))]
+    #[ensures((result === ClauseState::Unsat)   ==> self.unsat(*a))]
+    #[ensures((result === ClauseState::Unit)    ==> self.unit(*a) && !a.complete())]
+    #[ensures((result === ClauseState::Unknown) ==> !a.complete())]
     pub fn check_if_unit(&self, a: &Assignments, f: &Formula) -> ClauseState {
         let mut i: usize = 0;
         let mut k: usize = 0;
         let mut unassigned: usize = 0;
         #[invariant(loop_invariant, 0 <= @i && @i <= (@self.rest).len())]
-        #[invariant(unass, @unassigned <= @i)] 
+        #[invariant(unass, @unassigned <= 1)] 
         #[invariant(k_is_unass, (@unassigned === 0 || (@self)[@k].unset(*a)))]
         #[invariant(kk, @unassigned > 0 ==> (@self)[@k].unset(*a))]
         #[invariant(not_sat, forall<j: Int> 0 <= j && j < @i ==>
@@ -160,17 +156,18 @@ impl Clause {
             if lit.lit_sat(a) {
                 return ClauseState::Sat;
             } else if lit.lit_unset(a) { // Could make two different check_if_unit functions, one for pre_sat_possible and one for after
+                if unassigned > 0 {
+                    return ClauseState::Unknown;
+                }
                 k = i;
                 unassigned += 1;
             }
             i += 1;
         }
-        if unassigned == 0 {
-            ClauseState::Unsat
-        } else if unassigned == 1 {
+        if unassigned == 1 {
             ClauseState::Unit
         } else {
-            ClauseState::Unknown
+            ClauseState::Unsat
         }
     }
 

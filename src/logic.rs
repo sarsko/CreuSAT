@@ -52,6 +52,29 @@ pub fn unset(v: AssignedState) -> bool {
     }
 }
 
+/*
+#[logic]
+#[requires(complete_inner(a))]
+#[ensures(f.unsat_inner(a) || f.sat_inner(a))]
+pub fn lemma_complete_implies_sat_or_unsat(f: Formula, a: Seq<AssignedState>) {}
+
+#[logic]
+#[requires(complete_inner(a))]
+#[requires(!f.sat_inner(a))]
+#[ensures(f.unsat_inner(a))]
+pub fn lemma_complete_and_not_sat_implies_unsat(f: Formula, a: Seq<AssignedState>) {
+    lemma_complete_implies_sat_or_unsat(f, a);
+}
+
+#[logic]
+#[requires(complete_inner(a))]
+#[requires(!f.unsat_inner(a))]
+#[ensures(f.sat_inner(a))]
+pub fn lemma_complete_and_not_unsat_implies_sat(f: Formula, a: Seq<AssignedState>) {
+    lemma_complete_implies_sat_or_unsat(f, a);
+}
+*/
+
 #[logic] 
 #[requires(f.invariant())]
 #[requires(assignments_invariant(a, f))]
