@@ -192,9 +192,13 @@ impl Assignments {
         proof_assert!(^self === ^@old_a);
         match clause.check_if_unit(self, f) {
             ClauseState::Unit => { 
+                // I tried both to make ClauseState::Unit contain a usize and to return a tuple, but
+                // both were slower than getting it after. Kind of makes sense since unit clauses are
+                // rare and we on average have to traverse n/2 lits to find the unit lit. If I make formula
+                // mutable, then I can swap to index 0 and skip the call to clause.get_unit()
                 let lit = clause.get_unit(self, f);
                 proof_assert!(clause.invariant((@self).len()));
-                proof_assert!(lemma_unitClauseLiteralFalse_tauNotSatisfiable(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
+                proof_assert!(lemma_unit_wrong_polarity_unsat_formula(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
                 proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() && !(@(@clause)[j].idx === @lit.idx) ==> !((@clause)[j].unset(*self)));
                 proof_assert!(lemma_unit_forces(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
                 if lit.polarity {
@@ -204,8 +208,8 @@ impl Assignments {
                 }
                 t.enq_assignment(lit, Reason::Unit, f);
                 proof_assert!(@^self == (@*@old_a).set(@lit.idx, bool_to_assignedstate(lit.polarity)));
-                proof_assert!(lemma_extensionSat_baseSat(*f, @@old_a, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
-                proof_assert!(lemma_extensionsUnsat_baseUnsat(@@old_a, @lit.idx, *f); true);
+                proof_assert!(lemma_extension_sat_base_sat(*f, @@old_a, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
+                proof_assert!(lemma_extensions_unsat_base_unsat(@@old_a, @lit.idx, *f); true);
                 proof_assert!(^self === ^@old_a);
                 return ClauseState::Unit;
             },

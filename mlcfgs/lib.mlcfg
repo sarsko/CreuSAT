@@ -2480,7 +2480,7 @@ module Lib_Logic_LemmaCorrectPolarityMakesClauseSat_Interface
   clone Lib_Clause_Impl1_SatInner_Interface as SatInner0
   clone Lib_Logic_BoolToAssignedstate_Interface as BoolToAssignedstate0 with axiom .
   clone Lib_Clause_Impl0_Model_Interface as Model0
-  function lemma_correctPolarityMakesClauseSat (c : Type.lib_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
+  function lemma_correct_polarity_makes_clause_sat (c : Type.lib_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
 end
 module Lib_Logic_LemmaCorrectPolarityMakesClauseSat
@@ -2494,11 +2494,11 @@ module Lib_Logic_LemmaCorrectPolarityMakesClauseSat
   clone Lib_Clause_Impl1_SatInner_Interface as SatInner0
   clone Lib_Logic_BoolToAssignedstate_Interface as BoolToAssignedstate0 with axiom .
   clone Lib_Clause_Impl0_Model_Interface as Model0
-  function lemma_correctPolarityMakesClauseSat (c : Type.lib_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
+  function lemma_correct_polarity_makes_clause_sat (c : Type.lib_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
    = 
     ()
-  axiom lemma_correctPolarityMakesClauseSat_spec : forall c : Type.lib_clause_clause, a : Seq.seq uint8, ix : int, v : uint8 . (exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix && BoolToAssignedstate0.bool_to_assignedstate (Type.lib_lit_lit_Lit_polarity (Seq.get (Model0.model c) j)) = v) -> 0 <= ix && ix < Seq.length a -> SatInner0.sat_inner c (Seq.set a ix v)
+  axiom lemma_correct_polarity_makes_clause_sat_spec : forall c : Type.lib_clause_clause, a : Seq.seq uint8, ix : int, v : uint8 . (exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix && BoolToAssignedstate0.bool_to_assignedstate (Type.lib_lit_lit_Lit_polarity (Seq.get (Model0.model c) j)) = v) -> 0 <= ix && ix < Seq.length a -> SatInner0.sat_inner c (Seq.set a ix v)
 end
 module Lib_Logic_LemmaCorrectPolarityMakesClauseSat_Impl
   use mach.int.Int
@@ -2514,7 +2514,7 @@ module Lib_Logic_LemmaCorrectPolarityMakesClauseSat_Impl
   clone Lib_Clause_Impl0_Model as Model0 with function Model0.model = Model1.model
   clone Lib_Clause_Impl1_SatInner as SatInner0 with function Model0.model = Model0.model,
   predicate SatInner0.sat_inner = SatInner1.sat_inner
-  let rec ghost function lemma_correctPolarityMakesClauseSat (c : Type.lib_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
+  let rec ghost function lemma_correct_polarity_makes_clause_sat (c : Type.lib_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     requires {exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix && BoolToAssignedstate0.bool_to_assignedstate (Type.lib_lit_lit_Lit_polarity (Seq.get (Model0.model c) j)) = v}
     requires {0 <= ix && ix < Seq.length a}
     ensures { SatInner0.sat_inner c (Seq.set a ix v) }
@@ -2539,7 +2539,7 @@ module Lib_Logic_LemmaIncorrectPolarityMakesClauseUnsat_Interface
   clone Lib_Clause_Impl1_Invariant_Interface as Invariant0
   clone Lib_Lit_Impl1_UnsatInner_Interface as UnsatInner0
   clone Lib_Clause_Impl0_Model_Interface as Model0
-  function lemma_incorrectPolarityMakesClauseUnsat (c : Type.lib_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
+  function lemma_incorrect_polarity_makes_clause_unsat (c : Type.lib_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
 end
 module Lib_Logic_LemmaIncorrectPolarityMakesClauseUnsat
@@ -2559,11 +2559,11 @@ module Lib_Logic_LemmaIncorrectPolarityMakesClauseUnsat
   clone Lib_Clause_Impl1_Invariant_Interface as Invariant0
   clone Lib_Lit_Impl1_UnsatInner_Interface as UnsatInner0
   clone Lib_Clause_Impl0_Model_Interface as Model0
-  function lemma_incorrectPolarityMakesClauseUnsat (c : Type.lib_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
+  function lemma_incorrect_polarity_makes_clause_unsat (c : Type.lib_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
    = 
     ()
-  axiom lemma_incorrectPolarityMakesClauseUnsat_spec : forall c : Type.lib_clause_clause, a : Seq.seq uint8, ix : int, v : uint8 . (forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) && not (UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix) -> UnsatInner0.unsat_inner (Seq.get (Model0.model c) j) a) -> Invariant0.invariant' c (Seq.length a) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix && SatInner0.sat_inner (Seq.get (Model0.model c) j) a) -> not (SatInner1.sat_inner c a) -> UnitInner0.unit_inner c a -> 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix) -> not (Unset0.unset v) -> (forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) -> not (Unset0.unset (Seq.get (Seq.set a ix v) (UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)))))) && not (Unset0.unset (Seq.get (Seq.set a ix (FlipV0.flip_v v)) ix)) && UnsatInner1.unsat_inner c (Seq.set a ix (FlipV0.flip_v v)) && not (SatInner1.sat_inner c (Seq.set a ix (FlipV0.flip_v v)))
+  axiom lemma_incorrect_polarity_makes_clause_unsat_spec : forall c : Type.lib_clause_clause, a : Seq.seq uint8, ix : int, v : uint8 . (forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) && not (UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix) -> UnsatInner0.unsat_inner (Seq.get (Model0.model c) j) a) -> Invariant0.invariant' c (Seq.length a) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix && SatInner0.sat_inner (Seq.get (Model0.model c) j) a) -> not (SatInner1.sat_inner c a) -> UnitInner0.unit_inner c a -> 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix) -> not (Unset0.unset v) -> (forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) -> not (Unset0.unset (Seq.get (Seq.set a ix v) (UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)))))) && not (Unset0.unset (Seq.get (Seq.set a ix (FlipV0.flip_v v)) ix)) && UnsatInner1.unsat_inner c (Seq.set a ix (FlipV0.flip_v v)) && not (SatInner1.sat_inner c (Seq.set a ix (FlipV0.flip_v v)))
 end
 module Lib_Logic_LemmaIncorrectPolarityMakesClauseUnsat_Impl
   use mach.int.Int
@@ -2593,7 +2593,7 @@ module Lib_Logic_LemmaIncorrectPolarityMakesClauseUnsat_Impl
   clone Lib_Clause_Impl1_UnitInner as UnitInner0 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
   predicate SatInner0.sat_inner = SatInner1.sat_inner, function Model0.model = Model0.model,
   predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
-  let rec ghost function lemma_incorrectPolarityMakesClauseUnsat (c : Type.lib_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
+  let rec ghost function lemma_incorrect_polarity_makes_clause_unsat (c : Type.lib_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     requires {forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) && not (UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix) -> UnsatInner0.unsat_inner (Seq.get (Model0.model c) j) a}
     requires {Invariant0.invariant' c (Seq.length a)}
     requires {exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix && SatInner0.sat_inner (Seq.get (Model0.model c) j) a}
@@ -2659,7 +2659,7 @@ module Lib_Logic_LemmaNotSatClauseImpliesUnsatFormula_Impl
    = 
     ()
 end
-module Lib_Logic_LemmaUnitClauseLiteralFalseTauNotSatisfiable_Interface
+module Lib_Logic_LemmaUnitWrongPolarityUnsatFormula_Interface
   use mach.int.Int
   use mach.int.Int32
   use seq.Seq
@@ -2678,10 +2678,10 @@ module Lib_Logic_LemmaUnitClauseLiteralFalseTauNotSatisfiable_Interface
   clone Lib_Logic_BoolToAssignedstate_Interface as BoolToAssignedstate0 with axiom .
   clone Lib_Lit_Impl1_UnsatInner_Interface as UnsatInner0
   clone Lib_Clause_Impl0_Model_Interface as Model0
-  function lemma_unitClauseLiteralFalse_tauNotSatisfiable (c : Type.lib_clause_clause) (f : Type.lib_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
+  function lemma_unit_wrong_polarity_unsat_formula (c : Type.lib_clause_clause) (f : Type.lib_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
 end
-module Lib_Logic_LemmaUnitClauseLiteralFalseTauNotSatisfiable
+module Lib_Logic_LemmaUnitWrongPolarityUnsatFormula
   use mach.int.Int
   use mach.int.Int32
   use seq.Seq
@@ -2720,13 +2720,13 @@ module Lib_Logic_LemmaUnitClauseLiteralFalseTauNotSatisfiable
   clone Lib_Logic_LemmaCorrectPolarityMakesClauseSat_Interface as LemmaCorrectPolarityMakesClauseSat0 with function Model0.model = Model0.model,
   function BoolToAssignedstate0.bool_to_assignedstate = BoolToAssignedstate0.bool_to_assignedstate,
   predicate SatInner0.sat_inner = SatInner0.sat_inner, axiom .
-  function lemma_unitClauseLiteralFalse_tauNotSatisfiable (c : Type.lib_clause_clause) (f : Type.lib_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
+  function lemma_unit_wrong_polarity_unsat_formula (c : Type.lib_clause_clause) (f : Type.lib_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
    = 
-    let _ = LemmaNotSatFormulaImpliesUnsatFormula0.lemma_not_sat_formula_implies_unsat_formula f a in let _ = LemmaCorrectPolarityMakesClauseSat0.lemma_correctPolarityMakesClauseSat c a ix v in let _ = LemmaIncorrectPolarityMakesClauseUnsat0.lemma_incorrectPolarityMakesClauseUnsat c a ix v in let _ = LemmaNotSatClauseImpliesUnsatFormula0.lemma_not_sat_clause_implies_unsat_formula f c (Seq.set a ix (FlipV0.flip_v v)) in ()
-  axiom lemma_unitClauseLiteralFalse_tauNotSatisfiable_spec : forall c : Type.lib_clause_clause, f : Type.lib_formula_formula, a : Seq.seq uint8, ix : int, v : uint8 . (forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) && not (UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix) -> UnsatInner0.unsat_inner (Seq.get (Model0.model c) j) a) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix && BoolToAssignedstate0.bool_to_assignedstate (Type.lib_lit_lit_Lit_polarity (Seq.get (Model0.model c) j)) = v) -> Invariant0.invariant' c (Seq.length a) -> InFormula0.in_formula c f -> UnitInner0.unit_inner c a -> not (Unset0.unset v) -> 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix) -> UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f) = Seq.length a -> Invariant1.invariant' f -> not (EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v))) && UnsatInner1.unsat_inner f (Seq.set a ix (FlipV0.flip_v v))
+    let _ = LemmaNotSatFormulaImpliesUnsatFormula0.lemma_not_sat_formula_implies_unsat_formula f a in let _ = LemmaCorrectPolarityMakesClauseSat0.lemma_correct_polarity_makes_clause_sat c a ix v in let _ = LemmaIncorrectPolarityMakesClauseUnsat0.lemma_incorrect_polarity_makes_clause_unsat c a ix v in let _ = LemmaNotSatClauseImpliesUnsatFormula0.lemma_not_sat_clause_implies_unsat_formula f c (Seq.set a ix (FlipV0.flip_v v)) in ()
+  axiom lemma_unit_wrong_polarity_unsat_formula_spec : forall c : Type.lib_clause_clause, f : Type.lib_formula_formula, a : Seq.seq uint8, ix : int, v : uint8 . (forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) && not (UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix) -> UnsatInner0.unsat_inner (Seq.get (Model0.model c) j) a) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix && BoolToAssignedstate0.bool_to_assignedstate (Type.lib_lit_lit_Lit_polarity (Seq.get (Model0.model c) j)) = v) -> Invariant0.invariant' c (Seq.length a) -> InFormula0.in_formula c f -> UnitInner0.unit_inner c a -> not (Unset0.unset v) -> 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix) -> UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f) = Seq.length a -> Invariant1.invariant' f -> not (EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v))) && UnsatInner1.unsat_inner f (Seq.set a ix (FlipV0.flip_v v))
 end
-module Lib_Logic_LemmaUnitClauseLiteralFalseTauNotSatisfiable_Impl
+module Lib_Logic_LemmaUnitWrongPolarityUnsatFormula_Impl
   use mach.int.Int
   use mach.int.Int32
   use seq.Seq
@@ -2786,7 +2786,7 @@ module Lib_Logic_LemmaUnitClauseLiteralFalseTauNotSatisfiable_Impl
   predicate Invariant0.invariant' = Invariant1.invariant',
   predicate EventuallySatCompleteInner0.eventually_sat_complete_inner = EventuallySatCompleteInner0.eventually_sat_complete_inner,
   axiom .
-  let rec ghost function lemma_unitClauseLiteralFalse_tauNotSatisfiable (c : Type.lib_clause_clause) (f : Type.lib_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
+  let rec ghost function lemma_unit_wrong_polarity_unsat_formula (c : Type.lib_clause_clause) (f : Type.lib_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     requires {forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) && not (UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix) -> UnsatInner0.unsat_inner (Seq.get (Model0.model c) j) a}
     requires {exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix && BoolToAssignedstate0.bool_to_assignedstate (Type.lib_lit_lit_Lit_polarity (Seq.get (Model0.model c) j)) = v}
     requires {Invariant0.invariant' c (Seq.length a)}
@@ -2800,7 +2800,7 @@ module Lib_Logic_LemmaUnitClauseLiteralFalseTauNotSatisfiable_Impl
     ensures { not (EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v))) }
     
    = 
-    let _ = LemmaNotSatFormulaImpliesUnsatFormula0.lemma_not_sat_formula_implies_unsat_formula f a in let _ = LemmaCorrectPolarityMakesClauseSat0.lemma_correctPolarityMakesClauseSat c a ix v in let _ = LemmaIncorrectPolarityMakesClauseUnsat0.lemma_incorrectPolarityMakesClauseUnsat c a ix v in let _ = let c' = let c' = FlipV0.flip_v v in Seq.set a ix c' in LemmaNotSatClauseImpliesUnsatFormula0.lemma_not_sat_clause_implies_unsat_formula f c c' in ()
+    let _ = LemmaNotSatFormulaImpliesUnsatFormula0.lemma_not_sat_formula_implies_unsat_formula f a in let _ = LemmaCorrectPolarityMakesClauseSat0.lemma_correct_polarity_makes_clause_sat c a ix v in let _ = LemmaIncorrectPolarityMakesClauseUnsat0.lemma_incorrect_polarity_makes_clause_unsat c a ix v in let _ = let c' = let c' = FlipV0.flip_v v in Seq.set a ix c' in LemmaNotSatClauseImpliesUnsatFormula0.lemma_not_sat_clause_implies_unsat_formula f c c' in ()
 end
 module Lib_Logic_LemmaUnitForces_Interface
   use seq.Seq
@@ -2906,7 +2906,7 @@ module Lib_Logic_LemmaExtensionSatBaseSat_Interface
   use prelude.UInt8
   clone Lib_Logic_Unset_Interface as Unset0
   clone Lib_Formula_Impl1_EventuallySatCompleteInner_Interface as EventuallySatCompleteInner0
-  function lemma_extensionSat_baseSat (f : Type.lib_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
+  function lemma_extension_sat_base_sat (f : Type.lib_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
 end
 module Lib_Logic_LemmaExtensionSatBaseSat
   use seq.Seq
@@ -2917,9 +2917,10 @@ module Lib_Logic_LemmaExtensionSatBaseSat
   use prelude.UInt8
   clone Lib_Logic_Unset_Interface as Unset0
   clone Lib_Formula_Impl1_EventuallySatCompleteInner_Interface as EventuallySatCompleteInner0
-  function lemma_extensionSat_baseSat (f : Type.lib_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : () = 
+  function lemma_extension_sat_base_sat (f : Type.lib_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
+   = 
     ()
-  axiom lemma_extensionSat_baseSat_spec : forall f : Type.lib_formula_formula, a : Seq.seq uint8, ix : int, v : uint8 . EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix v) -> 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix) -> EventuallySatCompleteInner0.eventually_sat_complete_inner f a
+  axiom lemma_extension_sat_base_sat_spec : forall f : Type.lib_formula_formula, a : Seq.seq uint8, ix : int, v : uint8 . EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix v) -> 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix) -> EventuallySatCompleteInner0.eventually_sat_complete_inner f a
 end
 module Lib_Logic_LemmaExtensionSatBaseSat_Impl
   use seq.Seq
@@ -2943,7 +2944,7 @@ module Lib_Logic_LemmaExtensionSatBaseSat_Impl
   predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner
   clone Lib_Formula_Impl1_EventuallySatCompleteInner as EventuallySatCompleteInner0 with predicate CompatibleCompleteInner0.compatible_complete_inner = CompatibleCompleteInner0.compatible_complete_inner,
   predicate SatInner0.sat_inner = SatInner0.sat_inner
-  let rec ghost function lemma_extensionSat_baseSat (f : Type.lib_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
+  let rec ghost function lemma_extension_sat_base_sat (f : Type.lib_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     requires {EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix v)}
     requires {0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix)}
     ensures { EventuallySatCompleteInner0.eventually_sat_complete_inner f a }
@@ -2988,7 +2989,7 @@ module Lib_Logic_LemmaExtensionsUnsatBaseUnsat_Interface
   clone Lib_Logic_Neg_Interface as Neg0
   clone Lib_Formula_Impl1_EventuallySatCompleteInner_Interface as EventuallySatCompleteInner0
   clone Lib_Logic_Pos_Interface as Pos0
-  function lemma_extensionsUnsat_baseUnsat (a : Seq.seq uint8) (ix : int) (f : Type.lib_formula_formula) : ()
+  function lemma_extensions_unsat_base_unsat (a : Seq.seq uint8) (ix : int) (f : Type.lib_formula_formula) : ()
 end
 module Lib_Logic_LemmaExtensionsUnsatBaseUnsat
   use seq.Seq
@@ -3002,9 +3003,9 @@ module Lib_Logic_LemmaExtensionsUnsatBaseUnsat
   clone Lib_Formula_Impl1_EventuallySatCompleteInner_Interface as EventuallySatCompleteInner0
   clone Lib_Logic_Pos_Interface as Pos0
   clone Lib_Assignments_CompatibleInner_Interface as CompatibleInner0
-  function lemma_extensionsUnsat_baseUnsat (a : Seq.seq uint8) (ix : int) (f : Type.lib_formula_formula) : () = 
+  function lemma_extensions_unsat_base_unsat (a : Seq.seq uint8) (ix : int) (f : Type.lib_formula_formula) : () = 
     let _ = CompatibleInner0.compatible_inner a (Seq.set a ix (Pos0.pos ())) in let _ = CompatibleInner0.compatible_inner a (Seq.set a ix (Neg0.neg ())) in ()
-  axiom lemma_extensionsUnsat_baseUnsat_spec : forall a : Seq.seq uint8, ix : int, f : Type.lib_formula_formula . not (EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (Pos0.pos ()))) -> not (EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (Neg0.neg ()))) -> 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix) -> not (EventuallySatCompleteInner0.eventually_sat_complete_inner f a)
+  axiom lemma_extensions_unsat_base_unsat_spec : forall a : Seq.seq uint8, ix : int, f : Type.lib_formula_formula . not (EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (Pos0.pos ()))) -> not (EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (Neg0.neg ()))) -> 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix) -> not (EventuallySatCompleteInner0.eventually_sat_complete_inner f a)
 end
 module Lib_Logic_LemmaExtensionsUnsatBaseUnsat_Impl
   use seq.Seq
@@ -3030,7 +3031,7 @@ module Lib_Logic_LemmaExtensionsUnsatBaseUnsat_Impl
   predicate SatInner0.sat_inner = SatInner0.sat_inner
   clone Lib_Logic_Neg as Neg0
   clone Lib_Logic_Pos as Pos0
-  let rec ghost function lemma_extensionsUnsat_baseUnsat (a : Seq.seq uint8) (ix : int) (f : Type.lib_formula_formula) : ()
+  let rec ghost function lemma_extensions_unsat_base_unsat (a : Seq.seq uint8) (ix : int) (f : Type.lib_formula_formula) : ()
     requires {not (EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (Pos0.pos ())))}
     requires {not (EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (Neg0.neg ())))}
     requires {0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix)}
@@ -3346,7 +3347,7 @@ module Lib_Assignments_Impl2_UnitPropOnce
   clone Lib_Logic_LemmaCorrectPolarityMakesClauseSat as LemmaCorrectPolarityMakesClauseSat0 with function Model0.model = Model6.model,
   function BoolToAssignedstate0.bool_to_assignedstate = BoolToAssignedstate0.bool_to_assignedstate,
   predicate SatInner0.sat_inner = SatInner0.sat_inner, axiom .
-  clone Lib_Logic_LemmaUnitClauseLiteralFalseTauNotSatisfiable as LemmaUnitClauseLiteralFalseTauNotSatisfiable0 with function Model0.model = Model6.model,
+  clone Lib_Logic_LemmaUnitWrongPolarityUnsatFormula as LemmaUnitWrongPolarityUnsatFormula0 with function Model0.model = Model6.model,
   predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner,
   function BoolToAssignedstate0.bool_to_assignedstate = BoolToAssignedstate0.bool_to_assignedstate,
   predicate Invariant0.invariant' = Invariant0.invariant', predicate InFormula0.in_formula = InFormula0.in_formula,
@@ -3355,8 +3356,8 @@ module Lib_Assignments_Impl2_UnitPropOnce
   predicate UnsatInner1.unsat_inner = UnsatInner1.unsat_inner,
   predicate EventuallySatCompleteInner0.eventually_sat_complete_inner = EventuallySatCompleteInner0.eventually_sat_complete_inner,
   function LemmaNotSatFormulaImpliesUnsatFormula0.lemma_not_sat_formula_implies_unsat_formula = LemmaNotSatFormulaImpliesUnsatFormula0.lemma_not_sat_formula_implies_unsat_formula,
-  function LemmaCorrectPolarityMakesClauseSat0.lemma_correctPolarityMakesClauseSat = LemmaCorrectPolarityMakesClauseSat0.lemma_correctPolarityMakesClauseSat,
-  function LemmaIncorrectPolarityMakesClauseUnsat0.lemma_incorrectPolarityMakesClauseUnsat = LemmaIncorrectPolarityMakesClauseUnsat0.lemma_incorrectPolarityMakesClauseUnsat,
+  function LemmaCorrectPolarityMakesClauseSat0.lemma_correct_polarity_makes_clause_sat = LemmaCorrectPolarityMakesClauseSat0.lemma_correct_polarity_makes_clause_sat,
+  function LemmaIncorrectPolarityMakesClauseUnsat0.lemma_incorrect_polarity_makes_clause_unsat = LemmaIncorrectPolarityMakesClauseUnsat0.lemma_incorrect_polarity_makes_clause_unsat,
   function LemmaNotSatClauseImpliesUnsatFormula0.lemma_not_sat_clause_implies_unsat_formula = LemmaNotSatClauseImpliesUnsatFormula0.lemma_not_sat_clause_implies_unsat_formula,
   predicate AssignmentsInvariant0.assignments_invariant = AssignmentsInvariant0.assignments_invariant,
   predicate SatInner0.sat_inner = SatInner0.sat_inner, predicate SatInner1.sat_inner = SatInner1.sat_inner,
@@ -3531,7 +3532,7 @@ module Lib_Assignments_Impl2_UnitPropOnce
     assert { Invariant0.invariant' clause_5 (Seq.length (Model1.model self_1)) };
     _23 <- ();
     assume { Resolve4.resolve _23 };
-    assert { let _ = LemmaUnitClauseLiteralFalseTauNotSatisfiable0.lemma_unitClauseLiteralFalse_tauNotSatisfiable clause_5 f_3 (Model1.model self_1) (UInt64.to_int (Type.lib_lit_lit_Lit_idx lit_19)) (BoolToAssignedstate0.bool_to_assignedstate (Type.lib_lit_lit_Lit_polarity lit_19)) in true };
+    assert { let _ = LemmaUnitWrongPolarityUnsatFormula0.lemma_unit_wrong_polarity_unsat_formula clause_5 f_3 (Model1.model self_1) (UInt64.to_int (Type.lib_lit_lit_Lit_idx lit_19)) (BoolToAssignedstate0.bool_to_assignedstate (Type.lib_lit_lit_Lit_polarity lit_19)) in true };
     _24 <- ();
     assume { Resolve4.resolve _24 };
     assert { forall j : (int) . 0 <= j && j < Seq.length (Model2.model clause_5) && not (UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model2.model clause_5) j)) = UInt64.to_int (Type.lib_lit_lit_Lit_idx lit_19)) -> not (Unset0.unset (Seq.get (Model2.model clause_5) j) ( * self_1)) };
@@ -3596,10 +3597,10 @@ module Lib_Assignments_Impl2_UnitPropOnce
     assert { Seq.(==) (Model3.model ( ^ self_1)) (Seq.set (Model3.model ( * Model0.model old_a_9)) (UInt64.to_int (Type.lib_lit_lit_Lit_idx lit_19)) (BoolToAssignedstate0.bool_to_assignedstate (Type.lib_lit_lit_Lit_polarity lit_19))) };
     _40 <- ();
     assume { Resolve4.resolve _40 };
-    assert { let _ = LemmaExtensionSatBaseSat0.lemma_extensionSat_baseSat f_3 (Model1.model (Model0.model old_a_9)) (UInt64.to_int (Type.lib_lit_lit_Lit_idx lit_19)) (BoolToAssignedstate0.bool_to_assignedstate (Type.lib_lit_lit_Lit_polarity lit_19)) in true };
+    assert { let _ = LemmaExtensionSatBaseSat0.lemma_extension_sat_base_sat f_3 (Model1.model (Model0.model old_a_9)) (UInt64.to_int (Type.lib_lit_lit_Lit_idx lit_19)) (BoolToAssignedstate0.bool_to_assignedstate (Type.lib_lit_lit_Lit_polarity lit_19)) in true };
     _41 <- ();
     assume { Resolve4.resolve _41 };
-    assert { let _ = LemmaExtensionsUnsatBaseUnsat0.lemma_extensionsUnsat_baseUnsat (Model1.model (Model0.model old_a_9)) (UInt64.to_int (Type.lib_lit_lit_Lit_idx lit_19)) f_3 in true };
+    assert { let _ = LemmaExtensionsUnsatBaseUnsat0.lemma_extensions_unsat_base_unsat (Model1.model (Model0.model old_a_9)) (UInt64.to_int (Type.lib_lit_lit_Lit_idx lit_19)) f_3 in true };
     _42 <- ();
     assume { Resolve4.resolve _42 };
     assert {  ^ self_1 =  ^ Model0.model old_a_9 };
