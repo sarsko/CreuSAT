@@ -62,32 +62,25 @@ fn inner(f: &Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut
         Some(n) => { return n; },
         _ => {},
     }
-    if let Some(next) = a.find_unassigned(d, f) {
-        let dlevel = t.trail.len();
-        let old_a = Ghost::record(&a);
-        t.add_level(f);
-        a.0[next] = 1;
-        let lit = Lit{ idx: next, polarity: true };
-        t.enq_assignment(lit, Reason::Decision, f);
-        let old_a1 = a.1;
-
-        if inner(f, a, d, t, w) {
-            return true;
-        }
-        a.cancel_until(t, dlevel, f);
-        proof_assert!(@a === @@old_a); // Todo on post for cancel_until
-        t.add_level(f);
-        a.0[next] = 0;
-        a.1 = old_a1;
-        let lit = Lit{ idx: next, polarity: false };
-        t.enq_assignment(lit, Reason::Decision, f);
-        return inner(f, a, d, t, w);
-    } else {
-        //proof_assert!(a.complete());
-        //proof_assert!(!f.unsat(*a)); 
-        //proof_assert!(lemma_complete_and_not_unsat_implies_sat(*f, @a); f.sat(*a));
+    let next = a.find_unassigned(d, f);
+    let dlevel = t.trail.len();
+    let old_a = Ghost::record(&a);
+    t.add_level(f);
+    a.0[next] = 1;
+    let lit = Lit{ idx: next, polarity: true };
+    t.enq_assignment(lit, Reason::Decision, f);
+    let old_a1 = a.1;
+    if inner(f, a, d, t, w) {
         return true;
     }
+    a.cancel_until(t, dlevel, f);
+    proof_assert!(@a === @@old_a); // Todo on post for cancel_until
+    t.add_level(f);
+    a.0[next] = 0;
+    a.1 = old_a1;
+    let lit = Lit{ idx: next, polarity: false };
+    t.enq_assignment(lit, Reason::Decision, f);
+    return inner(f, a, d, t, w);
 }
 
 #[trusted]

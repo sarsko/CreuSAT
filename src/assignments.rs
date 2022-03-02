@@ -141,13 +141,10 @@ impl Assignments {
     #[requires(!self.complete())]
     #[requires(self.invariant(*_f))]
     #[requires(d.invariant((@self).len()))]
-    #[ensures(match result {
-        Some(n) => @n < (@self).len() && unset((@self)[@n]) && !(^self).complete(),
-        None => (^self).complete() && (^self) === (*self)
-    })]
+    #[ensures(@result < (@self).len() && unset((@self)[@result]))]
     #[ensures(@self === @^self)]
     #[ensures((^self).invariant(*_f))]
-    pub fn find_unassigned(&mut self, d: &Decisions, _f: &Formula) -> Option<usize> {
+    pub fn find_unassigned(&mut self, d: &Decisions, _f: &Formula) -> usize {
         let mut i: usize = self.1;
         #[invariant(i_bound, @i <= (@d.lit_order).len())]
         while i < d.lit_order.len() {
@@ -156,7 +153,7 @@ impl Assignments {
                 //let b = curr != 2;
                 self.1 = i + 1;
                 //return Some(Lit{ idx: d.lit_order[i], polarity: b });
-                return Some(d.lit_order[i]);
+                return d.lit_order[i];
             }
             i += 1;
         }
@@ -166,11 +163,11 @@ impl Assignments {
         #[invariant(prev, forall<j: Int> 0 <= j && j < @i ==> !unset((@self)[j]))]
         while i < self.0.len() {
             if self.0[i] >= 2 {
-                return Some(i);
+                return i;
             }
             i += 1;
         }
-        None
+        panic!();
     }
 
     //#[trusted] // OK
