@@ -294,7 +294,8 @@ impl Assignments {
     #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))]
     #[ensures((*self).compatible(^self))]
     #[ensures(result === Some(false) ==> f.unsat(^self))]
-    #[ensures(result === Some(true) ==> f.sat(^self))]
+    #[ensures(result === Some(true) ==> !f.unsat(^self))]
+    //#[ensures(result === Some(true) ==> f.sat(^self))]
     #[ensures(result === None ==> !(^self).complete())]
     pub fn do_unit_propagation(&mut self, f: &Formula, t: &mut Trail) -> Option<bool> {
         let old_a = Ghost::record(&self);

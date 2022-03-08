@@ -64,8 +64,10 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 #[ensures(result === false ==> !f.eventually_sat_complete(*a))]
 fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> bool {
     match a.do_unit_propagation(f, t) {
-        Some(n) => { return n; },
-        _ => {},
+        Some(false) => { return false; },
+        Some(true) => {},
+        None => {},
+        //_ => {},
     }
     match a.find_unassigned(d, f) {
         Some(next) => {
@@ -93,7 +95,11 @@ fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: 
             //return inner(f, a, d, t, w);
             return inner(f, &mut a_cloned, d, t, w);
         },
-        None => { return true; },
+        None => { 
+            proof_assert!(a.complete());
+            proof_assert!(!f.unsat(*a));
+            proof_assert!(lemma_complete_and_not_unsat_implies_sat(*f, @a); true);
+            return true; },
     }
 }
 
