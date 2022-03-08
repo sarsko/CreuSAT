@@ -6,9 +6,23 @@ use crate::clause::*;
 use crate::assignments::*;
 
 #[derive(Clone, Copy)]
+//#[derive(Clone, Copy, Debug)]
 pub struct Lit {
     pub idx: usize,
     pub polarity: bool,
+}
+
+// Logic
+impl Lit {
+    #[logic]
+    pub fn to_watchidx_logic(&self) -> Int {
+        pearlite! { @self.idx * 2 + if self.polarity { 0 } else { 1 } }
+    }
+
+    #[logic]
+    pub fn to_neg_watchidx_logic(&self) -> Int {
+        pearlite! { @self.idx * 2 + if self.polarity { 1 } else { 0 } }
+    }
 }
 
 // Predicates
@@ -103,5 +117,22 @@ impl Lit {
     #[ensures(result === self.unset(*a))]
     pub fn lit_unset(self, a: &Assignments) -> bool {
         a.0[self.idx] >= 2
+    }
+    
+    // Gets the index of the literal in the representation used for the watchlist
+    #[trusted] // OK
+    #[requires(@self.idx < @usize::MAX/2)]
+    #[ensures(@result === self.to_watchidx_logic())]
+    #[ensures(@result === @self.idx * 2 + if self.polarity { 0 } else { 1 })]
+    pub fn to_watchidx(&self) -> usize {
+        self.idx * 2 + if self.polarity { 0 } else { 1 }
+    }
+    // Gets the index of the literal of the opposite polarity(-self) in the representation used for the watchlist
+    #[trusted] // OK
+    #[requires(@self.idx < @usize::MAX/2)]
+    #[ensures(@result === self.to_neg_watchidx_logic())]
+    #[ensures(@result === @self.idx * 2 + if self.polarity { 1 } else { 0 })]
+    pub fn to_neg_watchidx(&self) -> usize {
+        self.idx * 2 + if self.polarity { 1 } else { 0 }
     }
 }

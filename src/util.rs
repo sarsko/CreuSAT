@@ -31,7 +31,7 @@ fn partition_rev(v: Seq<(usize, usize)>, i: Int) -> bool {
 }
 
 // Selection sort with larger elements first. Based on the one in Creusot repo by me and Xavier
-//#[trusted] // OK
+#[trusted] // OK
 #[ensures(sorted_rev(@^v))]
 #[ensures((@^v).permutation_of(@v))]
 pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {

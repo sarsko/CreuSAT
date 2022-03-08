@@ -17,3 +17,5 @@ pub mod solver_dpll;
 pub mod parser;
 pub mod util;
 pub mod decision;
+pub mod trail;
+pub mod watches;

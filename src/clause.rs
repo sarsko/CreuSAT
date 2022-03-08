@@ -108,9 +108,17 @@ impl Clause {
     }
 }
 
+//#[derive(Copy, Clone, Eq)]
+pub enum ClauseState {
+    Sat,
+    Unsat,
+    Unit,
+    Unknown
+}
+
 impl Clause {
     #[inline]
-    #[trusted]
+    #[trusted] // TMP
     pub fn clause_from_vec(vec: &std::vec::Vec<Lit>) -> Clause {
         Clause { rest: vec.clone() }
         /*
@@ -121,24 +129,24 @@ impl Clause {
         }
         */
     }
-    // Can be made to a complete eval function if I like
+    //#[trusted] // OK
     #[requires(self.invariant((@a).len()))]
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
-    #[ensures(result ==> self.unit(*a))] 
-    //#[ensures(!result ==> !self.unit(*a))]
-    //#[ensures(result ==> !self.unsat(*a))] 
-    //#[ensures(result ==> !self.sat(*a))] 
-    pub fn check_if_unit(&self, a: &Assignments, f: &Formula) -> bool {
+    #[ensures((result === ClauseState::Sat)     ==> self.sat(*a))]
+    #[ensures((result === ClauseState::Unsat)   ==> self.unsat(*a))]
+    #[ensures((result === ClauseState::Unit)    ==> self.unit(*a) && !a.complete())]
+    #[ensures((result === ClauseState::Unknown) ==> !a.complete())]
+    pub fn check_if_unit(&self, a: &Assignments, f: &Formula) -> ClauseState {
         let mut i: usize = 0;
-        let mut unassigned: usize = 0;
         let mut k: usize = 0;
-        #[invariant(loop_invariant, 0 <= @i && @i <= (@self).len())]
-        #[invariant(unass, @unassigned < 2)] 
+        let mut unassigned: usize = 0;
+        #[invariant(loop_invariant, 0 <= @i && @i <= (@self.rest).len())]
+        #[invariant(unass, @unassigned <= 1)] 
         #[invariant(k_is_unass, (@unassigned === 0 || (@self)[@k].unset(*a)))]
         #[invariant(kk, @unassigned > 0 ==> (@self)[@k].unset(*a))]
         #[invariant(not_sat, forall<j: Int> 0 <= j && j < @i ==>
-            ((@self)[j].unsat(*a) || ((@self)[j].unset(*a) && @unassigned === 1)))]
+            ((@self)[j].unsat(*a) || ((@self)[j].unset(*a) && @unassigned >= 1)))]
         #[invariant(k_in_bounds, @unassigned === 0 || 0 <= @k && @k < (@self).len())]
         #[invariant(k_only, @unassigned === 1 ==> 
             (forall<j: Int> 0 <= j && j < @i && j != @k ==> !(@self)[j].unset(*a)))]
@@ -146,10 +154,10 @@ impl Clause {
         while i < self.rest.len() {
             let lit = self.rest[i];
             if lit.lit_sat(a) {
-                return false;
-            } else if lit.lit_unset(a) {
+                return ClauseState::Sat;
+            } else if lit.lit_unset(a) { // Could make two different check_if_unit functions, one for pre_sat_possible and one for after
                 if unassigned > 0 {
-                    return false;
+                    return ClauseState::Unknown;
                 }
                 k = i;
                 unassigned += 1;
@@ -157,12 +165,13 @@ impl Clause {
             i += 1;
         }
         if unassigned == 1 {
-            true
+            ClauseState::Unit
         } else {
-            false
+            ClauseState::Unsat
         }
     }
 
+    #[trusted] // OK
     #[requires(self.unit(*a))]
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
