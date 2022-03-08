@@ -51,41 +51,50 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 #[requires(d.invariant(@f.num_vars))]
 #[requires(t.invariant(*f))]
 #[requires((@t.trail).len() > 0)]
+#[ensures(@f.num_vars === @(^f).num_vars)]
+#[ensures((^f).invariant())]
+#[ensures(^f === *f)]
+#[ensures(f.eventually_sat(*a) === (^f).eventually_sat(*a))]
+#[ensures(f.eventually_sat_complete(*a) === (^f).eventually_sat_complete(*a))]
 #[ensures((@(^t).trail).len() >= (@t.trail).len())]
-#[ensures((^t).invariant(*f))]
-#[ensures((^a).invariant(*f))]
+#[ensures((^t).invariant(^f))]
+#[ensures((^a).invariant(^f))]
 //#[ensures((^d).invariant())]
 #[ensures(result === true ==> f.eventually_sat(*a))]
 #[ensures(result === false ==> !f.eventually_sat_complete(*a))]
-fn inner(f: &Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> bool {
+fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> bool {
     match a.do_unit_propagation(f, t) {
         Some(n) => { return n; },
         _ => {},
     }
-    let next = a.find_unassigned(d, f);
-    let dlevel = t.trail.len();
-    let old_a = Ghost::record(&a);
-    let mut a_cloned = a.clone();
-    proof_assert!(@a_cloned === @@old_a);
-    t.add_level(f);
-    a.0[next] = 1;
-    let lit = Lit{ idx: next, polarity: true };
-    t.enq_assignment(lit, Reason::Decision, f);
-    let old_a1 = a.1;
-    if inner(f, a, d, t, w) {
-        return true;
+    match a.find_unassigned(d, f) {
+        Some(next) => {
+            let dlevel = t.trail.len();
+            let old_a = Ghost::record(&a);
+            let mut a_cloned = a.clone();
+            proof_assert!(@a_cloned === @@old_a);
+            t.add_level(f);
+            a.0[next] = 1;
+            let lit = Lit{ idx: next, polarity: true };
+            t.enq_assignment(lit, Reason::Decision, f);
+            let old_a1 = a.1;
+            if inner(f, a, d, t, w) {
+                return true;
+            }
+            //a.cancel_until(t, dlevel, f);
+            //proof_assert!(@a === @@old_a); // Todo on post for cancel_until
+            t.add_level(f);
+            //a.0[next] = 0;
+            a_cloned.0[next] = 0;
+            //a.1 = old_a1;
+            a_cloned.1 = old_a1;
+            let lit = Lit{ idx: next, polarity: false };
+            t.enq_assignment(lit, Reason::Decision, f);
+            //return inner(f, a, d, t, w);
+            return inner(f, &mut a_cloned, d, t, w);
+        },
+        None => { return true; },
     }
-    //a.cancel_until(t, dlevel, f);
-    //proof_assert!(@a === @@old_a); // Todo on post for cancel_until
-    t.add_level(f);
-    //a.0[next] = 0;
-    a_cloned.0[next] = 0;
-    //a.1 = old_a1;
-    a_cloned.1 = old_a1;
-    let lit = Lit{ idx: next, polarity: false };
-    t.enq_assignment(lit, Reason::Decision, f);
-    //return inner(f, a, d, t, w);
-    return inner(f, &mut a_cloned, d, t, w);
 }
 
 #[trusted]
