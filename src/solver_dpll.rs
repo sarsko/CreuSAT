@@ -65,6 +65,8 @@ fn inner(f: &Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut
     let next = a.find_unassigned(d, f);
     let dlevel = t.trail.len();
     let old_a = Ghost::record(&a);
+    let mut a_cloned = a.clone();
+    proof_assert!(@a_cloned === @@old_a);
     t.add_level(f);
     a.0[next] = 1;
     let lit = Lit{ idx: next, polarity: true };
@@ -73,14 +75,17 @@ fn inner(f: &Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut
     if inner(f, a, d, t, w) {
         return true;
     }
-    a.cancel_until(t, dlevel, f);
-    proof_assert!(@a === @@old_a); // Todo on post for cancel_until
+    //a.cancel_until(t, dlevel, f);
+    //proof_assert!(@a === @@old_a); // Todo on post for cancel_until
     t.add_level(f);
-    a.0[next] = 0;
-    a.1 = old_a1;
+    //a.0[next] = 0;
+    a_cloned.0[next] = 0;
+    //a.1 = old_a1;
+    a_cloned.1 = old_a1;
     let lit = Lit{ idx: next, polarity: false };
     t.enq_assignment(lit, Reason::Decision, f);
-    return inner(f, a, d, t, w);
+    //return inner(f, a, d, t, w);
+    return inner(f, &mut a_cloned, d, t, w);
 }
 
 #[trusted]
