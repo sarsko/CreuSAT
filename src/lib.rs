@@ -19,3 +19,4 @@ pub mod util;
 pub mod decision;
 pub mod trail;
 pub mod watches;
+pub mod conflict_analysis;

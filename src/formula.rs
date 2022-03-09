@@ -8,6 +8,7 @@ use crate::clause::*;
 use crate::assignments::*;
 use crate::logic::*;
 use crate::solver_dpll::*;
+use crate::watches::*;
 
 pub struct Formula {
     pub clauses: Vec<Clause>,
@@ -150,5 +151,14 @@ impl Formula {
         } else {
             return SatState::Unknown;
         }
+    }
+    #[trusted] // TODO
+    pub fn add_clause(&mut self, clause: &Vec<Lit>, watches: &mut Watches) -> usize {
+        let clause = Clause::clause_from_vec(clause);
+        let cref = self.clauses.len();
+        watches.add_watcher(clause.rest[0], cref, self);
+        watches.add_watcher(clause.rest[1], cref, self);
+        self.clauses.push(clause);
+        cref
     }
 }

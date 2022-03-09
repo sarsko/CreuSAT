@@ -2,6 +2,8 @@ extern crate creusot_contracts;
 use creusot_contracts::*;
 use creusot_contracts::std::*;
 
+use ::std::ops;
+
 use crate::clause::*;
 use crate::assignments::*;
 
@@ -134,5 +136,19 @@ impl Lit {
     #[ensures(@result === @self.idx * 2 + if self.polarity { 1 } else { 0 })]
     pub fn to_neg_watchidx(&self) -> usize {
         self.idx * 2 + if self.polarity { 1 } else { 0 }
+    }
+}
+impl ops::Not for Lit {
+    type Output = Lit;
+
+    #[inline]
+    #[trusted] // OK
+    #[ensures(@result.idx === @self.idx)]
+    #[ensures(result.polarity === !self.polarity)]
+    fn not(self) -> Lit {
+        Lit {
+            idx: self.idx,
+            polarity: !self.polarity,
+        }
     }
 }

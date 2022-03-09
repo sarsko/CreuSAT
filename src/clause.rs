@@ -113,7 +113,8 @@ pub enum ClauseState {
     Sat,
     Unsat,
     Unit,
-    Unknown
+    Unknown,
+    Err(usize),
 }
 
 impl Clause {

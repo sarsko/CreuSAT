@@ -190,7 +190,7 @@ impl Assignments {
     #[ensures((result === ClauseState::Unsat)   ==> (@f.clauses)[@i].unsat(^self) && @self === @^self)]
     #[ensures((result === ClauseState::Unknown) ==> @self === @^self && !(^self).complete())]
     #[ensures((self).complete() ==> *self === ^self && ((result === ClauseState::Unsat) || (result === ClauseState::Sat)))]
-    pub fn unit_prop_once(&mut self, i: usize, f: &Formula, t: &mut Trail) -> ClauseState {
+    pub fn unit_prop_once(&mut self, i: usize, f: &mut Formula, t: &mut Trail) -> ClauseState {
         let clause = &f.clauses[i];
         let old_a = Ghost::record(&self);
         proof_assert!(^self === ^@old_a);
@@ -210,13 +210,35 @@ impl Assignments {
                 } else {
                     self.0[lit.idx] = 0;    
                 }
-                t.enq_assignment(lit, Reason::Unit, f);
+                //t.enq_assignment(lit, Reason::Unit, f);
+                t.enq_assignment(lit, Reason::Long(i), f);
                 proof_assert!(@^self == (@*@old_a).set(@lit.idx, bool_to_assignedstate(lit.polarity)));
                 proof_assert!(lemma_extension_sat_base_sat(*f, @@old_a, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
                 proof_assert!(lemma_extensions_unsat_base_unsat(@@old_a, @lit.idx, *f); true);
                 proof_assert!(^self === ^@old_a);
                 return ClauseState::Unit;
             },
+            ClauseState::Unsat => {
+                let end = t.trail.len() - 1;
+                let mut j = t.trail[end].len() - 1;
+                while j >= 0 {
+                    let mut k = 0;
+                    let mut done = false;
+                    while k < clause.rest.len() {
+                        if clause.rest[k].idx == t.trail[end][j].idx {
+                            done = true;
+                            break;
+                        }
+                        k += 1;
+                    }
+                    if done {
+                        f.clauses[i].rest.swap(0, k);
+                        break;
+                    }
+                    j -= 1;
+                }
+                return ClauseState::Err(i);
+            }
             o => return o
         }
     }
@@ -235,9 +257,10 @@ impl Assignments {
         ClauseState::Unsat => f.unsat(^self),
         ClauseState::Unknown => !(^self).complete(),
         ClauseState::Unit => !self.complete(),
+        _ => true,
     })]
     #[ensures((self).complete() ==> *self === (^self) && ((result === ClauseState::Unsat) || f.sat(*self)))]
-    pub fn unit_propagate(&mut self, f: &Formula, t: &mut Trail) -> ClauseState {
+    pub fn unit_propagate(&mut self, f: &mut Formula, t: &mut Trail) -> ClauseState {
         let old_a = Ghost::record(&self);
         let old_t = Ghost::record(&t);
         let mut i: usize = 0;
@@ -278,6 +301,7 @@ impl Assignments {
                         _ => {},
                     }
                 }
+                ClauseState::Err(i) => { return ClauseState::Err(i); },
             }
             i += 1
         }
@@ -293,11 +317,13 @@ impl Assignments {
     #[ensures((^self).invariant(*f))]
     #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))]
     #[ensures((*self).compatible(^self))]
-    #[ensures(result === Some(false) ==> f.unsat(^self))]
-    #[ensures(result === Some(true) ==> !f.unsat(^self))]
+    #[ensures(match result {
+        Err(cref) => f.unsat(^self),
+        Ok(_) => !(^self).complete() || !f.unsat(^self), //hmm
+    })]
     //#[ensures(result === Some(true) ==> f.sat(^self))]
-    #[ensures(result === None ==> !(^self).complete())]
-    pub fn do_unit_propagation(&mut self, f: &Formula, t: &mut Trail) -> Option<bool> {
+    //#[ensures(result === None ==> !(^self).complete())]
+    pub fn do_unit_propagation(&mut self, f: &mut Formula, t: &mut Trail) -> Result<(), usize> {
         let old_a = Ghost::record(&self);
         let old_t = Ghost::record(&t);
         #[invariant(ti, t.invariant(*f))]
@@ -309,9 +335,10 @@ impl Assignments {
         #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) ==> f.eventually_sat_complete(*self))]
         loop {
             match self.unit_propagate(f, t) {
-                ClauseState::Sat     => { return Some(true); },
-                ClauseState::Unsat   => { return Some(false); },
-                ClauseState::Unknown => { return None; }
+                ClauseState::Sat     => { return Ok(()); },
+                ClauseState::Err(i)  => { return Err(i); },
+                ClauseState::Unsat   => { panic!(); },
+                ClauseState::Unknown => { return Ok(()); }
                 ClauseState::Unit    => { }, // Continue
             }
         } 
@@ -384,7 +411,7 @@ impl Assignments {
             }
             i -= 1;
         }
-        //self.1 = 0; // ADDED
+        self.1 = 0; // ADDED
     }
 
     /*
