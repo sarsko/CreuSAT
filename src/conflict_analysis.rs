@@ -18,7 +18,7 @@ pub enum Conflict {
 
 // The "standard one from Zha03"
 #[trusted]
-pub fn analyze_conflict_(f: &Formula, _a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
+pub fn analyze_conflict_(f: &Formula, a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.trail.len() - 1;
     if decisionlevel == 0 {
         return Conflict::Ground;
@@ -42,13 +42,21 @@ pub fn analyze_conflict_(f: &Formula, _a: &Assignments, trail: &Trail, cref: usi
 }
 
 #[trusted]
-/*
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
-#[requires(t.invariant(*f))]
-#[requires((@t.trail).len() > 0)]
-*/
-pub fn analyze_conflict(f: &Formula, _a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
+#[requires(trail.invariant(*f))]
+#[requires((@trail.trail).len() > 0)]
+#[requires(@cref < (@f.clauses).len())]
+#[ensures(match result {
+    Conflict::Ground => f.unsat(*a),
+    Conflict::Unit(lit) => {true}, // know lit can be learned
+    Conflict::Learned(level, lit, clause) => {
+        @level > 0 && @level <= (@trail.trail).len() &&
+        @lit.idx < ((@a).len()) && // can be changed to lit in or somet
+        true
+    }, // know clause can be learned
+})]
+pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.trail.len() - 1;
     if decisionlevel == 0 {
         return Conflict::Ground;

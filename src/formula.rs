@@ -9,6 +9,7 @@ use crate::assignments::*;
 use crate::logic::*;
 use crate::solver_dpll::*;
 use crate::watches::*;
+use crate::trail::*;
 
 pub struct Formula {
     pub clauses: Vec<Clause>,
@@ -33,6 +34,7 @@ impl PartialEq for SatState {
         };
     }
 }
+
 
 // Predicates
 impl Formula {
@@ -186,13 +188,18 @@ impl Formula {
         }
     }
     #[trusted] // TODO
+    //#[requires()] // OK CLAUSE
     #[requires(self.invariant())]
     #[ensures(@self.num_vars === @(^self).num_vars)]
     #[ensures((^self).invariant())]
+    #[ensures(_t.invariant(*self))]
+    #[ensures(self.equisat_compatible(^self))]
+    #[ensures(@result === (@self.clauses).len())]
+    #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
     //#[ensures(^f === *f)]
     //#[ensures(f.eventually_sat(*a) === (^f).eventually_sat(*a))]
     //#[ensures(f.eventually_sat_complete(*a) === (^f).eventually_sat_complete(*a))]
-    pub fn add_clause(&mut self, clause: &Vec<Lit>, watches: &mut Watches) -> usize {
+    pub fn add_clause(&mut self, clause: &Vec<Lit>, watches: &mut Watches, _t: &Trail) -> usize {
         let clause = Clause::clause_from_vec(clause);
         let cref = self.clauses.len();
         watches.add_watcher(clause.rest[0], cref, self);

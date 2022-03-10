@@ -89,6 +89,7 @@ impl Assignments {
 }
 
 impl Assignments {
+    // Not used
     #[trusted] // Broken atm, fix later
     #[ensures(forall<i: Int> 0 <= i && i < (@self).len() ==> (@self)[i] === (@result)[i])]
     #[ensures((@self).len() === (@result).len())]
@@ -110,7 +111,6 @@ impl Assignments {
     }
 
     #[inline]
-    //#[cfg(not(contracts))]
     #[trusted]
     #[ensures(self.invariant(*_f))]
     //#[requires((@self)[@lit.idx] >= 2)] // This is a correctness req
