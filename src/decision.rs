@@ -184,6 +184,7 @@ impl Decisions {
         */
     }
 
+    #[trusted]
     pub fn get_next(&mut self, a: &Assignments) -> Option<usize> {
         /*
         let mut head = Some(self.head);

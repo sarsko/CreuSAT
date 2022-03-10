@@ -13,6 +13,7 @@ use crate::watches::*;
 use crate::conflict_analysis::*;
 
 
+#[trusted] // OK
 #[ensures(result === (@f.clauses)[@idx].sat(*a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
@@ -30,6 +31,7 @@ pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     return false;
 }
 
+#[trusted] // OK
 #[ensures(result === (@f.clauses)[@idx].unsat(*a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
@@ -47,23 +49,42 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     return true;
 }
 
+#[trusted] // TODO
 pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula) {
     //a.cancel_until(trail, trail.trail.len(), 1, decisions);
     a.cancel_until(trail, 1, f);
     //a.cancel_long(trail);
-    a.set_assignment(lit);
+    a.set_assignment(lit, f);
     trail.enq_assignment(lit, Reason::Unit, f);
 }
+#[trusted]
+
+#[requires(f.invariant())]
+#[requires(a.invariant(*f))]
+#[requires(trail.invariant(*f))]
+#[requires((@trail.trail).len() > 0)]
+#[ensures((@(^trail).trail).len() === (@trail.trail).len())]
+#[ensures((^trail).invariant(*f))]
+#[ensures((^a).invariant(*f))]
+#[ensures(f.eventually_sat_complete(^a) === f.eventually_sat_complete(*a))]
+#[ensures((*a).compatible(^a))]
+/*
+#[ensures(match result { 
+    ClauseState::Sat => f.sat(^self),
+    ClauseState::Unsat => f.unsat(^self),
+    ClauseState::Unknown => !(^self).complete(),
+    ClauseState::Unit => !self.complete(),
+    _ => true,
+})]
+*/
+//#[ensures((a).complete() ==> *a === (^a) && ((result === ClauseState::Unsat) || f.sat(*self)))]
 fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
     let mut i = 0;
     let d = trail.trail.len() - 1;
-    println!("{}", d);
     while i < trail.trail[d].len() {
         let mut j = 0;
         let lit = trail.trail[d][i];
         let watchidx = lit.to_watchidx();
-        println!("{}", watches.watches[watchidx].len());
-        println!("{}", lit.idx);
         'outer: while j < watches.watches[watchidx].len() {
             let cref = watches.watches[watchidx][j].cref;
             let first_lit = f.clauses[cref].rest[0];
@@ -110,11 +131,11 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
             }
             // If we have gotten here, the clause is either all false or unit
             if a.0[first_lit.idx] >= 2 {
-                a.set_assignment(first_lit);
+                a.set_assignment(first_lit, f);
                 trail.enq_assignment(first_lit, Reason::Long(cref), f);
             } else if a.0[second_lit.idx] >= 2 {
                 f.clauses[cref].rest.swap(0,1);
-                a.set_assignment(second_lit);
+                a.set_assignment(second_lit, f);
                 trail.enq_assignment(second_lit, Reason::Long(cref), f);
             } else {
                 return Err(cref);
@@ -126,69 +147,68 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
     Ok(())
 }
 
-#[requires(f.invariant())]
-#[requires(a.invariant(*f))]
-#[requires(d.invariant(@f.num_vars))]
-#[requires(t.invariant(*f))]
-#[requires((@t.trail).len() > 0)]
-#[ensures(@f.num_vars === @(^f).num_vars)]
-#[ensures((^f).invariant())]
-#[ensures(^f === *f)]
-#[ensures(f.eventually_sat(*a) === (^f).eventually_sat(*a))]
-#[ensures(f.eventually_sat_complete(*a) === (^f).eventually_sat_complete(*a))]
-#[ensures((@(^t).trail).len() >= (@t.trail).len())]
-#[ensures((^t).invariant(^f))]
-#[ensures((^a).invariant(^f))]
-//#[ensures((^d).invariant())]
-#[ensures(result === true ==> f.eventually_sat(*a))]
-#[ensures(result === false ==> !f.eventually_sat_complete(*a))]
-fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> bool {
-    loop {
-    loop {
-        match unit_propagate(f, a, t, w) {
-        //match a.do_unit_propagation(f, t) {
-            Ok(_) => {
-                break; },
-            Err(cref) => { 
-                match analyze_conflict(f, a, t, cref) {
-                    Conflict::Ground => { 
-                        return false; 
-                    },
-                        Conflict::Unit(lit) => {
-                            //num_conflicts += 1;
-                            //num_conflicts = 0;
+fn unit_prop_step(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
+    match unit_propagate(f, a, t, w) {
+    //match a.do_unit_propagation(f, t) {
+        Ok(_) => {
+            return Some(true);
+        },
+        Err(cref) => {
+            // Abstract this away further
+            match analyze_conflict(f, a, t, cref) {
+                Conflict::Ground => { 
+                    return Some(false);
+                },
+                    Conflict::Unit(lit) => {
+                        learn_unit(a, t, lit, f);
+                    }
+                    Conflict::Learned(level, lit, clause) => {
+                        let cref = f.add_clause(&clause, w);
+                        //decisions.increment_and_move(f, cref);
+                        //a.cancel_until(trail, trail.trail.len(), level, decisions);
+                        a.cancel_until(t, level, f);
+                        t.trail.push(Vec::new());
+                        a.set_assignment(lit, f);
+                        t.enq_assignment(lit, Reason::Long(cref), f);
+                    }
+                    _ => panic!()
+            }
+        },
+    }
+    None
+}
 
-                            learn_unit(a, t, lit, f);
-                        }
-                        Conflict::Learned(level, lit, clause) => {
-                            //num_conflicts += 1;
-                            let cref = f.add_clause(&clause, w);
-                            //decisions.increment_and_move(f, cref);
-                            //a.cancel_until(trail, trail.trail.len(), level, decisions);
-                            a.cancel_until(t, level, f);
-                            t.trail.push(Vec::new());
-                            a.set_assignment(lit);
-                            t.enq_assignment(lit, Reason::Long(cref), f);
-                        }
-                        _ => panic!()
-                }
-                //return false; 
+fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> bool {
+    loop {
+        match unit_prop_step(f, a, d, t, w) {
+            Some(true) => {
+                return true;
             },
-            //_ => {},
+            Some(false) => {
+                return false;
+            },
+            None => {}
         }
+    }
+}
+
+fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
+    match unit_prop_loop(f, a, d, t, w) {
+        false => return Some(false),
+        _ => {}
     }
     proof_assert!(!a.complete() || !f.unsat(*a));
     match a.find_unassigned(d, f) {
         Some(next) => {
             let dlevel = t.trail.len();
+            t.trail.push(Vec::new());
+            a.0[next] = 1; 
+            let lit = Lit{ idx: next, polarity: true };
+            t.enq_assignment(lit, Reason::Decision, f);
             //let old_a = Ghost::record(&a);
             //let mut a_cloned = a.clone();
             //proof_assert!(@a_cloned === @@old_a);
-            t.trail.push(Vec::new());
             //t.add_level(f);
-            a.0[next] = 1;
-            let lit = Lit{ idx: next, polarity: true };
-            t.enq_assignment(lit, Reason::Decision, f);
             //let old_a1 = a.1;
             /*
             return inner(f, a, d, t, w);
@@ -212,13 +232,60 @@ fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: 
             */
         },
         None => { 
-            println!("Done");
             proof_assert!(a.complete());
             proof_assert!(!f.unsat(*a));
             proof_assert!(lemma_complete_and_not_unsat_implies_sat(*f, @a); true);
-            return true; },
+            return Some(true); 
+        },
     }
+    None
 }
+
+#[requires(f.invariant())]
+#[requires(a.invariant(*f))]
+#[requires(d.invariant(@f.num_vars))]
+#[requires(t.invariant(*f))]
+#[requires((@t.trail).len() > 0)]
+#[ensures(@f.num_vars === @(^f).num_vars)]
+#[ensures((^f).invariant())]
+#[ensures(^f === *f)]
+#[ensures(f.eventually_sat(*a) === (^f).eventually_sat(*a))]
+#[ensures(f.eventually_sat_complete(*a) === (^f).eventually_sat_complete(*a))]
+#[ensures((@(^t).trail).len() >= (@t.trail).len())]
+#[ensures((^t).invariant(^f))]
+#[ensures((^a).invariant(^f))]
+//#[ensures((^d).invariant())]
+//#[ensures(result === true ==> f.eventually_sat(*a))]
+//#[ensures(result === false ==> !f.eventually_sat_complete(*a))]
+fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> bool {
+    let old_f = Ghost::record(&f);
+    let old_a = Ghost::record(&a);
+    let old_w = Ghost::record(&w);
+    let old_t = Ghost::record(&t);
+    #[invariant(maintains_f, f.invariant())]
+    #[invariant(maintains_a, a.invariant(@f.num_vars))]
+    #[invariant(maintains_t, trail.invariant(*f))]
+    #[invariant(maintains_w, watches.invariant(*f))]
+    #[invariant(vardata_unchanged, (@trail.vardata).len() === (@(@old_t).vardata).len())]
+    #[invariant(num_vars, @f.num_vars === @(@old_f).num_vars)]
+    #[invariant(clauses, (@f.clauses).len() > 0)]
+    #[invariant(trail_len, (@trail.trail).len() > 0)]
+    #[invariant(propha, ^a === ^@old_a)]
+    #[invariant(prophw, ^watches === ^@old_w)]
+    #[invariant(prophf, ^f === ^@old_f)]
+    #[invariant(propht, ^trail === ^@old_t)]
+    loop {
+        let res = outer_loop(f, a, d, t, w);
+        match res {
+            Some(true) => {
+                return true;
+            },
+            Some(false) => {
+                return false;
+            },
+            None => {},
+        }
+    }
 }
 
 #[trusted]

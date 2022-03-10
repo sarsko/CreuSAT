@@ -94,6 +94,7 @@ impl Lit {
 }
 
 impl Lit {
+    #[trusted] // OK
     #[inline]
     #[requires(self.invariant((@a).len()))]
     #[ensures(result === self.sat(*a))]
@@ -104,6 +105,7 @@ impl Lit {
         }
     }
 
+    #[trusted] // OK
     #[inline]
     #[requires(self.invariant((@a).len()))]
     #[ensures(result === self.unsat(*a))]
@@ -114,6 +116,7 @@ impl Lit {
         }
     }
 
+    #[trusted] // OK
     #[inline]
     #[requires(self.invariant((@a).len()))]
     #[ensures(result === self.unset(*a))]

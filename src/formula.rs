@@ -15,7 +15,7 @@ pub struct Formula {
     pub num_vars: usize,
 }
 
-#[derive(Copy, Clone, Eq)]
+//#[derive(Copy, Clone, Eq)]
 pub enum SatState {
     Unknown,
     Sat,

@@ -7,6 +7,7 @@ use crate::clause::*;
 use crate::assignments::*;
 use crate::formula::*;
 
+#[trusted] // OK
 #[logic]
 #[ensures(b ==> @result === 1)]
 #[ensures(!b ==> @result === 0)]
@@ -52,6 +53,7 @@ pub fn unset(v: AssignedState) -> bool {
     }
 }
 
+#[trusted] // OK
 #[logic]
 #[requires(f.invariant())]
 #[requires(assignments_invariant(a, f))]
@@ -59,6 +61,7 @@ pub fn unset(v: AssignedState) -> bool {
 #[ensures(f.unsat_inner(a) || f.sat_inner(a))]
 pub fn lemma_complete_implies_sat_or_unsat(f: Formula, a: Seq<AssignedState>) {}
 
+#[trusted] // OK
 #[logic]
 #[requires(f.invariant())]
 #[requires(assignments_invariant(a, f))]
@@ -69,6 +72,7 @@ pub fn lemma_complete_and_not_sat_implies_unsat(f: Formula, a: Seq<AssignedState
     lemma_complete_implies_sat_or_unsat(f, a);
 }
 
+#[trusted] // OK
 #[logic]
 #[requires(f.invariant())]
 #[requires(assignments_invariant(a, f))]
@@ -79,6 +83,7 @@ pub fn lemma_complete_and_not_unsat_implies_sat(f: Formula, a: Seq<AssignedState
     lemma_complete_implies_sat_or_unsat(f, a);
 }
 
+#[trusted] // OK
 #[logic] 
 #[requires(f.invariant())]
 #[requires(assignments_invariant(a, f))]
@@ -86,6 +91,7 @@ pub fn lemma_complete_and_not_unsat_implies_sat(f: Formula, a: Seq<AssignedState
 #[ensures(!f.eventually_sat_complete_inner(a))]
 pub fn lemma_not_sat_formula_implies_unsat_formula(f: Formula, a: Seq<AssignedState>) {}
 
+#[trusted] // OK
 #[logic]
 #[requires(c.unsat_inner(a))]
 #[requires(c.in_formula(f))]
@@ -93,6 +99,7 @@ pub fn lemma_not_sat_formula_implies_unsat_formula(f: Formula, a: Seq<AssignedSt
 pub fn lemma_not_sat_clause_implies_unsat_formula(f: Formula, c: Clause, a: Seq<AssignedState>) {}
 
 
+#[trusted] // OK
 #[logic]
 #[requires(f.invariant())]
 #[requires(@f.num_vars === a.len())]
@@ -105,6 +112,7 @@ pub fn lemma_unit_forces(c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, 
     lemma_not_sat_formula_implies_unsat_formula(f, a);
 }
 
+#[trusted] // OK
 #[logic]
 #[requires(f.invariant())]
 #[requires(@f.num_vars === a.len())]
@@ -124,12 +132,14 @@ pub fn lemma_unit_wrong_polarity_unsat_formula(c: Clause, f: Formula, a: Seq<Ass
     lemma_not_sat_clause_implies_unsat_formula(f, c, a.set(ix, flip_v(v)));
 }
 
+#[trusted] // OK
 #[logic]
 #[requires(0 <= ix && ix < a.len())]
 #[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === ix && bool_to_assignedstate((@c)[j].polarity) === v)]
 #[ensures(c.sat_inner(a.set(ix, v)))]
 pub fn lemma_correct_polarity_makes_clause_sat(c: Clause, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 
+#[trusted] // OK
 #[logic]
 #[requires(!unset(v))]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
@@ -144,12 +154,14 @@ pub fn lemma_correct_polarity_makes_clause_sat(c: Clause, a: Seq<AssignedState>,
 #[ensures(!c.sat_inner(a.set(ix, flip_v(v))))]
 pub fn lemma_incorrect_polarity_makes_clause_unsat(c: Clause, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 
+#[trusted] // OK
 #[logic]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
 #[requires(f.eventually_sat_complete_inner(a.set(ix, v)))]
 #[ensures(f.eventually_sat_complete_inner(a))]
 pub fn lemma_extension_sat_base_sat(f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 
+#[trusted] // OK
 #[logic]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
 #[requires(!f.eventually_sat_complete_inner(a.set(ix, neg())))]

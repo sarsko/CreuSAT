@@ -110,15 +110,38 @@ impl Assignments {
     }
 
     #[inline]
-    #[cfg(not(contracts))]
-    pub fn set_assignment(&mut self, l: Lit) {
+    //#[cfg(not(contracts))]
+    #[trusted]
+    #[ensures(self.invariant(*_f))]
+    //#[requires((@self)[@lit.idx] >= 2)] // This is a correctness req
+    #[ensures((^self).invariant(*_f))]
+    #[ensures(@(@^self)[@lit.idx] === 1 || @(@^self)[@lit.idx] === 0)]
+    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
+    j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
+    #[requires(0 <= @lit.idx && @lit.idx < (@self).len())]
+    #[ensures(
+        match lit.polarity {
+            true => @(@^self)[@lit.idx] === 1,
+            false => @(@^self)[@lit.idx] === 0,
+        }
+    )]
+    //#[ensures(self.compatible(^self))]
+    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
+        j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
+    #[ensures((@^self).len() === (@self).len())]
+    pub fn set_assignment(&mut self, lit: Lit, _f: &Formula) {
         /*
         if !self.0[l.idx].is_none() {
             panic!("Assignment already set. Attempting to set {:?}", l);
         }
         */
         //assert!(self.0[l.idx].is_none());
-        self.0[l.idx] = l.polarity as u8;
+        if lit.polarity {
+            self.0[lit.idx] = 1;
+        } else {
+            self.0[lit.idx] = 0;
+        }
+        //self.0[l.idx] = l.polarity as u8;
     }
 
     #[trusted] // OK
@@ -137,7 +160,7 @@ impl Assignments {
         Assignments(assign, 0)
     }
 
-    //#[trusted] // OK
+    #[trusted] // OK
     //#[requires(!self.complete())]
     #[requires(self.invariant(*_f))]
     #[requires(d.invariant((@self).len()))]
@@ -174,7 +197,7 @@ impl Assignments {
         None
     }
 
-    //#[trusted] // OK
+    #[trusted] // OK
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
     #[requires(0 <= @i && @i < (@f.clauses).len())]
@@ -219,30 +242,13 @@ impl Assignments {
                 return ClauseState::Unit;
             },
             ClauseState::Unsat => {
-                let end = t.trail.len() - 1;
-                let mut j = t.trail[end].len() - 1;
-                while j >= 0 {
-                    let mut k = 0;
-                    let mut done = false;
-                    while k < clause.rest.len() {
-                        if clause.rest[k].idx == t.trail[end][j].idx {
-                            done = true;
-                            break;
-                        }
-                        k += 1;
-                    }
-                    if done {
-                        f.clauses[i].rest.swap(0, k);
-                        break;
-                    }
-                    j -= 1;
-                }
                 return ClauseState::Err(i);
             }
             o => return o
         }
     }
 
+    #[trusted]
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
     #[requires(t.invariant(*f))]
@@ -308,6 +314,7 @@ impl Assignments {
         return out;
     }
 
+    #[trusted]
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
     #[requires(t.invariant(*f))]

@@ -7,8 +7,8 @@ use crate::lit::*;
 use crate::formula::*;
 use crate::logic::*;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-//#[derive(Copy, Clone)]
+//#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Copy, Clone)]
 pub enum Reason {
     Undefined,
     Decision,

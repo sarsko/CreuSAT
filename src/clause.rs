@@ -130,7 +130,7 @@ impl Clause {
         }
         */
     }
-    //#[trusted] // OK
+    #[trusted] // OK
     #[requires(self.invariant((@a).len()))]
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]

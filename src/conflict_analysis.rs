@@ -1,3 +1,7 @@
+extern crate creusot_contracts;
+use creusot_contracts::*;
+use creusot_contracts::std::*;
+
 use crate::assignments::*;
 //use crate::clause::*;
 use crate::formula::*;
@@ -13,6 +17,7 @@ pub enum Conflict {
     Panic,
 }
 
+#[trusted]
 pub fn analyze_conflict(f: &Formula, _a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.trail.len() - 1;
     if decisionlevel == 0 {
@@ -21,8 +26,10 @@ pub fn analyze_conflict(f: &Formula, _a: &Assignments, trail: &Trail, cref: usiz
     // `seen` should be persistent across calls to `analyze_conflict`.
     // Solved by somehow keeping it in `solver`, either as a buffer or by making
     // conflict analysis a struct which is instatiated once and then kept.
-    let mut seen = vec![false; f.num_vars]; 
-    let mut out_learnt = vec![Lit{idx: 999999, polarity: false}; 1]; // I really don't like this way of reserving space.
+    let mut seen = vec::from_elem(false, f.num_vars); //vec![false; f.num_vars]; 
+    //let mut out_learnt = vec![Lit{idx: 999999, polarity: false}; 1]; // I really don't like this way of reserving space.
+    let mut out_learnt = Vec::new();
+    out_learnt.push(Lit{idx: 999999, polarity: false});
 
     let mut path_c = 0;
     let mut confl = cref;
