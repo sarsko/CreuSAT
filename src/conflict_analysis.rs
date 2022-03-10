@@ -14,10 +14,15 @@ pub enum Conflict {
     Ground,
     Unit(Lit),
     Learned(usize, Lit, Vec<Lit>),
-    Panic,
 }
 
 #[trusted]
+/*
+#[requires(f.invariant())]
+#[requires(a.invariant(*f))]
+#[requires(t.invariant(*f))]
+#[requires((@t.trail).len() > 0)]
+*/
 pub fn analyze_conflict(f: &Formula, _a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.trail.len() - 1;
     if decisionlevel == 0 {
@@ -78,7 +83,7 @@ pub fn analyze_conflict(f: &Formula, _a: &Assignments, trail: &Trail, cref: usiz
             Long(c) => confl = *c,
             //other => panic!(),
             //other => panic!("Error - this has reason: {:?}", other),
-            other => return Conflict::Panic,
+            _other => panic!(),
         }
     }
     if out_learnt.len() == 1 {

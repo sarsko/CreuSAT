@@ -39,6 +39,7 @@ impl Formula {
     #[predicate]
     pub fn invariant(self) -> bool {
         pearlite! {
+            //(@f.clauses).len() > 0 && // added
             forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
                 (@self.clauses)[i].invariant(@self.num_vars)
         }
@@ -153,6 +154,12 @@ impl Formula {
         }
     }
     #[trusted] // TODO
+    #[requires(self.invariant())]
+    #[ensures(@self.num_vars === @(^self).num_vars)]
+    #[ensures((^self).invariant())]
+    //#[ensures(^f === *f)]
+    //#[ensures(f.eventually_sat(*a) === (^f).eventually_sat(*a))]
+    //#[ensures(f.eventually_sat_complete(*a) === (^f).eventually_sat_complete(*a))]
     pub fn add_clause(&mut self, clause: &Vec<Lit>, watches: &mut Watches) -> usize {
         let clause = Clause::clause_from_vec(clause);
         let cref = self.clauses.len();
