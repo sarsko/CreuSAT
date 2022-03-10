@@ -16,6 +16,31 @@ pub enum Conflict {
     Learned(usize, Lit, Vec<Lit>),
 }
 
+// The "standard one from Zha03"
+#[trusted]
+pub fn analyze_conflict_(f: &Formula, _a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
+    let decisionlevel = trail.trail.len() - 1;
+    if decisionlevel == 0 {
+        return Conflict::Ground;
+    }
+    Conflict::Ground
+    // cl = find_conflicting_clause();
+    /*
+    loop {
+        lit = choose_literal(cl);
+        var = variable_of_literal(lit);
+        ante = antecedent(var);
+        cl = resolve(cl, ante, var);
+        if stop_criterion_met(cl) {
+            break;
+        }
+    }
+    add_clause_to_database(cl);
+    back_dl = clause_asserting_level(cl);
+    return back_dl
+    */
+}
+
 #[trusted]
 /*
 #[requires(f.invariant())]

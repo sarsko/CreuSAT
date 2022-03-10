@@ -57,8 +57,8 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
     a.set_assignment(lit, f);
     trail.enq_assignment(lit, Reason::Unit, f);
 }
-#[trusted]
 
+#[trusted]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(trail.invariant(*f))]
@@ -79,7 +79,6 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
 })]
 */
 //#[ensures((a).complete() ==> *a === (^a) && ((result === ClauseState::Unsat) || f.sat(*self)))]
-
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((^f).invariant())]
 #[ensures(^f === *f)]
@@ -185,6 +184,7 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
             t.trail.push(Vec::new());
             a.set_assignment(lit, f);
             t.enq_assignment(lit, Reason::Long(cref), f);
+            //t.enq_assignment(lit, Reason::Decision, f);
         }
     }
     true
@@ -218,6 +218,9 @@ fn unit_prop_step(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
     None
 }
 
+
+#[ensures(!result ==> (^f).unsat(^a))]
+#[ensures(result ==> !(^f).unsat(^a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(d.invariant(@f.num_vars))]
@@ -275,6 +278,11 @@ fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
 #[ensures((@(^t).trail).len() > 0)]
 #[ensures((^t).invariant(^f))]
 #[ensures((^a).invariant(^f))]
+#[ensures(match result {
+    Some(true) => { (^f).sat(^a)},
+    Some(false) => { (^f).unsat(^a)}, // ground conflict
+    None => {true}  // we know something
+})]
 fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
     match unit_prop_loop(f, a, d, t, w) {
         false => return Some(false),
@@ -290,11 +298,9 @@ fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail
             t.enq_assignment(lit, Reason::Decision, f);
         },
         None => { 
-            /*
             proof_assert!(a.complete());
             proof_assert!(!f.unsat(*a));
             proof_assert!(lemma_complete_and_not_unsat_implies_sat(*f, @a); true);
-            */
             return Some(true); 
         },
     }

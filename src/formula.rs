@@ -36,6 +36,38 @@ impl PartialEq for SatState {
 
 // Predicates
 impl Formula {
+    // New stuff:
+    #[predicate]
+    pub fn eventually_sat_complete_no_ass(self) -> bool {
+        pearlite! {
+            exists<a2 : Seq<AssignedState>> a2.len() === @self.num_vars && complete_inner(a2) && self.sat_inner(a2)
+        }
+    }
+    #[predicate]
+    pub fn equisat(self, o: Formula) -> bool {
+        pearlite! {
+            self.eventually_sat_complete_no_ass() === o.eventually_sat_complete_no_ass()
+        }
+    }
+
+    #[predicate]
+    pub fn compatible(self, o: Formula) -> bool {
+        pearlite! {
+            @self.num_vars === @o.num_vars &&
+            (@o.clauses).len() >= (@self.clauses).len() &&
+            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+                (@self.clauses)[i] === (@o.clauses)[i]
+        }
+    }
+
+    #[predicate]
+    pub fn equisat_compatible(self, o: Formula) -> bool {
+        pearlite! {
+            self.compatible(o) &&
+            self.equisat(o)
+        }
+    }
+
     #[predicate]
     pub fn invariant(self) -> bool {
         pearlite! {
@@ -87,8 +119,8 @@ impl Formula {
     #[predicate]
     pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
-            exists<i: Int> 0 <= i && i < (@(self.clauses)).len() &&
-                (@(self.clauses))[i].unsat_inner(a)
+            exists<i: Int> 0 <= i && i < (@self.clauses).len() &&
+                (@self.clauses)[i].unsat_inner(a)
         }
     }
 
