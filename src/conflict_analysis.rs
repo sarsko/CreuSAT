@@ -3,7 +3,7 @@ use creusot_contracts::*;
 use creusot_contracts::std::*;
 
 use crate::assignments::*;
-//use crate::clause::*;
+use crate::clause::*;
 use crate::formula::*;
 use crate::lit::*;
 use crate::trail::*;
@@ -16,7 +16,10 @@ pub enum Conflict {
     Learned(usize, Lit, Vec<Lit>),
 }
 
-// The "standard one from Zha03"
+// The "standard one" from Zha03
+// Probs better to use as a base
+// Might also be good to do the proof of the extension being OK inside this rather than do
+// a return then add
 #[trusted]
 pub fn analyze_conflict_(f: &Formula, a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.trail.len() - 1;
@@ -53,6 +56,9 @@ pub fn analyze_conflict_(f: &Formula, a: &Assignments, trail: &Trail, cref: usiz
     Conflict::Learned(level, lit, clause) => {
         @level > 0 && @level <= (@trail.trail).len() &&
         @lit.idx < ((@a).len()) && // can be changed to lit in or somet
+        (@clause).len() > 1 &&
+        vars_in_range_inner(@clause, @f.num_vars) &&
+        no_duplicate_indexes_inner(@clause) &&
         true
     }, // know clause can be learned
 })]

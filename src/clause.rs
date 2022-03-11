@@ -7,6 +7,7 @@ use crate::assignments::*;
 use crate::formula::*;
 use crate::logic::*;
 
+#[derive(Debug)]
 pub struct Clause {
     //pub first: Lit,
     //pub second: Lit,
@@ -20,6 +21,22 @@ impl Model for Clause {
     #[logic]
     fn model(self) -> Self::ModelTy {
         self.rest.model()//.push(self.first)//.push(self.second)
+    }
+}
+
+#[predicate]
+pub fn no_duplicate_indexes_inner(s: Seq<Lit>) -> bool {
+    pearlite! {
+        forall<j: Int, k: Int> 0 <= j && j < s.len() &&
+                k < j ==> !(@s[k].idx === @s[j].idx)
+    }
+}
+
+#[predicate]
+pub fn vars_in_range_inner(s: Seq<Lit>, n: Int) -> bool {
+    pearlite! {
+        forall<i: Int> 0 <= i && i < s.len() ==> 
+            s[i].invariant(n)
     }
 }
 
@@ -88,16 +105,14 @@ impl Clause {
     #[predicate]
     pub fn vars_in_range(self, n: Int) -> bool {
         pearlite! {            
-            forall<i: Int> 0 <= i && i < (@self).len() ==> 
-                (@self)[i].invariant(n)
+            vars_in_range_inner(@self, n)
         }
     }
 
     #[predicate]
     pub fn no_duplicate_indexes(self) -> bool {
         pearlite! {
-            forall<j: Int, k: Int> 0 <= j && j < (@self).len() &&
-                 k < j ==> !(@(@self)[k].idx === @(@self)[j].idx)
+            no_duplicate_indexes_inner(@self)
         }
     }
 
@@ -119,7 +134,10 @@ pub enum ClauseState {
 
 impl Clause {
     #[inline]
-    #[trusted] // TMP
+    #[trusted] // TODO
+    // Requires a bunch of stuff, TODO
+    //#[ensures(result.invariant(@_f.num_vars))]
+    //#[ensures((@result).len() >= 2)]
     pub fn clause_from_vec(vec: &std::vec::Vec<Lit>) -> Clause {
         Clause { rest: vec.clone() }
         /*

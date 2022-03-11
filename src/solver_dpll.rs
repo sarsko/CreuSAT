@@ -172,7 +172,7 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
 
 //#[trusted] // TODO
 #[ensures(match result {
-    true  => {true},// !(^f).unsat(^a)}, // we dont know this
+    true  => { true },// !(^f).unsat(^a)}, // we dont know this
     false => { (^f).unsat(^a)},
 })]
 #[requires(f.invariant())]
@@ -198,13 +198,18 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
             learn_unit(a, t, lit, f);
         }
         Conflict::Learned(level, lit, clause) => {
+            // Okay so doing a full search restart every time is a lot less slow than expected
+            // and is very simple. If I make the proof of resolution from init to empty clause/
+            // ground conflict work, then everything else can be treated as optimizations
             let cref = f.add_clause(&clause, w, t);
+            a.cancel_until(t, 1, f);
+            //println!("Learned clause {:?}", clause);
             //decisions.increment_and_move(f, cref);
-            a.cancel_until(t, level, f);
-            t.add_level(f);
-            a.set_assignment(lit, f);
-            proof_assert!(@cref < (@f.clauses).len());
-            t.enq_assignment(lit, Reason::Long(cref), f);
+            //a.cancel_until(t, level, f);
+            //t.add_level(f);
+            //a.set_assignment(lit, f);
+            //proof_assert!(@cref < (@f.clauses).len());
+            //t.enq_assignment(lit, Reason::Long(cref), f);
         }
     }
     true
@@ -213,7 +218,7 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
 #[ensures(match result {
     Some(true)  => {!(^f).unsat(^a)}, // Prop went ok
     Some(false) => { (^f).unsat(^a)},
-    None => {true} // Continue
+    None        => { true } // Continue
 })]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
@@ -281,13 +286,9 @@ fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
     #[invariant(equi, (@old_f).equisat_compatible(*f))]
     loop {
         match unit_prop_step(f, a, d, t, w) {
-            Some(true) => {
-                return true;
-            },
-            Some(false) => {
-                return false;
-            },
-            None => {}
+            Some(true)  => { return true;  },
+            Some(false) => { return false; },
+            None        => {},
         }
     }
 }
@@ -307,9 +308,9 @@ fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
 #[ensures((^t).invariant(^f))]
 #[ensures((^a).invariant(^f))]
 #[ensures(match result {
-    Some(true) => { (^f).sat(^a) && (^a).complete() },
+    Some(true)  => { (^f).sat(^a) && (^a).complete() },
     Some(false) => { (^f).unsat(^a)}, // ground conflict
-    None => {true}  // we know something
+    None        => {true}  // we know something
 })]
 #[ensures(f.equisat_compatible(^f))]
 fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
@@ -380,13 +381,9 @@ fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: 
     loop {
         let res = outer_loop(f, a, d, t, w);
         match res {
-            Some(true) => {
-                return true;
-            },
-            Some(false) => {
-                return false;
-            },
-            None => {},
+            Some(true)  => { return true;  },
+            Some(false) => { return false; },
+            None        => {},
         }
     }
 }
