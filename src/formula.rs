@@ -56,9 +56,16 @@ impl Formula {
     pub fn compatible(self, o: Formula) -> bool {
         pearlite! {
             @self.num_vars === @o.num_vars &&
+            /*
             (@o.clauses).len() >= (@self.clauses).len() &&
             forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
                 (@self.clauses)[i] === (@o.clauses)[i]
+                */
+            (@o.clauses).len() >= (@self.clauses).len() &&
+            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+                (@(@self.clauses)[i]).len() === (@(@o.clauses)[i]).len() &&
+                forall<j: Int> 0 <= j && j < (@(@self.clauses)[i]).len() ==>
+                (@(@self.clauses)[i])[j] === (@(@o.clauses)[i])[j]
         }
     }
 

@@ -7,8 +7,8 @@ use ::std::ops;
 use crate::clause::*;
 use crate::assignments::*;
 
-//#[derive(Clone, Copy)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
+//#[derive(Clone, Copy, Debug)]
 pub struct Lit {
     pub idx: usize,
     pub polarity: bool,
@@ -29,6 +29,13 @@ impl Lit {
 
 // Predicates
 impl Lit {
+    #[predicate]
+    pub fn is_opp(self, o: Lit) -> bool {
+        pearlite! {
+            @self.idx === @o.idx && self.polarity != o.polarity
+        }
+    }
+
     #[predicate]
     pub fn lit_in(self, c: Clause) -> bool {
         pearlite! {

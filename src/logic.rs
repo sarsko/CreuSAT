@@ -7,6 +7,145 @@ use crate::clause::*;
 use crate::assignments::*;
 use crate::formula::*;
 
+
+// CDCL STUFF START
+
+#[logic]
+#[requires(f.invariant())]
+#[requires(f2.invariant())]
+#[requires(f.equisat_compatible(f2))]
+#[requires(f.eventually_sat_complete_no_ass())]
+#[ensures(f2.eventually_sat_complete_no_ass())]
+pub fn lemma_trivial(f: Formula, f2: Formula) {}
+
+// Trivial
+// De facto test
+#[logic]
+#[requires(f.invariant())]
+#[requires(f2.invariant())]
+#[requires(f === f2)]
+#[ensures(f.equisat_compatible(f2))]
+pub fn lemma_equal_are_equisat(f: Formula, f2: Formula) {}
+
+// Trivial
+// De facto test
+#[logic]
+#[requires(f.invariant())]
+#[requires(f2.invariant())]
+#[requires(@f.num_vars === @f2.num_vars)]
+#[requires((@f.clauses).len() === (@f2.clauses).len())]
+#[requires(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
+    (@f.clauses)[i] === (@f2.clauses)[i])]
+#[ensures(f.equisat_compatible(f2))]
+pub fn lemma_equal_are_equisat2(f: Formula, f2: Formula) {}
+
+// Trivial
+// De facto test
+#[logic]
+#[requires(f.invariant())]
+#[requires(f2.invariant())]
+#[requires(@f.num_vars === @f2.num_vars)]
+#[requires((@f.clauses).len() === (@f2.clauses).len())]
+#[requires(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
+    (@(@f.clauses)[i]).len() === (@(@f2.clauses)[i]).len() &&
+    forall<j: Int> 0 <= j && j < (@(@f.clauses)[i]).len() ==>
+    (@(@f.clauses)[i])[j] === (@(@f2.clauses)[i])[j]
+)]
+#[ensures(f.equisat_compatible(f2))]
+pub fn lemma_equal_are_equisat3(f: Formula, f2: Formula) {}
+
+#[logic]
+#[requires(f.invariant())]
+#[requires(f2.invariant())]
+#[requires(@f.num_vars === @f2.num_vars)]
+#[requires((@f.clauses).len() + 1 === (@f2.clauses).len())]
+#[requires(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
+    ((@f.clauses)[i]).equals((@f2.clauses)[i]))]
+#[requires(@(@f2.clauses)[(@f2.clauses).len()-1] === @c3)]
+#[requires(c.in_formula(f))]
+#[requires(c2.in_formula(f))]
+#[requires(forall<i: Int> 0 <= i && i < (@c ).len() && i != m ==> (@c )[i].lit_in(c3))]
+#[requires(forall<i: Int> 0 <= i && i < (@c2).len() && i != k ==> (@c2)[i].lit_in(c3))]
+#[requires(forall<i: Int> 0 <= i && i < (@c3).len()           ==> (@c3)[i].lit_in(c) 
+                                                               || (@c3)[i].lit_in(c2))]
+#[requires((@c2)[k].is_opp((@c)[m]))]
+#[requires(f.sat(a))]
+#[ensures(f2.sat(a))]
+pub fn lemma_sat_gives_sat(f: Formula, f2: Formula, c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
+    lemma_sub_clause_not_sat(c, c2, c3, a);
+    lemma_sub_clause_sat(c, c2, c3, a, k, m);
+}
+
+#[logic]
+#[requires(f.invariant())]
+#[requires(f2.invariant())]
+#[requires(@f.num_vars === @f2.num_vars)]
+#[requires((@f.clauses).len() + 1 === (@f2.clauses).len())]
+#[requires(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
+    ((@f.clauses)[i]).equals((@f2.clauses)[i]))]
+#[requires(@(@f2.clauses)[(@f2.clauses).len()-1] === @c3)]
+#[requires(c.in_formula(f))]
+#[requires(c2.in_formula(f))]
+#[requires(forall<i: Int> 0 <= i && i < (@c ).len() && i != m ==> (@c )[i].lit_in(c3))]
+#[requires(forall<i: Int> 0 <= i && i < (@c2).len() && i != k ==> (@c2)[i].lit_in(c3))]
+#[requires(forall<i: Int> 0 <= i && i < (@c3).len()           ==> (@c3)[i].lit_in(c) 
+                                                               || (@c3)[i].lit_in(c2))]
+#[requires((@c2)[k].is_opp((@c)[m]))]
+#[requires(!f.sat(a))]
+#[ensures(!f2.sat(a))]
+pub fn lemma_not_sat_gives_not_sat(f: Formula, f2: Formula, c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
+    lemma_sub_clause_not_sat(c, c2, c3, a);
+    lemma_sub_clause_sat(c, c2, c3, a, k, m);
+}
+
+#[logic]
+#[requires(f.invariant())]
+#[requires(f2.invariant())]
+#[requires(@f.num_vars === @f2.num_vars)]
+#[requires((@f.clauses).len() + 1 === (@f2.clauses).len())]
+#[requires(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
+    ((@f.clauses)[i]).equals((@f2.clauses)[i]))]
+#[requires(@(@f2.clauses)[(@f2.clauses).len()-1] === @c3)]
+#[requires(c.in_formula(f))]
+#[requires(c2.in_formula(f))]
+#[requires(forall<i: Int> 0 <= i && i < (@c ).len() && i != m ==> (@c )[i].lit_in(c3))]
+#[requires(forall<i: Int> 0 <= i && i < (@c2).len() && i != k ==> (@c2)[i].lit_in(c3))]
+#[requires(forall<i: Int> 0 <= i && i < (@c3).len()           ==> (@c3)[i].lit_in(c) 
+                                                               || (@c3)[i].lit_in(c2))]
+#[requires((@c2)[k].is_opp((@c)[m]))]
+#[ensures(f.equisat_compatible(f2))]
+pub fn lemma_extended_formula_is_equisat_compatible(f: Formula, f2: Formula, c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
+    lemma_not_sat_gives_not_sat(f, f2, c, c2, c3, k, m, a);
+    lemma_sat_gives_sat(f, f2, c, c2, c3, k, m, a);
+}
+
+#[logic]
+#[requires(forall<i: Int> 0 <= i && i < (@c ).len() ==> (@c )[i].lit_in(c3) ||
+    (exists<j: Int> 0 <= j && j < (@c2).len() && (@c )[i].is_opp((@c2)[j])))]
+#[requires(forall<i: Int> 0 <= i && i < (@c2).len() ==> (@c2)[i].lit_in(c3) ||
+    (exists<j: Int> 0 <= j && j < (@c ).len() && (@c2)[i].is_opp((@c)[j])))]
+#[requires(forall<i: Int> 0 <= i && i < (@c3).len() ==> (@c3)[i].lit_in(c) 
+                                                     || (@c3)[i].lit_in(c2))]
+#[requires(!c.sat(a))]
+#[requires(!c2.sat(a))]
+#[ensures(!c3.sat(a))]
+pub fn lemma_sub_clause_not_sat(c: Clause, c2: Clause, c3: Clause, a: Assignments) {}
+
+// Requires knowledge of the idx of the conflict literal
+#[logic]
+#[requires(forall<i: Int> 0 <= i && i < (@c ).len() && i != m ==> (@c )[i].lit_in(c3))]
+#[requires(forall<i: Int> 0 <= i && i < (@c2).len() && i != k ==> (@c2)[i].lit_in(c3))]
+#[requires(forall<i: Int> 0 <= i && i < (@c3).len()           ==> (@c3)[i].lit_in(c) 
+                                                               || (@c3)[i].lit_in(c2))]
+#[requires((@c2)[k].is_opp((@c)[m]))]
+#[requires(c.sat(a))]
+#[requires(c2.sat(a))]
+#[ensures(c3.sat(a))]
+pub fn lemma_sub_clause_sat(c: Clause, c2: Clause, c3: Clause, a: Assignments, k: Int, m: Int) {}
+
+// CDCL STUFF END
+
+
 #[trusted] // OK
 #[logic]
 #[ensures(b ==> @result === 1)]

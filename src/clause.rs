@@ -7,7 +7,7 @@ use crate::assignments::*;
 use crate::formula::*;
 use crate::logic::*;
 
-#[derive(Debug)]
+//#[derive(Debug)]
 pub struct Clause {
     //pub first: Lit,
     //pub second: Lit,
@@ -120,6 +120,15 @@ impl Clause {
     pub fn invariant(self, n: Int) -> bool {
         // Should remove the possibility of empty clauses
         pearlite! { self.vars_in_range(n) && self.no_duplicate_indexes() }
+    }
+
+    #[predicate]
+    pub fn equals(self, o: Clause) -> bool {
+        pearlite! {
+            (@self).len() === (@o).len() &&
+            forall<j: Int> 0 <= j && j < (@self).len() ==>
+                (@self)[j] === (@o)[j]
+        }
     }
 }
 
