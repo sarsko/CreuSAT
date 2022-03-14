@@ -190,7 +190,8 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
 #[ensures((^a).invariant(^f))]
 #[ensures(f.equisat_compatible(^f))]
 fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: usize, w: &mut Watches) -> bool {
-    match analyze_conflict(f, a, t, cref) {
+    let res = analyze_conflict_new(f, a, t, cref);
+    match res {
         Conflict::Ground => { 
             return false;
         },

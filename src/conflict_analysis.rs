@@ -10,23 +10,84 @@ use crate::trail::*;
 //use crate::watches::*;
 use crate::trail::{Reason::*};
 
+#[derive(Debug)]
 pub enum Conflict {
     Ground,
     Unit(Lit),
     Learned(usize, Lit, Vec<Lit>),
 }
 
+fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize) -> Clause {
+    let mut new = Vec::new();
+    let mut i = 0;
+    while i < c.rest.len() {
+        if c.rest[i].idx != idx {
+            new.push(c.rest[i]);
+        }
+        i += 1;
+    }
+    i = 0;
+    while i < o.rest.len() {
+        if o.rest[i].idx != idx {
+            let mut k = 0;
+            let mut broken = false;
+            // Super bad way of removing duplis
+            while k < new.len() {
+                if new[k].idx == o.rest[i].idx {
+                    broken = true;
+                    break;
+                }
+                k += 1;
+            }
+            if !broken {
+                new.push(o.rest[i]);
+            }
+        }
+        i += 1;
+    }
+    Clause {
+        rest: new,
+    }
+}
+
+// Super bad / simple
+fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, j: &mut usize) -> Lit {
+    let next = {
+        loop { 
+            *j -= 1;
+            let mut k = 0;
+            let mut broken = false;
+            while k < c.rest.len() {
+                if trail.trail[*i][*j].idx == c.rest[k].idx {
+                    broken = true;
+                    break;
+                }
+                k += 1;
+            }
+            if broken {
+                break;
+            }
+            if *j == 0 {
+                *i -= 1;
+                *j = trail.trail[*i].len();
+            }
+        }
+        trail.trail[*i][*j]
+    };
+    next
+}
+
+
 // The "standard one" from Zha03
 // Probs better to use as a base
 // Might also be good to do the proof of the extension being OK inside this rather than do
 // a return then add
 #[trusted]
-pub fn analyze_conflict_(f: &Formula, a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
+pub fn analyze_conflict_new(f: &Formula, a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.trail.len() - 1;
     if decisionlevel == 0 {
         return Conflict::Ground;
     }
-    Conflict::Ground
     // cl = find_conflicting_clause();
     /*
     loop {
@@ -42,6 +103,36 @@ pub fn analyze_conflict_(f: &Formula, a: &Assignments, trail: &Trail, cref: usiz
     back_dl = clause_asserting_level(cl);
     return back_dl
     */
+    // Making these persistent is strictly speaking an optimization
+    let mut i = trail.trail.len() - 1;
+    let mut j = trail.trail[i].len();
+    let mut clause = f.clauses[cref].clone();
+    loop {
+    //i = trail.trail.len() - 1;
+    //j = trail.trail[i].len();
+        let lit = choose_literal(&clause, trail, &mut i, &mut j);
+        let ante = match &trail.vardata[lit.idx].1 {
+            Long(c) => f.clauses[*c].clone(),
+            o => panic!(),
+        };
+        clause = resolve(f, &clause, &ante, lit.idx);
+        let mut k = 0;
+        let mut cnt = 0;
+        while k < clause.rest.len() {
+            if trail.vardata[clause.rest[k].idx].0 == decisionlevel {
+                cnt += 1;
+            }
+            k += 1;
+        }
+        if cnt == 1 {
+            break;
+        }
+    }
+    if clause.rest.len() == 1 {
+        Conflict::Unit(clause.rest[0])
+    } else {
+        Conflict::Learned(cref, clause.rest[0], clause.rest)
+    }
 }
 
 #[trusted]
@@ -120,7 +211,6 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
         }
         match &trail.vardata[(!next).idx].1 {
             Long(c) => confl = *c,
-            //other => panic!(),
             //other => panic!("Error - this has reason: {:?}", other),
             _other => panic!(),
         }

@@ -8,6 +8,7 @@ use crate::formula::*;
 use crate::logic::*;
 
 //#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Clause {
     //pub first: Lit,
     //pub second: Lit,
