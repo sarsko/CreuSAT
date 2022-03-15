@@ -7,8 +7,8 @@ use ::std::ops;
 use crate::clause::*;
 use crate::assignments::*;
 
-//#[derive(Clone, Copy)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
+//#[derive(Clone, Copy, Debug)]
 pub struct Lit {
     pub idx: usize,
     pub polarity: bool,

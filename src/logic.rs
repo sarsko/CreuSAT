@@ -9,7 +9,18 @@ use crate::formula::*;
 
 
 // CDCL STUFF START
+#[predicate]
+pub fn resolvent_of_(c3: Clause, c: Clause, c2: Clause, idx: usize) -> bool{
+    pearlite! {
+         forall<i: Int> 0 <= i && i < (@c ).len() && !(@(@c)[i].idx === @idx) ==> (@c )[i].lit_in(c3) &&
+         forall<i: Int> 0 <= i && i < (@c2).len() && !(@(@c)[i].idx === @idx) ==> (@c2)[i].lit_in(c3) &&
+        (forall<i: Int> 0 <= i && i < (@c3).len()           ==> (@c3)[i].lit_in(c) 
+                                                            ||  (@c3)[i].lit_in(c2))
+    }
+}
 
+
+#[trusted] // OK
 #[logic]
 #[requires(f.invariant())]
 #[requires(f2.invariant())]
@@ -20,6 +31,7 @@ pub fn lemma_trivial(f: Formula, f2: Formula) {}
 
 // Trivial
 // De facto test
+#[trusted] // OK
 #[logic]
 #[requires(f.invariant())]
 #[requires(f2.invariant())]
@@ -29,6 +41,7 @@ pub fn lemma_equal_are_equisat(f: Formula, f2: Formula) {}
 
 // Trivial
 // De facto test
+#[trusted] // OK
 #[logic]
 #[requires(f.invariant())]
 #[requires(f2.invariant())]
@@ -41,6 +54,7 @@ pub fn lemma_equal_are_equisat2(f: Formula, f2: Formula) {}
 
 // Trivial
 // De facto test
+#[trusted] // OK
 #[logic]
 #[requires(f.invariant())]
 #[requires(f2.invariant())]
@@ -54,6 +68,8 @@ pub fn lemma_equal_are_equisat2(f: Formula, f2: Formula) {}
 #[ensures(f.equisat_compatible(f2))]
 pub fn lemma_equal_are_equisat3(f: Formula, f2: Formula) {}
 
+
+//#[trusted] // OK
 #[logic]
 #[requires(f.invariant())]
 #[requires(f2.invariant())]
@@ -64,11 +80,7 @@ pub fn lemma_equal_are_equisat3(f: Formula, f2: Formula) {}
 #[requires(@(@f2.clauses)[(@f2.clauses).len()-1] === @c3)]
 #[requires(c.in_formula(f))]
 #[requires(c2.in_formula(f))]
-#[requires(forall<i: Int> 0 <= i && i < (@c ).len() && i != m ==> (@c )[i].lit_in(c3))]
-#[requires(forall<i: Int> 0 <= i && i < (@c2).len() && i != k ==> (@c2)[i].lit_in(c3))]
-#[requires(forall<i: Int> 0 <= i && i < (@c3).len()           ==> (@c3)[i].lit_in(c) 
-                                                               || (@c3)[i].lit_in(c2))]
-#[requires((@c2)[k].is_opp((@c)[m]))]
+#[requires(c3.resolvent_of(c, c2, k, m))]
 #[requires(f.sat(a))]
 #[ensures(f2.sat(a))]
 pub fn lemma_sat_gives_sat(f: Formula, f2: Formula, c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
@@ -76,6 +88,7 @@ pub fn lemma_sat_gives_sat(f: Formula, f2: Formula, c: Clause, c2: Clause, c3: C
     lemma_sub_clause_sat(c, c2, c3, a, k, m);
 }
 
+//#[trusted] // OK
 #[logic]
 #[requires(f.invariant())]
 #[requires(f2.invariant())]
@@ -86,11 +99,7 @@ pub fn lemma_sat_gives_sat(f: Formula, f2: Formula, c: Clause, c2: Clause, c3: C
 #[requires(@(@f2.clauses)[(@f2.clauses).len()-1] === @c3)]
 #[requires(c.in_formula(f))]
 #[requires(c2.in_formula(f))]
-#[requires(forall<i: Int> 0 <= i && i < (@c ).len() && i != m ==> (@c )[i].lit_in(c3))]
-#[requires(forall<i: Int> 0 <= i && i < (@c2).len() && i != k ==> (@c2)[i].lit_in(c3))]
-#[requires(forall<i: Int> 0 <= i && i < (@c3).len()           ==> (@c3)[i].lit_in(c) 
-                                                               || (@c3)[i].lit_in(c2))]
-#[requires((@c2)[k].is_opp((@c)[m]))]
+#[requires(c3.resolvent_of(c, c2, k, m))]
 #[requires(!f.sat(a))]
 #[ensures(!f2.sat(a))]
 pub fn lemma_not_sat_gives_not_sat(f: Formula, f2: Formula, c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
@@ -98,6 +107,7 @@ pub fn lemma_not_sat_gives_not_sat(f: Formula, f2: Formula, c: Clause, c2: Claus
     lemma_sub_clause_sat(c, c2, c3, a, k, m);
 }
 
+//#[trusted] // OK
 #[logic]
 #[requires(f.invariant())]
 #[requires(f2.invariant())]
@@ -108,17 +118,15 @@ pub fn lemma_not_sat_gives_not_sat(f: Formula, f2: Formula, c: Clause, c2: Claus
 #[requires(@(@f2.clauses)[(@f2.clauses).len()-1] === @c3)]
 #[requires(c.in_formula(f))]
 #[requires(c2.in_formula(f))]
-#[requires(forall<i: Int> 0 <= i && i < (@c ).len() && i != m ==> (@c )[i].lit_in(c3))]
-#[requires(forall<i: Int> 0 <= i && i < (@c2).len() && i != k ==> (@c2)[i].lit_in(c3))]
-#[requires(forall<i: Int> 0 <= i && i < (@c3).len()           ==> (@c3)[i].lit_in(c) 
-                                                               || (@c3)[i].lit_in(c2))]
-#[requires((@c2)[k].is_opp((@c)[m]))]
+#[requires(c3.resolvent_of(c, c2, k, m))]
 #[ensures(f.equisat_compatible(f2))]
+#[ensures(c3.equisat_extension(f, f2))] // OK
 pub fn lemma_extended_formula_is_equisat_compatible(f: Formula, f2: Formula, c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
     lemma_not_sat_gives_not_sat(f, f2, c, c2, c3, k, m, a);
     lemma_sat_gives_sat(f, f2, c, c2, c3, k, m, a);
 }
 
+//#[trusted] // OK
 #[logic]
 #[requires(forall<i: Int> 0 <= i && i < (@c ).len() ==> (@c )[i].lit_in(c3) ||
     (exists<j: Int> 0 <= j && j < (@c2).len() && (@c )[i].is_opp((@c2)[j])))]
@@ -132,12 +140,9 @@ pub fn lemma_extended_formula_is_equisat_compatible(f: Formula, f2: Formula, c: 
 pub fn lemma_sub_clause_not_sat(c: Clause, c2: Clause, c3: Clause, a: Assignments) {}
 
 // Requires knowledge of the idx of the conflict literal
+//#[trusted] // OK
 #[logic]
-#[requires(forall<i: Int> 0 <= i && i < (@c ).len() && i != m ==> (@c )[i].lit_in(c3))]
-#[requires(forall<i: Int> 0 <= i && i < (@c2).len() && i != k ==> (@c2)[i].lit_in(c3))]
-#[requires(forall<i: Int> 0 <= i && i < (@c3).len()           ==> (@c3)[i].lit_in(c) 
-                                                               || (@c3)[i].lit_in(c2))]
-#[requires((@c2)[k].is_opp((@c)[m]))]
+#[requires(c3.resolvent_of(c, c2, k, m))]
 #[requires(c.sat(a))]
 #[requires(c2.sat(a))]
 #[ensures(c3.sat(a))]

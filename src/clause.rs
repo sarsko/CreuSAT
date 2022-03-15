@@ -8,11 +8,21 @@ use crate::formula::*;
 use crate::logic::*;
 
 //#[derive(Debug)]
-#[derive(Clone, Debug)]
+//#[derive(Clone)]
 pub struct Clause {
     //pub first: Lit,
     //pub second: Lit,
     pub rest: Vec<Lit>
+}
+
+impl Clone for Clause {
+    #[trusted]
+    #[ensures(result === *self)]
+    fn clone(&self) -> Self {
+        Clause {
+            rest: self.rest.clone()
+        }
+}
 }
 
 #[cfg(contracts)]
@@ -42,6 +52,36 @@ pub fn vars_in_range_inner(s: Seq<Lit>, n: Int) -> bool {
 }
 
 impl Clause {
+    #[predicate]
+    pub fn equisat_extension(self, f: Formula, f2: Formula) -> bool {
+        pearlite! {
+        (
+            f.invariant() && f2.invariant() &&
+            @f.num_vars === @f2.num_vars && 
+            (@f.clauses).push(self) === (@f2.clauses)
+            /*
+            //(@f.clauses).len() + 1 === (@f2.clauses).len() &&
+            (forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
+            ((@f.clauses)[i]).equals((@f2.clauses)[i])) &&
+            (@(@f2.clauses)[(@f2.clauses).len()-1] === @self)
+            */
+        ) ==>
+            f.equisat_compatible(f2)
+        }
+
+    }
+
+    #[predicate]
+    pub fn resolvent_of(self, c: Clause, c2: Clause, k: Int, m: Int) -> bool {
+        pearlite! {
+            (forall<i: Int> 0 <= i && i < (@c ).len() && i != m ==> (@c )[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < (@c2).len() && i != k ==> (@c2)[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < (@self).len()         ==> (@self)[i].lit_in(c) 
+                                                                ||  (@self)[i].lit_in(c2)) &&
+            (@c2)[k].is_opp((@c)[m])                 
+        }
+    }
+
     #[predicate]
     pub fn in_formula(self, f: Formula) -> bool {
         pearlite! {

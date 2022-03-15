@@ -10,13 +10,15 @@ use crate::trail::*;
 //use crate::watches::*;
 use crate::trail::{Reason::*};
 
-#[derive(Debug)]
+//#[derive(Debug)]
 pub enum Conflict {
     Ground,
     Unit(Lit),
     Learned(usize, Lit, Vec<Lit>),
 }
 
+#[trusted] // tmp
+#[ensures(result.invariant(@_f.num_vars))]
 fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize) -> Clause {
     let mut new = Vec::new();
     let mut i = 0;
@@ -50,7 +52,10 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize) -> Clause {
     }
 }
 
+#[trusted] // tmp
+#[ensures(@result.idx < (@trail.vardata).len())]
 // Super bad / simple
+
 fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, j: &mut usize) -> Lit {
     let next = {
         loop { 
@@ -82,7 +87,29 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, j: &mut usize) -> Li
 // Probs better to use as a base
 // Might also be good to do the proof of the extension being OK inside this rather than do
 // a return then add
-#[trusted]
+//#[trusted]
+
+#[requires(f.invariant())]
+#[requires(a.invariant(*f))]
+#[requires(trail.invariant(*f))]
+#[requires((@trail.trail).len() > 0)]
+#[requires(@cref < (@f.clauses).len())]
+#[ensures(match result {
+    //Conflict::Ground => f.unsat(*a), // Either have to do proof on this seperately or reforumlate
+    Conflict::Unit(lit) => {true}, // know lit can be learned
+    Conflict::Learned(level, lit, clause) => {
+        //@level > 0 && @level <= (@trail.trail).len() && // Don't need atm
+        @lit.idx < ((@a).len()) && // can be changed to lit in or somet
+        (@clause).len() > 1 &&
+        vars_in_range_inner(@clause, @f.num_vars) &&
+        no_duplicate_indexes_inner(@clause) &&
+        true
+    }, // know clause can be learned
+    _ => { true }
+})]
+/*
+})]
+*/
 pub fn analyze_conflict_new(f: &Formula, a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.trail.len() - 1;
     if decisionlevel == 0 {
@@ -107,6 +134,7 @@ pub fn analyze_conflict_new(f: &Formula, a: &Assignments, trail: &Trail, cref: u
     let mut i = trail.trail.len() - 1;
     let mut j = trail.trail[i].len();
     let mut clause = f.clauses[cref].clone();
+    #[invariant(clause_ok, clause.invariant(@f.num_vars))]
     loop {
     //i = trail.trail.len() - 1;
     //j = trail.trail[i].len();
@@ -116,8 +144,10 @@ pub fn analyze_conflict_new(f: &Formula, a: &Assignments, trail: &Trail, cref: u
             o => panic!(),
         };
         clause = resolve(f, &clause, &ante, lit.idx);
-        let mut k = 0;
-        let mut cnt = 0;
+        let mut k: usize = 0;
+        let mut cnt: usize = 0;
+        #[invariant(k_bound, @k <= (@clause.rest).len())]
+        #[invariant(cnt_bound, @cnt <= @k)]
         while k < clause.rest.len() {
             if trail.vardata[clause.rest[k].idx].0 == decisionlevel {
                 cnt += 1;
