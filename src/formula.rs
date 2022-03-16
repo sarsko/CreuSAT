@@ -23,6 +23,16 @@ pub enum SatState {
     Unsat,
 }
 
+#[cfg(contracts)]
+impl Model for Formula {
+    type ModelTy = (Seq<Clause>, Int);
+
+    #[logic]
+    fn model(self) -> Self::ModelTy {
+        (self.clauses.model(), self.num_vars.model())
+    }
+}
+
 impl PartialEq for SatState {
     #[trusted] // OK
     fn eq(&self, other: &Self) -> bool {
@@ -32,6 +42,49 @@ impl PartialEq for SatState {
             (SatState::Unsat,   SatState::Unsat)    => true,
             _ => false,
         };
+    }
+}
+
+#[predicate]
+pub fn eventually_sat_complete_no_ass(f: (Seq<Clause>, Int)) -> bool {
+    pearlite! {
+        exists<a2 : Seq<AssignedState>> a2.len() === f.1 && complete_inner(a2) && self.sat_inner(a2)
+    }
+}
+
+#[predicate]
+pub fn equisat(self, o: Formula) -> bool {
+    pearlite! {
+        self.eventually_sat_complete_no_ass() === o.eventually_sat_complete_no_ass()
+    }
+}
+
+#[predicate]
+pub fn compatible(self, o: Formula) -> bool {
+    pearlite! {
+        @self.num_vars === @o.num_vars &&
+        /*
+        (@o.clauses).len() >= (@self.clauses).len() &&
+        forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+            (@self.clauses)[i] === (@o.clauses)[i]
+            */
+        (@o.clauses).len() >= (@self.clauses).len() &&
+        forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+            ((@self.clauses)[i]).equals((@o.clauses)[i])
+        /*
+            (@(@self.clauses)[i]).len() === (@(@o.clauses)[i]).len() &&
+            forall<j: Int> 0 <= j && j < (@(@self.clauses)[i]).len() ==>
+            (@(@self.clauses)[i])[j] === (@(@o.clauses)[i])[j]
+            */
+    }
+}
+
+#[predicate]
+pub fn equisat_compatible_inner(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
+    pearlite! {
+        true
+        //self.compatible(o) &&
+        //self.equisat(o)
     }
 }
 
@@ -63,9 +116,12 @@ impl Formula {
                 */
             (@o.clauses).len() >= (@self.clauses).len() &&
             forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+                ((@self.clauses)[i]).equals((@o.clauses)[i])
+            /*
                 (@(@self.clauses)[i]).len() === (@(@o.clauses)[i]).len() &&
                 forall<j: Int> 0 <= j && j < (@(@self.clauses)[i]).len() ==>
                 (@(@self.clauses)[i])[j] === (@(@o.clauses)[i])[j]
+                */
         }
     }
 

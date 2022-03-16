@@ -53,23 +53,27 @@ pub fn vars_in_range_inner(s: Seq<Lit>, n: Int) -> bool {
 
 impl Clause {
     #[predicate]
-    pub fn equisat_extension(self, f: Formula, f2: Formula) -> bool {
+    pub fn equisat_extension(self, f: Formula) -> bool {
         pearlite! {
-        (
+            exists<f2: Formula> self.equisat_extension_double(f, f2)
+        }
+    }
+
+    #[predicate]
+    pub fn equisat_extension_double(self, f: Formula, f2: Formula) -> bool {
+        pearlite! {
             f.invariant() && f2.invariant() &&
             @f.num_vars === @f2.num_vars && 
-            (@f.clauses).push(self) === (@f2.clauses)
-            /*
-            //(@f.clauses).len() + 1 === (@f2.clauses).len() &&
+            //(@f.clauses).push(self) === (@f2.clauses) && // Push doesnt pass
+            ((@f.clauses).len() + 1 === (@f2.clauses).len() &&
             (forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
             ((@f.clauses)[i]).equals((@f2.clauses)[i])) &&
-            (@(@f2.clauses)[(@f2.clauses).len()-1] === @self)
-            */
-        ) ==>
+            (@(@f2.clauses)[(@f2.clauses).len()-1] === @self)) &&
             f.equisat_compatible(f2)
         }
 
     }
+
 
     #[predicate]
     pub fn resolvent_of(self, c: Clause, c2: Clause, k: Int, m: Int) -> bool {
