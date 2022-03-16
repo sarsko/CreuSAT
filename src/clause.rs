@@ -95,6 +95,14 @@ impl Clause {
     }
 
     #[predicate]
+    pub fn in_formula_inner(self, f: (Seq<Clause>, Int)) -> bool {
+        pearlite! {
+            exists<i: Int> 0 <= i && i < (f.0).len() &&
+                (f.0)[i] === self
+        }
+    }
+
+    #[predicate]
     pub fn unit_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             self.vars_in_range(a.len()) &&

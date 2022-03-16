@@ -46,31 +46,48 @@ impl PartialEq for SatState {
 }
 
 #[predicate]
+pub fn formula_invariant(f: (Seq<Clause>, Int)) -> bool {
+    pearlite! {
+        //(@f.clauses).len() > 0 && // added
+        forall<i: Int> 0 <= i && i < f.0.len() ==>
+            f.0[i].invariant(f.1)
+    }
+}
+
+#[predicate]
+pub fn formula_sat_inner(f: (Seq<Clause>, Int), a: Seq<AssignedState>) -> bool {
+    pearlite! {
+        forall<i: Int> 0 <= i && i < f.0.len() ==>
+            f.0[i].sat_inner(a)
+    }
+}
+
+#[predicate]
 pub fn eventually_sat_complete_no_ass(f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
-        exists<a2 : Seq<AssignedState>> a2.len() === f.1 && complete_inner(a2) && self.sat_inner(a2)
+        exists<a2 : Seq<AssignedState>> a2.len() === f.1 && complete_inner(a2) && formula_sat_inner(f, a2)
     }
 }
 
 #[predicate]
-pub fn equisat(self, o: Formula) -> bool {
+pub fn equisat(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
     pearlite! {
-        self.eventually_sat_complete_no_ass() === o.eventually_sat_complete_no_ass()
+        eventually_sat_complete_no_ass(f) === eventually_sat_complete_no_ass(o)
     }
 }
 
 #[predicate]
-pub fn compatible(self, o: Formula) -> bool {
+pub fn compatible(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
     pearlite! {
-        @self.num_vars === @o.num_vars &&
+        f.1 === o.1 &&
         /*
         (@o.clauses).len() >= (@self.clauses).len() &&
         forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
             (@self.clauses)[i] === (@o.clauses)[i]
             */
-        (@o.clauses).len() >= (@self.clauses).len() &&
-        forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
-            ((@self.clauses)[i]).equals((@o.clauses)[i])
+        o.0.len() >= f.0.len() &&
+        forall<i: Int> 0 <= i && i < f.0.len() ==>
+            (f.0[i]).equals(o.0[i])
         /*
             (@(@self.clauses)[i]).len() === (@(@o.clauses)[i]).len() &&
             forall<j: Int> 0 <= j && j < (@(@self.clauses)[i]).len() ==>
@@ -82,9 +99,9 @@ pub fn compatible(self, o: Formula) -> bool {
 #[predicate]
 pub fn equisat_compatible_inner(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
     pearlite! {
-        true
-        //self.compatible(o) &&
-        //self.equisat(o)
+        //true
+        compatible(f, o) &&
+        equisat(f, o)
     }
 }
 
@@ -128,17 +145,29 @@ impl Formula {
     #[predicate]
     pub fn equisat_compatible(self, o: Formula) -> bool {
         pearlite! {
+            equisat_compatible_inner(@self, @o)
+            /*
             self.compatible(o) &&
             self.equisat(o)
+            */
         }
     }
 
     #[predicate]
-    pub fn invariant(self) -> bool {
+    pub fn invariant_old(self) -> bool {
         pearlite! {
             //(@f.clauses).len() > 0 && // added
             forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
                 (@self.clauses)[i].invariant(@self.num_vars)
+        }
+    }
+
+    #[predicate]
+    #[ensures(result === self.invariant_old())]
+    pub fn invariant(self) -> bool {
+        pearlite! {
+            //(@f.clauses).len() > 0 && // added
+            formula_invariant(@self)
         }
     }
 
@@ -175,9 +204,11 @@ impl Formula {
     }
 
     #[predicate]
+    #[ensures(result === self.sat_inner(@a))]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! { 
-            self.sat_inner(@a)
+            //self.sat_inner(@a)
+            formula_sat_inner(@self, @a)
         }
     }
 

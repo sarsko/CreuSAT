@@ -88,7 +88,21 @@ pub fn lemma_sat_gives_sat(f: Formula, f2: Formula, c: Clause, c2: Clause, c3: C
     lemma_sub_clause_sat(c, c2, c3, a, k, m);
 }
 
-//#[trusted] // OK
+#[logic]
+#[requires(formula_invariant(f))]
+#[requires(c.in_formula_inner(f))]
+#[requires(c2.in_formula_inner(f))]
+#[requires(c3.resolvent_of(c, c2, k, m))]
+#[requires(formula_sat_inner(f, @a))]
+#[ensures(formula_sat_inner((f.0.push(c3), f.1), @a))]
+pub fn lemma_sat_gives_sat_new(f: (Seq<Clause>, Int), f2: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
+    lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
+    lemma_sub_clause_not_sat(c, c2, c3, a);
+    lemma_sub_clause_sat(c, c2, c3, a, k, m);
+}
+
+// Takes forever to prove after swap to new f.sat(a)
+#[trusted] // OK
 #[logic]
 #[requires(f.invariant())]
 #[requires(f2.invariant())]
@@ -103,6 +117,31 @@ pub fn lemma_sat_gives_sat(f: Formula, f2: Formula, c: Clause, c2: Clause, c3: C
 #[requires(!f.sat(a))]
 #[ensures(!f2.sat(a))]
 pub fn lemma_not_sat_gives_not_sat(f: Formula, f2: Formula, c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
+    lemma_sub_clause_not_sat(c, c2, c3, a);
+    lemma_sub_clause_sat(c, c2, c3, a, k, m);
+}
+
+
+#[logic]
+#[requires(f2.0 === f.0.push(c))]
+#[requires(formula_invariant(f))]
+//#[ensures(formula_invariant(f2))]
+//#[ensures(f.1 === f2.1)]
+#[ensures((f.0).len() + 1 === (f2.0).len())]
+#[ensures(forall<i: Int> 0 <= i && i < (f.0).len() ==> 
+    ((f.0)[i]).equals((f2.0)[i]))]
+#[ensures(@(f2.0)[(f2.0).len()-1] === @c)]
+pub fn lemma_eq_formulas(f: (Seq<Clause>, Int), f2: (Seq<Clause>, Int), c: Clause) {}
+
+#[logic]
+//#[requires(c.in_formula_inner(f))]
+//#[requires(c2.in_formula_inner(f))]
+#[requires(formula_invariant(f))]
+//#[requires(c3.resolvent_of(c, c2, k, m))]
+#[requires(!formula_sat_inner(f, @a))]
+#[ensures(!formula_sat_inner((f.0.push(c3), f.1), @a))]
+pub fn lemma_not_sat_gives_not_sat_new2(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
+    lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
     lemma_sub_clause_not_sat(c, c2, c3, a);
     lemma_sub_clause_sat(c, c2, c3, a, k, m);
 }
@@ -145,6 +184,7 @@ pub fn lemma_resolvent_is_equisat(f: Formula, f2: Formula, c: Clause, c2: Clause
     lemma_extended_formula_is_equisat_compatible(f, f2, c, c2, c3, k, m, a);
 }
 
+
 /*
 #[logic]
 #[requires(f.invariant())]
@@ -186,7 +226,6 @@ pub fn lemma_resolvent_is_equisat2(f: Formula, f2: Formula, f3: Formula, c: Clau
 #[requires(f2.equisat_compatible(f3))]
 #[ensures(f.equisat_compatible(f3))]
 pub fn lemma_equisat_is_trans(f: Formula, f2: Formula, f3: Formula) {}
-
 
 //#[trusted] // OK
 #[logic]
