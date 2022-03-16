@@ -99,7 +99,6 @@ pub fn compatible(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
 #[predicate]
 pub fn equisat_compatible_inner(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
     pearlite! {
-        //true
         compatible(f, o) &&
         equisat(f, o)
     }

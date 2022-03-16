@@ -2924,6 +2924,59 @@ module Lib_Logic_LemmaEqualAreEquisat3
   function lemma_equal_are_equisat3 (f : Type.lib_formula_formula) (f2 : Type.lib_formula_formula) : ()
   axiom lemma_equal_are_equisat3_spec : forall f : Type.lib_formula_formula, f2 : Type.lib_formula_formula . (forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f)) -> Seq.length (Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) i)) = Seq.length (Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) i)) && (forall j : (int) . 0 <= j && j < Seq.length (Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) i)) -> Seq.get (Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) i)) j = Seq.get (Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) i)) j)) -> Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f)) = Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) -> UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f2) -> Invariant0.invariant' f2 -> Invariant0.invariant' f -> EquisatCompatible0.equisat_compatible f f2
 end
+module Lib_Logic_LemmaEqFormulas_Interface
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.Int32
+  use Type
+  clone Lib_Clause_Impl2_Equals_Interface as Equals0
+  clone Lib_Clause_Impl1_Model_Interface as Model0
+  clone Lib_Formula_FormulaInvariant_Interface as FormulaInvariant0
+  function lemma_eq_formulas (f : (Seq.seq (Type.lib_clause_clause), int)) (f2 : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) : ()
+    
+end
+module Lib_Logic_LemmaEqFormulas
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.Int32
+  use Type
+  clone Lib_Clause_Impl2_Equals_Interface as Equals0
+  clone Lib_Clause_Impl1_Model_Interface as Model0
+  clone Lib_Formula_FormulaInvariant_Interface as FormulaInvariant0
+  function lemma_eq_formulas (f : (Seq.seq (Type.lib_clause_clause), int)) (f2 : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) : ()
+    
+   = 
+    ()
+  axiom lemma_eq_formulas_spec : forall f : (Seq.seq (Type.lib_clause_clause), int), f2 : (Seq.seq (Type.lib_clause_clause), int), c : Type.lib_clause_clause . FormulaInvariant0.formula_invariant f -> (let (a, _) = f2 in a) = Seq.snoc (let (a, _) = f in a) c -> Seq.length (let (a, _) = f in a) + 1 = Seq.length (let (a, _) = f2 in a) && (forall i : (int) . 0 <= i && i < Seq.length (let (a, _) = f in a) -> Equals0.equals (Seq.get (let (a, _) = f in a) i) (Seq.get (let (a, _) = f2 in a) i)) && Model0.model (Seq.get (let (a, _) = f2 in a) (Seq.length (let (a, _) = f2 in a) - 1)) = Model0.model c
+end
+module Lib_Logic_LemmaEqFormulas_Impl
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.Int32
+  use Type
+  clone Lib_Lit_Impl1_Invariant as Invariant1
+  clone Lib_Clause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant1.invariant'
+  clone Lib_Clause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model0 with function Model0.model = Model1.model
+  clone Lib_Clause_Impl2_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model0.model,
+  predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner
+  clone Lib_Clause_Impl2_VarsInRange as VarsInRange0 with function Model0.model = Model0.model,
+  predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner
+  clone Lib_Clause_Impl2_Invariant as Invariant0 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
+  predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant0.invariant'
+  clone Lib_Clause_Impl2_Equals as Equals0 with function Model0.model = Model0.model
+  let rec ghost function lemma_eq_formulas (f : (Seq.seq (Type.lib_clause_clause), int)) (f2 : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) : ()
+    requires {FormulaInvariant0.formula_invariant f}
+    requires {(let (a, _) = f2 in a) = Seq.snoc (let (a, _) = f in a) c}
+    ensures { Model0.model (Seq.get (let (a, _) = f2 in a) (Seq.length (let (a, _) = f2 in a) - 1)) = Model0.model c }
+    ensures { forall i : (int) . 0 <= i && i < Seq.length (let (a, _) = f in a) -> Equals0.equals (Seq.get (let (a, _) = f in a) i) (Seq.get (let (a, _) = f2 in a) i) }
+    ensures { Seq.length (let (a, _) = f in a) + 1 = Seq.length (let (a, _) = f2 in a) }
+    
+   = 
+    ()
+end
 module Lib_Logic_LemmaSubClauseNotSat_Interface
   use mach.int.Int
   use mach.int.Int32
@@ -3028,179 +3081,6 @@ module Lib_Logic_LemmaSubClauseSat_Impl
 end
 module Lib_Logic_LemmaSatGivesSat_Interface
   use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use mach.int.UInt64
-  use Type
-  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
-  clone Lib_Formula_Impl2_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
-  clone Lib_Clause_Impl2_Equals_Interface as Equals0
-  clone Lib_Clause_Impl1_Model_Interface as Model1
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.lib_clause_clause
-  clone Lib_Clause_Impl2_InFormula_Interface as InFormula0
-  clone Lib_Clause_Impl2_ResolventOf_Interface as ResolventOf0
-  clone Lib_Formula_Impl2_SatInner_Interface as SatInner0
-  clone Lib_Assignments_Impl0_Model_Interface as Model2
-  clone Lib_Formula_Impl2_Sat_Interface as Sat0 with function Model0.model = Model2.model,
-  predicate SatInner0.sat_inner = SatInner0.sat_inner, axiom .
-  function lemma_sat_gives_sat (f : Type.lib_formula_formula) (f2 : Type.lib_formula_formula) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
-    
-end
-module Lib_Logic_LemmaSatGivesSat
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use mach.int.UInt64
-  use Type
-  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
-  clone Lib_Formula_Impl2_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
-  clone Lib_Clause_Impl2_Equals_Interface as Equals0
-  clone Lib_Clause_Impl1_Model_Interface as Model1
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.lib_clause_clause
-  clone Lib_Clause_Impl2_InFormula_Interface as InFormula0
-  clone Lib_Clause_Impl2_ResolventOf_Interface as ResolventOf0
-  clone Lib_Formula_Impl2_SatInner_Interface as SatInner0
-  clone Lib_Assignments_Impl0_Model_Interface as Model2
-  clone Lib_Formula_Impl2_Sat_Interface as Sat0 with function Model0.model = Model2.model,
-  predicate SatInner0.sat_inner = SatInner0.sat_inner, axiom .
-  clone Lib_Lit_Impl1_IsOpp_Interface as IsOpp0
-  clone Lib_Lit_Impl1_LitIn_Interface as LitIn0
-  clone Lib_Clause_Impl2_Sat_Interface as Sat1
-  clone Lib_Logic_LemmaSubClauseNotSat_Interface as LemmaSubClauseNotSat0 with predicate Sat0.sat = Sat1.sat,
-  function Model0.model = Model1.model, predicate LitIn0.lit_in = LitIn0.lit_in,
-  predicate IsOpp0.is_opp = IsOpp0.is_opp, axiom .
-  clone Lib_Logic_LemmaSubClauseSat_Interface as LemmaSubClauseSat0 with predicate Sat0.sat = Sat1.sat,
-  predicate ResolventOf0.resolvent_of = ResolventOf0.resolvent_of, axiom .
-  function lemma_sat_gives_sat (f : Type.lib_formula_formula) (f2 : Type.lib_formula_formula) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
-    
-   = 
-    let _ = LemmaSubClauseNotSat0.lemma_sub_clause_not_sat c c2 c3 a in let _ = LemmaSubClauseSat0.lemma_sub_clause_sat c c2 c3 a k m in ()
-  axiom lemma_sat_gives_sat_spec : forall f : Type.lib_formula_formula, f2 : Type.lib_formula_formula, c : Type.lib_clause_clause, c2 : Type.lib_clause_clause, c3 : Type.lib_clause_clause, k : int, m : int, a : Type.lib_assignments_assignments . Sat0.sat f a -> ResolventOf0.resolvent_of c3 c c2 k m -> InFormula0.in_formula c2 f -> InFormula0.in_formula c f -> Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) (Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) - 1)) = Model1.model c3 -> (forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f)) -> Equals0.equals (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) i) (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) i)) -> Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f)) + 1 = Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) -> UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f2) -> Invariant0.invariant' f2 -> Invariant0.invariant' f -> Sat0.sat f2 a
-end
-module Lib_Logic_LemmaSatGivesSat_Impl
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use mach.int.UInt64
-  use Type
-  use prelude.Prelude
-  use prelude.UInt8
-  clone Lib_Lit_Impl1_Invariant as Invariant2
-  clone Lib_Clause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant2.invariant'
-  clone Lib_Clause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
-  clone Lib_Lit_Impl1_SatInner as SatInner2
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model2 with function Model0.model = Model5.model
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model1 with function Model0.model = Model4.model
-  clone Lib_Clause_Impl2_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model1.model,
-  predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner
-  clone Lib_Clause_Impl2_VarsInRange as VarsInRange0 with function Model0.model = Model1.model,
-  predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner
-  clone Lib_Clause_Impl2_Invariant as Invariant1 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
-  predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
-  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant1.invariant'
-  clone Lib_Clause_Impl2_SatInner as SatInner1 with function Model0.model = Model1.model,
-  predicate SatInner0.sat_inner = SatInner2.sat_inner
-  clone Lib_Clause_Impl2_Sat as Sat1 with function Model0.model = Model2.model,
-  predicate SatInner0.sat_inner = SatInner1.sat_inner
-  clone Lib_Formula_FormulaSatInner as FormulaSatInner0 with predicate SatInner0.sat_inner = SatInner1.sat_inner
-  clone Lib_Lit_Impl1_LitIn as LitIn0 with function Model0.model = Model1.model
-  clone Lib_Clause_Impl2_Equals as Equals0 with function Model0.model = Model1.model
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.lib_clause_clause
-  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model0.model,
-  predicate Invariant0.invariant' = Invariant1.invariant'
-  clone Lib_Formula_Impl0_Model as Model3 with function Model0.model = Model0.model
-  clone Lib_Formula_Impl2_Invariant as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  function Model0.model = Model3.model,
-  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
-  clone Lib_Formula_Impl2_SatInner as SatInner0 with function Model0.model = Model0.model,
-  predicate SatInner0.sat_inner = SatInner1.sat_inner
-  clone Lib_Formula_Impl2_Sat as Sat0 with function Model0.model = Model2.model,
-  predicate SatInner0.sat_inner = SatInner0.sat_inner, function Model1.model = Model3.model,
-  predicate FormulaSatInner0.formula_sat_inner = FormulaSatInner0.formula_sat_inner, axiom .
-  clone Lib_Clause_Impl2_InFormula as InFormula0 with function Model0.model = Model0.model
-  clone Lib_Lit_Impl1_IsOpp as IsOpp0
-  clone Lib_Logic_LemmaSubClauseNotSat as LemmaSubClauseNotSat0 with predicate Sat0.sat = Sat1.sat,
-  function Model0.model = Model1.model, predicate LitIn0.lit_in = LitIn0.lit_in,
-  predicate IsOpp0.is_opp = IsOpp0.is_opp, axiom .
-  clone Lib_Clause_Impl2_ResolventOf as ResolventOf0 with function Model0.model = Model1.model,
-  predicate LitIn0.lit_in = LitIn0.lit_in, predicate IsOpp0.is_opp = IsOpp0.is_opp
-  clone Lib_Logic_LemmaSubClauseSat as LemmaSubClauseSat0 with predicate Sat0.sat = Sat1.sat,
-  predicate ResolventOf0.resolvent_of = ResolventOf0.resolvent_of, axiom .
-  let rec ghost function lemma_sat_gives_sat (f : Type.lib_formula_formula) (f2 : Type.lib_formula_formula) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
-    requires {Sat0.sat f a}
-    requires {ResolventOf0.resolvent_of c3 c c2 k m}
-    requires {InFormula0.in_formula c2 f}
-    requires {InFormula0.in_formula c f}
-    requires {Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) (Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) - 1)) = Model1.model c3}
-    requires {forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f)) -> Equals0.equals (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) i) (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) i)}
-    requires {Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f)) + 1 = Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f2))}
-    requires {UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f2)}
-    requires {Invariant0.invariant' f2}
-    requires {Invariant0.invariant' f}
-    ensures { Sat0.sat f2 a }
-    
-   = 
-    let _ = LemmaSubClauseNotSat0.lemma_sub_clause_not_sat c c2 c3 a in let _ = LemmaSubClauseSat0.lemma_sub_clause_sat c c2 c3 a k m in ()
-end
-module Lib_Logic_LemmaEqFormulas_Interface
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use Type
-  clone Lib_Clause_Impl2_Equals_Interface as Equals0
-  clone Lib_Clause_Impl1_Model_Interface as Model0
-  clone Lib_Formula_FormulaInvariant_Interface as FormulaInvariant0
-  function lemma_eq_formulas (f : (Seq.seq (Type.lib_clause_clause), int)) (f2 : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) : ()
-    
-end
-module Lib_Logic_LemmaEqFormulas
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use Type
-  clone Lib_Clause_Impl2_Equals_Interface as Equals0
-  clone Lib_Clause_Impl1_Model_Interface as Model0
-  clone Lib_Formula_FormulaInvariant_Interface as FormulaInvariant0
-  function lemma_eq_formulas (f : (Seq.seq (Type.lib_clause_clause), int)) (f2 : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) : ()
-    
-   = 
-    ()
-  axiom lemma_eq_formulas_spec : forall f : (Seq.seq (Type.lib_clause_clause), int), f2 : (Seq.seq (Type.lib_clause_clause), int), c : Type.lib_clause_clause . FormulaInvariant0.formula_invariant f -> (let (a, _) = f2 in a) = Seq.snoc (let (a, _) = f in a) c -> Seq.length (let (a, _) = f in a) + 1 = Seq.length (let (a, _) = f2 in a) && (forall i : (int) . 0 <= i && i < Seq.length (let (a, _) = f in a) -> Equals0.equals (Seq.get (let (a, _) = f in a) i) (Seq.get (let (a, _) = f2 in a) i)) && Model0.model (Seq.get (let (a, _) = f2 in a) (Seq.length (let (a, _) = f2 in a) - 1)) = Model0.model c
-end
-module Lib_Logic_LemmaEqFormulas_Impl
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use Type
-  clone Lib_Lit_Impl1_Invariant as Invariant1
-  clone Lib_Clause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant1.invariant'
-  clone Lib_Clause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model0 with function Model0.model = Model1.model
-  clone Lib_Clause_Impl2_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model0.model,
-  predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner
-  clone Lib_Clause_Impl2_VarsInRange as VarsInRange0 with function Model0.model = Model0.model,
-  predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner
-  clone Lib_Clause_Impl2_Invariant as Invariant0 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
-  predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
-  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant0.invariant'
-  clone Lib_Clause_Impl2_Equals as Equals0 with function Model0.model = Model0.model
-  let rec ghost function lemma_eq_formulas (f : (Seq.seq (Type.lib_clause_clause), int)) (f2 : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) : ()
-    requires {FormulaInvariant0.formula_invariant f}
-    requires {(let (a, _) = f2 in a) = Seq.snoc (let (a, _) = f in a) c}
-    ensures { Model0.model (Seq.get (let (a, _) = f2 in a) (Seq.length (let (a, _) = f2 in a) - 1)) = Model0.model c }
-    ensures { forall i : (int) . 0 <= i && i < Seq.length (let (a, _) = f in a) -> Equals0.equals (Seq.get (let (a, _) = f in a) i) (Seq.get (let (a, _) = f2 in a) i) }
-    ensures { Seq.length (let (a, _) = f in a) + 1 = Seq.length (let (a, _) = f2 in a) }
-    
-   = 
-    ()
-end
-module Lib_Logic_LemmaSatGivesSatNew_Interface
-  use seq.Seq
   use Type
   use mach.int.Int
   clone Lib_Formula_FormulaInvariant_Interface as FormulaInvariant0
@@ -3208,10 +3088,10 @@ module Lib_Logic_LemmaSatGivesSatNew_Interface
   clone Lib_Clause_Impl2_ResolventOf_Interface as ResolventOf0
   clone Lib_Formula_FormulaSatInner_Interface as FormulaSatInner0
   clone Lib_Assignments_Impl0_Model_Interface as Model0
-  function lemma_sat_gives_sat_new (f : (Seq.seq (Type.lib_clause_clause), int)) (f2 : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
+  function lemma_sat_gives_sat (f : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
     
 end
-module Lib_Logic_LemmaSatGivesSatNew
+module Lib_Logic_LemmaSatGivesSat
   use seq.Seq
   use Type
   use mach.int.Int
@@ -3232,13 +3112,13 @@ module Lib_Logic_LemmaSatGivesSatNew
   function Model0.model = Model1.model, predicate Equals0.equals = Equals0.equals, axiom .
   clone Lib_Logic_LemmaSubClauseSat_Interface as LemmaSubClauseSat0 with predicate Sat0.sat = Sat0.sat,
   predicate ResolventOf0.resolvent_of = ResolventOf0.resolvent_of, axiom .
-  function lemma_sat_gives_sat_new (f : (Seq.seq (Type.lib_clause_clause), int)) (f2 : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
+  function lemma_sat_gives_sat (f : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
     
    = 
     let _ = LemmaEqFormulas0.lemma_eq_formulas f (Seq.snoc (let (a, _) = f in a) c3, let (_, a) = f in a) c3 in let _ = LemmaSubClauseNotSat0.lemma_sub_clause_not_sat c c2 c3 a in let _ = LemmaSubClauseSat0.lemma_sub_clause_sat c c2 c3 a k m in ()
-  axiom lemma_sat_gives_sat_new_spec : forall f : (Seq.seq (Type.lib_clause_clause), int), f2 : (Seq.seq (Type.lib_clause_clause), int), c : Type.lib_clause_clause, c2 : Type.lib_clause_clause, c3 : Type.lib_clause_clause, k : int, m : int, a : Type.lib_assignments_assignments . FormulaSatInner0.formula_sat_inner f (Model0.model a) -> ResolventOf0.resolvent_of c3 c c2 k m -> InFormulaInner0.in_formula_inner c2 f -> InFormulaInner0.in_formula_inner c f -> FormulaInvariant0.formula_invariant f -> FormulaSatInner0.formula_sat_inner (Seq.snoc (let (a, _) = f in a) c3, let (_, a) = f in a) (Model0.model a)
+  axiom lemma_sat_gives_sat_spec : forall f : (Seq.seq (Type.lib_clause_clause), int), c : Type.lib_clause_clause, c2 : Type.lib_clause_clause, c3 : Type.lib_clause_clause, k : int, m : int, a : Type.lib_assignments_assignments . FormulaSatInner0.formula_sat_inner f (Model0.model a) -> ResolventOf0.resolvent_of c3 c c2 k m -> InFormulaInner0.in_formula_inner c2 f -> InFormulaInner0.in_formula_inner c f -> FormulaInvariant0.formula_invariant f -> FormulaSatInner0.formula_sat_inner (Seq.snoc (let (a, _) = f in a) c3, let (_, a) = f in a) (Model0.model a)
 end
-module Lib_Logic_LemmaSatGivesSatNew_Impl
+module Lib_Logic_LemmaSatGivesSat_Impl
   use seq.Seq
   use Type
   use mach.int.Int
@@ -3277,7 +3157,7 @@ module Lib_Logic_LemmaSatGivesSatNew_Impl
   clone Lib_Logic_LemmaSubClauseNotSat as LemmaSubClauseNotSat0 with predicate Sat0.sat = Sat0.sat,
   function Model0.model = Model2.model, predicate LitIn0.lit_in = LitIn0.lit_in,
   predicate IsOpp0.is_opp = IsOpp0.is_opp, axiom .
-  let rec ghost function lemma_sat_gives_sat_new (f : (Seq.seq (Type.lib_clause_clause), int)) (f2 : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
+  let rec ghost function lemma_sat_gives_sat (f : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
     requires {FormulaSatInner0.formula_sat_inner f (Model0.model a)}
     requires {ResolventOf0.resolvent_of c3 c c2 k m}
     requires {InFormulaInner0.in_formula_inner c2 f}
@@ -3290,58 +3170,15 @@ module Lib_Logic_LemmaSatGivesSatNew_Impl
 end
 module Lib_Logic_LemmaNotSatGivesNotSat_Interface
   use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use mach.int.UInt64
-  use Type
-  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
-  clone Lib_Formula_Impl2_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
-  clone Lib_Clause_Impl2_Equals_Interface as Equals0
-  clone Lib_Clause_Impl1_Model_Interface as Model1
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.lib_clause_clause
-  clone Lib_Clause_Impl2_InFormula_Interface as InFormula0
-  clone Lib_Clause_Impl2_ResolventOf_Interface as ResolventOf0
-  clone Lib_Formula_Impl2_SatInner_Interface as SatInner0
-  clone Lib_Assignments_Impl0_Model_Interface as Model2
-  clone Lib_Formula_Impl2_Sat_Interface as Sat0 with function Model0.model = Model2.model,
-  predicate SatInner0.sat_inner = SatInner0.sat_inner, axiom .
-  function lemma_not_sat_gives_not_sat (f : Type.lib_formula_formula) (f2 : Type.lib_formula_formula) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
-    
-end
-module Lib_Logic_LemmaNotSatGivesNotSat
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use mach.int.UInt64
-  use Type
-  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
-  clone Lib_Formula_Impl2_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
-  clone Lib_Clause_Impl2_Equals_Interface as Equals0
-  clone Lib_Clause_Impl1_Model_Interface as Model1
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.lib_clause_clause
-  clone Lib_Clause_Impl2_InFormula_Interface as InFormula0
-  clone Lib_Clause_Impl2_ResolventOf_Interface as ResolventOf0
-  clone Lib_Formula_Impl2_SatInner_Interface as SatInner0
-  clone Lib_Assignments_Impl0_Model_Interface as Model2
-  clone Lib_Formula_Impl2_Sat_Interface as Sat0 with function Model0.model = Model2.model,
-  predicate SatInner0.sat_inner = SatInner0.sat_inner, axiom .
-  function lemma_not_sat_gives_not_sat (f : Type.lib_formula_formula) (f2 : Type.lib_formula_formula) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
-    
-  axiom lemma_not_sat_gives_not_sat_spec : forall f : Type.lib_formula_formula, f2 : Type.lib_formula_formula, c : Type.lib_clause_clause, c2 : Type.lib_clause_clause, c3 : Type.lib_clause_clause, k : int, m : int, a : Type.lib_assignments_assignments . not (Sat0.sat f a) -> ResolventOf0.resolvent_of c3 c c2 k m -> InFormula0.in_formula c2 f -> InFormula0.in_formula c f -> Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) (Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) - 1)) = Model1.model c3 -> (forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f)) -> Equals0.equals (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) i) (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) i)) -> Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f)) + 1 = Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) -> UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f2) -> Invariant0.invariant' f2 -> Invariant0.invariant' f -> not (Sat0.sat f2 a)
-end
-module Lib_Logic_LemmaNotSatGivesNotSatNew2_Interface
-  use seq.Seq
   use Type
   use mach.int.Int
   clone Lib_Formula_FormulaInvariant_Interface as FormulaInvariant0
   clone Lib_Formula_FormulaSatInner_Interface as FormulaSatInner0
   clone Lib_Assignments_Impl0_Model_Interface as Model0
-  function lemma_not_sat_gives_not_sat_new2 (f : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
+  function lemma_not_sat_gives_not_sat (f : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
     
 end
-module Lib_Logic_LemmaNotSatGivesNotSatNew2
+module Lib_Logic_LemmaNotSatGivesNotSat
   use seq.Seq
   use Type
   use mach.int.Int
@@ -3361,13 +3198,13 @@ module Lib_Logic_LemmaNotSatGivesNotSatNew2
   predicate IsOpp0.is_opp = IsOpp0.is_opp, axiom .
   clone Lib_Logic_LemmaEqFormulas_Interface as LemmaEqFormulas0 with predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant,
   function Model0.model = Model1.model, predicate Equals0.equals = Equals0.equals, axiom .
-  function lemma_not_sat_gives_not_sat_new2 (f : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
+  function lemma_not_sat_gives_not_sat (f : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
     
    = 
     let _ = LemmaEqFormulas0.lemma_eq_formulas f (Seq.snoc (let (a, _) = f in a) c3, let (_, a) = f in a) c3 in let _ = LemmaSubClauseNotSat0.lemma_sub_clause_not_sat c c2 c3 a in let _ = LemmaSubClauseSat0.lemma_sub_clause_sat c c2 c3 a k m in ()
-  axiom lemma_not_sat_gives_not_sat_new2_spec : forall f : (Seq.seq (Type.lib_clause_clause), int), c : Type.lib_clause_clause, c2 : Type.lib_clause_clause, c3 : Type.lib_clause_clause, k : int, m : int, a : Type.lib_assignments_assignments . not (FormulaSatInner0.formula_sat_inner f (Model0.model a)) -> FormulaInvariant0.formula_invariant f -> not (FormulaSatInner0.formula_sat_inner (Seq.snoc (let (a, _) = f in a) c3, let (_, a) = f in a) (Model0.model a))
+  axiom lemma_not_sat_gives_not_sat_spec : forall f : (Seq.seq (Type.lib_clause_clause), int), c : Type.lib_clause_clause, c2 : Type.lib_clause_clause, c3 : Type.lib_clause_clause, k : int, m : int, a : Type.lib_assignments_assignments . not (FormulaSatInner0.formula_sat_inner f (Model0.model a)) -> FormulaInvariant0.formula_invariant f -> not (FormulaSatInner0.formula_sat_inner (Seq.snoc (let (a, _) = f in a) c3, let (_, a) = f in a) (Model0.model a))
 end
-module Lib_Logic_LemmaNotSatGivesNotSatNew2_Impl
+module Lib_Logic_LemmaNotSatGivesNotSat_Impl
   use seq.Seq
   use Type
   use mach.int.Int
@@ -3405,7 +3242,7 @@ module Lib_Logic_LemmaNotSatGivesNotSatNew2_Impl
   clone Lib_Logic_LemmaSubClauseNotSat as LemmaSubClauseNotSat0 with predicate Sat0.sat = Sat0.sat,
   function Model0.model = Model2.model, predicate LitIn0.lit_in = LitIn0.lit_in,
   predicate IsOpp0.is_opp = IsOpp0.is_opp, axiom .
-  let rec ghost function lemma_not_sat_gives_not_sat_new2 (f : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
+  let rec ghost function lemma_not_sat_gives_not_sat (f : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
     requires {not (FormulaSatInner0.formula_sat_inner f (Model0.model a))}
     requires {FormulaInvariant0.formula_invariant f}
     ensures { not (FormulaSatInner0.formula_sat_inner (Seq.snoc (let (a, _) = f in a) c3, let (_, a) = f in a) (Model0.model a)) }
@@ -3415,161 +3252,118 @@ module Lib_Logic_LemmaNotSatGivesNotSatNew2_Impl
 end
 module Lib_Logic_LemmaExtendedFormulaIsEquisatCompatible_Interface
   use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use mach.int.UInt64
   use Type
-  clone Lib_Formula_Impl2_EquisatCompatible_Interface as EquisatCompatible0
-  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
-  clone Lib_Formula_Impl2_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
-  clone Lib_Clause_Impl2_Equals_Interface as Equals0
-  clone Lib_Clause_Impl1_Model_Interface as Model1
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.lib_clause_clause
-  clone Lib_Clause_Impl2_InFormula_Interface as InFormula0
+  use mach.int.Int
+  clone Lib_Formula_EquisatCompatibleInner_Interface as EquisatCompatibleInner0
+  clone Lib_Formula_FormulaInvariant_Interface as FormulaInvariant0
+  clone Lib_Clause_Impl2_InFormulaInner_Interface as InFormulaInner0
   clone Lib_Clause_Impl2_ResolventOf_Interface as ResolventOf0
-  function lemma_extended_formula_is_equisat_compatible (f : Type.lib_formula_formula) (f2 : Type.lib_formula_formula) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
+  function lemma_extended_formula_is_equisat_compatible (f : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
     
 end
 module Lib_Logic_LemmaExtendedFormulaIsEquisatCompatible
   use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use mach.int.UInt64
   use Type
-  clone Lib_Formula_Impl2_EquisatCompatible_Interface as EquisatCompatible0
-  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
-  clone Lib_Formula_Impl2_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
-  clone Lib_Clause_Impl2_Equals_Interface as Equals0
-  clone Lib_Clause_Impl1_Model_Interface as Model1
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.lib_clause_clause
-  clone Lib_Clause_Impl2_InFormula_Interface as InFormula0
-  clone Lib_Clause_Impl2_ResolventOf_Interface as ResolventOf0
-  function lemma_extended_formula_is_equisat_compatible (f : Type.lib_formula_formula) (f2 : Type.lib_formula_formula) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
-    
-  axiom lemma_extended_formula_is_equisat_compatible_spec : forall f : Type.lib_formula_formula, f2 : Type.lib_formula_formula, c : Type.lib_clause_clause, c2 : Type.lib_clause_clause, c3 : Type.lib_clause_clause, k : int, m : int, a : Type.lib_assignments_assignments . ResolventOf0.resolvent_of c3 c c2 k m -> InFormula0.in_formula c2 f -> InFormula0.in_formula c f -> Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) (Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) - 1)) = Model1.model c3 -> (forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f)) -> Equals0.equals (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) i) (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) i)) -> Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f)) + 1 = Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) -> UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f2) -> Invariant0.invariant' f2 -> Invariant0.invariant' f -> EquisatCompatible0.equisat_compatible f f2
-end
-module Lib_Logic_LemmaResolventIsEquisat_Interface
-  use seq.Seq
   use mach.int.Int
-  use mach.int.Int32
-  use mach.int.UInt64
-  use Type
-  clone Lib_Formula_Impl2_EquisatCompatible_Interface as EquisatCompatible0
-  clone Lib_Clause_Impl2_EquisatExtensionDouble_Interface as EquisatExtensionDouble0
-  clone Lib_Clause_Impl2_EquisatExtension_Interface as EquisatExtension0
-  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
-  clone Lib_Formula_Impl2_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
-  clone Lib_Clause_Impl2_Equals_Interface as Equals0
-  clone Lib_Clause_Impl1_Model_Interface as Model1
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.lib_clause_clause
-  clone Lib_Clause_Impl2_InFormula_Interface as InFormula0
+  clone Lib_Formula_EquisatCompatibleInner_Interface as EquisatCompatibleInner0
+  clone Lib_Formula_FormulaInvariant_Interface as FormulaInvariant0
+  clone Lib_Clause_Impl2_InFormulaInner_Interface as InFormulaInner0
   clone Lib_Clause_Impl2_ResolventOf_Interface as ResolventOf0
-  function lemma_resolvent_is_equisat (f : Type.lib_formula_formula) (f2 : Type.lib_formula_formula) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
-    
-end
-module Lib_Logic_LemmaResolventIsEquisat
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use mach.int.UInt64
-  use Type
-  clone Lib_Formula_Impl2_EquisatCompatible_Interface as EquisatCompatible0
-  clone Lib_Clause_Impl2_EquisatExtensionDouble_Interface as EquisatExtensionDouble0
-  clone Lib_Clause_Impl2_EquisatExtension_Interface as EquisatExtension0
-  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
-  clone Lib_Formula_Impl2_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  clone Lib_Formula_FormulaSatInner_Interface as FormulaSatInner0
+  clone Lib_Assignments_Impl0_Model_Interface as Model1
   clone Lib_Clause_Impl2_Equals_Interface as Equals0
-  clone Lib_Clause_Impl1_Model_Interface as Model1
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.lib_clause_clause
-  clone Lib_Clause_Impl2_InFormula_Interface as InFormula0
-  clone Lib_Clause_Impl2_ResolventOf_Interface as ResolventOf0
-  clone Lib_Logic_LemmaExtendedFormulaIsEquisatCompatible_Interface as LemmaExtendedFormulaIsEquisatCompatible0 with predicate ResolventOf0.resolvent_of = ResolventOf0.resolvent_of,
-  predicate InFormula0.in_formula = InFormula0.in_formula, function Model0.model = Model0.model,
-  function Model1.model = Model1.model, predicate Equals0.equals = Equals0.equals,
-  predicate Invariant0.invariant' = Invariant0.invariant',
-  predicate EquisatCompatible0.equisat_compatible = EquisatCompatible0.equisat_compatible, axiom .
-  function lemma_resolvent_is_equisat (f : Type.lib_formula_formula) (f2 : Type.lib_formula_formula) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
+  clone Lib_Clause_Impl1_Model_Interface as Model0
+  clone Lib_Logic_LemmaNotSatGivesNotSat_Interface as LemmaNotSatGivesNotSat0 with function Model0.model = Model1.model,
+  predicate FormulaSatInner0.formula_sat_inner = FormulaSatInner0.formula_sat_inner,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
+  clone Lib_Logic_LemmaEqFormulas_Interface as LemmaEqFormulas0 with predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant,
+  function Model0.model = Model0.model, predicate Equals0.equals = Equals0.equals, axiom .
+  clone Lib_Logic_LemmaSatGivesSat_Interface as LemmaSatGivesSat0 with function Model0.model = Model1.model,
+  predicate FormulaSatInner0.formula_sat_inner = FormulaSatInner0.formula_sat_inner,
+  predicate ResolventOf0.resolvent_of = ResolventOf0.resolvent_of,
+  predicate InFormulaInner0.in_formula_inner = InFormulaInner0.in_formula_inner,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
+  function lemma_extended_formula_is_equisat_compatible (f : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
     
    = 
-    let _ = LemmaExtendedFormulaIsEquisatCompatible0.lemma_extended_formula_is_equisat_compatible f f2 c c2 c3 k m a in ()
-  axiom lemma_resolvent_is_equisat_spec : forall f : Type.lib_formula_formula, f2 : Type.lib_formula_formula, c : Type.lib_clause_clause, c2 : Type.lib_clause_clause, c3 : Type.lib_clause_clause, k : int, m : int, a : Type.lib_assignments_assignments . ResolventOf0.resolvent_of c3 c c2 k m -> InFormula0.in_formula c2 f -> InFormula0.in_formula c f -> Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) (Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) - 1)) = Model1.model c3 -> (forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f)) -> Equals0.equals (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) i) (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) i)) -> Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f)) + 1 = Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) -> UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f2) -> Invariant0.invariant' f2 -> Invariant0.invariant' f -> EquisatCompatible0.equisat_compatible f f2 && EquisatExtensionDouble0.equisat_extension_double c3 f f2 && EquisatExtension0.equisat_extension c3 f
+    let _ = LemmaEqFormulas0.lemma_eq_formulas f (Seq.snoc (let (a, _) = f in a) c3, let (_, a) = f in a) c3 in let _ = LemmaNotSatGivesNotSat0.lemma_not_sat_gives_not_sat f c c2 c3 k m a in let _ = LemmaSatGivesSat0.lemma_sat_gives_sat f c c2 c3 k m a in ()
+  axiom lemma_extended_formula_is_equisat_compatible_spec : forall f : (Seq.seq (Type.lib_clause_clause), int), c : Type.lib_clause_clause, c2 : Type.lib_clause_clause, c3 : Type.lib_clause_clause, k : int, m : int, a : Type.lib_assignments_assignments . ResolventOf0.resolvent_of c3 c c2 k m -> InFormulaInner0.in_formula_inner c2 f -> InFormulaInner0.in_formula_inner c f -> FormulaInvariant0.formula_invariant f -> EquisatCompatibleInner0.equisat_compatible_inner f (Seq.snoc (let (a, _) = f in a) c3, let (_, a) = f in a)
 end
-module Lib_Logic_LemmaResolventIsEquisat_Impl
+module Lib_Logic_LemmaExtendedFormulaIsEquisatCompatible_Impl
   use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use mach.int.UInt64
   use Type
-  clone Lib_Lit_Impl1_SatInner as SatInner1
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
   clone Lib_Logic_Unset as Unset0
   clone Lib_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
-  clone Lib_Lit_Impl1_Invariant as Invariant2
-  clone Lib_Clause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant2.invariant'
+  clone Lib_Lit_Impl1_Invariant as Invariant1
+  clone Lib_Clause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant1.invariant'
+  clone Lib_Lit_Impl1_SatInner as SatInner1
   clone Lib_Clause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model1 with function Model0.model = Model3.model
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model1 with function Model0.model = Model2.model
-  clone Lib_Clause_Impl2_SatInner as SatInner0 with function Model0.model = Model1.model,
+  clone Lib_Clause_Impl1_Model as Model0 with function Model0.model = Model2.model
+  clone Lib_Clause_Impl2_SatInner as SatInner0 with function Model0.model = Model0.model,
   predicate SatInner0.sat_inner = SatInner1.sat_inner
+  clone Lib_Clause_Impl2_Sat as Sat0 with function Model0.model = Model1.model,
+  predicate SatInner0.sat_inner = SatInner0.sat_inner
   clone Lib_Formula_FormulaSatInner as FormulaSatInner0 with predicate SatInner0.sat_inner = SatInner0.sat_inner
   clone Lib_Formula_EventuallySatCompleteNoAss as EventuallySatCompleteNoAss0 with predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner,
   predicate FormulaSatInner0.formula_sat_inner = FormulaSatInner0.formula_sat_inner
   clone Lib_Formula_Equisat as Equisat0 with predicate EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass = EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass
-  clone Lib_Clause_Impl2_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model1.model,
+  clone Lib_Clause_Impl2_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model0.model,
   predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner
-  clone Lib_Clause_Impl2_VarsInRange as VarsInRange0 with function Model0.model = Model1.model,
+  clone Lib_Clause_Impl2_VarsInRange as VarsInRange0 with function Model0.model = Model0.model,
   predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner
-  clone Lib_Clause_Impl2_Invariant as Invariant1 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
+  clone Lib_Clause_Impl2_Invariant as Invariant0 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
   predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
-  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant1.invariant'
-  clone Lib_Lit_Impl1_LitIn as LitIn0 with function Model0.model = Model1.model
-  clone Lib_Clause_Impl2_Equals as Equals0 with function Model0.model = Model1.model
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant0.invariant'
+  clone Lib_Clause_Impl2_Equals as Equals0 with function Model0.model = Model0.model
   clone Lib_Formula_Compatible as Compatible0 with predicate Equals0.equals = Equals0.equals
   clone Lib_Formula_EquisatCompatibleInner as EquisatCompatibleInner0 with predicate Compatible0.compatible = Compatible0.compatible,
   predicate Equisat0.equisat = Equisat0.equisat
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.lib_clause_clause
-  clone Lib_Formula_Impl0_Model as Model3 with function Model0.model = Model0.model
-  clone Lib_Formula_Impl2_EquisatCompatible as EquisatCompatible0 with function Model0.model = Model3.model,
-  predicate EquisatCompatibleInner0.equisat_compatible_inner = EquisatCompatibleInner0.equisat_compatible_inner
-  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model0.model,
-  predicate Invariant0.invariant' = Invariant1.invariant'
-  clone Lib_Formula_Impl2_Invariant as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  function Model0.model = Model3.model,
-  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
-  clone Lib_Clause_Impl2_EquisatExtensionDouble as EquisatExtensionDouble0 with predicate Invariant0.invariant' = Invariant0.invariant',
-  function Model0.model = Model0.model, predicate Equals0.equals = Equals0.equals, function Model1.model = Model1.model,
-  predicate EquisatCompatible0.equisat_compatible = EquisatCompatible0.equisat_compatible,
-  predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  clone Lib_Clause_Impl2_EquisatExtension as EquisatExtension0 with predicate EquisatExtensionDouble0.equisat_extension_double = EquisatExtensionDouble0.equisat_extension_double
-  clone Lib_Clause_Impl2_InFormula as InFormula0 with function Model0.model = Model0.model
+  clone Lib_Logic_LemmaEqFormulas as LemmaEqFormulas0 with predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant,
+  function Model0.model = Model0.model, predicate Equals0.equals = Equals0.equals, axiom .
+  clone Lib_Lit_Impl1_LitIn as LitIn0 with function Model0.model = Model0.model
+  clone Lib_Clause_Impl2_InFormulaInner as InFormulaInner0
   clone Lib_Lit_Impl1_IsOpp as IsOpp0
-  clone Lib_Clause_Impl2_ResolventOf as ResolventOf0 with function Model0.model = Model1.model,
+  clone Lib_Logic_LemmaSubClauseNotSat as LemmaSubClauseNotSat0 with predicate Sat0.sat = Sat0.sat,
+  function Model0.model = Model0.model, predicate LitIn0.lit_in = LitIn0.lit_in,
+  predicate IsOpp0.is_opp = IsOpp0.is_opp, axiom .
+  clone Lib_Clause_Impl2_ResolventOf as ResolventOf0 with function Model0.model = Model0.model,
   predicate LitIn0.lit_in = LitIn0.lit_in, predicate IsOpp0.is_opp = IsOpp0.is_opp
-  clone Lib_Logic_LemmaExtendedFormulaIsEquisatCompatible as LemmaExtendedFormulaIsEquisatCompatible0 with predicate ResolventOf0.resolvent_of = ResolventOf0.resolvent_of,
-  predicate InFormula0.in_formula = InFormula0.in_formula, function Model0.model = Model0.model,
-  function Model1.model = Model1.model, predicate Equals0.equals = Equals0.equals,
-  predicate Invariant0.invariant' = Invariant0.invariant',
-  predicate EquisatCompatible0.equisat_compatible = EquisatCompatible0.equisat_compatible,
-  predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old, axiom .
-  let rec ghost function lemma_resolvent_is_equisat (f : Type.lib_formula_formula) (f2 : Type.lib_formula_formula) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
+  clone Lib_Logic_LemmaSubClauseSat as LemmaSubClauseSat0 with predicate Sat0.sat = Sat0.sat,
+  predicate ResolventOf0.resolvent_of = ResolventOf0.resolvent_of, axiom .
+  clone Lib_Logic_LemmaSatGivesSat as LemmaSatGivesSat0 with function Model0.model = Model1.model,
+  predicate FormulaSatInner0.formula_sat_inner = FormulaSatInner0.formula_sat_inner,
+  predicate ResolventOf0.resolvent_of = ResolventOf0.resolvent_of,
+  predicate InFormulaInner0.in_formula_inner = InFormulaInner0.in_formula_inner,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant,
+  function LemmaEqFormulas0.lemma_eq_formulas = LemmaEqFormulas0.lemma_eq_formulas,
+  function LemmaSubClauseNotSat0.lemma_sub_clause_not_sat = LemmaSubClauseNotSat0.lemma_sub_clause_not_sat,
+  function LemmaSubClauseSat0.lemma_sub_clause_sat = LemmaSubClauseSat0.lemma_sub_clause_sat,
+  function Model1.model = Model0.model, predicate Equals0.equals = Equals0.equals, predicate Sat0.sat = Sat0.sat,
+  predicate LitIn0.lit_in = LitIn0.lit_in, predicate IsOpp0.is_opp = IsOpp0.is_opp, axiom .
+  clone Lib_Logic_LemmaNotSatGivesNotSat as LemmaNotSatGivesNotSat0 with function Model0.model = Model1.model,
+  predicate FormulaSatInner0.formula_sat_inner = FormulaSatInner0.formula_sat_inner,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant,
+  function LemmaEqFormulas0.lemma_eq_formulas = LemmaEqFormulas0.lemma_eq_formulas,
+  function LemmaSubClauseNotSat0.lemma_sub_clause_not_sat = LemmaSubClauseNotSat0.lemma_sub_clause_not_sat,
+  function LemmaSubClauseSat0.lemma_sub_clause_sat = LemmaSubClauseSat0.lemma_sub_clause_sat,
+  function Model1.model = Model0.model, predicate Equals0.equals = Equals0.equals, predicate Sat0.sat = Sat0.sat,
+  predicate LitIn0.lit_in = LitIn0.lit_in, predicate IsOpp0.is_opp = IsOpp0.is_opp,
+  predicate ResolventOf0.resolvent_of = ResolventOf0.resolvent_of, axiom .
+  let rec ghost function lemma_extended_formula_is_equisat_compatible (f : (Seq.seq (Type.lib_clause_clause), int)) (c : Type.lib_clause_clause) (c2 : Type.lib_clause_clause) (c3 : Type.lib_clause_clause) (k : int) (m : int) (a : Type.lib_assignments_assignments) : ()
     requires {ResolventOf0.resolvent_of c3 c c2 k m}
-    requires {InFormula0.in_formula c2 f}
-    requires {InFormula0.in_formula c f}
-    requires {Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) (Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) - 1)) = Model1.model c3}
-    requires {forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f)) -> Equals0.equals (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) i) (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f2)) i)}
-    requires {Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f)) + 1 = Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f2))}
-    requires {UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f2)}
-    requires {Invariant0.invariant' f2}
-    requires {Invariant0.invariant' f}
-    ensures { EquisatExtension0.equisat_extension c3 f }
-    ensures { EquisatExtensionDouble0.equisat_extension_double c3 f f2 }
-    ensures { EquisatCompatible0.equisat_compatible f f2 }
+    requires {InFormulaInner0.in_formula_inner c2 f}
+    requires {InFormulaInner0.in_formula_inner c f}
+    requires {FormulaInvariant0.formula_invariant f}
+    ensures { EquisatCompatibleInner0.equisat_compatible_inner f (Seq.snoc (let (a, _) = f in a) c3, let (_, a) = f in a) }
     
    = 
-    let _ = LemmaExtendedFormulaIsEquisatCompatible0.lemma_extended_formula_is_equisat_compatible f f2 c c2 c3 k m a in ()
+    let _ = LemmaEqFormulas0.lemma_eq_formulas f (Seq.snoc (let (a, _) = f in a) c3, let (_, a) = f in a) c3 in let _ = LemmaNotSatGivesNotSat0.lemma_not_sat_gives_not_sat f c c2 c3 k m a in let _ = LemmaSatGivesSat0.lemma_sat_gives_sat f c c2 c3 k m a in ()
 end
 module Lib_Logic_LemmaEquisatIsTrans_Interface
   use Type
