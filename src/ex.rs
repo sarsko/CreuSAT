@@ -1,12 +1,17 @@
 extern crate creusot_contracts;
 use creusot_contracts::*;
-use creusot_contracts::std::*;
+
+#[logic]
+fn lemma() {
+    ex();
+}
+
 
 #[predicate]
-pub fn ex(v: Vec<usize>) -> bool {
-    pearlite! {
-        forall<i: Int> 0 <= i && i < (@v).len()
-        true === true
-            //(@v)[i] === (@v)[i]
-    }
+pub fn ex() -> bool { true }
+
+#[predicate]
+pub fn ex_______() -> bool { true }
+
+pub fn main() {
 }

@@ -39,8 +39,14 @@ impl Model for Clause {
 pub fn no_duplicate_indexes_inner(s: Seq<Lit>) -> bool {
     pearlite! {
         forall<j: Int, k: Int> 0 <= j && j < s.len() &&
-                k < j ==> !(@s[k].idx === @s[j].idx)
+                0 <= k && k < j ==> !(@s[k].idx === @s[j].idx)
     }
+    /*
+    pearlite! {
+        forall<j: Int, k: Int> 0 <= j && j < s.len() &&
+                k != j ==> !(@s[k].idx === @s[j].idx)
+    }
+    */
 }
 
 #[predicate]
@@ -51,11 +57,20 @@ pub fn vars_in_range_inner(s: Seq<Lit>, n: Int) -> bool {
     }
 }
 
+#[predicate]
+pub fn equisat_extension_inner(c: Clause, f: (Seq<Clause>, Int)) -> bool {
+    pearlite! {
+        eventually_sat_complete_no_ass(f) ==> eventually_sat_complete_no_ass((f.0.push(c), f.1))
+        //f.eventually_sat_complete_no_ass() ==> eventually_sat_complete_no_ass(f)
+    }
+}
+
 impl Clause {
     #[predicate]
     pub fn equisat_extension(self, f: Formula) -> bool {
         pearlite! {
-            exists<f2: Formula> self.equisat_extension_double(f, f2)
+            equisat_extension_inner(self, @f)
+            //f.eventually_sat_complete_no_ass() ==> eventually_sat_complete_no_ass(f)
         }
     }
 
@@ -83,6 +98,18 @@ impl Clause {
             (forall<i: Int> 0 <= i && i < (@self).len()         ==> (@self)[i].lit_in(c) 
                                                                 ||  (@self)[i].lit_in(c2)) &&
             (@c2)[k].is_opp((@c)[m])                 
+        }
+    }
+
+    #[predicate]
+    pub fn resolvent_of_idx(self, c: Clause, c2: Clause, idx: Int) -> bool {
+        pearlite! {
+            (forall<i: Int> 0 <= i && i < (@c ).len() && @(@c )[i].idx != idx ==> (@c )[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < (@c2).len() && @(@c2)[i].idx != idx ==> (@c2)[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < (@self).len()                       ==> (@self)[i].lit_in(c) 
+                                                                              ||  (@self)[i].lit_in(c2)) &&
+            (exists<k: Int, m: Int> 0 <= k && k < (@c2).len() && 0 <= m && m < (@c).len() &&
+                @(@c)[m].idx === idx && @(@c2)[k].idx === idx && (@c2)[k].is_opp((@c)[m]))
         }
     }
 

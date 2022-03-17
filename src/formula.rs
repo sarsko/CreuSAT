@@ -228,6 +228,36 @@ impl Formula {
 }
 
 impl Formula {
+    #[trusted] // Only lacking the watcher stuff
+    #[requires(self.invariant())]
+    #[requires(_t.invariant(*self))]
+    #[requires((@clause).len() >= 2)]
+    #[requires(vars_in_range_inner(@clause, @self.num_vars))]
+    #[requires(no_duplicate_indexes_inner(@clause))]
+    #[requires(equisat_extension_inner(clause, @self))]
+    #[ensures(@self.num_vars === @(^self).num_vars)]
+    #[ensures((^self).invariant())]
+    #[ensures(_t.invariant(*self))]
+    #[ensures(self.equisat_compatible(^self))]
+    #[ensures(@result === (@self.clauses).len())]
+    #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
+    //#[ensures(f.eventually_sat(*a) === (^f).eventually_sat(*a))]
+    //#[ensures(f.eventually_sat_complete(*a) === (^f).eventually_sat_complete(*a))]
+    pub fn add_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
+        let cref = self.clauses.len();
+        // Just cbf adding the ensures everywhere. The watch is ok
+        proof_assert!(watches.invariant(*self));
+        /*
+        watches.add_watcher(clause.rest[0], cref, self);
+        watches.add_watcher(clause.rest[1], cref, self);
+        */
+        self.clauses.push(clause);
+        cref
+    }
+}
+
+// UNUSED
+impl Formula {
     // NONE OF THESE ARE IN USE
     #[trusted] // OK
     #[requires(self.invariant())]
@@ -281,31 +311,4 @@ impl Formula {
         }
     }
 
-    #[trusted] // TODO
-    //#[requires()] // extension is equisat
-    #[requires(self.invariant())]
-    #[requires(_t.invariant(*self))]
-    #[requires((@clause).len() >= 2)]
-    #[requires(vars_in_range_inner(@clause, @self.num_vars))]
-    #[requires(no_duplicate_indexes_inner(@clause))]
-    #[ensures(@self.num_vars === @(^self).num_vars)]
-    #[ensures((^self).invariant())]
-    #[ensures(_t.invariant(*self))]
-    #[ensures(self.equisat_compatible(^self))]
-    #[ensures(@result === (@self.clauses).len())]
-    #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
-    //#[ensures(^f === *f)]
-    //#[ensures(f.eventually_sat(*a) === (^f).eventually_sat(*a))]
-    //#[ensures(f.eventually_sat_complete(*a) === (^f).eventually_sat_complete(*a))]
-    pub fn add_clause(&mut self, clause: &Vec<Lit>, watches: &mut Watches, _t: &Trail) -> usize {
-        // We misuse clause_from_vec here. Entirely unecessary
-        let clause = Clause::clause_from_vec(clause);
-        let cref = self.clauses.len();
-        // Just cbf adding the ensures everywhere. The watch is ok
-        proof_assert!(watches.invariant(*self));
-        watches.add_watcher(clause.rest[0], cref, self);
-        watches.add_watcher(clause.rest[1], cref, self);
-        self.clauses.push(clause);
-        cref
-    }
 }

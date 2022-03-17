@@ -9,78 +9,18 @@ use crate::formula::*;
 
 
 // CDCL STUFF START
-#[predicate]
-pub fn resolvent_of_(c3: Clause, c: Clause, c2: Clause, idx: usize) -> bool{
-    pearlite! {
-         forall<i: Int> 0 <= i && i < (@c ).len() && !(@(@c)[i].idx === @idx) ==> (@c )[i].lit_in(c3) &&
-         forall<i: Int> 0 <= i && i < (@c2).len() && !(@(@c)[i].idx === @idx) ==> (@c2)[i].lit_in(c3) &&
-        (forall<i: Int> 0 <= i && i < (@c3).len()           ==> (@c3)[i].lit_in(c) 
-                                                            ||  (@c3)[i].lit_in(c2))
-    }
-}
-
-
 #[trusted] // OK
-#[logic]
-#[requires(f.invariant())]
-#[requires(f2.invariant())]
-#[requires(f.equisat_compatible(f2))]
-#[requires(f.eventually_sat_complete_no_ass())]
-#[ensures(f2.eventually_sat_complete_no_ass())]
-pub fn lemma_trivial(f: Formula, f2: Formula) {}
-
-// Trivial
-// De facto test
-#[trusted] // OK
-#[logic]
-#[requires(f.invariant())]
-#[requires(f2.invariant())]
-#[requires(f === f2)]
-#[ensures(f.equisat_compatible(f2))]
-pub fn lemma_equal_are_equisat(f: Formula, f2: Formula) {}
-
-// Trivial
-// De facto test
-#[trusted] // OK
-#[logic]
-#[requires(f.invariant())]
-#[requires(f2.invariant())]
-#[requires(@f.num_vars === @f2.num_vars)]
-#[requires((@f.clauses).len() === (@f2.clauses).len())]
-#[requires(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
-    (@f.clauses)[i] === (@f2.clauses)[i])]
-#[ensures(f.equisat_compatible(f2))]
-pub fn lemma_equal_are_equisat2(f: Formula, f2: Formula) {}
-
-// Trivial
-// De facto test
-#[trusted] // OK
-#[logic]
-#[requires(f.invariant())]
-#[requires(f2.invariant())]
-#[requires(@f.num_vars === @f2.num_vars)]
-#[requires((@f.clauses).len() === (@f2.clauses).len())]
-#[requires(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
-    (@(@f.clauses)[i]).len() === (@(@f2.clauses)[i]).len() &&
-    forall<j: Int> 0 <= j && j < (@(@f.clauses)[i]).len() ==>
-    (@(@f.clauses)[i])[j] === (@(@f2.clauses)[i])[j]
-)]
-#[ensures(f.equisat_compatible(f2))]
-pub fn lemma_equal_are_equisat3(f: Formula, f2: Formula) {}
-
-
-
 #[logic]
 //#[ensures(formula_invariant(f2))]
 //#[ensures(f.1 === f2.1)]
 #[requires(f2.0 === f.0.push(c))]
 #[requires(formula_invariant(f))]
 #[ensures((f.0).len() + 1 === (f2.0).len())]
-#[ensures(forall<i: Int> 0 <= i && i < (f.0).len() ==> 
-    ((f.0)[i]).equals((f2.0)[i]))]
+#[ensures(forall<i: Int> 0 <= i && i < (f.0).len() ==> ((f.0)[i]).equals((f2.0)[i]))]
 #[ensures(@(f2.0)[(f2.0).len()-1] === @c)]
 pub fn lemma_eq_formulas(f: (Seq<Clause>, Int), f2: (Seq<Clause>, Int), c: Clause) {}
 
+#[trusted] // OK
 #[logic]
 #[requires(formula_invariant(f))]
 #[requires(c.in_formula_inner(f))]
@@ -94,6 +34,7 @@ pub fn lemma_sat_gives_sat(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Cla
     lemma_sub_clause_sat(c, c2, c3, a, k, m);
 }
 
+#[trusted] // OK
 #[logic]
 //#[requires(c.in_formula_inner(f))]
 //#[requires(c2.in_formula_inner(f))]
@@ -107,69 +48,73 @@ pub fn lemma_not_sat_gives_not_sat(f: (Seq<Clause>, Int), c: Clause, c2: Clause,
     lemma_sub_clause_sat(c, c2, c3, a, k, m);
 }
 
-//#[trusted] // OK
+#[trusted] // OK
 #[logic]
 #[requires(formula_invariant(f))]
 #[requires(c.in_formula_inner(f))]
 #[requires(c2.in_formula_inner(f))]
 #[requires(c3.resolvent_of(c, c2, k, m))]
-#[ensures(equisat_compatible_inner(f, (f.0.push(c3), f.1)))]
-//#[ensures(c3.equisat_extension_double(f, f2))] // OK
-//#[ensures(c3.equisat_extension(f))] // OK
+//#[ensures(equisat_compatible_inner(f, (f.0.push(c3), f.1)))]
+#[ensures(equisat_extension_inner(c3, f))] 
 pub fn lemma_extended_formula_is_equisat_compatible(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
     lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
     lemma_not_sat_gives_not_sat(f, c, c2, c3, k, m, a);
     lemma_sat_gives_sat(f, c, c2, c3, k, m, a);
 }
 
-/*
+#[trusted] // OK
+// Dont think Ill need
 #[logic]
-#[requires(f.invariant())]
-#[requires(c.in_formula(f))]
-#[requires(c2.in_formula(f))]
+#[requires(formula_invariant(f))]
+#[requires(c.in_formula_inner(f))]
+#[requires(c2.in_formula_inner(f))]
+#[requires(c4.in_formula_inner(f))]
 #[requires(c3.resolvent_of(c, c2, k, m))]
-#[ensures(f.equisat_compatible(f2))]
-//#[ensures(c3.equisat_extension_double(f, f2))] 
-//#[ensures(c3.equisat_extension(f))] 
-pub fn lemma_resolvent_is_equisat(f: (Seq<Clause>, Int),  c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
+#[requires(c5.resolvent_of(c4, c3, kk, mm))]
+#[ensures(equisat_extension_inner(c5, f))] 
+//#[ensures(equisat_compatible_inner(f, (f.0.push(c5), f.1)))]
+pub fn lemma_extended_formula_is_equisat_compatible2(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, c4: Clause, c5: Clause, k: Int, m: Int, kk: Int, mm: Int, a: Assignments) {
+    lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
+    lemma_not_sat_gives_not_sat(f, c, c2, c3, k, m, a);
+    lemma_sat_gives_sat(f, c, c2, c3, k, m, a);
+    lemma_extended_formula_is_equisat_compatible(f, c, c2, c3, k, m, a);
+}
+
+#[trusted] // OK
+#[logic]
+#[requires(formula_invariant(f))]
+#[requires(c.in_formula_inner(f))]
+#[requires(equisat_extension_inner(c2, f))]
+#[requires(c3.resolvent_of(c, c2, k, m))]
+#[ensures(equisat_extension_inner(c3, f))]
+//#[ensures(equisat_compatible_inner(f, (f.0.push(c3), f.1)))]
+pub fn lemma_resolvent_of_equisat_extension_is_equisat(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
+    lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
+    lemma_not_sat_gives_not_sat(f, c, c2, c3, k, m, a);
+    lemma_sat_gives_sat(f, c, c2, c3, k, m, a);
+    lemma_extended_formula_is_equisat_compatible(f, c, c2, c3, k, m, a);
+}
+
+#[trusted] // OK
+#[logic]
+#[requires(formula_invariant(f))]
+#[requires(c.in_formula_inner(f))]
+#[requires(c2.in_formula_inner(f))]
+#[requires(c3.resolvent_of(c, c2, k, m))]
+#[ensures(equisat_extension_inner(c, f))] 
+pub fn lemma_resolvent_of_in_is_equisat(f: (Seq<Clause>, Int),  c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
     lemma_extended_formula_is_equisat_compatible(f,  c, c2, c3, k, m, a);
 }
-*/
 
-
-/*
+#[trusted] // OK
 #[logic]
-#[requires(f.invariant())]
-#[requires(f2.invariant())]
-#[requires(f3.invariant())]
-#[requires(@f.num_vars === @f2.num_vars)]
-#[requires(@f2.num_vars === @f3.num_vars)]
-#[requires((@f.clauses).len() + 1 === (@f2.clauses).len())]
-#[requires((@f2.clauses).len() + 1 === (@f3.clauses).len())]
-#[requires(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
-    ((@f.clauses)[i]).equals((@f2.clauses)[i]))]
-#[requires(forall<i: Int> 0 <= i && i < (@f2.clauses).len() ==> 
-    ((@f2.clauses)[i]).equals((@f3.clauses)[i]))]
-#[requires(@(@f3.clauses)[(@f3.clauses).len()-1] === @c3)]
-#[requires(@(@f2.clauses)[(@f2.clauses).len()-1] === @c2)]
-//#[requires(c2.equisat_extension(f))]
-//#[requires(c2.equisat_extension_double(f, f2))]
-#[requires(c.in_formula(f))]
-#[requires(c.in_formula(f2))]
-#[requires(c2.in_formula(f2))]
-#[requires(c3.resolvent_of(c, c2, k, m))]
-#[ensures(c3.equisat_extension_double(f2, f3))] 
-#[ensures(c3.equisat_extension(f2))] 
-#[ensures(c3.equisat_extension(f))] 
-//#[ensures(f.equisat_compatible(f2))]
-//#[ensures(f.equisat_compatible(f3))]
-pub fn lemma_resolvent_is_equisat2(f: Formula, f2: Formula, f3: Formula, c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
-    lemma_extended_formula_is_equisat_compatible(f, f2, c, c2, c3, k, m, a);
-    lemma_resolvent_is_equisat(f, f2, c, c2, c3, k, m, a);
-    lemma_equisat_is_trans(f, f2, f3)
-}
-*/
+#[requires(formula_invariant(f))]
+#[requires(equisat_extension_inner(c, f))] 
+#[ensures(equisat_compatible_inner(f, (f.0.push(c), f.1)))]
+pub fn lemma_extending_with_equi_ext_is_equi_compat(f: (Seq<Clause>, Int),  c: Clause) {}
 
+
+#[trusted] // OK
 #[logic]
 #[requires(f.invariant())]
 #[requires(f2.invariant())]
@@ -179,7 +124,14 @@ pub fn lemma_resolvent_is_equisat2(f: Formula, f2: Formula, f3: Formula, c: Clau
 #[ensures(f.equisat_compatible(f3))]
 pub fn lemma_equisat_is_trans(f: Formula, f2: Formula, f3: Formula) {}
 
-//#[trusted] // OK
+/*
+#[trusted]
+#[logic]
+#[requires(resolvent_of(c, c2, c3, k, m))]
+#[ensures(resolvent_of_idx(c, c2, c3, ))]
+*/
+
+#[trusted] // OK
 #[logic]
 #[requires(forall<i: Int> 0 <= i && i < (@c ).len() ==> (@c )[i].lit_in(c3) ||
     (exists<j: Int> 0 <= j && j < (@c2).len() && (@c )[i].is_opp((@c2)[j])))]
@@ -193,7 +145,7 @@ pub fn lemma_equisat_is_trans(f: Formula, f2: Formula, f3: Formula) {}
 pub fn lemma_sub_clause_not_sat(c: Clause, c2: Clause, c3: Clause, a: Assignments) {}
 
 // Requires knowledge of the idx of the conflict literal
-//#[trusted] // OK
+#[trusted] // OK
 #[logic]
 #[requires(c3.resolvent_of(c, c2, k, m))]
 #[requires(c.sat(a))]

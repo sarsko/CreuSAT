@@ -202,7 +202,7 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
             // Okay so doing a full search restart every time is a lot less slow than expected
             // and is very simple. If I make the proof of resolution from init to empty clause/
             // ground conflict work, then everything else can be treated as optimizations
-            let cref = f.add_clause(&clause, w, t);
+            let cref = f.add_clause(clause, w, t);
             a.cancel_until(t, 1, f);
             //println!("Learned clause {:?}", clause);
             //decisions.increment_and_move(f, cref);
@@ -212,6 +212,7 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
             //proof_assert!(@cref < (@f.clauses).len());
             //t.enq_assignment(lit, Reason::Long(cref), f);
         }
+    _ => {panic!();} // todo
     }
     true
 }
