@@ -35,6 +35,14 @@ module Type
     ensures { result = naive_clause_Clause_0 self }
     
   axiom naive_clause_Clause_0_acc : forall a : creusotcontracts_std1_vec_vec (naive_lit) . naive_clause_Clause_0 (Naive_Clause a : naive_clause) = a
+  type naive_assignment  = 
+    | Naive_Assignment (creusotcontracts_std1_vec_vec bool)
+    
+  function naive_assignment_Assignment_0 (self : naive_assignment) : creusotcontracts_std1_vec_vec bool
+  val naive_assignment_Assignment_0 (self : naive_assignment) : creusotcontracts_std1_vec_vec bool
+    ensures { result = naive_assignment_Assignment_0 self }
+    
+  axiom naive_assignment_Assignment_0_acc : forall a : creusotcontracts_std1_vec_vec bool . naive_assignment_Assignment_0 (Naive_Assignment a : naive_assignment) = a
   type naive_pasn  = 
     | Naive_Pasn (creusotcontracts_std1_vec_vec bool) usize
     
@@ -48,14 +56,6 @@ module Type
     ensures { result = naive_pasn_Pasn_ix self }
     
   axiom naive_pasn_Pasn_ix_acc : forall a : creusotcontracts_std1_vec_vec bool, b : usize . naive_pasn_Pasn_ix (Naive_Pasn a b : naive_pasn) = b
-  type naive_assignment  = 
-    | Naive_Assignment (creusotcontracts_std1_vec_vec bool)
-    
-  function naive_assignment_Assignment_0 (self : naive_assignment) : creusotcontracts_std1_vec_vec bool
-  val naive_assignment_Assignment_0 (self : naive_assignment) : creusotcontracts_std1_vec_vec bool
-    ensures { result = naive_assignment_Assignment_0 self }
-    
-  axiom naive_assignment_Assignment_0_acc : forall a : creusotcontracts_std1_vec_vec bool . naive_assignment_Assignment_0 (Naive_Assignment a : naive_assignment) = a
   type naive_formula  = 
     | Naive_Formula (creusotcontracts_std1_vec_vec (naive_clause)) usize
     
@@ -70,21 +70,6 @@ module Type
     
   axiom naive_formula_Formula_num_vars_acc : forall a : creusotcontracts_std1_vec_vec (naive_clause), b : usize . naive_formula_Formula_num_vars (Naive_Formula a b : naive_formula) = b
 end
-module Naive_Main_Interface
-  val main [@cfg:stackify] () : ()
-end
-module Naive_Main
-  let rec cfg main [@cfg:stackify] () : () = 
-  var _0 : ();
-  {
-    goto BB0
-  }
-  BB0 {
-    _0 <- ();
-    return _0
-  }
-  
-end
 module CreusotContracts_Std1_Vec_Impl0_Model_Interface
   type t   
   use Type
@@ -97,82 +82,130 @@ module CreusotContracts_Std1_Vec_Impl0_Model
   use seq.Seq
   function model (self : Type.creusotcontracts_std1_vec_vec t) : Seq.seq t
 end
-module Naive_VarsInRange_Interface
-  use mach.int.Int
+module Naive_Impl3_VarsInRange_Interface
   use Type
-  predicate vars_in_range (n : int) (c : Type.naive_clause)
+  use mach.int.Int
+  predicate vars_in_range (self : Type.naive_lit) (n : int)
 end
-module Naive_VarsInRange
-  use mach.int.Int
+module Naive_Impl3_VarsInRange
   use Type
+  use mach.int.Int
+  use mach.int.Int32
+  use mach.int.UInt64
+  predicate vars_in_range (self : Type.naive_lit) (n : int) = 
+    0 <= UInt64.to_int (Type.naive_lit_Lit_var self) && UInt64.to_int (Type.naive_lit_Lit_var self) < n
+end
+module Naive_Impl0_VarsInRange_Interface
+  use Type
+  use mach.int.Int
+  predicate vars_in_range (self : Type.naive_clause) (n : int)
+end
+module Naive_Impl0_VarsInRange
+  use Type
+  use mach.int.Int
   use mach.int.Int32
   use seq.Seq
-  use mach.int.UInt64
+  clone Naive_Impl3_VarsInRange_Interface as VarsInRange0
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.naive_lit
-  predicate vars_in_range (n : int) (c : Type.naive_clause) = 
-    forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.naive_clause_Clause_0 c)) -> 0 <= UInt64.to_int (Type.naive_lit_Lit_var (Seq.get (Model0.model (Type.naive_clause_Clause_0 c)) i)) && UInt64.to_int (Type.naive_lit_Lit_var (Seq.get (Model0.model (Type.naive_clause_Clause_0 c)) i)) < n
+  predicate vars_in_range (self : Type.naive_clause) (n : int) = 
+    forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.naive_clause_Clause_0 self)) -> VarsInRange0.vars_in_range (Seq.get (Model0.model (Type.naive_clause_Clause_0 self)) i) n
 end
-module Naive_Compatible_Interface
+module Naive_Impl1_Compatible_Interface
   use Type
-  predicate compatible (pa : Type.naive_pasn) (a : Type.naive_assignment)
+  predicate compatible (self : Type.naive_assignment) (pa : Type.naive_pasn)
 end
-module Naive_Compatible
+module Naive_Impl1_Compatible
   use Type
   use seq.Seq
   use mach.int.Int
   use mach.int.Int32
   use mach.int.UInt64
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool
-  predicate compatible (pa : Type.naive_pasn) (a : Type.naive_assignment) = 
-    Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa)) = Seq.length (Model0.model (Type.naive_assignment_Assignment_0 a)) && (forall i : (int) . 0 <= i && i < UInt64.to_int (Type.naive_pasn_Pasn_ix pa) -> Seq.get (Model0.model (Type.naive_pasn_Pasn_assign pa)) i = Seq.get (Model0.model (Type.naive_assignment_Assignment_0 a)) i)
+  predicate compatible (self : Type.naive_assignment) (pa : Type.naive_pasn) = 
+    Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa)) = Seq.length (Model0.model (Type.naive_assignment_Assignment_0 self)) && (forall i : (int) . 0 <= i && i < UInt64.to_int (Type.naive_pasn_Pasn_ix pa) -> Seq.get (Model0.model (Type.naive_pasn_Pasn_assign pa)) i = Seq.get (Model0.model (Type.naive_assignment_Assignment_0 self)) i)
 end
-module Naive_FormulaInvariant_Interface
-  use prelude.Prelude
+module Naive_Impl2_Invariant_Interface
   use Type
-  predicate formula_invariant (f : Type.naive_formula)
+  predicate invariant' (self : Type.naive_formula)
 end
-module Naive_FormulaInvariant
-  use prelude.Prelude
+module Naive_Impl2_Invariant
   use Type
   use mach.int.Int
   use mach.int.Int32
   use seq.Seq
   use mach.int.UInt64
-  clone Naive_VarsInRange_Interface as VarsInRange0
+  clone Naive_Impl0_VarsInRange_Interface as VarsInRange0
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.naive_clause
-  predicate formula_invariant (f : Type.naive_formula) = 
-    forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.naive_formula_Formula_clauses f)) -> VarsInRange0.vars_in_range (UInt64.to_int (Type.naive_formula_Formula_num_vars f)) (Seq.get (Model0.model (Type.naive_formula_Formula_clauses f)) i)
+  predicate invariant' (self : Type.naive_formula) = 
+    forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.naive_formula_Formula_clauses self)) -> VarsInRange0.vars_in_range (Seq.get (Model0.model (Type.naive_formula_Formula_clauses self)) i) (UInt64.to_int (Type.naive_formula_Formula_num_vars self))
 end
-module Naive_NotSatClause_Interface
+module Naive_Impl3_Sat_Interface
   use Type
-  predicate not_sat_clause (a : Type.naive_assignment) (c : Type.naive_clause)
+  predicate sat (self : Type.naive_lit) (a : Type.naive_assignment)
 end
-module Naive_NotSatClause
+module Naive_Impl3_Sat
+  use Type
+  use mach.int.UInt64
+  use seq.Seq
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool
+  predicate sat (self : Type.naive_lit) (a : Type.naive_assignment) = 
+    Seq.get (Model0.model (Type.naive_assignment_Assignment_0 a)) (UInt64.to_int (Type.naive_lit_Lit_var self)) = Type.naive_lit_Lit_value self
+end
+module Naive_Impl5_Sat_Interface
+  use Type
+  predicate sat (self : Type.naive_clause) (a : Type.naive_assignment)
+end
+module Naive_Impl5_Sat
   use Type
   use mach.int.Int
   use mach.int.Int32
   use seq.Seq
-  use mach.int.UInt64
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = bool
+  clone Naive_Impl3_Sat_Interface as Sat0
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.naive_lit
-  predicate not_sat_clause (a : Type.naive_assignment) (c : Type.naive_clause) = 
-    forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.naive_clause_Clause_0 c)) -> Seq.get (Model1.model (Type.naive_assignment_Assignment_0 a)) (UInt64.to_int (Type.naive_lit_Lit_var (Seq.get (Model0.model (Type.naive_clause_Clause_0 c)) i))) <> Type.naive_lit_Lit_value (Seq.get (Model0.model (Type.naive_clause_Clause_0 c)) i)
+  predicate sat (self : Type.naive_clause) (a : Type.naive_assignment) = 
+    exists i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.naive_clause_Clause_0 self)) && Sat0.sat (Seq.get (Model0.model (Type.naive_clause_Clause_0 self)) i) a
 end
-module Naive_SatFormula_Interface
+module Naive_Impl2_Sat_Interface
   use Type
-  use prelude.Prelude
-  predicate sat_formula (a : Type.naive_assignment) (f : Type.naive_formula)
+  predicate sat (self : Type.naive_formula) (a : Type.naive_assignment)
 end
-module Naive_SatFormula
+module Naive_Impl2_Sat
   use Type
-  use prelude.Prelude
   use mach.int.Int
   use mach.int.Int32
   use seq.Seq
-  clone Naive_NotSatClause_Interface as NotSatClause0
+  clone Naive_Impl5_Sat_Interface as Sat0
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.naive_clause
-  predicate sat_formula (a : Type.naive_assignment) (f : Type.naive_formula) = 
-    forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.naive_formula_Formula_clauses f)) -> not (NotSatClause0.not_sat_clause a (Seq.get (Model0.model (Type.naive_formula_Formula_clauses f)) i))
+  predicate sat (self : Type.naive_formula) (a : Type.naive_assignment) = 
+    forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.naive_formula_Formula_clauses self)) -> Sat0.sat (Seq.get (Model0.model (Type.naive_formula_Formula_clauses self)) i) a
+end
+module Naive_Impl4_Invariant_Interface
+  use Type
+  use mach.int.Int
+  predicate invariant' (self : Type.naive_pasn) (n : int)
+end
+module Naive_Impl4_Invariant
+  use Type
+  use mach.int.Int
+  use mach.int.UInt64
+  use seq.Seq
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool
+  predicate invariant' (self : Type.naive_pasn) (n : int) = 
+    UInt64.to_int (Type.naive_pasn_Pasn_ix self) <= Seq.length (Model0.model (Type.naive_pasn_Pasn_assign self)) && Seq.length (Model0.model (Type.naive_pasn_Pasn_assign self)) = n
+end
+module Naive_Impl6_Clone_Interface
+  use prelude.Prelude
+  use Type
+  val clone' [@cfg:stackify] (self : Type.naive_pasn) : Type.naive_pasn
+    ensures { self = result }
+    
+end
+module Naive_Impl6_Clone
+  use prelude.Prelude
+  use Type
+  val clone' [@cfg:stackify] (self : Type.naive_pasn) : Type.naive_pasn
+    ensures { self = result }
+    
 end
 module CreusotContracts_Logic_Model_Model_ModelTy
   type self   
@@ -367,12 +400,12 @@ module Naive_InterpClause_Interface
   use seq.Seq
   use prelude.Prelude
   use Type
-  clone Naive_NotSatClause_Interface as NotSatClause0
-  clone Naive_VarsInRange_Interface as VarsInRange0
+  clone Naive_Impl5_Sat_Interface as Sat0
+  clone Naive_Impl0_VarsInRange_Interface as VarsInRange0
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool
   val interp_clause [@cfg:stackify] (a : Type.naive_assignment) (c : Type.naive_clause) : bool
-    requires {VarsInRange0.vars_in_range (Seq.length (Model0.model (Type.naive_assignment_Assignment_0 a))) c}
-    ensures { result = not (NotSatClause0.not_sat_clause a c) }
+    requires {VarsInRange0.vars_in_range c (Seq.length (Model0.model (Type.naive_assignment_Assignment_0 a)))}
+    ensures { result = Sat0.sat c a }
     
 end
 module Naive_InterpClause
@@ -382,11 +415,13 @@ module Naive_InterpClause
   use seq.Seq
   use prelude.Prelude
   use Type
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.naive_lit
-  clone Naive_VarsInRange as VarsInRange0 with function Model0.model = Model1.model
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = bool
-  clone Naive_NotSatClause as NotSatClause0 with function Model0.model = Model1.model,
-  function Model1.model = Model0.model
+  clone Naive_Impl3_VarsInRange as VarsInRange1
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = bool
+  clone Naive_Impl3_Sat as Sat0 with function Model0.model = Model1.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.naive_lit
+  clone Naive_Impl5_Sat as Sat1 with function Model0.model = Model0.model, predicate Sat0.sat = Sat0.sat
+  clone Naive_Impl0_VarsInRange as VarsInRange0 with function Model0.model = Model0.model,
+  predicate VarsInRange0.vars_in_range = VarsInRange1.vars_in_range
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve6 with type t = ()
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve5 with type t = Type.naive_clause
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve4 with type t = Type.naive_assignment
@@ -396,19 +431,19 @@ module Naive_InterpClause
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve1 with type t = Type.naive_lit
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve0 with type t = usize
   clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = Type.naive_lit
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model3 with type t = Type.creusotcontracts_std1_vec_vec bool,
+  type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model1.model
+  clone CreusotContracts_Std1_Vec_Impl3_Index_Interface as Index1 with type t = bool,
+  function Model0.model = Model3.model
   clone CreusotContracts_Logic_Model_Impl0_Model as Model2 with type t = Type.creusotcontracts_std1_vec_vec (Type.naive_lit),
-  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model1.model
+  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model0.model
   clone CreusotContracts_Std1_Vec_Impl3_Index_Interface as Index0 with type t = Type.naive_lit,
   function Model0.model = Model2.model
   clone CreusotContracts_Std1_Vec_Impl1_Len_Interface as Len0 with type t = Type.naive_lit,
   function Model0.model = Model2.model
-  clone CreusotContracts_Logic_Model_Impl0_Model as Model3 with type t = Type.creusotcontracts_std1_vec_vec bool,
-  type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model0.model
-  clone CreusotContracts_Std1_Vec_Impl3_Index_Interface as Index1 with type t = bool,
-  function Model0.model = Model3.model
   let rec cfg interp_clause [@cfg:stackify] (a : Type.naive_assignment) (c : Type.naive_clause) : bool
-    requires {VarsInRange0.vars_in_range (Seq.length (Model0.model (Type.naive_assignment_Assignment_0 a))) c}
-    ensures { result = not (NotSatClause0.not_sat_clause a c) }
+    requires {VarsInRange0.vars_in_range c (Seq.length (Model1.model (Type.naive_assignment_Assignment_0 a)))}
+    ensures { result = Sat1.sat c a }
     
    = 
   var _0 : bool;
@@ -456,7 +491,7 @@ module Naive_InterpClause
     goto BB2
   }
   BB2 {
-    invariant previous { forall j : (int) . 0 <= j && j < UInt64.to_int i_3 -> Seq.get (Model0.model (Type.naive_assignment_Assignment_0 a_1)) (UInt64.to_int (Type.naive_lit_Lit_var (Seq.get (Model1.model (Type.naive_clause_Clause_0 c_2)) j))) <> Type.naive_lit_Lit_value (Seq.get (Model1.model (Type.naive_clause_Clause_0 c_2)) j) };
+    invariant prev_not_sat { forall j : (int) . 0 <= j && j < UInt64.to_int i_3 -> not (Sat0.sat (Seq.get (Model0.model (Type.naive_clause_Clause_0 c_2)) j) a_1) };
     invariant loop_invariant { 0 <= UInt64.to_int i_3 && UInt64.to_int i_3 <= UInt64.to_int clause_len_4 };
     assume { Resolve0.resolve _9 };
     _9 <- i_3;
@@ -545,13 +580,13 @@ module Naive_InterpFormula_Interface
   use mach.int.UInt64
   use prelude.Prelude
   use Type
-  clone Naive_SatFormula_Interface as SatFormula0
-  clone Naive_FormulaInvariant_Interface as FormulaInvariant0
+  clone Naive_Impl2_Sat_Interface as Sat0
+  clone Naive_Impl2_Invariant_Interface as Invariant0
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool
   val interp_formula [@cfg:stackify] (a : Type.naive_assignment) (f : Type.naive_formula) : bool
     requires {Seq.length (Model0.model (Type.naive_assignment_Assignment_0 a)) = UInt64.to_int (Type.naive_formula_Formula_num_vars f)}
-    requires {FormulaInvariant0.formula_invariant f}
-    ensures { result = SatFormula0.sat_formula a f }
+    requires {Invariant0.invariant' f}
+    ensures { result = Sat0.sat f a }
     
 end
 module Naive_InterpFormula
@@ -561,25 +596,25 @@ module Naive_InterpFormula
   use seq.Seq
   use prelude.Prelude
   use Type
+  clone Naive_Impl3_VarsInRange as VarsInRange1
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = bool
+  clone Naive_Impl3_Sat as Sat2 with function Model0.model = Model1.model
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.naive_lit
-  clone Naive_VarsInRange as VarsInRange0 with function Model0.model = Model2.model
-  clone Naive_NotSatClause as NotSatClause0 with function Model0.model = Model2.model,
-  function Model1.model = Model1.model
+  clone Naive_Impl0_VarsInRange as VarsInRange0 with function Model0.model = Model2.model,
+  predicate VarsInRange0.vars_in_range = VarsInRange1.vars_in_range
+  clone Naive_Impl5_Sat as Sat0 with function Model0.model = Model2.model, predicate Sat0.sat = Sat2.sat
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.naive_clause
-  clone Naive_SatFormula as SatFormula0 with function Model0.model = Model0.model,
-  predicate NotSatClause0.not_sat_clause = NotSatClause0.not_sat_clause
-  clone Naive_FormulaInvariant as FormulaInvariant0 with function Model0.model = Model0.model,
+  clone Naive_Impl2_Sat as Sat1 with function Model0.model = Model0.model, predicate Sat0.sat = Sat0.sat
+  clone Naive_Impl2_Invariant as Invariant0 with function Model0.model = Model0.model,
   predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve4 with type t = ()
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve3 with type t = Type.naive_formula
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve2 with type t = Type.naive_assignment
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve1 with type t = Type.naive_clause
-  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve0 with type t = usize
   clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = Type.naive_clause
+  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve0 with type t = usize
   clone Naive_InterpClause_Interface as InterpClause0 with function Model0.model = Model1.model,
-  predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
-  predicate NotSatClause0.not_sat_clause = NotSatClause0.not_sat_clause
+  predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range, predicate Sat0.sat = Sat0.sat
   clone CreusotContracts_Logic_Model_Impl0_Model as Model3 with type t = Type.creusotcontracts_std1_vec_vec (Type.naive_clause),
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model0.model
   clone CreusotContracts_Std1_Vec_Impl3_Index_Interface as Index0 with type t = Type.naive_clause,
@@ -588,34 +623,33 @@ module Naive_InterpFormula
   function Model0.model = Model3.model
   let rec cfg interp_formula [@cfg:stackify] (a : Type.naive_assignment) (f : Type.naive_formula) : bool
     requires {Seq.length (Model1.model (Type.naive_assignment_Assignment_0 a)) = UInt64.to_int (Type.naive_formula_Formula_num_vars f)}
-    requires {FormulaInvariant0.formula_invariant f}
-    ensures { result = SatFormula0.sat_formula a f }
+    requires {Invariant0.invariant' f}
+    ensures { result = Sat1.sat f a }
     
    = 
   var _0 : bool;
   var a_1 : Type.naive_assignment;
   var f_2 : Type.naive_formula;
   var i_3 : usize;
-  var clauses_len_4 : usize;
-  var _5 : Type.creusotcontracts_std1_vec_vec (Type.naive_clause);
-  var _6 : ();
-  var _7 : ();
-  var _8 : bool;
-  var _9 : usize;
-  var _10 : usize;
-  var _11 : ();
+  var _4 : ();
+  var _5 : ();
+  var _6 : bool;
+  var _7 : usize;
+  var _8 : usize;
+  var _9 : Type.creusotcontracts_std1_vec_vec (Type.naive_clause);
+  var _10 : ();
+  var _11 : bool;
   var _12 : bool;
-  var _13 : bool;
-  var _14 : Type.naive_assignment;
+  var _13 : Type.naive_assignment;
+  var _14 : Type.naive_clause;
   var _15 : Type.naive_clause;
   var _16 : Type.naive_clause;
-  var _17 : Type.naive_clause;
-  var _18 : Type.creusotcontracts_std1_vec_vec (Type.naive_clause);
-  var _19 : usize;
+  var _17 : Type.creusotcontracts_std1_vec_vec (Type.naive_clause);
+  var _18 : usize;
+  var _19 : ();
   var _20 : ();
   var _21 : ();
   var _22 : ();
-  var _23 : ();
   {
     a_1 <- a;
     f_2 <- f;
@@ -623,45 +657,43 @@ module Naive_InterpFormula
   }
   BB0 {
     i_3 <- (0 : usize);
-    _5 <- Type.naive_formula_Formula_clauses f_2;
-    clauses_len_4 <- Len0.len _5;
     goto BB1
   }
   BB1 {
+    invariant prev_sat { forall j : (int) . 0 <= j && j < UInt64.to_int i_3 -> Sat0.sat (Seq.get (Model0.model (Type.naive_formula_Formula_clauses f_2)) j) a_1 };
+    invariant loop_invariant { 0 <= UInt64.to_int i_3 && UInt64.to_int i_3 <= Seq.length (Model0.model (Type.naive_formula_Formula_clauses f_2)) };
+    assume { Resolve0.resolve _7 };
+    _7 <- i_3;
+    _9 <- Type.naive_formula_Formula_clauses f_2;
+    _8 <- Len0.len _9;
     goto BB2
   }
   BB2 {
-    invariant previous { forall j : (int) . 0 <= j && j < UInt64.to_int i_3 -> not (NotSatClause0.not_sat_clause a_1 (Seq.get (Model0.model (Type.naive_formula_Formula_clauses f_2)) j)) };
-    invariant loop_invariant { 0 <= UInt64.to_int i_3 && UInt64.to_int i_3 <= UInt64.to_int clauses_len_4 };
-    assume { Resolve0.resolve _9 };
-    _9 <- i_3;
-    assume { Resolve0.resolve _10 };
-    _10 <- clauses_len_4;
-    _8 <- _9 < _10;
-    switch (_8)
+    _6 <- _7 < _8;
+    switch (_6)
       | False -> goto BB8
       | _ -> goto BB3
       end
   }
   BB3 {
-    _14 <- a_1;
-    _18 <- Type.naive_formula_Formula_clauses f_2;
-    assume { Resolve0.resolve _19 };
-    _19 <- i_3;
-    _17 <- Index0.index _18 _19;
+    _13 <- a_1;
+    _17 <- Type.naive_formula_Formula_clauses f_2;
+    assume { Resolve0.resolve _18 };
+    _18 <- i_3;
+    _16 <- Index0.index _17 _18;
     goto BB4
   }
   BB4 {
-    _16 <- _17;
-    assume { Resolve1.resolve _17 };
     _15 <- _16;
     assume { Resolve1.resolve _16 };
-    _13 <- InterpClause0.interp_clause _14 _15;
+    _14 <- _15;
+    assume { Resolve1.resolve _15 };
+    _12 <- InterpClause0.interp_clause _13 _14;
     goto BB5
   }
   BB5 {
-    _12 <- not _13;
-    switch (_12)
+    _11 <- not _12;
+    switch (_11)
       | False -> goto BB7
       | _ -> goto BB6
       end
@@ -670,25 +702,23 @@ module Naive_InterpFormula
     assume { Resolve2.resolve a_1 };
     assume { Resolve3.resolve f_2 };
     assume { Resolve0.resolve i_3 };
-    assume { Resolve0.resolve clauses_len_4 };
     _0 <- false;
     goto BB9
   }
   BB7 {
-    _11 <- ();
-    assume { Resolve4.resolve _11 };
+    _10 <- ();
+    assume { Resolve4.resolve _10 };
     i_3 <- i_3 + (1 : usize);
-    _7 <- ();
-    assume { Resolve4.resolve _7 };
-    goto BB2
+    _5 <- ();
+    assume { Resolve4.resolve _5 };
+    goto BB1
   }
   BB8 {
     assume { Resolve2.resolve a_1 };
     assume { Resolve3.resolve f_2 };
     assume { Resolve0.resolve i_3 };
-    assume { Resolve0.resolve clauses_len_4 };
-    _6 <- ();
-    assume { Resolve4.resolve _6 };
+    _4 <- ();
+    assume { Resolve4.resolve _4 };
     _0 <- true;
     goto BB9
   }
@@ -697,28 +727,18 @@ module Naive_InterpFormula
   }
   
 end
-module Naive_Clone_Interface
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
+module CreusotContracts_Std1_Clone_Clone_Clone_Interface
+  type self   
   use prelude.Prelude
-  use Type
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool
-  val clone' [@cfg:stackify] (pa : Type.naive_pasn) : Type.creusotcontracts_std1_vec_vec bool
-    ensures { Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa)) = Seq.length (Model0.model result) }
-    ensures { forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa)) -> Seq.get (Model0.model (Type.naive_pasn_Pasn_assign pa)) i = Seq.get (Model0.model result) i }
+  val clone' [@cfg:stackify] (self : self) : self
+    ensures { result = self }
     
 end
-module Naive_Clone
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
+module CreusotContracts_Std1_Clone_Clone_Clone
+  type self   
   use prelude.Prelude
-  use Type
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = bool
-  val clone' [@cfg:stackify] (pa : Type.naive_pasn) : Type.creusotcontracts_std1_vec_vec bool
-    ensures { Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa)) = Seq.length (Model0.model result) }
-    ensures { forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa)) -> Seq.get (Model0.model (Type.naive_pasn_Pasn_assign pa)) i = Seq.get (Model0.model result) i }
+  val clone' [@cfg:stackify] (self : self) : self
+    ensures { result = self }
     
 end
 module Core_Ops_Index_IndexMut_IndexMut_Interface
@@ -805,21 +825,11 @@ module CreusotContracts_Logic_Resolve_Impl1_Resolve
   predicate resolve (self : borrowed t) = 
      ^ self =  * self
 end
-module CreusotContracts_Std1_Vec_Impl5_Resolve_Interface
-  type t   
+module Naive_Impl6
   use Type
-  predicate resolve (self : Type.creusotcontracts_std1_vec_vec t)
-end
-module CreusotContracts_Std1_Vec_Impl5_Resolve
-  type t   
-  use Type
-  use mach.int.Int
-  use mach.int.Int32
-  use seq.Seq
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve_Interface as Resolve0 with type self = t
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t
-  predicate resolve (self : Type.creusotcontracts_std1_vec_vec t) = 
-    forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> Resolve0.resolve (Seq.get (Model0.model self) i)
+  clone Naive_Impl6_Clone_Interface as Clone0
+  clone CreusotContracts_Std1_Clone_Clone_Clone_Interface as Clone1 with type self = Type.naive_pasn,
+  val clone' = Clone0.clone'
 end
 module CreusotContracts_Std1_Vec_Impl2
   type t   
@@ -844,16 +854,6 @@ module CreusotContracts_Logic_Resolve_Impl1
   clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve1 with type self = borrowed t,
   predicate resolve = Resolve0.resolve
 end
-module CreusotContracts_Std1_Vec_Impl5
-  type t   
-  use Type
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve2 with type self = t
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = t
-  clone CreusotContracts_Std1_Vec_Impl5_Resolve as Resolve0 with type t = t, function Model0.model = Model0.model,
-  predicate Resolve0.resolve = Resolve2.resolve
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve1 with type self = Type.creusotcontracts_std1_vec_vec t,
-  predicate resolve = Resolve0.resolve
-end
 module CreusotContracts_Logic_Model_Impl1_ModelTy
   type t   
   clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
@@ -873,249 +873,154 @@ module CreusotContracts_Logic_Model_Impl1
   clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = borrowed t,
   type modelTy = ModelTy0.modelTy
 end
-module Naive_SetTrue_Interface
-  use mach.int.UInt64
+module Naive_Set_Interface
   use seq.Seq
   use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
   use mach.int.Int32
   use Type
-  use prelude.Prelude
-  clone Naive_Compatible_Interface as Compatible0
+  clone Naive_Impl1_Compatible_Interface as Compatible0
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool
-  val set_true [@cfg:stackify] (pa : Type.naive_pasn) : Type.naive_pasn
-    requires {not (UInt64.to_int (Type.naive_pasn_Pasn_ix pa) = Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa)))}
+  val set [@cfg:stackify] (pa : Type.naive_pasn) (b : bool) : Type.naive_pasn
+    requires {Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa)) <= 18446744073709551615}
     requires {UInt64.to_int (Type.naive_pasn_Pasn_ix pa) < Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa))}
     ensures { UInt64.to_int (Type.naive_pasn_Pasn_ix result) = UInt64.to_int (Type.naive_pasn_Pasn_ix pa) + 1 }
-    ensures { Seq.get (Model0.model (Type.naive_pasn_Pasn_assign result)) (UInt64.to_int (Type.naive_pasn_Pasn_ix pa)) = true }
-    ensures { Compatible0.compatible pa (Type.Naive_Assignment (Type.naive_pasn_Pasn_assign result)) }
+    ensures { Seq.get (Model0.model (Type.naive_pasn_Pasn_assign result)) (UInt64.to_int (Type.naive_pasn_Pasn_ix pa)) = b }
+    ensures { Compatible0.compatible (Type.Naive_Assignment (Type.naive_pasn_Pasn_assign result)) pa }
     
 end
-module Naive_SetTrue
-  use mach.int.UInt64
+module Naive_Set
   use seq.Seq
   use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
   use mach.int.Int32
   use Type
-  use prelude.Prelude
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = bool
-  clone Naive_Compatible as Compatible0 with function Model0.model = Model0.model
-  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve3 with type t = Type.naive_pasn
-  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve4 with type t = bool
-  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve1 with type t = bool
-  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve0 with type t = usize
+  clone Naive_Impl1_Compatible as Compatible0 with function Model0.model = Model0.model
+  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve4 with type t = Type.naive_pasn
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve3 with type t = bool
   clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = bool
-  clone CreusotContracts_Logic_Model_Impl1_Model as Model2 with type t = Type.creusotcontracts_std1_vec_vec bool,
+  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve2 with type t = Type.naive_pasn
+  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve1 with type t = usize
+  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve0 with type t = bool
+  clone Naive_Impl6_Clone_Interface as Clone0
+  clone CreusotContracts_Logic_Model_Impl1_Model as Model1 with type t = Type.creusotcontracts_std1_vec_vec bool,
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model0.model
   clone CreusotContracts_Std1_Vec_Impl2_IndexMut_Interface as IndexMut0 with type t = bool,
-  function Model0.model = Model0.model, function Model1.model = Model2.model
-  clone CreusotContracts_Logic_Model_Impl0_Model as Model1 with type t = Type.creusotcontracts_std1_vec_vec bool,
-  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model0.model
-  clone CreusotContracts_Std1_Vec_Impl1_Len_Interface as Len0 with type t = bool, function Model0.model = Model1.model
-  clone CreusotContracts_Std1_Vec_Impl5_Resolve as Resolve2 with type t = bool, function Model0.model = Model0.model,
-  predicate Resolve0.resolve = Resolve4.resolve
-  clone Naive_Clone_Interface as Clone0 with function Model0.model = Model0.model
-  let rec cfg set_true [@cfg:stackify] (pa : Type.naive_pasn) : Type.naive_pasn
-    requires {not (UInt64.to_int (Type.naive_pasn_Pasn_ix pa) = Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa)))}
+  function Model0.model = Model0.model, function Model1.model = Model1.model
+  let rec cfg set [@cfg:stackify] (pa : Type.naive_pasn) (b : bool) : Type.naive_pasn
+    requires {Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa)) <= 18446744073709551615}
     requires {UInt64.to_int (Type.naive_pasn_Pasn_ix pa) < Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa))}
     ensures { UInt64.to_int (Type.naive_pasn_Pasn_ix result) = UInt64.to_int (Type.naive_pasn_Pasn_ix pa) + 1 }
-    ensures { Seq.get (Model0.model (Type.naive_pasn_Pasn_assign result)) (UInt64.to_int (Type.naive_pasn_Pasn_ix pa)) = true }
-    ensures { Compatible0.compatible pa (Type.Naive_Assignment (Type.naive_pasn_Pasn_assign result)) }
+    ensures { Seq.get (Model0.model (Type.naive_pasn_Pasn_assign result)) (UInt64.to_int (Type.naive_pasn_Pasn_ix pa)) = b }
+    ensures { Compatible0.compatible (Type.Naive_Assignment (Type.naive_pasn_Pasn_assign result)) pa }
     
    = 
   var _0 : Type.naive_pasn;
   var pa_1 : Type.naive_pasn;
-  var pa_len_2 : usize;
-  var _3 : Type.creusotcontracts_std1_vec_vec bool;
-  var new_assign_4 : Type.creusotcontracts_std1_vec_vec bool;
-  var _5 : Type.naive_pasn;
+  var b_2 : bool;
+  var new_pa_3 : Type.naive_pasn;
+  var _4 : Type.naive_pasn;
+  var _5 : bool;
   var _6 : borrowed bool;
   var _7 : borrowed (Type.creusotcontracts_std1_vec_vec bool);
   var _8 : usize;
-  var _9 : Type.creusotcontracts_std1_vec_vec bool;
-  var _10 : usize;
-  var _11 : usize;
   {
     pa_1 <- pa;
+    b_2 <- b;
     goto BB0
   }
   BB0 {
-    _3 <- Type.naive_pasn_Pasn_assign pa_1;
-    pa_len_2 <- Len0.len _3;
+    _4 <- pa_1;
+    new_pa_3 <- Clone0.clone' _4;
     goto BB1
   }
   BB1 {
-    assume { Resolve0.resolve pa_len_2 };
-    _5 <- pa_1;
-    new_assign_4 <- Clone0.clone' _5;
+    assume { Resolve0.resolve _5 };
+    _5 <- b_2;
+    assume { Resolve0.resolve b_2 };
+    _7 <- borrow_mut (Type.naive_pasn_Pasn_assign new_pa_3);
+    new_pa_3 <- (let Type.Naive_Pasn a b = new_pa_3 in Type.Naive_Pasn ( ^ _7) b);
+    assume { Resolve1.resolve _8 };
+    _8 <- Type.naive_pasn_Pasn_ix pa_1;
+    assume { Resolve2.resolve pa_1 };
+    _6 <- IndexMut0.index_mut _7 _8;
     goto BB2
   }
   BB2 {
-    _7 <- borrow_mut new_assign_4;
-    new_assign_4 <-  ^ _7;
-    assume { Resolve0.resolve _8 };
-    _8 <- Type.naive_pasn_Pasn_ix pa_1;
-    _6 <- IndexMut0.index_mut _7 _8;
+    assume { Resolve0.resolve ( * _6) };
+    _6 <- { _6 with current = _5 };
+    assume { Resolve3.resolve _6 };
+    new_pa_3 <- (let Type.Naive_Pasn a b = new_pa_3 in Type.Naive_Pasn a (Type.naive_pasn_Pasn_ix new_pa_3 + (1 : usize)));
+    assume { Resolve4.resolve _0 };
+    _0 <- new_pa_3;
     goto BB3
   }
   BB3 {
-    _6 <- { _6 with current = true };
-    assume { Resolve1.resolve _6 };
-    assume { Resolve2.resolve _9 };
-    _9 <- new_assign_4;
-    assume { Resolve0.resolve _11 };
-    _11 <- Type.naive_pasn_Pasn_ix pa_1;
-    assume { Resolve3.resolve pa_1 };
-    _10 <- _11 + (1 : usize);
-    _0 <- Type.Naive_Pasn _9 _10;
-    goto BB4
-  }
-  BB4 {
-    goto BB5
-  }
-  BB5 {
     return _0
   }
   
 end
-module Naive_SetFalse_Interface
-  use mach.int.UInt64
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
+module CreusotContracts_Std1_Vec_Impl5_Resolve_Interface
+  type t   
   use Type
-  use prelude.Prelude
-  clone Naive_Compatible_Interface as Compatible0
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool
-  val set_false [@cfg:stackify] (pa : Type.naive_pasn) : Type.naive_pasn
-    requires {not (UInt64.to_int (Type.naive_pasn_Pasn_ix pa) = Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa)))}
-    requires {UInt64.to_int (Type.naive_pasn_Pasn_ix pa) < Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa))}
-    ensures { UInt64.to_int (Type.naive_pasn_Pasn_ix result) = UInt64.to_int (Type.naive_pasn_Pasn_ix pa) + 1 }
-    ensures { Compatible0.compatible pa (Type.Naive_Assignment (Type.naive_pasn_Pasn_assign result)) }
-    ensures { Seq.get (Model0.model (Type.naive_pasn_Pasn_assign result)) (UInt64.to_int (Type.naive_pasn_Pasn_ix pa)) = false }
-    
+  predicate resolve (self : Type.creusotcontracts_std1_vec_vec t)
 end
-module Naive_SetFalse
-  use mach.int.UInt64
-  use seq.Seq
+module CreusotContracts_Std1_Vec_Impl5_Resolve
+  type t   
+  use Type
   use mach.int.Int
   use mach.int.Int32
+  use seq.Seq
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve_Interface as Resolve0 with type self = t
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t
+  predicate resolve (self : Type.creusotcontracts_std1_vec_vec t) = 
+    forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> Resolve0.resolve (Seq.get (Model0.model self) i)
+end
+module CreusotContracts_Std1_Vec_Impl5
+  type t   
   use Type
-  use prelude.Prelude
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = bool
-  clone Naive_Compatible as Compatible0 with function Model0.model = Model0.model
-  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve3 with type t = Type.naive_pasn
-  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve4 with type t = bool
-  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve1 with type t = bool
-  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve0 with type t = usize
-  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = bool
-  clone CreusotContracts_Logic_Model_Impl1_Model as Model2 with type t = Type.creusotcontracts_std1_vec_vec bool,
-  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model0.model
-  clone CreusotContracts_Std1_Vec_Impl2_IndexMut_Interface as IndexMut0 with type t = bool,
-  function Model0.model = Model0.model, function Model1.model = Model2.model
-  clone CreusotContracts_Logic_Model_Impl0_Model as Model1 with type t = Type.creusotcontracts_std1_vec_vec bool,
-  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model0.model
-  clone CreusotContracts_Std1_Vec_Impl1_Len_Interface as Len0 with type t = bool, function Model0.model = Model1.model
-  clone CreusotContracts_Std1_Vec_Impl5_Resolve as Resolve2 with type t = bool, function Model0.model = Model0.model,
-  predicate Resolve0.resolve = Resolve4.resolve
-  clone Naive_Clone_Interface as Clone0 with function Model0.model = Model0.model
-  let rec cfg set_false [@cfg:stackify] (pa : Type.naive_pasn) : Type.naive_pasn
-    requires {not (UInt64.to_int (Type.naive_pasn_Pasn_ix pa) = Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa)))}
-    requires {UInt64.to_int (Type.naive_pasn_Pasn_ix pa) < Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa))}
-    ensures { UInt64.to_int (Type.naive_pasn_Pasn_ix result) = UInt64.to_int (Type.naive_pasn_Pasn_ix pa) + 1 }
-    ensures { Compatible0.compatible pa (Type.Naive_Assignment (Type.naive_pasn_Pasn_assign result)) }
-    ensures { Seq.get (Model0.model (Type.naive_pasn_Pasn_assign result)) (UInt64.to_int (Type.naive_pasn_Pasn_ix pa)) = false }
-    
-   = 
-  var _0 : Type.naive_pasn;
-  var pa_1 : Type.naive_pasn;
-  var pa_len_2 : usize;
-  var _3 : Type.creusotcontracts_std1_vec_vec bool;
-  var new_assign_4 : Type.creusotcontracts_std1_vec_vec bool;
-  var _5 : Type.naive_pasn;
-  var _6 : borrowed bool;
-  var _7 : borrowed (Type.creusotcontracts_std1_vec_vec bool);
-  var _8 : usize;
-  var _9 : Type.creusotcontracts_std1_vec_vec bool;
-  var _10 : usize;
-  var _11 : usize;
-  {
-    pa_1 <- pa;
-    goto BB0
-  }
-  BB0 {
-    _3 <- Type.naive_pasn_Pasn_assign pa_1;
-    pa_len_2 <- Len0.len _3;
-    goto BB1
-  }
-  BB1 {
-    assume { Resolve0.resolve pa_len_2 };
-    _5 <- pa_1;
-    new_assign_4 <- Clone0.clone' _5;
-    goto BB2
-  }
-  BB2 {
-    _7 <- borrow_mut new_assign_4;
-    new_assign_4 <-  ^ _7;
-    assume { Resolve0.resolve _8 };
-    _8 <- Type.naive_pasn_Pasn_ix pa_1;
-    _6 <- IndexMut0.index_mut _7 _8;
-    goto BB3
-  }
-  BB3 {
-    _6 <- { _6 with current = false };
-    assume { Resolve1.resolve _6 };
-    assume { Resolve2.resolve _9 };
-    _9 <- new_assign_4;
-    assume { Resolve0.resolve _11 };
-    _11 <- Type.naive_pasn_Pasn_ix pa_1;
-    assume { Resolve3.resolve pa_1 };
-    _10 <- _11 + (1 : usize);
-    _0 <- Type.Naive_Pasn _9 _10;
-    goto BB4
-  }
-  BB4 {
-    goto BB5
-  }
-  BB5 {
-    return _0
-  }
-  
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve2 with type self = t
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = t
+  clone CreusotContracts_Std1_Vec_Impl5_Resolve as Resolve0 with type t = t, function Model0.model = Model0.model,
+  predicate Resolve0.resolve = Resolve2.resolve
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve1 with type self = Type.creusotcontracts_std1_vec_vec t,
+  predicate resolve = Resolve0.resolve
 end
 module Naive_Inner_Interface
-  use seq.Seq
   use mach.int.UInt64
-  use mach.int.Int
   use Type
   use prelude.Prelude
-  clone Naive_Compatible_Interface as Compatible0
-  clone Naive_SatFormula_Interface as SatFormula0
-  clone Naive_FormulaInvariant_Interface as FormulaInvariant0
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool
+  clone Naive_Impl2_Sat_Interface as Sat0
+  clone Naive_Impl1_Compatible_Interface as Compatible0
+  clone Naive_Impl4_Invariant_Interface as Invariant1
+  clone Naive_Impl2_Invariant_Interface as Invariant0
   val inner [@cfg:stackify] (f : Type.naive_formula) (pa : Type.naive_pasn) : bool
-    requires {Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa)) = UInt64.to_int (Type.naive_formula_Formula_num_vars f)}
-    requires {UInt64.to_int (Type.naive_pasn_Pasn_ix pa) <= Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa))}
-    requires {FormulaInvariant0.formula_invariant f}
-    ensures { result -> (exists a : (Type.naive_assignment) . SatFormula0.sat_formula a f) }
-    ensures { not result -> (forall a : (Type.naive_assignment) . Compatible0.compatible pa a -> not (SatFormula0.sat_formula a f)) }
+    requires {Invariant0.invariant' f}
+    requires {Invariant1.invariant' pa (UInt64.to_int (Type.naive_formula_Formula_num_vars f))}
+    ensures { not result = (forall a : (Type.naive_assignment) . Compatible0.compatible a pa -> not (Sat0.sat f a)) }
     
 end
 module Naive_Inner
-  use seq.Seq
   use mach.int.UInt64
-  use mach.int.Int
   use Type
   use prelude.Prelude
+  clone Naive_Impl3_VarsInRange as VarsInRange1
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.naive_lit
-  clone Naive_VarsInRange as VarsInRange0 with function Model0.model = Model2.model
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.naive_clause
-  clone Naive_FormulaInvariant as FormulaInvariant0 with function Model0.model = Model1.model,
+  clone Naive_Impl0_VarsInRange as VarsInRange0 with function Model0.model = Model2.model,
+  predicate VarsInRange0.vars_in_range = VarsInRange1.vars_in_range
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = bool
+  clone Naive_Impl3_Sat as Sat2 with function Model0.model = Model1.model
+  clone Naive_Impl5_Sat as Sat1 with function Model0.model = Model2.model, predicate Sat0.sat = Sat2.sat
+  clone Naive_Impl1_Compatible as Compatible0 with function Model0.model = Model1.model
+  clone Naive_Impl4_Invariant as Invariant1 with function Model0.model = Model1.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.naive_clause
+  clone Naive_Impl2_Sat as Sat0 with function Model0.model = Model0.model, predicate Sat0.sat = Sat1.sat
+  clone Naive_Impl2_Invariant as Invariant0 with function Model0.model = Model0.model,
   predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = bool
-  clone Naive_NotSatClause as NotSatClause0 with function Model0.model = Model2.model,
-  function Model1.model = Model0.model
-  clone Naive_SatFormula as SatFormula0 with function Model0.model = Model1.model,
-  predicate NotSatClause0.not_sat_clause = NotSatClause0.not_sat_clause
-  clone Naive_Compatible as Compatible0 with function Model0.model = Model0.model
+  use mach.int.Int
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve6 with type t = Type.naive_pasn
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve5 with type t = Type.naive_pasn
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve4 with type t = Type.naive_assignment
@@ -1125,23 +1030,19 @@ module Naive_Inner
   clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = bool
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve0 with type t = usize
   clone CreusotContracts_Logic_Model_Impl0_Model as Model3 with type t = Type.creusotcontracts_std1_vec_vec bool,
-  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model0.model
+  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model1.model
   clone CreusotContracts_Std1_Vec_Impl1_Len_Interface as Len0 with type t = bool, function Model0.model = Model3.model
-  clone CreusotContracts_Std1_Vec_Impl5_Resolve as Resolve1 with type t = bool, function Model0.model = Model0.model,
+  clone CreusotContracts_Std1_Vec_Impl5_Resolve as Resolve1 with type t = bool, function Model0.model = Model1.model,
   predicate Resolve0.resolve = Resolve7.resolve
-  clone Naive_InterpFormula_Interface as InterpFormula0 with function Model0.model = Model0.model,
-  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant,
-  predicate SatFormula0.sat_formula = SatFormula0.sat_formula
-  clone Naive_SetFalse_Interface as SetFalse0 with function Model0.model = Model0.model,
+  clone Naive_Set_Interface as Set0 with function Model0.model = Model1.model,
   predicate Compatible0.compatible = Compatible0.compatible
-  clone Naive_SetTrue_Interface as SetTrue0 with function Model0.model = Model0.model,
-  predicate Compatible0.compatible = Compatible0.compatible
+  clone Naive_InterpFormula_Interface as InterpFormula0 with function Model0.model = Model1.model,
+  predicate Invariant0.invariant' = Invariant0.invariant', predicate Sat0.sat = Sat0.sat
   let rec cfg inner [@cfg:stackify] (f : Type.naive_formula) (pa : Type.naive_pasn) : bool
-    requires {Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa)) = UInt64.to_int (Type.naive_formula_Formula_num_vars f)}
-    requires {UInt64.to_int (Type.naive_pasn_Pasn_ix pa) <= Seq.length (Model0.model (Type.naive_pasn_Pasn_assign pa))}
-    requires {FormulaInvariant0.formula_invariant f}
-    ensures { result -> (exists a : (Type.naive_assignment) . SatFormula0.sat_formula a f) }
-    ensures { not result -> (forall a : (Type.naive_assignment) . Compatible0.compatible pa a -> not (SatFormula0.sat_formula a f)) }
+    requires {Invariant0.invariant' f}
+    requires {Invariant1.invariant' pa (UInt64.to_int (Type.naive_formula_Formula_num_vars f))}
+    ensures { not result = (forall a : (Type.naive_assignment) . Compatible0.compatible a pa -> not (Sat0.sat f a)) }
+    variant {UInt64.to_int (Type.naive_formula_Formula_num_vars f) - UInt64.to_int (Type.naive_pasn_Pasn_ix pa)}
     
    = 
   var _0 : bool;
@@ -1180,90 +1081,87 @@ module Naive_Inner
     goto BB2
   }
   BB2 {
-    goto BB3
-  }
-  BB3 {
     assume { Resolve0.resolve _4 };
     _4 <- Type.naive_pasn_Pasn_ix pa_2;
     _6 <- Type.naive_pasn_Pasn_assign pa_2;
     _5 <- Len0.len _6;
-    goto BB4
+    goto BB3
   }
-  BB4 {
+  BB3 {
     _3 <- _4 = _5;
     switch (_3)
-      | False -> goto BB8
-      | _ -> goto BB5
+      | False -> goto BB7
+      | _ -> goto BB4
       end
   }
-  BB5 {
+  BB4 {
     assume { Resolve1.resolve _11 };
     _11 <- Type.naive_pasn_Pasn_assign pa_2;
     _10 <- Type.Naive_Assignment _11;
-    goto BB6
+    goto BB5
   }
-  BB6 {
+  BB5 {
     _9 <- _10;
     _8 <- _9;
     assume { Resolve2.resolve _9 };
     _12 <- f_1;
     assume { Resolve3.resolve f_1 };
     _0 <- InterpFormula0.interp_formula _8 _12;
-    goto BB7
+    goto BB6
+  }
+  BB6 {
+    goto BB15
   }
   BB7 {
-    goto BB16
-  }
-  BB8 {
     _14 <- f_1;
     _17 <- pa_2;
     _16 <- _17;
     assume { Resolve6.resolve _17 };
-    _15 <- SetTrue0.set_true _16;
+    _15 <- Set0.set _16 true;
+    goto BB8
+  }
+  BB8 {
+    _13 <- inner _14 _15;
     goto BB9
   }
   BB9 {
-    _13 <- inner _14 _15;
-    goto BB10
-  }
-  BB10 {
     switch (_13)
-      | False -> goto BB12
-      | _ -> goto BB11
+      | False -> goto BB11
+      | _ -> goto BB10
       end
   }
-  BB11 {
+  BB10 {
     assume { Resolve3.resolve f_1 };
     _0 <- true;
-    goto BB15
+    goto BB14
   }
-  BB12 {
+  BB11 {
     _20 <- f_1;
     assume { Resolve3.resolve f_1 };
     _23 <- pa_2;
     _22 <- _23;
     assume { Resolve6.resolve _23 };
-    _21 <- SetFalse0.set_false _22;
+    _21 <- Set0.set _22 false;
+    goto BB12
+  }
+  BB12 {
+    _0 <- inner _20 _21;
     goto BB13
   }
   BB13 {
-    _0 <- inner _20 _21;
     goto BB14
   }
   BB14 {
-    goto BB15
+    goto BB16
   }
   BB15 {
-    goto BB17
+    assume { Resolve4.resolve _10 };
+    goto BB16
   }
   BB16 {
-    assume { Resolve4.resolve _10 };
     goto BB17
   }
   BB17 {
-    goto BB18
-  }
-  BB18 {
     assume { Resolve5.resolve pa_2 };
     return _0
   }
@@ -1325,12 +1223,12 @@ module Naive_Solver_Interface
   use seq.Seq
   use prelude.Prelude
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool
-  clone Naive_SatFormula_Interface as SatFormula0
-  clone Naive_FormulaInvariant_Interface as FormulaInvariant0
+  clone Naive_Impl2_Sat_Interface as Sat0
+  clone Naive_Impl2_Invariant_Interface as Invariant0
   val solver [@cfg:stackify] (f : Type.naive_formula) : bool
-    requires {FormulaInvariant0.formula_invariant f}
-    ensures { result -> UInt64.to_int (Type.naive_formula_Formula_num_vars f) = 0 || (exists a : (Type.naive_assignment) . SatFormula0.sat_formula a f) }
-    ensures { not result -> (forall a : (Type.naive_assignment) . Seq.length (Model0.model (Type.naive_assignment_Assignment_0 a)) = UInt64.to_int (Type.naive_formula_Formula_num_vars f) -> not (SatFormula0.sat_formula a f)) }
+    requires {Invariant0.invariant' f}
+    ensures { result -> UInt64.to_int (Type.naive_formula_Formula_num_vars f) = 0 || (exists a : (Type.naive_assignment) . Sat0.sat f a) }
+    ensures { not result -> (forall a : (Type.naive_assignment) . Seq.length (Model0.model (Type.naive_assignment_Assignment_0 a)) = UInt64.to_int (Type.naive_formula_Formula_num_vars f) -> not (Sat0.sat f a)) }
     
 end
 module Naive_Solver
@@ -1340,23 +1238,25 @@ module Naive_Solver
   use seq.Seq
   use Type
   use prelude.Prelude
+  clone Naive_Impl3_VarsInRange as VarsInRange1
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.naive_lit
-  clone Naive_VarsInRange as VarsInRange0 with function Model0.model = Model2.model
+  clone Naive_Impl0_VarsInRange as VarsInRange0 with function Model0.model = Model2.model,
+  predicate VarsInRange0.vars_in_range = VarsInRange1.vars_in_range
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.naive_clause
-  clone Naive_FormulaInvariant as FormulaInvariant0 with function Model0.model = Model1.model,
+  clone Naive_Impl2_Invariant as Invariant0 with function Model0.model = Model1.model,
   predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = bool
-  clone Naive_NotSatClause as NotSatClause0 with function Model0.model = Model2.model,
-  function Model1.model = Model0.model
-  clone Naive_SatFormula as SatFormula0 with function Model0.model = Model1.model,
-  predicate NotSatClause0.not_sat_clause = NotSatClause0.not_sat_clause
+  clone Naive_Impl3_Sat as Sat2 with function Model0.model = Model0.model
+  clone Naive_Impl5_Sat as Sat1 with function Model0.model = Model2.model, predicate Sat0.sat = Sat2.sat
+  clone Naive_Impl2_Sat as Sat0 with function Model0.model = Model1.model, predicate Sat0.sat = Sat1.sat
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve4 with type t = Type.naive_pasn
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve5 with type t = bool
   clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = bool
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve2 with type t = ()
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve1 with type t = Type.naive_formula
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve0 with type t = usize
-  clone Naive_Compatible as Compatible0 with function Model0.model = Model0.model
+  clone Naive_Impl1_Compatible as Compatible0 with function Model0.model = Model0.model
+  clone Naive_Impl4_Invariant as Invariant1 with function Model0.model = Model0.model
   clone CreusotContracts_Logic_Model_Impl1_Model as Model3 with type t = Type.creusotcontracts_std1_vec_vec bool,
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model0.model
   clone CreusotContracts_Std1_Vec_Impl1_Push_Interface as Push0 with type t = bool,
@@ -1364,13 +1264,13 @@ module Naive_Solver
   clone CreusotContracts_Std1_Vec_Impl5_Resolve as Resolve3 with type t = bool, function Model0.model = Model0.model,
   predicate Resolve0.resolve = Resolve5.resolve
   clone CreusotContracts_Std1_Vec_Impl1_New_Interface as New0 with type t = bool, function Model0.model = Model0.model
-  clone Naive_Inner_Interface as Inner0 with function Model0.model = Model0.model,
-  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant,
-  predicate SatFormula0.sat_formula = SatFormula0.sat_formula, predicate Compatible0.compatible = Compatible0.compatible
+  clone Naive_Inner_Interface as Inner0 with predicate Invariant0.invariant' = Invariant0.invariant',
+  predicate Invariant1.invariant' = Invariant1.invariant', predicate Compatible0.compatible = Compatible0.compatible,
+  predicate Sat0.sat = Sat0.sat
   let rec cfg solver [@cfg:stackify] (f : Type.naive_formula) : bool
-    requires {FormulaInvariant0.formula_invariant f}
-    ensures { result -> UInt64.to_int (Type.naive_formula_Formula_num_vars f) = 0 || (exists a : (Type.naive_assignment) . SatFormula0.sat_formula a f) }
-    ensures { not result -> (forall a : (Type.naive_assignment) . Seq.length (Model0.model (Type.naive_assignment_Assignment_0 a)) = UInt64.to_int (Type.naive_formula_Formula_num_vars f) -> not (SatFormula0.sat_formula a f)) }
+    requires {Invariant0.invariant' f}
+    ensures { result -> UInt64.to_int (Type.naive_formula_Formula_num_vars f) = 0 || (exists a : (Type.naive_assignment) . Sat0.sat f a) }
+    ensures { not result -> (forall a : (Type.naive_assignment) . Seq.length (Model0.model (Type.naive_assignment_Assignment_0 a)) = UInt64.to_int (Type.naive_formula_Formula_num_vars f) -> not (Sat0.sat f a)) }
     
    = 
   var _0 : bool;
