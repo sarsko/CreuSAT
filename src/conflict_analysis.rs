@@ -56,6 +56,10 @@ fn move_to_end(v: &mut Vec<Lit>, to_be_removed: usize,  _f: &Formula) {
     //v.pop();
 }
 */
+#[logic]
+#[requires(@v[i].idx === idx)]
+fn lemma_idx(v: Seq<Lit>, i: Int, idx: Int) {
+}
 
 #[ensures(result === (exists<i: Int> 0 <= i && i < (@v).len() && @(@v)[i].idx === @idx))]
 fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
@@ -82,6 +86,8 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
     (exists<k: Int, m: Int> 0 <= k && k < (@o).len() && 0 <= m && m < (@c).len() &&
         @(@c)[m].idx === @idx && @(@o)[k].idx === @idx && (@o)[k].is_opp((@c)[m]))
 )]
+#[requires(forall<j: Int, k: Int> 0 <= j && j < (@c).len() &&  ==> @(@c)[j].idx != @idx)]
+#[requires(c.same_idx_same_polarity(*o))]
 #[requires(@idx < @_f.num_vars)]
 #[ensures(result.invariant(@_f.num_vars))]
 #[ensures(equisat_extension_inner(result, @_f))]
@@ -96,19 +102,24 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize) -> Clause {
     #[invariant(not_idx, forall<j: Int> 0 <= j && j < (@new).len() ==> @(@new)[j].idx != @idx)]
     #[invariant(resolve, forall<j: Int> 0 <= j && j < @i && @(@c)[j].idx != @idx ==> 
         (@c)[j].lit_in_internal(@new))]
-    #[invariant(from_c, forall<j: Int> 0 <= j && j < @i ==> (@new)[j].lit_in(*c))]
+    #[invariant(from_c, forall<j: Int> 0 <= j && j < (@new).len() ==> (@new)[j].lit_in(*c))]
     while i < c.rest.len() {
-        if !idx_in(&new, c.rest[i].idx) && c.rest[i].idx != idx { 
+        let old_new = Ghost::record(&new);
+        if idx_in(&new, c.rest[i].idx) {
+            proof_assert!(@new === @@old_new);
+        } else if c.rest[i].idx == idx {
+            proof_assert!(@new === @@old_new);
+        } else {
             new.push(c.rest[i]);
+            proof_assert!((@new)[(@new).len() - 1] === (@c.rest)[@i]);
+            proof_assert!((@new)[(@new).len() - 1].lit_in(*c));
         }
         i += 1;
     }
-    /*
-    proof_assert!(
-            (forall<i: Int> 0 <= i && i < (@c ).len() && @(@c )[i].idx != @idx ==> (@c )[i].lit_in_internal(@new))
-    );
     let old_new = Ghost::record(&new);
-    let old_i = i;
+    proof_assert!(@new === @@old_new);
+    proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==> 
+        (@new)[j] === (@@old_new)[j]);
     i = 0;
     #[invariant(i_less, @i <= (@o.rest).len())]
     #[invariant(new_elems, forall<j: Int> 0 <= j && j < (@new).len() ==> 
@@ -118,20 +129,64 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize) -> Clause {
     #[invariant(not_idx, forall<j: Int> 0 <= j && j < (@new).len() ==> @(@new)[j].idx != @idx)]
     #[invariant(resolve, forall<j: Int> 0 <= j && j < @i && @(@o)[j].idx != @idx ==> 
         (@o)[j].lit_in_internal(@new))]
-    #[invariant(from_c, forall<j: Int> 0 <= j && j < @i ==> (@new)[@old_i + j].lit_in(*o))]
-    #[invariant(old_unchanged, forall<j: Int> 0 <= j && j < @old_i ==> 
+    #[invariant(from_o, forall<j: Int> 0 <= j && j < (@new).len() - (@@old_new).len() ==> (@new)[(@@old_new).len() + j].lit_in(*o))]
+    #[invariant(from_c, forall<j: Int> 0 <= j && j < (@@old_new).len() ==> (@new)[j].lit_in(*c))]
+    #[invariant(old_unchanged, forall<j: Int> 0 <= j && j < (@@old_new).len() ==> 
         (@new)[j] === (@@old_new)[j])]
+    #[invariant(maintains, 
+            (forall<j: Int> 0 <= j && j < (@c ).len() && @(@c )[j].idx != @idx ==> (@c )[j].lit_in_internal(@new))
+    )]
     while i < o.rest.len() {
+        /*
         if !idx_in(&new, o.rest[i].idx) && o.rest[i].idx != idx {
             new.push(o.rest[i]);
         }
+        */
+        let old_new2 = Ghost::record(&new);
+        proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==> 
+            (@@old_new2)[j] === (@@old_new)[j]);
+        proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==> 
+            (@new)[j] === (@@old_new)[j]);
+        proof_assert!(@new === @@old_new2);
+        if idx_in(&new, o.rest[i].idx) {
+            proof_assert!(@new === @@old_new2);
+            // TODO proof of idx_in + no_dups + empty intersection ==> lit_in
+            // Only missing assertion
+            proof_assert!((@o)[@i].lit_in_internal(@new)); // #56
+        } else if o.rest[i].idx == idx {
+            proof_assert!(@new === @@old_new2);
+            proof_assert!(@(@o)[@i].idx === @idx);
+        } else {
+            new.push(o.rest[i]);
+            proof_assert!((@new)[(@new).len() - 1] === (@o.rest)[@i]);
+            proof_assert!((@new)[(@new).len() - 1].lit_in(*o));
+            proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new2).len() ==> 
+                (@new)[j] === (@@old_new2)[j]);
+            proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==> 
+                (@new)[j] === (@@old_new)[j]);
+            proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==> 
+                (@@old_new2)[j] === (@@old_new)[j]);
+            proof_assert!((@o)[@i].lit_in_internal(@new));
+        }
+        proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==> 
+            (@@old_new2)[j] === (@@old_new)[j]);
+        proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==> 
+            (@new)[j] === (@@old_new)[j]);
         i += 1;
     }
-    */
     let out = Clause {
         rest: new,
     };
     /*
+
+            (forall<i: Int> 0 <= i && i < (@c ).len() && @(@c )[i].idx != idx ==> (@c   )[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < (@c2).len() && @(@c2)[i].idx != idx ==> (@c2  )[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < (@self).len()                       ==> ((@self)[i].lit_in(c) 
+                                                                              ||  (@self)[i].lit_in(c2))) &&
+            (exists<k: Int, m: Int> 0 <= k && k < (@c2).len() && 0 <= m && m < (@c).len() &&
+                @(@c)[m].idx === idx && @(@c2)[k].idx === idx && (@c2)[k].is_opp((@c)[m]))
+
+    */
     proof_assert!(
             (forall<i: Int> 0 <= i && i < (@o).len() && @(@o)[i].idx != @idx ==> (@o)[i].lit_in_internal(@new))
     );
@@ -139,13 +194,15 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize) -> Clause {
     (exists<k: Int, m: Int> 0 <= k && k < (@o).len() && 0 <= m && m < (@c).len() &&
         @(@c)[m].idx === @idx && @(@o)[k].idx === @idx && (@o)[k].is_opp((@c)[m]))
     );
+    /*
     proof_assert!(
             (forall<i: Int> 0 <= i && i < (@c).len() && @(@c)[i].idx != @idx ==> (@c)[i].lit_in_internal(@new))
     );
+    */
 
+    //proof_assert!(lemma_resolvent_of_equisat_extension_is_equisat2(f: @f, c, o, out, idx, a: Assignments)
     proof_assert!(out.resolvent_of_idx(*c, *o, @idx));
     proof_assert!(out.invariant(@_f.num_vars));
-    */
     out
 }
 
@@ -256,6 +313,7 @@ pub fn analyze_conflict_new(f: &Formula, a: &Assignments, trail: &Trail, cref: u
             break;
         }
     }
+
     if clause.rest.len() == 1 {
         Conflict::Unit(clause.rest[0])
     } else {

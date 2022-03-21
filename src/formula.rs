@@ -247,10 +247,8 @@ impl Formula {
         let cref = self.clauses.len();
         // Just cbf adding the ensures everywhere. The watch is ok
         proof_assert!(watches.invariant(*self));
-        /*
         watches.add_watcher(clause.rest[0], cref, self);
         watches.add_watcher(clause.rest[1], cref, self);
-        */
         self.clauses.push(clause);
         cref
     }

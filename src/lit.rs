@@ -51,6 +51,11 @@ impl Lit {
         pearlite! {
             exists<i: Int> 0 <= i && i < (@c).len() &&
                 (@c)[i] === self
+            /*
+            exists<i: Int> 0 <= i && i < (@c).len() &&
+                (@c)[i].idx === self.idx &&
+                (@c)[i].polarity === self.polarity
+                */
         }
     }
 

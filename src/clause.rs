@@ -89,14 +89,23 @@ impl Clause {
 
     }
 
+    #[predicate]
+    pub fn same_idx_same_polarity(self, other: Clause) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@self.rest).len() ==> 
+                @(@self.rest)[i].idx === @(@other.rest)[i].idx ==>
+                (@self.rest)[i].polarity === (@other.rest)[i].polarity
+        }
+    }
+
 
     #[predicate]
     pub fn resolvent_of(self, c: Clause, c2: Clause, k: Int, m: Int) -> bool {
         pearlite! {
-            (forall<i: Int> 0 <= i && i < (@c ).len() && i != m ==> (@c )[i].lit_in(self)) &&
-            (forall<i: Int> 0 <= i && i < (@c2).len() && i != k ==> (@c2)[i].lit_in(self)) &&
-            (forall<i: Int> 0 <= i && i < (@self).len()         ==> (@self)[i].lit_in(c) 
-                                                                ||  (@self)[i].lit_in(c2)) &&
+            (forall<i: Int> 0 <= i && i < (@c ).len() && i != m ==> (@c   )[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < (@c2).len() && i != k ==> (@c2  )[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < (@self).len()         ==> ((@self)[i].lit_in(c) 
+                                                                ||  (@self)[i].lit_in(c2))) &&
             (@c2)[k].is_opp((@c)[m])                 
         }
     }
@@ -104,10 +113,10 @@ impl Clause {
     #[predicate]
     pub fn resolvent_of_idx(self, c: Clause, c2: Clause, idx: Int) -> bool {
         pearlite! {
-            (forall<i: Int> 0 <= i && i < (@c ).len() && @(@c )[i].idx != idx ==> (@c )[i].lit_in(self)) &&
-            (forall<i: Int> 0 <= i && i < (@c2).len() && @(@c2)[i].idx != idx ==> (@c2)[i].lit_in(self)) &&
-            (forall<i: Int> 0 <= i && i < (@self).len()                       ==> (@self)[i].lit_in(c) 
-                                                                              ||  (@self)[i].lit_in(c2)) &&
+            (forall<i: Int> 0 <= i && i < (@c ).len() && @(@c )[i].idx != idx ==> (@c   )[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < (@c2).len() && @(@c2)[i].idx != idx ==> (@c2  )[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < (@self).len()                       ==> ((@self)[i].lit_in(c) 
+                                                                              ||  (@self)[i].lit_in(c2))) &&
             (exists<k: Int, m: Int> 0 <= k && k < (@c2).len() && 0 <= m && m < (@c).len() &&
                 @(@c)[m].idx === idx && @(@c2)[k].idx === idx && (@c2)[k].is_opp((@c)[m]))
         }
