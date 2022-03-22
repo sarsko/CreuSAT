@@ -98,11 +98,18 @@ impl Clause {
     }
 
     #[predicate]
-    pub fn same_idx_same_polarity(self, other: Clause) -> bool {
+    pub fn same_idx_same_polarity_except(self, other: Clause, exception: Int) -> bool {
         pearlite! {
+            /*
+            // Wrong
             forall<i: Int> 0 <= i && i < (@self.rest).len() ==> 
                 @(@self.rest)[i].idx === @(@other.rest)[i].idx ==>
                 (@self.rest)[i].polarity === (@other.rest)[i].polarity
+                */
+            forall<i: Int, j: Int> 0 <= i && i < (@self).len() && 0 <= j && j < (@other).len() ==> 
+                (@(@self)[i].idx != exception &&
+                @(@self)[i].idx === @(@other)[j].idx)==>
+                (@self)[i].polarity === (@other)[j].polarity
         }
     }
 

@@ -111,7 +111,7 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
     false
 }
 
-#[trusted]
+//#[trusted] // OK
 //#[requires(equisat_extension_inner(*o, @_f))]
 /*
 #[requires(
@@ -130,7 +130,7 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
 )]
 #[requires(forall<j: Int, k: Int> 0 <= j && j < (@o).len() && 0 <= k && k < (@c).len() &&
     k != @c_idx && @(@o)[j].idx != @idx ==> !(@c)[k].is_opp((@o)[j]))]
-#[requires(c.same_idx_same_polarity(*o))]
+#[requires(c.same_idx_same_polarity_except(*o, @idx))]
 #[requires(@idx < @_f.num_vars)]
 #[ensures(result.invariant(@_f.num_vars))]
 #[ensures(equisat_extension_inner(result, @_f))]
@@ -291,7 +291,10 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize) -> Cl
 // todo on result.1
 #[trusted] // tmp
 #[ensures(@result.0.idx < (@trail.vardata).len())]
-#[ensures(result.0.lit_in(*c))]
+//#[ensures(result.0.lit_in(*c))]
+#[ensures(@result.1 < (@c).len())]
+#[ensures(@(@c)[@result.1].idx === @result.0.idx)]
+#[ensures((@c)[@result.1].is_opp(result.0))]
 // Super bad / simple
 
 fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, j: &mut usize) -> (Lit, usize) {
@@ -303,6 +306,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, j: &mut usize) -> (L
             let mut broken = false;
             while k < c.rest.len() {
                 if trail.trail[*i][*j].idx == c.rest[k].idx {
+                    assert!(trail.trail[*i][*j].polarity != (c.rest[k]).polarity);
                     broken = true;
                     break;
                 }
