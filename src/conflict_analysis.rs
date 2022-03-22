@@ -146,6 +146,9 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize) -> Cl
     #[invariant(resolve, forall<j: Int> 0 <= j && j < @i && @(@c)[j].idx != @idx ==> 
         (@c)[j].lit_in_internal(@new))]
     #[invariant(from_c, forall<j: Int> 0 <= j && j < (@new).len() ==> (@new)[j].lit_in(*c))]
+
+    #[invariant(res2, (forall<j: Int> 0 <= j && j < @i && j != @c_idx ==> 
+        (@c)[j].lit_in_internal(@new)))]
     while i < c.rest.len() {
         let old_new = Ghost::record(&new);
         if idx_in(&new, c.rest[i].idx) {
@@ -186,6 +189,14 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize) -> Cl
         None => forall<j: Int> 0 <= j && j < @i ==> @(@o)[j].idx != @idx,
         Some(j) => @(@o)[@j].idx === @idx
     })]
+    #[invariant(res2, match _o_idx {
+        None => (forall<j: Int> 0 <= j && j < @i ==> 
+        (@o)[j].lit_in_internal(@new)),
+        Some(k) => {@k < @i && (forall<j: Int> 0 <= j && j < @i && j != @k ==> 
+        (@o)[j].lit_in_internal(@new))}
+    })]
+    #[invariant(res, (forall<j: Int> 0 <= j && j < (@c).len() && j != @c_idx ==> 
+        (@c)[j].lit_in_internal(@new)))]
     while i < o.rest.len() {
         /*
         if !idx_in(&new, o.rest[i].idx) && o.rest[i].idx != idx {
@@ -259,6 +270,7 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize) -> Cl
     let out = Clause {
         rest: new,
     };
+    proof_assert!(@out === @new);
     proof_assert!(
             (forall<i: Int> 0 <= i && i < (@o).len() && @(@o)[i].idx != @idx ==> (@o)[i].lit_in_internal(@new))
     );
@@ -284,9 +296,17 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize) -> Cl
 #[requires(c2.in_formula_inner(f))]
 #[requires(c3.resolvent_of(c, c2, k, m))]
 */
+
+            proof_assert!(forall<j: Int> 0 <= j && j < (@c).len() && j != @c_idx ==> 
+            (@c)[j].lit_in(out));
+            proof_assert!(forall<j: Int> 0 <= j && j < (@o).len() && j != @o_idx ==> 
+            (@o)[j].lit_in(out));
+            proof_assert!(formula_invariant(@_f));
+            proof_assert!(equisat_extension_inner(*c, @_f));
             proof_assert!(o.in_formula_inner(@_f));
-            proof_assert!(out.resolvent_of(*c, *o, @c_idx, @o_idx));
+            proof_assert!(out.resolvent_of(*c, *o, @o_idx, @c_idx));
             proof_assert!(lemma_resolvent_of_equisat_extension_is_equisat(@_f, *c, *o, out, @c_idx, @o_idx);true);
+            proof_assert!(equisat_extension_inner(out, @_f));
         }
         None => panic!(),
     }

@@ -110,7 +110,6 @@ impl Clause {
     #[predicate]
     pub fn resolvent_of(self, c: Clause, c2: Clause, k: Int, m: Int) -> bool {
         pearlite! {
-            c.no_duplicate_indexes() && c2.no_duplicate_indexes() && // The lazy way of making proofs pass
             (forall<i: Int> 0 <= i && i < (@c ).len() && i != m ==> (@c   )[i].lit_in(self)) &&
             (forall<i: Int> 0 <= i && i < (@c2).len() && i != k ==> (@c2  )[i].lit_in(self)) &&
             (forall<i: Int> 0 <= i && i < (@self).len()         ==> ((@self)[i].lit_in(c) 

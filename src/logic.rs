@@ -9,6 +9,17 @@ use crate::formula::*;
 
 
 // CDCL STUFF START
+/*
+#[logic]
+#[requires(c.no_duplicate_indexes())]
+#[requires(c2.no_duplicate_indexes())]
+#[requires(c3.resolvent_of_idx(c, c2, idx))]
+#[requires((@c2)[k].is_opp((@c)[m]))]
+#[ensures(c3.resolvent_of(c, c2, k, m))]
+pub fn lemma_gives_res_of_idx(c: Clause, c2: Clause, c3: Clause, idx: Int, k: Int, m: Int) {}
+*/
+
+
 #[trusted] // OK
 #[logic]
 #[requires(forall<i: Int> 0 <= i && i < (@c ).len() ==> (@c )[i].lit_in(c3) ||
