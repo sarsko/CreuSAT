@@ -111,19 +111,19 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
     false
 }
 
-//#[trusted]
-#[requires(_f.invariant())]
-#[requires(equisat_extension_inner(*c, @_f))]
+#[trusted]
 //#[requires(equisat_extension_inner(*o, @_f))]
-#[requires(o.in_formula(*_f))]
-#[requires(c.invariant(@_f.num_vars))]
-#[requires(o.invariant(@_f.num_vars))]
 /*
 #[requires(
     (exists<k: Int, m: Int> 0 <= k && k < (@o).len() && 0 <= m && m < (@c).len() &&
         @(@c)[m].idx === @idx && @(@o)[k].idx === @idx && (@o)[k].is_opp((@c)[m]))
 )]
 */
+#[requires(_f.invariant())]
+#[requires(equisat_extension_inner(*c, @_f))]
+#[requires(o.in_formula(*_f))]
+#[requires(c.invariant(@_f.num_vars))]
+#[requires(o.invariant(@_f.num_vars))]
 #[requires(@c_idx < (@c).len() && @(@c)[@c_idx].idx === @idx &&
     (exists<k: Int> 0 <= k && k < (@o).len() &&
         (@o)[k].is_opp((@c)[@c_idx]))
@@ -211,8 +211,6 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize) -> Cl
         proof_assert!(@new === @@old_new2);
         if idx_in(&new, o.rest[i].idx) {
             proof_assert!(@new === @@old_new2);
-            // TODO proof of idx_in + no_dups + empty intersection ==> lit_in
-            // Only missing assertion
             proof_assert!(@c_idx < (@c).len() && @(@c)[@c_idx].idx === @idx &&
                 (exists<k: Int> 0 <= k && k < (@o).len() && k != @i &&
                     (@o)[k].is_opp((@c)[@c_idx]))
@@ -230,21 +228,10 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize) -> Cl
             proof_assert!(forall<j: Int> 0 <= j && j < (@new).len() ==> (@new)[j].lit_in_internal(@c) || (@new)[j].lit_in_internal(@o));
             proof_assert!(exists<k: Int> 0 <= k && k < (@new).len() && @(@o)[@i].idx === @(@new)[k].idx);
 
-            /*
-            #[requires(0 <= c_idx && c_idx < c.len() && @(c)[c_idx].idx === idx &&
-                (exists<k: Int> 0 <= k && k < o.len() && k != i &&
-                    o[k].is_opp(c[c_idx]))
-            )]
-            #[requires(forall<j: Int, k: Int> 0 <= j && j < o.len() && 0 <= k && k < c.len() &&
-                k != c_idx && @o[j].idx != idx ==> !c[k].is_opp((o)[j]))]
-            #[requires(forall<j: Int> 0 <= j && j < c.len() && @c[j].idx != idx ==> c[j].lit_in_internal(new))]
-            */
             proof_assert!(lemma_idx2(@c, @o, @new, @i, @idx, @c_idx, *_f); 
                 (@o)[@i].lit_in_internal(@new)
         );
 
-//fn lemma_idx2(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_idx: Int, _f: Formula) {
-            //proof_assert!((@o)[@i].lit_in_internal(@new)); // #56
         } else if o.rest[i].idx == idx {
             proof_assert!(@new === @@old_new2);
             proof_assert!(@(@o)[@i].idx === @idx);
@@ -278,25 +265,12 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize) -> Cl
     (exists<k: Int, m: Int> 0 <= k && k < (@o).len() && 0 <= m && m < (@c).len() &&
         @(@c)[m].idx === @idx && @(@o)[k].idx === @idx && (@o)[k].is_opp((@c)[m]))
     );
-    /*
-    proof_assert!(
-            (forall<i: Int> 0 <= i && i < (@c).len() && @(@c)[i].idx != @idx ==> (@c)[i].lit_in_internal(@new))
-    );
-    */
 
     proof_assert!(out.resolvent_of_idx(*c, *o, @idx));
     proof_assert!(out.invariant(@_f.num_vars));
 
     match _o_idx {
         Some(o_idx) => {
-            proof_assert!(@(@o)[@o_idx].idx === @idx);
-            /*
-#[requires(formula_invariant(f))]
-#[requires(equisat_extension_inner(c, f))]
-#[requires(c2.in_formula_inner(f))]
-#[requires(c3.resolvent_of(c, c2, k, m))]
-*/
-
             proof_assert!(forall<j: Int> 0 <= j && j < (@c).len() && j != @c_idx ==> 
             (@c)[j].lit_in(out));
             proof_assert!(forall<j: Int> 0 <= j && j < (@o).len() && j != @o_idx ==> 
