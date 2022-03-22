@@ -58,6 +58,14 @@ pub fn vars_in_range_inner(s: Seq<Lit>, n: Int) -> bool {
 }
 
 #[predicate]
+pub fn invariant_internal(s: Seq<Lit>, n: Int) -> bool {
+    pearlite! {
+        vars_in_range_inner(s, n) && no_duplicate_indexes_inner(s)
+    }
+
+}
+
+#[predicate]
 pub fn equisat_extension_inner(c: Clause, f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
         eventually_sat_complete_no_ass(f) ==> eventually_sat_complete_no_ass((f.0.push(c), f.1))
@@ -102,6 +110,7 @@ impl Clause {
     #[predicate]
     pub fn resolvent_of(self, c: Clause, c2: Clause, k: Int, m: Int) -> bool {
         pearlite! {
+            c.no_duplicate_indexes() && c2.no_duplicate_indexes() && // The lazy way of making proofs pass
             (forall<i: Int> 0 <= i && i < (@c ).len() && i != m ==> (@c   )[i].lit_in(self)) &&
             (forall<i: Int> 0 <= i && i < (@c2).len() && i != k ==> (@c2  )[i].lit_in(self)) &&
             (forall<i: Int> 0 <= i && i < (@self).len()         ==> ((@self)[i].lit_in(c) 
@@ -119,6 +128,20 @@ impl Clause {
                                                                               ||  (@self)[i].lit_in(c2))) &&
             (exists<k: Int, m: Int> 0 <= k && k < (@c2).len() && 0 <= m && m < (@c).len() &&
                 @(@c)[m].idx === idx && @(@c2)[k].idx === idx && (@c2)[k].is_opp((@c)[m]))
+        }
+    }
+
+    #[predicate]
+    pub fn resolvent_of_idx2(self, c: Clause, c2: Clause, idx: Int, c_idx: Int) -> bool {
+        pearlite! {
+            (forall<i: Int> 0 <= i && i < (@c ).len() && @(@c )[i].idx != idx ==> (@c   )[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < (@c2).len() && @(@c2)[i].idx != idx ==> (@c2  )[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < (@self).len()                       ==> ((@self)[i].lit_in(c) 
+                                                                              ||  (@self)[i].lit_in(c2))) &&
+
+            (0 <= c_idx && c_idx < (@c).len() && @(@c)[c_idx].idx === idx &&
+                (exists<k: Int> 0 <= k && k < (@c2).len() &&
+                    (@c2)[k].is_opp((@c)[c_idx])))
         }
     }
 

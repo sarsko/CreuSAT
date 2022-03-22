@@ -72,18 +72,16 @@ pub fn lemma_sub_clause_sat2(c: Clause, c2: Clause, c3: Clause, a: Assignments, 
 #[ensures(@(f2.0)[(f2.0).len()-1] === @c)]
 pub fn lemma_eq_formulas(f: (Seq<Clause>, Int), f2: (Seq<Clause>, Int), c: Clause) {}
 
-#[trusted] // OK
+//#[trusted] // OK
 #[logic]
 #[requires(formula_invariant(f))]
 #[requires(c.in_formula_inner(f))]
 #[requires(c2.in_formula_inner(f))]
 #[requires(c3.resolvent_of(c, c2, k, m))]
-#[requires(formula_sat_inner(f, @a))]
-#[ensures(formula_sat_inner((f.0.push(c3), f.1), @a))]
-pub fn lemma_sat_gives_sat(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
+#[requires(eventually_sat_complete_no_ass(f))]
+#[ensures(eventually_sat_complete_no_ass(((f.0).push(c3), f.1)))]
+pub fn lemma_sat_gives_sat(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, k: Int, m: Int) {
     lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
-    lemma_sub_clause_not_sat(c, c2, c3, a);
-    lemma_sub_clause_sat(c, c2, c3, a, k, m);
 }
 
 #[trusted] // OK
@@ -102,16 +100,32 @@ pub fn lemma_sat_gives_sat2(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Cl
 
 #[trusted] // OK
 #[logic]
+#[requires(formula_invariant(f))]
+#[requires(c.in_formula_inner(f))]
+#[requires(c2.in_formula_inner(f))]
+#[requires(c3.resolvent_of_idx2(c, c2, idx, c_idx))]
+#[requires(formula_sat_inner(f, @a))]
+#[ensures(formula_sat_inner((f.0.push(c3), f.1), @a))]
+pub fn lemma_sat_gives_sat3(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, idx: Int, c_idx: Int, a: Assignments) {
+    lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
+    lemma_sub_clause_not_sat2(c, c2, c3, a);
+    lemma_sub_clause_sat2(c, c2, c3, a, idx);
+}
+
+#[trusted] // OK
+#[logic]
 //#[requires(c.in_formula_inner(f))]
 //#[requires(c2.in_formula_inner(f))]
 //#[requires(c3.resolvent_of(c, c2, k, m))]
 #[requires(formula_invariant(f))]
-#[requires(!formula_sat_inner(f, @a))]
-#[ensures(!formula_sat_inner((f.0.push(c3), f.1), @a))]
-pub fn lemma_not_sat_gives_not_sat(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
+#[requires(!eventually_sat_complete_no_ass(f))]
+#[ensures(!eventually_sat_complete_no_ass(((f.0).push(c3), f.1)))]
+//#[requires(!formula_sat_inner(f, @a))]
+//#[ensures(!formula_sat_inner((f.0.push(c3), f.1), @a))]
+pub fn lemma_not_sat_gives_not_sat(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, k: Int, m: Int) {
     lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
-    lemma_sub_clause_not_sat(c, c2, c3, a);
-    lemma_sub_clause_sat(c, c2, c3, a, k, m);
+    //lemma_sub_clause_not_sat(c, c2, c3, a);
+    //lemma_sub_clause_sat(c, c2, c3, a, k, m);
 }
 
 #[trusted] // OK
@@ -136,10 +150,24 @@ pub fn lemma_not_sat_gives_not_sat2(f: (Seq<Clause>, Int), c: Clause, c2: Clause
 #[requires(c3.resolvent_of(c, c2, k, m))]
 //#[ensures(equisat_compatible_inner(f, (f.0.push(c3), f.1)))]
 #[ensures(equisat_extension_inner(c3, f))] 
-pub fn lemma_extended_formula_is_equisat_compatible(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
+pub fn lemma_extended_formula_is_equisat_compatible(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, k: Int, m: Int) {
     lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
-    lemma_not_sat_gives_not_sat(f, c, c2, c3, k, m, a);
-    lemma_sat_gives_sat(f, c, c2, c3, k, m, a);
+    lemma_not_sat_gives_not_sat(f, c, c2, c3, k, m);
+    lemma_sat_gives_sat(f, c, c2, c3, k, m);
+}
+
+#[trusted] // OK
+#[logic]
+#[requires(formula_invariant(f))]
+#[requires(c.in_formula_inner(f))]
+#[requires(c2.in_formula_inner(f))]
+#[requires(c3.resolvent_of_idx2(c, c2, idx, c_idx))]
+//#[ensures(equisat_compatible_inner(f, (f.0.push(c3), f.1)))]
+#[ensures(equisat_extension_inner(c3, f))] 
+pub fn lemma_extended_formula_is_equisat_compatible_new(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, idx: Int, c_idx: Int, a: Assignments) {
+    lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
+    lemma_not_sat_gives_not_sat2(f, c, c2, c3, idx, a);
+    lemma_sat_gives_sat2(f, c, c2, c3, idx, a);
 }
 
 #[trusted] // OK
@@ -169,11 +197,75 @@ pub fn lemma_extended_formula_is_equisat_compatible2(f: (Seq<Clause>, Int), c: C
 //#[ensures(equisat_compatible_inner(f, (f.0.push(c5), f.1)))]
 pub fn lemma_extended_formula_is_equisat_compatible2_unused(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, c4: Clause, c5: Clause, k: Int, m: Int, kk: Int, mm: Int, a: Assignments) {
     lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
+    lemma_not_sat_gives_not_sat(f, c, c2, c3, k, m);
+    lemma_sat_gives_sat(f, c, c2, c3, k, m);
+    lemma_extended_formula_is_equisat_compatible(f, c, c2, c3, k, m);
+}
+
+#[trusted]
+#[logic]
+#[requires(formula_invariant(f))]
+#[requires(c.in_formula_inner(f))]
+#[requires(equisat_extension_inner(c2, f))]
+#[requires(c3.resolvent_of_idx2(c, c2, idx, c_idx))]
+#[ensures(equisat_extension_inner(c3, f))]
+//#[ensures(equisat_compatible_inner(f, (f.0.push(c3), f.1)))]
+pub fn lemma_resolvent_of_equisat_extension_is_equisat_new(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, idx: Int, c_idx: Int, a: Assignments) {
+    lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
+    lemma_not_sat_gives_not_sat2(f, c, c2, c3, idx, a);
+    lemma_sat_gives_sat3(f, c, c2, c3, idx, c_idx, a);
+    lemma_extended_formula_is_equisat_compatible_new(f, c, c2, c3, idx, c_idx, a);
+}
+
+//#[trusted] // OK
+#[logic]
+#[requires(formula_invariant(f))]
+#[requires(equisat_extension_inner(c, f))]
+#[requires(c2.in_formula_inner(f))]
+#[requires(c3.resolvent_of(c, c2, k, m))]
+#[ensures(equisat_extension_inner(c3, f))]
+//#[ensures(equisat_compatible_inner(f, (f.0.push(c3), f.1)))]
+pub fn lemma_resolvent_of_equisat_extension_is_equisat(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, k: Int, m: Int) {
+    lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
+    lemma_not_sat_gives_not_sat(f, c, c2, c3, k, m);
+    lemma_sat_gives_sat(f, c, c2, c3, k, m);
+    lemma_extended_formula_is_equisat_compatible(f, c, c2, c3, k, m);
+}
+
+/*
+#[logic]
+#[requires(formula_invariant(f))]
+#[requires(equisat_extension_inner(c, f))]
+#[requires(equisat_extension_inner(c2, f))]
+#[requires(c3.resolvent_of(c, c2, k, m))]
+#[ensures(equisat_extension_inner(c3, f))]
+//#[ensures(equisat_compatible_inner(f, (f.0.push(c3), f.1)))]
+pub fn lemma_resolvent_of_equisat_extension_is_equisat2(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
+    lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
     lemma_not_sat_gives_not_sat(f, c, c2, c3, k, m, a);
     lemma_sat_gives_sat(f, c, c2, c3, k, m, a);
     lemma_extended_formula_is_equisat_compatible(f, c, c2, c3, k, m, a);
+    lemma_resolvent_of_equisat_extension_is_equisat(f, c, c2, c3, k, m, a);
 }
+*/
 
+/*
+#[logic]
+#[requires(formula_invariant(f))]
+#[requires(c.in_formula_inner(f))]
+#[requires(equisat_extension_inner(c2, f))]
+//#[requires(c3.resolvent_of(c, c2, k, m))]
+#[requires(c3.resolvent_of_idx(c, c2, idx))]
+#[ensures(equisat_extension_inner(c3, f))]
+//#[ensures(equisat_compatible_inner(f, (f.0.push(c3), f.1)))]
+pub fn lemma_resolvent_of_equisat_extension_is_equisat4(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, idx: Int, c_index: Int, a: Assignments) {
+    lemma_res_idx_to_km(c, c2, c3, idx, a);
+    //lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
+    //lemma_not_sat_gives_not_sat(f, c, c2, c3, k, m, a);
+    //lemma_sat_gives_sat(f, c, c2, c3, k, m, a);
+    //lemma_extended_formula_is_equisat_compatible(f, c, c2, c3, k, m, a);
+}
+*/
 
 /*
 //#[trusted] // OK
@@ -191,14 +283,6 @@ pub fn lemma_resolvent_of_equisat_extension_is_equisat_new(f: (Seq<Clause>, Int)
     lemma_sat_gives_sat(f, c, c2, c3, k, m, a);
     lemma_extended_formula_is_equisat_compatible2(f, c, c2, c3, idx, a);
 }
-*/
-
-/*
-#[requires(c.invariant((@a).len()))]
-#[requires(c2.invariant((@a).len()))]
-#[requires(c3.resolvent_of_idx(c, c2, idx))]
-#[ensures(exists<k: Int, m: Int> c3.resolvent_of(c, c2, k, m))]
-pub fn lemma_res_idx_to_km(c: Clause, c2: Clause, c3: Clause, idx: Int, a: Assignments) {}
 */
 
 /*
@@ -226,10 +310,11 @@ pub fn lemma_resolvent_of_equisat_extension_is_equisat2(f: (Seq<Clause>, Int), c
 #[requires(c3.resolvent_of(c, c2, k, m))]
 #[ensures(equisat_extension_inner(c, f))] 
 pub fn lemma_resolvent_of_in_is_equisat(f: (Seq<Clause>, Int),  c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
-    lemma_extended_formula_is_equisat_compatible(f,  c, c2, c3, k, m, a);
+    lemma_extended_formula_is_equisat_compatible(f,  c, c2, c3, k, m);
 }
 
 
+#[trusted] // OK
 #[logic]
 #[requires(formula_invariant(f))]
 #[requires(c.in_formula_inner(f))]
