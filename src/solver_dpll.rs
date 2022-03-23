@@ -91,7 +91,7 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
 //#[ensures((a).complete() ==> *a === (^a) && ((result === ClauseState::Unsat) || f.sat(*self)))]
 #[ensures(match result {
     Ok(()) => !(^f).unsat(^a),
-    Err(n) => @n < (@f.clauses).len() && (^f).unsat(^a),
+    Err(n) => @n < (@f.clauses).len() && (^f).unsat(^a) && (@(^f).clauses)[@n].unsat(*a),
 })]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((^f).invariant())]

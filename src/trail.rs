@@ -98,6 +98,15 @@ impl Trail {
     }
 
 
+    // TODO
+    #[predicate]
+    pub fn trail_sem_invariant(self, a: Assignments) -> bool {
+        pearlite! {
+            true
+        }
+    }
+
+
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {

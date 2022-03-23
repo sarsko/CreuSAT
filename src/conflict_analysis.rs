@@ -111,7 +111,7 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
     false
 }
 
-//#[trusted] // OK
+#[trusted] // OK
 //#[requires(equisat_extension_inner(*o, @_f))]
 /*
 #[requires(
@@ -386,6 +386,22 @@ pub fn analyze_conflict_new(f: &Formula, a: &Assignments, trail: &Trail, cref: u
             o => return Conflict::Panic, // TODO
             //o => panic!(),
         };
+        // This property has to be ensured by a combination of the trail invariant and a proof
+        // with a bunch of lemmas that if this was not the case, then the previous clause would never have become unit
+        // or this clause would never have become a conflict clause(they would become sat before that)
+        proof_assert!(clause.same_idx_same_polarity_except(ante, @lit.idx));
+        //proof_assert!(exists<k: Int> 0 <= k && k < (@ante).len() && @(@ante)[k].idx === @lit.idx); // Not needed strictly speaking
+
+        // Similarily we have to do a proof over the trail to show that there exists a conflicting literal
+        proof_assert!(exists<k: Int> 0 <= k && k < (@ante).len() && (@ante)[k].is_opp((@clause)[@c_idx]));
+
+        // Have to do the whole proof of conflict analysis.
+        // Add precond that cref is a conflict clause and have to do proof that choose_lit
+        // returns the conflicting literal. Then add the lemma that the clauses have no other opp lits
+        // The good part is that we will get the backtracking level more or less for free
+
+
+        
         clause = resolve(f, &clause, &ante, lit.idx, c_idx);
         let mut k: usize = 0;
         let mut cnt: usize = 0;

@@ -8,6 +8,25 @@ use crate::assignments::*;
 use crate::formula::*;
 
 
+// CDCL 2 STUFF START (WIP)
+#[logic]
+//#[requires(c.post_unit_inner(a))]
+#[requires(c.invariant(a.len()))]
+#[requires(c2.invariant(a.len()))]
+#[requires(
+    forall<j: Int> 0 <= j && j < (@c).len() &&
+    j != idx ==> (@c)[j].unsat_inner(a)
+)]
+#[requires(0 <= idx && idx < (@c).len() && (@c)[idx].sat_inner(a))]
+#[requires(c2.unsat_inner(a))]
+//#[ensures(c.same_idx_same_polarity_except(c2, @(@c)[idx].idx))]
+#[ensures(c2.same_idx_same_polarity_except(c, @(@c)[idx].idx))]
+//#[ensures(c.post_unit_inner(a))]
+//#[ensures(c.sat_inner(a))]
+pub fn lemma_same_pol(f: (Seq<Clause>, Int), c: Clause, c2: Clause, a: Seq<AssignedState>, idx: Int) {}
+
+
+
 // CDCL STUFF START
 #[trusted] // OK
 #[logic]

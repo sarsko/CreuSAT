@@ -73,6 +73,70 @@ pub fn equisat_extension_inner(c: Clause, f: (Seq<Clause>, Int)) -> bool {
     }
 }
 
+#[logic]
+#[requires(c.unit_inner(a))]
+#[ensures(c.unit_inner2(a))]
+fn lemma_unit_eq(c: Clause, a: Seq<AssignedState>) {}
+
+#[logic]
+#[requires(c.unit_inner2(a))]
+#[requires(c.vars_in_range(a.len()))]
+#[ensures(c.unit_inner(a))]
+fn lemma_unit_eq2(c: Clause, a: Seq<AssignedState>) {}
+
+// The states for doing cdcl stuff
+impl Clause {
+    #[predicate]
+    pub fn unit_inner2(self, a: Seq<AssignedState>) -> bool {
+        pearlite! {
+            exists<i: Int> 0 <= i && i < (@self).len() && 
+                (@self)[i].unset_inner(a) && forall<j: Int> 0 <= j && j < (@self).len() &&
+                j != i ==> (@self)[j].unsat_inner(a)
+            /*
+            self.vars_in_range(a.len()) &&
+                !self.sat_inner(a) && 
+                    exists<i: Int> 0 <= i && i < (@self).len() &&
+                        (@self)[i].unset_inner(a) && 
+                            (forall<j: Int> 0 <= j && j < (@self).len() && j != i ==>
+                                !(@self)[j].unset_inner(a))
+                                */
+        }
+    }
+    #[predicate]
+    pub fn unit2(self, a: Assignments) -> bool {
+        pearlite! {
+            self.unit_inner2(@a)
+        }
+    }
+
+    #[predicate]
+    pub fn post_unit_inner(self, a: Seq<AssignedState>) -> bool {
+        pearlite! {
+            exists<i: Int> 0 <= i && i < (@self).len() && 
+                (@self)[i].sat_inner(a) && forall<j: Int> 0 <= j && j < (@self).len() &&
+                j != i ==> (@self)[j].unsat_inner(a)
+        }
+    }
+    #[predicate]
+    pub fn post_unit(self, a: Assignments) -> bool {
+        pearlite! {
+            self.post_unit_inner(@a)
+        }
+    }
+
+    /*
+    #[predicate]
+    pub fn no_opps(self, o: Clause) -> bool {
+        pearlite! {
+            forall<j: Int, k: Int> 0 <= j && j < (@o).len() && 0 <= k && k < (@self).len() ==> 
+                !(@c)[k].is_opp((@o)[j])
+        }
+
+    }
+    */
+
+}
+
 impl Clause {
     #[predicate]
     pub fn equisat_extension(self, f: Formula) -> bool {
@@ -108,7 +172,7 @@ impl Clause {
                 */
             forall<i: Int, j: Int> 0 <= i && i < (@self).len() && 0 <= j && j < (@other).len() ==> 
                 (@(@self)[i].idx != exception &&
-                @(@self)[i].idx === @(@other)[j].idx)==>
+                @(@self)[i].idx === @(@other)[j].idx) ==>
                 (@self)[i].polarity === (@other)[j].polarity
         }
     }
