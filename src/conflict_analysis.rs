@@ -57,6 +57,7 @@ fn move_to_end(v: &mut Vec<Lit>, to_be_removed: usize,  _f: &Formula) {
     //v.pop();
 }
 */
+#[trusted] // OK
 #[logic]
 //#[requires(@v[i].idx === idx)]
 #[requires(0 <= c_idx && c_idx < c.len() && @(c)[c_idx].idx === idx &&
@@ -76,6 +77,7 @@ fn move_to_end(v: &mut Vec<Lit>, to_be_removed: usize,  _f: &Formula) {
 //#[ensures(((o)[i].lit_in_internal(new)))]
 fn lemma_idx(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_idx: Int, _f: Formula) {}
 
+#[trusted] // OK
 #[logic]
 //#[requires(@v[i].idx === idx)]
 #[requires(0 <= c_idx && c_idx < c.len() && @(c)[c_idx].idx === idx &&
@@ -111,6 +113,12 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
     false
 }
 
+
+// Assignments has to be passed in as we either have to have access to it
+// in resolve, or we have to have access to the second resolve index outside of
+// resolve. Can be lifted if watches and literal reordering gets implemented
+// as we then have access to both resolve indexes everywhere.
+
 #[trusted] // OK
 //#[requires(equisat_extension_inner(*o, @_f))]
 /*
@@ -134,7 +142,19 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
 #[requires(@idx < @_f.num_vars)]
 #[ensures(result.invariant(@_f.num_vars))]
 #[ensures(equisat_extension_inner(result, @_f))]
-fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize) -> Clause {
+
+// resolved_post
+#[requires(o.post_unit_inner(@_a))]
+#[requires(c.invariant((@_a).len()))]
+#[requires(o.invariant((@_a).len()))]
+//#[requires((@c)[c_idx].sat_inner(@_a))]
+#[requires(c.unsat_inner(@_a))]
+//#[requires(0 <= c_idx && c_idx < (@c).len())]
+//#[requires(0 <= c2_idx && c2_idx < (@c2).len())]
+//#[requires(c3.resolvent_of(c, c2, c2_idx, c_idx))]
+#[ensures(result.unsat_inner(@_a))]
+
+fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &Assignments) -> Clause {
     let mut new: Vec<Lit> = Vec::new();
     let mut i: usize = 0;
     #[invariant(i_less, @i <= (@c.rest).len())]
@@ -281,6 +301,7 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize) -> Cl
             proof_assert!(out.resolvent_of(*c, *o, @o_idx, @c_idx));
             proof_assert!(lemma_resolvent_of_equisat_extension_is_equisat(@_f, *c, *o, out, @c_idx, @o_idx);true);
             proof_assert!(equisat_extension_inner(out, @_f));
+            //proof_assert!(lemma_resolved_post_and_unsat_is_unsat(*o, *c, out, @a, @o_idx, @c_idx); true);
         }
         None => panic!(),
     }
@@ -348,11 +369,14 @@ return back_dl
 // a return then add
 //#[trusted]
 
+#[requires(trail.trail_sem_invariant(*f, *a))]
+
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(trail.invariant(*f))]
 #[requires((@trail.trail).len() > 0)]
 #[requires(@cref < (@f.clauses).len())]
+#[requires((@f.clauses)[@cref].unsat(*a))]
 #[ensures(match result {
     //Conflict::Ground => f.unsat(*a), // Either have to do proof on this seperately or reforumlate
     Conflict::Unit(lit) => {true}, // know lit can be learned
@@ -377,32 +401,34 @@ pub fn analyze_conflict_new(f: &Formula, a: &Assignments, trail: &Trail, cref: u
     let mut clause = f.clauses[cref].clone();
     #[invariant(clause_ok, clause.invariant(@f.num_vars))]
     #[invariant(clause_equi, equisat_extension_inner(clause, @f))]
+    #[invariant(clause_unsat, clause.unsat(*a))]
     loop {
     //i = trail.trail.len() - 1;
     //j = trail.trail[i].len();
         let (lit, c_idx) = choose_literal(&clause, trail, &mut i, &mut j);
         let ante = match &trail.vardata[lit.idx].1 {
             Long(c) => f.clauses[*c].clone(),
-            o => return Conflict::Panic, // TODO
+            o => return Conflict::Panic, // TODO // This never happens, but is an entirely new proof
             //o => panic!(),
         };
-        // This property has to be ensured by a combination of the trail invariant and a proof
-        // with a bunch of lemmas that if this was not the case, then the previous clause would never have become unit
-        // or this clause would never have become a conflict clause(they would become sat before that)
-        proof_assert!(clause.same_idx_same_polarity_except(ante, @lit.idx));
-        //proof_assert!(exists<k: Int> 0 <= k && k < (@ante).len() && @(@ante)[k].idx === @lit.idx); // Not needed strictly speaking
+        //proof_assert!(exists<j: Int> 0 <= j && j < (@clause).len() && (@clause)[j].idx === lit.idx);
+        //proof_assert!(exists<j: Int> 0 <= j && j < (@ante).len() && (@ante)[j].idx === lit.idx);
+        proof_assert!(ante.post_unit(*a)); // Ensured by trail.vardata
 
-        // Similarily we have to do a proof over the trail to show that there exists a conflicting literal
+        proof_assert!(exists<i: Int>
+            0 <= i && i < (@ante).len() && @(@ante)[i].idx === @lit.idx && (@ante)[i].sat(*a)); // Also vardata
+        proof_assert!(clause.unsat(*a)); // OK
+        proof_assert!(lemma_same_pol(ante, clause, @a, @lit.idx);true);
+
+        proof_assert!(clause.same_idx_same_polarity_except(ante, @lit.idx));
         proof_assert!(exists<k: Int> 0 <= k && k < (@ante).len() && (@ante)[k].is_opp((@clause)[@c_idx]));
 
         // Have to do the whole proof of conflict analysis.
         // Add precond that cref is a conflict clause and have to do proof that choose_lit
         // returns the conflicting literal. Then add the lemma that the clauses have no other opp lits
         // The good part is that we will get the backtracking level more or less for free
-
-
         
-        clause = resolve(f, &clause, &ante, lit.idx, c_idx);
+        clause = resolve(f, &clause, &ante, lit.idx, c_idx, a);
         let mut k: usize = 0;
         let mut cnt: usize = 0;
         #[invariant(k_bound, @k <= (@clause.rest).len())]

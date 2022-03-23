@@ -97,12 +97,25 @@ impl Trail {
         }
     }
 
+    #[predicate]
+    pub fn long_are_post_unit(self, f: Formula, a: Assignments) -> bool {
+        pearlite! {
+            forall<j: Int> 0 <= j && j < (@self.vardata).len() ==> match
+            (@self.vardata)[j].1 { 
+                Reason::Long(k) => {(@f.clauses)[@k].post_unit(a) &&
+                exists<i: Int> 0 <= i && i < (@(@f.clauses)[@k]).len() &&
+                    @(@(@f.clauses)[@k])[i].idx === j &&
+                    (@(@f.clauses)[@k])[i].sat(a) },
+                _ => true,
+            }
+        }
+    }
 
     // TODO
     #[predicate]
-    pub fn trail_sem_invariant(self, a: Assignments) -> bool {
+    pub fn trail_sem_invariant(self, f: Formula, a: Assignments) -> bool {
         pearlite! {
-            true
+            self.long_are_post_unit(f, a)
         }
     }
 

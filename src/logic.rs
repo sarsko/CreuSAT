@@ -10,21 +10,40 @@ use crate::formula::*;
 
 // CDCL 2 STUFF START (WIP)
 #[logic]
-//#[requires(c.post_unit_inner(a))]
+#[requires(c.post_unit_inner(a))]
 #[requires(c.invariant(a.len()))]
 #[requires(c2.invariant(a.len()))]
+/*
 #[requires(
     forall<j: Int> 0 <= j && j < (@c).len() &&
     j != idx ==> (@c)[j].unsat_inner(a)
 )]
-#[requires(0 <= idx && idx < (@c).len() && (@c)[idx].sat_inner(a))]
+*/
+//#[requires(0 <= idx && idx < (@c).len() && (@c)[idx].sat_inner(a))]
+#[requires(exists<i: Int>
+    0 <= i && i < (@c).len() && @(@c)[i].idx === idx && (@c)[i].sat_inner(a))]
 #[requires(c2.unsat_inner(a))]
 //#[ensures(c.same_idx_same_polarity_except(c2, @(@c)[idx].idx))]
-#[ensures(c2.same_idx_same_polarity_except(c, @(@c)[idx].idx))]
+#[ensures(c2.same_idx_same_polarity_except(c, idx))]
 //#[ensures(c.post_unit_inner(a))]
 //#[ensures(c.sat_inner(a))]
-pub fn lemma_same_pol(f: (Seq<Clause>, Int), c: Clause, c2: Clause, a: Seq<AssignedState>, idx: Int) {}
+pub fn lemma_same_pol(c: Clause, c2: Clause, a: Seq<AssignedState>, idx: Int) {}
 
+
+// Currently working on proof of resolvent being unsat
+#[logic]
+#[requires(c.post_unit_inner(a))]
+#[requires(c.invariant(a.len()))]
+#[requires(c2.invariant(a.len()))]
+#[requires((@c)[c_idx].sat_inner(a))]
+#[requires(c2.unsat_inner(a))]
+#[requires(0 <= c_idx && c_idx < (@c).len())]
+#[requires(0 <= c2_idx && c2_idx < (@c2).len())]
+#[requires(c3.resolvent_of(c, c2, c2_idx, c_idx))]
+#[ensures(c3.unsat_inner(a))]
+pub fn lemma_resolved_post_and_unsat_is_unsat(c: Clause, c2: Clause, c3: Clause, a: Seq<AssignedState>, c_idx: Int, c2_idx: Int) {
+    //lemma_same_pol(c, c2, a, (@c)[idx);
+}
 
 
 // CDCL STUFF START

@@ -117,6 +117,7 @@ impl Clause {
                 j != i ==> (@self)[j].unsat_inner(a)
         }
     }
+
     #[predicate]
     pub fn post_unit(self, a: Assignments) -> bool {
         pearlite! {
@@ -185,6 +186,7 @@ impl Clause {
             (forall<i: Int> 0 <= i && i < (@c2).len() && i != k ==> (@c2  )[i].lit_in(self)) &&
             (forall<i: Int> 0 <= i && i < (@self).len()         ==> ((@self)[i].lit_in(c) 
                                                                 ||  (@self)[i].lit_in(c2))) &&
+            !(@c)[m].lit_in(self) && !(@c2)[k].lit_in(self) && // Added
             (@c2)[k].is_opp((@c)[m])                 
         }
     }
