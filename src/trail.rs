@@ -130,7 +130,7 @@ impl Trail {
 }
 
 impl Trail {
-    #[trusted] // OK
+    //#[trusted] // OK
     #[requires(self.invariant(*_f))]
     #[requires(0 <= @lit.idx && @lit.idx < @_f.num_vars)]
     #[requires((@self.trail).len() > 0)]

@@ -309,13 +309,15 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
     out
 }
 
+// Might end up doing this as an option. Time loss is really minimal, and it makes me not have to do
+// a somewhat cumbersome proof.
 // todo on result.1
 #[trusted] // tmp
 #[ensures(@result.0.idx < (@trail.vardata).len())]
 //#[ensures(result.0.lit_in(*c))]
 #[ensures(@result.1 < (@c).len())]
 #[ensures(@(@c)[@result.1].idx === @result.0.idx)]
-#[ensures((@c)[@result.1].is_opp(result.0))]
+#[ensures((@c)[@result.1].is_opp(result.0))] // This will need a longer proof
 // Super bad / simple
 
 fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, j: &mut usize) -> (Lit, usize) {
@@ -367,7 +369,7 @@ return back_dl
 // Probs better to use as a base
 // Might also be good to do the proof of the extension being OK inside this rather than do
 // a return then add
-//#[trusted]
+#[trusted] // OK 
 
 #[requires(trail.trail_sem_invariant(*f, *a))]
 
@@ -440,6 +442,7 @@ pub fn analyze_conflict_new(f: &Formula, a: &Assignments, trail: &Trail, cref: u
             k += 1;
         }
         if cnt == 1 {
+            //println!();
             break;
         }
     }

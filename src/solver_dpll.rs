@@ -180,6 +180,8 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
 #[requires(t.invariant(*f))]
 #[requires((@t.trail).len() > 0)]
 #[requires(@cref < (@f.clauses).len())]
+#[requires((@f.clauses)[@cref].unsat(*a))] // added
+#[requires(t.trail_sem_invariant(*f, *a))] // added
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((^f).invariant())]
 //#[ensures(^f === *f)]
