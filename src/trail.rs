@@ -103,10 +103,10 @@ impl Trail {
             forall<j: Int> 0 <= j && j < (@self.vardata).len() ==> match
             (@self.vardata)[j].1 { 
                 Reason::Long(k) => {(@f.clauses)[@k].post_unit(a) &&
-                exists<i: Int> 0 <= i && i < (@(@f.clauses)[@k]).len() &&
-                    @(@(@f.clauses)[@k])[i].idx === j &&
-                    (@(@f.clauses)[@k])[i].sat(a) },
-                _ => true,
+                    exists<i: Int> 0 <= i && i < (@(@f.clauses)[@k]).len() &&
+                        @(@(@f.clauses)[@k])[i].idx === j &&
+                        (@(@f.clauses)[@k])[i].sat(a) },
+                    _ => true,
             }
         }
     }
@@ -119,7 +119,6 @@ impl Trail {
         }
     }
 
-
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
@@ -130,7 +129,9 @@ impl Trail {
 }
 
 impl Trail {
-    //#[trusted] // OK
+    #[trusted] // OK (tmp check back)
+    #[requires(self.trail_sem_invariant(*_f, *_a))]
+    #[ensures((^self).trail_sem_invariant(*_f, *_a))]
     #[requires(self.invariant(*_f))]
     #[requires(0 <= @lit.idx && @lit.idx < @_f.num_vars)]
     #[requires((@self.trail).len() > 0)]
@@ -138,19 +139,24 @@ impl Trail {
         Reason::Undefined => true,
         Reason::Decision => true,
         Reason::Unit => true,
-        Reason::Long(k) => 0 <= @k && @k < (@_f.clauses).len()
+        Reason::Long(k) => 0 <= @k && @k < (@_f.clauses).len() &&
+        (@_f.clauses)[@k].post_unit(*_a) &&
+            exists<i: Int> 0 <= i && i < (@(@_f.clauses)[@k]).len() &&
+                (@(@_f.clauses)[@k])[i].polarity === lit.polarity &&
+                @(@(@_f.clauses)[@k])[i].idx === @lit.idx &&
+                (@(@_f.clauses)[@k])[i].sat(*_a)  
     })]
     #[ensures((^self).invariant(*_f))]
     #[ensures((@(^self).trail).len() === (@self.trail).len())]
     #[ensures((@(^self).vardata).len() === (@self.vardata).len())]
-    #[ensures((@(@((^self).trail))[(@(self).trail).len()-1]) === (@(@(self.trail))[(@(self).trail).len()-1]).push(lit))]
+    #[ensures((@(@(^self).trail)[(@self.trail).len()-1]) === (@(@self.trail)[(@self.trail).len()-1]).push(lit))]
     #[ensures(forall<i: Int> 0 <= i && i < (@self.trail).len() - 1 ==>
         (@self.trail)[i] === (@(^self).trail)[i])]
     #[ensures(forall<i: Int> 0 <= i && i < (@self.vardata).len() && i != @lit.idx ==>
         (@self.vardata)[i] === (@(^self).vardata)[i])]
-    #[ensures(@((@((^self).vardata))[@lit.idx]).0 === (@self.trail).len()-1)]
-    #[ensures(((@((^self).vardata))[@lit.idx]).1 === reason)]
-    pub fn enq_assignment(&mut self, lit: Lit, reason: Reason, _f: &Formula) {
+    #[ensures(@(@(^self).vardata)[@lit.idx].0 === (@self.trail).len()-1)]
+    #[ensures((@(^self).vardata)[@lit.idx].1 === reason)]
+    pub fn enq_assignment(&mut self, lit: Lit, reason: Reason, _f: &Formula, _a: &Assignments) {
         let dlevel = self.trail.len() - 1;
         self.trail[dlevel].push(lit);
         self.vardata[lit.idx] = (dlevel, reason);
@@ -183,7 +189,7 @@ impl Trail {
     #[trusted] // OK
     #[requires(self.invariant(*_f))]
     #[ensures((^self).invariant(*_f))]
-    #[ensures((@self.vardata) === (@(^self).vardata))]
+    #[ensures(@self.vardata === @(^self).vardata)]
     #[ensures(forall<i: Int> 0 <= i && i < (@self.trail).len() ==>
         (@self.trail)[i] === (@(^self).trail)[i])]
     #[ensures((@(^self).trail).len() === (@self.trail).len() + 1)]

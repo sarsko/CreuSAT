@@ -54,6 +54,8 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 #[requires(a.invariant(*f))]
 #[requires(trail.invariant(*f))]
 #[requires((@trail.trail).len() > 0)]
+#[requires(trail.trail_sem_invariant(*f, *a))]
+#[ensures((^trail).trail_sem_invariant(*f, ^a))]
 #[ensures((@(^trail).trail).len() === 1)]
 //#[ensures(^f === *f)]
 //#[ensures(f.eventually_sat(*a) === (^f).eventually_sat(*a))]
@@ -65,7 +67,7 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
     a.cancel_until(trail, 1, f);
     //a.cancel_long(trail);
     a.set_assignment(lit, f);
-    trail.enq_assignment(lit, Reason::Unit, f);
+    trail.enq_assignment(lit, Reason::Unit, f, a);
 }
 
 #[trusted]
@@ -154,11 +156,11 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
             // If we have gotten here, the clause is either all false or unit
             if a.0[first_lit.idx] >= 2 {
                 a.set_assignment(first_lit, f);
-                trail.enq_assignment(first_lit, Reason::Long(cref), f);
+                trail.enq_assignment(first_lit, Reason::Long(cref), f, a);
             } else if a.0[second_lit.idx] >= 2 {
                 f.clauses[cref].rest.swap(0,1);
                 a.set_assignment(second_lit, f);
-                trail.enq_assignment(second_lit, Reason::Long(cref), f);
+                trail.enq_assignment(second_lit, Reason::Long(cref), f, a);
             } else {
                 return Err(cref);
             }
@@ -170,6 +172,7 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
 }
 
 
+//#[trusted] // OK(except for panic)
 //#[trusted] // TODO
 #[ensures(match result {
     true  => { true },// !(^f).unsat(^a)}, // we dont know this
@@ -182,6 +185,7 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
 #[requires(@cref < (@f.clauses).len())]
 #[requires((@f.clauses)[@cref].unsat(*a))] // added
 #[requires(t.trail_sem_invariant(*f, *a))] // added
+#[ensures((^t).trail_sem_invariant(^f, ^a))] // added
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((^f).invariant())]
 //#[ensures(^f === *f)]
@@ -219,6 +223,7 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
     true
 }
 
+//#[trusted] // TMP, lacks trail
 #[ensures(match result {
     Some(true)  => {!(^f).unsat(^a)}, // Prop went ok
     Some(false) => { (^f).unsat(^a)},
@@ -229,6 +234,8 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
 #[requires(d.invariant(@f.num_vars))]
 #[requires(t.invariant(*f))]
 #[requires((@t.trail).len() > 0)]
+#[requires(t.trail_sem_invariant(*f, *a))]
+#[ensures((^t).trail_sem_invariant(^f, ^a))]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((^f).invariant())]
 //#[ensures(^f === *f)]
@@ -254,12 +261,15 @@ fn unit_prop_step(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
 }
 
 
+//#[trusted] // OK (until trail)
 #[ensures(!result ==> (^f).unsat(^a))]
 #[ensures(result ==> !(^f).unsat(^a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(d.invariant(@f.num_vars))]
 #[requires(t.invariant(*f))]
+#[requires(t.trail_sem_invariant(*f, *a))]
+#[ensures((^t).trail_sem_invariant(^f, ^a))]
 #[requires((@t.trail).len() > 0)]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((^f).invariant())]
@@ -279,6 +289,7 @@ fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
     #[invariant(maintains_f, f.invariant())]
     #[invariant(maintains_a, a.invariant(*f))]
     #[invariant(maintains_t, t.invariant(*f))]
+    #[invariant(maintains_t2, t.trail_sem_invariant(*f, *a))]
     #[invariant(vardata_unchanged, (@t.vardata).len() === (@(@old_t).vardata).len())]
     #[invariant(num_vars, @f.num_vars === @(@old_f).num_vars)]
     //#[invariant(clauses, (@f.clauses).len() > 0)]
@@ -303,6 +314,8 @@ fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
 #[requires(d.invariant(@f.num_vars))]
 #[requires(t.invariant(*f))]
 #[requires((@t.trail).len() > 0)]
+#[requires(t.trail_sem_invariant(*f, *a))]
+#[requires((^t).trail_sem_invariant(^f, ^a))]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((^f).invariant())]
 //#[ensures(^f === *f)]
@@ -330,7 +343,7 @@ fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail
             t.add_level(f);
             a.0[next] = 1; 
             let lit = Lit{ idx: next, polarity: true };
-            t.enq_assignment(lit, Reason::Decision, f);
+            t.enq_assignment(lit, Reason::Decision, f, a);
         },
         None => { 
             // This is gonna get broken if one changes the definition of unsat
@@ -343,6 +356,7 @@ fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail
     None
 }
 
+#[trusted] // tmp (mostly ok)
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(d.invariant(@f.num_vars))]
@@ -405,7 +419,7 @@ pub fn solver(f: &mut Formula, units: &std::vec::Vec<Lit>) -> bool {
     watches.init_watches(f);
     let decisions = Decisions::new(f);
     while i < units.len() {
-        trail.enq_assignment(units[i], Reason::Unit, f);
+        trail.enq_assignment(units[i], Reason::Unit, f, &assignments);
         let lit = units[i];
         learn_unit(&mut assignments, &mut trail, lit, f);
         i += 1;

@@ -9,6 +9,8 @@ use crate::formula::*;
 
 
 // CDCL 2 STUFF START (WIP)
+
+#[trusted]//trusted
 #[logic]
 #[requires(c.post_unit_inner(a))]
 #[requires(c.invariant(a.len()))]
@@ -31,6 +33,7 @@ pub fn lemma_same_pol(c: Clause, c2: Clause, a: Seq<AssignedState>, idx: Int) {}
 
 
 // Currently working on proof of resolvent being unsat
+#[trusted]//trusted
 #[logic]
 #[requires(c.post_unit_inner(a))]
 #[requires(c.invariant(a.len()))]

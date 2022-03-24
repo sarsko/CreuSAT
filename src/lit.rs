@@ -166,7 +166,7 @@ impl Lit {
 }
 
 impl PartialEq for Lit {
-    //#[trusted] // OK
+    #[trusted] // OK
     #[ensures(result === (*self === *other))]
     fn eq(&self, other: &Lit) -> bool {
         self.idx == other.idx && self.polarity == other.polarity

@@ -73,11 +73,13 @@ pub fn equisat_extension_inner(c: Clause, f: (Seq<Clause>, Int)) -> bool {
     }
 }
 
+#[trusted] // OK
 #[logic]
 #[requires(c.unit_inner(a))]
 #[ensures(c.unit_inner2(a))]
 fn lemma_unit_eq(c: Clause, a: Seq<AssignedState>) {}
 
+#[trusted] // OK
 #[logic]
 #[requires(c.unit_inner2(a))]
 #[requires(c.vars_in_range(a.len()))]

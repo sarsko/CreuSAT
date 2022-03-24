@@ -234,7 +234,7 @@ impl Assignments {
                     self.0[lit.idx] = 0;    
                 }
                 //t.enq_assignment(lit, Reason::Unit, f);
-                t.enq_assignment(lit, Reason::Long(i), f);
+                t.enq_assignment(lit, Reason::Long(i), f, self);
                 proof_assert!(@^self == (@*@old_a).set(@lit.idx, bool_to_assignedstate(lit.polarity)));
                 proof_assert!(lemma_extension_sat_base_sat(*f, @@old_a, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
                 proof_assert!(lemma_extensions_unsat_base_unsat(@@old_a, @lit.idx, *f); true);
@@ -370,6 +370,8 @@ impl Assignments {
             @(@(^self))[@(@(@trail.trail)[j])[i].idx] === 2)]
         //(@(^trail).trail)[j].assigned(^self))]
         */
+    #[requires(trail.trail_sem_invariant(*_f, *self))] // added
+    #[ensures((^trail).trail_sem_invariant(*_f, ^self))] // added
     pub fn cancel_until(&mut self, trail: &mut Trail, level: usize, _f: &Formula) {
         let mut i: usize = trail.trail.len();
         let old_self = Ghost::record(&self);

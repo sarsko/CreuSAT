@@ -98,6 +98,7 @@ fn lemma_idx2(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_idx: 
 }
 
 
+#[trusted] // OK
 #[ensures(result === (exists<i: Int> 0 <= i && i < (@v).len() && @(@v)[i].idx === @idx))]
 fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
     let mut i: usize = 0;

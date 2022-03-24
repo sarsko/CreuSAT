@@ -162,6 +162,7 @@ impl Formula {
     }
 
     #[predicate]
+    #[trusted] // OK
     #[ensures(result === self.invariant_old())]
     pub fn invariant(self) -> bool {
         pearlite! {
@@ -203,6 +204,7 @@ impl Formula {
     }
 
     #[predicate]
+    #[trusted] // OK
     #[ensures(result === self.sat_inner(@a))]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! { 
@@ -308,5 +310,4 @@ impl Formula {
             return SatState::Unknown;
         }
     }
-
 }
