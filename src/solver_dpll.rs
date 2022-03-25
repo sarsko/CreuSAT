@@ -71,6 +71,9 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
 }
 
 #[trusted]
+
+#[requires(trail.trail_sem_invariant(*f, *a))]
+#[ensures((^trail).trail_sem_invariant(^f, ^a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(trail.invariant(*f))]
@@ -88,7 +91,7 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
     ClauseState::Unknown => !(^self).complete(),
     ClauseState::Unit => !self.complete(),
     _ => true,
-})]
+})^
 */
 //#[ensures((a).complete() ==> *a === (^a) && ((result === ClauseState::Unsat) || f.sat(*self)))]
 #[ensures(match result {
@@ -218,7 +221,7 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
             //proof_assert!(@cref < (@f.clauses).len());
             //t.enq_assignment(lit, Reason::Long(cref), f);
         }
-    _ => {panic!();} // todo
+    _ => { return true;} // todo
     }
     true
 }
@@ -309,13 +312,14 @@ fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
 }
 
 
+#[trusted] // OK
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(d.invariant(@f.num_vars))]
 #[requires(t.invariant(*f))]
 #[requires((@t.trail).len() > 0)]
 #[requires(t.trail_sem_invariant(*f, *a))]
-#[requires((^t).trail_sem_invariant(^f, ^a))]
+#[ensures((^t).trail_sem_invariant(^f, ^a))]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((^f).invariant())]
 //#[ensures(^f === *f)]
@@ -341,8 +345,12 @@ fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail
             let dlevel = t.trail.len();
             //t.trail.push(Vec::new());
             t.add_level(f);
+            // TODO DO A PROOF HERE
+            // Have to do a proof to an unassigned cannot affect any post_units
+            // VC Checks out, but it is slow.
             a.0[next] = 1; 
             let lit = Lit{ idx: next, polarity: true };
+            proof_assert!(t.trail_sem_invariant(*f, *a));
             t.enq_assignment(lit, Reason::Decision, f, a);
         },
         None => { 
@@ -356,12 +364,14 @@ fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail
     None
 }
 
-#[trusted] // tmp (mostly ok)
+#[trusted] // OK
+//#[trusted] // tmp (mostly ok)
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(d.invariant(@f.num_vars))]
 #[requires(t.invariant(*f))]
 #[requires((@t.trail).len() > 0)]
+#[requires(t.trail_sem_invariant(*f, *a))]
 //#[ensures(@f.num_vars === @(^f).num_vars)]
 //#[ensures((^f).invariant())]
 //#[ensures(^f === *f)]
@@ -389,6 +399,7 @@ fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: 
     #[invariant(maintains_f, f.invariant())]
     #[invariant(maintains_a, a.invariant(*f))]
     #[invariant(maintains_t, t.invariant(*f))]
+    #[invariant(maintains_t2, t.trail_sem_invariant(*f, *a))]
     #[invariant(vardata_unchanged, (@t.vardata).len() === (@(@old_t).vardata).len())]
     #[invariant(num_vars, @f.num_vars === @(@old_f).num_vars)]
     #[invariant(trail_len, (@t.trail).len() > 0)]
@@ -411,7 +422,7 @@ pub fn solver(f: &mut Formula, units: &std::vec::Vec<Lit>) -> bool {
     // should do pure literal and identifying unit clauses in preproc
     let mut i = 0;
     let mut assignments = Assignments::new(f);
-    let mut trail = Trail::new(f);
+    let mut trail = Trail::new(f, &assignments);
     if f.num_vars == 0 {
         return true;
     }

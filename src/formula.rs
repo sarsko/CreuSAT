@@ -80,14 +80,14 @@ pub fn equisat(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
 pub fn compatible(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
     pearlite! {
         f.1 === o.1 &&
+        o.0.len() >= f.0.len() &&
+        forall<i: Int> 0 <= i && i < f.0.len() ==>
+            (f.0[i]).equals(o.0[i])
         /*
         (@o.clauses).len() >= (@self.clauses).len() &&
         forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
             (@self.clauses)[i] === (@o.clauses)[i]
             */
-        o.0.len() >= f.0.len() &&
-        forall<i: Int> 0 <= i && i < f.0.len() ==>
-            (f.0[i]).equals(o.0[i])
         /*
             (@(@self.clauses)[i]).len() === (@(@o.clauses)[i]).len() &&
             forall<j: Int> 0 <= j && j < (@(@self.clauses)[i]).len() ==>
@@ -99,8 +99,7 @@ pub fn compatible(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
 #[predicate]
 pub fn equisat_compatible_inner(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
     pearlite! {
-        compatible(f, o) &&
-        equisat(f, o)
+        compatible(f, o) && equisat(f, o)
     }
 }
 
@@ -256,6 +255,7 @@ impl Formula {
     }
 }
 
+/*
 // UNUSED
 impl Formula {
     // NONE OF THESE ARE IN USE
@@ -311,3 +311,4 @@ impl Formula {
         }
     }
 }
+*/  

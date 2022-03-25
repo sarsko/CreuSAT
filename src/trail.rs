@@ -162,10 +162,11 @@ impl Trail {
         self.vardata[lit.idx] = (dlevel, reason);
     }
 
-    #[trusted] // OK
+    //#[trusted] // OK
     #[ensures(result.invariant(*f))]
     #[ensures((@result.trail).len() === 1)]
-    pub fn new(f: &Formula) -> Trail {
+    #[ensures(result.trail_sem_invariant(*f, *_a))]
+    pub fn new(f: &Formula, _a: &Assignments) -> Trail {
         let mut vardata: Vec<(usize, Reason)> = Vec::new();
         let mut i: usize = 0;
         #[invariant(i_less, @i <= @f.num_vars)]

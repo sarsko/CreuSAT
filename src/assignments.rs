@@ -89,6 +89,7 @@ impl Assignments {
 }
 
 impl Assignments {
+    /*
     // Not used
     #[trusted] // Broken atm, fix later
     #[ensures(forall<i: Int> 0 <= i && i < (@self).len() ==> (@self)[i] === (@result)[i])]
@@ -109,6 +110,7 @@ impl Assignments {
         }
         Assignments(out, self.1)
     }
+    */
 
     #[inline]
     #[trusted]
@@ -351,7 +353,7 @@ impl Assignments {
         } 
     }
 
-    #[trusted] // TMP
+    //#[trusted] // TMP
     //#[requires(trail.trail_entries_are_assigned(*self))] // Gonna need this at some point
     #[requires(@level <= (@trail.trail).len())]
     #[requires(trail.invariant(*_f))]
