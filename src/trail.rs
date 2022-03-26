@@ -26,6 +26,30 @@ pub struct Trail {
     pub vardata: Vec<(usize, Reason)>,
 }
 
+#[predicate]
+pub fn long_are_post_unit(vardata: Seq<(usize, Reason)>, f: Formula, a: Assignments) -> bool {
+    pearlite! {
+        forall<j: Int> 0 <= j && j < (vardata).len() ==> match
+        (vardata)[j].1 { 
+            Reason::Long(k) => {(@f.clauses)[@k].post_unit(a) &&
+                exists<i: Int> 0 <= i && i < (@(@f.clauses)[@k]).len() &&
+                    @(@(@f.clauses)[@k])[i].idx === j &&
+                    (@(@f.clauses)[@k])[i].sat(a) },
+                _ => true,
+            }
+    }
+}
+
+#[predicate]
+// All the indexes in trail are less than f.num_vars
+pub fn trail_invariant(trail: Seq<Vec<Lit>>, f: Formula) -> bool {
+    pearlite! { 
+        forall<i: Int> 0 <= i && i < trail.len() ==> (
+        forall<j: Int> 0 <= j && j < (@trail[i]).len() ==>
+            0 <= @(@trail[i])[j].idx && @(@trail[i])[j].idx < @f.num_vars )
+        }
+}
+
 impl Trail {
     #[predicate]
     // Just the length bound atm
@@ -97,17 +121,13 @@ impl Trail {
         }
     }
 
+    // We can make vardata nonwiping by having the predicate be reliant on assignments:
+    // if entry is set => post_unit
+    // if unset => true
     #[predicate]
     pub fn long_are_post_unit(self, f: Formula, a: Assignments) -> bool {
         pearlite! {
-            forall<j: Int> 0 <= j && j < (@self.vardata).len() ==> match
-            (@self.vardata)[j].1 { 
-                Reason::Long(k) => {(@f.clauses)[@k].post_unit(a) &&
-                    exists<i: Int> 0 <= i && i < (@(@f.clauses)[@k]).len() &&
-                        @(@(@f.clauses)[@k])[i].idx === j &&
-                        (@(@f.clauses)[@k])[i].sat(a) },
-                    _ => true,
-            }
+            long_are_post_unit(@self.vardata, f, a)
         }
     }
 

@@ -176,7 +176,7 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
 
 
 //#[trusted] // OK(except for panic)
-//#[trusted] // TODO
+#[trusted] // tmp
 #[ensures(match result {
     true  => { true },// !(^f).unsat(^a)}, // we dont know this
     false => { (^f).unsat(^a)},
@@ -226,6 +226,7 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
     true
 }
 
+#[trusted] // tmp
 //#[trusted] // TMP, lacks trail
 #[ensures(match result {
     Some(true)  => {!(^f).unsat(^a)}, // Prop went ok

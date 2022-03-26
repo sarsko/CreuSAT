@@ -353,6 +353,69 @@ impl Assignments {
         } 
     }
 
+
+    #[requires(trail_invariant(@trail, *_f))]
+    #[requires(self.invariant(*_f))]
+    #[requires(long_are_post_unit(@vardata, *_f, *self))]
+    #[requires(vars_in_range_inner(@curr_level, @_f.num_vars))]
+    #[requires((@vardata).len() === @_f.num_vars)]
+    #[ensures((@vardata).len() === (@^vardata).len())]
+    #[ensures((^self).invariant(*_f))]
+    #[ensures(long_are_post_unit(@^vardata, *_f, *self))]
+    #[ensures((^self).invariant(*_f))]
+    /*
+    #[ensures((@(^trail).vardata) === (@trail.vardata))]
+    #[ensures((@(^trail).trail).len() === @level)]
+    #[ensures(forall<j: Int> 0 <= j && j < @level ==> 
+        (@(^trail).trail)[j] === (@trail.trail)[j])] // new
+        */
+        /*
+    #[ensures((^trail).assignments_invariant(^self))]
+    #[ensures(forall<j: Int> @level <= j && j < (@trail.trail).len() ==> 
+        forall<i: Int> 0 <= i && i < (@(@trail.trail)[j]).len() ==> 
+            @(@(^self))[@(@(@trail.trail)[j])[i].idx] === 2)]
+        //(@(^trail).trail)[j].assigned(^self))]
+        */
+    //#[requires(trail.trail_sem_invariant(*_f, *self))] // added
+    //#[ensures((^trail).trail_sem_invariant(*_f, ^self))] // added
+    pub fn wipe_level(&mut self, trail: &Vec<Vec<Lit>>, vardata: &mut Vec<(usize, Reason)>, curr_level: Vec<Lit>, _f: &Formula) {
+        let mut j: usize = 0;
+        let old_vardata = Ghost::record(&vardata);
+        let old_self = Ghost::record(&self);
+        //#[invariant(assigned2, trail.trail_entries_are_assigned(*self))]
+        #[invariant(maintains_ass_inv2, self.invariant(*_f))]
+        #[invariant(same_len_trail, (@vardata).len() === (@@old_vardata).len())]
+        #[invariant(same_len_ass, (@self).len() === (@@old_self).len())]
+        #[invariant(intact_self2, ^self === ^@old_self)]
+        #[invariant(intact_vardata, ^vardata === ^@old_vardata)]
+        /*
+        #[invariant(i_is_trail_len2, @i - 1 === (@trail.trail).len())]
+            */
+        #[invariant(j_less, 0 <= @j && @j <= (@curr_level).len())]
+        #[invariant(wiped, forall<k: Int> 0 <= k && k < @j ==> 
+            (@vardata)[@(@curr_level)[k].idx] === (0usize, Reason::Undefined))]
+        /*
+        #[invariant(assigned_dec, forall<k: Int> @j <= k && k < (@decisions).len() ==>
+            @(@self)[@(@decisions)[k].idx] < 2)]
+        #[invariant(assigned_dec2, forall<k: Int> 0 <= k && k < @j ==>
+            @(@self)[@(@decisions)[k].idx] >= 2)]
+            */
+        // Is this invariant even provable? It might be if we count downwards.
+        // Also might be possible if we prove that the removal of an entire decision level
+        // results in long_post. Still a whole proof about the semantics of the trail,
+        // and maybe the full wipe/search restart is easier(as long as the invariant
+        // that everything on d0 is units is enforced).
+        #[invariant(maintains_post_unit, long_are_post_unit(@vardata, *_f, *self))] // need a lemma
+        while j < curr_level.len() {
+            let lit = curr_level[j];
+            vardata[lit.idx] = (0, Reason::Undefined); // Comment out this to make it pass // No need to wipe it
+            proof_assert!((@vardata)[@(@curr_level)[@j].idx] === (0usize, Reason::Undefined));
+            //self.0[lit.idx] += 2; // TODO
+            self.0[lit.idx] = 2; // I'll do the phase saving later lol
+            j += 1;
+        }
+    }
+
     //#[trusted] // TMP
     //#[requires(trail.trail_entries_are_assigned(*self))] // Gonna need this at some point
     #[requires(@level <= (@trail.trail).len())]
@@ -382,39 +445,21 @@ impl Assignments {
         #[invariant(i_is_trail_len, @i === (@trail.trail).len())]
         #[invariant(trail_len, (@trail.trail).len() > 0)]
         #[invariant(maintains_trail_inv, trail.invariant(*_f))]
-        #[invariant(vardata_ok, (@trail.vardata) === @(@old_trail).vardata)]
+        //#[invariant(vardata_ok, (@trail.vardata) === @(@old_trail).vardata)]
         #[invariant(trail_ok, forall<j: Int> 0 <= j && j < @i ==>
             (@(@old_trail).trail)[j] === (@trail.trail)[j])]
         #[invariant(maintains_ass_inv, self.invariant(*_f))]
         #[invariant(intact, ^self === ^@old_self)]
         #[invariant(intact_trail, ^trail === ^@old_trail)]
         //#[invariant(assigned, trail.trail_entries_are_assigned(*self))]
+        #[invariant(maintains_sem_inv_o, trail.trail_sem_invariant(*_f, *self))]
         while i > level {
-            let decisions = trail.trail.pop();
-            match decisions {
-                Some(decisions) => {
-                    let mut j: usize = 0;
-                    //#[invariant(assigned2, trail.trail_entries_are_assigned(*self))]
-                    #[invariant(maintains_trail_inv2, trail.invariant(*_f))]
-                    #[invariant(maintains_ass_inv2, self.invariant(*_f))]
-                    #[invariant(same_len_trail, (@trail.vardata).len() === (@(@old_trail).vardata).len())]
-                    #[invariant(intact_self2, ^self === ^@old_self)]
-                    #[invariant(intact_trail2, ^trail === ^@old_trail)]
-                    #[invariant(i_is_trail_len2, @i - 1 === (@trail.trail).len())]
-                    #[invariant(j_less, 0 <= @j && @j <= (@decisions).len())]
-                    /*
-                    #[invariant(assigned_dec, forall<k: Int> @j <= k && k < (@decisions).len() ==>
-                        @(@self)[@(@decisions)[k].idx] < 2)]
-                    #[invariant(assigned_dec2, forall<k: Int> 0 <= k && k < @j ==>
-                        @(@self)[@(@decisions)[k].idx] >= 2)]
-                        */
-                    while j < decisions.len() {
-                        let lit = decisions[j];
-                        //trail.vardata[lit.idx] = (0, Reason::Undefined); // Comment out this to make it pass // No need to wipe it
-                        //self.0[lit.idx] += 2; // TODO
-                        self.0[lit.idx] = 2; // I'll do the phase saving later lol
-                        j += 1;
-                    }
+            let curr_level = trail.trail.pop();
+            proof_assert!(trail.trail_sem_invariant(*_f, *self));
+            proof_assert!(trail.invariant(*_f));
+            match curr_level {
+                Some(curr_level) => {
+                    self.wipe_level(&trail.trail, &mut trail.vardata, curr_level, _f);
                 }
                 None => {
                     panic!();
