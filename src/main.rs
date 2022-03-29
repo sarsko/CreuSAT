@@ -9,7 +9,7 @@ use clap::{crate_authors, App, AppSettings, Arg};
 fn main() {
     let matches = App::new("\nA minimal SAT solver with no name")
         .author(crate_authors!("\n"))
-        .about("A yet unverified SAT solver written in Rust.")
+        .about("A verified SAT solver written in Rust.")
         .usage("cargo run -- [FLAGS] --file <file>")
         .setting(AppSettings::ColoredHelp)
         .setting(AppSettings::DisableVersion)

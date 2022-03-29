@@ -265,7 +265,7 @@ fn unit_prop_step(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
 }
 
 
-//#[trusted] // OK (until trail)
+#[trusted] // OK
 #[ensures(!result ==> (^f).unsat(^a))]
 #[ensures(result ==> !(^f).unsat(^a))]
 #[requires(f.invariant())]
@@ -349,10 +349,10 @@ fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail
             // TODO DO A PROOF HERE
             // Have to do a proof to an unassigned cannot affect any post_units
             // VC Checks out, but it is slow.
-            a.0[next] = 1; 
-            let lit = Lit{ idx: next, polarity: true };
-            proof_assert!(t.trail_sem_invariant(*f, *a));
+            let lit = Lit{ idx: next, polarity: a.0[next] == 3 };
+            a.0[next] -= 2;
             t.enq_assignment(lit, Reason::Decision, f, a);
+            proof_assert!(t.trail_sem_invariant(*f, *a));
         },
         None => { 
             // This is gonna get broken if one changes the definition of unsat

@@ -367,7 +367,6 @@ add_clause_to_database(cl);
 back_dl = clause_asserting_level(cl);
 return back_dl
 */
-// Probs better to use as a base
 // Might also be good to do the proof of the extension being OK inside this rather than do
 // a return then add
 #[trusted] // OK 
@@ -443,7 +442,6 @@ pub fn analyze_conflict_new(f: &Formula, a: &Assignments, trail: &Trail, cref: u
             k += 1;
         }
         if cnt == 1 {
-            //println!();
             break;
         }
     }

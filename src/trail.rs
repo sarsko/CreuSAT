@@ -26,15 +26,42 @@ pub struct Trail {
     pub vardata: Vec<(usize, Reason)>,
 }
 
+#[cfg(contracts)]
+impl Model for Trail {
+    type ModelTy = (Seq<Vec<Lit>>, Seq<(usize, Reason)>);
+
+    #[logic]
+    fn model(self) -> Self::ModelTy {
+        (self.trail.model(), self.vardata.model())
+    }
+}
+
 #[predicate]
 pub fn long_are_post_unit(vardata: Seq<(usize, Reason)>, f: Formula, a: Assignments) -> bool {
     pearlite! {
-        forall<j: Int> 0 <= j && j < (vardata).len() ==> match
-        (vardata)[j].1 { 
+        forall<j: Int> 0 <= j && j < vardata.len() ==> match
+        vardata[j].1 { 
             Reason::Long(k) => {(@f.clauses)[@k].post_unit(a) &&
                 exists<i: Int> 0 <= i && i < (@(@f.clauses)[@k]).len() &&
                     @(@(@f.clauses)[@k])[i].idx === j &&
                     (@(@f.clauses)[@k])[i].sat(a) },
+                _ => true,
+            }
+    }
+}
+
+#[predicate]
+pub fn vardata_invariant(vardata: Seq<(usize, Reason)>, n: Int) -> bool {
+        pearlite! { vardata.len() === n }
+}
+
+#[predicate]
+// All the long clauses carry a cref which is inside the formula
+pub fn crefs_in_range(vardata: Seq<(usize, Reason)>, f: Formula) -> bool {
+    pearlite! {
+        forall<j: Int> 0 <= j && j < vardata.len() ==>
+            match vardata[j].1 {
+                Reason::Long(k) => 0 <= @k && @k < (@f.clauses).len(),
                 _ => true,
             }
     }
@@ -50,11 +77,24 @@ pub fn trail_invariant(trail: Seq<Vec<Lit>>, f: Formula) -> bool {
         }
 }
 
+#[predicate]
+pub fn trail_invariant_full(trail: Seq<Vec<Lit>>, vardata: Seq<(usize, Reason)>, f: Formula) -> bool {
+    pearlite! { 
+        trail_invariant(trail, f) && vardata_invariant(vardata, @f.num_vars) && crefs_in_range(vardata, f)
+    }
+}
+
+#[predicate]
+pub fn trail_invariant_full_no_sep(trail: (Seq<Vec<Lit>>, Seq<(usize, Reason)>), f: Formula) -> bool {
+    trail_invariant_full(trail.0, trail.1, f)
+}
+
 impl Trail {
     #[predicate]
     // Just the length bound atm
     pub fn vardata_invariant(self, n: Int) -> bool {
-        pearlite! { (@self.vardata).len() === n 
+        pearlite! {
+            vardata_invariant(@self.vardata, n)
             // This used to be correct, but isnt after we stopped wiping
             //&& 
             //forall<i: Int> 0 <= i && i < (@self.vardata).len() ==>
@@ -66,21 +106,15 @@ impl Trail {
     // All the indexes in trail are less than f.num_vars
     pub fn trail_invariant(self, f: Formula) -> bool {
         pearlite! { 
-            forall<i: Int> 0 <= i && i < (@self.trail).len() ==> (
-            forall<j: Int> 0 <= j && j < (@(@self.trail)[i]).len() ==>
-                0 <= @(@(@self.trail)[i])[j].idx && @(@(@self.trail)[i])[j].idx < @f.num_vars )
-            }
+            trail_invariant(@self.trail, f)
+        }
     }
 
     #[predicate]
     // All the long clauses carry a cref which is inside the formula
     pub fn crefs_in_range(self, f: Formula) -> bool {
         pearlite! {
-            forall<j: Int> 0 <= j && j < (@self.vardata).len() ==>
-            match (@self.vardata)[j].1 {
-                Reason::Long(k) => 0 <= @k && @k < (@f.clauses).len(),
-                _ => true,
-            }
+            crefs_in_range(@self.vardata, f)
         }
     }
 
@@ -133,17 +167,21 @@ impl Trail {
 
     // TODO
     #[predicate]
+    #[ensures(result === (long_are_post_unit(@self.vardata, f, a)))]
     pub fn trail_sem_invariant(self, f: Formula, a: Assignments) -> bool {
         pearlite! {
-            self.long_are_post_unit(f, a)
+            long_are_post_unit(@self.vardata, f, a)
+            //self.long_are_post_unit(f, a)
         }
     }
 
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
-        pearlite! {
-            self.vardata_invariant(@f.num_vars) && self.trail_invariant(f) &&  
-            self.crefs_in_range(f)
+        pearlite! { 
+            trail_invariant_full(@self.trail, @self.vardata, f)
+
+            /*
+            self.vardata_invariant(@f.num_vars) &&             */
         }
     }
 }
