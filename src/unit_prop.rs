@@ -9,6 +9,34 @@ use crate::formula::*;
 use crate::trail::*;
 use crate::watches::*;
 
+fn unit_prop_check_rest(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, watchidx: usize,
+first_lit: Lit, second_lit: Lit, lit: Lit) -> Result<(), ()> {
+    let curr_lit = f.clauses[cref].rest[k];
+    if curr_lit.lit_unset(a) || curr_lit.lit_sat(a) { // Can swap to !unsat
+        if first_lit.idx == lit.idx {
+            f.clauses[cref].rest[0] = curr_lit;
+            f.clauses[cref].rest[k] = first_lit;
+        } else {
+            f.clauses[cref].rest[0] = curr_lit;
+            f.clauses[cref].rest[k] = second_lit;
+            f.clauses[cref].rest[1] = first_lit;
+        }
+        // Update watch inlined
+        let end = watches.watches[watchidx].len() - 1;
+        watches.watches[watchidx].swap(j, end);
+        match watches.watches[watchidx].pop() {
+            Some(w) => {
+                watches.watches[curr_lit.to_neg_watchidx()].push(w);
+            },
+            None => {
+                unreachable!();
+            }
+        }
+        return Err(()); // dont increase j
+    }
+    return Ok(());
+}
+
 fn unit_prop_do_outer(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches, j: usize, watchidx: usize, lit: Lit) -> Result<bool, usize> {
     let cref = watches.watches[watchidx][j].cref;
     let first_lit = f.clauses[cref].rest[0];
@@ -26,36 +54,19 @@ fn unit_prop_do_outer(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, w
     let mut k = 2;
     let clause_len = f.clauses[cref].rest.len();
     while k < clause_len {
-        let curr_lit = f.clauses[cref].rest[k];
-        if a.0[curr_lit.idx] >= 2 || a.0[curr_lit.idx] == curr_lit.polarity as u8 { // Todo change
-            if first_lit.idx == lit.idx {
-                f.clauses[cref].rest[0] = curr_lit;
-                f.clauses[cref].rest[k] = first_lit;
-            } else {
-                f.clauses[cref].rest[0] = curr_lit;
-                f.clauses[cref].rest[k] = second_lit;
-                f.clauses[cref].rest[1] = first_lit;
+        match unit_prop_check_rest(f, a, trail, watches, cref, j, k, watchidx, first_lit, second_lit, lit) {
+            Ok(_) => {},
+            Err(_) => {
+                return Ok(false);
             }
-            // Update watch inlined
-            let end = watches.watches[watchidx].len() - 1;
-            watches.watches[watchidx].swap(j, end);
-            match watches.watches[watchidx].pop() {
-                Some(w) => {
-                    watches.watches[curr_lit.to_neg_watchidx()].push(w);
-                },
-                None => {
-                    unreachable!();
-                }
-            }
-            return Ok(false) // dont increase j
         }
         k += 1;
     }
     // If we have gotten here, the clause is either all false or unit
-    if a.0[first_lit.idx] >= 2 {
+    if first_lit.lit_unset(a) {
         a.set_assignment(first_lit, f);
         trail.enq_assignment(first_lit, Reason::Long(cref), f, a);
-    } else if a.0[second_lit.idx] >= 2 {
+    } else if second_lit.lit_unset(a) {
         f.clauses[cref].rest.swap(0,1);
         a.set_assignment(second_lit, f);
         trail.enq_assignment(second_lit, Reason::Long(cref), f, a);
