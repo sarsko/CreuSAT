@@ -6,6 +6,7 @@ use crate::assignments::*;
 use crate::lit::*;
 use crate::formula::*;
 use crate::logic::*;
+use crate::clause::*;
 
 //#[derive(Debug, Clone, PartialEq, Eq)]
 #[derive(Copy, Clone)]
@@ -37,14 +38,21 @@ impl Model for Trail {
 }
 
 #[predicate]
+pub fn clause_post_with_regards_to(c: Clause, a: Assignments, j: Int) -> bool {
+    pearlite! {
+        c.post_unit(a) &&
+        exists<i: Int> 0 <= i && i < (@c).len() &&
+            @(@c)[i].idx === j &&
+            (@c)[i].sat(a) 
+    }
+}
+
+#[predicate]
 pub fn long_are_post_unit(vardata: Seq<(usize, Reason)>, f: Formula, a: Assignments) -> bool {
     pearlite! {
         forall<j: Int> 0 <= j && j < vardata.len() ==> match
         vardata[j].1 { 
-            Reason::Long(k) => {(@f.clauses)[@k].post_unit(a) &&
-                exists<i: Int> 0 <= i && i < (@(@f.clauses)[@k]).len() &&
-                    @(@(@f.clauses)[@k])[i].idx === j &&
-                    (@(@f.clauses)[@k])[i].sat(a) },
+            Reason::Long(k) => { clause_post_with_regards_to((@f.clauses)[@k], a, j) },
                 _ => true,
             }
     }

@@ -1,0 +1,75 @@
+module Type
+  use Ref
+  use mach.int.Int
+  use prelude.Int8
+  use prelude.Int16
+  use mach.int.Int32
+  use mach.int.Int64
+  use prelude.UInt8
+  use prelude.UInt16
+  use mach.int.UInt32
+  use mach.int.UInt64
+  use string.Char
+  use floating_point.Single
+  use floating_point.Double
+  use prelude.Prelude
+  type ex_lit  = 
+    | Ex_Lit usize bool
+    
+  function ex_lit_Lit_idx (self : ex_lit) : usize
+  val ex_lit_Lit_idx (self : ex_lit) : usize
+    ensures { result = ex_lit_Lit_idx self }
+    
+  axiom ex_lit_Lit_idx_acc : forall a : usize, b : bool . ex_lit_Lit_idx (Ex_Lit a b : ex_lit) = a
+end
+module Ex_NoDuplicateIndexesInner_Interface
+  use seq.Seq
+  use Type
+  predicate no_duplicate_indexes_inner (s : Seq.seq (Type.ex_lit))
+end
+module Ex_NoDuplicateIndexesInner
+  use seq.Seq
+  use Type
+  use mach.int.Int
+  use mach.int.Int32
+  use mach.int.UInt64
+  predicate no_duplicate_indexes_inner (s : Seq.seq (Type.ex_lit)) = 
+    forall k : (int) . forall j : (int) . 0 <= j && j < Seq.length s && 0 <= k && k < j -> not (UInt64.to_int (Type.ex_lit_Lit_idx (Seq.get s k)) = UInt64.to_int (Type.ex_lit_Lit_idx (Seq.get s j)))
+end
+module Ex_LemmaPermutClauseNoDups_Interface
+  use mach.int.Int
+  use mach.int.Int32
+  use seq.Permut
+  use seq.Seq
+  use Type
+  clone Ex_NoDuplicateIndexesInner_Interface as NoDuplicateIndexesInner0
+  function lemma_permut_clause_no_dups (c : Seq.seq (Type.ex_lit)) (c2 : Seq.seq (Type.ex_lit)) : ()
+end
+module Ex_LemmaPermutClauseNoDups
+  use mach.int.Int
+  use mach.int.Int32
+  use seq.Permut
+  use seq.Seq
+  use Type
+  clone Ex_NoDuplicateIndexesInner_Interface as NoDuplicateIndexesInner0
+  function lemma_permut_clause_no_dups (c : Seq.seq (Type.ex_lit)) (c2 : Seq.seq (Type.ex_lit)) : () = 
+    ()
+  axiom lemma_permut_clause_no_dups_spec : forall c : Seq.seq (Type.ex_lit), c2 : Seq.seq (Type.ex_lit) . NoDuplicateIndexesInner0.no_duplicate_indexes_inner c -> Permut.exchange c2 c 0 1 -> Seq.length c2 = Seq.length c -> Seq.length c = 2 -> NoDuplicateIndexesInner0.no_duplicate_indexes_inner c2
+end
+module Ex_LemmaPermutClauseNoDups_Impl
+  use mach.int.Int
+  use mach.int.Int32
+  use seq.Permut
+  use seq.Seq
+  use Type
+  clone Ex_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
+  let rec ghost function lemma_permut_clause_no_dups (c : Seq.seq (Type.ex_lit)) (c2 : Seq.seq (Type.ex_lit)) : ()
+    requires {NoDuplicateIndexesInner0.no_duplicate_indexes_inner c}
+    requires {Permut.exchange c2 c 0 1}
+    requires {Seq.length c2 = Seq.length c}
+    requires {Seq.length c = 2}
+    ensures { NoDuplicateIndexesInner0.no_duplicate_indexes_inner c2 }
+    
+   = 
+    ()
+end

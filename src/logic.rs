@@ -10,6 +10,133 @@ use crate::trail::*;
 
 
 // CDCL 2 STUFF START (WIP)
+#[logic]
+#[requires(c.sat(a))]
+#[requires((@c2).permut(@c, 0, (@c).len()))]
+#[ensures(c2.sat(a))]
+pub fn lemma_permut_clause_ok(c: Clause, c2: Clause, a: Assignments) {}
+
+#[logic]
+#[requires(c.unsat(a))]
+#[requires((@c2).permut(@c, 0, (@c).len()))]
+#[ensures(c2.unsat(a))]
+pub fn lemma_permut_clause_ok2(c: Clause, c2: Clause, a: Assignments) {}
+
+#[trusted] // OK
+#[logic]
+#[requires((@c).len() >= 2)]
+#[requires((@c2).len() === (@c).len())]
+#[requires((@c2).exchange(@c, a, b))]
+#[requires(no_duplicate_indexes_inner(@c))]
+#[ensures(no_duplicate_indexes_inner(@c2))]
+pub fn lemma_swap_clause_no_dups(c: Clause, c2: Clause, a: Int, b: Int) {}
+
+#[trusted] // OK
+#[logic]
+#[requires((@c).len() >= 2)]
+#[requires((@c2).len() === (@c).len())]
+#[requires((@c2).exchange(@c, a, b))]
+#[requires(c.post_unit(ass))]
+#[ensures(c2.post_unit(ass))]
+pub fn lemma_swap_maintains_post_unit(c: Clause, c2: Clause, a: Int, b: Int, ass: Assignments) {
+    lemma_swap_clause_no_dups(c, c2, a, b);
+}
+
+#[logic]
+#[requires((@c).len() >= 2)]
+#[requires((@c2).len() === (@c).len())]
+#[requires((@c2).exchange(@c, a, b))]
+#[requires(clause_post_with_regards_to(c, ass, j))]
+#[ensures(clause_post_with_regards_to(c2, ass, j))]
+pub fn lemma_swap_maintains_post_with_regards_to(c: Clause, c2: Clause, a: Int, b: Int, ass: Assignments, j: Int) {
+    lemma_swap_maintains_post_unit(c, c2, a, b, ass);
+}
+
+/*
+#[logic]
+#[requires((@c).len() >= 2)]
+#[requires((@c2).len() === (@c).len())]
+#[requires((@c2).exchange(@c, a, b))]
+#[requires(
+    c.post_unit(ass))]
+#[ensures(c2.post_unit(ass))]
+pub fn lemma_swap_maintains_post_unit(c: Clause, c2: Clause, a: Int, b: Int, ass: Assignments) {
+    lemma_swap_clause_no_dups(c, c2, a, b);
+}
+*/
+
+/*
+#[logic]
+#[requires(c.invariant(n))]
+#[requires((@c2).permut(@c, 0, (@c).len()))]
+#[ensures(c2.invariant(n))]
+pub fn lemma_permut_clause_invariant(c: Clause, c2: Clause, n: Int) {}
+*/
+
+
+#[logic]
+#[requires(f.sat(a))]
+#[requires((@f2.clauses).permut(@f.clauses, 0, (@f.clauses).len()))]
+#[requires(@f2.num_vars === @f.num_vars)]
+#[ensures(f2.sat(a))]
+pub fn lemma_permut_formula_ok(f: Formula, f2: Formula, a: Assignments) {}
+
+#[logic]
+#[requires(f.unsat(a))]
+#[requires((@f2.clauses).permut(@f.clauses, 0, (@f.clauses).len()))]
+#[requires(@f2.num_vars === @f.num_vars)]
+#[ensures(f2.unsat(a))]
+pub fn lemma_permut_formula_ok2(f: Formula, f2: Formula, a: Assignments) {}
+
+#[logic]
+#[requires(f.eventually_sat_complete_no_ass())]
+#[requires((@f2.clauses).permut(@f.clauses, 0, (@f.clauses).len()))]
+#[requires(@f2.num_vars === @f.num_vars)]
+#[ensures(f2.eventually_sat_complete_no_ass())]
+pub fn lemma_permut_formula_ok_no_ass(f: Formula, f2: Formula) {}
+
+/*
+#[logic]
+#[requires(f.eventually_sat_complete_no_ass())]
+#[requires((@f2.clauses).len() === (@f.clauses).len())]
+#[requires(forall<i: Int> 0 <= i && i < (@f2.clauses).len() ==> 
+    (@(@f2.clauses)[i]).permut((@(@f.clauses)[i]), 0, (@(@f.clauses)[i]).len()))]
+#[requires(@f2.num_vars === @f.num_vars)]
+#[ensures(f2.eventually_sat_complete_no_ass())]
+pub fn lemma_permut_formula_ok_no_ass2(f: Formula, f2: Formula) {}
+*/
+
+#[logic]
+#[requires(f.eventually_sat_complete_no_ass())]
+#[requires((@f2.clauses).len() === (@f.clauses).len())]
+#[requires(forall<i: Int> 0 <= i && i < (@f2.clauses).len() && i != cref ==> 
+    (@(@f2.clauses)[i]) === (@(@f.clauses)[i]))]
+#[requires((@(@f2.clauses)[cref]).permut((@(@f.clauses)[cref]), 0, (@(@f.clauses)[cref]).len()))]
+#[requires(@f2.num_vars === @f.num_vars)]
+#[ensures(f2.eventually_sat_complete_no_ass())]
+pub fn lemma_permut_clause_in_formula_maintains_sat(f: Formula, f2: Formula, cref: Int) {}
+
+#[logic]
+#[requires(!f.eventually_sat_complete_no_ass())]
+#[requires((@f2.clauses).len() === (@f.clauses).len())]
+#[requires(forall<i: Int> 0 <= i && i < (@f2.clauses).len() && i != cref ==> 
+    (@(@f2.clauses)[i]) === (@(@f.clauses)[i]))]
+#[requires((@(@f2.clauses)[cref]).permut((@(@f.clauses)[cref]), 0, (@(@f.clauses)[cref]).len()))]
+#[requires(@f2.num_vars === @f.num_vars)]
+#[ensures(!f2.eventually_sat_complete_no_ass())]
+pub fn lemma_permut_clause_in_formula_maintains_unsat(f: Formula, f2: Formula, cref: Int) {}
+
+/*
+#[logic]
+#[requires(f.invariant())]
+#[requires((@f2.clauses).len() === (@f.clauses).len())]
+#[requires(forall<i: Int> 0 <= i && i < (@f2.clauses).len() && i != cref ==> 
+    (@(@f2.clauses)[i]) === (@(@f.clauses)[i]))]
+#[requires((@(@f2.clauses)[cref]).permut((@(@f.clauses)[cref]), 0, (@(@f.clauses)[cref]).len()))]
+#[requires(@f2.num_vars === @f.num_vars)]
+#[ensures(f2.invariant())]
+pub fn lemma_permut_formula_ok_invariant(f: Formula, f2: Formula, cref: Int) {}
+*/
 
 #[trusted] // OK
 #[logic]
