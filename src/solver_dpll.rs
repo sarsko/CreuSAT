@@ -11,6 +11,7 @@ use crate::decision::*;
 use crate::trail::*;
 use crate::watches::*;
 use crate::conflict_analysis::*;
+use crate::unit_prop::*;
 
 
 #[trusted] // OK
@@ -105,7 +106,7 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
 #[ensures((^trail).invariant(^f))]
 #[ensures((^a).invariant(^f))]
 #[ensures(f.equisat_compatible(^f))]
-fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
+fn unit_propagate_UNVERIFIED(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
     let mut i = 0;
     let d = trail.trail.len() - 1;
     while i < trail.trail[d].len() {
@@ -173,6 +174,7 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
     }
     Ok(())
 }
+
 
 
 //#[trusted] // OK(except for panic)
@@ -250,7 +252,7 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
 #[ensures((^a).invariant(^f))]
 #[ensures(f.equisat_compatible(^f))]
 fn unit_prop_step(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
-    match unit_propagate(f, a, t, w) {
+    match unit_propagate_WIP(f, a, t, w) {
     //match a.do_unit_propagation(f, t) {
         Ok(_) => {
             return Some(true);
