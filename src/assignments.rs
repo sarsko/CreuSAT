@@ -354,6 +354,7 @@ impl Assignments {
     }
 
 
+    #[trusted] // tmp
     #[requires(long_are_post_unit(@vardata, *_f, *self))]
     #[requires(vars_in_range_inner(@curr_level, @_f.num_vars))]
     #[requires(trail_invariant_full(@trail, @vardata, *_f))]

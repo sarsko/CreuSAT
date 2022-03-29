@@ -228,8 +228,7 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
     true
 }
 
-#[trusted] // tmp
-//#[trusted] // TMP, lacks trail
+#[trusted] // OK
 #[ensures(match result {
     Some(true)  => {!(^f).unsat(^a)}, // Prop went ok
     Some(false) => { (^f).unsat(^a)},
