@@ -16,7 +16,7 @@ pub struct Clause {
 }
 
 impl Clone for Clause {
-    #[trusted]
+    #[trusted] // --TODO--
     #[ensures(result === *self)]
     fn clone(&self) -> Self {
         Clause {
@@ -135,18 +135,6 @@ impl Clause {
             self.post_unit_inner(@a)
         }
     }
-
-    /*
-    #[predicate]
-    pub fn no_opps(self, o: Clause) -> bool {
-        pearlite! {
-            forall<j: Int, k: Int> 0 <= j && j < (@o).len() && 0 <= k && k < (@self).len() ==> 
-                !(@c)[k].is_opp((@o)[j])
-        }
-
-    }
-    */
-
 }
 
 impl Clause {
@@ -339,7 +327,7 @@ pub enum ClauseState {
 
 impl Clause {
     #[inline]
-    #[trusted] // TODO
+    #[trusted] // --TODO--
     // Requires a bunch of stuff, TODO
     //#[ensures(result.invariant(@_f.num_vars))]
     //#[ensures((@result).len() >= 2)]
@@ -352,66 +340,5 @@ impl Clause {
             rest: vec[2..].to_vec()
         }
         */
-    }
-    #[trusted] // OK
-    #[requires(self.invariant((@a).len()))]
-    #[requires(f.invariant())]
-    #[requires(a.invariant(*f))]
-    #[ensures((result === ClauseState::Sat)     ==> self.sat(*a))]
-    #[ensures((result === ClauseState::Unsat)   ==> self.unsat(*a))]
-    #[ensures((result === ClauseState::Unit)    ==> self.unit(*a) && !a.complete())]
-    #[ensures((result === ClauseState::Unknown) ==> !a.complete())]
-    pub fn check_if_unit(&self, a: &Assignments, f: &Formula) -> ClauseState {
-        let mut i: usize = 0;
-        let mut k: usize = 0;
-        let mut unassigned: usize = 0;
-        #[invariant(loop_invariant, 0 <= @i && @i <= (@self.rest).len())]
-        #[invariant(unass, @unassigned <= 1)] 
-        #[invariant(k_is_unass, (@unassigned === 0 || (@self)[@k].unset(*a)))]
-        #[invariant(kk, @unassigned > 0 ==> (@self)[@k].unset(*a))]
-        #[invariant(not_sat, forall<j: Int> 0 <= j && j < @i ==>
-            ((@self)[j].unsat(*a) || ((@self)[j].unset(*a) && @unassigned >= 1)))]
-        #[invariant(k_in_bounds, @unassigned === 0 || 0 <= @k && @k < (@self).len())]
-        #[invariant(k_only, @unassigned === 1 ==> 
-            (forall<j: Int> 0 <= j && j < @i && j != @k ==> !(@self)[j].unset(*a)))]
-        #[invariant(k_unset, @unassigned === 0 ==> @k === 0)]
-        while i < self.rest.len() {
-            let lit = self.rest[i];
-            if lit.lit_sat(a) {
-                return ClauseState::Sat;
-            } else if lit.lit_unset(a) { // Could make two different check_if_unit functions, one for pre_sat_possible and one for after
-                if unassigned > 0 {
-                    return ClauseState::Unknown;
-                }
-                k = i;
-                unassigned += 1;
-            }
-            i += 1;
-        }
-        if unassigned == 1 {
-            ClauseState::Unit
-        } else {
-            ClauseState::Unsat
-        }
-    }
-
-    #[trusted] // OK
-    #[requires(self.unit(*a))]
-    #[requires(f.invariant())]
-    #[requires(a.invariant(*f))]
-    #[ensures(exists<j: Int> 0 <= j && j < (@self).len() && (@self)[j] === result)]
-    #[ensures(@result.idx < (@a).len())]
-    #[ensures(unset((@a)[@result.idx]))]
-    pub fn get_unit(&self, a: &Assignments, f: &Formula) -> Lit {
-        let mut i: usize = 0;
-        #[invariant(not_unset, forall<j: Int> 0 <= j && j < @i ==> !(@self)[j].unset(*a))]
-        while i < self.rest.len() {
-            let lit = self.rest[i];
-            if lit.lit_unset(a) {
-                return lit;
-            }
-            i += 1;
-        }
-        panic!();
     }
 }
