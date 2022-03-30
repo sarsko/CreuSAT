@@ -10,12 +10,14 @@ use crate::trail::*;
 
 
 // CDCL 2 STUFF START (WIP)
+#[trusted] // OK
 #[logic]
 #[requires(c.sat(a))]
 #[requires((@c2).permut(@c, 0, (@c).len()))]
 #[ensures(c2.sat(a))]
 pub fn lemma_permut_clause_ok(c: Clause, c2: Clause, a: Assignments) {}
 
+#[trusted] // OK
 #[logic]
 #[requires(c.unsat(a))]
 #[requires((@c2).permut(@c, 0, (@c).len()))]
@@ -42,6 +44,7 @@ pub fn lemma_swap_maintains_post_unit(c: Clause, c2: Clause, a: Int, b: Int, ass
     lemma_swap_clause_no_dups(c, c2, a, b);
 }
 
+#[trusted] // OK
 #[logic]
 #[requires((@c).len() >= 2)]
 #[requires((@c2).len() === (@c).len())]
@@ -74,6 +77,7 @@ pub fn lemma_permut_clause_invariant(c: Clause, c2: Clause, n: Int) {}
 */
 
 
+#[trusted] // OK
 #[logic]
 #[requires(f.sat(a))]
 #[requires((@f2.clauses).permut(@f.clauses, 0, (@f.clauses).len()))]
@@ -81,6 +85,7 @@ pub fn lemma_permut_clause_invariant(c: Clause, c2: Clause, n: Int) {}
 #[ensures(f2.sat(a))]
 pub fn lemma_permut_formula_ok(f: Formula, f2: Formula, a: Assignments) {}
 
+#[trusted] // OK
 #[logic]
 #[requires(f.unsat(a))]
 #[requires((@f2.clauses).permut(@f.clauses, 0, (@f.clauses).len()))]
@@ -88,6 +93,7 @@ pub fn lemma_permut_formula_ok(f: Formula, f2: Formula, a: Assignments) {}
 #[ensures(f2.unsat(a))]
 pub fn lemma_permut_formula_ok2(f: Formula, f2: Formula, a: Assignments) {}
 
+#[trusted] // OK
 #[logic]
 #[requires(f.eventually_sat_complete_no_ass())]
 #[requires((@f2.clauses).permut(@f.clauses, 0, (@f.clauses).len()))]
@@ -106,6 +112,7 @@ pub fn lemma_permut_formula_ok_no_ass(f: Formula, f2: Formula) {}
 pub fn lemma_permut_formula_ok_no_ass2(f: Formula, f2: Formula) {}
 */
 
+#[trusted] // OK
 #[logic]
 #[requires(f.eventually_sat_complete_no_ass())]
 #[requires((@f2.clauses).len() === (@f.clauses).len())]
@@ -116,6 +123,7 @@ pub fn lemma_permut_formula_ok_no_ass2(f: Formula, f2: Formula) {}
 #[ensures(f2.eventually_sat_complete_no_ass())]
 pub fn lemma_permut_clause_in_formula_maintains_sat(f: Formula, f2: Formula, cref: Int) {}
 
+#[trusted] // OK
 #[logic]
 #[requires(!f.eventually_sat_complete_no_ass())]
 #[requires((@f2.clauses).len() === (@f.clauses).len())]

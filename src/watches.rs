@@ -137,7 +137,7 @@ impl Watches {
     #[requires(@old_pos < (@(@self.watches)[@old_idx]).len())]
     #[ensures((^self).invariant(*_f))]
     #[ensures((@(@(^self).watches)[@old_idx]).len() === ((@(@self.watches)[@old_idx]).len()))]
-    fn move_to_end(&mut self, old_idx: usize, old_pos: usize, new_lit: Lit, _f: &Formula) {
+    pub fn move_to_end(&mut self, old_idx: usize, old_pos: usize, new_lit: Lit, _f: &Formula) {
         let end = self.watches[old_idx].len() - 1;
         self.watches[old_idx].swap(old_pos, end);
     }

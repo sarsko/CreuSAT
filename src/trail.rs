@@ -38,6 +38,17 @@ impl Model for Trail {
 }
 
 #[predicate]
+pub fn clause_post_with_regards_to_lit(c: Clause, a: Assignments, lit: Lit) -> bool {
+    pearlite! {
+        c.post_unit(a) &&
+        exists<i: Int> 0 <= i && i < (@c).len() &&
+            (@c)[i].polarity === lit.polarity &&
+            @(@c)[i].idx === @lit.idx &&
+            (@c)[i].sat(a) 
+    }
+}
+
+#[predicate]
 pub fn clause_post_with_regards_to(c: Clause, a: Assignments, j: Int) -> bool {
     pearlite! {
         c.post_unit(a) &&
@@ -206,11 +217,14 @@ impl Trail {
         Reason::Decision => true,
         Reason::Unit => true,
         Reason::Long(k) => 0 <= @k && @k < (@_f.clauses).len() &&
+        clause_post_with_regards_to_lit((@_f.clauses)[@k], *_a, lit)
+        /*
         (@_f.clauses)[@k].post_unit(*_a) &&
             exists<i: Int> 0 <= i && i < (@(@_f.clauses)[@k]).len() &&
                 (@(@_f.clauses)[@k])[i].polarity === lit.polarity &&
                 @(@(@_f.clauses)[@k])[i].idx === @lit.idx &&
                 (@(@_f.clauses)[@k])[i].sat(*_a)  
+                */
     })]
     #[ensures((^self).invariant(*_f))]
     #[ensures((@(^self).trail).len() === (@self.trail).len())]

@@ -146,6 +146,43 @@ impl Assignments {
         //self.0[l.idx] = l.polarity as u8;
     }
 
+    // Not used and todo
+    #[inline]
+    #[trusted]
+    #[ensures(self.invariant(*_f))]
+    //#[requires((@self)[@lit.idx] >= 2)] // This is a correctness req
+    #[ensures((^self).invariant(*_f))]
+    #[ensures(@(@^self)[@lit.idx] === 1 || @(@^self)[@lit.idx] === 0)]
+    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
+    j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
+    #[requires(0 <= @lit.idx && @lit.idx < (@self).len())]
+    #[ensures(
+        match lit.polarity {
+            true => @(@^self)[@lit.idx] === 1,
+            false => @(@^self)[@lit.idx] === 0,
+        }
+    )]
+    //#[ensures(self.compatible(^self))]
+    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
+        j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
+    #[ensures((@^self).len() === (@self).len())]
+    #[requires(_t.trail_sem_invariant(*_f, *self))]
+    #[ensures(_t.trail_sem_invariant(*_f, ^self))]
+    pub fn assign(&mut self, lit: Lit, _f: &Formula, _t: &Trail) {
+        /*
+        if !self.0[l.idx].is_none() {
+            panic!("Assignment already set. Attempting to set {:?}", l);
+        }
+        */
+        //assert!(self.0[l.idx].is_none());
+        if lit.polarity {
+            self.0[lit.idx] = 1;
+        } else {
+            self.0[lit.idx] = 0;
+        }
+        //self.0[l.idx] = l.polarity as u8;
+    }
+
     #[trusted] // OK
     #[requires(f.invariant())]
     #[ensures(result.invariant(*f))]
