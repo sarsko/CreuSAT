@@ -71,8 +71,8 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
     trail.enq_assignment(lit, Reason::Unit, f, a);
 }
 
-//#[trusted] // OK(except for panic)
-#[trusted] // tmp
+#[trusted] // OK(except for panic)
+//#[trusted] // tmp
 #[ensures(match result {
     true  => { true },// !(^f).unsat(^a)}, // we dont know this
     false => { (^f).unsat(^a)},
@@ -87,6 +87,8 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
 #[ensures((^t).trail_sem_invariant(^f, ^a))] // added
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((^f).invariant())]
+#[requires(w.invariant(*f))] // new
+#[ensures((^w).invariant(^f))] // new
 //#[ensures(^f === *f)]
 //#[ensures(f.eventually_sat(*a) === (^f).eventually_sat(*a))]
 //#[ensures(f.eventually_sat_complete(*a) === (^f).eventually_sat_complete(*a))]
@@ -123,6 +125,7 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
 }
 
 #[trusted] // OK
+#[requires(@f.num_vars < @usize::MAX/2)]
 #[ensures(match result {
     Some(true)  => true,//{!(^f).unsat(^a)}, // Prop went ok
     Some(false) => { (^f).unsat(^a)},
@@ -134,16 +137,15 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
 #[requires(t.invariant(*f))]
 #[requires((@t.trail).len() > 0)]
 #[requires(t.trail_sem_invariant(*f, *a))]
+#[requires(w.invariant(*f))]
+#[ensures((^w).invariant(^f))]
 #[ensures((^t).trail_sem_invariant(^f, ^a))]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((^f).invariant())]
-//#[ensures(^f === *f)]
-//#[ensures(f.eventually_sat(*a) === (^f).eventually_sat(*a))]
-//#[ensures(f.eventually_sat_complete(*a) === (^f).eventually_sat_complete(*a))]
 #[ensures((@(^t).trail).len() > 0)]
 #[ensures((^t).invariant(^f))]
 #[ensures((^a).invariant(^f))]
-#[ensures(f.equisat_compatible(^f))]
+#[ensures(f.equisat(^f))]
 fn unit_prop_step(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
     match unit_propagate(f, a, t, w) {
     //match a.do_unit_propagation(f, t) {
@@ -161,43 +163,43 @@ fn unit_prop_step(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
 
 
 #[trusted] // OK
-#[ensures(!result ==> (^f).unsat(^a))]
-#[ensures(result ==> !(^f).unsat(^a))]
+#[requires(@f.num_vars < @usize::MAX/2)]
+//#[ensures(result ==> !(^f).unsat(^a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(d.invariant(@f.num_vars))]
 #[requires(t.invariant(*f))]
 #[requires(t.trail_sem_invariant(*f, *a))]
-#[ensures((^t).trail_sem_invariant(^f, ^a))]
 #[requires((@t.trail).len() > 0)]
+#[requires(w.invariant(*f))]
+#[ensures((^w).invariant(^f))]
+#[ensures((^t).trail_sem_invariant(^f, ^a))]
+#[ensures(!result ==> (^f).unsat(^a))]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((^f).invariant())]
-//#[ensures(^f === *f)]
-//#[ensures(f.eventually_sat(*a) === (^f).eventually_sat(*a))]
-//#[ensures(f.eventually_sat_complete(*a) === (^f).eventually_sat_complete(*a))]
 #[ensures((@(^t).trail).len() > 0)]
 #[ensures((^t).invariant(^f))]
 #[ensures((^a).invariant(^f))]
-#[ensures(f.equisat_compatible(^f))]
+#[ensures(f.equisat(^f))]
 fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> bool {
     let old_f = Ghost::record(&f);
     let old_a = Ghost::record(&a);
     let old_t = Ghost::record(&t);
-    //let old_w = Ghost::record(&w);
-    //#[invariant(maintains_w, w.invariant(*f))]
+    let old_w = Ghost::record(&w);
     #[invariant(maintains_f, f.invariant())]
     #[invariant(maintains_a, a.invariant(*f))]
     #[invariant(maintains_t, t.invariant(*f))]
+    #[invariant(maintains_w, w.invariant(*f))]
     #[invariant(maintains_t2, t.trail_sem_invariant(*f, *a))]
     #[invariant(vardata_unchanged, (@t.vardata).len() === (@(@old_t).vardata).len())]
     #[invariant(num_vars, @f.num_vars === @(@old_f).num_vars)]
     //#[invariant(clauses, (@f.clauses).len() > 0)]
     #[invariant(trail_len, (@t.trail).len() > 0)]
-    #[invariant(propha, ^a === ^@old_a)]
-    //#[invariant(prophw, ^w === ^@old_w)]
     #[invariant(prophf, ^f === ^@old_f)]
+    #[invariant(propha, ^a === ^@old_a)]
     #[invariant(propht, ^t === ^@old_t)]
-    #[invariant(equi, (@old_f).equisat_compatible(*f))]
+    #[invariant(prophw, ^w === ^@old_w)]
+    #[invariant(equi, (@old_f).equisat(*f))]
     loop {
         match unit_prop_step(f, a, d, t, w) {
             Some(true)  => { return true;  },
@@ -208,13 +210,16 @@ fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
 }
 
 
-#[trusted] // OK
+#[trusted] // Only thing missing is the assertion of sat
+#[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(d.invariant(@f.num_vars))]
 #[requires(t.invariant(*f))]
 #[requires((@t.trail).len() > 0)]
 #[requires(t.trail_sem_invariant(*f, *a))]
+#[requires(w.invariant(*f))]
+#[ensures((^w).invariant(^f))]
 #[ensures((^t).trail_sem_invariant(^f, ^a))]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((^f).invariant())]
@@ -229,7 +234,7 @@ fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
     Some(false) => { (^f).unsat(^a)}, // ground conflict
     None        => {true}  // we know something
 })]
-#[ensures(f.equisat_compatible(^f))]
+#[ensures(f.equisat(^f))]
 fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
     match unit_prop_loop(f, a, d, t, w) {
         false => return Some(false),
@@ -251,6 +256,9 @@ fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail
         },
         None => { 
             // This is gonna get broken if one changes the definition of unsat
+            // Okay so this got broken from unit prop not returning full eval anymore.
+            // Seems like we either have to become ternary and do a check(which cannot fail)
+            // or do a rather long proof about the correctness of watched literals
             proof_assert!(a.complete());
             proof_assert!(!f.unsat(*a));
             proof_assert!(lemma_complete_and_not_unsat_implies_sat(*f, @a); true);
@@ -261,13 +269,14 @@ fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail
 }
 
 #[trusted] // OK
-//#[trusted] // tmp (mostly ok)
+#[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(d.invariant(@f.num_vars))]
 #[requires(t.invariant(*f))]
 #[requires((@t.trail).len() > 0)]
 #[requires(t.trail_sem_invariant(*f, *a))]
+#[requires(w.invariant(*f))]
 //#[ensures(@f.num_vars === @(^f).num_vars)]
 //#[ensures((^f).invariant())]
 //#[ensures(^f === *f)]
@@ -280,14 +289,15 @@ fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail
 //#[ensures(result === true ==> f.eventually_sat(*a))]
 //#[ensures(result === false ==> !f.eventually_sat_complete(*a))]
 #[ensures(match result {
-    true => { (^f).sat(^a) && f.sat(^a) && f.eventually_sat_complete_no_ass()},
+    true => { (^f).sat(^a) && f.equisat(^f) && f.eventually_sat_complete_no_ass()},
     false => { (^f).unsat(^a) }// && f.unsat(^a)}, // + add resolution from empty clause
 })]
-#[ensures(f.equisat_compatible(^f))]
+#[ensures(f.equisat(^f))]
 fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> bool {
     let old_f = Ghost::record(&f);
     let old_a = Ghost::record(&a);
     let old_t = Ghost::record(&t);
+    let old_w = Ghost::record(&w);
     //let old_w = Ghost::record(&w);
     //#[invariant(maintains_w, watches.invariant(*f))]
     //#[invariant(clauses, (@f.clauses).len() > 0)]
@@ -296,13 +306,15 @@ fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: 
     #[invariant(maintains_a, a.invariant(*f))]
     #[invariant(maintains_t, t.invariant(*f))]
     #[invariant(maintains_t2, t.trail_sem_invariant(*f, *a))]
+    #[invariant(maintains_w, w.invariant(*f))]
     #[invariant(vardata_unchanged, (@t.vardata).len() === (@(@old_t).vardata).len())]
     #[invariant(num_vars, @f.num_vars === @(@old_f).num_vars)]
     #[invariant(trail_len, (@t.trail).len() > 0)]
     #[invariant(propha, ^a === ^@old_a)]
     #[invariant(prophf, ^f === ^@old_f)]
     #[invariant(propht, ^t === ^@old_t)]
-    #[invariant(equi, (@old_f).equisat_compatible(*f))]
+    #[invariant(prophw, ^w === ^@old_w)]
+    #[invariant(equi, (@old_f).equisat(*f))]
     loop {
         let res = outer_loop(f, a, d, t, w);
         match res {
@@ -325,6 +337,7 @@ pub fn solver(f: &mut Formula, units: &std::vec::Vec<Lit>) -> bool {
     let mut watches = Watches::new(f);
     watches.init_watches(f);
     let decisions = Decisions::new(f);
+    // Todo on this
     while i < units.len() {
         trail.enq_assignment(units[i], Reason::Unit, f, &assignments);
         let lit = units[i];

@@ -236,6 +236,8 @@ impl Formula {
     #[requires(vars_in_range_inner(@clause, @self.num_vars))]
     #[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(equisat_extension_inner(clause, @self))]
+    #[requires(watches.invariant(*self))] // new
+    #[ensures((^watches).invariant(^self))] // new
     #[ensures(@self.num_vars === @(^self).num_vars)]
     #[ensures((^self).invariant())]
     #[ensures(_t.invariant(*self))]

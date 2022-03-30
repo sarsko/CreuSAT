@@ -351,7 +351,7 @@ fn unit_prop_current_level(f: &mut Formula, a: &mut Assignments, trail: &mut Tra
 
 // Gotta add some pres in solver_dpll
 #[trusted] // OK
-#[requires(@f.num_vars < @usize::MAX/2)] // TODO
+#[requires(@f.num_vars < @usize::MAX/2)] 
 #[requires(trail.trail_sem_invariant(*f, *a))]
 #[ensures((^trail).trail_sem_invariant(^f, ^a))]
 #[requires(f.invariant())]
