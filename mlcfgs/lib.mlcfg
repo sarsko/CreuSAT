@@ -6605,7 +6605,7 @@ module Lib_UnitProp_UpdateWatch_Interface
     requires {Seq.length (Model1.model (Seq.get (Model0.model (Type.lib_watches_watches_Watches_watches ( * watches))) (ToWatchidxLogic0.to_watchidx_logic lit))) > UInt64.to_int j}
     requires {Seq.length (Model1.model (Seq.get (Model0.model (Type.lib_watches_watches_Watches_watches ( * watches))) (ToWatchidxLogic0.to_watchidx_logic lit))) > 0}
     requires {Seq.length (Model3.model (Seq.get (Model2.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int cref))) > 2}
-    requires {2 <= UInt64.to_int k && UInt64.to_int k < Seq.length (Model3.model (Seq.get (Model2.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int cref)))}
+    requires {0 <= UInt64.to_int k && UInt64.to_int k < Seq.length (Model3.model (Seq.get (Model2.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int cref)))}
     requires {UInt64.to_int cref < Seq.length (Model2.model (Type.lib_formula_formula_Formula_clauses f))}
     requires {Invariant0.invariant' ( * watches) f}
     requires {Seq.length (Model4.model (Type.lib_trail_trail_Trail_trail trail)) > 0}
@@ -6683,7 +6683,7 @@ module Lib_UnitProp_UpdateWatch
     requires {Seq.length (Model1.model (Seq.get (Model0.model (Type.lib_watches_watches_Watches_watches ( * watches))) (ToWatchidxLogic0.to_watchidx_logic lit))) > UInt64.to_int j}
     requires {Seq.length (Model1.model (Seq.get (Model0.model (Type.lib_watches_watches_Watches_watches ( * watches))) (ToWatchidxLogic0.to_watchidx_logic lit))) > 0}
     requires {Seq.length (Model3.model (Seq.get (Model2.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int cref))) > 2}
-    requires {2 <= UInt64.to_int k && UInt64.to_int k < Seq.length (Model3.model (Seq.get (Model2.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int cref)))}
+    requires {0 <= UInt64.to_int k && UInt64.to_int k < Seq.length (Model3.model (Seq.get (Model2.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int cref)))}
     requires {UInt64.to_int cref < Seq.length (Model2.model (Type.lib_formula_formula_Formula_clauses f))}
     requires {Invariant0.invariant' ( * watches) f}
     requires {Seq.length (Model4.model (Type.lib_trail_trail_Trail_trail trail)) > 0}
@@ -7183,10 +7183,9 @@ module Lib_UnitProp_UnitPropDoOuter
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
   clone Lib_Trail_VardataInvariant as VardataInvariant0
   clone Lib_Lit_Impl1_SatInner as SatInner1
-  clone Lib_Lit_Impl1_UnsetInner as UnsetInner0
-  clone Lib_Logic_Unset as Unset0
-  clone Lib_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
-  clone Lib_Assignments_CompatibleInner as CompatibleInner0 with predicate Unset0.unset = Unset0.unset
+  clone Lib_Logic_Unset as Unset1
+  clone Lib_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset1.unset
+  clone Lib_Assignments_CompatibleInner as CompatibleInner0 with predicate Unset0.unset = Unset1.unset
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model12 with type t = uint8
   clone Lib_Assignments_Impl0_Model as Model10 with function Model0.model = Model12.model
   clone Lib_Lit_Impl1_Sat as Sat0 with function Model0.model = Model10.model,
@@ -7196,6 +7195,9 @@ module Lib_UnitProp_UnitPropDoOuter
   clone Lib_Assignments_Impl1_Invariant as Invariant1 with function Model0.model = Model10.model
   clone Lib_Lit_Impl0_ToWatchidxLogic as ToWatchidxLogic0
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model7 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_lit_lit)
+  clone Lib_Lit_Impl1_UnsetInner as UnsetInner0
+  clone Lib_Lit_Impl1_Unset as Unset0 with function Model0.model = Model10.model,
+  predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
   clone Lib_Lit_Impl1_UnsatInner as UnsatInner0
   clone Lib_Lit_Impl1_Unsat as Unsat0 with function Model0.model = Model10.model,
   predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
@@ -7279,16 +7281,14 @@ module Lib_UnitProp_UnitPropDoOuter
   clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve0 with type self = usize
   clone CreusotContracts_Logic_Model_Impl1_Model as Model16 with type t = Type.lib_assignments_assignments,
   type ModelTy0.modelTy = ModelTy2.modelTy, function Model0.model = Model10.model
-  clone Lib_Lit_Impl1_Unset as Unset1 with function Model0.model = Model10.model,
-  predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
   clone CreusotContracts_Logic_Model_Impl0_Model as Model15 with type t = Type.lib_assignments_assignments,
   type ModelTy0.modelTy = ModelTy2.modelTy, function Model0.model = Model10.model
-  clone Lib_Lit_Impl2_LitUnset_Interface as LitUnset0 with function Model0.model = Model15.model,
-  predicate Invariant0.invariant' = Invariant5.invariant', predicate Unset0.unset = Unset1.unset
   clone Lib_Lit_Impl2_LitSat_Interface as LitSat0 with function Model0.model = Model15.model,
   predicate Invariant0.invariant' = Invariant5.invariant', predicate Sat0.sat = Sat0.sat
   clone Lib_Assignments_Impl2_SetAssignment_Interface as SetAssignment0 with function Model0.model = Model16.model,
   function Model1.model = Model10.model, predicate Invariant0.invariant' = Invariant1.invariant'
+  clone Lib_Lit_Impl2_LitUnset_Interface as LitUnset0 with function Model0.model = Model15.model,
+  predicate Invariant0.invariant' = Invariant5.invariant', predicate Unset0.unset = Unset0.unset
   clone CreusotContracts_Logic_Model_Impl0_Model as Model14 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_lit_lit),
   type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model11.model
   clone CreusotContracts_Std1_Vec_Impl1_Len_Interface as Len0 with type t = Type.lib_lit_lit,
@@ -7434,11 +7434,11 @@ module Lib_UnitProp_UnitPropDoOuter
   var _78 : ();
   var _79 : bool;
   var _80 : Type.lib_lit_lit;
-  var _81 : Type.lib_lit_lit;
-  var _82 : Type.creusotcontracts_std1_vec_vec (Type.lib_lit_lit);
-  var _83 : Type.lib_clause_clause;
-  var _84 : Type.creusotcontracts_std1_vec_vec (Type.lib_clause_clause);
-  var _85 : usize;
+  var _81 : Type.lib_assignments_assignments;
+  var _82 : ();
+  var _83 : ();
+  var _84 : bool;
+  var _85 : Type.lib_lit_lit;
   var _86 : Type.lib_assignments_assignments;
   var _87 : ();
   var _88 : ();
@@ -7458,35 +7458,30 @@ module Lib_UnitProp_UnitPropDoOuter
   var _102 : usize;
   var _103 : Type.lib_formula_formula;
   var _104 : Type.lib_assignments_assignments;
-  var _105 : bool;
-  var _106 : Type.lib_lit_lit;
+  var _105 : ();
+  var _106 : bool;
   var _107 : Type.lib_lit_lit;
-  var _108 : Type.creusotcontracts_std1_vec_vec (Type.lib_lit_lit);
-  var _109 : Type.lib_clause_clause;
-  var _110 : Type.creusotcontracts_std1_vec_vec (Type.lib_clause_clause);
-  var _111 : usize;
-  var _112 : Type.lib_assignments_assignments;
-  var _113 : ();
-  var _114 : ();
-  var _115 : ();
+  var _108 : Type.lib_assignments_assignments;
+  var _109 : ();
+  var _110 : ();
+  var _111 : ();
+  var _112 : ();
+  var _113 : borrowed (Type.lib_assignments_assignments);
+  var _114 : Type.lib_lit_lit;
+  var _115 : Type.lib_formula_formula;
   var _116 : ();
   var _117 : ();
-  var _118 : borrowed (Type.lib_assignments_assignments);
-  var _119 : Type.lib_lit_lit;
-  var _120 : Type.lib_formula_formula;
-  var _121 : ();
-  var _122 : ();
-  var _123 : ();
-  var _124 : ();
-  var _125 : borrowed (Type.lib_trail_trail);
-  var _126 : Type.lib_lit_lit;
-  var _127 : Type.lib_trail_reason;
+  var _118 : ();
+  var _119 : ();
+  var _120 : borrowed (Type.lib_trail_trail);
+  var _121 : Type.lib_lit_lit;
+  var _122 : Type.lib_trail_reason;
+  var _123 : usize;
+  var _124 : Type.lib_formula_formula;
+  var _125 : Type.lib_assignments_assignments;
+  var _126 : ();
+  var _127 : ();
   var _128 : usize;
-  var _129 : Type.lib_formula_formula;
-  var _130 : Type.lib_assignments_assignments;
-  var _131 : ();
-  var _132 : ();
-  var _133 : usize;
   {
     f_1 <- f;
     a_2 <- a;
@@ -7538,7 +7533,7 @@ module Lib_UnitProp_UnitPropDoOuter
     assume { Resolve0.resolve j_7 };
     assume { Resolve2.resolve first_lit_8 };
     _0 <- Type.Core_Result_Result_Ok true;
-    goto BB43
+    goto BB42
   }
   BB5 {
     _14 <- ();
@@ -7608,7 +7603,7 @@ module Lib_UnitProp_UnitPropDoOuter
     assume { Resolve5.resolve f_1 };
     assume { Resolve8.resolve watches_4 };
     _0 <- Type.Core_Result_Result_Ok true;
-    goto BB42
+    goto BB41
   }
   BB12 {
     _29 <- ();
@@ -7716,7 +7711,7 @@ module Lib_UnitProp_UnitPropDoOuter
     assume { Resolve0.resolve k_43 };
     assume { Resolve0.resolve clause_len_44 };
     _0 <- Type.Core_Result_Result_Ok false;
-    goto BB41
+    goto BB40
   }
   BB22 {
     assume { Resolve5.resolve f_1 };
@@ -7748,37 +7743,47 @@ module Lib_UnitProp_UnitPropDoOuter
     assume { Resolve0.resolve clause_len_44 };
     _58 <- ();
     assume { Resolve9.resolve _58 };
-    assert { Unsat1.unsat (Seq.get (Model5.model (Type.lib_formula_formula_Formula_clauses ( * f_1))) (UInt64.to_int cref_5)) ( * a_2) || Unit0.unit (Seq.get (Model5.model (Type.lib_formula_formula_Formula_clauses ( * f_1))) (UInt64.to_int cref_5)) ( * a_2) };
+    assert { Unsat1.unsat (Seq.get (Model5.model (Type.lib_formula_formula_Formula_clauses ( * f_1))) (UInt64.to_int cref_5)) ( * a_2) || Unset0.unset (Seq.get (Model6.model (Seq.get (Model5.model (Type.lib_formula_formula_Formula_clauses ( * f_1))) (UInt64.to_int cref_5))) 0) ( * a_2) || Unset0.unset (Seq.get (Model6.model (Seq.get (Model5.model (Type.lib_formula_formula_Formula_clauses ( * f_1))) (UInt64.to_int cref_5))) 1) ( * a_2) };
     _78 <- ();
     assume { Resolve9.resolve _78 };
-    _84 <- Type.lib_formula_formula_Formula_clauses ( * f_1);
-    assume { Resolve0.resolve _85 };
-    _85 <- cref_5;
-    _83 <- Index0.index _84 _85;
+    assume { Resolve2.resolve _80 };
+    _80 <- first_lit_8;
+    _81 <-  * a_2;
+    _79 <- LitUnset0.lit_unset _80 _81;
     goto BB25
   }
   BB25 {
-    _82 <- Type.lib_clause_clause_Clause_rest _83;
-    assume { Resolve1.resolve _83 };
-    _81 <- Index1.index _82 (0 : usize);
-    goto BB26
+    switch (_79)
+      | False -> goto BB32
+      | _ -> goto BB26
+      end
   }
   BB26 {
-    assume { Resolve2.resolve _80 };
-    _80 <- _81;
-    assume { Resolve3.resolve _81 };
+    assume { Resolve2.resolve _85 };
+    _85 <- second_lit_20;
+    assume { Resolve2.resolve second_lit_20 };
     _86 <-  * a_2;
-    _79 <- LitUnset0.lit_unset _80 _86;
+    _84 <- LitUnset0.lit_unset _85 _86;
     goto BB27
   }
   BB27 {
-    switch (_79)
-      | False -> goto BB31
+    switch (_84)
+      | False -> goto BB29
       | _ -> goto BB28
       end
   }
   BB28 {
-    assume { Resolve2.resolve second_lit_20 };
+    assume { Resolve5.resolve f_1 };
+    assume { Resolve6.resolve a_2 };
+    assume { Resolve7.resolve trail_3 };
+    assume { Resolve0.resolve cref_5 };
+    assume { Resolve2.resolve first_lit_8 };
+    _0 <- Type.Core_Result_Result_Ok true;
+    goto BB39
+  }
+  BB29 {
+    _83 <- ();
+    assume { Resolve9.resolve _83 };
     assert { TrailSemInvariant0.trail_sem_invariant ( * trail_3) ( * f_1) ( * a_2) };
     _88 <- ();
     assume { Resolve9.resolve _88 };
@@ -7794,9 +7799,9 @@ module Lib_UnitProp_UnitPropDoOuter
     _93 <- first_lit_8;
     _94 <-  * f_1;
     _91 <- SetAssignment0.set_assignment _92 _93 _94;
-    goto BB29
+    goto BB30
   }
-  BB29 {
+  BB30 {
     assert { TrailSemInvariant0.trail_sem_invariant ( * trail_3) ( * f_1) ( * a_2) && true };
     _95 <- ();
     assume { Resolve9.resolve _95 };
@@ -7820,102 +7825,91 @@ module Lib_UnitProp_UnitPropDoOuter
     _104 <-  * a_2;
     assume { Resolve6.resolve a_2 };
     _98 <- EnqAssignment0.enq_assignment _99 _100 _101 _103 _104;
-    goto BB30
-  }
-  BB30 {
-    assume { Resolve7.resolve trail_3 };
-    _0 <- Type.Core_Result_Result_Ok true;
-    goto BB40
+    goto BB31
   }
   BB31 {
-    assume { Resolve2.resolve first_lit_8 };
-    _110 <- Type.lib_formula_formula_Formula_clauses ( * f_1);
-    assume { Resolve0.resolve _111 };
-    _111 <- cref_5;
-    _109 <- Index0.index _110 _111;
-    goto BB32
-  }
-  BB32 {
-    _108 <- Type.lib_clause_clause_Clause_rest _109;
-    assume { Resolve1.resolve _109 };
-    _107 <- Index1.index _108 (1 : usize);
-    goto BB33
-  }
-  BB33 {
-    assume { Resolve2.resolve _106 };
-    _106 <- _107;
-    assume { Resolve3.resolve _107 };
-    _112 <-  * a_2;
-    _105 <- LitUnset0.lit_unset _106 _112;
-    goto BB34
-  }
-  BB34 {
-    switch (_105)
-      | False -> goto BB38
-      | _ -> goto BB35
-      end
-  }
-  BB35 {
-    assert { TrailSemInvariant0.trail_sem_invariant ( * trail_3) ( * f_1) ( * a_2) };
-    _114 <- ();
-    assume { Resolve9.resolve _114 };
-    assert { not (Unsat1.unsat (Seq.get (Model5.model (Type.lib_formula_formula_Formula_clauses ( * f_1))) (UInt64.to_int cref_5)) ( * a_2)) && true && true };
-    _115 <- ();
-    assume { Resolve9.resolve _115 };
-    assert { Unit0.unit (Seq.get (Model5.model (Type.lib_formula_formula_Formula_clauses ( * f_1))) (UInt64.to_int cref_5)) ( * a_2) };
-    _116 <- ();
-    assume { Resolve9.resolve _116 };
-    _118 <- borrow_mut ( * a_2);
-    a_2 <- { a_2 with current = ( ^ _118) };
-    assume { Resolve2.resolve _119 };
-    _119 <- second_lit_20;
-    _120 <-  * f_1;
-    _117 <- SetAssignment0.set_assignment _118 _119 _120;
-    goto BB36
-  }
-  BB36 {
-    assert { TrailSemInvariant0.trail_sem_invariant ( * trail_3) ( * f_1) ( * a_2) && true };
-    _121 <- ();
-    assume { Resolve9.resolve _121 };
-    assert { PostUnit0.post_unit (Seq.get (Model5.model (Type.lib_formula_formula_Formula_clauses ( * f_1))) (UInt64.to_int cref_5)) ( * a_2) };
-    _122 <- ();
-    assume { Resolve9.resolve _122 };
-    assert { ClausePostWithRegardsToLit0.clause_post_with_regards_to_lit (Seq.get (Model5.model (Type.lib_formula_formula_Formula_clauses ( * f_1))) (UInt64.to_int cref_5)) ( * a_2) second_lit_20 };
-    _123 <- ();
-    assume { Resolve9.resolve _123 };
-    _125 <- borrow_mut ( * trail_3);
-    trail_3 <- { trail_3 with current = ( ^ _125) };
-    assume { Resolve2.resolve _126 };
-    _126 <- second_lit_20;
-    assume { Resolve2.resolve second_lit_20 };
-    assume { Resolve0.resolve _128 };
-    _128 <- cref_5;
-    assume { Resolve0.resolve cref_5 };
-    _127 <- Type.Lib_Trail_Reason_Long _128;
-    _129 <-  * f_1;
-    assume { Resolve5.resolve f_1 };
-    _130 <-  * a_2;
-    assume { Resolve6.resolve a_2 };
-    _124 <- EnqAssignment0.enq_assignment _125 _126 _127 _129 _130;
-    goto BB37
-  }
-  BB37 {
     assume { Resolve7.resolve trail_3 };
+    assert { TrailSemInvariant0.trail_sem_invariant ( * trail_3) ( * f_1) ( * a_2) };
+    _105 <- ();
+    assume { Resolve9.resolve _105 };
     _0 <- Type.Core_Result_Result_Ok true;
     goto BB39
   }
-  BB38 {
+  BB32 {
+    assume { Resolve2.resolve first_lit_8 };
+    assume { Resolve2.resolve _107 };
+    _107 <- second_lit_20;
+    _108 <-  * a_2;
+    _106 <- LitUnset0.lit_unset _107 _108;
+    goto BB33
+  }
+  BB33 {
+    switch (_106)
+      | False -> goto BB37
+      | _ -> goto BB34
+      end
+  }
+  BB34 {
+    assert { not (Unsat1.unsat (Seq.get (Model5.model (Type.lib_formula_formula_Formula_clauses ( * f_1))) (UInt64.to_int cref_5)) ( * a_2)) && true && true };
+    _110 <- ();
+    assume { Resolve9.resolve _110 };
+    assert { Unit0.unit (Seq.get (Model5.model (Type.lib_formula_formula_Formula_clauses ( * f_1))) (UInt64.to_int cref_5)) ( * a_2) };
+    _111 <- ();
+    assume { Resolve9.resolve _111 };
+    _113 <- borrow_mut ( * a_2);
+    a_2 <- { a_2 with current = ( ^ _113) };
+    assume { Resolve2.resolve _114 };
+    _114 <- second_lit_20;
+    _115 <-  * f_1;
+    _112 <- SetAssignment0.set_assignment _113 _114 _115;
+    goto BB35
+  }
+  BB35 {
+    assert { TrailSemInvariant0.trail_sem_invariant ( * trail_3) ( * f_1) ( * a_2) && true };
+    _116 <- ();
+    assume { Resolve9.resolve _116 };
+    assert { PostUnit0.post_unit (Seq.get (Model5.model (Type.lib_formula_formula_Formula_clauses ( * f_1))) (UInt64.to_int cref_5)) ( * a_2) };
+    _117 <- ();
+    assume { Resolve9.resolve _117 };
+    assert { ClausePostWithRegardsToLit0.clause_post_with_regards_to_lit (Seq.get (Model5.model (Type.lib_formula_formula_Formula_clauses ( * f_1))) (UInt64.to_int cref_5)) ( * a_2) second_lit_20 };
+    _118 <- ();
+    assume { Resolve9.resolve _118 };
+    _120 <- borrow_mut ( * trail_3);
+    trail_3 <- { trail_3 with current = ( ^ _120) };
+    assume { Resolve2.resolve _121 };
+    _121 <- second_lit_20;
+    assume { Resolve2.resolve second_lit_20 };
+    assume { Resolve0.resolve _123 };
+    _123 <- cref_5;
+    assume { Resolve0.resolve cref_5 };
+    _122 <- Type.Lib_Trail_Reason_Long _123;
+    _124 <-  * f_1;
+    assume { Resolve5.resolve f_1 };
+    _125 <-  * a_2;
+    assume { Resolve6.resolve a_2 };
+    _119 <- EnqAssignment0.enq_assignment _120 _121 _122 _124 _125;
+    goto BB36
+  }
+  BB36 {
+    assume { Resolve7.resolve trail_3 };
+    _0 <- Type.Core_Result_Result_Ok true;
+    goto BB38
+  }
+  BB37 {
     assume { Resolve5.resolve f_1 };
     assume { Resolve6.resolve a_2 };
     assume { Resolve7.resolve trail_3 };
     assume { Resolve2.resolve second_lit_20 };
     assert { Unsat1.unsat (Seq.get (Model5.model (Type.lib_formula_formula_Formula_clauses ( * f_1))) (UInt64.to_int cref_5)) ( * a_2) };
-    _132 <- ();
-    assume { Resolve9.resolve _132 };
-    assume { Resolve0.resolve _133 };
-    _133 <- cref_5;
+    _127 <- ();
+    assume { Resolve9.resolve _127 };
+    assume { Resolve0.resolve _128 };
+    _128 <- cref_5;
     assume { Resolve0.resolve cref_5 };
-    _0 <- Type.Core_Result_Result_Err _133;
+    _0 <- Type.Core_Result_Result_Err _128;
+    goto BB38
+  }
+  BB38 {
     goto BB39
   }
   BB39 {
@@ -7928,9 +7922,6 @@ module Lib_UnitProp_UnitPropDoOuter
     goto BB42
   }
   BB42 {
-    goto BB43
-  }
-  BB43 {
     return _0
   }
   

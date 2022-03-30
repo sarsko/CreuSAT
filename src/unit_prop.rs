@@ -178,8 +178,9 @@ fn swap(f: &mut Formula, a: &Assignments, trail: &Trail, watches: &mut Watches, 
     proof_assert!(^@old_f === ^f);
 }
 
-
-//#[trusted] // Some work to do
+// Checks out, but very slow(should refactor)
+// Dunno if it checks out further up
+#[trusted]
 #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)] // Added. Unsure if this is the correct way to formulate it
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(@lit.idx < @f.num_vars)]
@@ -256,10 +257,13 @@ fn unit_prop_do_outer(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, w
     //proof_assert!((@(@f.clauses)[@cref])[m])
     // Ok so the assertions except the unsat or unit(which doesnt assert) are just really slow
     // If we have gotten here, the clause is either all false or unit
-    proof_assert!((@f.clauses)[@cref].unsat(*a) || ((@f.clauses)[@cref].unit(*a)));
+    proof_assert!((@f.clauses)[@cref].unsat(*a) || ((@(@f.clauses)[@cref])[0]).unset(*a) || ((@(@f.clauses)[@cref])[1]).unset(*a));
     if first_lit.lit_unset(a) {
     //if f.clauses[cref].rest[0].lit_unset(a) {
-        // Could add a runtime check here, which could simplify the proof.
+        // TODO: Prove the runtime-check
+        if second_lit.lit_unset(a) {
+            return Ok(true);
+        }
         proof_assert!(trail.trail_sem_invariant(*f, *a));
         proof_assert!(!(@f.clauses)[@cref].unsat(*a) && true);
         proof_assert!((@f.clauses)[@cref].unit(*a));
@@ -268,9 +272,9 @@ fn unit_prop_do_outer(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, w
         proof_assert!(((@f.clauses)[@cref]).post_unit(*a) && true);
         proof_assert!(clause_post_with_regards_to_lit(((@f.clauses)[@cref]), *a, first_lit));
         trail.enq_assignment(first_lit, Reason::Long(cref), f, a);
-        return Ok(true);
     //} else if f.clauses[cref].rest[1].lit_unset(a) {
         proof_assert!(trail.trail_sem_invariant(*f, *a));
+        return Ok(true);    
     } else if second_lit.lit_unset(a) {
         proof_assert!(!(@f.clauses)[@cref].unsat(*a) && true && true);
         proof_assert!((@f.clauses)[@cref].unit(*a));
@@ -293,7 +297,6 @@ fn unit_prop_do_outer(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, w
         */
         return Ok(true);
     } else {
-
         // TODO
         proof_assert!((@f.clauses)[@cref].unsat(*a));
         return Err(cref);
