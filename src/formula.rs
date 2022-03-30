@@ -161,7 +161,7 @@ impl Formula {
     }
 
     #[predicate]
-    #[trusted] // OK
+    //--#[trusted] // OK
     #[ensures(result === self.invariant_old())]
     pub fn invariant(self) -> bool {
         pearlite! {
@@ -266,7 +266,7 @@ impl Formula {
 // UNUSED
 impl Formula {
     // NONE OF THESE ARE IN USE
-    #[trusted] // OK
+    //--#[trusted] // OK
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[ensures(result === self.unsat(*a))]
@@ -284,7 +284,7 @@ impl Formula {
         return false;
     }
 
-    #[trusted] // OK
+    //--#[trusted] // OK
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[ensures(result === self.sat(*a))]
@@ -302,7 +302,7 @@ impl Formula {
         return true;
     }
 
-    #[trusted] // OK
+    //--#[trusted] // OK
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[ensures((result === SatState::Sat) === self.sat(*a))]

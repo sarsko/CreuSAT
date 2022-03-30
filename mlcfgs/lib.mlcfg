@@ -13,6 +13,11 @@ module Type
   use floating_point.Single
   use floating_point.Double
   use prelude.Prelude
+  type lib_formula_satstate  = 
+    | Lib_Formula_SatState_Unknown
+    | Lib_Formula_SatState_Sat
+    | Lib_Formula_SatState_Unsat
+    
   type creusotcontracts_std1_vec_vec 't  
   type lib_decision_decisions  = 
     | Lib_Decision_Decisions (creusotcontracts_std1_vec_vec usize)
@@ -97,11 +102,6 @@ module Type
     | Core_Option_Option_None
     | Core_Option_Option_Some 't
     
-  type lib_formula_satstate  = 
-    | Lib_Formula_SatState_Unknown
-    | Lib_Formula_SatState_Sat
-    | Lib_Formula_SatState_Unsat
-    
   type lib_watches_watcher  = 
     | Lib_Watches_Watcher usize
     
@@ -130,6 +130,38 @@ module Type
     | Core_Result_Result_Err 'e
     
 end
+module Core_Cmp_PartialEq_Eq_Interface
+  type self   
+  type rhs   
+  use prelude.Prelude
+  val eq [@cfg:stackify] (self : self) (other : rhs) : bool
+    requires {false}
+    
+end
+module Core_Cmp_PartialEq_Eq
+  type self   
+  type rhs   
+  use prelude.Prelude
+  val eq [@cfg:stackify] (self : self) (other : rhs) : bool
+    requires {false}
+    
+end
+module Core_Cmp_PartialEq_Ne_Interface
+  type self   
+  type rhs   
+  use prelude.Prelude
+  val ne [@cfg:stackify] (self : self) (other : rhs) : bool
+    requires {false}
+    
+end
+module Core_Cmp_PartialEq_Ne
+  type self   
+  type rhs   
+  use prelude.Prelude
+  val ne [@cfg:stackify] (self : self) (other : rhs) : bool
+    requires {false}
+    
+end
 module CreusotContracts_Logic_Resolve_Resolve_Resolve_Interface
   type self   
   predicate resolve (self : self)
@@ -137,6 +169,101 @@ end
 module CreusotContracts_Logic_Resolve_Resolve_Resolve
   type self   
   predicate resolve (self : self)
+end
+module Lib_Formula_Impl1_Eq_Interface
+  use prelude.Prelude
+  use Type
+  val eq [@cfg:stackify] (self : Type.lib_formula_satstate) (other : Type.lib_formula_satstate) : bool
+end
+module Lib_Formula_Impl1_Eq
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  use mach.int.Int64
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve1 with type self = (Type.lib_formula_satstate, Type.lib_formula_satstate)
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve0 with type self = Type.lib_formula_satstate
+  let rec cfg eq [@cfg:stackify] (self : Type.lib_formula_satstate) (other : Type.lib_formula_satstate) : bool = 
+  var _0 : bool;
+  var self_1 : Type.lib_formula_satstate;
+  var other_2 : Type.lib_formula_satstate;
+  var _3 : ();
+  var _4 : (Type.lib_formula_satstate, Type.lib_formula_satstate);
+  var _5 : Type.lib_formula_satstate;
+  var _6 : Type.lib_formula_satstate;
+  var _7 : isize;
+  var _8 : isize;
+  var _9 : isize;
+  var _10 : isize;
+  {
+    self_1 <- self;
+    other_2 <- other;
+    goto BB0
+  }
+  BB0 {
+    assume { Resolve0.resolve _5 };
+    _5 <- self_1;
+    assume { Resolve0.resolve self_1 };
+    assume { Resolve0.resolve _6 };
+    _6 <- other_2;
+    assume { Resolve0.resolve other_2 };
+    _4 <- (_5, _6);
+    switch (let (a, _) = _4 in a)
+      | Type.Lib_Formula_SatState_Unknown -> goto BB1
+      | Type.Lib_Formula_SatState_Sat -> goto BB3
+      | Type.Lib_Formula_SatState_Unsat -> goto BB4
+      end
+  }
+  BB1 {
+    assume { Resolve1.resolve _4 };
+    switch (let (_, a) = _4 in a)
+      | Type.Lib_Formula_SatState_Unknown -> goto BB5
+      | _ -> goto BB2
+      end
+  }
+  BB2 {
+    _0 <- false;
+    goto BB8
+  }
+  BB3 {
+    assume { Resolve1.resolve _4 };
+    switch (let (_, a) = _4 in a)
+      | Type.Lib_Formula_SatState_Sat -> goto BB6
+      | _ -> goto BB2
+      end
+  }
+  BB4 {
+    assume { Resolve1.resolve _4 };
+    switch (let (_, a) = _4 in a)
+      | Type.Lib_Formula_SatState_Unsat -> goto BB7
+      | _ -> goto BB2
+      end
+  }
+  BB5 {
+    _0 <- true;
+    goto BB8
+  }
+  BB6 {
+    _0 <- true;
+    goto BB8
+  }
+  BB7 {
+    _0 <- true;
+    goto BB8
+  }
+  BB8 {
+    return _0
+  }
+  BB9 {
+    assume { Resolve1.resolve _4 };
+    goto BB2
+  }
+  
+end
+module Lib_Formula_Impl1
+  use Type
+  clone Lib_Formula_Impl1_Eq_Interface as Eq0
+  clone Core_Cmp_PartialEq_Eq_Interface as Eq1 with type self = Type.lib_formula_satstate,
+  type rhs = Type.lib_formula_satstate, val eq = Eq0.eq
 end
 module CreusotContracts_Logic_Resolve_Impl1_Resolve_Interface
   type t   
@@ -806,38 +933,6 @@ module Lib_Lit_Impl2_ToNegWatchidx
     ensures { UInt64.to_int result = ToNegWatchidxLogic0.to_neg_watchidx_logic self }
     
 end
-module Core_Cmp_PartialEq_Eq_Interface
-  type self   
-  type rhs   
-  use prelude.Prelude
-  val eq [@cfg:stackify] (self : self) (other : rhs) : bool
-    requires {false}
-    
-end
-module Core_Cmp_PartialEq_Eq
-  type self   
-  type rhs   
-  use prelude.Prelude
-  val eq [@cfg:stackify] (self : self) (other : rhs) : bool
-    requires {false}
-    
-end
-module Core_Cmp_PartialEq_Ne_Interface
-  type self   
-  type rhs   
-  use prelude.Prelude
-  val ne [@cfg:stackify] (self : self) (other : rhs) : bool
-    requires {false}
-    
-end
-module Core_Cmp_PartialEq_Ne
-  type self   
-  type rhs   
-  use prelude.Prelude
-  val ne [@cfg:stackify] (self : self) (other : rhs) : bool
-    requires {false}
-    
-end
 module Lib_Lit_Impl3_Eq_Interface
   use prelude.Prelude
   use Type
@@ -980,6 +1075,21 @@ module Lib_Clause_AtLeastBinary
   use mach.int.Int32
   predicate at_least_binary (s : Seq.seq (Type.lib_lit_lit)) = 
     Seq.length s >= 2
+end
+module Lib_Clause_InvariantUnaryOkInternal_Interface
+  use seq.Seq
+  use Type
+  use mach.int.Int
+  predicate invariant_unary_ok_internal (s : Seq.seq (Type.lib_lit_lit)) (n : int)
+end
+module Lib_Clause_InvariantUnaryOkInternal
+  use seq.Seq
+  use Type
+  use mach.int.Int
+  clone Lib_Clause_NoDuplicateIndexesInner_Interface as NoDuplicateIndexesInner0
+  clone Lib_Clause_VarsInRangeInner_Interface as VarsInRangeInner0
+  predicate invariant_unary_ok_internal (s : Seq.seq (Type.lib_lit_lit)) (n : int) = 
+    VarsInRangeInner0.vars_in_range_inner s n && NoDuplicateIndexesInner0.no_duplicate_indexes_inner s
 end
 module Lib_Clause_InvariantInternal_Interface
   use seq.Seq
@@ -1312,6 +1422,21 @@ module Lib_Formula_Impl2_InvariantOld
   predicate invariant_old (self : Type.lib_formula_formula) = 
     forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses self)) -> Invariant0.invariant' (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses self)) i) (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars self))
 end
+module Lib_Formula_FormulaInvariant_Interface
+  use seq.Seq
+  use Type
+  use mach.int.Int
+  predicate formula_invariant (f : (Seq.seq (Type.lib_clause_clause), int))
+end
+module Lib_Formula_FormulaInvariant
+  use seq.Seq
+  use Type
+  use mach.int.Int
+  use mach.int.Int32
+  clone Lib_Clause_Impl3_Invariant_Interface as Invariant0
+  predicate formula_invariant (f : (Seq.seq (Type.lib_clause_clause), int)) = 
+    forall i : (int) . 0 <= i && i < Seq.length (let (a, _) = f in a) -> Invariant0.invariant' (Seq.get (let (a, _) = f in a) i) (let (_, a) = f in a)
+end
 module Lib_Formula_Impl2_Invariant_Interface
   use Type
   clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
@@ -1320,8 +1445,35 @@ end
 module Lib_Formula_Impl2_Invariant
   use Type
   clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
-  predicate invariant' (self : Type.lib_formula_formula)
+  clone Lib_Formula_FormulaInvariant_Interface as FormulaInvariant0
+  clone Lib_Formula_Impl0_Model_Interface as Model0
+  predicate invariant' (self : Type.lib_formula_formula) = 
+    FormulaInvariant0.formula_invariant (Model0.model self)
   axiom invariant'_spec : forall self : Type.lib_formula_formula . invariant' self = InvariantOld0.invariant_old self
+end
+module Lib_Formula_Impl2_Invariant_Impl
+  use Type
+  clone Lib_Lit_Impl1_Invariant as Invariant1
+  clone Lib_Clause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant1.invariant'
+  clone Lib_Clause_AtLeastBinary as AtLeastBinary0
+  clone Lib_Clause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
+  clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
+  predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
+  predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model2 with function Model0.model = Model3.model
+  clone Lib_Clause_Impl3_Invariant as Invariant0 with function Model0.model = Model2.model,
+  predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant0.invariant'
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.lib_clause_clause
+  clone Lib_Formula_Impl0_Model as Model0 with function Model0.model = Model1.model
+  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model1.model,
+  predicate Invariant0.invariant' = Invariant0.invariant'
+  let rec ghost function invariant' (self : Type.lib_formula_formula) : bool
+    ensures { result = InvariantOld0.invariant_old self }
+    
+   = 
+    let a' = Model0.model self in FormulaInvariant0.formula_invariant a'
 end
 module Lib_Clause_Impl3_Equals_Interface
   use Type
@@ -1595,6 +1747,19 @@ module Lib_Clause_Impl3_NoDuplicateIndexes
   clone Lib_Clause_Impl1_Model_Interface as Model0
   predicate no_duplicate_indexes (self : Type.lib_clause_clause) = 
     NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model0.model self)
+end
+module Lib_Clause_Impl3_InvariantUnaryOk_Interface
+  use Type
+  use mach.int.Int
+  predicate invariant_unary_ok (self : Type.lib_clause_clause) (n : int)
+end
+module Lib_Clause_Impl3_InvariantUnaryOk
+  use Type
+  use mach.int.Int
+  clone Lib_Clause_Impl3_NoDuplicateIndexes_Interface as NoDuplicateIndexes0
+  clone Lib_Clause_Impl3_VarsInRange_Interface as VarsInRange0
+  predicate invariant_unary_ok (self : Type.lib_clause_clause) (n : int) = 
+    VarsInRange0.vars_in_range self n && NoDuplicateIndexes0.no_duplicate_indexes self
 end
 module Lib_Clause_Impl4_ClauseFromVec_Interface
   use prelude.Prelude
@@ -2016,18 +2181,21 @@ module Lib_Assignments_Impl2_New
   clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
   predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model3 with function Model0.model = Model4.model
-  clone Lib_Clause_Impl3_Invariant as Invariant2 with function Model0.model = Model3.model,
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model4 with function Model0.model = Model5.model
+  clone Lib_Clause_Impl3_Invariant as Invariant2 with function Model0.model = Model4.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model0 with function Model0.model = Model2.model
-  clone Lib_Assignments_Impl1_Invariant as Invariant1 with function Model0.model = Model0.model
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.lib_clause_clause
-  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model1.model,
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant2.invariant'
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model1 with function Model0.model = Model3.model
+  clone Lib_Assignments_Impl1_Invariant as Invariant1 with function Model0.model = Model1.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.lib_clause_clause
+  clone Lib_Formula_Impl0_Model as Model0 with function Model0.model = Model2.model
+  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model2.model,
   predicate Invariant0.invariant' = Invariant2.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  function Model0.model = Model0.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   val new [@cfg:stackify] (f : Type.lib_formula_formula) : Type.lib_assignments_assignments
     requires {Invariant0.invariant' f}
     ensures { Invariant1.invariant' result f }
@@ -2360,37 +2528,6 @@ module Lib_Assignments_Impl2_CancelUntil
     ensures { Invariant1.invariant' ( ^ trail) _f }
     
 end
-module Lib_Formula_Impl1_Eq_Interface
-  use prelude.Prelude
-  use Type
-  val eq [@cfg:stackify] (self : Type.lib_formula_satstate) (other : Type.lib_formula_satstate) : bool
-end
-module Lib_Formula_Impl1_Eq
-  use prelude.Prelude
-  use Type
-  val eq [@cfg:stackify] (self : Type.lib_formula_satstate) (other : Type.lib_formula_satstate) : bool
-end
-module Lib_Formula_Impl1
-  use Type
-  clone Lib_Formula_Impl1_Eq_Interface as Eq0
-  clone Core_Cmp_PartialEq_Eq_Interface as Eq1 with type self = Type.lib_formula_satstate,
-  type rhs = Type.lib_formula_satstate, val eq = Eq0.eq
-end
-module Lib_Formula_FormulaInvariant_Interface
-  use seq.Seq
-  use Type
-  use mach.int.Int
-  predicate formula_invariant (f : (Seq.seq (Type.lib_clause_clause), int))
-end
-module Lib_Formula_FormulaInvariant
-  use seq.Seq
-  use Type
-  use mach.int.Int
-  use mach.int.Int32
-  clone Lib_Clause_Impl3_Invariant_Interface as Invariant0
-  predicate formula_invariant (f : (Seq.seq (Type.lib_clause_clause), int)) = 
-    forall i : (int) . 0 <= i && i < Seq.length (let (a, _) = f in a) -> Invariant0.invariant' (Seq.get (let (a, _) = f in a) i) (let (_, a) = f in a)
-end
 module Lib_Formula_Impl2_SatInner_Interface
   use Type
   use seq.Seq
@@ -2524,8 +2661,34 @@ module Lib_Formula_Impl2_Sat
   use Type
   clone Lib_Formula_Impl2_SatInner_Interface as SatInner0
   clone Lib_Assignments_Impl0_Model_Interface as Model0
-  predicate sat (self : Type.lib_formula_formula) (a : Type.lib_assignments_assignments)
+  clone Lib_Formula_FormulaSatInner_Interface as FormulaSatInner0
+  clone Lib_Formula_Impl0_Model_Interface as Model1
+  predicate sat (self : Type.lib_formula_formula) (a : Type.lib_assignments_assignments) = 
+    FormulaSatInner0.formula_sat_inner (Model1.model self) (Model0.model a)
   axiom sat_spec : forall self : Type.lib_formula_formula, a : Type.lib_assignments_assignments . sat self a = SatInner0.sat_inner self (Model0.model a)
+end
+module Lib_Formula_Impl2_Sat_Impl
+  use Type
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model4 with function Model0.model = Model5.model
+  clone Lib_Lit_Impl1_SatInner as SatInner2
+  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model4.model,
+  predicate SatInner0.sat_inner = SatInner2.sat_inner
+  clone Lib_Formula_FormulaSatInner as FormulaSatInner0 with predicate SatInner0.sat_inner = SatInner1.sat_inner
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = Type.lib_clause_clause
+  clone Lib_Formula_Impl0_Model as Model1 with function Model0.model = Model3.model
+  clone Lib_Formula_Impl2_SatInner as SatInner0 with function Model0.model = Model3.model,
+  predicate SatInner0.sat_inner = SatInner1.sat_inner
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model0 with function Model0.model = Model2.model
+  let rec ghost function sat (self : Type.lib_formula_formula) (a : Type.lib_assignments_assignments) : bool
+    ensures { result = SatInner0.sat_inner self (Model0.model a) }
+    
+   = 
+    let a' = Model1.model self in let b' = Model0.model a in FormulaSatInner0.formula_sat_inner a' b'
 end
 module Lib_Formula_Impl2_UnsatInner_Interface
   use Type
@@ -2573,6 +2736,189 @@ module Lib_Watches_Impl0_Invariant
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher)
   predicate invariant' (self : Type.lib_watches_watches) (f : Type.lib_formula_formula) = 
     2 * UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f) = Seq.length (Model0.model (Type.lib_watches_watches_Watches_watches self)) && (forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.lib_watches_watches_Watches_watches self)) -> (forall j : (int) . 0 <= j && j < Seq.length (Model1.model (Seq.get (Model0.model (Type.lib_watches_watches_Watches_watches self)) i)) -> UInt64.to_int (Type.lib_watches_watcher_Watcher_cref (Seq.get (Model1.model (Seq.get (Model0.model (Type.lib_watches_watches_Watches_watches self)) i)) j)) < Seq.length (Model2.model (Type.lib_formula_formula_Formula_clauses f))))
+end
+module CreusotContracts_Std1_Vec_Impl1_Len_Interface
+  type t   
+  use mach.int.UInt64
+  use seq.Seq
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = t
+  clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model0 with type t = Type.creusotcontracts_std1_vec_vec t,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  val len [@cfg:stackify] (self : Type.creusotcontracts_std1_vec_vec t) : usize
+    ensures { UInt64.to_int result = Seq.length (Model0.model self) }
+    
+end
+module CreusotContracts_Std1_Vec_Impl1_Len
+  type t   
+  use mach.int.UInt64
+  use seq.Seq
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = t
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = t
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.creusotcontracts_std1_vec_vec t,
+  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model1.model
+  val len [@cfg:stackify] (self : Type.creusotcontracts_std1_vec_vec t) : usize
+    ensures { UInt64.to_int result = Seq.length (Model0.model self) }
+    
+end
+module Core_Ops_Index_Index_Output
+  type self   
+  type idx   
+  type output   
+end
+module Core_Ops_Index_Index_Index_Interface
+  type self   
+  type idx   
+  use prelude.Prelude
+  clone Core_Ops_Index_Index_Output as Output0 with type self = self, type idx = idx
+  val index [@cfg:stackify] (self : self) (index : idx) : Output0.output
+    requires {false}
+    
+end
+module Core_Ops_Index_Index_Index
+  type self   
+  type idx   
+  use prelude.Prelude
+  clone Core_Ops_Index_Index_Output as Output0 with type self = self, type idx = idx
+  val index [@cfg:stackify] (self : self) (index : idx) : Output0.output
+    requires {false}
+    
+end
+module CreusotContracts_Std1_Vec_Impl3_Output
+  type t   
+  type output  = 
+    t
+end
+module CreusotContracts_Std1_Vec_Impl3_Index_Interface
+  type t   
+  use mach.int.UInt64
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = t
+  clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model0 with type t = Type.creusotcontracts_std1_vec_vec t,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  val index [@cfg:stackify] (self : Type.creusotcontracts_std1_vec_vec t) (ix : usize) : t
+    requires {UInt64.to_int ix < Seq.length (Model0.model self)}
+    ensures { result = Seq.get (Model0.model self) (UInt64.to_int ix) }
+    
+end
+module CreusotContracts_Std1_Vec_Impl3_Index
+  type t   
+  use mach.int.UInt64
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = t
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = t
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.creusotcontracts_std1_vec_vec t,
+  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model1.model
+  val index [@cfg:stackify] (self : Type.creusotcontracts_std1_vec_vec t) (ix : usize) : t
+    requires {UInt64.to_int ix < Seq.length (Model0.model self)}
+    ensures { result = Seq.get (Model0.model self) (UInt64.to_int ix) }
+    
+end
+module CreusotContracts_Std1_Vec_Impl3
+  type t   
+  use Type
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = t
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = t
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.creusotcontracts_std1_vec_vec t,
+  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model1.model
+  clone CreusotContracts_Std1_Vec_Impl3_Index_Interface as Index0 with type t = t, function Model0.model = Model0.model
+  clone CreusotContracts_Std1_Vec_Impl3_Output as Output0 with type t = t
+  clone Core_Ops_Index_Index_Index_Interface as Index1 with type self = Type.creusotcontracts_std1_vec_vec t,
+  type idx = usize, type Output0.output = Output0.output, val index = Index0.index
+  clone Core_Ops_Index_Index_Output as Output1 with type self = Type.creusotcontracts_std1_vec_vec t, type idx = usize,
+  type output = Output0.output
+end
+module CreusotContracts_Std1_Vec_Impl1_Push_Interface
+  type t   
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.Int32
+  use prelude.Prelude
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = t
+  clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model1 with type t = Type.creusotcontracts_std1_vec_vec t,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t
+  val push [@cfg:stackify] (self : borrowed (Type.creusotcontracts_std1_vec_vec t)) (v : t) : ()
+    ensures { Seq.get (Model0.model ( ^ self)) (Seq.length (Model0.model ( ^ self)) - 1) = v }
+    ensures { Seq.length (Model1.model self) + 1 = Seq.length (Model0.model ( ^ self)) }
+    ensures { forall i : (int) . 0 <= i && i < Seq.length (Model1.model self) -> Seq.get (Model1.model self) i = Seq.get (Model0.model ( ^ self)) i }
+    ensures { Model0.model ( ^ self) = Seq.snoc (Model1.model self) v }
+    
+end
+module CreusotContracts_Std1_Vec_Impl1_Push
+  type t   
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.Int32
+  use prelude.Prelude
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = t
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = t
+  clone CreusotContracts_Logic_Model_Impl1_Model as Model1 with type t = Type.creusotcontracts_std1_vec_vec t,
+  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model0.model
+  val push [@cfg:stackify] (self : borrowed (Type.creusotcontracts_std1_vec_vec t)) (v : t) : ()
+    ensures { Seq.get (Model0.model ( ^ self)) (Seq.length (Model0.model ( ^ self)) - 1) = v }
+    ensures { Seq.length (Model1.model self) + 1 = Seq.length (Model0.model ( ^ self)) }
+    ensures { forall i : (int) . 0 <= i && i < Seq.length (Model1.model self) -> Seq.get (Model1.model self) i = Seq.get (Model0.model ( ^ self)) i }
+    ensures { Model0.model ( ^ self) = Seq.snoc (Model1.model self) v }
+    
+end
+module Lib_Watches_Impl1_AddWatcher_Interface
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.UInt64
+  use prelude.Prelude
+  use mach.int.Int32
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = Type.lib_clause_clause
+  clone Lib_Watches_Impl0_Invariant_Interface as Invariant0
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher)
+  clone Lib_Lit_Impl0_ToNegWatchidxLogic_Interface as ToNegWatchidxLogic0
+  val add_watcher [@cfg:stackify] (self : borrowed (Type.lib_watches_watches)) (lit : Type.lib_lit_lit) (cref : usize) (_f : Type.lib_formula_formula) : ()
+    requires {ToNegWatchidxLogic0.to_neg_watchidx_logic lit < Seq.length (Model0.model (Type.lib_watches_watches_Watches_watches ( * self)))}
+    requires {UInt64.to_int (Type.lib_lit_lit_Lit_idx lit) < div 18446744073709551615 2}
+    requires {Invariant0.invariant' ( * self) _f}
+    requires {UInt64.to_int cref < Seq.length (Model1.model (Type.lib_formula_formula_Formula_clauses _f))}
+    ensures { Seq.length (Model0.model (Type.lib_watches_watches_Watches_watches ( * self))) = Seq.length (Model0.model (Type.lib_watches_watches_Watches_watches ( ^ self))) }
+    ensures { Invariant0.invariant' ( ^ self) _f }
+    
+end
+module Lib_Watches_Impl1_AddWatcher
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.UInt64
+  use prelude.Prelude
+  use mach.int.Int32
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.lib_clause_clause
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.lib_watches_watcher
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher)
+  clone Lib_Watches_Impl0_Invariant as Invariant0 with function Model0.model = Model0.model,
+  function Model1.model = Model2.model, function Model2.model = Model1.model
+  clone Lib_Lit_Impl0_ToNegWatchidxLogic as ToNegWatchidxLogic0
+  val add_watcher [@cfg:stackify] (self : borrowed (Type.lib_watches_watches)) (lit : Type.lib_lit_lit) (cref : usize) (_f : Type.lib_formula_formula) : ()
+    requires {ToNegWatchidxLogic0.to_neg_watchidx_logic lit < Seq.length (Model0.model (Type.lib_watches_watches_Watches_watches ( * self)))}
+    requires {UInt64.to_int (Type.lib_lit_lit_Lit_idx lit) < div 18446744073709551615 2}
+    requires {Invariant0.invariant' ( * self) _f}
+    requires {UInt64.to_int cref < Seq.length (Model1.model (Type.lib_formula_formula_Formula_clauses _f))}
+    ensures { Seq.length (Model0.model (Type.lib_watches_watches_Watches_watches ( * self))) = Seq.length (Model0.model (Type.lib_watches_watches_Watches_watches ( ^ self))) }
+    ensures { Invariant0.invariant' ( ^ self) _f }
+    
 end
 module Lib_Formula_Impl3_AddClause_Interface
   use mach.int.UInt64
@@ -2649,6 +2995,7 @@ module Lib_Formula_Impl3_AddClause
   clone Lib_Clause_EquisatExtensionInner as EquisatExtensionInner0 with predicate EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass = EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass
   clone Lib_Clause_Impl3_Invariant as Invariant4 with function Model0.model = Model1.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant4.invariant'
   clone Lib_Formula_Impl0_ModelTy as ModelTy0
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.lib_clause_clause
   clone Lib_Trail_CrefsInRange as CrefsInRange0 with function Model0.model = Model2.model
@@ -2660,18 +3007,44 @@ module Lib_Formula_Impl3_AddClause
   predicate TrailInvariantFull0.trail_invariant_full = TrailInvariantFull0.trail_invariant_full
   clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model2.model,
   predicate Invariant0.invariant' = Invariant4.invariant'
-  clone Lib_Formula_Impl2_Invariant as Invariant2 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
   clone Lib_Formula_Impl0_Model as Model5 with function Model0.model = Model2.model
   clone Lib_Formula_Impl2_EquisatCompatible as EquisatCompatible0 with function Model0.model = Model5.model,
   predicate EquisatCompatibleInner0.equisat_compatible_inner = EquisatCompatibleInner0.equisat_compatible_inner
+  clone Lib_Formula_Impl2_Invariant as Invariant2 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  function Model0.model = Model5.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   clone CreusotContracts_Logic_Model_Impl1_Model as Model0 with type t = Type.lib_formula_formula,
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model5.model
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = Type.lib_watches_watcher
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher)
   clone Lib_Watches_Impl0_Invariant as Invariant0 with function Model0.model = Model3.model,
   function Model1.model = Model4.model, function Model2.model = Model2.model
-  val add_clause [@cfg:stackify] (self : borrowed (Type.lib_formula_formula)) (clause : Type.lib_clause_clause) (watches : borrowed (Type.lib_watches_watches)) (_t : Type.lib_trail_trail) : usize
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve6 with type t = Type.lib_watches_watches
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve5 with type t = Type.lib_formula_formula
+  clone Lib_Lit_Impl0_ToNegWatchidxLogic as ToNegWatchidxLogic0
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve4 with type self = usize
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve3 with type self = Type.lib_clause_clause
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve2 with type self = Type.lib_lit_lit
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve1 with type self = Type.lib_lit_lit
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy2 with type t = Type.lib_lit_lit
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy1 with type t = Type.lib_clause_clause
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve0 with type self = Type.lib_trail_trail
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model10 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_lit_lit),
+  type ModelTy0.modelTy = ModelTy2.modelTy, function Model0.model = Model6.model
+  clone CreusotContracts_Std1_Vec_Impl3_Index_Interface as Index0 with type t = Type.lib_lit_lit,
+  function Model0.model = Model10.model
+  clone CreusotContracts_Logic_Model_Impl1_Model as Model11 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_clause_clause),
+  type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model2.model
+  clone CreusotContracts_Std1_Vec_Impl1_Push_Interface as Push0 with type t = Type.lib_clause_clause,
+  function Model0.model = Model2.model, function Model1.model = Model11.model
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model9 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_clause_clause),
+  type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model2.model
+  clone CreusotContracts_Std1_Vec_Impl1_Len_Interface as Len0 with type t = Type.lib_clause_clause,
+  function Model0.model = Model9.model
+  clone Lib_Watches_Impl1_AddWatcher_Interface as AddWatcher0 with function ToNegWatchidxLogic0.to_neg_watchidx_logic = ToNegWatchidxLogic0.to_neg_watchidx_logic,
+  function Model0.model = Model3.model, predicate Invariant0.invariant' = Invariant0.invariant',
+  function Model1.model = Model2.model
+  let rec cfg add_clause [@cfg:stackify] (self : borrowed (Type.lib_formula_formula)) (clause : Type.lib_clause_clause) (watches : borrowed (Type.lib_watches_watches)) (_t : Type.lib_trail_trail) : usize
     requires {Invariant0.invariant' ( * watches) ( * self)}
     requires {EquisatExtensionInner0.equisat_extension_inner clause (Model0.model self)}
     requires {NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model1.model clause)}
@@ -2688,6 +3061,118 @@ module Lib_Formula_Impl3_AddClause
     ensures { UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( ^ self)) }
     ensures { Invariant0.invariant' ( ^ watches) ( ^ self) }
     
+   = 
+  var _0 : usize;
+  var self_1 : borrowed (Type.lib_formula_formula);
+  var clause_2 : Type.lib_clause_clause;
+  var watches_3 : borrowed (Type.lib_watches_watches);
+  var _t_4 : Type.lib_trail_trail;
+  var cref_5 : usize;
+  var _6 : Type.creusotcontracts_std1_vec_vec (Type.lib_clause_clause);
+  var first_lit_7 : Type.lib_lit_lit;
+  var _8 : Type.lib_lit_lit;
+  var _9 : Type.creusotcontracts_std1_vec_vec (Type.lib_lit_lit);
+  var second_lit_10 : Type.lib_lit_lit;
+  var _11 : Type.lib_lit_lit;
+  var _12 : Type.creusotcontracts_std1_vec_vec (Type.lib_lit_lit);
+  var _13 : ();
+  var _14 : borrowed (Type.creusotcontracts_std1_vec_vec (Type.lib_clause_clause));
+  var _15 : Type.lib_clause_clause;
+  var _16 : ();
+  var _17 : borrowed (Type.lib_watches_watches);
+  var _18 : Type.lib_lit_lit;
+  var _19 : usize;
+  var _20 : Type.lib_formula_formula;
+  var _21 : ();
+  var _22 : borrowed (Type.lib_watches_watches);
+  var _23 : Type.lib_lit_lit;
+  var _24 : usize;
+  var _25 : Type.lib_formula_formula;
+  {
+    self_1 <- self;
+    clause_2 <- clause;
+    watches_3 <- watches;
+    _t_4 <- _t;
+    goto BB0
+  }
+  BB0 {
+    assume { Resolve0.resolve _t_4 };
+    goto BB1
+  }
+  BB1 {
+    goto BB2
+  }
+  BB2 {
+    goto BB3
+  }
+  BB3 {
+    goto BB4
+  }
+  BB4 {
+    _6 <- Type.lib_formula_formula_Formula_clauses ( * self_1);
+    cref_5 <- Len0.len _6;
+    goto BB5
+  }
+  BB5 {
+    _9 <- Type.lib_clause_clause_Clause_rest clause_2;
+    _8 <- Index0.index _9 (0 : usize);
+    goto BB6
+  }
+  BB6 {
+    assume { Resolve1.resolve first_lit_7 };
+    first_lit_7 <- _8;
+    assume { Resolve2.resolve _8 };
+    _12 <- Type.lib_clause_clause_Clause_rest clause_2;
+    _11 <- Index0.index _12 (1 : usize);
+    goto BB7
+  }
+  BB7 {
+    assume { Resolve1.resolve second_lit_10 };
+    second_lit_10 <- _11;
+    assume { Resolve2.resolve _11 };
+    _14 <- borrow_mut (Type.lib_formula_formula_Formula_clauses ( * self_1));
+    self_1 <- { self_1 with current = (let Type.Lib_Formula_Formula a b =  * self_1 in Type.Lib_Formula_Formula ( ^ _14) b) };
+    assume { Resolve3.resolve _15 };
+    _15 <- clause_2;
+    _13 <- Push0.push _14 _15;
+    goto BB8
+  }
+  BB8 {
+    _17 <- borrow_mut ( * watches_3);
+    watches_3 <- { watches_3 with current = ( ^ _17) };
+    assume { Resolve1.resolve _18 };
+    _18 <- first_lit_7;
+    assume { Resolve1.resolve first_lit_7 };
+    assume { Resolve4.resolve _19 };
+    _19 <- cref_5;
+    _20 <-  * self_1;
+    _16 <- AddWatcher0.add_watcher _17 _18 _19 _20;
+    goto BB9
+  }
+  BB9 {
+    _22 <- borrow_mut ( * watches_3);
+    watches_3 <- { watches_3 with current = ( ^ _22) };
+    assume { Resolve1.resolve _23 };
+    _23 <- second_lit_10;
+    assume { Resolve1.resolve second_lit_10 };
+    assume { Resolve4.resolve _24 };
+    _24 <- cref_5;
+    _25 <-  * self_1;
+    assume { Resolve5.resolve self_1 };
+    _21 <- AddWatcher0.add_watcher _22 _23 _24 _25;
+    goto BB10
+  }
+  BB10 {
+    assume { Resolve6.resolve watches_3 };
+    assume { Resolve4.resolve _0 };
+    _0 <- cref_5;
+    assume { Resolve4.resolve cref_5 };
+    goto BB11
+  }
+  BB11 {
+    return _0
+  }
+  
 end
 module Lib_Logic_LemmaPermutClauseOk_Interface
   use mach.int.Int
@@ -3639,23 +4124,26 @@ module Lib_SolverDpll_IsClauseSat
   clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
   predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model3 with function Model0.model = Model4.model
-  clone Lib_Clause_Impl3_Invariant as Invariant2 with function Model0.model = Model3.model,
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model4 with function Model0.model = Model5.model
+  clone Lib_Clause_Impl3_Invariant as Invariant2 with function Model0.model = Model4.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant2.invariant'
   clone Lib_Lit_Impl1_SatInner as SatInner1
-  clone Lib_Clause_Impl3_SatInner as SatInner0 with function Model0.model = Model3.model,
+  clone Lib_Clause_Impl3_SatInner as SatInner0 with function Model0.model = Model4.model,
   predicate SatInner0.sat_inner = SatInner1.sat_inner
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model1 with function Model0.model = Model2.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model1 with function Model0.model = Model3.model
   clone Lib_Clause_Impl3_Sat as Sat0 with function Model0.model = Model1.model,
   predicate SatInner0.sat_inner = SatInner0.sat_inner
   clone Lib_Assignments_Impl1_Invariant as Invariant0 with function Model0.model = Model1.model
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.lib_clause_clause
+  clone Lib_Formula_Impl0_Model as Model2 with function Model0.model = Model0.model
   clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model0.model,
   predicate Invariant0.invariant' = Invariant2.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant1 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  function Model0.model = Model2.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   val is_clause_sat [@cfg:stackify] (f : Type.lib_formula_formula) (idx : usize) (a : Type.lib_assignments_assignments) : bool
     requires {UInt64.to_int idx < Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f))}
     requires {Invariant0.invariant' a f}
@@ -3696,23 +4184,26 @@ module Lib_SolverDpll_IsClauseUnsat
   clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
   predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model3 with function Model0.model = Model4.model
-  clone Lib_Clause_Impl3_Invariant as Invariant2 with function Model0.model = Model3.model,
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model4 with function Model0.model = Model5.model
+  clone Lib_Clause_Impl3_Invariant as Invariant2 with function Model0.model = Model4.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant2.invariant'
   clone Lib_Lit_Impl1_UnsatInner as UnsatInner1
-  clone Lib_Clause_Impl3_UnsatInner as UnsatInner0 with function Model0.model = Model3.model,
+  clone Lib_Clause_Impl3_UnsatInner as UnsatInner0 with function Model0.model = Model4.model,
   predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model1 with function Model0.model = Model2.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model1 with function Model0.model = Model3.model
   clone Lib_Clause_Impl3_Unsat as Unsat0 with function Model0.model = Model1.model,
   predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
   clone Lib_Assignments_Impl1_Invariant as Invariant0 with function Model0.model = Model1.model
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.lib_clause_clause
+  clone Lib_Formula_Impl0_Model as Model2 with function Model0.model = Model0.model
   clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model0.model,
   predicate Invariant0.invariant' = Invariant2.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant1 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  function Model0.model = Model2.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   val is_clause_unsat [@cfg:stackify] (f : Type.lib_formula_formula) (idx : usize) (a : Type.lib_assignments_assignments) : bool
     requires {UInt64.to_int idx < Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f))}
     requires {Invariant0.invariant' a f}
@@ -3770,32 +4261,35 @@ module Lib_SolverDpll_LearnUnit
   predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
   clone Lib_Lit_Impl1_SatInner as SatInner0
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model7 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model6 with function Model0.model = Model7.model
-  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model6.model,
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model8 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model7 with function Model0.model = Model8.model
+  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model7.model,
   predicate SatInner0.sat_inner = SatInner0.sat_inner, predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
-  clone Lib_Clause_Impl3_Invariant as Invariant3 with function Model0.model = Model6.model,
+  clone Lib_Clause_Impl3_Invariant as Invariant3 with function Model0.model = Model7.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
-  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model7.model
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant3.invariant'
+  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model8.model
   clone Lib_Trail_VardataInvariant as VardataInvariant0
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = Type.lib_clause_clause
-  clone Lib_Trail_CrefsInRange as CrefsInRange0 with function Model0.model = Model5.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model6 with type t = Type.lib_clause_clause
+  clone Lib_Trail_CrefsInRange as CrefsInRange0 with function Model0.model = Model6.model
   clone Lib_Trail_TrailInvariantFull as TrailInvariantFull0 with predicate TrailInvariant0.trail_invariant = TrailInvariant0.trail_invariant,
   predicate VardataInvariant0.vardata_invariant = VardataInvariant0.vardata_invariant,
   predicate CrefsInRange0.crefs_in_range = CrefsInRange0.crefs_in_range
-  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model5.model,
+  clone Lib_Formula_Impl0_Model as Model4 with function Model0.model = Model6.model
+  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model6.model,
   predicate Invariant0.invariant' = Invariant3.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant2 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model2 with function Model0.model = Model4.model
+  function Model0.model = Model4.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model2 with function Model0.model = Model5.model
   clone Lib_Lit_Impl1_Sat as Sat0 with function Model0.model = Model2.model,
   predicate SatInner0.sat_inner = SatInner0.sat_inner
   clone Lib_Clause_Impl2_PostUnit as PostUnit0 with function Model0.model = Model2.model,
   predicate PostUnitInner0.post_unit_inner = PostUnitInner0.post_unit_inner
   clone Lib_Trail_ClausePostWithRegardsTo as ClausePostWithRegardsTo0 with predicate PostUnit0.post_unit = PostUnit0.post_unit,
-  function Model0.model = Model6.model, predicate Sat0.sat = Sat0.sat
-  clone Lib_Trail_LongArePostUnit as LongArePostUnit0 with function Model0.model = Model5.model,
+  function Model0.model = Model7.model, predicate Sat0.sat = Sat0.sat
+  clone Lib_Trail_LongArePostUnit as LongArePostUnit0 with function Model0.model = Model6.model,
   predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
   clone Lib_Assignments_Impl1_Invariant as Invariant1 with function Model0.model = Model2.model
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_lit_lit)
@@ -3897,6 +4391,7 @@ module Lib_SolverDpll_HandleConflict
   predicate Equisat0.equisat = Equisat0.equisat
   clone Lib_Clause_Impl3_Invariant as Invariant4 with function Model0.model = Model8.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant4.invariant'
   clone Lib_Trail_VardataInvariant as VardataInvariant0
   clone Lib_Lit_Impl1_UnsatInner as UnsatInner2
   clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model8.model,
@@ -3932,7 +4427,8 @@ module Lib_SolverDpll_HandleConflict
   clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model0.model,
   predicate Invariant0.invariant' = Invariant4.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant3 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  function Model0.model = Model6.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   clone Lib_Trail_LongArePostUnit as LongArePostUnit0 with function Model0.model = Model0.model,
   predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
   clone Lib_Watches_Impl0_Invariant as Invariant0 with function Model0.model = Model4.model,
@@ -4028,25 +4524,26 @@ module Lib_SolverDpll_UnitPropStep
   clone Lib_Lit_Impl1_UnsatInner as UnsatInner2
   clone Lib_Logic_Unset as Unset0
   clone Lib_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model9 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model8 with function Model0.model = Model9.model
-  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model8.model,
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model10 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model9 with function Model0.model = Model10.model
+  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model9.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner, predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model8.model,
+  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model9.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
-  clone Lib_Clause_Impl3_UnsatInner as UnsatInner1 with function Model0.model = Model8.model,
+  clone Lib_Clause_Impl3_UnsatInner as UnsatInner1 with function Model0.model = Model9.model,
   predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone Lib_Clause_Impl3_Invariant as Invariant5 with function Model0.model = Model8.model,
+  clone Lib_Clause_Impl3_Invariant as Invariant5 with function Model0.model = Model9.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
-  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model9.model
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model7 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model6 with function Model0.model = Model7.model
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant5.invariant'
+  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model10.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model8 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model6 with function Model0.model = Model8.model
   clone Lib_Lit_Impl1_Sat as Sat0 with function Model0.model = Model6.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
   clone Lib_Clause_Impl2_PostUnit as PostUnit0 with function Model0.model = Model6.model,
   predicate PostUnitInner0.post_unit_inner = PostUnitInner0.post_unit_inner
   clone Lib_Trail_ClausePostWithRegardsTo as ClausePostWithRegardsTo0 with predicate PostUnit0.post_unit = PostUnit0.post_unit,
-  function Model0.model = Model8.model, predicate Sat0.sat = Sat0.sat
+  function Model0.model = Model9.model, predicate Sat0.sat = Sat0.sat
   clone Lib_Assignments_Impl1_Invariant as Invariant3 with function Model0.model = Model6.model
   clone Lib_Trail_VardataInvariant as VardataInvariant0
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = usize
@@ -4070,10 +4567,12 @@ module Lib_SolverDpll_UnitPropStep
   predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
   clone Lib_Formula_Impl2_Unsat as Unsat0 with function Model0.model = Model6.model,
   predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
+  clone Lib_Formula_Impl0_Model as Model7 with function Model0.model = Model3.model
   clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model3.model,
   predicate Invariant0.invariant' = Invariant5.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant4 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  function Model0.model = Model7.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   clone Lib_Trail_LongArePostUnit as LongArePostUnit0 with function Model0.model = Model3.model,
   predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
   clone Lib_Trail_Impl2_TrailSemInvariant as TrailSemInvariant0 with function Model0.model = Model4.model,
@@ -4166,25 +4665,26 @@ module Lib_SolverDpll_UnitPropLoop
   clone Lib_Lit_Impl1_UnsatInner as UnsatInner2
   clone Lib_Logic_Unset as Unset0
   clone Lib_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model9 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model8 with function Model0.model = Model9.model
-  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model8.model,
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model10 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model9 with function Model0.model = Model10.model
+  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model9.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner, predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model8.model,
+  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model9.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
-  clone Lib_Clause_Impl3_UnsatInner as UnsatInner1 with function Model0.model = Model8.model,
+  clone Lib_Clause_Impl3_UnsatInner as UnsatInner1 with function Model0.model = Model9.model,
   predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone Lib_Clause_Impl3_Invariant as Invariant5 with function Model0.model = Model8.model,
+  clone Lib_Clause_Impl3_Invariant as Invariant5 with function Model0.model = Model9.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
-  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model9.model
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model7 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model6 with function Model0.model = Model7.model
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant5.invariant'
+  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model10.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model8 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model6 with function Model0.model = Model8.model
   clone Lib_Lit_Impl1_Sat as Sat0 with function Model0.model = Model6.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
   clone Lib_Clause_Impl2_PostUnit as PostUnit0 with function Model0.model = Model6.model,
   predicate PostUnitInner0.post_unit_inner = PostUnitInner0.post_unit_inner
   clone Lib_Trail_ClausePostWithRegardsTo as ClausePostWithRegardsTo0 with predicate PostUnit0.post_unit = PostUnit0.post_unit,
-  function Model0.model = Model8.model, predicate Sat0.sat = Sat0.sat
+  function Model0.model = Model9.model, predicate Sat0.sat = Sat0.sat
   clone Lib_Assignments_Impl1_Invariant as Invariant3 with function Model0.model = Model6.model
   clone Lib_Trail_VardataInvariant as VardataInvariant0
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = usize
@@ -4208,10 +4708,12 @@ module Lib_SolverDpll_UnitPropLoop
   predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
   clone Lib_Formula_Impl2_Unsat as Unsat0 with function Model0.model = Model6.model,
   predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
+  clone Lib_Formula_Impl0_Model as Model7 with function Model0.model = Model3.model
   clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model3.model,
   predicate Invariant0.invariant' = Invariant5.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant4 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  function Model0.model = Model7.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   clone Lib_Trail_LongArePostUnit as LongArePostUnit0 with function Model0.model = Model3.model,
   predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
   clone Lib_Trail_Impl2_TrailSemInvariant as TrailSemInvariant0 with function Model0.model = Model4.model,
@@ -4307,25 +4809,27 @@ module Lib_SolverDpll_OuterLoop
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
   clone Lib_Lit_Impl1_UnsatInner as UnsatInner2
   clone Lib_Lit_Impl1_SatInner as SatInner2
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model9 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model8 with function Model0.model = Model9.model
-  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model8.model,
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model10 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model9 with function Model0.model = Model10.model
+  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model9.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner, predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone Lib_Clause_Impl3_UnsatInner as UnsatInner1 with function Model0.model = Model8.model,
+  clone Lib_Clause_Impl3_UnsatInner as UnsatInner1 with function Model0.model = Model9.model,
   predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model8.model,
+  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model9.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
-  clone Lib_Clause_Impl3_Invariant as Invariant5 with function Model0.model = Model8.model,
+  clone Lib_Formula_FormulaSatInner as FormulaSatInner0 with predicate SatInner0.sat_inner = SatInner1.sat_inner
+  clone Lib_Clause_Impl3_Invariant as Invariant5 with function Model0.model = Model9.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
-  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model9.model
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model7 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model6 with function Model0.model = Model7.model
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant5.invariant'
+  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model10.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model8 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model6 with function Model0.model = Model8.model
   clone Lib_Lit_Impl1_Sat as Sat1 with function Model0.model = Model6.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
   clone Lib_Clause_Impl2_PostUnit as PostUnit0 with function Model0.model = Model6.model,
   predicate PostUnitInner0.post_unit_inner = PostUnitInner0.post_unit_inner
   clone Lib_Trail_ClausePostWithRegardsTo as ClausePostWithRegardsTo0 with predicate PostUnit0.post_unit = PostUnit0.post_unit,
-  function Model0.model = Model8.model, predicate Sat0.sat = Sat1.sat
+  function Model0.model = Model9.model, predicate Sat0.sat = Sat1.sat
   clone Lib_Assignments_Impl1_Invariant as Invariant3 with function Model0.model = Model6.model
   clone Lib_Trail_VardataInvariant as VardataInvariant0
   clone Lib_Logic_Unset as Unset0
@@ -4353,12 +4857,15 @@ module Lib_SolverDpll_OuterLoop
   clone Lib_Formula_Impl2_EventuallySatCompleteNoAss as EventuallySatCompleteNoAss0 with predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner,
   predicate SatInner0.sat_inner = SatInner0.sat_inner
   clone Lib_Formula_Impl2_Equisat as Equisat0 with predicate EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass = EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass
+  clone Lib_Formula_Impl0_Model as Model7 with function Model0.model = Model3.model
   clone Lib_Formula_Impl2_Sat as Sat0 with function Model0.model = Model6.model,
-  predicate SatInner0.sat_inner = SatInner0.sat_inner, axiom .
+  predicate SatInner0.sat_inner = SatInner0.sat_inner, function Model1.model = Model7.model,
+  predicate FormulaSatInner0.formula_sat_inner = FormulaSatInner0.formula_sat_inner, axiom .
   clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model3.model,
   predicate Invariant0.invariant' = Invariant5.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant4 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  function Model0.model = Model7.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   clone Lib_Trail_LongArePostUnit as LongArePostUnit0 with function Model0.model = Model3.model,
   predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
   clone Lib_Trail_Impl2_TrailSemInvariant as TrailSemInvariant0 with function Model0.model = Model4.model,
@@ -4451,27 +4958,29 @@ module Lib_SolverDpll_Inner
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
   clone Lib_Lit_Impl1_UnsatInner as UnsatInner2
   clone Lib_Lit_Impl1_SatInner as SatInner2
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model9 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model8 with function Model0.model = Model9.model
-  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model8.model,
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model10 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model9 with function Model0.model = Model10.model
+  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model9.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner, predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone Lib_Clause_Impl3_UnsatInner as UnsatInner1 with function Model0.model = Model8.model,
+  clone Lib_Clause_Impl3_UnsatInner as UnsatInner1 with function Model0.model = Model9.model,
   predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model8.model,
+  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model9.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
-  clone Lib_Clause_Impl3_Invariant as Invariant5 with function Model0.model = Model8.model,
+  clone Lib_Formula_FormulaSatInner as FormulaSatInner0 with predicate SatInner0.sat_inner = SatInner1.sat_inner
+  clone Lib_Clause_Impl3_Invariant as Invariant5 with function Model0.model = Model9.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
-  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model9.model
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant5.invariant'
+  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model10.model
   clone Lib_Logic_Unset as Unset0
   clone Lib_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model7 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model6 with function Model0.model = Model7.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model8 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model6 with function Model0.model = Model8.model
   clone Lib_Lit_Impl1_Sat as Sat1 with function Model0.model = Model6.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
   clone Lib_Clause_Impl2_PostUnit as PostUnit0 with function Model0.model = Model6.model,
   predicate PostUnitInner0.post_unit_inner = PostUnitInner0.post_unit_inner
   clone Lib_Trail_ClausePostWithRegardsTo as ClausePostWithRegardsTo0 with predicate PostUnit0.post_unit = PostUnit0.post_unit,
-  function Model0.model = Model8.model, predicate Sat0.sat = Sat1.sat
+  function Model0.model = Model9.model, predicate Sat0.sat = Sat1.sat
   clone Lib_Assignments_Impl1_Invariant as Invariant3 with function Model0.model = Model6.model
   clone Lib_Trail_VardataInvariant as VardataInvariant0
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = usize
@@ -4495,12 +5004,15 @@ module Lib_SolverDpll_Inner
   clone Lib_Formula_Impl2_EventuallySatCompleteNoAss as EventuallySatCompleteNoAss0 with predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner,
   predicate SatInner0.sat_inner = SatInner0.sat_inner
   clone Lib_Formula_Impl2_Equisat as Equisat0 with predicate EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass = EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass
+  clone Lib_Formula_Impl0_Model as Model7 with function Model0.model = Model3.model
   clone Lib_Formula_Impl2_Sat as Sat0 with function Model0.model = Model6.model,
-  predicate SatInner0.sat_inner = SatInner0.sat_inner, axiom .
+  predicate SatInner0.sat_inner = SatInner0.sat_inner, function Model1.model = Model7.model,
+  predicate FormulaSatInner0.formula_sat_inner = FormulaSatInner0.formula_sat_inner, axiom .
   clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model3.model,
   predicate Invariant0.invariant' = Invariant5.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant4 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  function Model0.model = Model7.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   clone Lib_Trail_LongArePostUnit as LongArePostUnit0 with function Model0.model = Model3.model,
   predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
   clone Lib_Trail_Impl2_TrailSemInvariant as TrailSemInvariant0 with function Model0.model = Model4.model,
@@ -4658,17 +5170,20 @@ module Lib_Decision_Impl1_New
   clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
   predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model2 with function Model0.model = Model3.model
-  clone Lib_Clause_Impl3_Invariant as Invariant2 with function Model0.model = Model2.model,
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model3 with function Model0.model = Model4.model
+  clone Lib_Clause_Impl3_Invariant as Invariant2 with function Model0.model = Model3.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.lib_clause_clause
-  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model1.model,
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant2.invariant'
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.lib_clause_clause
+  clone Lib_Formula_Impl0_Model as Model0 with function Model0.model = Model2.model
+  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model2.model,
   predicate Invariant0.invariant' = Invariant2.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = usize
-  clone Lib_Decision_Impl0_Invariant as Invariant1 with function Model0.model = Model0.model
+  function Model0.model = Model0.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = usize
+  clone Lib_Decision_Impl0_Invariant as Invariant1 with function Model0.model = Model1.model
   val new [@cfg:stackify] (f : Type.lib_formula_formula) : Type.lib_decision_decisions
     requires {Invariant0.invariant' f}
     ensures { Invariant1.invariant' result (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f)) }
@@ -5025,42 +5540,6 @@ module CreusotContracts_Std1_Vec_Impl1_New
     ensures { Seq.length (Model0.model result) = 0 }
     
 end
-module CreusotContracts_Std1_Vec_Impl1_Push_Interface
-  type t   
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use prelude.Prelude
-  use Type
-  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = t
-  clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model1 with type t = Type.creusotcontracts_std1_vec_vec t,
-  type ModelTy0.modelTy = ModelTy0.modelTy
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t
-  val push [@cfg:stackify] (self : borrowed (Type.creusotcontracts_std1_vec_vec t)) (v : t) : ()
-    ensures { Seq.get (Model0.model ( ^ self)) (Seq.length (Model0.model ( ^ self)) - 1) = v }
-    ensures { Seq.length (Model1.model self) + 1 = Seq.length (Model0.model ( ^ self)) }
-    ensures { forall i : (int) . 0 <= i && i < Seq.length (Model1.model self) -> Seq.get (Model1.model self) i = Seq.get (Model0.model ( ^ self)) i }
-    ensures { Model0.model ( ^ self) = Seq.snoc (Model1.model self) v }
-    
-end
-module CreusotContracts_Std1_Vec_Impl1_Push
-  type t   
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use prelude.Prelude
-  use Type
-  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = t
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = t
-  clone CreusotContracts_Logic_Model_Impl1_Model as Model1 with type t = Type.creusotcontracts_std1_vec_vec t,
-  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model0.model
-  val push [@cfg:stackify] (self : borrowed (Type.creusotcontracts_std1_vec_vec t)) (v : t) : ()
-    ensures { Seq.get (Model0.model ( ^ self)) (Seq.length (Model0.model ( ^ self)) - 1) = v }
-    ensures { Seq.length (Model1.model self) + 1 = Seq.length (Model0.model ( ^ self)) }
-    ensures { forall i : (int) . 0 <= i && i < Seq.length (Model1.model self) -> Seq.get (Model1.model self) i = Seq.get (Model0.model ( ^ self)) i }
-    ensures { Model0.model ( ^ self) = Seq.snoc (Model1.model self) v }
-    
-end
 module Lib_Trail_Impl3_New_Interface
   use seq.Seq
   use mach.int.Int
@@ -5364,48 +5843,6 @@ module Lib_Watches_Impl1_New
     ensures { Invariant0.invariant' result f }
     
 end
-module Lib_Watches_Impl1_AddWatcher_Interface
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.UInt64
-  use prelude.Prelude
-  use mach.int.Int32
-  use Type
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = Type.lib_clause_clause
-  clone Lib_Watches_Impl0_Invariant_Interface as Invariant0
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher)
-  clone Lib_Lit_Impl0_ToNegWatchidxLogic_Interface as ToNegWatchidxLogic0
-  val add_watcher [@cfg:stackify] (self : borrowed (Type.lib_watches_watches)) (lit : Type.lib_lit_lit) (cref : usize) (_f : Type.lib_formula_formula) : ()
-    requires {ToNegWatchidxLogic0.to_neg_watchidx_logic lit < Seq.length (Model0.model (Type.lib_watches_watches_Watches_watches ( * self)))}
-    requires {UInt64.to_int (Type.lib_lit_lit_Lit_idx lit) < div 18446744073709551615 2}
-    requires {Invariant0.invariant' ( * self) _f}
-    requires {UInt64.to_int cref < Seq.length (Model1.model (Type.lib_formula_formula_Formula_clauses _f))}
-    ensures { Seq.length (Model0.model (Type.lib_watches_watches_Watches_watches ( * self))) = Seq.length (Model0.model (Type.lib_watches_watches_Watches_watches ( ^ self))) }
-    ensures { Invariant0.invariant' ( ^ self) _f }
-    
-end
-module Lib_Watches_Impl1_AddWatcher
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.UInt64
-  use prelude.Prelude
-  use mach.int.Int32
-  use Type
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.lib_clause_clause
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.lib_watches_watcher
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher)
-  clone Lib_Watches_Impl0_Invariant as Invariant0 with function Model0.model = Model0.model,
-  function Model1.model = Model2.model, function Model2.model = Model1.model
-  clone Lib_Lit_Impl0_ToNegWatchidxLogic as ToNegWatchidxLogic0
-  val add_watcher [@cfg:stackify] (self : borrowed (Type.lib_watches_watches)) (lit : Type.lib_lit_lit) (cref : usize) (_f : Type.lib_formula_formula) : ()
-    requires {ToNegWatchidxLogic0.to_neg_watchidx_logic lit < Seq.length (Model0.model (Type.lib_watches_watches_Watches_watches ( * self)))}
-    requires {UInt64.to_int (Type.lib_lit_lit_Lit_idx lit) < div 18446744073709551615 2}
-    requires {Invariant0.invariant' ( * self) _f}
-    requires {UInt64.to_int cref < Seq.length (Model1.model (Type.lib_formula_formula_Formula_clauses _f))}
-    ensures { Seq.length (Model0.model (Type.lib_watches_watches_Watches_watches ( * self))) = Seq.length (Model0.model (Type.lib_watches_watches_Watches_watches ( ^ self))) }
-    ensures { Invariant0.invariant' ( ^ self) _f }
-    
-end
 module Lib_Watches_Impl1_UpdateWatch_Interface
   use seq.Seq
   use mach.int.Int
@@ -5526,19 +5963,22 @@ module Lib_Watches_Impl1_InitWatches
   clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
   predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model3 with function Model0.model = Model4.model
-  clone Lib_Clause_Impl3_Invariant as Invariant2 with function Model0.model = Model3.model,
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model4 with function Model0.model = Model5.model
+  clone Lib_Clause_Impl3_Invariant as Invariant2 with function Model0.model = Model4.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.lib_clause_clause
-  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model2.model,
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant2.invariant'
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = Type.lib_clause_clause
+  clone Lib_Formula_Impl0_Model as Model0 with function Model0.model = Model3.model
+  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model3.model,
   predicate Invariant0.invariant' = Invariant2.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.lib_watches_watcher
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher)
-  clone Lib_Watches_Impl0_Invariant as Invariant1 with function Model0.model = Model0.model,
-  function Model1.model = Model1.model, function Model2.model = Model2.model
+  function Model0.model = Model0.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.lib_watches_watcher
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher)
+  clone Lib_Watches_Impl0_Invariant as Invariant1 with function Model0.model = Model1.model,
+  function Model1.model = Model2.model, function Model2.model = Model3.model
   val init_watches [@cfg:stackify] (self : borrowed (Type.lib_watches_watches)) (f : Type.lib_formula_formula) : ()
     requires {Invariant0.invariant' f}
     requires {Invariant1.invariant' ( * self) f}
@@ -5626,16 +6066,15 @@ module Lib_ConflictAnalysis_IdxIn
     
 end
 module Lib_ConflictAnalysis_Resolve_Interface
-  use seq.Seq
   use mach.int.UInt64
   use mach.int.Int
   use mach.int.Int32
+  use seq.Seq
   use prelude.Prelude
   use Type
-  clone Lib_Clause_Impl3_NoDuplicateIndexes_Interface as NoDuplicateIndexes0
   clone Lib_Clause_Impl3_VarsInRange_Interface as VarsInRange0
   clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
-  clone Lib_Formula_Impl2_Invariant_Interface as Invariant1 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  clone Lib_Formula_Impl2_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
   axiom .
   clone Lib_Clause_EquisatExtensionInner_Interface as EquisatExtensionInner0
   clone Lib_Formula_Impl0_ModelTy as ModelTy2
@@ -5648,66 +6087,68 @@ module Lib_ConflictAnalysis_Resolve_Interface
   type ModelTy0.modelTy = ModelTy1.modelTy
   clone Lib_Clause_Impl3_SameIdxSamePolarityExcept_Interface as SameIdxSamePolarityExcept0
   clone Lib_Clause_Impl2_PostUnitInner_Interface as PostUnitInner0
-  clone Lib_Clause_Impl3_Invariant_Interface as Invariant0
+  clone Lib_Clause_Impl3_InvariantUnaryOk_Interface as InvariantUnaryOk0
   clone Lib_Clause_Impl3_UnsatInner_Interface as UnsatInner0
   clone Lib_Assignments_Impl0_ModelTy as ModelTy0
   clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model0 with type t = Type.lib_assignments_assignments,
   type ModelTy0.modelTy = ModelTy0.modelTy
   val resolve [@cfg:stackify] (_f : Type.lib_formula_formula) (c : Type.lib_clause_clause) (o : Type.lib_clause_clause) (idx : usize) (c_idx : usize) (_a : Type.lib_assignments_assignments) : Type.lib_clause_clause
     requires {UnsatInner0.unsat_inner c (Model0.model _a)}
-    requires {Invariant0.invariant' o (Seq.length (Model0.model _a))}
-    requires {Invariant0.invariant' c (Seq.length (Model0.model _a))}
+    requires {InvariantUnaryOk0.invariant_unary_ok o (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars _f))}
+    requires {InvariantUnaryOk0.invariant_unary_ok c (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars _f))}
     requires {PostUnitInner0.post_unit_inner o (Model0.model _a)}
     requires {UInt64.to_int idx < UInt64.to_int (Type.lib_formula_formula_Formula_num_vars _f)}
     requires {SameIdxSamePolarityExcept0.same_idx_same_polarity_except c o (UInt64.to_int idx)}
     requires {forall k : (int) . forall j : (int) . 0 <= j && j < Seq.length (Model1.model o) && 0 <= k && k < Seq.length (Model1.model c) && k <> UInt64.to_int c_idx && UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model1.model o) j)) <> UInt64.to_int idx -> not (IsOpp0.is_opp (Seq.get (Model1.model c) k) (Seq.get (Model1.model o) j))}
     requires {UInt64.to_int c_idx < Seq.length (Model1.model c) && UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model1.model c) (UInt64.to_int c_idx))) = UInt64.to_int idx && (exists k : (int) . 0 <= k && k < Seq.length (Model1.model o) && IsOpp0.is_opp (Seq.get (Model1.model o) k) (Seq.get (Model1.model c) (UInt64.to_int c_idx)))}
-    requires {Invariant0.invariant' o (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars _f))}
-    requires {Invariant0.invariant' c (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars _f))}
     requires {InFormula0.in_formula o _f}
     requires {EquisatExtensionInner0.equisat_extension_inner c (Model2.model _f)}
-    requires {Invariant1.invariant' _f}
+    requires {Invariant0.invariant' _f}
     ensures { UnsatInner0.unsat_inner result (Model0.model _a) }
     ensures { VarsInRange0.vars_in_range result (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars _f)) }
-    ensures { NoDuplicateIndexes0.no_duplicate_indexes result }
+    ensures { InvariantUnaryOk0.invariant_unary_ok result (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars _f)) }
     ensures { EquisatExtensionInner0.equisat_extension_inner result (Model2.model _f) }
     
 end
 module Lib_ConflictAnalysis_Resolve
-  use seq.Seq
   use mach.int.UInt64
   use mach.int.Int
   use mach.int.Int32
+  use seq.Seq
   use prelude.Prelude
   use Type
   use prelude.UInt8
+  clone Lib_Clause_AtLeastBinary as AtLeastBinary0
   clone Lib_Logic_Unset as Unset0
   clone Lib_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
   clone Lib_Lit_Impl1_Invariant as Invariant2
   clone Lib_Clause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant2.invariant'
-  clone Lib_Clause_AtLeastBinary as AtLeastBinary0
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model8 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model4 with function Model0.model = Model8.model
-  clone Lib_Clause_Impl3_VarsInRange as VarsInRange0 with function Model0.model = Model4.model,
-  predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner
-  clone Lib_Clause_Impl3_SameIdxSamePolarityExcept as SameIdxSamePolarityExcept0 with function Model0.model = Model4.model
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model7 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model3 with function Model0.model = Model7.model
   clone Lib_Clause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
   clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
   predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
-  clone Lib_Clause_Impl3_Invariant as Invariant0 with function Model0.model = Model4.model,
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model8 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model4 with function Model0.model = Model8.model
+  clone Lib_Clause_Impl3_Invariant as Invariant1 with function Model0.model = Model4.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant1.invariant'
   clone Lib_Clause_Impl3_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model4.model,
   predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner
+  clone Lib_Clause_Impl3_VarsInRange as VarsInRange0 with function Model0.model = Model4.model,
+  predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner
+  clone Lib_Clause_Impl3_InvariantUnaryOk as InvariantUnaryOk0 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
+  predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
+  clone Lib_Clause_Impl3_SameIdxSamePolarityExcept as SameIdxSamePolarityExcept0 with function Model0.model = Model4.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model7 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model3 with function Model0.model = Model7.model
   clone Lib_Formula_Impl0_ModelTy as ModelTy2
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = Type.lib_clause_clause
   clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model5.model,
-  predicate Invariant0.invariant' = Invariant0.invariant'
-  clone Lib_Formula_Impl2_Invariant as Invariant1 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  predicate Invariant0.invariant' = Invariant1.invariant'
   clone Lib_Formula_Impl0_Model as Model6 with function Model0.model = Model5.model
+  clone Lib_Formula_Impl2_Invariant as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  function Model0.model = Model6.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   clone CreusotContracts_Logic_Model_Impl0_Model as Model2 with type t = Type.lib_formula_formula,
   type ModelTy0.modelTy = ModelTy2.modelTy, function Model0.model = Model6.model
   clone Lib_Clause_Impl3_InFormula as InFormula0 with function Model0.model = Model5.model
@@ -5732,21 +6173,19 @@ module Lib_ConflictAnalysis_Resolve
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model3.model
   val resolve [@cfg:stackify] (_f : Type.lib_formula_formula) (c : Type.lib_clause_clause) (o : Type.lib_clause_clause) (idx : usize) (c_idx : usize) (_a : Type.lib_assignments_assignments) : Type.lib_clause_clause
     requires {UnsatInner0.unsat_inner c (Model0.model _a)}
-    requires {Invariant0.invariant' o (Seq.length (Model0.model _a))}
-    requires {Invariant0.invariant' c (Seq.length (Model0.model _a))}
+    requires {InvariantUnaryOk0.invariant_unary_ok o (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars _f))}
+    requires {InvariantUnaryOk0.invariant_unary_ok c (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars _f))}
     requires {PostUnitInner0.post_unit_inner o (Model0.model _a)}
     requires {UInt64.to_int idx < UInt64.to_int (Type.lib_formula_formula_Formula_num_vars _f)}
     requires {SameIdxSamePolarityExcept0.same_idx_same_polarity_except c o (UInt64.to_int idx)}
     requires {forall k : (int) . forall j : (int) . 0 <= j && j < Seq.length (Model1.model o) && 0 <= k && k < Seq.length (Model1.model c) && k <> UInt64.to_int c_idx && UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model1.model o) j)) <> UInt64.to_int idx -> not (IsOpp0.is_opp (Seq.get (Model1.model c) k) (Seq.get (Model1.model o) j))}
     requires {UInt64.to_int c_idx < Seq.length (Model1.model c) && UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model1.model c) (UInt64.to_int c_idx))) = UInt64.to_int idx && (exists k : (int) . 0 <= k && k < Seq.length (Model1.model o) && IsOpp0.is_opp (Seq.get (Model1.model o) k) (Seq.get (Model1.model c) (UInt64.to_int c_idx)))}
-    requires {Invariant0.invariant' o (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars _f))}
-    requires {Invariant0.invariant' c (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars _f))}
     requires {InFormula0.in_formula o _f}
     requires {EquisatExtensionInner0.equisat_extension_inner c (Model2.model _f)}
-    requires {Invariant1.invariant' _f}
+    requires {Invariant0.invariant' _f}
     ensures { UnsatInner0.unsat_inner result (Model0.model _a) }
     ensures { VarsInRange0.vars_in_range result (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars _f)) }
-    ensures { NoDuplicateIndexes0.no_duplicate_indexes result }
+    ensures { InvariantUnaryOk0.invariant_unary_ok result (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars _f)) }
     ensures { EquisatExtensionInner0.equisat_extension_inner result (Model2.model _f) }
     
 end
@@ -5858,9 +6297,9 @@ module Lib_ConflictAnalysis_AnalyzeConflict
   clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
   predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model7 with type t = Type.lib_lit_lit
-  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model7.model
-  clone Lib_Clause_Impl1_Model as Model3 with function Model0.model = Model7.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model8 with type t = Type.lib_lit_lit
+  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model8.model
+  clone Lib_Clause_Impl1_Model as Model3 with function Model0.model = Model8.model
   clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model3.model,
   predicate SatInner0.sat_inner = SatInner1.sat_inner, predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
   clone Lib_Clause_Impl2_PostUnit as PostUnit0 with function Model0.model = Model5.model,
@@ -5875,6 +6314,7 @@ module Lib_ConflictAnalysis_AnalyzeConflict
   clone Lib_Clause_EquisatExtensionInner as EquisatExtensionInner0 with predicate EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass = EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass
   clone Lib_Clause_Impl3_Invariant as Invariant4 with function Model0.model = Model3.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant4.invariant'
   clone Lib_Clause_Impl3_UnsatInner as UnsatInner0 with function Model0.model = Model3.model,
   predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
   clone Lib_Clause_Impl3_Unsat as Unsat0 with function Model0.model = Model5.model,
@@ -5892,17 +6332,18 @@ module Lib_ConflictAnalysis_AnalyzeConflict
   clone Lib_Trail_Impl2_Invariant as Invariant0 with function Model0.model = Model1.model,
   function Model1.model = Model6.model,
   predicate TrailInvariantFull0.trail_invariant_full = TrailInvariantFull0.trail_invariant_full
-  clone Lib_Formula_Impl0_Model as Model8 with function Model0.model = Model0.model
-  clone CreusotContracts_Logic_Model_Impl0_Model as Model4 with type t = Type.lib_formula_formula,
-  type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model8.model
   clone Lib_Trail_LongArePostUnit as LongArePostUnit0 with function Model0.model = Model0.model,
   predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
   clone Lib_Trail_Impl2_TrailSemInvariant as TrailSemInvariant0 with function Model0.model = Model6.model,
   predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit, axiom .
+  clone Lib_Formula_Impl0_Model as Model7 with function Model0.model = Model0.model
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model4 with type t = Type.lib_formula_formula,
+  type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model7.model
   clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model0.model,
   predicate Invariant0.invariant' = Invariant4.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant2 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  function Model0.model = Model7.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   val analyze_conflict [@cfg:stackify] (f : Type.lib_formula_formula) (a : Type.lib_assignments_assignments) (trail : Type.lib_trail_trail) (cref : usize) : Type.lib_conflictanalysis_conflict
     requires {Unsat0.unsat (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int cref)) a}
     requires {UInt64.to_int cref < Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f))}
@@ -5979,8 +6420,8 @@ module Lib_UnitProp_UpdateWatch
   clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
   predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model8 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model7 with function Model0.model = Model8.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model9 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model7 with function Model0.model = Model9.model
   clone Lib_Lit_Impl1_Sat as Sat0 with function Model0.model = Model7.model,
   predicate SatInner0.sat_inner = SatInner0.sat_inner
   clone Lib_Assignments_Impl1_Invariant as Invariant2 with function Model0.model = Model7.model
@@ -5998,6 +6439,7 @@ module Lib_UnitProp_UpdateWatch
   function Model0.model = Model3.model, predicate Sat0.sat = Sat0.sat
   clone Lib_Clause_Impl3_Invariant as Invariant4 with function Model0.model = Model3.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant4.invariant'
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.lib_clause_clause
   clone Lib_Trail_CrefsInRange as CrefsInRange0 with function Model0.model = Model2.model
   clone Lib_Trail_TrailInvariantFull as TrailInvariantFull0 with predicate TrailInvariant0.trail_invariant = TrailInvariant0.trail_invariant,
@@ -6010,10 +6452,12 @@ module Lib_UnitProp_UpdateWatch
   predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
   clone Lib_Trail_Impl2_TrailSemInvariant as TrailSemInvariant0 with function Model0.model = Model6.model,
   predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit, axiom .
+  clone Lib_Formula_Impl0_Model as Model8 with function Model0.model = Model2.model
   clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model2.model,
   predicate Invariant0.invariant' = Invariant4.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant3 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  function Model0.model = Model8.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.lib_watches_watcher
   clone Lib_Lit_Impl0_ToWatchidxLogic as ToWatchidxLogic0
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher)
@@ -6111,8 +6555,8 @@ module Lib_UnitProp_UnitPropCheckRest
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
   clone Lib_Logic_Unset as Unset0
   clone Lib_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model8 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model7 with function Model0.model = Model8.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model9 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model7 with function Model0.model = Model9.model
   clone Lib_Lit_Impl1_Sat as Sat0 with function Model0.model = Model7.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
   clone Lib_Assignments_Impl1_Invariant as Invariant2 with function Model0.model = Model7.model
@@ -6135,6 +6579,7 @@ module Lib_UnitProp_UnitPropCheckRest
   predicate SatInner0.sat_inner = SatInner2.sat_inner
   clone Lib_Clause_Impl3_Invariant as Invariant4 with function Model0.model = Model3.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant4.invariant'
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.lib_clause_clause
   clone Lib_Formula_Impl2_SatInner as SatInner0 with function Model0.model = Model2.model,
   predicate SatInner0.sat_inner = SatInner1.sat_inner
@@ -6152,10 +6597,12 @@ module Lib_UnitProp_UnitPropCheckRest
   predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
   clone Lib_Trail_Impl2_TrailSemInvariant as TrailSemInvariant0 with function Model0.model = Model6.model,
   predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit, axiom .
+  clone Lib_Formula_Impl0_Model as Model8 with function Model0.model = Model2.model
   clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model2.model,
   predicate Invariant0.invariant' = Invariant4.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant3 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  function Model0.model = Model8.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.lib_watches_watcher
   clone Lib_Lit_Impl0_ToWatchidxLogic as ToWatchidxLogic0
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher)
@@ -6247,23 +6694,24 @@ module Lib_UnitProp_Swap
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
   clone Lib_Logic_Unset as Unset0
   clone Lib_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model7 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model8 with function Model0.model = Model7.model
-  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model8.model,
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model8 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model9 with function Model0.model = Model8.model
+  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model9.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner, predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
-  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model8.model,
+  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model9.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
-  clone Lib_Clause_Impl3_Invariant as Invariant4 with function Model0.model = Model8.model,
+  clone Lib_Clause_Impl3_Invariant as Invariant4 with function Model0.model = Model9.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
-  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model7.model
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model6 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model5 with function Model0.model = Model6.model
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant4.invariant'
+  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model8.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model7 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model5 with function Model0.model = Model7.model
   clone Lib_Lit_Impl1_Sat as Sat0 with function Model0.model = Model5.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
   clone Lib_Clause_Impl2_PostUnit as PostUnit0 with function Model0.model = Model5.model,
   predicate PostUnitInner0.post_unit_inner = PostUnitInner0.post_unit_inner
   clone Lib_Trail_ClausePostWithRegardsTo as ClausePostWithRegardsTo0 with predicate PostUnit0.post_unit = PostUnit0.post_unit,
-  function Model0.model = Model8.model, predicate Sat0.sat = Sat0.sat
+  function Model0.model = Model9.model, predicate Sat0.sat = Sat0.sat
   clone Lib_Assignments_Impl1_Invariant as Invariant2 with function Model0.model = Model5.model
   clone Lib_Trail_VardataInvariant as VardataInvariant0
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = (usize, Type.lib_trail_reason)
@@ -6287,10 +6735,12 @@ module Lib_UnitProp_Swap
   predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
   clone Lib_Trail_Impl2_TrailSemInvariant as TrailSemInvariant0 with function Model0.model = Model4.model,
   predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit, axiom .
+  clone Lib_Formula_Impl0_Model as Model6 with function Model0.model = Model0.model
   clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model0.model,
   predicate Invariant0.invariant' = Invariant4.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant3 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  function Model0.model = Model6.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   clone Lib_Watches_Impl0_Invariant as Invariant0 with function Model0.model = Model2.model,
   function Model1.model = Model3.model, function Model2.model = Model0.model
   val swap [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : Type.lib_assignments_assignments) (trail : Type.lib_trail_trail) (watches : borrowed (Type.lib_watches_watches)) (cref : usize) (lit : Type.lib_lit_lit) (j : usize) : ()
@@ -6381,29 +6831,30 @@ module Lib_UnitProp_UnitPropDoOuter
   clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
   predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model8 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model7 with function Model0.model = Model8.model
-  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model7.model,
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model9 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model8 with function Model0.model = Model9.model
+  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model8.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
-  clone Lib_Clause_Impl3_Invariant as Invariant4 with function Model0.model = Model7.model,
+  clone Lib_Clause_Impl3_Invariant as Invariant4 with function Model0.model = Model8.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
-  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model8.model
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant4.invariant'
+  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model9.model
   clone Lib_Lit_Impl1_UnsatInner as UnsatInner2
-  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model7.model,
+  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model8.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner, predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone Lib_Clause_Impl3_UnsatInner as UnsatInner1 with function Model0.model = Model7.model,
+  clone Lib_Clause_Impl3_UnsatInner as UnsatInner1 with function Model0.model = Model8.model,
   predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
   clone Lib_Logic_Unset as Unset0
   clone Lib_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
   clone Lib_Assignments_CompatibleInner as CompatibleInner0 with predicate Unset0.unset = Unset0.unset
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model6 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model5 with function Model0.model = Model6.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model7 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model5 with function Model0.model = Model7.model
   clone Lib_Lit_Impl1_Sat as Sat0 with function Model0.model = Model5.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
   clone Lib_Clause_Impl2_PostUnit as PostUnit0 with function Model0.model = Model5.model,
   predicate PostUnitInner0.post_unit_inner = PostUnitInner0.post_unit_inner
   clone Lib_Trail_ClausePostWithRegardsTo as ClausePostWithRegardsTo0 with predicate PostUnit0.post_unit = PostUnit0.post_unit,
-  function Model0.model = Model7.model, predicate Sat0.sat = Sat0.sat
+  function Model0.model = Model8.model, predicate Sat0.sat = Sat0.sat
   clone Lib_Clause_Impl3_Unsat as Unsat1 with function Model0.model = Model5.model,
   predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
   clone Lib_Assignments_Impl1_Compatible as Compatible0 with function Model0.model = Model5.model,
@@ -6436,10 +6887,12 @@ module Lib_UnitProp_UnitPropDoOuter
   predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
   clone Lib_Trail_Impl2_TrailSemInvariant as TrailSemInvariant0 with function Model0.model = Model4.model,
   predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit, axiom .
+  clone Lib_Formula_Impl0_Model as Model6 with function Model0.model = Model0.model
   clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model0.model,
   predicate Invariant0.invariant' = Invariant4.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant3 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  function Model0.model = Model6.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   clone Lib_Watches_Impl0_Invariant as Invariant0 with function Model0.model = Model2.model,
   function Model1.model = Model3.model, function Model2.model = Model0.model
   val unit_prop_do_outer [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (trail : borrowed (Type.lib_trail_trail)) (watches : borrowed (Type.lib_watches_watches)) (cref : usize) (lit : Type.lib_lit_lit) (j : usize) : Type.core_result_result bool usize
@@ -6532,29 +6985,30 @@ module Lib_UnitProp_UnitPropCurrentLevel
   clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
   predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model8 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model7 with function Model0.model = Model8.model
-  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model7.model,
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model9 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model8 with function Model0.model = Model9.model
+  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model8.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
-  clone Lib_Clause_Impl3_Invariant as Invariant4 with function Model0.model = Model7.model,
+  clone Lib_Clause_Impl3_Invariant as Invariant4 with function Model0.model = Model8.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
-  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model8.model
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant4.invariant'
+  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model9.model
   clone Lib_Lit_Impl1_UnsatInner as UnsatInner2
-  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model7.model,
+  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model8.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner, predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone Lib_Clause_Impl3_UnsatInner as UnsatInner1 with function Model0.model = Model7.model,
+  clone Lib_Clause_Impl3_UnsatInner as UnsatInner1 with function Model0.model = Model8.model,
   predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
   clone Lib_Logic_Unset as Unset0
   clone Lib_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
   clone Lib_Assignments_CompatibleInner as CompatibleInner0 with predicate Unset0.unset = Unset0.unset
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model6 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model5 with function Model0.model = Model6.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model7 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model5 with function Model0.model = Model7.model
   clone Lib_Lit_Impl1_Sat as Sat0 with function Model0.model = Model5.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
   clone Lib_Clause_Impl2_PostUnit as PostUnit0 with function Model0.model = Model5.model,
   predicate PostUnitInner0.post_unit_inner = PostUnitInner0.post_unit_inner
   clone Lib_Trail_ClausePostWithRegardsTo as ClausePostWithRegardsTo0 with predicate PostUnit0.post_unit = PostUnit0.post_unit,
-  function Model0.model = Model7.model, predicate Sat0.sat = Sat0.sat
+  function Model0.model = Model8.model, predicate Sat0.sat = Sat0.sat
   clone Lib_Clause_Impl3_Unsat as Unsat1 with function Model0.model = Model5.model,
   predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
   clone Lib_Assignments_Impl1_Compatible as Compatible0 with function Model0.model = Model5.model,
@@ -6584,10 +7038,12 @@ module Lib_UnitProp_UnitPropCurrentLevel
   predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
   clone Lib_Trail_Impl2_TrailSemInvariant as TrailSemInvariant0 with function Model0.model = Model4.model,
   predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit, axiom .
+  clone Lib_Formula_Impl0_Model as Model6 with function Model0.model = Model1.model
   clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model1.model,
   predicate Invariant0.invariant' = Invariant4.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant3 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  function Model0.model = Model6.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = Type.lib_watches_watcher
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher)
   clone Lib_Watches_Impl0_Invariant as Invariant0 with function Model0.model = Model2.model,
@@ -6678,26 +7134,27 @@ module Lib_UnitProp_UnitPropagate
   predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
   clone Lib_Logic_Unset as Unset0
   clone Lib_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model8 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model7 with function Model0.model = Model8.model
-  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model7.model,
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model9 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model8 with function Model0.model = Model9.model
+  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model8.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
-  clone Lib_Clause_Impl3_Invariant as Invariant4 with function Model0.model = Model7.model,
+  clone Lib_Clause_Impl3_Invariant as Invariant4 with function Model0.model = Model8.model,
   predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
-  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model8.model
+  clone Lib_Formula_FormulaInvariant as FormulaInvariant0 with predicate Invariant0.invariant' = Invariant4.invariant'
+  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model9.model
   clone Lib_Lit_Impl1_UnsatInner as UnsatInner2
-  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model7.model,
+  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model8.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner, predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone Lib_Clause_Impl3_UnsatInner as UnsatInner1 with function Model0.model = Model7.model,
+  clone Lib_Clause_Impl3_UnsatInner as UnsatInner1 with function Model0.model = Model8.model,
   predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model6 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model5 with function Model0.model = Model6.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model7 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model5 with function Model0.model = Model7.model
   clone Lib_Lit_Impl1_Sat as Sat0 with function Model0.model = Model5.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
   clone Lib_Clause_Impl2_PostUnit as PostUnit0 with function Model0.model = Model5.model,
   predicate PostUnitInner0.post_unit_inner = PostUnitInner0.post_unit_inner
   clone Lib_Trail_ClausePostWithRegardsTo as ClausePostWithRegardsTo0 with predicate PostUnit0.post_unit = PostUnit0.post_unit,
-  function Model0.model = Model7.model, predicate Sat0.sat = Sat0.sat
+  function Model0.model = Model8.model, predicate Sat0.sat = Sat0.sat
   clone Lib_Clause_Impl3_Unsat as Unsat1 with function Model0.model = Model5.model,
   predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
   clone Lib_Assignments_Impl1_Invariant as Invariant2 with function Model0.model = Model5.model
@@ -6725,10 +7182,12 @@ module Lib_UnitProp_UnitPropagate
   predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
   clone Lib_Trail_Impl2_TrailSemInvariant as TrailSemInvariant0 with function Model0.model = Model4.model,
   predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit, axiom .
+  clone Lib_Formula_Impl0_Model as Model6 with function Model0.model = Model1.model
   clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model1.model,
   predicate Invariant0.invariant' = Invariant4.invariant'
   clone Lib_Formula_Impl2_Invariant as Invariant3 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
+  function Model0.model = Model6.model,
+  predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = Type.lib_watches_watcher
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher)
   clone Lib_Watches_Impl0_Invariant as Invariant0 with function Model0.model = Model2.model,

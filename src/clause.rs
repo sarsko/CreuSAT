@@ -66,6 +66,14 @@ pub fn at_least_binary(s: Seq<Lit>) -> bool {
 }
 
 #[predicate]
+pub fn invariant_unary_ok_internal(s: Seq<Lit>, n: Int) -> bool {
+    pearlite! {
+        vars_in_range_inner(s, n) && no_duplicate_indexes_inner(s)
+    }
+
+}
+
+#[predicate]
 pub fn invariant_internal(s: Seq<Lit>, n: Int) -> bool {
     pearlite! {
         vars_in_range_inner(s, n) && no_duplicate_indexes_inner(s)
@@ -304,6 +312,12 @@ impl Clause {
         // Should remove the possibility of empty clauses
         //pearlite! { self.vars_in_range(n) && self.no_duplicate_indexes() }
         pearlite! { invariant_internal(@self, n) }
+    }
+
+    #[predicate]
+    pub fn invariant_unary_ok(self, n: Int) -> bool {
+        // Should remove the possibility of empty clauses
+        pearlite! { self.vars_in_range(n) && self.no_duplicate_indexes() }
     }
 
     #[predicate]

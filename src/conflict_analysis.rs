@@ -57,6 +57,7 @@ fn move_to_end(v: &mut Vec<Lit>, to_be_removed: usize,  _f: &Formula) {
     //v.pop();
 }
 */
+// Both of these should be changed to unary_ok, but things are checking out somehow
 #[trusted] // OK
 #[logic]
 //#[requires(@v[i].idx === idx)]
@@ -121,18 +122,9 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
 // as we then have access to both resolve indexes everywhere.
 
 #[trusted] // OK
-//#[requires(equisat_extension_inner(*o, @_f))]
-/*
-#[requires(
-    (exists<k: Int, m: Int> 0 <= k && k < (@o).len() && 0 <= m && m < (@c).len() &&
-        @(@c)[m].idx === @idx && @(@o)[k].idx === @idx && (@o)[k].is_opp((@c)[m]))
-)]
-*/
 #[requires(_f.invariant())]
 #[requires(equisat_extension_inner(*c, @_f))]
 #[requires(o.in_formula(*_f))]
-#[requires(c.invariant(@_f.num_vars))]
-#[requires(o.invariant(@_f.num_vars))]
 #[requires(@c_idx < (@c).len() && @(@c)[@c_idx].idx === @idx &&
     (exists<k: Int> 0 <= k && k < (@o).len() &&
         (@o)[k].is_opp((@c)[@c_idx]))
@@ -142,21 +134,13 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
 #[requires(c.same_idx_same_polarity_except(*o, @idx))]
 #[requires(@idx < @_f.num_vars)]
 #[ensures(equisat_extension_inner(result, @_f))]
-// We don't have full invariant, as we may return a unit clause
-//#[ensures(result.invariant(@_f.num_vars))]
-#[ensures(result.no_duplicate_indexes())]
+#[ensures(result.invariant_unary_ok(@_f.num_vars))]
 #[ensures(result.vars_in_range(@_f.num_vars))]
-// resolved_post
 #[requires(o.post_unit_inner(@_a))]
-#[requires(c.invariant((@_a).len()))]
-#[requires(o.invariant((@_a).len()))]
-//#[requires((@c)[c_idx].sat_inner(@_a))]
+#[requires(c.invariant_unary_ok(@_f.num_vars))]
+#[requires(o.invariant_unary_ok(@_f.num_vars))]
 #[requires(c.unsat_inner(@_a))]
-//#[requires(0 <= c_idx && c_idx < (@c).len())]
-//#[requires(0 <= c2_idx && c2_idx < (@c2).len())]
-//#[requires(c3.resolvent_of(c, c2, c2_idx, c_idx))]
 #[ensures(result.unsat_inner(@_a))]
-
 fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &Assignments) -> Clause {
     let mut new: Vec<Lit> = Vec::new();
     let mut i: usize = 0;
@@ -240,12 +224,13 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
             );
             proof_assert!(forall<j: Int, k: Int> 0 <= j && j < (@o).len() && 0 <= k && k < (@c).len() &&
                 k != @c_idx && @(@o)[j].idx != @idx ==> !(@c)[k].is_opp((@o)[j]));
-            proof_assert!(o.invariant(@_f.num_vars));
+            proof_assert!(o.invariant_unary_ok(@_f.num_vars));
+            proof_assert!(c.invariant_unary_ok(@_f.num_vars));
             //proof_assert!(forall<j: Int> 0 <= j && j < (@c ).len() && @(@c )[j].idx != @idx ==> (@c )[j].lit_in_internal(@new));
             //proof_assert!(exists<k: Int> 0 <= k && k < (@c).len() && @(@o)[@i].idx === @(@c)[k].idx);
             proof_assert!(0 <= @i && @i < (@o).len() && @(@o)[@i].idx != @idx);
-            proof_assert!(invariant_internal(@o, @_f.num_vars));
-            proof_assert!(invariant_internal(@c, @_f.num_vars));
+            //proof_assert!(invariant_internal(@o, @_f.num_vars));
+            //proof_assert!(invariant_internal(@c, @_f.num_vars));
             proof_assert!(forall<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx != @idx ==> (@c)[j].lit_in_internal(@new));
             proof_assert!(lemma_idx(@c, @o, @new, @i, @idx, @c_idx, *_f); true);
             proof_assert!(forall<j: Int> 0 <= j && j < (@new).len() ==> (@new)[j].lit_in_internal(@c) || (@new)[j].lit_in_internal(@o));
@@ -315,7 +300,7 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
 // Might end up doing this as an option. Time loss is really minimal, and it makes me not have to do
 // a somewhat cumbersome proof.
 // todo on result.1
-#[trusted] // tmp
+#[trusted] // --TODO--
 #[ensures(@result.0.idx < (@trail.vardata).len())]
 //#[ensures(result.0.lit_in(*c))]
 #[ensures(@result.1 < (@c).len())]
@@ -380,7 +365,8 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
     let mut i = trail.trail.len() - 1;
     let mut j = trail.trail[i].len();
     let mut clause = f.clauses[cref].clone();
-    #[invariant(clause_ok, clause.invariant(@f.num_vars))]
+    // Invariant impossible as it might be unary
+    #[invariant(clause_vars, clause.invariant_unary_ok(@f.num_vars))]
     #[invariant(clause_equi, equisat_extension_inner(clause, @f))]
     #[invariant(clause_unsat, clause.unsat(*a))]
     loop {
