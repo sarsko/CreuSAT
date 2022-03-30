@@ -230,7 +230,7 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
 
 #[trusted] // OK
 #[ensures(match result {
-    Some(true)  => {!(^f).unsat(^a)}, // Prop went ok
+    Some(true)  => true,//{!(^f).unsat(^a)}, // Prop went ok
     Some(false) => { (^f).unsat(^a)},
     None        => { true } // Continue
 })]
@@ -251,7 +251,7 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
 #[ensures((^a).invariant(^f))]
 #[ensures(f.equisat_compatible(^f))]
 fn unit_prop_step(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
-    match unit_propagate_WIP(f, a, t, w) {
+    match unit_propagate(f, a, t, w) {
     //match a.do_unit_propagation(f, t) {
         Ok(_) => {
             return Some(true);
@@ -437,8 +437,10 @@ pub fn solver(f: &mut Formula, units: &std::vec::Vec<Lit>) -> bool {
         learn_unit(&mut assignments, &mut trail, lit, f);
         i += 1;
     }
+    /*
     if units.len() > 0 {
         panic!();
     }
+    */
     inner(f, &mut assignments, &decisions, &mut trail, &mut watches)
 }
