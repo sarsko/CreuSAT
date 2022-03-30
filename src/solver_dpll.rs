@@ -50,12 +50,13 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     return true;
 }
 
-#[trusted] // TODO
+#[trusted] // OK
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(trail.invariant(*f))]
 #[requires((@trail.trail).len() > 0)]
 #[requires(trail.trail_sem_invariant(*f, *a))]
+#[requires(0 <= @lit.idx && @lit.idx < (@a).len())] // added
 #[ensures((^trail).trail_sem_invariant(*f, ^a))]
 #[ensures((@(^trail).trail).len() === 1)]
 //#[ensures(^f === *f)]
@@ -67,19 +68,21 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
     //a.cancel_until(trail, trail.trail.len(), 1, decisions);
     a.cancel_until(trail, 1, f);
     //a.cancel_long(trail);
-    a.set_assignment(lit, f);
+    //a.set_assignment(lit, f);
+    a.assign(lit, f, trail);
     trail.enq_assignment(lit, Reason::Unit, f, a);
 }
 
 #[trusted] // OK(except for panic)
-//#[trusted] // tmp
 #[ensures(match result {
     true  => { true },// !(^f).unsat(^a)}, // we dont know this
     false => { (^f).unsat(^a)},
 })]
+#[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(t.invariant(*f))]
+#[requires(w.invariant(*f))]
 #[requires((@t.trail).len() > 0)]
 #[requires(@cref < (@f.clauses).len())]
 #[requires((@f.clauses)[@cref].unsat(*a))] // added
@@ -87,17 +90,13 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
 #[ensures((^t).trail_sem_invariant(^f, ^a))] // added
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((^f).invariant())]
-#[requires(w.invariant(*f))] // new
-#[ensures((^w).invariant(^f))] // new
-//#[ensures(^f === *f)]
-//#[ensures(f.eventually_sat(*a) === (^f).eventually_sat(*a))]
-//#[ensures(f.eventually_sat_complete(*a) === (^f).eventually_sat_complete(*a))]
-#[ensures((@(^t).trail).len() > 0)]
-#[ensures((^t).invariant(^f))]
 #[ensures((^a).invariant(^f))]
+#[ensures((^t).invariant(^f))]
+#[ensures((^w).invariant(^f))] 
+#[ensures((@(^t).trail).len() > 0)]
 #[ensures(f.equisat_compatible(^f))]
 fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: usize, w: &mut Watches) -> bool {
-    let res = analyze_conflict_new(f, a, t, cref);
+    let res = analyze_conflict(f, a, t, cref);
     match res {
         Conflict::Ground => { 
             return false;
@@ -186,20 +185,19 @@ fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
     let old_a = Ghost::record(&a);
     let old_t = Ghost::record(&t);
     let old_w = Ghost::record(&w);
+    #[invariant(prophf, ^f === ^@old_f)]
+    #[invariant(propha, ^a === ^@old_a)]
+    #[invariant(propht, ^t === ^@old_t)]
+    #[invariant(prophw, ^w === ^@old_w)]
     #[invariant(maintains_f, f.invariant())]
     #[invariant(maintains_a, a.invariant(*f))]
     #[invariant(maintains_t, t.invariant(*f))]
     #[invariant(maintains_w, w.invariant(*f))]
     #[invariant(maintains_t2, t.trail_sem_invariant(*f, *a))]
-    #[invariant(vardata_unchanged, (@t.vardata).len() === (@(@old_t).vardata).len())]
-    #[invariant(num_vars, @f.num_vars === @(@old_f).num_vars)]
-    //#[invariant(clauses, (@f.clauses).len() > 0)]
-    #[invariant(trail_len, (@t.trail).len() > 0)]
-    #[invariant(prophf, ^f === ^@old_f)]
-    #[invariant(propha, ^a === ^@old_a)]
-    #[invariant(propht, ^t === ^@old_t)]
-    #[invariant(prophw, ^w === ^@old_w)]
     #[invariant(equi, (@old_f).equisat(*f))]
+    #[invariant(trail_len, (@t.trail).len() > 0)]
+    #[invariant(num_vars, @f.num_vars === @(@old_f).num_vars)]
+    #[invariant(vardata_unchanged, (@t.vardata).len() === (@(@old_t).vardata).len())]
     loop {
         match unit_prop_step(f, a, d, t, w) {
             Some(true)  => { return true;  },
@@ -277,6 +275,7 @@ fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail
 #[requires((@t.trail).len() > 0)]
 #[requires(t.trail_sem_invariant(*f, *a))]
 #[requires(w.invariant(*f))]
+// No point in ensuring these for our uses, but they are strictly speaking ensured
 //#[ensures(@f.num_vars === @(^f).num_vars)]
 //#[ensures((^f).invariant())]
 //#[ensures(^f === *f)]
@@ -298,23 +297,19 @@ fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: 
     let old_a = Ghost::record(&a);
     let old_t = Ghost::record(&t);
     let old_w = Ghost::record(&w);
-    //let old_w = Ghost::record(&w);
-    //#[invariant(maintains_w, watches.invariant(*f))]
-    //#[invariant(clauses, (@f.clauses).len() > 0)]
-    //#[invariant(prophw, ^w === ^@old_w)]
+    #[invariant(prophf, ^f === ^@old_f)]
+    #[invariant(propha, ^a === ^@old_a)]
+    #[invariant(propht, ^t === ^@old_t)]
+    #[invariant(prophw, ^w === ^@old_w)]
     #[invariant(maintains_f, f.invariant())]
     #[invariant(maintains_a, a.invariant(*f))]
     #[invariant(maintains_t, t.invariant(*f))]
-    #[invariant(maintains_t2, t.trail_sem_invariant(*f, *a))]
     #[invariant(maintains_w, w.invariant(*f))]
-    #[invariant(vardata_unchanged, (@t.vardata).len() === (@(@old_t).vardata).len())]
-    #[invariant(num_vars, @f.num_vars === @(@old_f).num_vars)]
-    #[invariant(trail_len, (@t.trail).len() > 0)]
-    #[invariant(propha, ^a === ^@old_a)]
-    #[invariant(prophf, ^f === ^@old_f)]
-    #[invariant(propht, ^t === ^@old_t)]
-    #[invariant(prophw, ^w === ^@old_w)]
+    #[invariant(maintains_t2, t.trail_sem_invariant(*f, *a))]
     #[invariant(equi, (@old_f).equisat(*f))]
+    #[invariant(trail_len, (@t.trail).len() > 0)]
+    #[invariant(num_vars, @f.num_vars === @(@old_f).num_vars)]
+    #[invariant(vardata_unchanged, (@t.vardata).len() === (@(@old_t).vardata).len())]
     loop {
         let res = outer_loop(f, a, d, t, w);
         match res {

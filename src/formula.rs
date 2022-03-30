@@ -229,7 +229,8 @@ impl Formula {
 }
 
 impl Formula {
-    #[trusted] // Only lacking the watcher stuff
+    #[trusted] // OK
+    #[requires(@self.num_vars < @usize::MAX/2)]
     #[requires(self.invariant())]
     #[requires(_t.invariant(*self))]
     #[requires((@clause).len() >= 2)]
@@ -248,11 +249,15 @@ impl Formula {
     //#[ensures(f.eventually_sat_complete(*a) === (^f).eventually_sat_complete(*a))]
     pub fn add_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
         let cref = self.clauses.len();
-        // Just cbf adding the ensures everywhere. The watch is ok
-        proof_assert!(watches.invariant(*self));
-        watches.add_watcher(clause.rest[0], cref, self);
-        watches.add_watcher(clause.rest[1], cref, self);
+        // The weird assignment to first_/second_lit is because otherwise we break the precond for
+        // add_watcher that the cref should be less than f.clauses.len(). We can't update the watches
+        // after the clause is added, as the value gets moved by the push. Could of course index on last
+        // element of f.clauses after the push, but I prefer this.
+        let first_lit = clause.rest[0];
+        let second_lit = clause.rest[1];
         self.clauses.push(clause);
+        watches.add_watcher(first_lit, cref, self);
+        watches.add_watcher(second_lit, cref, self);
         cref
     }
 }

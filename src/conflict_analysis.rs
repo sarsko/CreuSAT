@@ -141,9 +141,11 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
     k != @c_idx && @(@o)[j].idx != @idx ==> !(@c)[k].is_opp((@o)[j]))]
 #[requires(c.same_idx_same_polarity_except(*o, @idx))]
 #[requires(@idx < @_f.num_vars)]
-#[ensures(result.invariant(@_f.num_vars))]
 #[ensures(equisat_extension_inner(result, @_f))]
-
+// We don't have full invariant, as we may return a unit clause
+//#[ensures(result.invariant(@_f.num_vars))]
+#[ensures(result.no_duplicate_indexes())]
+#[ensures(result.vars_in_range(@_f.num_vars))]
 // resolved_post
 #[requires(o.post_unit_inner(@_a))]
 #[requires(c.invariant((@_a).len()))]
@@ -288,7 +290,7 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
     );
 
     proof_assert!(out.resolvent_of_idx(*c, *o, @idx));
-    proof_assert!(out.invariant(@_f.num_vars));
+    //proof_assert!(out.invariant(@_f.num_vars));
 
     match _o_idx {
         Some(o_idx) => {
@@ -358,7 +360,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, j: &mut usize) -> (L
 #[requires((@f.clauses)[@cref].unsat(*a))]
 #[ensures(match result {
     //Conflict::Ground => f.unsat(*a), // Either have to do proof on this seperately or reforumlate
-    Conflict::Unit(lit) => {true}, // know lit can be learned
+    Conflict::Unit(lit) => {0 <= @lit.idx && @lit.idx < (@a).len()}, // know lit can be learned
     Conflict::Learned(level, lit, clause) => {
         //@level > 0 && @level <= (@trail.trail).len() && // Don't need atm
         @lit.idx < ((@a).len()) && // can be changed to lit in or somet
@@ -369,7 +371,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, j: &mut usize) -> (L
     }, 
     _ => { true }
 })]
-pub fn analyze_conflict_new(f: &Formula, a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
+pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.trail.len() - 1;
     if decisionlevel == 0 {
         return Conflict::Ground;
