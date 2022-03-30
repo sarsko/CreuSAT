@@ -21,7 +21,7 @@ use crate::logic::*;
 #[requires((@trail.trail).len() > 0)]
 #[requires(watches.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
-#[requires(2 <= @k && @k < (@(@f.clauses)[@cref]).len())]
+#[requires(0 <= @k && @k < (@(@f.clauses)[@cref]).len())] // Changed
 #[requires((@(@f.clauses)[@cref]).len() > 2)]
 #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > 0)] 
 #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)]
@@ -31,11 +31,11 @@ use crate::logic::*;
 #[ensures(trail.invariant(*f))]
 #[ensures(a.invariant(*f))]
 fn update_watch(f: &Formula, a: &Assignments, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit) {
-    let curr_lit = f.clauses[cref].rest[k];
     let watchidx = lit.to_watchidx();
-    watches.move_to_end(watchidx, j, curr_lit, f);
-    //let end = watches.watches[watchidx].len() - 1;
-    //watches.watches[watchidx].swap(j, end);
+    let end = watches.watches[watchidx].len() - 1;
+    watches.watches[watchidx].swap(j, end);
+    let curr_lit = f.clauses[cref].rest[k];
+    //watches.move_to_end(watchidx, j, curr_lit, f);
     match watches.watches[watchidx].pop() {
         Some(w) => {
             watches.watches[curr_lit.to_neg_watchidx()].push(w);
@@ -96,6 +96,7 @@ fn unit_prop_check_rest(f: &mut Formula, a: &Assignments, trail: &Trail, watches
             f.clauses[cref].rest[0] = curr_lit;
             f.clauses[cref].rest[k] = first_lit;
             */
+            update_watch(f, a, trail, watches, cref, j, 0, lit);
         } else {
             f.clauses[cref].rest.swap(1,k);
             proof_assert!((@(@old_f).clauses).len() === (@f.clauses).len());
@@ -117,8 +118,21 @@ fn unit_prop_check_rest(f: &mut Formula, a: &Assignments, trail: &Trail, watches
             //f.clauses[cref].rest[0] = curr_lit;
             //f.clauses[cref].rest[k] = second_lit;
             //f.clauses[cref].rest[1] = first_lit;
+            update_watch(f, a, trail, watches, cref, j, 1, lit);
         }
-        update_watch(f, a, trail, watches, cref, j, k, lit);
+        /*
+        let watchidx = lit.to_watchidx();
+        let end = watches.watches[watchidx].len() - 1;
+        watches.watches[watchidx].swap(j, end);
+        match watches.watches[watchidx].pop() {
+            Some(w) => {
+                watches.watches[curr_lit.to_neg_watchidx()].push(w);
+            },
+            None => {
+                unreachable!();
+            }
+        }
+        */
         return Ok(()); // dont increase j
     }
     return Err(());
