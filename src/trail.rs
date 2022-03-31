@@ -206,7 +206,7 @@ impl Trail {
 }
 
 impl Trail {
-    #[trusted] // OK (tmp check back)
+    #[trusted] // OK
     #[requires(self.trail_sem_invariant(*_f, *_a))]
     #[ensures((^self).trail_sem_invariant(*_f, *_a))]
     #[requires(self.invariant(*_f))]
@@ -242,7 +242,7 @@ impl Trail {
         self.vardata[lit.idx] = (dlevel, reason);
     }
 
-    //#[trusted] // OK
+    #[trusted] // OK
     #[ensures(result.invariant(*f))]
     #[ensures((@result.trail).len() === 1)]
     #[ensures(result.trail_sem_invariant(*f, *_a))]

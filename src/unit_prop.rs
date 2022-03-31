@@ -166,8 +166,7 @@ fn swap(f: &mut Formula, a: &Assignments, trail: &Trail, watches: &mut Watches, 
 }
 
 // Checks out, but very slow(should refactor)
-// Dunno if it checks out further up
-#[trusted]
+#[trusted] // OK
 #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)] // Added. Unsure if this is the correct way to formulate it
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(@lit.idx < @f.num_vars)]

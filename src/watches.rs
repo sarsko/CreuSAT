@@ -61,7 +61,7 @@ impl Watches {
 
 impl Watches {
     // The way clauses are made and added should really be changed - builder pattern?
-    #[trusted] // OK
+    #[trusted]
     #[ensures(result.invariant(*f))]
     pub fn new(f: &Formula) -> Watches {
         let mut i: usize = 0;
@@ -92,7 +92,7 @@ impl Watches {
 
     // This requires the literal to be watched, otherwise it will panic
     // This method should be updated as we usually know where to look
-    #[trusted] // OK // TODO REMOVE; USELESS FUNCTION
+    #[trusted] // OK --TODO-- REMOVE; USELESS FUNCTION
     #[requires(exists<j: Int> 0 <= j && j < (@(@self.watches)[old_lit.to_watchidx_logic()]).len() && 
     (@(@(@self.watches)[old_lit.to_watchidx_logic()])[j].cref) === @cref)]
     #[requires(self.invariant(*_f))]
@@ -143,10 +143,6 @@ impl Watches {
     }
 
     // Requires duplicates to be removed
-    // Returns false if there exists an empty clause or two unit clauses of the same
-    // literal with opposite polarity(exists a clause [[-l]] and [[l]] for some l) (this is true only when duplicates are removed)
-    // Also returns false if there exists an empty clause
-    // #[requires(no_duplicates)] // TODO
     #[trusted] // OK
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(self.invariant(*f))]

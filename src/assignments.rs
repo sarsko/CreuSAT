@@ -113,7 +113,7 @@ impl Assignments {
     */
 
     #[inline]
-    #[trusted]
+    #[trusted] // --TODO--
     #[ensures(self.invariant(*_f))]
     //#[requires((@self)[@lit.idx] >= 2)] // This is a correctness req
     #[ensures((^self).invariant(*_f))]
@@ -146,28 +146,30 @@ impl Assignments {
         //self.0[l.idx] = l.polarity as u8;
     }
 
-    // Not used and todo
     #[inline]
-    #[trusted]
-    #[ensures(self.invariant(*_f))]
-    //#[requires((@self)[@lit.idx] >= 2)] // This is a correctness req
+    #[trusted] // --TODO--: Failing on the post for trail.
+    // Think I have to do a proof that assigning is fine.
+    // set_assignment is used in unit_prop and this is used in learn_unit
+    // migh have to add more requires
+    #[requires(0 <= @lit.idx && @lit.idx < (@self).len())]
+    #[requires(_t.trail_sem_invariant(*_f, *self))]
+//    #[requires(_t.invariant(_f))]
+    #[requires(_f.invariant())]
+    #[requires(self.invariant(*_f))]
+    #[requires(unset((@self)[@lit.idx]))] // Added, will break stuff further up
+    //#[ensures(self.compatible(^self))]
     #[ensures((^self).invariant(*_f))]
     #[ensures(@(@^self)[@lit.idx] === 1 || @(@^self)[@lit.idx] === 0)]
+    #[ensures((@^self).len() === (@self).len())]
+    #[ensures(_t.trail_sem_invariant(*_f, ^self))]
     #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
-    j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
-    #[requires(0 <= @lit.idx && @lit.idx < (@self).len())]
+        j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
     #[ensures(
         match lit.polarity {
             true => @(@^self)[@lit.idx] === 1,
             false => @(@^self)[@lit.idx] === 0,
         }
     )]
-    //#[ensures(self.compatible(^self))]
-    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
-        j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
-    #[ensures((@^self).len() === (@self).len())]
-    #[requires(_t.trail_sem_invariant(*_f, *self))]
-    #[ensures(_t.trail_sem_invariant(*_f, ^self))]
     pub fn assign(&mut self, lit: Lit, _f: &Formula, _t: &Trail) {
         /*
         if !self.0[l.idx].is_none() {
@@ -236,7 +238,7 @@ impl Assignments {
         None
     }
 
-    #[trusted] // tmp
+    #[trusted] // --TODO--
     #[requires(long_are_post_unit(@vardata, *_f, *self))]
     #[requires(vars_in_range_inner(@curr_level, @_f.num_vars))]
     #[requires(trail_invariant_full(@trail, @vardata, *_f))]
@@ -303,7 +305,7 @@ impl Assignments {
         }
     }
 
-    #[trusted] // OK
+    #[trusted] // OK // Level fails later, though
     //#[requires(trail.trail_entries_are_assigned(*self))] // Gonna need this at some point
         /*
     #[ensures((^trail).assignments_invariant(^self))]

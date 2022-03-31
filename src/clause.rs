@@ -15,6 +15,10 @@ pub struct Clause {
     pub rest: Vec<Lit>
 }
 
+// --TODO--:
+// Split up invariant and at least binary and revert to
+// old invariant instead of invariant_unary_ok
+
 impl Clone for Clause {
     #[trusted] // --TODO--
     #[ensures(result === *self)]

@@ -208,7 +208,7 @@ fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
 }
 
 
-#[trusted] // Only thing missing is the assertion of sat
+#[trusted] // --TODO--: Only thing missing is the assertion of sat
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
@@ -320,7 +320,7 @@ fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: 
     }
 }
 
-#[trusted]
+#[trusted] // --TODO--
 pub fn solver(f: &mut Formula, units: &std::vec::Vec<Lit>) -> bool {
     // should do pure literal and identifying unit clauses in preproc
     let mut i = 0;
