@@ -1245,6 +1245,26 @@ module Lib_Clause_Impl2_PostUnitInner
   predicate post_unit_inner (self : Type.lib_clause_clause) (a : Seq.seq uint8) = 
     exists i : (int) . 0 <= i && i < Seq.length (Model0.model self) && SatInner0.sat_inner (Seq.get (Model0.model self) i) a && (forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) && j <> i -> UnsatInner0.unsat_inner (Seq.get (Model0.model self) j) a)
 end
+module Lib_Clause_Impl2_NoUnsetInner_Interface
+  use Type
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  predicate no_unset_inner (self : Type.lib_clause_clause) (a : Seq.seq uint8)
+end
+module Lib_Clause_Impl2_NoUnsetInner
+  use Type
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  use mach.int.Int32
+  clone Lib_Lit_Impl1_UnsetInner_Interface as UnsetInner0
+  clone Lib_Clause_Impl1_Model_Interface as Model0
+  predicate no_unset_inner (self : Type.lib_clause_clause) (a : Seq.seq uint8) = 
+    forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) -> not (UnsetInner0.unset_inner (Seq.get (Model0.model self) j) a)
+end
 module Lib_Clause_Impl2_PostUnit_Interface
   use Type
   predicate post_unit (self : Type.lib_clause_clause) (a : Type.lib_assignments_assignments)
@@ -1940,12 +1960,13 @@ end
 module Lib_Assignments_Impl2_Assign_Interface
   use mach.int.UInt64
   use seq.Seq
+  use prelude.UInt8
   use mach.int.Int
   use mach.int.Int32
-  use prelude.UInt8
   use prelude.Prelude
   use Type
   clone Lib_Assignments_Impl0_Model_Interface as Model1
+  clone Lib_Lit_Impl1_Invariant_Interface as Invariant2
   clone Lib_Trail_LongArePostUnit_Interface as LongArePostUnit0
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model2 with type t = (usize, Type.lib_trail_reason)
   clone Lib_Trail_Impl2_TrailSemInvariant_Interface as TrailSemInvariant0 with function Model0.model = Model2.model,
@@ -1963,7 +1984,7 @@ module Lib_Assignments_Impl2_Assign_Interface
     requires {Invariant0.invariant' ( * self) _f}
     requires {Invariant1.invariant' _f}
     requires {TrailSemInvariant0.trail_sem_invariant _t _f ( * self)}
-    requires {0 <= UInt64.to_int (Type.lib_lit_lit_Lit_idx lit) && UInt64.to_int (Type.lib_lit_lit_Lit_idx lit) < Seq.length (Model0.model self)}
+    requires {Invariant2.invariant' lit (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars _f))}
     ensures { if Type.lib_lit_lit_Lit_polarity lit then
       UInt8.to_int (Seq.get (Model1.model ( ^ self)) (UInt64.to_int (Type.lib_lit_lit_Lit_idx lit))) = 1
     else
@@ -1979,31 +2000,20 @@ end
 module Lib_Assignments_Impl2_Assign
   use mach.int.UInt64
   use seq.Seq
+  use prelude.UInt8
   use mach.int.Int
   use mach.int.Int32
-  use prelude.UInt8
   use prelude.Prelude
   use Type
   clone Lib_Lit_Impl1_UnsatInner as UnsatInner0
-  clone Lib_Lit_Impl1_Invariant as Invariant3
-  clone Lib_Clause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant3.invariant'
   clone Lib_Lit_Impl1_SatInner as SatInner0
   clone Lib_Clause_AtLeastBinary as AtLeastBinary0
   clone Lib_Clause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
-  clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
-  predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
-  predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model6 with type t = Type.lib_lit_lit
   clone Lib_Clause_Impl1_Model as Model5 with function Model0.model = Model6.model
   clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model5.model,
   predicate SatInner0.sat_inner = SatInner0.sat_inner, predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
-  clone Lib_Clause_Impl3_Invariant as Invariant2 with function Model0.model = Model5.model,
-  predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = Type.lib_clause_clause
-  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model4.model,
-  predicate Invariant0.invariant' = Invariant2.invariant'
-  clone Lib_Formula_Impl2_Invariant as Invariant1 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = uint8
   clone Lib_Assignments_Impl0_Model as Model1 with function Model0.model = Model3.model
   clone Lib_Lit_Impl1_Sat as Sat0 with function Model0.model = Model1.model,
@@ -2015,6 +2025,17 @@ module Lib_Assignments_Impl2_Assign
   clone Lib_Trail_LongArePostUnit as LongArePostUnit0 with function Model0.model = Model4.model,
   predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
   clone Lib_Assignments_Impl1_Invariant as Invariant0 with function Model0.model = Model1.model
+  clone Lib_Lit_Impl1_Invariant as Invariant2
+  clone Lib_Clause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant2.invariant'
+  clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
+  predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
+  predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
+  clone Lib_Clause_Impl3_Invariant as Invariant3 with function Model0.model = Model5.model,
+  predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model4.model,
+  predicate Invariant0.invariant' = Invariant3.invariant'
+  clone Lib_Formula_Impl2_Invariant as Invariant1 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  axiom .
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = (usize, Type.lib_trail_reason)
   clone Lib_Trail_Impl2_TrailSemInvariant as TrailSemInvariant0 with function Model0.model = Model2.model,
   predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit, axiom .
@@ -2027,7 +2048,7 @@ module Lib_Assignments_Impl2_Assign
     requires {Invariant0.invariant' ( * self) _f}
     requires {Invariant1.invariant' _f}
     requires {TrailSemInvariant0.trail_sem_invariant _t _f ( * self)}
-    requires {0 <= UInt64.to_int (Type.lib_lit_lit_Lit_idx lit) && UInt64.to_int (Type.lib_lit_lit_Lit_idx lit) < Seq.length (Model0.model self)}
+    requires {Invariant2.invariant' lit (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars _f))}
     ensures { if Type.lib_lit_lit_Lit_polarity lit then
       UInt8.to_int (Seq.get (Model1.model ( ^ self)) (UInt64.to_int (Type.lib_lit_lit_Lit_idx lit))) = 1
     else
@@ -4831,6 +4852,468 @@ module Lib_Trail_ClausePostWithRegardsToLit
     
    = 
     PostUnit0.post_unit c a && (exists i : (int) . 0 <= i && i < Seq.length (Model0.model c) && Type.lib_lit_lit_Lit_polarity (Seq.get (Model0.model c) i) = Type.lib_lit_lit_Lit_polarity lit && UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) i)) = UInt64.to_int (Type.lib_lit_lit_Lit_idx lit) && Sat0.sat (Seq.get (Model0.model c) i) a)
+end
+module Lib_Trail_LemmaPostUnitNoUnset_Interface
+  use mach.int.UInt64
+  use mach.int.Int
+  use mach.int.Int32
+  use seq.Seq
+  use Type
+  clone Lib_Lit_Impl1_Unset_Interface as Unset0
+  clone Lib_Clause_Impl1_Model_Interface as Model0
+  clone Lib_Clause_Impl3_Invariant_Interface as Invariant1
+  clone Lib_Assignments_Impl1_Invariant_Interface as Invariant0
+  clone Lib_Clause_Impl2_PostUnit_Interface as PostUnit0
+  function lemma_post_unit_no_unset (c : Type.lib_clause_clause) (a : Type.lib_assignments_assignments) (f : Type.lib_formula_formula) : ()
+    
+end
+module Lib_Trail_LemmaPostUnitNoUnset
+  use mach.int.UInt64
+  use mach.int.Int
+  use mach.int.Int32
+  use seq.Seq
+  use Type
+  clone Lib_Lit_Impl1_Unset_Interface as Unset0
+  clone Lib_Clause_Impl1_Model_Interface as Model0
+  clone Lib_Clause_Impl3_Invariant_Interface as Invariant1
+  clone Lib_Assignments_Impl1_Invariant_Interface as Invariant0
+  clone Lib_Clause_Impl2_PostUnit_Interface as PostUnit0
+  function lemma_post_unit_no_unset (c : Type.lib_clause_clause) (a : Type.lib_assignments_assignments) (f : Type.lib_formula_formula) : ()
+    
+   = 
+    ()
+  axiom lemma_post_unit_no_unset_spec : forall c : Type.lib_clause_clause, a : Type.lib_assignments_assignments, f : Type.lib_formula_formula . PostUnit0.post_unit c a -> Invariant0.invariant' a f -> Invariant1.invariant' c (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f)) -> (forall i : (int) . 0 <= i && i < Seq.length (Model0.model c) -> not (Unset0.unset (Seq.get (Model0.model c) i) a))
+end
+module Lib_Trail_LemmaPostUnitNoUnset_Impl
+  use mach.int.UInt64
+  use mach.int.Int
+  use mach.int.Int32
+  use seq.Seq
+  use Type
+  use prelude.Prelude
+  use prelude.UInt8
+  clone Lib_Lit_Impl1_Invariant as Invariant2
+  clone Lib_Clause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant2.invariant'
+  clone Lib_Clause_AtLeastBinary as AtLeastBinary0
+  clone Lib_Clause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
+  clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
+  predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
+  predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
+  clone Lib_Lit_Impl1_UnsatInner as UnsatInner0
+  clone Lib_Lit_Impl1_SatInner as SatInner0
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model1 with function Model0.model = Model3.model
+  clone Lib_Assignments_Impl1_Invariant as Invariant0 with function Model0.model = Model1.model
+  clone Lib_Lit_Impl1_UnsetInner as UnsetInner0
+  clone Lib_Lit_Impl1_Unset as Unset0 with function Model0.model = Model1.model,
+  predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model0 with function Model0.model = Model2.model
+  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model0.model,
+  predicate SatInner0.sat_inner = SatInner0.sat_inner, predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
+  clone Lib_Clause_Impl2_PostUnit as PostUnit0 with function Model0.model = Model1.model,
+  predicate PostUnitInner0.post_unit_inner = PostUnitInner0.post_unit_inner
+  clone Lib_Clause_Impl3_Invariant as Invariant1 with function Model0.model = Model0.model,
+  predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  let rec ghost function lemma_post_unit_no_unset (c : Type.lib_clause_clause) (a : Type.lib_assignments_assignments) (f : Type.lib_formula_formula) : ()
+    requires {PostUnit0.post_unit c a}
+    requires {Invariant0.invariant' a f}
+    requires {Invariant1.invariant' c (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f))}
+    ensures { forall i : (int) . 0 <= i && i < Seq.length (Model0.model c) -> not (Unset0.unset (Seq.get (Model0.model c) i) a) }
+    
+   = 
+    ()
+end
+module Lib_Trail_LemmaAssignMaintains2_Interface
+  use mach.int.UInt64
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  use Type
+  clone Lib_Assignments_Impl1_Invariant_Interface as Invariant3
+  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
+  clone Lib_Formula_Impl2_Invariant_Interface as Invariant2 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  axiom .
+  clone Lib_Clause_Impl3_Invariant_Interface as Invariant1
+  clone Lib_Trail_LongArePostUnit_Interface as LongArePostUnit0
+  clone Lib_Logic_Unset_Interface as Unset0
+  clone Lib_Lit_Impl1_Invariant_Interface as Invariant0
+  clone Lib_Clause_Impl2_PostUnitInner_Interface as PostUnitInner0
+  clone Lib_Assignments_Impl0_Model_Interface as Model0
+  function lemma_assign_maintains2 (v : Seq.seq (usize, Type.lib_trail_reason)) (f : Type.lib_formula_formula) (a : Type.lib_assignments_assignments) (c : Type.lib_clause_clause) (lit : Type.lib_lit_lit) : ()
+    
+end
+module Lib_Trail_LemmaAssignMaintains2
+  use mach.int.UInt64
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  use Type
+  clone Lib_Assignments_Impl1_Invariant_Interface as Invariant3
+  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
+  clone Lib_Formula_Impl2_Invariant_Interface as Invariant2 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  axiom .
+  clone Lib_Clause_Impl3_Invariant_Interface as Invariant1
+  clone Lib_Trail_LongArePostUnit_Interface as LongArePostUnit0
+  clone Lib_Logic_Unset_Interface as Unset0
+  clone Lib_Lit_Impl1_Invariant_Interface as Invariant0
+  clone Lib_Clause_Impl2_PostUnitInner_Interface as PostUnitInner0
+  clone Lib_Assignments_Impl0_Model_Interface as Model0
+  clone Lib_Lit_Impl1_Unset_Interface as Unset1
+  clone Lib_Clause_Impl1_Model_Interface as Model1
+  clone Lib_Clause_Impl2_PostUnit_Interface as PostUnit0
+  clone Lib_Trail_LemmaPostUnitNoUnset_Interface as LemmaPostUnitNoUnset0 with predicate PostUnit0.post_unit = PostUnit0.post_unit,
+  predicate Invariant0.invariant' = Invariant3.invariant', predicate Invariant1.invariant' = Invariant1.invariant',
+  function Model0.model = Model1.model, predicate Unset0.unset = Unset1.unset, axiom .
+  function lemma_assign_maintains2 (v : Seq.seq (usize, Type.lib_trail_reason)) (f : Type.lib_formula_formula) (a : Type.lib_assignments_assignments) (c : Type.lib_clause_clause) (lit : Type.lib_lit_lit) : ()
+    
+   = 
+    let _ = LemmaPostUnitNoUnset0.lemma_post_unit_no_unset c a f in ()
+  axiom lemma_assign_maintains2_spec : forall v : Seq.seq (usize, Type.lib_trail_reason), f : Type.lib_formula_formula, a : Type.lib_assignments_assignments, c : Type.lib_clause_clause, lit : Type.lib_lit_lit . PostUnitInner0.post_unit_inner c (Model0.model a) -> Invariant0.invariant' lit (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f)) -> Unset0.unset (Seq.get (Model0.model a) (UInt64.to_int (Type.lib_lit_lit_Lit_idx lit))) -> LongArePostUnit0.long_are_post_unit v f a -> Invariant1.invariant' c (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f)) -> Invariant2.invariant' f -> Invariant3.invariant' a f -> PostUnitInner0.post_unit_inner c (Seq.set (Model0.model a) (UInt64.to_int (Type.lib_lit_lit_Lit_idx lit)) (1 : uint8)) && PostUnitInner0.post_unit_inner c (Seq.set (Model0.model a) (UInt64.to_int (Type.lib_lit_lit_Lit_idx lit)) (0 : uint8))
+end
+module Lib_Trail_LemmaAssignMaintains2_Impl
+  use mach.int.UInt64
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  use Type
+  clone Lib_Lit_Impl1_UnsetInner as UnsetInner0
+  clone Lib_Clause_AtLeastBinary as AtLeastBinary0
+  clone Lib_Clause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model2 with function Model0.model = Model4.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = Type.lib_clause_clause
+  clone Lib_Logic_Unset as Unset0
+  clone Lib_Lit_Impl1_Invariant as Invariant0
+  clone Lib_Clause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant0.invariant'
+  clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
+  predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
+  predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
+  clone Lib_Clause_Impl3_Invariant as Invariant1 with function Model0.model = Model2.model,
+  predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model3.model,
+  predicate Invariant0.invariant' = Invariant1.invariant'
+  clone Lib_Formula_Impl2_Invariant as Invariant2 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  axiom .
+  clone Lib_Lit_Impl1_UnsatInner as UnsatInner0
+  clone Lib_Lit_Impl1_SatInner as SatInner0
+  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model2.model,
+  predicate SatInner0.sat_inner = SatInner0.sat_inner, predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model0 with function Model0.model = Model1.model
+  clone Lib_Lit_Impl1_Sat as Sat0 with function Model0.model = Model0.model,
+  predicate SatInner0.sat_inner = SatInner0.sat_inner
+  clone Lib_Lit_Impl1_Unset as Unset1 with function Model0.model = Model0.model,
+  predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
+  clone Lib_Clause_Impl2_PostUnit as PostUnit0 with function Model0.model = Model0.model,
+  predicate PostUnitInner0.post_unit_inner = PostUnitInner0.post_unit_inner
+  clone Lib_Trail_ClausePostWithRegardsTo as ClausePostWithRegardsTo0 with predicate PostUnit0.post_unit = PostUnit0.post_unit,
+  function Model0.model = Model2.model, predicate Sat0.sat = Sat0.sat
+  clone Lib_Trail_LongArePostUnit as LongArePostUnit0 with function Model0.model = Model3.model,
+  predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
+  clone Lib_Assignments_Impl1_Invariant as Invariant3 with function Model0.model = Model0.model
+  clone Lib_Trail_LemmaPostUnitNoUnset as LemmaPostUnitNoUnset0 with predicate PostUnit0.post_unit = PostUnit0.post_unit,
+  predicate Invariant0.invariant' = Invariant3.invariant', predicate Invariant1.invariant' = Invariant1.invariant',
+  function Model0.model = Model2.model, predicate Unset0.unset = Unset1.unset, axiom .
+  let rec ghost function lemma_assign_maintains2 (v : Seq.seq (usize, Type.lib_trail_reason)) (f : Type.lib_formula_formula) (a : Type.lib_assignments_assignments) (c : Type.lib_clause_clause) (lit : Type.lib_lit_lit) : ()
+    requires {PostUnitInner0.post_unit_inner c (Model0.model a)}
+    requires {Invariant0.invariant' lit (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f))}
+    requires {Unset0.unset (Seq.get (Model0.model a) (UInt64.to_int (Type.lib_lit_lit_Lit_idx lit)))}
+    requires {LongArePostUnit0.long_are_post_unit v f a}
+    requires {Invariant1.invariant' c (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f))}
+    requires {Invariant2.invariant' f}
+    requires {Invariant3.invariant' a f}
+    ensures { PostUnitInner0.post_unit_inner c (Seq.set (Model0.model a) (UInt64.to_int (Type.lib_lit_lit_Lit_idx lit)) (0 : uint8)) }
+    ensures { PostUnitInner0.post_unit_inner c (Seq.set (Model0.model a) (UInt64.to_int (Type.lib_lit_lit_Lit_idx lit)) (1 : uint8)) }
+    
+   = 
+    let _ = LemmaPostUnitNoUnset0.lemma_post_unit_no_unset c a f in ()
+end
+module Lib_Trail_LemmaAssignMaintains_Interface
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use Type
+  function lemma_assign_maintains (v : Seq.seq (usize, Type.lib_trail_reason)) (f2 : (Seq.seq (Type.lib_clause_clause), int)) (a : Type.lib_assignments_assignments) (lit : Type.lib_lit_lit) (ff : Type.lib_formula_formula) : ()
+    
+end
+module Lib_Trail_LemmaAssignMaintains
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use Type
+  use mach.int.Int32
+  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
+  clone Lib_Formula_Impl2_Invariant_Interface as Invariant2 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  axiom .
+  clone Lib_Assignments_Impl1_Invariant_Interface as Invariant3
+  clone Lib_Clause_Impl3_Invariant_Interface as Invariant1
+  clone Lib_Trail_LongArePostUnit_Interface as LongArePostUnit0
+  clone Lib_Logic_Unset_Interface as Unset0
+  clone Lib_Lit_Impl1_Invariant_Interface as Invariant0
+  clone Lib_Clause_Impl2_PostUnitInner_Interface as PostUnitInner0
+  clone Lib_Assignments_Impl0_Model_Interface as Model0
+  clone Lib_Trail_LemmaAssignMaintains2_Interface as LemmaAssignMaintains20 with function Model0.model = Model0.model,
+  predicate PostUnitInner0.post_unit_inner = PostUnitInner0.post_unit_inner,
+  predicate Invariant0.invariant' = Invariant0.invariant', predicate Unset0.unset = Unset0.unset,
+  predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit,
+  predicate Invariant1.invariant' = Invariant1.invariant', predicate Invariant2.invariant' = Invariant2.invariant',
+  predicate Invariant3.invariant' = Invariant3.invariant', axiom .
+  function lemma_assign_maintains (v : Seq.seq (usize, Type.lib_trail_reason)) (f2 : (Seq.seq (Type.lib_clause_clause), int)) (a : Type.lib_assignments_assignments) (lit : Type.lib_lit_lit) (ff : Type.lib_formula_formula) : ()
+    
+   = 
+    let _ = forall i : (int) . 0 <= i && i < (let (_, a) = f2 in a) -> (let _ = LemmaAssignMaintains20.lemma_assign_maintains2 v ff a (Seq.get (let (a, _) = f2 in a) i) lit in true) in ()
+end
+module Lib_Trail_LemmaAssignMaintains4_Interface
+  use mach.int.UInt64
+  use mach.int.Int
+  use mach.int.Int32
+  use seq.Seq
+  use prelude.Prelude
+  use prelude.UInt8
+  use Type
+  clone Lib_Assignments_Impl1_Invariant_Interface as Invariant1
+  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
+  clone Lib_Formula_Impl2_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  axiom .
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = Type.lib_clause_clause
+  clone Lib_Assignments_Impl0_Model_Interface as Model0
+  function lemma_assign_maintains4 (v : Seq.seq (usize, Type.lib_trail_reason)) (f : Type.lib_formula_formula) (a : Type.lib_assignments_assignments) (m : usize) (idx : usize) : ()
+    
+end
+module Lib_Trail_LemmaAssignMaintains4
+  use mach.int.UInt64
+  use mach.int.Int
+  use mach.int.Int32
+  use seq.Seq
+  use prelude.Prelude
+  use prelude.UInt8
+  use Type
+  clone Lib_Assignments_Impl1_Invariant_Interface as Invariant1
+  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
+  clone Lib_Formula_Impl2_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  axiom .
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = Type.lib_clause_clause
+  clone Lib_Assignments_Impl0_Model_Interface as Model0
+  function lemma_assign_maintains4 (v : Seq.seq (usize, Type.lib_trail_reason)) (f : Type.lib_formula_formula) (a : Type.lib_assignments_assignments) (m : usize) (idx : usize) : ()
+    
+   = 
+    ()
+  axiom lemma_assign_maintains4_spec : forall v : Seq.seq (usize, Type.lib_trail_reason), f : Type.lib_formula_formula, a : Type.lib_assignments_assignments, m : usize, idx : usize . UInt64.to_int idx <= 0 && UInt64.to_int idx < Seq.length (Model0.model a) -> UInt64.to_int m <= 0 && UInt64.to_int m < Seq.length (Model1.model (Type.lib_formula_formula_Formula_clauses f)) -> Invariant0.invariant' f -> Invariant1.invariant' a f -> (forall i : (int) . 0 <= i && i < Seq.length (Model0.model a) && i <> UInt64.to_int idx -> Seq.get (Seq.set (Model0.model a) (UInt64.to_int idx) (1 : uint8)) i = Seq.get (Model0.model a) i)
+end
+module Lib_Trail_LemmaAssignMaintains4_Impl
+  use mach.int.UInt64
+  use mach.int.Int
+  use mach.int.Int32
+  use seq.Seq
+  use prelude.Prelude
+  use prelude.UInt8
+  use Type
+  clone Lib_Lit_Impl1_Invariant as Invariant3
+  clone Lib_Clause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant3.invariant'
+  clone Lib_Clause_AtLeastBinary as AtLeastBinary0
+  clone Lib_Clause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
+  clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
+  predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
+  predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model3 with function Model0.model = Model4.model
+  clone Lib_Clause_Impl3_Invariant as Invariant2 with function Model0.model = Model3.model,
+  predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.lib_clause_clause
+  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model1.model,
+  predicate Invariant0.invariant' = Invariant2.invariant'
+  clone Lib_Formula_Impl2_Invariant as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  axiom .
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model0 with function Model0.model = Model2.model
+  clone Lib_Assignments_Impl1_Invariant as Invariant1 with function Model0.model = Model0.model
+  let rec ghost function lemma_assign_maintains4 (v : Seq.seq (usize, Type.lib_trail_reason)) (f : Type.lib_formula_formula) (a : Type.lib_assignments_assignments) (m : usize) (idx : usize) : ()
+    requires {UInt64.to_int idx <= 0 && UInt64.to_int idx < Seq.length (Model0.model a)}
+    requires {UInt64.to_int m <= 0 && UInt64.to_int m < Seq.length (Model1.model (Type.lib_formula_formula_Formula_clauses f))}
+    requires {Invariant0.invariant' f}
+    requires {Invariant1.invariant' a f}
+    ensures { forall i : (int) . 0 <= i && i < Seq.length (Model0.model a) && i <> UInt64.to_int idx -> Seq.get (Seq.set (Model0.model a) (UInt64.to_int idx) (1 : uint8)) i = Seq.get (Model0.model a) i }
+    
+   = 
+    ()
+end
+module Lib_Trail_LemmaAssignMaintains3_Interface
+  use mach.int.Int
+  use mach.int.Int32
+  use mach.int.UInt64
+  use seq.Seq
+  use prelude.Prelude
+  use prelude.UInt8
+  use Type
+  clone Lib_Assignments_Impl1_Invariant_Interface as Invariant1
+  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
+  clone Lib_Formula_Impl2_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  axiom .
+  clone Lib_Logic_Unset_Interface as Unset0
+  clone Lib_Clause_Impl2_NoUnsetInner_Interface as NoUnsetInner0
+  clone Lib_Assignments_Impl0_Model_Interface as Model2
+  clone Lib_Clause_Impl1_Model_Interface as Model1
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.lib_clause_clause
+  function lemma_assign_maintains3 (v : Seq.seq (usize, Type.lib_trail_reason)) (f : Type.lib_formula_formula) (a : Type.lib_assignments_assignments) (m : usize) (idx : usize) : ()
+    
+end
+module Lib_Trail_LemmaAssignMaintains3
+  use mach.int.Int
+  use mach.int.Int32
+  use mach.int.UInt64
+  use seq.Seq
+  use prelude.Prelude
+  use prelude.UInt8
+  use Type
+  clone Lib_Assignments_Impl1_Invariant_Interface as Invariant1
+  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
+  clone Lib_Formula_Impl2_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  axiom .
+  clone Lib_Logic_Unset_Interface as Unset0
+  clone Lib_Clause_Impl2_NoUnsetInner_Interface as NoUnsetInner0
+  clone Lib_Assignments_Impl0_Model_Interface as Model2
+  clone Lib_Clause_Impl1_Model_Interface as Model1
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.lib_clause_clause
+  clone Lib_Trail_LemmaAssignMaintains4_Interface as LemmaAssignMaintains40 with function Model0.model = Model2.model,
+  function Model1.model = Model0.model, predicate Invariant0.invariant' = Invariant0.invariant',
+  predicate Invariant1.invariant' = Invariant1.invariant', axiom .
+  function lemma_assign_maintains3 (v : Seq.seq (usize, Type.lib_trail_reason)) (f : Type.lib_formula_formula) (a : Type.lib_assignments_assignments) (m : usize) (idx : usize) : ()
+    
+   = 
+    let _ = LemmaAssignMaintains40.lemma_assign_maintains4 v f a m idx in ()
+  axiom lemma_assign_maintains3_spec : forall v : Seq.seq (usize, Type.lib_trail_reason), f : Type.lib_formula_formula, a : Type.lib_assignments_assignments, m : usize, idx : usize . (forall i : (int) . 0 <= i && i < Seq.length (Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int m))) -> Type.lib_lit_lit_Lit_idx (Seq.get (Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int m))) i) <> idx) -> UInt64.to_int idx <= 0 && UInt64.to_int idx < Seq.length (Model2.model a) -> UInt64.to_int m <= 0 && UInt64.to_int m < Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f)) -> NoUnsetInner0.no_unset_inner (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int m)) (Model2.model a) -> Unset0.unset (Seq.get (Model2.model a) (UInt64.to_int idx)) -> Invariant0.invariant' f -> Invariant1.invariant' a f -> (forall i : (int) . 0 <= i && i < Seq.length (Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int m))) -> Seq.get (Seq.set (Model2.model a) (UInt64.to_int idx) (1 : uint8)) (UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int m))) i))) = Seq.get (Model2.model a) (UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int m))) i))))
+end
+module Lib_Trail_LemmaAssignMaintains3_Impl
+  use mach.int.Int
+  use mach.int.Int32
+  use mach.int.UInt64
+  use seq.Seq
+  use prelude.Prelude
+  use prelude.UInt8
+  use Type
+  clone Lib_Lit_Impl1_Invariant as Invariant3
+  clone Lib_Clause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant3.invariant'
+  clone Lib_Clause_AtLeastBinary as AtLeastBinary0
+  clone Lib_Clause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
+  clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
+  predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
+  predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
+  clone Lib_Logic_Unset as Unset0
+  clone Lib_Lit_Impl1_UnsetInner as UnsetInner0
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model2 with function Model0.model = Model4.model
+  clone Lib_Assignments_Impl1_Invariant as Invariant1 with function Model0.model = Model2.model
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model1 with function Model0.model = Model3.model
+  clone Lib_Clause_Impl3_Invariant as Invariant2 with function Model0.model = Model1.model,
+  predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  clone Lib_Clause_Impl2_NoUnsetInner as NoUnsetInner0 with function Model0.model = Model1.model,
+  predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.lib_clause_clause
+  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model0.model,
+  predicate Invariant0.invariant' = Invariant2.invariant'
+  clone Lib_Formula_Impl2_Invariant as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  axiom .
+  clone Lib_Trail_LemmaAssignMaintains4 as LemmaAssignMaintains40 with function Model0.model = Model2.model,
+  function Model1.model = Model0.model, predicate Invariant0.invariant' = Invariant0.invariant',
+  predicate Invariant1.invariant' = Invariant1.invariant',
+  predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old, axiom .
+  let rec ghost function lemma_assign_maintains3 (v : Seq.seq (usize, Type.lib_trail_reason)) (f : Type.lib_formula_formula) (a : Type.lib_assignments_assignments) (m : usize) (idx : usize) : ()
+    requires {forall i : (int) . 0 <= i && i < Seq.length (Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int m))) -> Type.lib_lit_lit_Lit_idx (Seq.get (Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int m))) i) <> idx}
+    requires {UInt64.to_int idx <= 0 && UInt64.to_int idx < Seq.length (Model2.model a)}
+    requires {UInt64.to_int m <= 0 && UInt64.to_int m < Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses f))}
+    requires {NoUnsetInner0.no_unset_inner (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int m)) (Model2.model a)}
+    requires {Unset0.unset (Seq.get (Model2.model a) (UInt64.to_int idx))}
+    requires {Invariant0.invariant' f}
+    requires {Invariant1.invariant' a f}
+    ensures { forall i : (int) . 0 <= i && i < Seq.length (Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int m))) -> Seq.get (Seq.set (Model2.model a) (UInt64.to_int idx) (1 : uint8)) (UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int m))) i))) = Seq.get (Model2.model a) (UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model1.model (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int m))) i))) }
+    
+   = 
+    let _ = LemmaAssignMaintains40.lemma_assign_maintains4 v f a m idx in ()
+end
+module Lib_Trail_ClausePostWithRegardsToInner_Interface
+  use Type
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  predicate clause_post_with_regards_to_inner (c : Type.lib_clause_clause) (a : Seq.seq uint8) (j : int)
+end
+module Lib_Trail_ClausePostWithRegardsToInner
+  use Type
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  use mach.int.Int32
+  use mach.int.UInt64
+  clone Lib_Lit_Impl1_SatInner_Interface as SatInner0
+  clone Lib_Clause_Impl1_Model_Interface as Model0
+  clone Lib_Clause_Impl2_PostUnitInner_Interface as PostUnitInner0
+  predicate clause_post_with_regards_to_inner (c : Type.lib_clause_clause) (a : Seq.seq uint8) (j : int) = 
+    PostUnitInner0.post_unit_inner c a && (exists i : (int) . 0 <= i && i < Seq.length (Model0.model c) && UInt64.to_int (Type.lib_lit_lit_Lit_idx (Seq.get (Model0.model c) i)) = j && SatInner0.sat_inner (Seq.get (Model0.model c) i) a)
+end
+module Lib_Trail_LongAreNoUnset_Interface
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use Type
+  use prelude.UInt8
+  predicate long_are_no_unset (vardata : Seq.seq (usize, Type.lib_trail_reason)) (f : Type.lib_formula_formula) (a : Seq.seq uint8)
+    
+end
+module Lib_Trail_LongAreNoUnset
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use Type
+  use prelude.UInt8
+  use mach.int.Int32
+  clone Lib_Clause_Impl2_NoUnsetInner_Interface as NoUnsetInner0
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.lib_clause_clause
+  predicate long_are_no_unset (vardata : Seq.seq (usize, Type.lib_trail_reason)) (f : Type.lib_formula_formula) (a : Seq.seq uint8)
+    
+   = 
+    forall j : (int) . 0 <= j && j < Seq.length vardata -> match (let (_, a) = Seq.get vardata j in a) with
+      | Type.Lib_Trail_Reason_Long k -> NoUnsetInner0.no_unset_inner (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int k)) a
+      | _ -> true
+      end
+end
+module Lib_Trail_LongArePostUnitInner_Interface
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use Type
+  use prelude.UInt8
+  predicate long_are_post_unit_inner (vardata : Seq.seq (usize, Type.lib_trail_reason)) (f : Type.lib_formula_formula) (a : Seq.seq uint8)
+    
+end
+module Lib_Trail_LongArePostUnitInner
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use Type
+  use prelude.UInt8
+  use mach.int.Int32
+  clone Lib_Trail_ClausePostWithRegardsToInner_Interface as ClausePostWithRegardsToInner0
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.lib_clause_clause
+  predicate long_are_post_unit_inner (vardata : Seq.seq (usize, Type.lib_trail_reason)) (f : Type.lib_formula_formula) (a : Seq.seq uint8)
+    
+   = 
+    forall j : (int) . 0 <= j && j < Seq.length vardata -> match (let (_, a) = Seq.get vardata j in a) with
+      | Type.Lib_Trail_Reason_Long k -> ClausePostWithRegardsToInner0.clause_post_with_regards_to_inner (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses f)) (UInt64.to_int k)) a j
+      | _ -> true
+      end
 end
 module Lib_Trail_Impl2_VardataInvariant_Interface
   use Type

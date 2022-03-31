@@ -48,6 +48,88 @@ pub fn clause_post_with_regards_to_lit(c: Clause, a: Assignments, lit: Lit) -> b
     }
 }
 
+#[logic]
+#[requires(c.invariant(@f.num_vars))]
+#[requires(a.invariant(f))]
+//#[requires(clause_post_with_regards_to(c, a, j))]
+#[requires(c.post_unit(a))]
+#[ensures(forall<i: Int> 0 <= i && i < (@c).len() ==> !(@c)[i].unset(a))]
+fn lemma_post_unit_no_unset(c: Clause, a: Assignments, f: Formula) {}
+
+//#[requires(long_are_post_unit(v, f, a))]
+//#[requires(unset((@a)[@lit.idx]))]
+#[requires(a.invariant(f))]
+#[requires(f.invariant())]
+#[requires(lit.invariant(@f.num_vars))]
+//#[requires(c.invariant(@f.num_vars))]
+#[requires(long_are_no_unset(v, f, @a))]
+#[requires(long_are_post_unit(v, f, a))]
+#[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 1u8)))]
+//#[ensures(long_are_no_unset(v, f, @a))]
+fn lemma_assign_maintains(v: Seq<(usize, Reason)>, f: Formula, a: Assignments, lit: Lit) {}
+
+#[logic]
+#[requires(a.invariant(f))]
+#[requires(f.invariant())]
+#[requires(c.invariant(@f.num_vars))]
+#[requires(long_are_post_unit(v, f, a))]
+#[requires(unset((@a)[@lit.idx]))]
+#[requires(lit.invariant(@f.num_vars))]
+#[requires(c.post_unit_inner(@a))]
+#[ensures(c.post_unit_inner((@a).set(@lit.idx, 1u8)))]
+#[ensures(c.post_unit_inner((@a).set(@lit.idx, 0u8)))]
+//#[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 1u8)))]
+//#[ensures(clause_post_with_regards_to_inner(c, (@a).set(@lit.idx, 1u8)))]
+fn lemma_assign_maintains2(v: Seq<(usize, Reason)>, f: Formula, a: Assignments, c: Clause, lit: Lit) {
+    lemma_post_unit_no_unset(c, a, f);
+}
+
+#[logic]
+#[requires(a.invariant(f))]
+#[requires(f.invariant())]
+//#[requires(c.invariant(@f.num_vars))]
+#[requires(unset((@a)[@idx]))]
+#[requires((@f.clauses)[@m].no_unset_inner(@a))]
+#[requires(@m <= 0 && @m < (@f.clauses).len())]
+#[requires(@idx <= 0 && @idx < (@a).len())]
+//#[requires(long_are_post_unit(v, f, a))]
+//#[requires(long_are_no_unset(v, f, @a))]
+//#[requires(c.post_unit_inner(@a))]
+//#[requires(!lit.lit_in(c))]
+#[requires(forall<i: Int> 0 <= i && i < ((@(@f.clauses)[@m])).len() ==>
+    (@(@f.clauses)[@m])[i].idx != idx)]
+#[ensures(forall<i: Int> 0 <= i && i < ((@(@f.clauses)[@m])).len() ==>
+    (@a).set(@idx, 1u8)[@((@(@f.clauses)[@m]))[i].idx] === (@a)[@((@(@f.clauses)[@m]))[i].idx])]
+//#[ensures(!lit.lit_in(c))]
+//#[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 1u8)))]
+//#[ensures(clause_post_with_regards_to_inner(c, (@a).set(@lit.idx, 1u8)))]
+fn lemma_assign_maintains3(v: Seq<(usize, Reason)>, f: Formula, a: Assignments, m: usize, idx: usize) {
+    lemma_assign_maintains4(v, f, a, m, idx);
+}
+
+#[logic]
+#[requires(a.invariant(f))]
+#[requires(f.invariant())]
+//#[requires(unset((@a)[@idx]))]
+//#[requires((@f.clauses)[@m].no_unset_inner(@a))]
+//#[requires(long_are_post_unit(v, f, a))]
+//#[requires(long_are_no_unset(v, f, @a))]
+//#[requires(c.post_unit_inner(@a))]
+//#[requires(!lit.lit_in(c))]
+#[requires(@m <= 0 && @m < (@f.clauses).len())]
+#[requires(@idx <= 0 && @idx < (@a).len())]
+//#[requires(forall<i: Int> 0 <= i && i < (@a).len() ==>
+//    (@(@f.clauses)[@m])[i].idx != idx)]
+#[ensures(forall<i: Int> 0 <= i && i < (@a).len() && i != @idx ==>
+    (@a).set(@idx, 1u8)[i] === (@a)[i])]
+//#[ensures(!lit.lit_in(c))]
+//#[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 1u8)))]
+//#[ensures(clause_post_with_regards_to_inner(c, (@a).set(@lit.idx, 1u8)))]
+fn lemma_assign_maintains4(v: Seq<(usize, Reason)>, f: Formula, a: Assignments, m: usize, idx: usize) {}
+
+//(@self)[i].sat_inner(a) && forall<j: Int> 0 <= j && j < (@self).len() &&
+//j != i ==> (@self)[j].unsat_inner(a)
+
 #[predicate]
 pub fn clause_post_with_regards_to(c: Clause, a: Assignments, j: Int) -> bool {
     pearlite! {
@@ -57,6 +139,39 @@ pub fn clause_post_with_regards_to(c: Clause, a: Assignments, j: Int) -> bool {
             (@c)[i].sat(a) 
     }
 }
+
+#[predicate]
+pub fn clause_post_with_regards_to_inner(c: Clause, a: Seq<AssignedState>, j: Int) -> bool {
+    pearlite! {
+        c.post_unit_inner(a) &&
+        exists<i: Int> 0 <= i && i < (@c).len() &&
+            @(@c)[i].idx === j &&
+            (@c)[i].sat_inner(a) 
+    }
+}
+
+#[predicate]
+pub fn long_are_no_unset(vardata: Seq<(usize, Reason)>, f: Formula, a: Seq<AssignedState>) -> bool {
+    pearlite! {
+        forall<j: Int> 0 <= j && j < vardata.len() ==> match
+        vardata[j].1 { 
+            Reason::Long(k) => { (@f.clauses)[@k].no_unset_inner(a) },
+                _ => true,
+            }
+    }
+}
+
+#[predicate]
+pub fn long_are_post_unit_inner(vardata: Seq<(usize, Reason)>, f: Formula, a: Seq<AssignedState>) -> bool {
+    pearlite! {
+        forall<j: Int> 0 <= j && j < vardata.len() ==> match
+        vardata[j].1 { 
+            Reason::Long(k) => { clause_post_with_regards_to_inner((@f.clauses)[@k], a, j) },
+                _ => true,
+            }
+    }
+}
+
 
 #[predicate]
 pub fn long_are_post_unit(vardata: Seq<(usize, Reason)>, f: Formula, a: Assignments) -> bool {
@@ -184,7 +299,6 @@ impl Trail {
         }
     }
 
-    // TODO
     #[predicate]
     #[ensures(result === (long_are_post_unit(@self.vardata, f, a)))]
     pub fn trail_sem_invariant(self, f: Formula, a: Assignments) -> bool {

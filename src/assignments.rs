@@ -150,8 +150,8 @@ impl Assignments {
     #[trusted] // --TODO--: Failing on the post for trail.
     // Think I have to do a proof that assigning is fine.
     // set_assignment is used in unit_prop and this is used in learn_unit
-    // migh have to add more requires
-    #[requires(0 <= @lit.idx && @lit.idx < (@self).len())]
+    // might have to add more requires
+    #[requires(lit.invariant(@_f.num_vars))]
     #[requires(_t.trail_sem_invariant(*_f, *self))]
 //    #[requires(_t.invariant(_f))]
     #[requires(_f.invariant())]
@@ -177,6 +177,8 @@ impl Assignments {
         }
         */
         //assert!(self.0[l.idx].is_none());
+        proof_assert!(@(@self)[@lit.idx] >= 2);
+        //proof_assert!(lemma_post_unit_no_unset())
         if lit.polarity {
             self.0[lit.idx] = 1;
         } else {

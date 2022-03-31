@@ -143,6 +143,14 @@ impl Clause {
     }
 
     #[predicate]
+    pub fn no_unset_inner(self, a: Seq<AssignedState>) -> bool {
+        pearlite! {
+                forall<j: Int> 0 <= j && j < (@self).len()
+                 ==> !(@self)[j].unset_inner(a)
+        }
+    }
+
+    #[predicate]
     pub fn post_unit(self, a: Assignments) -> bool {
         pearlite! {
             self.post_unit_inner(@a)
@@ -349,7 +357,7 @@ impl Clause {
     #[inline]
     #[trusted] // xxTODOxx
     // Requires a bunch of stuff, TODO
-    #[ensures(result.invariant(@_f.num_vars))]
+    //#[ensures(result.invariant(@_f.num_vars))]
     //#[ensures((@result).len() >= 2)]
     pub fn clause_from_vec(vec: &std::vec::Vec<Lit>) -> Clause {
         Clause { rest: vec.clone() }
