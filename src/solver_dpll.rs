@@ -21,6 +21,12 @@ pub enum SatResult {
     Err,
 }
 
+pub enum ConflictResult {
+    Ok,
+    Err,
+    Ground,
+    Continue,
+}
 
 #[trusted] // OK
 #[ensures(result === (@f.clauses)[@idx].sat(*a))]
@@ -83,8 +89,9 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
 
 #[trusted] // OK(except for panic)
 #[ensures(match result {
-    true  => { true },// !(^f).unsat(^a)}, // we dont know this
-    false => { (^f).unsat(^a)},
+    Some(false) => { (^f).unsat(^a)},
+    Some(true)  => { true },
+    None        => { true }, // !(^f).unsat(^a)}, // we dont know this
 })]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(f.invariant())]
@@ -103,11 +110,11 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
 #[ensures((^w).invariant(^f))] 
 #[ensures((@(^t).trail).len() > 0)]
 #[ensures(f.equisat_compatible(^f))]
-fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: usize, w: &mut Watches) -> bool {
+fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: usize, w: &mut Watches) -> Option<bool> {
     let res = analyze_conflict(f, a, t, cref);
     match res {
         Conflict::Ground => { 
-            return false;
+            return Some(false);
         },
         Conflict::Unit(lit) => {
             learn_unit(a, t, lit, f);
@@ -126,17 +133,16 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
             //proof_assert!(@cref < (@f.clauses).len());
             //t.enq_assignment(lit, Reason::Long(cref), f);
         }
-    _ => { return true;} // todo
+    _ => { return Some(true);} // todo
     }
-    true
+    None
 }
 
 #[trusted] // OK
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[ensures(match result {
-    Some(true)  => true,//{!(^f).unsat(^a)}, // Prop went ok
-    Some(false) => { (^f).unsat(^a)},
-    None        => { true } // Continue
+    ConflictResult::Ground => { (^f).unsat(^a)},
+    _                      => { true }
 })]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
@@ -153,17 +159,18 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
 #[ensures((^t).invariant(^f))]
 #[ensures((^a).invariant(^f))]
 #[ensures(f.equisat(^f))]
-fn unit_prop_step(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
+fn unit_prop_step(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> ConflictResult {
     match unit_propagate(f, a, t, w) {
     //match a.do_unit_propagation(f, t) {
         Ok(_) => {
-            return Some(true);
+            return ConflictResult::Ok;
         },
         Err(cref) => {
-            if !handle_conflict(f, a, t, cref, w) {
-                return Some(false);
-            }
-            None // Continue
+            return match handle_conflict(f, a, t, cref, w) {
+                Some(false) => ConflictResult::Ground,
+                Some(true)  => ConflictResult::Err,
+                None        => ConflictResult::Continue,
+            };
         },
     }
 }
@@ -181,14 +188,18 @@ fn unit_prop_step(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
 #[requires(w.invariant(*f))]
 #[ensures((^w).invariant(^f))]
 #[ensures((^t).trail_sem_invariant(^f, ^a))]
-#[ensures(!result ==> (^f).unsat(^a))]
+#[ensures(match result {
+    Some(false) => { (^f).unsat(^a)},
+    Some(true)  => { true },
+    None        => { true }, 
+})]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures((^f).invariant())]
 #[ensures((@(^t).trail).len() > 0)]
 #[ensures((^t).invariant(^f))]
 #[ensures((^a).invariant(^f))]
 #[ensures(f.equisat(^f))]
-fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> bool {
+fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
     let old_f = Ghost::record(&f);
     let old_a = Ghost::record(&a);
     let old_t = Ghost::record(&t);
@@ -208,9 +219,10 @@ fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
     #[invariant(vardata_unchanged, (@t.vardata).len() === (@(@old_t).vardata).len())]
     loop {
         match unit_prop_step(f, a, d, t, w) {
-            Some(true)  => { return true;  },
-            Some(false) => { return false; },
-            None        => {},
+            ConflictResult::Ok       => { return Some(true);  },
+            ConflictResult::Ground   => { return Some(false); },
+            ConflictResult::Err      => { return None; },
+            ConflictResult::Continue => {},
         }
     }
 }
@@ -244,7 +256,8 @@ fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
 #[ensures(f.equisat(^f))]
 fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> SatResult {
     match unit_prop_loop(f, a, d, t, w) {
-        false => return SatResult::Unsat,
+        Some(false) => return SatResult::Unsat,
+        None        => return SatResult::Err,
         _ => {}
     }
     //proof_assert!(!a.complete() || !f.unsat(*a)); // Need to get from unit_prop_loop

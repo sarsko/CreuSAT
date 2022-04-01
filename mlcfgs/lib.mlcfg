@@ -97,6 +97,11 @@ module Type
     | Core_Option_Option_None
     | Core_Option_Option_Some 't
     
+  function core_option_option_Some_0 (self : core_option_option 't) : 't
+  val core_option_option_Some_0 (self : core_option_option 't) : 't
+    ensures { result = core_option_option_Some_0 self }
+    
+  axiom core_option_option_Some_0_acc : forall a : 't . core_option_option_Some_0 (Core_Option_Option_Some a : core_option_option 't) = a
   type lib_formula_satstate  = 
     | Lib_Formula_SatState_Unknown
     | Lib_Formula_SatState_Sat
@@ -119,6 +124,21 @@ module Type
     ensures { result = lib_watches_watches_Watches_watches self }
     
   axiom lib_watches_watches_Watches_watches_acc : forall a : creusotcontracts_std1_vec_vec (creusotcontracts_std1_vec_vec (lib_watches_watcher)) . lib_watches_watches_Watches_watches (Lib_Watches_Watches a : lib_watches_watches) = a
+  type lib_solverdpll_conflictresult  = 
+    | Lib_SolverDpll_ConflictResult_Ok
+    | Lib_SolverDpll_ConflictResult_Err
+    | Lib_SolverDpll_ConflictResult_Ground
+    | Lib_SolverDpll_ConflictResult_Continue
+    
+  type core_result_result 't 'e = 
+    | Core_Result_Result_Ok 't
+    | Core_Result_Result_Err 'e
+    
+  function core_result_result_Err_0 (self : core_result_result 't 'e) : 'e
+  val core_result_result_Err_0 (self : core_result_result 't 'e) : 'e
+    ensures { result = core_result_result_Err_0 self }
+    
+  axiom core_result_result_Err_0_acc : forall a : 'e . core_result_result_Err_0 (Core_Result_Result_Err a : core_result_result 't 'e) = a
   type lib_solverdpll_satresult  = 
     | Lib_SolverDpll_SatResult_Sat (creusotcontracts_std1_vec_vec (lib_lit_lit))
     | Lib_SolverDpll_SatResult_Unsat
@@ -130,10 +150,6 @@ module Type
     | Lib_ConflictAnalysis_Conflict_Unit (lib_lit_lit)
     | Lib_ConflictAnalysis_Conflict_Learned usize (lib_lit_lit) (lib_clause_clause)
     | Lib_ConflictAnalysis_Conflict_Panic
-    
-  type core_result_result 't 'e = 
-    | Core_Result_Result_Ok 't
-    | Core_Result_Result_Err 'e
     
 end
 module CreusotContracts_Logic_Resolve_Impl1_Resolve_Interface
@@ -3678,7 +3694,7 @@ module Lib_SolverDpll_HandleConflict_Interface
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model2 with type t = (usize, Type.lib_trail_reason)
   clone Lib_Trail_Impl2_TrailSemInvariant_Interface as TrailSemInvariant0 with function Model0.model = Model2.model,
   predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit, axiom .
-  val handle_conflict [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (t : borrowed (Type.lib_trail_trail)) (cref : usize) (w : borrowed (Type.lib_watches_watches)) : bool
+  val handle_conflict [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (t : borrowed (Type.lib_trail_trail)) (cref : usize) (w : borrowed (Type.lib_watches_watches)) : Type.core_option_option bool
     requires {TrailSemInvariant0.trail_sem_invariant ( * t) ( * f) ( * a)}
     requires {Unsat0.unsat (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses ( * f))) (UInt64.to_int cref)) ( * a)}
     requires {UInt64.to_int cref < Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses ( * f)))}
@@ -3696,7 +3712,11 @@ module Lib_SolverDpll_HandleConflict_Interface
     ensures { Invariant3.invariant' ( ^ f) }
     ensures { UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( ^ f)) }
     ensures { TrailSemInvariant0.trail_sem_invariant ( ^ t) ( ^ f) ( ^ a) }
-    ensures { if result then true else Unsat1.unsat ( ^ f) ( ^ a) }
+    ensures { match (result) with
+      | Type.Core_Option_Option_Some (False) -> Unsat1.unsat ( ^ f) ( ^ a)
+      | Type.Core_Option_Option_Some (True) -> true
+      | Type.Core_Option_Option_None -> true
+      end }
     
 end
 module Lib_SolverDpll_HandleConflict
@@ -3778,7 +3798,7 @@ module Lib_SolverDpll_HandleConflict
   predicate TrailInvariantFull0.trail_invariant_full = TrailInvariantFull0.trail_invariant_full
   clone Lib_Trail_Impl2_TrailSemInvariant as TrailSemInvariant0 with function Model0.model = Model2.model,
   predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit, axiom .
-  val handle_conflict [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (t : borrowed (Type.lib_trail_trail)) (cref : usize) (w : borrowed (Type.lib_watches_watches)) : bool
+  val handle_conflict [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (t : borrowed (Type.lib_trail_trail)) (cref : usize) (w : borrowed (Type.lib_watches_watches)) : Type.core_option_option bool
     requires {TrailSemInvariant0.trail_sem_invariant ( * t) ( * f) ( * a)}
     requires {Unsat0.unsat (Seq.get (Model0.model (Type.lib_formula_formula_Formula_clauses ( * f))) (UInt64.to_int cref)) ( * a)}
     requires {UInt64.to_int cref < Seq.length (Model0.model (Type.lib_formula_formula_Formula_clauses ( * f)))}
@@ -3796,8 +3816,161 @@ module Lib_SolverDpll_HandleConflict
     ensures { Invariant3.invariant' ( ^ f) }
     ensures { UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( ^ f)) }
     ensures { TrailSemInvariant0.trail_sem_invariant ( ^ t) ( ^ f) ( ^ a) }
-    ensures { if result then true else Unsat1.unsat ( ^ f) ( ^ a) }
+    ensures { match (result) with
+      | Type.Core_Option_Option_Some (False) -> Unsat1.unsat ( ^ f) ( ^ a)
+      | Type.Core_Option_Option_Some (True) -> true
+      | Type.Core_Option_Option_None -> true
+      end }
     
+end
+module Lib_UnitProp_UnitPropagate_Interface
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.Int32
+  use mach.int.UInt64
+  use prelude.Prelude
+  use Type
+  clone Lib_Clause_Impl3_Unsat_Interface as Unsat1
+  clone Lib_Formula_Impl2_Unsat_Interface as Unsat0
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = Type.lib_clause_clause
+  clone Lib_Formula_Impl2_Equisat_Interface as Equisat0
+  clone Lib_Trail_LongArePostUnit_Interface as LongArePostUnit0
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model2 with type t = (usize, Type.lib_trail_reason)
+  clone Lib_Trail_Impl2_TrailSemInvariant_Interface as TrailSemInvariant0 with function Model0.model = Model2.model,
+  predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit, axiom .
+  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
+  clone Lib_Formula_Impl2_Invariant_Interface as Invariant3 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  axiom .
+  clone Lib_Assignments_Impl1_Invariant_Interface as Invariant2
+  clone Lib_Trail_Impl2_Invariant_Interface as Invariant1
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_lit_lit)
+  clone Lib_Watches_Impl0_Invariant_Interface as Invariant0
+  val unit_propagate [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (trail : borrowed (Type.lib_trail_trail)) (watches : borrowed (Type.lib_watches_watches)) : Type.core_result_result () usize
+    requires {Invariant0.invariant' ( * watches) ( * f)}
+    requires {Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( * trail))) > 0}
+    requires {Invariant1.invariant' ( * trail) ( * f)}
+    requires {Invariant2.invariant' ( * a) ( * f)}
+    requires {Invariant3.invariant' ( * f)}
+    requires {TrailSemInvariant0.trail_sem_invariant ( * trail) ( * f) ( * a)}
+    requires {UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)) < div 18446744073709551615 2}
+    ensures { Equisat0.equisat ( * f) ( ^ f) }
+    ensures { Invariant2.invariant' ( ^ a) ( ^ f) }
+    ensures { Invariant1.invariant' ( ^ trail) ( ^ f) }
+    ensures { Invariant3.invariant' ( ^ f) }
+    ensures { UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( ^ f)) }
+    ensures { match (result) with
+      | Type.Core_Result_Result_Ok () -> true
+      | Type.Core_Result_Result_Err n -> UInt64.to_int n < Seq.length (Model1.model (Type.lib_formula_formula_Formula_clauses ( ^ f))) && Unsat0.unsat ( ^ f) ( ^ a) && Unsat1.unsat (Seq.get (Model1.model (Type.lib_formula_formula_Formula_clauses ( ^ f))) (UInt64.to_int n)) ( ^ a)
+      end }
+    ensures { Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( ^ trail))) = Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( * trail))) }
+    ensures { Invariant0.invariant' ( ^ watches) ( ^ f) }
+    ensures { TrailSemInvariant0.trail_sem_invariant ( ^ trail) ( ^ f) ( ^ a) }
+    
+end
+module Lib_UnitProp_UnitPropagate
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.Int32
+  use mach.int.UInt64
+  use prelude.Prelude
+  use Type
+  use prelude.UInt8
+  clone Lib_Lit_Impl1_Invariant as Invariant5
+  clone Lib_Clause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant5.invariant'
+  clone Lib_Lit_Impl1_SatInner as SatInner2
+  clone Lib_Clause_AtLeastBinary as AtLeastBinary0
+  clone Lib_Clause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
+  clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
+  predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
+  predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
+  clone Lib_Logic_Unset as Unset0
+  clone Lib_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model8 with type t = Type.lib_lit_lit
+  clone Lib_Clause_Impl1_Model as Model7 with function Model0.model = Model8.model
+  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model7.model,
+  predicate SatInner0.sat_inner = SatInner2.sat_inner
+  clone Lib_Clause_Impl3_Invariant as Invariant4 with function Model0.model = Model7.model,
+  predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model8.model
+  clone Lib_Lit_Impl1_UnsatInner as UnsatInner2
+  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model7.model,
+  predicate SatInner0.sat_inner = SatInner2.sat_inner, predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
+  clone Lib_Clause_Impl3_UnsatInner as UnsatInner1 with function Model0.model = Model7.model,
+  predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model6 with type t = uint8
+  clone Lib_Assignments_Impl0_Model as Model5 with function Model0.model = Model6.model
+  clone Lib_Lit_Impl1_Sat as Sat0 with function Model0.model = Model5.model,
+  predicate SatInner0.sat_inner = SatInner2.sat_inner
+  clone Lib_Clause_Impl2_PostUnit as PostUnit0 with function Model0.model = Model5.model,
+  predicate PostUnitInner0.post_unit_inner = PostUnitInner0.post_unit_inner
+  clone Lib_Trail_ClausePostWithRegardsTo as ClausePostWithRegardsTo0 with predicate PostUnit0.post_unit = PostUnit0.post_unit,
+  function Model0.model = Model7.model, predicate Sat0.sat = Sat0.sat
+  clone Lib_Clause_Impl3_Unsat as Unsat1 with function Model0.model = Model5.model,
+  predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
+  clone Lib_Assignments_Impl1_Invariant as Invariant2 with function Model0.model = Model5.model
+  clone Lib_Trail_VardataInvariant as VardataInvariant0
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = (usize, Type.lib_trail_reason)
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_lit_lit)
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.lib_clause_clause
+  clone Lib_Formula_Impl2_SatInner as SatInner0 with function Model0.model = Model1.model,
+  predicate SatInner0.sat_inner = SatInner1.sat_inner
+  clone Lib_Formula_Impl2_EventuallySatCompleteNoAss as EventuallySatCompleteNoAss0 with predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner,
+  predicate SatInner0.sat_inner = SatInner0.sat_inner
+  clone Lib_Formula_Impl2_Equisat as Equisat0 with predicate EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass = EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass
+  clone Lib_Trail_CrefsInRange as CrefsInRange0 with function Model0.model = Model1.model
+  clone Lib_Trail_TrailInvariantFull as TrailInvariantFull0 with predicate TrailInvariant0.trail_invariant = TrailInvariant0.trail_invariant,
+  predicate VardataInvariant0.vardata_invariant = VardataInvariant0.vardata_invariant,
+  predicate CrefsInRange0.crefs_in_range = CrefsInRange0.crefs_in_range
+  clone Lib_Trail_Impl2_Invariant as Invariant1 with function Model0.model = Model0.model,
+  function Model1.model = Model4.model,
+  predicate TrailInvariantFull0.trail_invariant_full = TrailInvariantFull0.trail_invariant_full
+  clone Lib_Formula_Impl2_UnsatInner as UnsatInner0 with function Model0.model = Model1.model,
+  predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
+  clone Lib_Formula_Impl2_Unsat as Unsat0 with function Model0.model = Model5.model,
+  predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
+  clone Lib_Trail_LongArePostUnit as LongArePostUnit0 with function Model0.model = Model1.model,
+  predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
+  clone Lib_Trail_Impl2_TrailSemInvariant as TrailSemInvariant0 with function Model0.model = Model4.model,
+  predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit, axiom .
+  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model1.model,
+  predicate Invariant0.invariant' = Invariant4.invariant'
+  clone Lib_Formula_Impl2_Invariant as Invariant3 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  axiom .
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = Type.lib_watches_watcher
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher)
+  clone Lib_Watches_Impl0_Invariant as Invariant0 with function Model0.model = Model2.model,
+  function Model1.model = Model3.model, function Model2.model = Model1.model
+  val unit_propagate [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (trail : borrowed (Type.lib_trail_trail)) (watches : borrowed (Type.lib_watches_watches)) : Type.core_result_result () usize
+    requires {Invariant0.invariant' ( * watches) ( * f)}
+    requires {Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( * trail))) > 0}
+    requires {Invariant1.invariant' ( * trail) ( * f)}
+    requires {Invariant2.invariant' ( * a) ( * f)}
+    requires {Invariant3.invariant' ( * f)}
+    requires {TrailSemInvariant0.trail_sem_invariant ( * trail) ( * f) ( * a)}
+    requires {UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)) < div 18446744073709551615 2}
+    ensures { Equisat0.equisat ( * f) ( ^ f) }
+    ensures { Invariant2.invariant' ( ^ a) ( ^ f) }
+    ensures { Invariant1.invariant' ( ^ trail) ( ^ f) }
+    ensures { Invariant3.invariant' ( ^ f) }
+    ensures { UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( ^ f)) }
+    ensures { match (result) with
+      | Type.Core_Result_Result_Ok () -> true
+      | Type.Core_Result_Result_Err n -> UInt64.to_int n < Seq.length (Model1.model (Type.lib_formula_formula_Formula_clauses ( ^ f))) && Unsat0.unsat ( ^ f) ( ^ a) && Unsat1.unsat (Seq.get (Model1.model (Type.lib_formula_formula_Formula_clauses ( ^ f))) (UInt64.to_int n)) ( ^ a)
+      end }
+    ensures { Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( ^ trail))) = Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( * trail))) }
+    ensures { Invariant0.invariant' ( ^ watches) ( ^ f) }
+    ensures { TrailSemInvariant0.trail_sem_invariant ( ^ trail) ( ^ f) ( ^ a) }
+    
+end
+module Lib_Formula_Impl0
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.lib_clause_clause
+  clone Lib_Formula_Impl0_Model as Model0 with function Model0.model = Model2.model
+  clone Lib_Formula_Impl0_ModelTy as ModelTy0
+  clone CreusotContracts_Logic_Model_Model_Model as Model1 with type self = Type.lib_formula_formula,
+  function model = Model0.model, type ModelTy0.modelTy = ModelTy0.modelTy
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = Type.lib_formula_formula,
+  type modelTy = ModelTy0.modelTy
 end
 module Lib_SolverDpll_UnitPropStep_Interface
   use seq.Seq
@@ -3820,7 +3993,7 @@ module Lib_SolverDpll_UnitPropStep_Interface
   clone Lib_Trail_Impl2_TrailSemInvariant_Interface as TrailSemInvariant0 with function Model0.model = Model1.model,
   predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit, axiom .
   clone Lib_Watches_Impl0_Invariant_Interface as Invariant0
-  val unit_prop_step [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (d : Type.lib_decision_decisions) (t : borrowed (Type.lib_trail_trail)) (w : borrowed (Type.lib_watches_watches)) : Type.core_option_option bool
+  val unit_prop_step [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (d : Type.lib_decision_decisions) (t : borrowed (Type.lib_trail_trail)) (w : borrowed (Type.lib_watches_watches)) : Type.lib_solverdpll_conflictresult
     requires {Invariant0.invariant' ( * w) ( * f)}
     requires {TrailSemInvariant0.trail_sem_invariant ( * t) ( * f) ( * a)}
     requires {Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( * t))) > 0}
@@ -3838,9 +4011,8 @@ module Lib_SolverDpll_UnitPropStep_Interface
     ensures { TrailSemInvariant0.trail_sem_invariant ( ^ t) ( ^ f) ( ^ a) }
     ensures { Invariant0.invariant' ( ^ w) ( ^ f) }
     ensures { match (result) with
-      | Type.Core_Option_Option_Some (True) -> true
-      | Type.Core_Option_Option_Some (False) -> Unsat0.unsat ( ^ f) ( ^ a)
-      | Type.Core_Option_Option_None -> true
+      | Type.Lib_SolverDpll_ConflictResult_Ground -> Unsat0.unsat ( ^ f) ( ^ a)
+      | _ -> true
       end }
     
 end
@@ -3917,7 +4089,45 @@ module Lib_SolverDpll_UnitPropStep
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher)
   clone Lib_Watches_Impl0_Invariant as Invariant0 with function Model0.model = Model1.model,
   function Model1.model = Model2.model, function Model2.model = Model3.model
-  val unit_prop_step [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (d : Type.lib_decision_decisions) (t : borrowed (Type.lib_trail_trail)) (w : borrowed (Type.lib_watches_watches)) : Type.core_option_option bool
+  use mach.int.Int64
+  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve7 with type t = Type.core_option_option bool
+  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve6 with type t = usize
+  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve5 with type t = Type.core_result_result () usize
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve4 with type t = Type.lib_watches_watches
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve3 with type t = Type.lib_trail_trail
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve2 with type t = Type.lib_assignments_assignments
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve1 with type t = Type.lib_formula_formula
+  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve0 with type t = Type.lib_decision_decisions
+  clone Lib_Clause_Impl3_Equals as Equals0 with function Model0.model = Model8.model
+  clone Lib_Formula_Compatible as Compatible0 with predicate Equals0.equals = Equals0.equals
+  clone Lib_Formula_FormulaSatInner as FormulaSatInner0 with predicate SatInner0.sat_inner = SatInner1.sat_inner
+  clone Lib_Formula_EventuallySatCompleteNoAss as EventuallySatCompleteNoAss1 with predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner,
+  predicate FormulaSatInner0.formula_sat_inner = FormulaSatInner0.formula_sat_inner
+  clone Lib_Formula_Equisat as Equisat1 with predicate EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass = EventuallySatCompleteNoAss1.eventually_sat_complete_no_ass
+  clone Lib_Formula_EquisatCompatibleInner as EquisatCompatibleInner0 with predicate Compatible0.compatible = Compatible0.compatible,
+  predicate Equisat0.equisat = Equisat1.equisat
+  clone Lib_Clause_Impl3_Unsat as Unsat1 with function Model0.model = Model6.model,
+  predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
+  clone Lib_Formula_Impl0_Model as Model10 with function Model0.model = Model3.model
+  clone Lib_Formula_Impl2_EquisatCompatible as EquisatCompatible0 with function Model0.model = Model10.model,
+  predicate EquisatCompatibleInner0.equisat_compatible_inner = EquisatCompatibleInner0.equisat_compatible_inner
+  clone Lib_SolverDpll_HandleConflict_Interface as HandleConflict0 with predicate TrailSemInvariant0.trail_sem_invariant = TrailSemInvariant0.trail_sem_invariant,
+  function Model0.model = Model3.model, predicate Unsat0.unsat = Unsat1.unsat, function Model1.model = Model0.model,
+  predicate Invariant0.invariant' = Invariant0.invariant', predicate Invariant1.invariant' = Invariant1.invariant',
+  predicate Invariant2.invariant' = Invariant3.invariant', predicate Invariant3.invariant' = Invariant4.invariant',
+  predicate EquisatCompatible0.equisat_compatible = EquisatCompatible0.equisat_compatible,
+  predicate Unsat1.unsat = Unsat0.unsat, function Model2.model = Model4.model,
+  predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit,
+  predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
+  clone Lib_UnitProp_UnitPropagate_Interface as UnitPropagate0 with predicate Invariant0.invariant' = Invariant0.invariant',
+  function Model0.model = Model0.model, predicate Invariant1.invariant' = Invariant1.invariant',
+  predicate Invariant2.invariant' = Invariant3.invariant', predicate Invariant3.invariant' = Invariant4.invariant',
+  predicate TrailSemInvariant0.trail_sem_invariant = TrailSemInvariant0.trail_sem_invariant,
+  predicate Equisat0.equisat = Equisat0.equisat, function Model1.model = Model3.model,
+  predicate Unsat0.unsat = Unsat0.unsat, predicate Unsat1.unsat = Unsat1.unsat,
+  predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old, function Model2.model = Model4.model,
+  predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit
+  let rec cfg unit_prop_step [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (d : Type.lib_decision_decisions) (t : borrowed (Type.lib_trail_trail)) (w : borrowed (Type.lib_watches_watches)) : Type.lib_solverdpll_conflictresult
     requires {Invariant0.invariant' ( * w) ( * f)}
     requires {TrailSemInvariant0.trail_sem_invariant ( * t) ( * f) ( * a)}
     requires {Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( * t))) > 0}
@@ -3935,11 +4145,137 @@ module Lib_SolverDpll_UnitPropStep
     ensures { TrailSemInvariant0.trail_sem_invariant ( ^ t) ( ^ f) ( ^ a) }
     ensures { Invariant0.invariant' ( ^ w) ( ^ f) }
     ensures { match (result) with
-      | Type.Core_Option_Option_Some (True) -> true
-      | Type.Core_Option_Option_Some (False) -> Unsat0.unsat ( ^ f) ( ^ a)
-      | Type.Core_Option_Option_None -> true
+      | Type.Lib_SolverDpll_ConflictResult_Ground -> Unsat0.unsat ( ^ f) ( ^ a)
+      | _ -> true
       end }
     
+   = 
+  var _0 : Type.lib_solverdpll_conflictresult;
+  var f_1 : borrowed (Type.lib_formula_formula);
+  var a_2 : borrowed (Type.lib_assignments_assignments);
+  var d_3 : Type.lib_decision_decisions;
+  var t_4 : borrowed (Type.lib_trail_trail);
+  var w_5 : borrowed (Type.lib_watches_watches);
+  var _6 : Type.core_result_result () usize;
+  var _7 : borrowed (Type.lib_formula_formula);
+  var _8 : borrowed (Type.lib_assignments_assignments);
+  var _9 : borrowed (Type.lib_trail_trail);
+  var _10 : borrowed (Type.lib_watches_watches);
+  var _11 : isize;
+  var _12 : ();
+  var cref_13 : usize;
+  var _14 : ();
+  var _15 : Type.core_option_option bool;
+  var _16 : borrowed (Type.lib_formula_formula);
+  var _17 : borrowed (Type.lib_assignments_assignments);
+  var _18 : borrowed (Type.lib_trail_trail);
+  var _19 : usize;
+  var _20 : borrowed (Type.lib_watches_watches);
+  var _21 : isize;
+  {
+    f_1 <- f;
+    a_2 <- a;
+    d_3 <- d;
+    t_4 <- t;
+    w_5 <- w;
+    goto BB0
+  }
+  BB0 {
+    assume { Resolve0.resolve d_3 };
+    _7 <- borrow_mut ( * f_1);
+    f_1 <- { f_1 with current = ( ^ _7) };
+    _8 <- borrow_mut ( * a_2);
+    a_2 <- { a_2 with current = ( ^ _8) };
+    _9 <- borrow_mut ( * t_4);
+    t_4 <- { t_4 with current = ( ^ _9) };
+    _10 <- borrow_mut ( * w_5);
+    w_5 <- { w_5 with current = ( ^ _10) };
+    _6 <- UnitPropagate0.unit_propagate _7 _8 _9 _10;
+    goto BB1
+  }
+  BB1 {
+    switch (_6)
+      | Type.Core_Result_Result_Ok _ -> goto BB4
+      | Type.Core_Result_Result_Err _ -> goto BB2
+      end
+  }
+  BB2 {
+    assume { Resolve6.resolve cref_13 };
+    cref_13 <- Type.core_result_result_Err_0 _6;
+    assume { Resolve5.resolve _6 };
+    _16 <- borrow_mut ( * f_1);
+    f_1 <- { f_1 with current = ( ^ _16) };
+    _17 <- borrow_mut ( * a_2);
+    a_2 <- { a_2 with current = ( ^ _17) };
+    _18 <- borrow_mut ( * t_4);
+    t_4 <- { t_4 with current = ( ^ _18) };
+    assume { Resolve6.resolve _19 };
+    _19 <- cref_13;
+    assume { Resolve6.resolve cref_13 };
+    _20 <- borrow_mut ( * w_5);
+    w_5 <- { w_5 with current = ( ^ _20) };
+    _15 <- HandleConflict0.handle_conflict _16 _17 _18 _19 _20;
+    goto BB5
+  }
+  BB3 {
+    assume { Resolve1.resolve f_1 };
+    assume { Resolve2.resolve a_2 };
+    assume { Resolve3.resolve t_4 };
+    assume { Resolve4.resolve w_5 };
+    assume { Resolve5.resolve _6 };
+    absurd
+  }
+  BB4 {
+    assume { Resolve1.resolve f_1 };
+    assume { Resolve2.resolve a_2 };
+    assume { Resolve3.resolve t_4 };
+    assume { Resolve4.resolve w_5 };
+    assume { Resolve5.resolve _6 };
+    _0 <- Type.Lib_SolverDpll_ConflictResult_Ok;
+    goto BB12
+  }
+  BB5 {
+    assume { Resolve1.resolve f_1 };
+    assume { Resolve2.resolve a_2 };
+    assume { Resolve3.resolve t_4 };
+    assume { Resolve4.resolve w_5 };
+    switch (_15)
+      | Type.Core_Option_Option_None -> goto BB6
+      | Type.Core_Option_Option_Some _ -> goto BB7
+      end
+  }
+  BB6 {
+    assume { Resolve7.resolve _15 };
+    _0 <- Type.Lib_SolverDpll_ConflictResult_Continue;
+    goto BB11
+  }
+  BB7 {
+    switch (Type.core_option_option_Some_0 _15)
+      | False -> goto BB9
+      | _ -> goto BB10
+      end
+  }
+  BB8 {
+    assume { Resolve7.resolve _15 };
+    absurd
+  }
+  BB9 {
+    assume { Resolve7.resolve _15 };
+    _0 <- Type.Lib_SolverDpll_ConflictResult_Ground;
+    goto BB11
+  }
+  BB10 {
+    assume { Resolve7.resolve _15 };
+    _0 <- Type.Lib_SolverDpll_ConflictResult_Err;
+    goto BB11
+  }
+  BB11 {
+    goto BB12
+  }
+  BB12 {
+    return _0
+  }
+  
 end
 module Lib_SolverDpll_UnitPropLoop_Interface
   use seq.Seq
@@ -3962,7 +4298,7 @@ module Lib_SolverDpll_UnitPropLoop_Interface
   predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit, axiom .
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_lit_lit)
   clone Lib_Watches_Impl0_Invariant_Interface as Invariant0
-  val unit_prop_loop [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (d : Type.lib_decision_decisions) (t : borrowed (Type.lib_trail_trail)) (w : borrowed (Type.lib_watches_watches)) : bool
+  val unit_prop_loop [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (d : Type.lib_decision_decisions) (t : borrowed (Type.lib_trail_trail)) (w : borrowed (Type.lib_watches_watches)) : Type.core_option_option bool
     requires {Invariant0.invariant' ( * w) ( * f)}
     requires {Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( * t))) > 0}
     requires {TrailSemInvariant0.trail_sem_invariant ( * t) ( * f) ( * a)}
@@ -3977,7 +4313,11 @@ module Lib_SolverDpll_UnitPropLoop_Interface
     ensures { Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( ^ t))) > 0 }
     ensures { Invariant4.invariant' ( ^ f) }
     ensures { UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( ^ f)) }
-    ensures { not result -> Unsat0.unsat ( ^ f) ( ^ a) }
+    ensures { match (result) with
+      | Type.Core_Option_Option_Some (False) -> Unsat0.unsat ( ^ f) ( ^ a)
+      | Type.Core_Option_Option_Some (True) -> true
+      | Type.Core_Option_Option_None -> true
+      end }
     ensures { TrailSemInvariant0.trail_sem_invariant ( ^ t) ( ^ f) ( ^ a) }
     ensures { Invariant0.invariant' ( ^ w) ( ^ f) }
     
@@ -4055,7 +4395,7 @@ module Lib_SolverDpll_UnitPropLoop
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher)
   clone Lib_Watches_Impl0_Invariant as Invariant0 with function Model0.model = Model1.model,
   function Model1.model = Model2.model, function Model2.model = Model3.model
-  val unit_prop_loop [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (d : Type.lib_decision_decisions) (t : borrowed (Type.lib_trail_trail)) (w : borrowed (Type.lib_watches_watches)) : bool
+  val unit_prop_loop [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (d : Type.lib_decision_decisions) (t : borrowed (Type.lib_trail_trail)) (w : borrowed (Type.lib_watches_watches)) : Type.core_option_option bool
     requires {Invariant0.invariant' ( * w) ( * f)}
     requires {Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( * t))) > 0}
     requires {TrailSemInvariant0.trail_sem_invariant ( * t) ( * f) ( * a)}
@@ -4070,7 +4410,11 @@ module Lib_SolverDpll_UnitPropLoop
     ensures { Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( ^ t))) > 0 }
     ensures { Invariant4.invariant' ( ^ f) }
     ensures { UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( ^ f)) }
-    ensures { not result -> Unsat0.unsat ( ^ f) ( ^ a) }
+    ensures { match (result) with
+      | Type.Core_Option_Option_Some (False) -> Unsat0.unsat ( ^ f) ( ^ a)
+      | Type.Core_Option_Option_Some (True) -> true
+      | Type.Core_Option_Option_None -> true
+      end }
     ensures { TrailSemInvariant0.trail_sem_invariant ( ^ t) ( ^ f) ( ^ a) }
     ensures { Invariant0.invariant' ( ^ w) ( ^ f) }
     
@@ -7102,145 +7446,6 @@ module Lib_UnitProp_UnitPropCurrentLevel
     ensures { Invariant0.invariant' ( ^ watches) ( ^ f) }
     
 end
-module Lib_UnitProp_UnitPropagate_Interface
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use mach.int.UInt64
-  use prelude.Prelude
-  use Type
-  clone Lib_Clause_Impl3_Unsat_Interface as Unsat1
-  clone Lib_Formula_Impl2_Unsat_Interface as Unsat0
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = Type.lib_clause_clause
-  clone Lib_Formula_Impl2_Equisat_Interface as Equisat0
-  clone Lib_Trail_LongArePostUnit_Interface as LongArePostUnit0
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model2 with type t = (usize, Type.lib_trail_reason)
-  clone Lib_Trail_Impl2_TrailSemInvariant_Interface as TrailSemInvariant0 with function Model0.model = Model2.model,
-  predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit, axiom .
-  clone Lib_Formula_Impl2_InvariantOld_Interface as InvariantOld0
-  clone Lib_Formula_Impl2_Invariant_Interface as Invariant3 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
-  clone Lib_Assignments_Impl1_Invariant_Interface as Invariant2
-  clone Lib_Trail_Impl2_Invariant_Interface as Invariant1
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_lit_lit)
-  clone Lib_Watches_Impl0_Invariant_Interface as Invariant0
-  val unit_propagate [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (trail : borrowed (Type.lib_trail_trail)) (watches : borrowed (Type.lib_watches_watches)) : Type.core_result_result () usize
-    requires {Invariant0.invariant' ( * watches) ( * f)}
-    requires {Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( * trail))) > 0}
-    requires {Invariant1.invariant' ( * trail) ( * f)}
-    requires {Invariant2.invariant' ( * a) ( * f)}
-    requires {Invariant3.invariant' ( * f)}
-    requires {TrailSemInvariant0.trail_sem_invariant ( * trail) ( * f) ( * a)}
-    requires {UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)) < div 18446744073709551615 2}
-    ensures { Equisat0.equisat ( * f) ( ^ f) }
-    ensures { Invariant2.invariant' ( ^ a) ( ^ f) }
-    ensures { Invariant1.invariant' ( ^ trail) ( ^ f) }
-    ensures { Invariant3.invariant' ( ^ f) }
-    ensures { UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( ^ f)) }
-    ensures { match (result) with
-      | Type.Core_Result_Result_Ok () -> true
-      | Type.Core_Result_Result_Err n -> UInt64.to_int n < Seq.length (Model1.model (Type.lib_formula_formula_Formula_clauses ( ^ f))) && Unsat0.unsat ( ^ f) ( ^ a) && Unsat1.unsat (Seq.get (Model1.model (Type.lib_formula_formula_Formula_clauses ( ^ f))) (UInt64.to_int n)) ( ^ a)
-      end }
-    ensures { Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( ^ trail))) = Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( * trail))) }
-    ensures { Invariant0.invariant' ( ^ watches) ( ^ f) }
-    ensures { TrailSemInvariant0.trail_sem_invariant ( ^ trail) ( ^ f) ( ^ a) }
-    
-end
-module Lib_UnitProp_UnitPropagate
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use mach.int.UInt64
-  use prelude.Prelude
-  use Type
-  use prelude.UInt8
-  clone Lib_Lit_Impl1_Invariant as Invariant5
-  clone Lib_Clause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant5.invariant'
-  clone Lib_Lit_Impl1_SatInner as SatInner2
-  clone Lib_Clause_AtLeastBinary as AtLeastBinary0
-  clone Lib_Clause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
-  clone Lib_Clause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
-  predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
-  predicate AtLeastBinary0.at_least_binary = AtLeastBinary0.at_least_binary
-  clone Lib_Logic_Unset as Unset0
-  clone Lib_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model8 with type t = Type.lib_lit_lit
-  clone Lib_Clause_Impl1_Model as Model7 with function Model0.model = Model8.model
-  clone Lib_Clause_Impl3_SatInner as SatInner1 with function Model0.model = Model7.model,
-  predicate SatInner0.sat_inner = SatInner2.sat_inner
-  clone Lib_Clause_Impl3_Invariant as Invariant4 with function Model0.model = Model7.model,
-  predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
-  clone Lib_Trail_TrailInvariant as TrailInvariant0 with function Model0.model = Model8.model
-  clone Lib_Lit_Impl1_UnsatInner as UnsatInner2
-  clone Lib_Clause_Impl2_PostUnitInner as PostUnitInner0 with function Model0.model = Model7.model,
-  predicate SatInner0.sat_inner = SatInner2.sat_inner, predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone Lib_Clause_Impl3_UnsatInner as UnsatInner1 with function Model0.model = Model7.model,
-  predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model6 with type t = uint8
-  clone Lib_Assignments_Impl0_Model as Model5 with function Model0.model = Model6.model
-  clone Lib_Lit_Impl1_Sat as Sat0 with function Model0.model = Model5.model,
-  predicate SatInner0.sat_inner = SatInner2.sat_inner
-  clone Lib_Clause_Impl2_PostUnit as PostUnit0 with function Model0.model = Model5.model,
-  predicate PostUnitInner0.post_unit_inner = PostUnitInner0.post_unit_inner
-  clone Lib_Trail_ClausePostWithRegardsTo as ClausePostWithRegardsTo0 with predicate PostUnit0.post_unit = PostUnit0.post_unit,
-  function Model0.model = Model7.model, predicate Sat0.sat = Sat0.sat
-  clone Lib_Clause_Impl3_Unsat as Unsat1 with function Model0.model = Model5.model,
-  predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
-  clone Lib_Assignments_Impl1_Invariant as Invariant2 with function Model0.model = Model5.model
-  clone Lib_Trail_VardataInvariant as VardataInvariant0
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = (usize, Type.lib_trail_reason)
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_lit_lit)
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.lib_clause_clause
-  clone Lib_Formula_Impl2_SatInner as SatInner0 with function Model0.model = Model1.model,
-  predicate SatInner0.sat_inner = SatInner1.sat_inner
-  clone Lib_Formula_Impl2_EventuallySatCompleteNoAss as EventuallySatCompleteNoAss0 with predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner,
-  predicate SatInner0.sat_inner = SatInner0.sat_inner
-  clone Lib_Formula_Impl2_Equisat as Equisat0 with predicate EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass = EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass
-  clone Lib_Trail_CrefsInRange as CrefsInRange0 with function Model0.model = Model1.model
-  clone Lib_Trail_TrailInvariantFull as TrailInvariantFull0 with predicate TrailInvariant0.trail_invariant = TrailInvariant0.trail_invariant,
-  predicate VardataInvariant0.vardata_invariant = VardataInvariant0.vardata_invariant,
-  predicate CrefsInRange0.crefs_in_range = CrefsInRange0.crefs_in_range
-  clone Lib_Trail_Impl2_Invariant as Invariant1 with function Model0.model = Model0.model,
-  function Model1.model = Model4.model,
-  predicate TrailInvariantFull0.trail_invariant_full = TrailInvariantFull0.trail_invariant_full
-  clone Lib_Formula_Impl2_UnsatInner as UnsatInner0 with function Model0.model = Model1.model,
-  predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
-  clone Lib_Formula_Impl2_Unsat as Unsat0 with function Model0.model = Model5.model,
-  predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
-  clone Lib_Trail_LongArePostUnit as LongArePostUnit0 with function Model0.model = Model1.model,
-  predicate ClausePostWithRegardsTo0.clause_post_with_regards_to = ClausePostWithRegardsTo0.clause_post_with_regards_to
-  clone Lib_Trail_Impl2_TrailSemInvariant as TrailSemInvariant0 with function Model0.model = Model4.model,
-  predicate LongArePostUnit0.long_are_post_unit = LongArePostUnit0.long_are_post_unit, axiom .
-  clone Lib_Formula_Impl2_InvariantOld as InvariantOld0 with function Model0.model = Model1.model,
-  predicate Invariant0.invariant' = Invariant4.invariant'
-  clone Lib_Formula_Impl2_Invariant as Invariant3 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = Type.lib_watches_watcher
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher)
-  clone Lib_Watches_Impl0_Invariant as Invariant0 with function Model0.model = Model2.model,
-  function Model1.model = Model3.model, function Model2.model = Model1.model
-  val unit_propagate [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (a : borrowed (Type.lib_assignments_assignments)) (trail : borrowed (Type.lib_trail_trail)) (watches : borrowed (Type.lib_watches_watches)) : Type.core_result_result () usize
-    requires {Invariant0.invariant' ( * watches) ( * f)}
-    requires {Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( * trail))) > 0}
-    requires {Invariant1.invariant' ( * trail) ( * f)}
-    requires {Invariant2.invariant' ( * a) ( * f)}
-    requires {Invariant3.invariant' ( * f)}
-    requires {TrailSemInvariant0.trail_sem_invariant ( * trail) ( * f) ( * a)}
-    requires {UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)) < div 18446744073709551615 2}
-    ensures { Equisat0.equisat ( * f) ( ^ f) }
-    ensures { Invariant2.invariant' ( ^ a) ( ^ f) }
-    ensures { Invariant1.invariant' ( ^ trail) ( ^ f) }
-    ensures { Invariant3.invariant' ( ^ f) }
-    ensures { UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)) = UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( ^ f)) }
-    ensures { match (result) with
-      | Type.Core_Result_Result_Ok () -> true
-      | Type.Core_Result_Result_Err n -> UInt64.to_int n < Seq.length (Model1.model (Type.lib_formula_formula_Formula_clauses ( ^ f))) && Unsat0.unsat ( ^ f) ( ^ a) && Unsat1.unsat (Seq.get (Model1.model (Type.lib_formula_formula_Formula_clauses ( ^ f))) (UInt64.to_int n)) ( ^ a)
-      end }
-    ensures { Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( ^ trail))) = Seq.length (Model0.model (Type.lib_trail_trail_Trail_trail ( * trail))) }
-    ensures { Invariant0.invariant' ( ^ watches) ( ^ f) }
-    ensures { TrailSemInvariant0.trail_sem_invariant ( ^ trail) ( ^ f) ( ^ a) }
-    
-end
 module Core_Clone_Clone_Clone_Interface
   type self   
   use prelude.Prelude
@@ -7379,16 +7584,6 @@ module Lib_Clause_Impl0
   clone Lib_Clause_Impl0_Clone_Interface as Clone0
   clone CreusotContracts_Std1_Clone_Clone_Clone_Interface as Clone1 with type self = Type.lib_clause_clause,
   val clone' = Clone0.clone'
-end
-module Lib_Formula_Impl0
-  use Type
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.lib_clause_clause
-  clone Lib_Formula_Impl0_Model as Model0 with function Model0.model = Model2.model
-  clone Lib_Formula_Impl0_ModelTy as ModelTy0
-  clone CreusotContracts_Logic_Model_Model_Model as Model1 with type self = Type.lib_formula_formula,
-  function model = Model0.model, type ModelTy0.modelTy = ModelTy0.modelTy
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = Type.lib_formula_formula,
-  type modelTy = ModelTy0.modelTy
 end
 module Lib_Trail_Impl1_ModelTy
   use seq.Seq
