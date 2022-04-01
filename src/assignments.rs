@@ -60,9 +60,9 @@ pub fn assignments_invariant(a: Seq<AssignedState>, f: Formula) -> bool {
         @f.num_vars === a.len()
     }
 }
- 
+
 // Predicates
-impl Assignments { 
+impl Assignments {
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
@@ -112,48 +112,12 @@ impl Assignments {
     }
     */
 
+    // zzTODOzz : Checks out. Slow. Come back later and make faster/clean up
     #[inline]
-    #[trusted] // --TODO--
-    #[ensures(self.invariant(*_f))]
-    //#[requires((@self)[@lit.idx] >= 2)] // This is a correctness req
-    #[ensures((^self).invariant(*_f))]
-    #[ensures(@(@^self)[@lit.idx] === 1 || @(@^self)[@lit.idx] === 0)]
-    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
-    j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
-    #[requires(0 <= @lit.idx && @lit.idx < (@self).len())]
-    #[ensures(
-        match lit.polarity {
-            true => @(@^self)[@lit.idx] === 1,
-            false => @(@^self)[@lit.idx] === 0,
-        }
-    )]
-    //#[ensures(self.compatible(^self))]
-    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
-        j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
-    #[ensures((@^self).len() === (@self).len())]
-    pub fn set_assignment(&mut self, lit: Lit, _f: &Formula) {
-        /*
-        if !self.0[l.idx].is_none() {
-            panic!("Assignment already set. Attempting to set {:?}", l);
-        }
-        */
-        //assert!(self.0[l.idx].is_none());
-        if lit.polarity {
-            self.0[lit.idx] = 1;
-        } else {
-            self.0[lit.idx] = 0;
-        }
-        //self.0[l.idx] = l.polarity as u8;
-    }
-
-    #[inline]
-    #[trusted] // --TODO--: Failing on the post for trail.
-    // Think I have to do a proof that assigning is fine.
-    // set_assignment is used in unit_prop and this is used in learn_unit
-    // might have to add more requires
+    #[trusted] // OK
     #[requires(lit.invariant(@_f.num_vars))]
     #[requires(_t.trail_sem_invariant(*_f, *self))]
-//    #[requires(_t.invariant(_f))]
+    #[requires(_t.invariant(*_f))]
     #[requires(_f.invariant())]
     #[requires(self.invariant(*_f))]
     #[requires(unset((@self)[@lit.idx]))] // Added, will break stuff further up
@@ -162,7 +126,7 @@ impl Assignments {
     #[ensures(@(@^self)[@lit.idx] === 1 || @(@^self)[@lit.idx] === 0)]
     #[ensures((@^self).len() === (@self).len())]
     #[ensures(_t.trail_sem_invariant(*_f, ^self))]
-    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
+    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() &&
         j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
     #[ensures(
         match lit.polarity {
@@ -170,7 +134,7 @@ impl Assignments {
             false => @(@^self)[@lit.idx] === 0,
         }
     )]
-    pub fn assign(&mut self, lit: Lit, _f: &Formula, _t: &Trail) {
+    pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Trail) {
         /*
         if !self.0[l.idx].is_none() {
             panic!("Assignment already set. Attempting to set {:?}", l);
@@ -178,12 +142,28 @@ impl Assignments {
         */
         //assert!(self.0[l.idx].is_none());
         proof_assert!(@(@self)[@lit.idx] >= 2);
-        //proof_assert!(lemma_post_unit_no_unset())
+        let old_self = Ghost::record(&self);
+
+        proof_assert!(self.invariant(*_f));
+        proof_assert!(_f.invariant());
+        proof_assert!(vardata_invariant(@_t.vardata, @_f.num_vars));
+        proof_assert!(crefs_in_range(@_t.vardata, *_f));
+        proof_assert!(lit.invariant(@_f.num_vars));
+        proof_assert!(unset((@self)[@lit.idx]));
+        proof_assert!(long_are_post_unit_inner(@_t.vardata, *_f, @self));
+        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t.vardata, *_f, *self, lit));true);
+
         if lit.polarity {
             self.0[lit.idx] = 1;
+            //proof_assert!(@self === (@@old_self).set(@lit.idx, 1u8));
         } else {
             self.0[lit.idx] = 0;
+            //proof_assert!(@self === (@@old_self).set(@lit.idx, 0u8));
         }
+        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t.vardata, *_f, *@old_self, lit));true);
+        proof_assert!(^@old_self === ^self);
+
+        proof_assert!(long_are_post_unit_inner(@_t.vardata, *_f, @self));
         //self.0[l.idx] = l.polarity as u8;
     }
 
@@ -251,13 +231,13 @@ impl Assignments {
     /*
     #[ensures((@(^trail).vardata) === (@trail.vardata))]
     #[ensures((@(^trail).trail).len() === @level)]
-    #[ensures(forall<j: Int> 0 <= j && j < @level ==> 
+    #[ensures(forall<j: Int> 0 <= j && j < @level ==>
         (@(^trail).trail)[j] === (@trail.trail)[j])] // new
         */
         /*
     #[ensures((^trail).assignments_invariant(^self))]
-    #[ensures(forall<j: Int> @level <= j && j < (@trail.trail).len() ==> 
-        forall<i: Int> 0 <= i && i < (@(@trail.trail)[j]).len() ==> 
+    #[ensures(forall<j: Int> @level <= j && j < (@trail.trail).len() ==>
+        forall<i: Int> 0 <= i && i < (@(@trail.trail)[j]).len() ==>
             @(@(^self))[@(@(@trail.trail)[j])[i].idx] === 2)]
         //(@(^trail).trail)[j].assigned(^self))]
         */
@@ -279,14 +259,14 @@ impl Assignments {
         #[invariant(intact_vardata, ^vardata === ^@old_vardata)]
         #[invariant(crefs, crefs_in_range(@vardata, *_f))]
         #[invariant(j_less, 0 <= @j && @j <= (@curr_level).len())]
-        #[invariant(wiped, forall<k: Int> 0 <= k && k < @j ==> 
+        #[invariant(wiped, forall<k: Int> 0 <= k && k < @j ==>
             (@vardata)[@(@curr_level)[@curr_level_len - k - 1].idx] === (0usize, Reason::Undefined))]
         // Is this invariant even provable? It might be if we count downwards.
         // Also might be possible if we prove that the removal of an entire decision level
         // results in long_post. Still a whole proof about the semantics of the trail,
         // and maybe the full wipe/search restart is easier(as long as the invariant
         // that everything on d0 is units is enforced).
-        // Okay for this invariant to work we need to prove that if 
+        // Okay for this invariant to work we need to prove that if
         // we were post_unit before, and then added something, then we are post_unit after
         // and then prove that the same applies the opposite direction as well.
         // Need to have a proof that the trail is directly mapped to assignments + vardata
@@ -311,8 +291,8 @@ impl Assignments {
     //#[requires(trail.trail_entries_are_assigned(*self))] // Gonna need this at some point
         /*
     #[ensures((^trail).assignments_invariant(^self))]
-    #[ensures(forall<j: Int> @level <= j && j < (@trail.trail).len() ==> 
-        forall<i: Int> 0 <= i && i < (@(@trail.trail)[j]).len() ==> 
+    #[ensures(forall<j: Int> @level <= j && j < (@trail.trail).len() ==>
+        forall<i: Int> 0 <= i && i < (@(@trail.trail)[j]).len() ==>
             @(@(^self))[@(@(@trail.trail)[j])[i].idx] === 2)]
         //(@(^trail).trail)[j].assigned(^self))]
         */
@@ -323,7 +303,7 @@ impl Assignments {
     #[ensures((^trail).invariant(*_f))]
     #[ensures((^self).invariant(*_f))]
     #[ensures((@(^trail).trail).len() === @level)]
-    #[ensures(forall<j: Int> 0 <= j && j < @level ==> 
+    #[ensures(forall<j: Int> 0 <= j && j < @level ==>
         (@(^trail).trail)[j] === (@trail.trail)[j])] // new
     #[requires(trail.trail_sem_invariant(*_f, *self))] // added
     #[ensures((^trail).trail_sem_invariant(*_f, ^self))] // added
@@ -365,7 +345,7 @@ impl Assignments {
     //#[requires((@self)[@lit.idx] >= 2)] // This is a correctness req
     #[ensures((^self).invariant(@_f.num_vars))]
     #[ensures(@(@^self)[@lit.idx] === 1 || @(@^self)[@lit.idx] === 0)]
-    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
+    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() &&
     j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
     #[requires(0 <= @lit.idx && @lit.idx < (@self).len())]
     #[ensures(
@@ -375,7 +355,7 @@ impl Assignments {
         }
     )]
     //#[ensures(self.compatible(^self))]
-    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
+    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() &&
         j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
     #[ensures((@^self).len() === (@self).len())]
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula) {

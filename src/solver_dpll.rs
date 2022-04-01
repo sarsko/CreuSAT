@@ -69,7 +69,7 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
     a.cancel_until(trail, 1, f);
     //a.cancel_long(trail);
     //a.set_assignment(lit, f);
-    a.assign(lit, f, trail);
+    a.set_assignment(lit, f, trail); // TODO check preconds
     trail.enq_assignment(lit, Reason::Unit, f, a);
 }
 

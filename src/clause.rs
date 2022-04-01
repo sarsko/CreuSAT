@@ -156,6 +156,14 @@ impl Clause {
             self.post_unit_inner(@a)
         }
     }
+    
+    #[predicate]
+    pub fn eq_assn_inner(self, a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@self).len() ==> 
+                a[@(@self)[i].idx] === a2[@(@self)[i].idx]
+        }
+    }
 }
 
 impl Clause {

@@ -48,87 +48,67 @@ pub fn clause_post_with_regards_to_lit(c: Clause, a: Assignments, lit: Lit) -> b
     }
 }
 
+// unused
+#[trusted] // OK
 #[logic]
 #[requires(c.invariant(@f.num_vars))]
 #[requires(a.invariant(f))]
-//#[requires(clause_post_with_regards_to(c, a, j))]
 #[requires(c.post_unit(a))]
 #[ensures(forall<i: Int> 0 <= i && i < (@c).len() ==> !(@c)[i].unset(a))]
 fn lemma_post_unit_no_unset(c: Clause, a: Assignments, f: Formula) {}
 
-//#[requires(long_are_post_unit(v, f, a))]
-//#[requires(unset((@a)[@lit.idx]))]
-#[requires(a.invariant(f))]
-#[requires(f.invariant())]
-#[requires(lit.invariant(@f.num_vars))]
-//#[requires(c.invariant(@f.num_vars))]
-#[requires(long_are_no_unset(v, f, @a))]
-#[requires(long_are_post_unit(v, f, a))]
-#[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 1u8)))]
-//#[ensures(long_are_no_unset(v, f, @a))]
-fn lemma_assign_maintains(v: Seq<(usize, Reason)>, f: Formula, a: Assignments, lit: Lit) {}
-
+#[trusted] // OK
 #[logic]
 #[requires(a.invariant(f))]
 #[requires(f.invariant())]
-#[requires(c.invariant(@f.num_vars))]
-#[requires(long_are_post_unit(v, f, a))]
+#[requires(lit.invariant(@f.num_vars))]
 #[requires(unset((@a)[@lit.idx]))]
+#[ensures(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
+    (@f.clauses)[i].post_unit_inner(@a) ==> 
+    (@f.clauses)[i].post_unit_inner((@a).set(@lit.idx, 1u8))
+)]
+#[ensures(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
+    (@f.clauses)[i].post_unit_inner(@a) ==> 
+    (@f.clauses)[i].post_unit_inner((@a).set(@lit.idx, 0u8))
+)]
+fn lemma_assign_maintains_post_for_each(f: Formula, a: Assignments, lit: Lit) {}
+
+#[trusted] // OK
+#[logic]
+#[requires(a.invariant(f))]
+#[requires(f.invariant())]
+#[requires(vardata_invariant(v, @f.num_vars))]
+#[requires(crefs_in_range(v, f))]
 #[requires(lit.invariant(@f.num_vars))]
-#[requires(c.post_unit_inner(@a))]
-#[ensures(c.post_unit_inner((@a).set(@lit.idx, 1u8)))]
-#[ensures(c.post_unit_inner((@a).set(@lit.idx, 0u8)))]
-//#[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 1u8)))]
-//#[ensures(clause_post_with_regards_to_inner(c, (@a).set(@lit.idx, 1u8)))]
-fn lemma_assign_maintains2(v: Seq<(usize, Reason)>, f: Formula, a: Assignments, c: Clause, lit: Lit) {
-    lemma_post_unit_no_unset(c, a, f);
-}
+#[requires(unset((@a)[@lit.idx]))]
+#[requires(long_are_post_unit_inner(v, f, @a))]
+#[requires(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
+    (@f.clauses)[i].post_unit_inner(@a) ==> 
+    (@f.clauses)[i].post_unit_inner((@a).set(@lit.idx, 1u8))
+)]
+#[requires(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
+    (@f.clauses)[i].post_unit_inner(@a) ==> 
+    (@f.clauses)[i].post_unit_inner((@a).set(@lit.idx, 0u8)) 
+)]
+#[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 1u8)))]
+#[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 0u8)))]
+fn lemma_assign_maintains_for_each_to_post(v: Seq<(usize, Reason)>, f: Formula, a: Assignments, lit: Lit) {}
 
+#[trusted] // OK
 #[logic]
 #[requires(a.invariant(f))]
 #[requires(f.invariant())]
-//#[requires(c.invariant(@f.num_vars))]
-#[requires(unset((@a)[@idx]))]
-#[requires((@f.clauses)[@m].no_unset_inner(@a))]
-#[requires(@m <= 0 && @m < (@f.clauses).len())]
-#[requires(@idx <= 0 && @idx < (@a).len())]
-//#[requires(long_are_post_unit(v, f, a))]
-//#[requires(long_are_no_unset(v, f, @a))]
-//#[requires(c.post_unit_inner(@a))]
-//#[requires(!lit.lit_in(c))]
-#[requires(forall<i: Int> 0 <= i && i < ((@(@f.clauses)[@m])).len() ==>
-    (@(@f.clauses)[@m])[i].idx != idx)]
-#[ensures(forall<i: Int> 0 <= i && i < ((@(@f.clauses)[@m])).len() ==>
-    (@a).set(@idx, 1u8)[@((@(@f.clauses)[@m]))[i].idx] === (@a)[@((@(@f.clauses)[@m]))[i].idx])]
-//#[ensures(!lit.lit_in(c))]
-//#[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 1u8)))]
-//#[ensures(clause_post_with_regards_to_inner(c, (@a).set(@lit.idx, 1u8)))]
-fn lemma_assign_maintains3(v: Seq<(usize, Reason)>, f: Formula, a: Assignments, m: usize, idx: usize) {
-    lemma_assign_maintains4(v, f, a, m, idx);
+#[requires(vardata_invariant(v, @f.num_vars))]
+#[requires(crefs_in_range(v, f))]
+#[requires(lit.invariant(@f.num_vars))]
+#[requires(unset((@a)[@lit.idx]))]
+#[requires(long_are_post_unit_inner(v, f, @a))]
+#[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 1u8)))]
+#[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 0u8)))]
+pub fn lemma_assign_maintains_long_are_post_unit(v: Seq<(usize, Reason)>, f: Formula, a: Assignments, lit: Lit) {
+    lemma_assign_maintains_post_for_each(f, a, lit);
+    lemma_assign_maintains_for_each_to_post(v, f, a, lit);
 }
-
-#[logic]
-#[requires(a.invariant(f))]
-#[requires(f.invariant())]
-//#[requires(unset((@a)[@idx]))]
-//#[requires((@f.clauses)[@m].no_unset_inner(@a))]
-//#[requires(long_are_post_unit(v, f, a))]
-//#[requires(long_are_no_unset(v, f, @a))]
-//#[requires(c.post_unit_inner(@a))]
-//#[requires(!lit.lit_in(c))]
-#[requires(@m <= 0 && @m < (@f.clauses).len())]
-#[requires(@idx <= 0 && @idx < (@a).len())]
-//#[requires(forall<i: Int> 0 <= i && i < (@a).len() ==>
-//    (@(@f.clauses)[@m])[i].idx != idx)]
-#[ensures(forall<i: Int> 0 <= i && i < (@a).len() && i != @idx ==>
-    (@a).set(@idx, 1u8)[i] === (@a)[i])]
-//#[ensures(!lit.lit_in(c))]
-//#[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 1u8)))]
-//#[ensures(clause_post_with_regards_to_inner(c, (@a).set(@lit.idx, 1u8)))]
-fn lemma_assign_maintains4(v: Seq<(usize, Reason)>, f: Formula, a: Assignments, m: usize, idx: usize) {}
-
-//(@self)[i].sat_inner(a) && forall<j: Int> 0 <= j && j < (@self).len() &&
-//j != i ==> (@self)[j].unsat_inner(a)
 
 #[predicate]
 pub fn clause_post_with_regards_to(c: Clause, a: Assignments, j: Int) -> bool {

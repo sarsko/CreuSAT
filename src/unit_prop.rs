@@ -251,7 +251,8 @@ fn unit_prop_do_outer(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, w
         proof_assert!(trail.trail_sem_invariant(*f, *a));
         proof_assert!(!(@f.clauses)[@cref].unsat(*a) && true);
         proof_assert!((@f.clauses)[@cref].unit(*a));
-        a.set_assignment(first_lit, f);
+        //a.set_assignment(first_lit, f);
+        a.set_assignment(first_lit, f, trail); // TODO check preconds
         proof_assert!(trail.trail_sem_invariant(*f, *a) && true);
         proof_assert!(((@f.clauses)[@cref]).post_unit(*a) && true);
         proof_assert!(clause_post_with_regards_to_lit(((@f.clauses)[@cref]), *a, first_lit));
@@ -262,7 +263,8 @@ fn unit_prop_do_outer(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, w
     } else if second_lit.lit_unset(a) {
         proof_assert!(!(@f.clauses)[@cref].unsat(*a) && true && true);
         proof_assert!((@f.clauses)[@cref].unit(*a));
-        a.set_assignment(second_lit, f);
+        //a.set_assignment(second_lit, f);
+        a.set_assignment(second_lit, f, trail); // TODO check preconds
         proof_assert!(trail.trail_sem_invariant(*f, *a) && true);
         proof_assert!(((@f.clauses)[@cref]).post_unit(*a));
         proof_assert!(clause_post_with_regards_to_lit(((@f.clauses)[@cref]), *a, second_lit));
