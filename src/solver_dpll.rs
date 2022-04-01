@@ -13,7 +13,6 @@ use crate::watches::*;
 use crate::conflict_analysis::*;
 use crate::unit_prop::*;
 
-
 pub enum SatResult {
     Sat(Vec<Lit>),
     Unsat,
@@ -133,7 +132,7 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
             //proof_assert!(@cref < (@f.clauses).len());
             //t.enq_assignment(lit, Reason::Long(cref), f);
         }
-    _ => { return Some(true);} // todo
+        Conflict::Panic => { return Some(true); }
     }
     None
 }
@@ -334,8 +333,7 @@ fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: 
     #[invariant(num_vars, @f.num_vars === @(@old_f).num_vars)]
     #[invariant(vardata_unchanged, (@t.vardata).len() === (@(@old_t).vardata).len())]
     loop {
-        let res = outer_loop(f, a, d, t, w);
-        match res {
+        match outer_loop(f, a, d, t, w) {
             SatResult::Unknown => {}, // continue
             o => return o,
         }

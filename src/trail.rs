@@ -203,6 +203,15 @@ pub fn trail_invariant_full_no_sep(trail: (Seq<Vec<Lit>>, Seq<(usize, Reason)>),
     trail_invariant_full(trail.0, trail.1, f)
 }
 
+#[predicate]
+pub fn trail_entries_are_assigned(trail: Seq<Vec<Lit>>, a: Assignments) -> bool {
+    pearlite! {
+        forall<j: Int> 0 <= j && j < trail.len() ==>
+            forall<k: Int> 0 <= k && k < (@trail[j]).len() ==>
+                (@a)[@(@trail[j])[k].idx] === bool_to_assignedstate((@trail[j])[k].polarity)
+    }
+}
+
 impl Trail {
     #[predicate]
     // Just the length bound atm
@@ -279,11 +288,13 @@ impl Trail {
         }
     }
 
-    #[predicate]
-    #[ensures(result === (long_are_post_unit(@self.vardata, f, a)))]
+    #[predicate] // Dunno why i have this ensures lol. TODO
+    #[ensures(result === (long_are_post_unit(@self.vardata, f, a)
+        && trail_entries_are_assigned(@self.trail, a)))]
     pub fn trail_sem_invariant(self, f: Formula, a: Assignments) -> bool {
         pearlite! {
             long_are_post_unit(@self.vardata, f, a)
+            && trail_entries_are_assigned(@self.trail, a)
             //self.long_are_post_unit(f, a)
         }
     }

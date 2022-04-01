@@ -297,29 +297,42 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
     out
 }
 
-// Might end up doing this as an option. Time loss is really minimal, and it makes me not have to do
-// a somewhat cumbersome proof.
-// todo on result.1
-// This is currently "double" TODO: safety + last ensures.
-// Safety can be fixed by making it return an option(lazy ja ja), and last ensures
-// requires a longer proof.
-#[trusted] // --TODO--
-#[ensures(@result.0.idx < (@trail.vardata).len())]
-//#[ensures(result.0.lit_in(*c))]
-#[ensures(@result.1 < (@c).len())]
-#[ensures(@(@c)[@result.1].idx === @result.0.idx)]
-#[ensures((@c)[@result.1].is_opp(result.0))] // This will need a longer proof
-// Super bad / simple
-fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, j: &mut usize) -> (Lit, usize) {
+// Made it into an option, at least temporarily.
+// To do the opp proof, we have to have that the trail === assignments
+// and if it were the case that we have assigned to a literal, and that literal
+// has the same polarity, then clause would be sat, which it isnt
+#[trusted]
+#[requires(trail.invariant(*_f))]
+#[requires(trail.trail_sem_invariant(*_f, *_a))]
+#[requires(c.unsat(*_a))]
+#[requires(@i < (@trail.trail).len())]
+#[requires(0 < @j && @j <= (@(@trail.trail)[@i]).len())]
+//#[requires(trail.trail_entries_are_assigned(*_a))] // This is gonna trickle up
+#[ensures(match result {
+    None => true,
+    Some((l, r)) => @l.idx < (@trail.vardata).len() &&
+                    @r < (@c).len() &&
+                    @(@c)[@r].idx === @l.idx
+})]
+#[ensures(match result {
+    None => true,
+    Some((l, r)) => (@c)[@r].is_opp(l) // This will need a longer proof
+})]
+fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, j: &mut usize, _f: &Formula, _a: &Assignments) -> Option<(Lit, usize)> {
     let (next, k) = {
-        let mut k = 0;
+        let mut k: usize = 0;
+        #[invariant(j_bound, 0 < @j && @j <= (@(@trail.trail)[@i]).len())]
+        #[invariant(i_bound, 0 <= @i && @i < (@trail.trail).len())]
         loop { 
             *j -= 1;
             k = 0;
             let mut broken = false;
+            #[invariant(j_bound, 0 <= @j && @j < (@(@trail.trail)[@i]).len())]
+            #[invariant(i_bound, 0 <= @i && @i < (@trail.trail).len())]
+            #[invariant(k_bound, 0 <= @k && @k <= (@c).len())]
             while k < c.rest.len() {
                 if trail.trail[*i][*j].idx == c.rest[k].idx {
-                    assert!(trail.trail[*i][*j].polarity != (c.rest[k]).polarity);
+                    //assert!(trail.trail[*i][*j].polarity != (c.rest[k]).polarity);
                     broken = true;
                     break;
                 }
@@ -329,16 +342,22 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, j: &mut usize) -> (L
                 break;
             }
             if *j == 0 {
+                if *i == 0 {
+                    return None;
+                }
                 *i -= 1;
                 *j = trail.trail[*i].len();
+                if *j == 0 {
+                    return None;
+                }
             }
         }
-        (trail.trail[*i][*j], k)
+       (trail.trail[*i][*j], k)
     };
-    (next, k)
+    Some((next, k))
 }
 
-#[trusted] // OK 
+#[trusted] // --TODO--: Lacking the i and j preconds for choose lit
 #[requires(trail.trail_sem_invariant(*f, *a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
@@ -375,7 +394,10 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
     loop {
     //i = trail.trail.len() - 1;
     //j = trail.trail[i].len();
-        let (lit, c_idx) = choose_literal(&clause, trail, &mut i, &mut j);
+        let (lit, c_idx) = match choose_literal(&clause, trail, &mut i, &mut j, f, a) {
+            None => return Conflict::Panic,
+            Some((a, b)) => (a, b),
+        };
         let ante = match &trail.vardata[lit.idx].1 {
             Long(c) => f.clauses[*c].clone(),
             o => return Conflict::Panic, // TODO // This never happens, but is an entirely new proof

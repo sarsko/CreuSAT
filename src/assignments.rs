@@ -225,6 +225,9 @@ impl Assignments {
     #[requires(vars_in_range_inner(@curr_level, @_f.num_vars))]
     #[requires(trail_invariant_full(@trail, @vardata, *_f))]
     #[requires(self.invariant(*_f))]
+    // Okay we need to ensure that afterwards order is ensured
+    //#[requires(trail.trail_entries_are_assigned(*a))]
+    //#[ensures((^trail).trail_entries_are_assigned(^a))]
     #[ensures((@vardata).len() === (@^vardata).len())]
     #[ensures((^self).invariant(*_f))]
     #[ensures((^self).invariant(*_f))]
@@ -300,6 +303,8 @@ impl Assignments {
     #[requires(trail.invariant(*_f))]
     #[requires(self.invariant(*_f))]
     #[requires(@level > 0)]
+    #[requires(trail.trail_entries_are_assigned(*self))]
+    #[ensures((^trail).trail_entries_are_assigned(^self))]
     #[ensures((^trail).invariant(*_f))]
     #[ensures((^self).invariant(*_f))]
     #[ensures((@(^trail).trail).len() === @level)]
