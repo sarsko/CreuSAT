@@ -123,5 +123,9 @@ pub fn preproc_and_solve(
             formula.clauses.push(clause2);
         }
     }
-    return solver(&mut formula, &units);
+    match solver(&mut formula, &units){
+        SatResult::Sat(_) => true,
+        SatResult::Unsat => false,
+        _ => panic!("Sarek should really make the parser non-binary"),
+    }
 }

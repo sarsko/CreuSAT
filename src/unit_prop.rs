@@ -244,7 +244,7 @@ fn unit_prop_do_outer(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, w
     proof_assert!((@f.clauses)[@cref].unsat(*a) || ((@(@f.clauses)[@cref])[0]).unset(*a) || ((@(@f.clauses)[@cref])[1]).unset(*a));
     if first_lit.lit_unset(a) {
     //if f.clauses[cref].rest[0].lit_unset(a) {
-        // TODO: Prove the runtime-check
+        // zzTODOzz: Prove the runtime-check
         if second_lit.lit_unset(a) {
             return Ok(true);
         }
@@ -252,7 +252,7 @@ fn unit_prop_do_outer(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, w
         proof_assert!(!(@f.clauses)[@cref].unsat(*a) && true);
         proof_assert!((@f.clauses)[@cref].unit(*a));
         //a.set_assignment(first_lit, f);
-        a.set_assignment(first_lit, f, trail); // TODO check preconds
+        a.set_assignment(first_lit, f, trail); // TODO Verify preconds(might have broken loop inv)
         proof_assert!(trail.trail_sem_invariant(*f, *a) && true);
         proof_assert!(((@f.clauses)[@cref]).post_unit(*a) && true);
         proof_assert!(clause_post_with_regards_to_lit(((@f.clauses)[@cref]), *a, first_lit));
@@ -264,7 +264,7 @@ fn unit_prop_do_outer(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, w
         proof_assert!(!(@f.clauses)[@cref].unsat(*a) && true && true);
         proof_assert!((@f.clauses)[@cref].unit(*a));
         //a.set_assignment(second_lit, f);
-        a.set_assignment(second_lit, f, trail); // TODO check preconds
+        a.set_assignment(second_lit, f, trail); // TODO Verify preconds(might have broken loop inv)
         proof_assert!(trail.trail_sem_invariant(*f, *a) && true);
         proof_assert!(((@f.clauses)[@cref]).post_unit(*a));
         proof_assert!(clause_post_with_regards_to_lit(((@f.clauses)[@cref]), *a, second_lit));

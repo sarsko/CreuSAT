@@ -300,6 +300,9 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
 // Might end up doing this as an option. Time loss is really minimal, and it makes me not have to do
 // a somewhat cumbersome proof.
 // todo on result.1
+// This is currently "double" TODO: safety + last ensures.
+// Safety can be fixed by making it return an option(lazy ja ja), and last ensures
+// requires a longer proof.
 #[trusted] // --TODO--
 #[ensures(@result.0.idx < (@trail.vardata).len())]
 //#[ensures(result.0.lit_in(*c))]

@@ -169,7 +169,14 @@ impl Decisions {
         */
     }
 
+    #[trusted]
     pub fn increment_and_move(&mut self, f: &Formula, cref: usize) {
+        let clause = &f.clauses[cref];
+        let mut i = 0;
+        while i < 8 && i < clause.rest.len() {
+            self.move_to_front(clause.rest[i].idx);
+            i += 1;
+        }
         /*
         let clause = &f.clauses[cref];
         self.move_to_front(clause.first.idx);

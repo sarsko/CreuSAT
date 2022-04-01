@@ -14,6 +14,14 @@ use crate::conflict_analysis::*;
 use crate::unit_prop::*;
 
 
+pub enum SatResult {
+    Sat(Vec<Lit>),
+    Unsat,
+    Unknown,
+    Err,
+}
+
+
 #[trusted] // OK
 #[ensures(result === (@f.clauses)[@idx].sat(*a))]
 #[requires(f.invariant())]
@@ -50,7 +58,7 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     return true;
 }
 
-#[trusted] // OK
+#[trusted] // Small --TODO--
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(trail.invariant(*f))]
@@ -68,8 +76,8 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
     //a.cancel_until(trail, trail.trail.len(), 1, decisions);
     a.cancel_until(trail, 1, f);
     //a.cancel_long(trail);
-    //a.set_assignment(lit, f);
-    a.set_assignment(lit, f, trail); // TODO check preconds
+    // TODO fix precond for lit unset
+    a.set_assignment(lit, f, trail); 
     trail.enq_assignment(lit, Reason::Unit, f, a);
 }
 
@@ -228,14 +236,15 @@ fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
 #[ensures((^t).invariant(^f))]
 #[ensures((^a).invariant(^f))]
 #[ensures(match result {
-    Some(true)  => { (^f).sat(^a) && (^a).complete() },
-    Some(false) => { (^f).unsat(^a)}, // ground conflict
-    None        => {true}  // we know something
+    SatResult::Sat(_)   => { (^f).sat(^a) && (^a).complete() }, // TODO: Vec is sat assign
+    SatResult::Unsat    => { (^f).unsat(^a)}, // ground conflict
+    SatResult::Unknown  => {true}
+    SatResult::Err      => { true }
 })]
 #[ensures(f.equisat(^f))]
-fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
+fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> SatResult {
     match unit_prop_loop(f, a, d, t, w) {
-        false => return Some(false),
+        false => return SatResult::Unsat,
         _ => {}
     }
     //proof_assert!(!a.complete() || !f.unsat(*a)); // Need to get from unit_prop_loop
@@ -244,7 +253,7 @@ fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail
             let dlevel = t.trail.len();
             //t.trail.push(Vec::new());
             t.add_level(f);
-            // TODO DO A PROOF HERE
+            // zzTODOzz DO A PROOF HERE
             // Have to do a proof to an unassigned cannot affect any post_units
             // VC Checks out, but it is slow.
             let lit = Lit{ idx: next, polarity: a.0[next] == 3 };
@@ -260,10 +269,10 @@ fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail
             proof_assert!(a.complete());
             proof_assert!(!f.unsat(*a));
             proof_assert!(lemma_complete_and_not_unsat_implies_sat(*f, @a); true);
-            return Some(true); 
+            return SatResult::Sat(Vec::new()); // TODO add sat assignment
         },
     }
-    None
+    SatResult::Unknown
 }
 
 #[trusted] // OK
@@ -288,11 +297,12 @@ fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail
 //#[ensures(result === true ==> f.eventually_sat(*a))]
 //#[ensures(result === false ==> !f.eventually_sat_complete(*a))]
 #[ensures(match result {
-    true => { (^f).sat(^a) && f.equisat(^f) && f.eventually_sat_complete_no_ass()},
-    false => { (^f).unsat(^a) }// && f.unsat(^a)}, // + add resolution from empty clause
+    SatResult::Sat(_) => { (^f).sat(^a) && f.equisat(^f) && f.eventually_sat_complete_no_ass()}, // TODO: + vec is assign
+    SatResult::Unsat => { (^f).unsat(^a) }// && f.unsat(^a)}, // + add resolution from empty clause
+    _ => true,
 })]
 #[ensures(f.equisat(^f))]
-fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> bool {
+fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> SatResult {
     let old_f = Ghost::record(&f);
     let old_a = Ghost::record(&a);
     let old_t = Ghost::record(&t);
@@ -313,26 +323,40 @@ fn inner(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: 
     loop {
         let res = outer_loop(f, a, d, t, w);
         match res {
-            Some(true)  => { return true;  },
-            Some(false) => { return false; },
-            None        => {},
+            SatResult::Unknown => {}, // continue
+            o => return o,
         }
     }
 }
 
-#[trusted] // --TODO--
-pub fn solver(f: &mut Formula, units: &std::vec::Vec<Lit>) -> bool {
+//#[trusted] // xxTODOxx
+#[requires(forall<i: Int> 0 <= i && i < (@units).len() ==>
+    @(@units)[i].idx < @f.num_vars
+)]
+#[requires(f.invariant())] // Not fully correct, need a smaller invariant
+pub fn solver(f: &mut Formula, units: &std::vec::Vec<Lit>) -> SatResult {
     // should do pure literal and identifying unit clauses in preproc
     let mut i = 0;
     let mut assignments = Assignments::new(f);
     let mut trail = Trail::new(f, &assignments);
+    if f.num_vars >= usize::MAX/2 {
+        return SatResult::Err;
+    }
     if f.num_vars == 0 {
-        return true;
+        return SatResult::Sat(Vec::new());
     }
     let mut watches = Watches::new(f);
     watches.init_watches(f);
     let decisions = Decisions::new(f);
     // Todo on this
+    // Okay so actually this is fine for semantics, we just have to include
+    // it in the final check for sat and then return an error if they don't
+    // match. For the unsat case, not including a clause can't make a sat formula
+    // unsat
+    #[invariant(trail_inv, trail.invariant(*f))]
+    #[invariant(trail_sem, trail.trail_sem_invariant(*f, assignments))]
+    #[invariant(ass_inv, assignments.invariant(*f))]
+    #[invariant(trail_len, (@trail.trail).len() === 1)]
     while i < units.len() {
         trail.enq_assignment(units[i], Reason::Unit, f, &assignments);
         let lit = units[i];
