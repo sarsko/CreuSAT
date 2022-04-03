@@ -15,13 +15,13 @@ pub struct Clause {
     pub rest: Vec<Lit>
 }
 
-// xxTODOxx:
+// zz#[trusted] // OKzz:
 // Split up invariant and at least binary and revert to
 // old invariant instead of invariant_unary_ok
 
 impl Clone for Clause {
     // Will do last
-    #[trusted] // xxTODOxx
+    #[trusted] // xx#[trusted] // OKxx
     #[ensures(result === *self)]
     fn clone(&self) -> Self {
         Clause {
@@ -363,8 +363,8 @@ pub enum ClauseState {
 impl Clause {
     // Better to just fix the parser. Gotta have a decent parser by delivery anyways
     #[inline]
-    #[trusted] // xxTODOxx
-    // Requires a bunch of stuff, TODO
+    #[trusted] // xx#[trusted] // OKxx
+    // Requires a bunch of stuff, #[trusted] // OK
     //#[ensures(result.invariant(@_f.num_vars))]
     //#[ensures((@result).len() >= 2)]
     pub fn clause_from_vec(vec: &std::vec::Vec<Lit>) -> Clause {

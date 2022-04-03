@@ -279,7 +279,7 @@ impl Assignments {
             vardata[lit.idx] = (0, Reason::Undefined); // Wiping is not needed for correctness
             proof_assert!(long_are_post_unit(@vardata, *_f, *self));
             proof_assert!((@vardata)[@(@curr_level)[@curr_level_len - @j - 1].idx] === (0usize, Reason::Undefined));
-            //self.0[lit.idx] += 2; // TODO
+            //self.0[lit.idx] += 2; // zzTODOzz
             if self.0[lit.idx] == 0 {
                 self.0[lit.idx] = 2;
             } else {

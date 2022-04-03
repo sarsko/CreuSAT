@@ -283,7 +283,7 @@ fn unit_prop_do_outer(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, w
         */
         return Ok(true);
     } else {
-        // TODO
+        // TODO // Do a linear pass here
         proof_assert!((@f.clauses)[@cref].unsat(*a));
         return Err(cref);
     }

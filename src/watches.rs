@@ -6,7 +6,6 @@ use crate::formula::*;
 use crate::lit::*;
 use crate::assignments::*;
 use crate::trail::*;
-//use crate::solver::*; // TODO move
 use crate::clause::*;
 
 
@@ -92,7 +91,7 @@ impl Watches {
 
     // This requires the literal to be watched, otherwise it will panic
     // This method should be updated as we usually know where to look
-    #[trusted] // OK --TODO-- REMOVE; USELESS FUNCTION
+    #[trusted] // OK --#[trusted] // OK-- REMOVE; USELESS FUNCTION
     #[requires(exists<j: Int> 0 <= j && j < (@(@self.watches)[old_lit.to_watchidx_logic()]).len() && 
     (@(@(@self.watches)[old_lit.to_watchidx_logic()])[j].cref) === @cref)]
     #[requires(self.invariant(*_f))]
@@ -151,7 +150,7 @@ impl Watches {
     pub fn init_watches(&mut self, f: &Formula) {
         let old_w = Ghost::record(&self); 
         let mut i = 0;
-        //#[invariant(watchidx, f.idxs_in_range())]  // TODO
+        //#[invariant(watchidx, f.idxs_in_range())]  // #[trusted] // OK
         #[invariant(watch_inv, self.invariant(*f))]
         #[invariant(same_len, (@self.watches).len() === 2 * @f.num_vars)]
         #[invariant(proph, ^self === ^@old_w)]

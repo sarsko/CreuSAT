@@ -301,12 +301,13 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
 // To do the opp proof, we have to have that the trail === assignments
 // and if it were the case that we have assigned to a literal, and that literal
 // has the same polarity, then clause would be sat, which it isnt
-#[trusted]
+#[trusted] // OK
 #[requires(trail.invariant(*_f))]
 #[requires(trail.trail_sem_invariant(*_f, *_a))]
 #[requires(c.unsat(*_a))]
 #[requires(@i < (@trail.trail).len())]
-#[requires(0 < @j && @j <= (@(@trail.trail)[@i]).len())]
+#[requires((@trail.trail).len() > 0)]
+#[requires(@j <= (@(@trail.trail)[@i]).len())]
 //#[requires(trail.trail_entries_are_assigned(*_a))] // This is gonna trickle up
 #[ensures(match result {
     None => true,
@@ -314,22 +315,36 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
                     @r < (@c).len() &&
                     @(@c)[@r].idx === @l.idx
 })]
+// Actually does it find this post due to trail_entries assigned + c.unsat(*a) (as one would like)?
+// That's some really cool stuff if so.
 #[ensures(match result {
-    None => true,
-    Some((l, r)) => (@c)[@r].is_opp(l) // This will need a longer proof
+    Some((l, r)) => (@c)[@r].is_opp(l), // This will need a longer proof // Why is this passing? // TODO: It doesn't seem like a soundess issue, 
+    None => true
 })]
+#[ensures(@^i < (@trail.trail).len())]
+#[ensures(@^j <= (@(@trail.trail)[@^i]).len() )]
 fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, j: &mut usize, _f: &Formula, _a: &Assignments) -> Option<(Lit, usize)> {
+    if *j == 0 {
+        return None;
+    }
+    // I truly despise this ghost and proph bullshit
+    let old_i = Ghost::record(&i);
+    let old_j = Ghost::record(&j);
     let (next, k) = {
         let mut k: usize = 0;
         #[invariant(j_bound, 0 < @j && @j <= (@(@trail.trail)[@i]).len())]
         #[invariant(i_bound, 0 <= @i && @i < (@trail.trail).len())]
+        #[invariant(proph_i, ^i === ^@old_i)]
+        #[invariant(proph_j, ^j === ^@old_j)]
         loop { 
             *j -= 1;
             k = 0;
             let mut broken = false;
-            #[invariant(j_bound, 0 <= @j && @j < (@(@trail.trail)[@i]).len())]
-            #[invariant(i_bound, 0 <= @i && @i < (@trail.trail).len())]
+            #[invariant(j_bound2, 0 <= @j && @j < (@(@trail.trail)[@i]).len())]
+            #[invariant(i_bound2, 0 <= @i && @i < (@trail.trail).len())]
             #[invariant(k_bound, 0 <= @k && @k <= (@c).len())]
+            #[invariant(proph_i2, ^i === ^@old_i)]
+            #[invariant(proph_j2, ^j === ^@old_j)]
             while k < c.rest.len() {
                 if trail.trail[*i][*j].idx == c.rest[k].idx {
                     //assert!(trail.trail[*i][*j].polarity != (c.rest[k]).polarity);
@@ -357,7 +372,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, j: &mut usize, _f: &
     Some((next, k))
 }
 
-#[trusted] // --TODO--: Lacking the i and j preconds for choose lit
+#[trusted] // OK
 #[requires(trail.trail_sem_invariant(*f, *a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
@@ -391,6 +406,8 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
     #[invariant(clause_vars, clause.invariant_unary_ok(@f.num_vars))]
     #[invariant(clause_equi, equisat_extension_inner(clause, @f))]
     #[invariant(clause_unsat, clause.unsat(*a))]
+    #[invariant(j_bound, 0 <= @j && @j <= (@(@trail.trail)[@i]).len())]
+    #[invariant(i_bound, 0 <= @i && @i < (@trail.trail).len())]
     loop {
     //i = trail.trail.len() - 1;
     //j = trail.trail[i].len();
@@ -424,6 +441,7 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
         let mut k: usize = 0;
         let mut cnt: usize = 0;
         #[invariant(k_bound, @k <= (@clause.rest).len())]
+        #[invariant(j_bound2, 0 <= @j && @j <= (@(@trail.trail)[@i]).len())]
         #[invariant(cnt_bound, @cnt <= @k)]
         while k < clause.rest.len() {
             if trail.vardata[clause.rest[k].idx].0 == decisionlevel {
