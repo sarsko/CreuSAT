@@ -228,7 +228,7 @@ impl Formula {
     }
 }
 
-//#[trusted] // OK
+#[trusted] // OK // zzTODOzz check if this can be moved to clause
 #[ensures(result === (@f.clauses)[@idx].sat(*a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
@@ -247,7 +247,7 @@ pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 }
 
 impl Formula {
-    #[trusted] // OK
+    #[trusted] // OK[04.04]
     #[requires(@self.num_vars < @usize::MAX/2)]
     #[requires(self.invariant())]
     #[requires(_t.invariant(*self))]
@@ -278,7 +278,7 @@ impl Formula {
         watches.add_watcher(second_lit, cref, self);
         cref
     }
-    //#[trusted] // OK
+    #[trusted] // OK[04.04]
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[ensures(result === self.sat(*a))]

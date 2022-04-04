@@ -311,7 +311,7 @@ impl Trail {
 }
 
 impl Trail {
-    #[trusted] // OK
+    #[trusted] // OK [04.04]
     #[requires(self.trail_sem_invariant(*_f, *_a))]
     #[ensures((^self).trail_sem_invariant(*_f, *_a))]
     #[requires(self.invariant(*_f))]
@@ -331,6 +331,7 @@ impl Trail {
                 (@(@_f.clauses)[@k])[i].sat(*_a)  
                 */
     })]
+    #[requires(lit.sat(*_a))]
     #[ensures((^self).invariant(*_f))]
     #[ensures((@(^self).trail).len() === (@self.trail).len())]
     #[ensures((@(^self).vardata).len() === (@self.vardata).len())]
@@ -347,7 +348,7 @@ impl Trail {
         self.vardata[lit.idx] = (dlevel, reason);
     }
 
-    #[trusted] // OK
+    #[trusted] // OK [04.04]
     #[ensures(result.invariant(*f))]
     #[ensures((@result.trail).len() === 1)]
     #[ensures(result.trail_sem_invariant(*f, *_a))]
@@ -372,7 +373,7 @@ impl Trail {
         }
     }
 
-    #[trusted] // OK
+    #[trusted] // OK [04.04]
     #[requires(self.invariant(*_f))]
     #[ensures((^self).invariant(*_f))]
     #[ensures(@self.vardata === @(^self).vardata)]

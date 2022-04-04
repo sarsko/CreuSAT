@@ -27,7 +27,6 @@ pub enum ConflictResult {
     Continue,
 }
 
-
 #[trusted] // OK
 #[ensures(result === (@f.clauses)[@idx].unsat(*a))]
 #[requires(f.invariant())]
@@ -64,12 +63,14 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
     //a.cancel_until(trail, trail.trail.len(), 1, decisions);
     a.cancel_until(trail, 1, f);
     //a.cancel_long(trail);
-    // TODO fix precond for lit unset
+    // TODO set_assignment has unset as a precond.
+    // Is it really needed, though?
+    // Yes it is you dumbo, else the semantic invariants for trail will be broken
     a.set_assignment(lit, f, trail); 
     trail.enq_assignment(lit, Reason::Unit, f, a);
 }
 
-#[trusted] // OK(except for panic)
+#[trusted] // OK [04.04]
 #[ensures(match result {
     Some(false) => { (^f).unsat(^a)},
     Some(true)  => { true },
@@ -120,7 +121,7 @@ fn handle_conflict(f: &mut Formula, a: &mut Assignments, t: &mut Trail, cref: us
     None
 }
 
-#[trusted] // OK
+#[trusted] // OK [04.04]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[ensures(match result {
     ConflictResult::Ground => { (^f).unsat(^a)},
@@ -158,7 +159,7 @@ fn unit_prop_step(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
 }
 
 
-#[trusted] // OK
+#[trusted] // OK [04.04]
 #[requires(@f.num_vars < @usize::MAX/2)]
 //#[ensures(result ==> !(^f).unsat(^a))]
 #[requires(f.invariant())]
@@ -210,7 +211,8 @@ fn unit_prop_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut T
 }
 
 
-#[trusted] // OK. Precond is not proivng on Mac(but OK on Linux)
+//Precond is not proivng on Mac(but OK on Linux)
+#[trusted] // OK [04.04]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
@@ -274,7 +276,7 @@ fn outer_loop(f: &mut Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail
     SatResult::Unknown
 }
 
-#[trusted] // OK
+#[trusted] // OK [04.04]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]

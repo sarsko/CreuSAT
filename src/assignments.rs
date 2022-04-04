@@ -112,9 +112,8 @@ impl Assignments {
     }
     */
 
-    // zzTODOzz : Checks out. Slow. Come back later and make faster/clean up
     #[inline]
-    #[trusted] // OK
+    #[trusted] // OK [04.04]
     #[requires(lit.invariant(@_f.num_vars))]
     #[requires(_t.trail_sem_invariant(*_f, *self))]
     #[requires(_t.invariant(*_f))]
@@ -128,12 +127,7 @@ impl Assignments {
     #[ensures(_t.trail_sem_invariant(*_f, ^self))]
     #[ensures((forall<j : Int> 0 <= j && j < (@self).len() &&
         j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
-    #[ensures(
-        match lit.polarity {
-            true => @(@^self)[@lit.idx] === 1,
-            false => @(@^self)[@lit.idx] === 0,
-        }
-    )]
+    #[ensures(lit.sat(^self))]
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Trail) {
         /*
         if !self.0[l.idx].is_none() {

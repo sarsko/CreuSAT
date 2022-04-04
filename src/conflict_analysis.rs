@@ -58,7 +58,7 @@ fn move_to_end(v: &mut Vec<Lit>, to_be_removed: usize,  _f: &Formula) {
 }
 */
 // Both of these should be changed to unary_ok, but things are checking out somehow
-#[trusted] // OK
+#[trusted] // OK [04.04]
 #[logic]
 //#[requires(@v[i].idx === idx)]
 #[requires(0 <= c_idx && c_idx < c.len() && @(c)[c_idx].idx === idx &&
@@ -78,7 +78,7 @@ fn move_to_end(v: &mut Vec<Lit>, to_be_removed: usize,  _f: &Formula) {
 //#[ensures(((o)[i].lit_in_internal(new)))]
 fn lemma_idx(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_idx: Int, _f: Formula) {}
 
-#[trusted] // OK
+#[trusted] // OK [04.04] [[Doesnt check out on Mac [04.04]. Super easy on Linux]]
 #[logic]
 //#[requires(@v[i].idx === idx)]
 #[requires(0 <= c_idx && c_idx < c.len() && @(c)[c_idx].idx === idx &&
@@ -99,7 +99,7 @@ fn lemma_idx2(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_idx: 
 }
 
 
-#[trusted] // OK
+#[trusted] // OK [04.04]
 #[ensures(result === (exists<i: Int> 0 <= i && i < (@v).len() && @(@v)[i].idx === @idx))]
 fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
     let mut i: usize = 0;
@@ -121,7 +121,7 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
 // resolve. Can be lifted if watches and literal reordering gets implemented
 // as we then have access to both resolve indexes everywhere.
 
-#[trusted] // OK
+#[trusted] // OK [04.04] [[Doesnt check out on Mac [04.04] - struggling with the loop invariants, but that's it]]
 #[requires(_f.invariant())]
 #[requires(equisat_extension_inner(*c, @_f))]
 #[requires(o.in_formula(*_f))]
@@ -153,7 +153,6 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
     #[invariant(resolve, forall<j: Int> 0 <= j && j < @i && @(@c)[j].idx != @idx ==> 
         (@c)[j].lit_in_internal(@new))]
     #[invariant(from_c, forall<j: Int> 0 <= j && j < (@new).len() ==> (@new)[j].lit_in(*c))]
-
     #[invariant(res2, (forall<j: Int> 0 <= j && j < @i && j != @c_idx ==> 
         (@c)[j].lit_in_internal(@new)))]
     while i < c.rest.len() {
@@ -297,11 +296,7 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
     out
 }
 
-// Made it into an option, at least temporarily.
-// To do the opp proof, we have to have that the trail === assignments
-// and if it were the case that we have assigned to a literal, and that literal
-// has the same polarity, then clause would be sat, which it isnt
-#[trusted] // OK
+#[trusted] // OK [04.04]
 #[requires(trail.invariant(*_f))]
 #[requires(trail.trail_sem_invariant(*_f, *_a))]
 #[requires(c.unsat(*_a))]
@@ -417,7 +412,7 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
         };
         let ante = match &trail.vardata[lit.idx].1 {
             Long(c) => f.clauses[*c].clone(),
-            o => return Conflict::Panic, // TODO // This never happens, but is an entirely new proof
+            o => return Conflict::Panic, // nnTODOnn // This never happens, but is an entirely new proof
             //o => panic!(),
         };
         //proof_assert!(exists<j: Int> 0 <= j && j < (@clause).len() && (@clause)[j].idx === lit.idx);
