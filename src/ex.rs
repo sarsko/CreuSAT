@@ -1,29 +1,59 @@
 extern crate creusot_contracts;
 use creusot_contracts::*;
+use creusot_contracts::std::*;
 
-pub struct Lit {
-    pub idx: usize,
-    pub polarity: bool,
+
+pub struct Formula {
+    pub clauses: Vec<usize>,
+    pub num_vars: usize,
 }
 
-#[predicate]
-pub fn no_duplicate_indexes_inner(s: Seq<Lit>) -> bool {
-    /*
-    pearlite! {
-        forall<j: Int, k: Int> 0 <= j && j < s.len() &&
-                0 <= k && k < j ==> !(@s[k].idx === @s[j].idx)
+pub trait Bing {
+    fn bing(self) -> usize;
+}
+
+/*
+pub trait Model {
+    type ModelTy;
+    #[logic]
+    fn model(self) -> Self::ModelTy;
+}
+
+impl<T: Model + ?Sized> Model for &T {
+    type ModelTy = T::ModelTy;
+    #[logic]
+    fn model(self) -> Self::ModelTy {
+        (*self).model()
     }
-    */
-    pearlite! {
-        forall<j: Int, k: Int> 0 <= j && j < s.len() &&
-                k != j ==> !(@s[k].idx === @s[j].idx)
+}
+*/
+impl<T> Bing for Vec<T> {
+    fn bing(self) -> usize {
+        0
+    }
+
+}
+
+impl<T: Bing + ?Sized> Bing for &T {
+    fn bing(self) -> usize {
+        0
     }
 }
 
-#[logic]
-#[requires((c).len() === 2)]
-#[requires((c2).len() === (c).len())]
-#[requires((c2).exchange(c, 0, 1))]
-#[requires(no_duplicate_indexes_inner(c))]
-#[ensures(no_duplicate_indexes_inner(c2))]
-pub fn lemma_permut_clause_no_dups(c: Seq<Lit>, c2: Seq<Lit>) {}
+/*
+impl<T: Bing + ?Sized> Bing for &mut T {
+    fn bing(self) -> usize {
+        (*self).bing()
+    }
+}
+*/
+
+
+
+#[ensures((*u).model()=== @u)]
+fn main(u: &&&&&&&&&&&&&&&&usize)  {
+}
+
+fn main3(u: & Vec<usize>)  {
+    let b = u.bing();
+}

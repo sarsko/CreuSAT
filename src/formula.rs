@@ -228,6 +228,24 @@ impl Formula {
     }
 }
 
+//#[trusted] // OK
+#[ensures(result === (@f.clauses)[@idx].sat(*a))]
+#[requires(f.invariant())]
+#[requires(a.invariant(*f))]
+#[requires(@idx < (@f.clauses).len())]
+pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
+    let clause = &f.clauses[idx];
+    let mut i: usize = 0;
+    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==> !(@clause)[j].sat(*a))]
+    while i < clause.rest.len() {
+        if clause.rest[i].lit_sat(a) {
+            return true;
+        }
+        i += 1;
+    }
+    return false;
+}
+
 impl Formula {
     #[trusted] // OK
     #[requires(@self.num_vars < @usize::MAX/2)]
@@ -260,6 +278,23 @@ impl Formula {
         watches.add_watcher(second_lit, cref, self);
         cref
     }
+    //#[trusted] // OK
+    #[requires(self.invariant())]
+    #[requires(a.invariant(*self))]
+    #[ensures(result === self.sat(*a))]
+    pub fn is_sat(&self, a: &Assignments) -> bool {
+        let mut i: usize = 0;
+        #[invariant(prev,
+            forall<k: Int> 0 <= k && k < @i ==>
+            (@self.clauses)[k].sat(*a))]
+        while i < self.clauses.len() {
+            if !is_clause_sat(self, i, a) {
+                return false;
+            }
+            i += 1
+        }
+        return true;
+    }
 }
 
 /*
@@ -284,23 +319,6 @@ impl Formula {
         return false;
     }
 
-    #[trusted] // OK
-    #[requires(self.invariant())]
-    #[requires(a.invariant(*self))]
-    #[ensures(result === self.sat(*a))]
-    pub fn is_sat(&self, a: &Assignments) -> bool {
-        let mut i: usize = 0;
-        #[invariant(prev,
-            forall<k: Int> 0 <= k && k < @i ==>
-            (@self.clauses)[k].sat(*a))]
-        while i < self.clauses.len() {
-            if !is_clause_sat(self, i, a) {
-                return false;
-            }
-            i += 1
-        }
-        return true;
-    }
 
     #[trusted] // OK
     #[requires(self.invariant())]
