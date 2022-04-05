@@ -204,11 +204,23 @@ pub fn trail_invariant_full_no_sep(trail: (Seq<Vec<Lit>>, Seq<(usize, Reason)>),
 }
 
 #[predicate]
-pub fn trail_entries_are_assigned(trail: Seq<Vec<Lit>>, a: Assignments) -> bool {
+pub fn trail_entries_are_assigned_inner(trail: Seq<Vec<Lit>>, a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<j: Int> 0 <= j && j < trail.len() ==>
             forall<k: Int> 0 <= k && k < (@trail[j]).len() ==>
+                a[@(@trail[j])[k].idx] === bool_to_assignedstate((@trail[j])[k].polarity)
+    }
+}
+
+#[predicate]
+pub fn trail_entries_are_assigned(trail: Seq<Vec<Lit>>, a: Assignments) -> bool {
+    pearlite! {
+        trail_entries_are_assigned_inner(trail, @a)
+        /*
+        forall<j: Int> 0 <= j && j < trail.len() ==>
+            forall<k: Int> 0 <= k && k < (@trail[j]).len() ==>
                 (@a)[@(@trail[j])[k].idx] === bool_to_assignedstate((@trail[j])[k].polarity)
+                */
     }
 }
 

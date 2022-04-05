@@ -9,6 +9,34 @@ use crate::formula::*;
 use crate::trail::*;
 
 
+
+// Trail stuff start
+#[logic]
+#[requires(s.len() > 0)]
+fn last_idx<T>(s: Seq<T>) -> Int {
+    pearlite! { s.len()-1 }
+}
+
+#[logic]
+#[requires(s.len() > 0)]
+fn last_elem<T>(s: Seq<T>) -> T {
+    pearlite! { s[s.len()-1] }
+}
+
+#[logic]
+#[requires(trail_invariant_full_no_sep(t, f))]
+#[requires(trail_entries_are_assigned_inner(t.0, a))]
+#[requires(long_are_post_unit_inner(t.1, f, a))]
+#[requires(t.0.len() > 0)]
+//#[requires((@(t.0)[0]).len() > 0)]
+#[requires((@last_elem(t.0)).len() > 0)]
+#[ensures((@last_elem(t.0)))]
+//#[ensures((@(t.0)[0])[(@(t.0)[0]).len()-1])]
+pub fn lemma_trail_1(t: (Seq<Vec<Lit>>, Seq<(usize, Reason)>), f: Formula, a: Seq<AssignedState>) {}
+
+
+
+// Trail stuff end
 // CDCL 2 STUFF START (WIP)
 #[trusted] // OK
 #[logic]

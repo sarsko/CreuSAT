@@ -147,6 +147,8 @@ impl Assignments {
         proof_assert!(long_are_post_unit_inner(@_t.vardata, *_f, @self));
         proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t.vardata, *_f, *self, lit));true);
 
+        // zzTODOzz 
+       //self.0[lit.idx] = lit.polarity as u8;
         if lit.polarity {
             self.0[lit.idx] = 1;
             //proof_assert!(@self === (@@old_self).set(@lit.idx, 1u8));
@@ -224,7 +226,6 @@ impl Assignments {
     //#[ensures((^trail).trail_entries_are_assigned(^a))]
     #[ensures((@vardata).len() === (@^vardata).len())]
     #[ensures((^self).invariant(*_f))]
-    #[ensures((^self).invariant(*_f))]
     /*
     #[ensures((@(^trail).vardata) === (@trail.vardata))]
     #[ensures((@(^trail).trail).len() === @level)]
@@ -267,7 +268,7 @@ impl Assignments {
         // we were post_unit before, and then added something, then we are post_unit after
         // and then prove that the same applies the opposite direction as well.
         // Need to have a proof that the trail is directly mapped to assignments + vardata
-        #[invariant(maintains_post_unit, long_are_post_unit(@vardata, *_f, *self))] // need a lemma
+        #[invariant(maintains_post_unit, long_are_post_unit(@vardata, *_f, *self))] // need a lemma // only thing missing
         while j < curr_level_len {
             let lit = curr_level[curr_level_len - j - 1];
             vardata[lit.idx] = (0, Reason::Undefined); // Wiping is not needed for correctness
@@ -279,7 +280,6 @@ impl Assignments {
             } else {
                 self.0[lit.idx] = 3;
             }
-            //self.0[lit.idx] = 2; // I'll do the phase saving later lol
             j += 1;
         }
     }
