@@ -11,6 +11,7 @@ use crate::trail::*;
 
 
 // Trail stuff start
+/*
 #[logic]
 #[requires(s.len() > 0)]
 fn last_idx<T>(s: Seq<T>) -> Int {
@@ -33,6 +34,12 @@ fn last_elem<T>(s: Seq<T>) -> T {
 #[ensures((@last_elem(t.0)))]
 //#[ensures((@(t.0)[0])[(@(t.0)[0]).len()-1])]
 pub fn lemma_trail_1(t: (Seq<Vec<Lit>>, Seq<(usize, Reason)>), f: Formula, a: Seq<AssignedState>) {}
+*/
+
+/*
+
+
+*/
 
 
 

@@ -27,6 +27,7 @@ pub struct Trail {
     pub vardata: Vec<(usize, Reason)>,
 }
 
+
 #[cfg(contracts)]
 impl Model for Trail {
     type ModelTy = (Seq<Vec<Lit>>, Seq<(usize, Reason)>);
@@ -300,6 +301,7 @@ impl Trail {
         }
     }
 
+    #[trusted] // OK
     #[predicate] // Dunno why i have this ensures lol. TODO
     #[ensures(result === (long_are_post_unit(@self.vardata, f, a)
         && trail_entries_are_assigned(@self.trail, a)))]

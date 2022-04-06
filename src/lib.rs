@@ -21,3 +21,4 @@ pub mod trail;
 pub mod watches;
 pub mod conflict_analysis;
 pub mod unit_prop;
+mod ntrail;

@@ -60,6 +60,20 @@ impl Lit {
     }
 
     #[predicate]
+    //#[ensures(result === self.lit_in_internal(@c))]
+    pub fn lit_idx_in(self, c: Clause) -> bool {
+        pearlite! {
+            exists<i: Int> 0 <= i && i < (@c).len() &&
+                (@c)[i].idx === self.idx
+            /*
+            exists<i: Int> 0 <= i && i < (@c).len() &&
+                (@c)[i].idx === self.idx &&
+                (@c)[i].polarity === self.polarity
+                */
+        }
+    }
+
+    #[predicate]
     pub fn invariant(self, n: Int) -> bool {
         pearlite! {
             @self.idx < n
