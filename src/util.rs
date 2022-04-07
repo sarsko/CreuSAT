@@ -58,3 +58,23 @@ pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
         i += 1;
     }
 }
+
+#[logic]
+#[requires(s.len() > 0)]
+pub fn pop<T>(s: Seq<T>) -> Seq<T> {
+    pearlite! {
+        s.subsequence(0, s.len() - 1)
+    }
+}
+
+#[logic]
+#[requires(s.len() > 0)]
+pub fn last_idx<T>(s: Seq<T>) -> Int {
+    pearlite! { s.len()-1 }
+}
+
+#[logic]
+#[requires(s.len() > 0)]
+pub fn last_elem<T>(s: Seq<T>) -> T {
+    pearlite! { s[s.len()-1] }
+}
