@@ -22,3 +22,4 @@ pub mod watches;
 pub mod conflict_analysis;
 pub mod unit_prop;
 mod ntrail;
+mod logic_ntrail;

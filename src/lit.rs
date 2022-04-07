@@ -6,6 +6,7 @@ use ::std::ops;
 
 use crate::clause::*;
 use crate::assignments::*;
+use crate::ntrail::*;
 
 #[derive(Clone, Copy)]
 //#[derive(Clone, Copy, Debug)]
@@ -125,6 +126,14 @@ impl Lit {
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! {
             self.unsat_inner(@a)
+        }
+    }
+
+    #[predicate]
+    pub fn idx_in_trail(self, t: Vec<Step>) -> bool {
+        pearlite! {
+            exists<i: Int> 0 <= i && i < (@t).len() &&
+                (@t)[i].lit.idx === self.idx
         }
     }
 

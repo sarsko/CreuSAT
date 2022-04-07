@@ -8,6 +8,8 @@ use crate::logic::*;
 use crate::formula::*;
 use crate::decision::*;
 use crate::trail::*;
+use crate::ntrail::{NTrail, Step};
+use crate::logic_ntrail::{trail_invariant, long_are_post_unit_inner_new};
 
 pub type AssignedState = u8;
 
@@ -112,6 +114,43 @@ impl Assignments {
     }
     */
 
+    /* Starlit:
+impl PartialAssignment {
+    /// Assigns `true` to the given literal.
+    ///
+    /// A variable can be assigned `false` by assigning `true` to the negated literal.
+    #[inline(always)]
+    pub fn assign(&mut self, lit: Lit) {
+        self.assigned[lit.index()] = lit.is_positive() as u8
+    }
+
+    /// Removes any assigned value from a variable.
+    #[inline(always)]
+    pub fn unassign(&mut self, var: Var) {
+        self.assigned[var.index()] = 2
+    }
+
+    /// Returns `true` if the literal is assigned `true`.
+    #[inline(always)]
+    pub fn is_true(&self, lit: Lit) -> bool {
+        self.assigned[lit.index()] == lit.is_positive() as u8
+    }
+
+    /// Returns `true` if the literal is assigned `false`.
+    #[inline(always)]
+    pub fn is_false(&self, lit: Lit) -> bool {
+        self.assigned[lit.index()] == lit.is_negative() as u8
+    }
+
+    /// Returns `true` if the literal is assigned.
+    #[inline(always)]
+    pub fn is_assigned(&self, var: Var) -> bool {
+        self.assigned[var.index()] != 2
+    }
+}
+
+*/
+
     #[inline]
     #[trusted] // OK [04.04]
     #[requires(lit.invariant(@_f.num_vars))]
@@ -162,6 +201,62 @@ impl Assignments {
         proof_assert!(long_are_post_unit_inner(@_t.vardata, *_f, @self));
         //self.0[l.idx] = l.polarity as u8;
     }
+
+    #[inline]
+    #[trusted] // Post failing(as expected)
+    #[requires(lit.invariant(@_f.num_vars))]
+    #[requires(_f.invariant())]
+    // TODO:
+    #[requires(trail_invariant(@_t, *_f))] // #[requires(_t.invariant(*_f))]
+    //#[requires(_t.trail_sem_invariant(*_f, *self))]
+
+    #[requires(self.invariant(*_f))]//#[requires(a.invariant(f))]
+    #[requires(unset((@self)[@lit.idx]))] // Added, will break stuff further up
+    #[ensures((^self).invariant(*_f))]
+    #[ensures(@(@^self)[@lit.idx] === 1 || @(@^self)[@lit.idx] === 0)] // Is this needed?
+    #[ensures((@^self).len() === (@self).len())]
+    /*
+    #[ensures(_t.trail_sem_invariant(*_f, ^self))]
+    */
+    #[requires(long_are_post_unit_inner_new(@_t, *_f, @self))]
+    #[ensures(long_are_post_unit_inner_new(@_t, *_f, @^self))]
+    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() &&
+        j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
+    #[ensures(lit.sat(^self))]
+    pub fn set_assignment_new(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {
+        /*
+        proof_assert!(@(@self)[@lit.idx] >= 2);
+        let old_self = Ghost::record(&self);
+
+        proof_assert!(self.invariant(*_f));
+        proof_assert!(_f.invariant());
+        proof_assert!(vardata_invariant(@_t.vardata, @_f.num_vars));
+        proof_assert!(crefs_in_range(@_t.vardata, *_f));
+        proof_assert!(lit.invariant(@_f.num_vars));
+        proof_assert!(unset((@self)[@lit.idx]));
+        proof_assert!(long_are_post_unit_inner(@_t.vardata, *_f, @self));
+        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t.vardata, *_f, *self, lit));true);
+        */
+
+        // zzTODOzz 
+       //self.0[lit.idx] = lit.polarity as u8;
+        if lit.polarity {
+            self.0[lit.idx] = 1;
+            //proof_assert!(@self === (@@old_self).set(@lit.idx, 1u8));
+        } else {
+            self.0[lit.idx] = 0;
+            //proof_assert!(@self === (@@old_self).set(@lit.idx, 0u8));
+        }
+        /*
+        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t.vardata, *_f, *@old_self, lit));true);
+        proof_assert!(^@old_self === ^self);
+
+        proof_assert!(long_are_post_unit_inner(@_t.vardata, *_f, @self));
+        */
+        //self.0[l.idx] = l.polarity as u8;
+    }
+
+    pub fn pos(&mut self, _t: &Vec<Step> ) {}
 
     #[trusted] // OK
     #[requires(f.invariant())]

@@ -57,3 +57,15 @@ fn main(u: &&&&&&&&&&&&&&&&usize)  {
 fn main3(u: & Vec<usize>)  {
     let b = u.bing();
 }
+
+#[requires(unset((@self.assignments)[@step.lit.idx]))]
+pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
+    //self.trail_index[step.assigned_lit.index()] = self.steps.len() as _;
+    //debug_assert!(!self.assigned.is_assigned(step.assigned_lit.var()));
+    //self.assignments.set_assignment_new(step.lit, _f, &self.trail);
+    let bingo = &self.trail;
+    self.assignments.pos(&self.trail); // ERROR
+    self.trail.push(step);
+}
+
+pub fn pos(&mut self, _t: &Vec<Step> ) {}
