@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
-use crate::solver_dpll::*;
+use crate::solver::*;
 use crate::formula::*;
 use crate::lit::Lit as Lit2;
 use crate::clause::Clause as Clause2;

@@ -7,7 +7,7 @@ use crate::{
     assignments::*,
     clause::*,
     lit::*,
-    solver_dpll::*,
+    solver::*,
     trail::*,
     watches::*,
 };

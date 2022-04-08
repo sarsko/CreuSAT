@@ -15,7 +15,7 @@ mod decision;
 mod formula;
 mod lit;
 pub mod parser;
-mod solver_dpll;
+mod solver;
 mod trail;
 mod unit_prop;
 mod util;
