@@ -344,7 +344,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
         let ante = match trail.trail[i].reason {
             Reason::Long(c) => f.clauses[c].clone(),
             o => {
-                panic!("Sarek is such a fucking retard"); 
+                panic!("Sarek is such a fucking retard(trail is messed up)"); 
                 return Conflict::Panic}, // nnTODOnn // This never happens, but is an entirely new proof
             //o => panic!(),
         };
@@ -384,6 +384,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             break;
         }
     }
+    // TODO: Get level and return asserting level
 
     if clause.rest.len() == 1 {
         Conflict::Unit(clause.rest[0])

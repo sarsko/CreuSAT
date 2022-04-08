@@ -397,12 +397,7 @@ fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Wat
 #[ensures((^a).invariant(^f))]
 #[ensures(f.equisat(^f))]
 pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
-    // This has got to be wrong
-    if trail.trail.len() == 0 {
-        return Ok(());
-    }
-    //let mut i = trail.trail.len() - 1; // TODO is this correct?
-    let mut i = 0; // TODO is this correct?
+    let mut i = trail.curr_i; 
     let old_trail = Ghost::record(&trail);
     let old_f = Ghost::record(&f);
     //let old_a = Ghost::record(&a);
@@ -431,6 +426,7 @@ pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches)
         }
         i += 1;
     }
+    trail.curr_i = i;
     //proof_assert!(!f.unsat(*a)); // Only thing missing
     Ok(())
 }

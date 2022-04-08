@@ -46,6 +46,7 @@ pub struct Trail {
     pub assignments: Assignments,
     pub lit_to_level: Vec<usize>, // usize::MAX if unassigned
     pub trail: Vec<Step>,
+    pub curr_i: usize,
 
     /// Trail indices of decisions.
     ///
@@ -70,6 +71,7 @@ impl Trail {
             assignments: a,
             lit_to_level: vec::from_elem(usize::MAX, a_len), // TODO
             trail: Vec::new(),
+            curr_i: 0,
             decisions: vec::from_elem(0, 1),
         }
     }
@@ -85,6 +87,7 @@ impl Trail {
     // of pop being "too weak". Vytautas told me to complain more, so I'll complain to Xavier.
     // Also: on the Mac the other Assertion fails, so the whole thing should be looked into.
     #[trusted] // Seems like this just takes forever, but checks out
+    #[inline(always)]
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
     #[requires(self.lit_not_in_less(*f))]
@@ -98,7 +101,7 @@ impl Trail {
         let last = self.trail.pop();
         match last {
             Some(step) => {
-                self.assignments.0[step.lit.idx] = 3; // TODO: Phase saving
+                self.assignments.0[step.lit.idx] += 2; // TODO: Phase saving
                 proof_assert!(@self.assignments == (@(@old_t).assignments).set(@step.lit.idx, 3u8));
                 proof_assert!(@self.trail === pop(@(@old_t).trail));
                 proof_assert!(^@old_t === ^self);
@@ -124,17 +127,34 @@ impl Trail {
     pub fn backtrack_to(&mut self, level: usize, f: &Formula) {
         let old_t = Ghost::record(&self);
         //proof_assert!(self === @old_t);
-        while 
-        self.trail.len() > 0 &&
-        self.trail[self.trail.len() - 1].decision_level > level{ // TODO: >= ?
-            self.backstep(f);
+        //let how_many = self.trail.len() - self.decisions[level];
+        //let mut i = 0;
+        //let mut i = self.trail.len() - 1;
+        let len = self.trail.len();
+        let mut i = 0;
+        let des = self.decisions[level];
+        while i < len {
+            self.assignments.0[self.trail[i].lit.idx] += 2;
+            //self.assignments.0[self.trail[i].lit.idx] = 3; // TODO: Phase saving
+        //while self.trail.len() > 0 && self.trail[self.trail.len() - 1].decision_level > level{ // TODO: >= ?
+            //self.backstep(f);
+            //self.trail.pop();
+            i += 1;
         }
+        self.trail.truncate(des);
+        use ::std::cmp::max;
+        self.trail.truncate(max(level, 1));
+        /*
         while self.decisions.len() > level { // TODO + 1?
             self.decisions.pop();
         }
+        */
+        /*
         if self.decisions.len() == 0 {
             self.decisions.push(0);
         }
+        */
+        self.curr_i = des//self.trail.len();
     }
 
     // Requires step.lit to be unasigned
@@ -192,10 +212,9 @@ impl Trail {
     #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
     #[ensures((^self).invariant(*_f))]
     pub fn enq_decision(&mut self, lit: Lit, _f: &Formula) {
-        //let dlevel = self.decisions.len(); // Not doing this results in a Why3 error. Todo: Yell at Xavier
+        let dlevel = self.decisions.len(); // Not doing this results in a Why3 error. Todo: Yell at Xavier
         // TODO Unsure if this is correct/the correct thing to track
-        self.decisions.push(self.assignments.len());
-        let dlevel = self.decision_level();
+        self.decisions.push(self.trail.len());
         self.enq_assignment(Step {
             lit: lit,
             decision_level: dlevel,//self.decision_level(),
@@ -219,7 +238,9 @@ impl Trail {
     #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
     #[ensures((^self).invariant(*_f))]
     pub fn learn_unit(&mut self, lit: Lit, _f: &Formula) {
-        self.backtrack_to(0, _f);
+        if self.decision_level() > 0 {
+            self.backtrack_to(0, _f);
+        }
         self.enq_assignment(Step {
             lit: lit,
             decision_level: 0,//self.decision_level(),
@@ -228,16 +249,6 @@ impl Trail {
 
     }
 
-    /*
-    pub fn decision_level(&self) -> LitIdx {
-        (self.decisions.len() - 1) as LitIdx
-    }
-    */
-    /*
-    // Requires backtracked
-    // Requires unset
-
-    */
     
 
     /*

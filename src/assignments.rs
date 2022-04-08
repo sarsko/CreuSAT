@@ -24,6 +24,7 @@ pub struct Assignments(pub Vec<AssignedState>, pub usize);
 
 
 impl Assignments {
+    #[inline(always)]
     pub fn len(&self) -> usize {
         self.0.len()
     }
@@ -123,7 +124,8 @@ impl PartialAssignment {
         proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t.vardata, *_f, *self, lit));true);
 
         // zzTODOzz 
-       //self.0[lit.idx] = lit.polarity as u8;
+        self.0[lit.idx] = lit.polarity as u8;
+        /*
         if lit.polarity {
             self.0[lit.idx] = 1;
             //proof_assert!(@self === (@@old_self).set(@lit.idx, 1u8));
@@ -131,6 +133,7 @@ impl PartialAssignment {
             self.0[lit.idx] = 0;
             //proof_assert!(@self === (@@old_self).set(@lit.idx, 0u8));
         }
+        */
         proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t.vardata, *_f, *@old_self, lit));true);
         proof_assert!(^@old_self === ^self);
 
