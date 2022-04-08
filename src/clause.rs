@@ -13,7 +13,7 @@ use crate::logic::{
     logic_clause::*
 };
 
-//#[derive(Debug)]
+#[derive(Debug)]
 //#[derive(Clone)]
 pub struct Clause {
     //pub first: Lit,

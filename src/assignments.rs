@@ -8,7 +8,7 @@ use crate::{
     formula::*,
     lit::*,
     trail::*,
-    ntrail::{NTrail, Step},
+    //trail::{NTrail, Step},
 };
 
 #[cfg(contracts)]
@@ -16,13 +16,17 @@ use crate::logic::{
     logic::*,
     logic_assignments::*,
     logic_clause::*,
-    logic_ntrail::{trail_invariant, long_are_post_unit_inner_new},
+    logic_trail::{trail_invariant, long_are_post_unit_inner_new},
 };
 
 pub type AssignedState = u8;
 pub struct Assignments(pub Vec<AssignedState>, pub usize);
 
+
 impl Assignments {
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
     /*
     // Not used
     #[trusted] // Broken atm, fix later
@@ -241,6 +245,7 @@ impl PartialAssignment {
         None
     }
 
+    /*
     #[trusted] // --TODO--
     #[requires(long_are_post_unit(@vardata, *_f, *self))]
     #[requires(vars_in_range_inner(@curr_level, @_f.num_vars))]
@@ -362,6 +367,7 @@ impl PartialAssignment {
         }
         self.1 = 0; // ADDED
     }
+    */
 
     /*
     #[trusted] // OK

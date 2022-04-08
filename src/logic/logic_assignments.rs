@@ -8,8 +8,8 @@ use crate::{
     assignments::*,
     decision::*,
     formula::*,
-    trail::*,
-    ntrail::{ NTrail, Step },
+    //trail::*,
+    trail::{ Trail, Step },
 };
 
 use crate::logic::{

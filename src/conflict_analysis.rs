@@ -243,6 +243,7 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
 }
 
 #[trusted] // OK [04.04]
+/*
 #[requires(trail.invariant(*_f))]
 #[requires(trail.trail_sem_invariant(*_f, *_a))]
 #[requires(c.unsat(*_a))]
@@ -264,31 +265,25 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
 })]
 #[ensures(@^i < (@trail.trail).len())]
 #[ensures(@^j <= (@(@trail.trail)[@^i]).len() )]
-fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, j: &mut usize, _f: &Formula, _a: &Assignments) -> Option<(Lit, usize)> {
-    if *j == 0 {
-        return None;
-    }
-    // I truly despise this ghost and proph bullshit
+*/
+fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Option<(Lit, usize)> {
     let old_i = Ghost::record(&i);
-    let old_j = Ghost::record(&j);
     let (next, k) = {
         let mut k: usize = 0;
-        #[invariant(j_bound, 0 < @j && @j <= (@(@trail.trail)[@i]).len())]
+        /*
         #[invariant(i_bound, 0 <= @i && @i < (@trail.trail).len())]
         #[invariant(proph_i, ^i === ^@old_i)]
-        #[invariant(proph_j, ^j === ^@old_j)]
+        */
         loop { 
-            *j -= 1;
+            *i -= 1;
             k = 0;
             let mut broken = false;
-            #[invariant(j_bound2, 0 <= @j && @j < (@(@trail.trail)[@i]).len())]
             #[invariant(i_bound2, 0 <= @i && @i < (@trail.trail).len())]
             #[invariant(k_bound, 0 <= @k && @k <= (@c).len())]
             #[invariant(proph_i2, ^i === ^@old_i)]
-            #[invariant(proph_j2, ^j === ^@old_j)]
             while k < c.rest.len() {
-                if trail.trail[*i][*j].idx == c.rest[k].idx {
-                    //assert!(trail.trail[*i][*j].polarity != (c.rest[k]).polarity);
+                if trail.trail[*i].lit.idx == c.rest[k].idx {
+                    assert!(trail.trail[*i].lit.polarity != (c.rest[k]).polarity);
                     broken = true;
                     break;
                 }
@@ -297,18 +292,8 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, j: &mut usize, _f: &
             if broken {
                 break;
             }
-            if *j == 0 {
-                if *i == 0 {
-                    return None;
-                }
-                *i -= 1;
-                *j = trail.trail[*i].len();
-                if *j == 0 {
-                    return None;
-                }
-            }
         }
-       (trail.trail[*i][*j], k)
+       (trail.trail[*i].lit, k)
     };
     Some((next, k))
 }
@@ -334,14 +319,13 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, j: &mut usize, _f: &
     }, 
     _ => { true }
 })]
-pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize) -> Conflict {
-    let decisionlevel = trail.trail.len() - 1;
+pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
+    let decisionlevel = trail.decision_level();
     if decisionlevel == 0 {
         return Conflict::Ground;
     }
     // Making these persistent is strictly speaking an optimization
-    let mut i = trail.trail.len() - 1;
-    let mut j = trail.trail[i].len();
+    let mut i = trail.trail.len();
     let mut clause = f.clauses[cref].clone();
     // Invariant impossible as it might be unary
     #[invariant(clause_vars, clause.invariant_unary_ok(@f.num_vars))]
@@ -352,13 +336,16 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
     loop {
     //i = trail.trail.len() - 1;
     //j = trail.trail[i].len();
-        let (lit, c_idx) = match choose_literal(&clause, trail, &mut i, &mut j, f, a) {
+        let (lit, c_idx) = match choose_literal(&clause, trail, &mut i, f) {
             None => return Conflict::Panic,
             Some((a, b)) => (a, b),
         };
-        let ante = match &trail.vardata[lit.idx].1 {
-            Reason::Long(c) => f.clauses[*c].clone(),
-            o => return Conflict::Panic, // nnTODOnn // This never happens, but is an entirely new proof
+                
+        let ante = match trail.trail[i].reason {
+            Reason::Long(c) => f.clauses[c].clone(),
+            o => {
+                panic!("Sarek is such a fucking retard"); 
+                return Conflict::Panic}, // nnTODOnn // This never happens, but is an entirely new proof
             //o => panic!(),
         };
         //proof_assert!(exists<j: Int> 0 <= j && j < (@clause).len() && (@clause)[j].idx === lit.idx);
@@ -378,14 +365,17 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
         // returns the conflicting literal. Then add the lemma that the clauses have no other opp lits
         // The good part is that we will get the backtracking level more or less for free
         
-        clause = resolve(f, &clause, &ante, lit.idx, c_idx, a);
+        clause = resolve(f, &clause, &ante, lit.idx, c_idx, &trail.assignments);
         let mut k: usize = 0;
         let mut cnt: usize = 0;
         #[invariant(k_bound, @k <= (@clause.rest).len())]
         #[invariant(j_bound2, 0 <= @j && @j <= (@(@trail.trail)[@i]).len())]
         #[invariant(cnt_bound, @cnt <= @k)]
         while k < clause.rest.len() {
-            if trail.vardata[clause.rest[k].idx].0 == decisionlevel {
+            let decision_level = trail.decision_level();
+            //if trail.vardata[clause.rest[k].idx].0 == decisionlevel {
+            //if trail.lit_to_level[clause.rest[k].idx] == decisionlevel {
+            if trail.lit_to_level[clause.rest[k].idx] == decisionlevel {
                 cnt += 1;
             }
             k += 1;

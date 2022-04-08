@@ -7,7 +7,7 @@ use sat::parser::{ parse_cnf, preproc_and_solve };
 
 #[test]
 fn test_all_sat() {
-    test_all_path("tests/cnf/sat", true, 500);
+    test_all_path("tests/cnf/sat", true, 1);
 }
 
 #[test]

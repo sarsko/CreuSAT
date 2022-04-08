@@ -6,7 +6,7 @@ use crate::{
     assignments::*,
     clause::*,
     lit::*,
-    ntrail::*,
+    trail::*,
 };
 
 // Logic

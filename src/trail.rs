@@ -3,405 +3,293 @@ use creusot_contracts::*;
 use creusot_contracts::std::*;
 
 use crate::{
-    assignments::*,
-    clause::*,
-    formula::*,
     lit::*,
-};
-
-use crate::logic::{
-    logic_formula::*,
+    assignments::*,
+    formula::*,
+    clause::*,
     logic::*,
+    util::*,
 };
 
-//#[derive(Debug, Clone, PartialEq, Eq)]
-#[derive(Copy, Clone)]
+#[cfg(contracts)]
+use crate::logic::{
+    logic::*,
+    logic_util::*,
+    logic_ntrail::*,
+};
+
+#[derive(Copy, Clone, Debug)]
 pub enum Reason {
-    Undefined,
+    //Undefined,
     Decision,
     Unit,
     Long(usize),
 }
 
-impl Default for Reason {
-    fn default() -> Self { Reason::Undefined }
-}
-
-//#[derive(Debug)]
+/*
 pub struct Trail {
-    pub trail: Vec<Vec<Lit>>,
+    pub trail: Vec<Lit>,
     pub vardata: Vec<(usize, Reason)>,
 }
-
-
-#[cfg(contracts)]
-impl Model for Trail {
-    type ModelTy = (Seq<Vec<Lit>>, Seq<(usize, Reason)>);
-
-    #[logic]
-    fn model(self) -> Self::ModelTy {
-        (self.trail.model(), self.vardata.model())
-    }
+*/
+#[derive(Debug)]
+pub struct Step {
+    pub lit: Lit,
+    pub decision_level: usize,
+    pub reason: Reason,
 }
 
-#[predicate]
-pub fn clause_post_with_regards_to_lit(c: Clause, a: Assignments, lit: Lit) -> bool {
-    pearlite! {
-        c.post_unit(a) &&
-        exists<i: Int> 0 <= i && i < (@c).len() &&
-            (@c)[i].polarity === lit.polarity &&
-            @(@c)[i].idx === @lit.idx &&
-            (@c)[i].sat(a) 
-    }
-}
+//const UNASSIGNED: usize = usize::MAX;
 
-// unused
-#[trusted] // OK
-#[logic]
-#[requires(c.invariant(@f.num_vars))]
-#[requires(a.invariant(f))]
-#[requires(c.post_unit(a))]
-#[ensures(forall<i: Int> 0 <= i && i < (@c).len() ==> !(@c)[i].unset(a))]
-fn lemma_post_unit_no_unset(c: Clause, a: Assignments, f: Formula) {}
+pub struct Trail {
+    //pub assignments: Vec<AssignedState>,
+    pub assignments: Assignments,
+    pub lit_to_level: Vec<usize>, // usize::MAX if unassigned
+    pub trail: Vec<Step>,
 
-#[trusted] // OK
-#[logic]
-#[requires(a.invariant(f))]
-#[requires(f.invariant())]
-#[requires(lit.invariant(@f.num_vars))]
-#[requires(unset((@a)[@lit.idx]))]
-#[ensures(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
-    (@f.clauses)[i].post_unit_inner(@a) ==> 
-    (@f.clauses)[i].post_unit_inner((@a).set(@lit.idx, 1u8))
-)]
-#[ensures(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
-    (@f.clauses)[i].post_unit_inner(@a) ==> 
-    (@f.clauses)[i].post_unit_inner((@a).set(@lit.idx, 0u8))
-)]
-fn lemma_assign_maintains_post_for_each(f: Formula, a: Assignments, lit: Lit) {}
-
-#[trusted] // OK
-#[logic]
-#[requires(a.invariant(f))]
-#[requires(f.invariant())]
-#[requires(vardata_invariant(v, @f.num_vars))]
-#[requires(crefs_in_range(v, f))]
-#[requires(lit.invariant(@f.num_vars))]
-#[requires(unset((@a)[@lit.idx]))]
-#[requires(long_are_post_unit_inner(v, f, @a))]
-#[requires(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
-    (@f.clauses)[i].post_unit_inner(@a) ==> 
-    (@f.clauses)[i].post_unit_inner((@a).set(@lit.idx, 1u8))
-)]
-#[requires(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
-    (@f.clauses)[i].post_unit_inner(@a) ==> 
-    (@f.clauses)[i].post_unit_inner((@a).set(@lit.idx, 0u8)) 
-)]
-#[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 1u8)))]
-#[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 0u8)))]
-fn lemma_assign_maintains_for_each_to_post(v: Seq<(usize, Reason)>, f: Formula, a: Assignments, lit: Lit) {}
-
-#[trusted] // OK
-#[logic]
-#[requires(a.invariant(f))]
-#[requires(f.invariant())]
-#[requires(vardata_invariant(v, @f.num_vars))]
-#[requires(crefs_in_range(v, f))]
-#[requires(lit.invariant(@f.num_vars))]
-#[requires(unset((@a)[@lit.idx]))]
-#[requires(long_are_post_unit_inner(v, f, @a))]
-#[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 1u8)))]
-#[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 0u8)))]
-pub fn lemma_assign_maintains_long_are_post_unit(v: Seq<(usize, Reason)>, f: Formula, a: Assignments, lit: Lit) {
-    lemma_assign_maintains_post_for_each(f, a, lit);
-    lemma_assign_maintains_for_each_to_post(v, f, a, lit);
-}
-
-#[predicate]
-pub fn clause_post_with_regards_to(c: Clause, a: Assignments, j: Int) -> bool {
-    pearlite! {
-        c.post_unit(a) &&
-        exists<i: Int> 0 <= i && i < (@c).len() &&
-            @(@c)[i].idx === j &&
-            (@c)[i].sat(a) 
-    }
-}
-
-#[predicate]
-pub fn clause_post_with_regards_to_inner(c: Clause, a: Seq<AssignedState>, j: Int) -> bool {
-    pearlite! {
-        c.post_unit_inner(a) &&
-        exists<i: Int> 0 <= i && i < (@c).len() &&
-            @(@c)[i].idx === j &&
-            (@c)[i].sat_inner(a) 
-    }
-}
-
-#[predicate]
-pub fn long_are_no_unset(vardata: Seq<(usize, Reason)>, f: Formula, a: Seq<AssignedState>) -> bool {
-    pearlite! {
-        forall<j: Int> 0 <= j && j < vardata.len() ==> match
-        vardata[j].1 { 
-            Reason::Long(k) => { (@f.clauses)[@k].no_unset_inner(a) },
-                _ => true,
-            }
-    }
-}
-
-#[predicate]
-pub fn long_are_post_unit_inner(vardata: Seq<(usize, Reason)>, f: Formula, a: Seq<AssignedState>) -> bool {
-    pearlite! {
-        forall<j: Int> 0 <= j && j < vardata.len() ==> match
-        vardata[j].1 { 
-            Reason::Long(k) => { clause_post_with_regards_to_inner((@f.clauses)[@k], a, j) },
-                _ => true,
-            }
-    }
-}
-
-
-#[predicate]
-pub fn long_are_post_unit(vardata: Seq<(usize, Reason)>, f: Formula, a: Assignments) -> bool {
-    pearlite! {
-        forall<j: Int> 0 <= j && j < vardata.len() ==> match
-        vardata[j].1 { 
-            Reason::Long(k) => { clause_post_with_regards_to((@f.clauses)[@k], a, j) },
-                _ => true,
-            }
-    }
-}
-
-#[predicate]
-pub fn vardata_invariant(vardata: Seq<(usize, Reason)>, n: Int) -> bool {
-        pearlite! { vardata.len() === n }
-}
-
-#[predicate]
-// All the long clauses carry a cref which is inside the formula
-pub fn crefs_in_range(vardata: Seq<(usize, Reason)>, f: Formula) -> bool {
-    pearlite! {
-        forall<j: Int> 0 <= j && j < vardata.len() ==>
-            match vardata[j].1 {
-                Reason::Long(k) => 0 <= @k && @k < (@f.clauses).len(),
-                _ => true,
-            }
-    }
-}
-
-#[predicate]
-// All the indexes in trail are less than f.num_vars
-pub fn trail_invariant(trail: Seq<Vec<Lit>>, f: Formula) -> bool {
-    pearlite! { 
-        forall<i: Int> 0 <= i && i < trail.len() ==> (
-        forall<j: Int> 0 <= j && j < (@trail[i]).len() ==>
-            0 <= @(@trail[i])[j].idx && @(@trail[i])[j].idx < @f.num_vars )
-        }
-}
-
-#[predicate]
-pub fn trail_invariant_full(trail: Seq<Vec<Lit>>, vardata: Seq<(usize, Reason)>, f: Formula) -> bool {
-    pearlite! { 
-        trail_invariant(trail, f) && vardata_invariant(vardata, @f.num_vars) && crefs_in_range(vardata, f)
-    }
-}
-
-#[predicate]
-pub fn trail_invariant_full_no_sep(trail: (Seq<Vec<Lit>>, Seq<(usize, Reason)>), f: Formula) -> bool {
-    trail_invariant_full(trail.0, trail.1, f)
-}
-
-#[predicate]
-pub fn trail_entries_are_assigned_inner(trail: Seq<Vec<Lit>>, a: Seq<AssignedState>) -> bool {
-    pearlite! {
-        forall<j: Int> 0 <= j && j < trail.len() ==>
-            forall<k: Int> 0 <= k && k < (@trail[j]).len() ==>
-                a[@(@trail[j])[k].idx] === bool_to_assignedstate((@trail[j])[k].polarity)
-    }
-}
-
-#[predicate]
-pub fn trail_entries_are_assigned(trail: Seq<Vec<Lit>>, a: Assignments) -> bool {
-    pearlite! {
-        trail_entries_are_assigned_inner(trail, @a)
-        /*
-        forall<j: Int> 0 <= j && j < trail.len() ==>
-            forall<k: Int> 0 <= k && k < (@trail[j]).len() ==>
-                (@a)[@(@trail[j])[k].idx] === bool_to_assignedstate((@trail[j])[k].polarity)
-                */
-    }
+    /// Trail indices of decisions.
+    ///
+    /// The first entry does not represent a decision and is fixed at 0 so that each entry on the
+    /// trail has a preceding entry in this list and so that the decision at level `n` corresponds
+    /// to the index `n`.
+    decisions: Vec<usize>,
 }
 
 impl Trail {
-    #[predicate]
-    // Just the length bound atm
-    pub fn vardata_invariant(self, n: Int) -> bool {
-        pearlite! {
-            vardata_invariant(@self.vardata, n)
-            // This used to be correct, but isnt after we stopped wiping
-            //&& 
-            //forall<i: Int> 0 <= i && i < (@self.vardata).len() ==>
-        //@(@self.vardata)[i].0 < (@self.trail).len()
-        }
+    pub fn decision_level(&self) -> usize {
+        self.decisions.len() - 1
     }
-
-    #[predicate]
-    // All the indexes in trail are less than f.num_vars
-    pub fn trail_invariant(self, f: Formula) -> bool {
-        pearlite! { 
-            trail_invariant(@self.trail, f)
-        }
-    }
-
-    #[predicate]
-    // All the long clauses carry a cref which is inside the formula
-    pub fn crefs_in_range(self, f: Formula) -> bool {
-        pearlite! {
-            crefs_in_range(@self.vardata, f)
-        }
-    }
-
-    #[predicate]
-    pub fn old_trail_entries_are_assigned(self, a: Assignments) -> bool {
-        pearlite! {
-            forall<i: Int> 0 <= i && i < (@self.trail).len() ==>
-            forall<j: Int> 0 <= j && j < (@(@self.trail)[i]).len() ==>
-                @(@a)[@(@(@self.trail)[i])[j].idx] < 2
-        }
-    }
-
-    #[predicate]
-    pub fn trail_entries_are_assigned(self, a: Assignments) -> bool {
-        pearlite! {
-            forall<j: Int> 0 <= j && j < (@self.trail).len() ==>
-                forall<k: Int> 0 <= k && k < (@(@self.trail)[j]).len() ==>
-                    (@a)[@(@(@self.trail)[j])[k].idx] === bool_to_assignedstate((@(@self.trail)[j])[k].polarity)
-        }
-    }
-
-    #[predicate]
-    pub fn unassigned_not_in_trail(self, a: Assignments) -> bool {
-        pearlite! {
-            forall<i: Int> 0 <= i && i < (@a).len() ==>
-                @(@a)[i] >= 2 ==>
-                forall<j: Int> 0 <= j && j < (@self.trail).len() ==>
-                    forall<k: Int> 0 <= k && k < (@(@self.trail)[j]).len() ==>
-                        !(@(@(@self.trail)[j])[k].idx === i)
-        }
-    }
-
-    #[predicate]
-    pub fn assignments_invariant(self, a: Assignments) -> bool {
-        pearlite! {
-            self.trail_entries_are_assigned(a) &&
-            self.unassigned_not_in_trail(a)
-        }
-    }
-
-    // We can make vardata nonwiping by having the predicate be reliant on assignments:
-    // if entry is set => post_unit
-    // if unset => true
-    #[predicate]
-    pub fn long_are_post_unit(self, f: Formula, a: Assignments) -> bool {
-        pearlite! {
-            long_are_post_unit(@self.vardata, f, a)
-        }
-    }
-
-    #[trusted] // OK
-    #[predicate] // Dunno why i have this ensures lol. TODO
-    #[ensures(result === (long_are_post_unit(@self.vardata, f, a)
-        && trail_entries_are_assigned(@self.trail, a)))]
-    pub fn trail_sem_invariant(self, f: Formula, a: Assignments) -> bool {
-        pearlite! {
-            long_are_post_unit(@self.vardata, f, a)
-            && trail_entries_are_assigned(@self.trail, a)
-            //self.long_are_post_unit(f, a)
-        }
-    }
-
-    #[predicate]
-    pub fn invariant(self, f: Formula) -> bool {
-        pearlite! { 
-            trail_invariant_full(@self.trail, @self.vardata, f)
-
-            /*
-            self.vardata_invariant(@f.num_vars) &&             */
-        }
-    }
-}
-
-impl Trail {
-    #[trusted] // OK [04.04]
-    #[requires(self.trail_sem_invariant(*_f, *_a))]
-    #[ensures((^self).trail_sem_invariant(*_f, *_a))]
-    #[requires(self.invariant(*_f))]
-    #[requires(0 <= @lit.idx && @lit.idx < @_f.num_vars)]
-    #[requires((@self.trail).len() > 0)]
-    #[requires(match reason {
-        Reason::Undefined => true,
-        Reason::Decision => true,
-        Reason::Unit => true,
-        Reason::Long(k) => 0 <= @k && @k < (@_f.clauses).len() &&
-        clause_post_with_regards_to_lit((@_f.clauses)[@k], *_a, lit)
-        /*
-        (@_f.clauses)[@k].post_unit(*_a) &&
-            exists<i: Int> 0 <= i && i < (@(@_f.clauses)[@k]).len() &&
-                (@(@_f.clauses)[@k])[i].polarity === lit.polarity &&
-                @(@(@_f.clauses)[@k])[i].idx === @lit.idx &&
-                (@(@_f.clauses)[@k])[i].sat(*_a)  
-                */
-    })]
-    #[requires(lit.sat(*_a))]
-    #[ensures((^self).invariant(*_f))]
-    #[ensures((@(^self).trail).len() === (@self.trail).len())]
-    #[ensures((@(^self).vardata).len() === (@self.vardata).len())]
-    #[ensures((@(@(^self).trail)[(@self.trail).len()-1]) === (@(@self.trail)[(@self.trail).len()-1]).push(lit))]
-    #[ensures(forall<i: Int> 0 <= i && i < (@self.trail).len() - 1 ==>
-        (@self.trail)[i] === (@(^self).trail)[i])]
-    #[ensures(forall<i: Int> 0 <= i && i < (@self.vardata).len() && i != @lit.idx ==>
-        (@self.vardata)[i] === (@(^self).vardata)[i])]
-    #[ensures(@(@(^self).vardata)[@lit.idx].0 === (@self.trail).len()-1)]
-    #[ensures((@(^self).vardata)[@lit.idx].1 === reason)]
-    pub fn enq_assignment(&mut self, lit: Lit, reason: Reason, _f: &Formula, _a: &Assignments) {
-        let dlevel = self.trail.len() - 1;
-        self.trail[dlevel].push(lit);
-        self.vardata[lit.idx] = (dlevel, reason);
-    }
-
-    #[trusted] // OK [04.04]
+    /*
     #[ensures(result.invariant(*f))]
     #[ensures((@result.trail).len() === 1)]
     #[ensures(result.trail_sem_invariant(*f, *_a))]
-    pub fn new(f: &Formula, _a: &Assignments) -> Trail {
-        let mut vardata: Vec<(usize, Reason)> = Vec::new();
-        let mut i: usize = 0;
-        #[invariant(i_less, @i <= @f.num_vars)]
-        #[invariant(len_correct, (@vardata).len() === @i)]
-        #[invariant(all_undef, 
-            forall<j: Int> 0 <= j && j < @i ==>
-            @(@vardata)[j].0 === 0 &&
-            (@vardata)[j].1 === Reason::Undefined)]
-        while i < f.num_vars {
-            vardata.push((0, Reason::Undefined));
-            i += 1;
-        }
-        let mut trail: Vec<Vec<Lit>> = Vec::new();
-        trail.push(Vec::new());
+    */
+    pub fn new(f: &Formula, a: Assignments) -> Trail {
+        let a_len = a.len();
         Trail {
-            trail: trail,
-            vardata: vardata,
+            assignments: a,
+            lit_to_level: vec::from_elem(usize::MAX, a_len), // TODO
+            trail: Vec::new(),
+            decisions: vec::from_elem(0, 1),
+        }
+    }
+    
+    /*
+    pub fn find_unassigned(&mut self) -> Option<usize> {
+        // call self.assignments.find_unassigned()
+        None
+    }
+    */
+
+    // Okay so this checks out on the Linux, but it takes time. I believe it is due to the spec
+    // of pop being "too weak". Vytautas told me to complain more, so I'll complain to Xavier.
+    // Also: on the Mac the other Assertion fails, so the whole thing should be looked into.
+    #[trusted] // Seems like this just takes forever, but checks out
+    #[requires(f.invariant())]
+    #[requires(self.invariant(*f))]
+    #[requires(self.lit_not_in_less(*f))]
+    #[requires(self.lit_is_unique())]
+    #[requires((@self.trail).len() > 0)]
+    #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
+    #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
+    fn backstep(&mut self, f: &Formula) {
+        let old_t = Ghost::record(&self);
+        //proof_assert!(self === @old_t);
+        let last = self.trail.pop();
+        match last {
+            Some(step) => {
+                self.assignments.0[step.lit.idx] = 3; // TODO: Phase saving
+                proof_assert!(@self.assignments == (@(@old_t).assignments).set(@step.lit.idx, 3u8));
+                proof_assert!(@self.trail === pop(@(@old_t).trail));
+                proof_assert!(^@old_t === ^self);
+                proof_assert!((lemma_backtrack_ok(*self, *f, step.lit)); true);
+                //self.lit_to_level[step.lit.idx] = usize::MAX;
+            }
+            None => {
+                panic!();
+            }
         }
     }
 
-    #[trusted] // OK [04.04]
-    #[requires(self.invariant(*_f))]
-    #[ensures((^self).invariant(*_f))]
-    #[ensures(@self.vardata === @(^self).vardata)]
-    #[ensures(forall<i: Int> 0 <= i && i < (@self.trail).len() ==>
-        (@self.trail)[i] === (@(^self).trail)[i])]
-    #[ensures((@(^self).trail).len() === (@self.trail).len() + 1)]
-    #[ensures((@(@(^self).trail)[(@self.trail).len()]).len() === 0)]
-    pub fn add_level(&mut self, _f: &Formula) {
-        self.trail.push(Vec::new());
+    /*
+    #[requires(f.invariant())]
+    #[requires(self.invariant(*f))]
+    #[requires(self.lit_not_in_less(*f))]
+    #[requires(self.lit_is_unique())]
+    #[requires((@self.trail).len() > 0)]
+    #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
+    #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
+    */
+    // Backtracks to the start of level
+    pub fn backtrack_to(&mut self, level: usize, f: &Formula) {
+        let old_t = Ghost::record(&self);
+        //proof_assert!(self === @old_t);
+        while 
+        self.trail.len() > 0 &&
+        self.trail[self.trail.len() - 1].decision_level > level{ // TODO: >= ?
+            self.backstep(f);
+        }
+        while self.decisions.len() > level { // TODO + 1?
+            self.decisions.pop();
+        }
+        if self.decisions.len() == 0 {
+            self.decisions.push(0);
+        }
     }
+
+    // Requires step.lit to be unasigned
+
+
+    #[trusted] // OK (for now, gonna do some additions later)
+    #[requires(_f.invariant())]
+    #[requires((@self.trail).len() < @_f.num_vars)]
+    #[requires(step.lit.invariant(@_f.num_vars))]
+    #[requires(self.invariant(*_f))]
+    #[requires(match step.reason {
+        Reason::Long(k) => 0 <= @k && @k < (@_f.clauses).len() &&
+        clause_post_with_regards_to_lit((@_f.clauses)[@k], self.assignments, step.lit),
+        _ => true
+    })]
+    #[requires(step.invariant(*_f))]
+    #[requires(step.lit.invariant(@_f.num_vars))]
+    #[requires(!step.lit.idx_in_trail(self.trail))]
+    #[requires(unset((@self.assignments)[@step.lit.idx]))]
+    #[ensures((forall<j : Int> 0 <= j && j < (@self.assignments).len() &&
+        j != @step.lit.idx ==> (@self.assignments)[j] === (@(^self).assignments)[j]))]
+    #[ensures(step.lit.sat((^self).assignments))]
+    #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
+    #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
+    #[ensures((^self).invariant(*_f))]
+    pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
+        //self.trail_index[step.assigned_lit.index()] = self.steps.len() as _;
+        //debug_assert!(!self.assigned.is_assigned(step.assigned_lit.var()));
+        self.lit_to_level[step.lit.idx] = self.decision_level();
+        let trail = &self.trail;
+        self.assignments.set_assignment_new(step.lit, _f, trail);
+        proof_assert!(!step.lit.idx_in_trail(self.trail));
+        proof_assert!(self.lit_is_unique());
+        self.trail.push(step);
+        // These foure are not checking out
+        proof_assert!(self.lit_is_unique()); // Nope
+        proof_assert!(self.lit_not_in_less(*_f)); // checking out on Linux
+        proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments)); // Nope
+        proof_assert!(crefs_in_range(@self.trail, *_f)); // This is checking out somehow?
+    }
+
+    #[trusted] // OK
+    #[requires((@self.decisions).len() > 0)]
+    #[requires(_f.invariant())]
+    #[requires((@self.trail).len() < @_f.num_vars)]
+    #[requires(lit.invariant(@_f.num_vars))]
+    #[requires(self.invariant(*_f))]
+    #[requires(lit.invariant(@_f.num_vars))]
+    #[requires(!lit.idx_in_trail(self.trail))]
+    #[requires(unset((@self.assignments)[@lit.idx]))]
+    #[ensures((forall<j : Int> 0 <= j && j < (@self.assignments).len() &&
+        j != @lit.idx ==> (@self.assignments)[j] === (@(^self).assignments)[j]))]
+    #[ensures(lit.sat((^self).assignments))]
+    #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
+    #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
+    #[ensures((^self).invariant(*_f))]
+    pub fn enq_decision(&mut self, lit: Lit, _f: &Formula) {
+        //let dlevel = self.decisions.len(); // Not doing this results in a Why3 error. Todo: Yell at Xavier
+        // TODO Unsure if this is correct/the correct thing to track
+        self.decisions.push(self.assignments.len());
+        let dlevel = self.decision_level();
+        self.enq_assignment(Step {
+            lit: lit,
+            decision_level: dlevel,//self.decision_level(),
+            reason: Reason::Decision,
+        }, _f);
+    }
+    // Maybe remove this, I dunno
+    #[trusted] // OK
+    #[requires((@self.decisions).len() === 1)]
+    #[requires(_f.invariant())]
+    #[requires((@self.trail).len() < @_f.num_vars)]
+    #[requires(lit.invariant(@_f.num_vars))]
+    #[requires(self.invariant(*_f))]
+    #[requires(lit.invariant(@_f.num_vars))]
+    #[requires(!lit.idx_in_trail(self.trail))]
+    #[requires(unset((@self.assignments)[@lit.idx]))]
+    #[ensures((forall<j : Int> 0 <= j && j < (@self.assignments).len() &&
+        j != @lit.idx ==> (@self.assignments)[j] === (@(^self).assignments)[j]))]
+    #[ensures(lit.sat((^self).assignments))]
+    #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
+    #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
+    #[ensures((^self).invariant(*_f))]
+    pub fn learn_unit(&mut self, lit: Lit, _f: &Formula) {
+        self.backtrack_to(0, _f);
+        self.enq_assignment(Step {
+            lit: lit,
+            decision_level: 0,//self.decision_level(),
+            reason: Reason::Unit,
+        }, _f);
+
+    }
+
+    /*
+    pub fn decision_level(&self) -> LitIdx {
+        (self.decisions.len() - 1) as LitIdx
+    }
+    */
+    /*
+    // Requires backtracked
+    // Requires unset
+
+    */
+    
+
+    /*
+    #[inline]
+    #[trusted] // OK [04.04]
+    #[requires(lit.invariant(@_f.num_vars))]
+    #[requires(_t.trail_sem_invariant(*_f, *self))]
+    #[requires(_t.invariant(*_f))]
+    #[requires(_f.invariant())]
+    #[requires(self.invariant(*_f))]
+    #[requires(unset((@self)[@lit.idx]))] // Added, will break stuff further up
+    //#[ensures(self.compatible(^self))]
+    #[ensures((^self).invariant(*_f))]
+    #[ensures(@(@^self)[@lit.idx] === 1 || @(@^self)[@lit.idx] === 0)]
+    #[ensures((@^self).len() === (@self).len())]
+    #[ensures(_t.trail_sem_invariant(*_f, ^self))]
+    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() &&
+        j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
+    #[ensures(lit.sat(^self))]
+    pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Trail) {
+        /*
+        if !self.0[l.idx].is_none() {
+            panic!("Assignment already set. Attempting to set {:?}", l);
+        }
+        */
+        //assert!(self.0[l.idx].is_none());
+        proof_assert!(@(@self)[@lit.idx] >= 2);
+        let old_self = Ghost::record(&self);
+
+        proof_assert!(self.invariant(*_f));
+        proof_assert!(_f.invariant());
+        proof_assert!(vardata_invariant(@_t.vardata, @_f.num_vars));
+        proof_assert!(crefs_in_range(@_t.vardata, *_f));
+        proof_assert!(lit.invariant(@_f.num_vars));
+        proof_assert!(unset((@self)[@lit.idx]));
+        proof_assert!(long_are_post_unit_inner(@_t.vardata, *_f, @self));
+        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t.vardata, *_f, *self, lit));true);
+
+        // zzTODOzz 
+       //self.0[lit.idx] = lit.polarity as u8;
+        if lit.polarity {
+            self.0[lit.idx] = 1;
+            //proof_assert!(@self === (@@old_self).set(@lit.idx, 1u8));
+        } else {
+            self.0[lit.idx] = 0;
+            //proof_assert!(@self === (@@old_self).set(@lit.idx, 0u8));
+        }
+        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t.vardata, *_f, *@old_self, lit));true);
+        proof_assert!(^@old_self === ^self);
+
+        proof_assert!(long_are_post_unit_inner(@_t.vardata, *_f, @self));
+        //self.0[l.idx] = l.polarity as u8;
+    }
+    */
 }

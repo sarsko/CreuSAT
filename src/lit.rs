@@ -7,7 +7,7 @@ use ::std::ops;
 use crate::{
     assignments::*,
     clause::*,
-    ntrail::*,
+    trail::*,
 };
 
 #[cfg(contracts)]
@@ -15,8 +15,8 @@ use crate::logic::{
     logic_lit::*,
 };
 
-#[derive(Clone, Copy)]
-//#[derive(Clone, Copy, Debug)]
+//#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Lit {
     pub idx: usize,
     pub polarity: bool,

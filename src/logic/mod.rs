@@ -6,5 +6,5 @@ pub mod logic_formula;
 pub mod logic_lit;
 pub mod logic_util;
 pub mod logic_watches;
-pub mod logic_ntrail;
+pub mod logic_trail;
 pub mod logic;
