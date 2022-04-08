@@ -2,12 +2,18 @@ extern crate creusot_contracts;
 use creusot_contracts::*;
 use creusot_contracts::std::*;
 
-use crate::assignments::*;
-use crate::lit::*;
-use crate::formula::*;
-use crate::clause::*;
+use crate::{
+    assignments::*,
+    clause::*,
+    formula::*,
+    lit::*,
+};
 
-use crate::logic::logic::*;
+use crate::logic::{
+    logic_formula::*,
+    logic::*,
+};
+
 //#[derive(Debug, Clone, PartialEq, Eq)]
 #[derive(Copy, Clone)]
 pub enum Reason {

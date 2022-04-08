@@ -9,6 +9,10 @@ use crate::{
     lit::*,
 };
 
+#[cfg(contracts)]
+use crate::logic::{
+    logic_formula::*,
+};
 
 #[cfg(contracts)]
 impl Model for Clause {

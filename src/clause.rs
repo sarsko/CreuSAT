@@ -9,7 +9,9 @@ use crate::{
 };
 
 #[cfg(contracts)]
-use crate::logic::{logic_clause::*};
+use crate::logic::{
+    logic_clause::*
+};
 
 //#[derive(Debug)]
 //#[derive(Clone)]

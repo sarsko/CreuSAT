@@ -2,10 +2,18 @@ extern crate creusot_contracts;
 use creusot_contracts::*;
 use creusot_contracts::std::*;
 
-use crate::formula::*;
-use crate::lit::*;
-use crate::assignments::*;
-use crate::util::*;
+use crate::{
+    formula::*,
+    lit::*,
+    assignments::*,
+    util::{sort_reverse},
+};
+
+#[cfg(contracts)]
+use crate::logic::{
+    logic_util::*,
+    logic_decision::*,
+};
 
 /*
 //#[derive(Debug, Clone, PartialEq, Eq)]
@@ -24,17 +32,6 @@ pub struct Decisions {
     pub start: usize,
     pub head: usize
     */
-}
-
-impl Decisions {
-    #[predicate]
-    pub fn invariant(self, n: Int) -> bool {
-        pearlite! {
-            (@self.lit_order).len() === n && 
-            forall<i: Int> 0 <= i && i < (@self.lit_order).len() ==>
-                @(@self.lit_order)[i] < n 
-        }
-    }
 }
 
 impl Decisions {

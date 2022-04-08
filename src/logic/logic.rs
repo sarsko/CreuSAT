@@ -2,14 +2,19 @@ extern crate creusot_contracts;
 use creusot_contracts::*;
 use creusot_contracts::std::*;
 
-use crate::lit::*;
-use crate::clause::*;
-use crate::assignments::*;
-use crate::formula::*;
-use crate::trail::*;
+use crate::{
+    lit::*,
+    clause::*,
+    assignments::*,
+    formula::*,
+    trail::*,
+};
 
-use crate::logic::logic_assignments::*;
-use crate::logic::logic_clause::*;
+use crate::logic::{
+    logic_assignments::*,
+    logic_clause::*,
+    logic_formula::*,
+};
 
 
 

@@ -2,16 +2,18 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::lit::*;
-use crate::clause::*;
-use crate::assignments::*;
-use crate::formula::*;
-use crate::logic::*;
-use crate::decision::*;
-use crate::trail::*;
-use crate::watches::*;
-use crate::conflict_analysis::*;
-use crate::unit_prop::*;
+use crate::{
+    lit::*,
+    clause::*,
+    assignments::*,
+    formula::*,
+    logic::*,
+    decision::*,
+    trail::*,
+    watches::*,
+    conflict_analysis::*,
+    unit_prop::*,
+};
 
 pub enum SatResult {
     Sat(Vec<Lit>),

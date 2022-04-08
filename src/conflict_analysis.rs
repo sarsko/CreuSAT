@@ -14,6 +14,7 @@ use crate::{
 use crate::logic::{
     logic_clause::*,
     logic_conflict_analysis::*,
+    logic_formula::*,
     logic::*,
 };
 

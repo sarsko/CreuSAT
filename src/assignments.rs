@@ -8,15 +8,15 @@ use crate::{
     formula::*,
     lit::*,
     trail::*,
+    ntrail::{NTrail, Step},
 };
-use crate::ntrail::{NTrail, Step};
-#[cfg(contracts)]
-use crate::logic_ntrail::{trail_invariant, long_are_post_unit_inner_new};
+
 #[cfg(contracts)]
 use crate::logic::{
     logic::*,
     logic_assignments::*,
     logic_clause::*,
+    logic_ntrail::{trail_invariant, long_are_post_unit_inner_new},
 };
 
 pub type AssignedState = u8;
@@ -187,8 +187,6 @@ impl PartialAssignment {
         */
         //self.0[l.idx] = l.polarity as u8;
     }
-
-    pub fn pos(&mut self, _t: &Vec<Step> ) {}
 
     #[trusted] // OK
     #[requires(f.invariant())]

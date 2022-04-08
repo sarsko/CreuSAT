@@ -4,12 +4,18 @@ use creusot_contracts::std::*;
 
 //use crate::lit::*;
 //use crate::clause::*;
-use crate::formula::*;
-use crate::decision::*;
-use crate::trail::*;
-use crate::assignments::*;
-use crate::ntrail::{ NTrail, Step };
-use crate::logic::logic::*;
+use crate::{
+    assignments::*,
+    decision::*,
+    formula::*,
+    trail::*,
+    ntrail::{ NTrail, Step },
+};
+
+use crate::logic::{
+    logic::*,
+    logic_formula::*,
+};
 
 #[cfg(contracts)]
 impl Model for Assignments {

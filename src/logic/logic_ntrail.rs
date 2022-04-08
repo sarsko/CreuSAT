@@ -7,14 +7,76 @@ use crate::assignments::*;
 use crate::formula::*;
 use crate::clause::*;
 //use crate::logic::*;
-use crate::util::*;
 use crate::ntrail::*;
 
 #[cfg(contracts)]
 use crate::logic::{
     logic_clause::*,
     logic::*,
+    logic_util::*,
 };
+
+impl Reason {
+    #[predicate]
+    pub fn invariant(self, f: Formula) -> bool {
+        pearlite! {
+            match self {
+                Reason::Long(i) => 0 <= @i && @i < (@f.clauses).len(),
+                _ => true
+            }
+        }
+    }
+}
+
+impl Step {
+    #[predicate]
+    pub fn invariant(self, f: Formula) -> bool {
+        pearlite! {
+            self.lit.invariant(@f.num_vars) &&
+            //self.decision_level >= 0 &&
+            self.reason.invariant(f)
+            //self.reason != Reason::Undefined
+        }
+    }
+}
+
+// LOGIC
+impl NTrail {
+    #[predicate]
+    pub fn invariant(self, f: Formula) -> bool {
+        pearlite! {
+            self.assignments.invariant(f) &&
+            trail_invariant(@self.trail, f) //&&
+            // added, watch out
+            && self.lit_not_in_less(f)
+            && self.lit_is_unique()
+            && long_are_post_unit_inner(@self.trail, f, @self.assignments)
+            // I am not sure these will be needed
+            //trail_entries_are_assigned_inner(@self.trail, @self.assignments) && // added
+            //assignments_are_in_trail(@self.trail, @self.assignments) // added
+        }
+    }
+
+    #[predicate]
+    pub fn lit_not_in_less(self, f: Formula) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@self.trail).len() ==>
+                forall<j: Int> 0 <= j && j < i ==>
+                match (@self.trail)[j].reason {
+                    Reason::Long(cref) => !(@self.trail)[i].lit.lit_idx_in((@f.clauses)[@cref]),
+                    _ => true,
+                }
+        }
+    }
+
+    // Trail does not contail duplicate idxes
+    #[predicate]
+    pub fn lit_is_unique(self) -> bool {
+        pearlite! {
+            lit_is_unique_inner(@self.trail)
+        }
+    }
+}
 
 
 #[predicate]

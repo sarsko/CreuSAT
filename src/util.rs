@@ -2,33 +2,10 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-/*
-#[trusted]
-#[ensures(@l <= @result && @result  < @u)]
-fn rand_in_range(l: usize, u: usize) -> usize {
-    use creusot_contracts::rand::Rng;
-    rand::thread_rng().gen_range(l..u)
-}
-*/
-
-#[predicate]
-fn sorted_range_rev(s: Seq<(usize, usize)>, l: Int, u: Int) -> bool {
-    pearlite! {
-        forall<i: Int, j: Int> l <= i && i < j && j < u ==> s[i].0 >= s[j].0
-    }
-}
-
-#[predicate]
-pub fn sorted_rev(s: Seq<(usize, usize)>) -> bool {
-    pearlite! {
-        sorted_range_rev(s, 0, s.len())
-    }
-}
-
-#[predicate]
-fn partition_rev(v: Seq<(usize, usize)>, i: Int) -> bool {
-    pearlite! { forall<k1 : Int, k2: Int> 0 <= k1 && k1 < i && i <= k2 && k2 < v.len() ==> v[k1].0 >= v[k2].0}
-}
+#[cfg(contracts)]
+use crate::logic::{
+    logic_util::*,
+};
 
 // Selection sort with larger elements first. Based on the one in Creusot repo by me and Xavier
 #[trusted] // OK
@@ -57,24 +34,4 @@ pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
         v.swap(i, max);
         i += 1;
     }
-}
-
-#[logic]
-#[requires(s.len() > 0)]
-pub fn pop<T>(s: Seq<T>) -> Seq<T> {
-    pearlite! {
-        s.subsequence(0, s.len() - 1)
-    }
-}
-
-#[logic]
-#[requires(s.len() > 0)]
-pub fn last_idx<T>(s: Seq<T>) -> Int {
-    pearlite! { s.len()-1 }
-}
-
-#[logic]
-#[requires(s.len() > 0)]
-pub fn last_elem<T>(s: Seq<T>) -> T {
-    pearlite! { s[s.len()-1] }
 }
