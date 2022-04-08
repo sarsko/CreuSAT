@@ -8,7 +8,11 @@ use crate::assignments::*;
 use crate::formula::*;
 use crate::trail::*;
 use crate::watches::*;
-use crate::logic::*;
+
+use crate::logic::{
+    logic_clause::*,
+    logic::*,
+};
 
 
 #[trusted] // OK

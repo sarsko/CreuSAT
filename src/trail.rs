@@ -5,9 +5,9 @@ use creusot_contracts::std::*;
 use crate::assignments::*;
 use crate::lit::*;
 use crate::formula::*;
-use crate::logic::*;
 use crate::clause::*;
 
+use crate::logic::logic::*;
 //#[derive(Debug, Clone, PartialEq, Eq)]
 #[derive(Copy, Clone)]
 pub enum Reason {

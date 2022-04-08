@@ -457,3 +457,40 @@ fn lemma_trail_post_old(f: Formula, a: Assignments, lit: Lit, t: NTrail) {}
     (@f.clauses)[i].post_unit_inner((@a).set(@lit.idx, 3u8))
 )]
 fn lemma_assign_maintains_test(f: Formula, a: Assignments, lit: Lit) {}
+
+#[trusted] // OK
+#[logic]
+#[requires(c.unit_inner(a))]
+#[ensures(c.unit_inner2(a))]
+fn lemma_unit_eq(c: Clause, a: Seq<AssignedState>) {}
+
+#[trusted] // OK
+#[logic]
+#[requires(c.unit_inner2(a))]
+#[requires(c.vars_in_range(a.len()))]
+#[ensures(c.unit_inner(a))]
+fn lemma_unit_eq2(c: Clause, a: Seq<AssignedState>) {}
+
+/*
+#[logic]
+#[variant(j-i)]
+fn count(i: Int, j: Int, t: Seq<Lit>, lf: Int) -> Int {
+    pearlite! {
+        if i >= j { 0 } else {
+            if @t[j-1].idx === lf {
+                count(i,j-1,t, lf) + 1
+            } else {
+                count(i,j-1,t, lf)
+            }
+        }
+    }
+}
+*/
+
+/*
+#[logic]
+#[requires(no_duplicate_indexes_inner(v))]
+#[requires(v.permutation_of(v2))]
+#[ensures(no_duplicate_indexes_inner(v2))]
+fn lemma_no_dups_permut(v: Seq<Lit>, v2: Seq<Lit>) {}
+*/

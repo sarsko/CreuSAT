@@ -8,6 +8,9 @@ use crate::assignments::*;
 use crate::formula::*;
 use crate::trail::*;
 
+use crate::logic::logic_assignments::*;
+use crate::logic::logic_clause::*;
+
 
 
 // Trail stuff start

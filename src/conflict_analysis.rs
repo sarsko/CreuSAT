@@ -2,14 +2,20 @@ extern crate creusot_contracts;
 use creusot_contracts::*;
 use creusot_contracts::std::*;
 
-use crate::assignments::*;
-use crate::clause::*;
-use crate::formula::*;
-use crate::lit::*;
-use crate::trail::*;
-//use crate::watches::*;
-use crate::trail::{Reason::*};
-use crate::logic::*;
+use crate::{
+    assignments::*,
+    clause::*,
+    formula::*,
+    lit::*,
+    trail::*,
+};
+
+#[cfg(contracts)]
+use crate::logic::{
+    logic_clause::*,
+    logic_conflict_analysis::*,
+    logic::*,
+};
 
 //#[derive(Debug)]
 pub enum Conflict {
@@ -19,29 +25,6 @@ pub enum Conflict {
     Learned(usize, Lit, Clause),
     Panic,
 }
-/*
-#[logic]
-#[variant(j-i)]
-fn count(i: Int, j: Int, t: Seq<Lit>, lf: Int) -> Int {
-    pearlite! {
-        if i >= j { 0 } else {
-            if @t[j-1].idx === lf {
-                count(i,j-1,t, lf) + 1
-            } else {
-                count(i,j-1,t, lf)
-            }
-        }
-    }
-}
-*/
-
-/*
-#[logic]
-#[requires(no_duplicate_indexes_inner(v))]
-#[requires(v.permutation_of(v2))]
-#[ensures(no_duplicate_indexes_inner(v2))]
-fn lemma_no_dups_permut(v: Seq<Lit>, v2: Seq<Lit>) {}
-*/
 
 /*
 #[requires(vars_in_range_inner(@v, @_f.num_vars))]
@@ -58,45 +41,7 @@ fn move_to_end(v: &mut Vec<Lit>, to_be_removed: usize,  _f: &Formula) {
 }
 */
 // Both of these should be changed to unary_ok, but things are checking out somehow
-#[trusted] // OK [04.04]
-#[logic]
-//#[requires(@v[i].idx === idx)]
-#[requires(0 <= c_idx && c_idx < c.len() && @(c)[c_idx].idx === idx &&
-    (exists<k: Int> 0 <= k && k < o.len() && k != i &&
-        o[k].is_opp(c[c_idx]))
-)]
-#[requires(forall<j: Int, k: Int> 0 <= j && j < o.len() && 0 <= k && k < c.len() &&
-    k != c_idx && @o[j].idx != idx ==> !c[k].is_opp((o)[j]))]
-#[requires(0 <= i && i < o.len() && @o[i].idx != idx)]
-#[requires(invariant_internal(o, @_f.num_vars))]
-#[requires(invariant_internal(c, @_f.num_vars))]
-#[requires(forall<j: Int> 0 <= j && j < c.len() && @c[j].idx != idx ==> c[j].lit_in_internal(new))]
-#[requires(forall<j: Int> 0 <= j && j < new.len() ==> (new)[j].lit_in_internal(c) || (new)[j].lit_in_internal(o))]
-#[requires(exists<k: Int> 0 <= k && k < new.len() && @o[i].idx === @(new)[k].idx)]
-#[ensures(exists<k: Int> 0 <= k && k < c.len() && @o[i].idx === @c[k].idx || (o)[i].lit_in_internal(new))]
-#[ensures(exists<k: Int> 0 <= k && k < c.len() && @o[i].idx === @c[k].idx && o[i].polarity === c[k].polarity || (o)[i].lit_in_internal(new))]
-//#[ensures(((o)[i].lit_in_internal(new)))]
-fn lemma_idx(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_idx: Int, _f: Formula) {}
 
-#[trusted] // OK [04.04] [[Doesnt check out on Mac [04.04]. Super easy on Linux]]
-#[logic]
-//#[requires(@v[i].idx === idx)]
-#[requires(0 <= c_idx && c_idx < c.len() && @(c)[c_idx].idx === idx &&
-    (exists<k: Int> 0 <= k && k < o.len() && k != i &&
-        o[k].is_opp(c[c_idx]))
-)]
-#[requires(forall<j: Int, k: Int> 0 <= j && j < o.len() && 0 <= k && k < c.len() &&
-    k != c_idx && @o[j].idx != idx ==> !c[k].is_opp((o)[j]))]
-#[requires(0 <= i && i < o.len() && @o[i].idx != idx)]
-#[requires(invariant_internal(o, @_f.num_vars))]
-#[requires(invariant_internal(c, @_f.num_vars))]
-#[requires(forall<j: Int> 0 <= j && j < c.len() && @c[j].idx != idx ==> c[j].lit_in_internal(new))]
-#[requires(forall<j: Int> 0 <= j && j < new.len() ==> (new)[j].lit_in_internal(c) || (new)[j].lit_in_internal(o))]
-#[requires(exists<k: Int> 0 <= k && k < new.len() && @o[i].idx === @(new)[k].idx)]
-#[ensures(((o)[i].lit_in_internal(new)))]
-fn lemma_idx2(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_idx: Int, _f: Formula) {
-    lemma_idx(c, o, new, i, idx, c_idx, _f);
-}
 
 
 #[trusted] // OK [04.04]
@@ -411,7 +356,7 @@ pub fn analyze_conflict(f: &Formula, a: &Assignments, trail: &Trail, cref: usize
             Some((a, b)) => (a, b),
         };
         let ante = match &trail.vardata[lit.idx].1 {
-            Long(c) => f.clauses[*c].clone(),
+            Reason::Long(c) => f.clauses[*c].clone(),
             o => return Conflict::Panic, // nnTODOnn // This never happens, but is an entirely new proof
             //o => panic!(),
         };

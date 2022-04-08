@@ -10,6 +10,8 @@ use crate::logic::*;
 use crate::util::*;
 use crate::logic_ntrail::*;
 
+use crate::logic::logic::*;
+
 #[derive(Copy, Clone)]
 pub enum Reason {
     //Undefined,
@@ -146,37 +148,15 @@ impl NTrail {
     // Requires step.lit to be unasigned
 
 
-    // Lit unique and crefs in range
+    #[trusted] // OK (for now, gonna do some additions later)
     #[requires(_f.invariant())]
     #[requires((@self.trail).len() < @_f.num_vars)]
     #[requires(step.lit.invariant(@_f.num_vars))]
-    // TODO:
-    //#[requires(trail_invariant(@_t, *_f))] // #[requires(_t.invariant(*_f))]
     #[requires(self.invariant(*_f))]
-    //#[requires(_t.trail_sem_invariant(*_f, *self))]
-
-    /*
-    #[requires(self.invariant(*_f))]//#[requires(a.invariant(f))]
-    #[requires(unset((@self)[@lit.idx]))] // Added, will break stuff further up
-    #[ensures((^self).invariant(*_f))]
-    #[ensures(@(@^self)[@lit.idx] === 1 || @(@^self)[@lit.idx] === 0)] // Is this needed?
-    #[ensures((@^self).len() === (@self).len())]
-    /*
-    #[ensures(_t.trail_sem_invariant(*_f, ^self))]
-    */
-    */
-
     #[requires(match step.reason {
         Reason::Long(k) => 0 <= @k && @k < (@_f.clauses).len() &&
         clause_post_with_regards_to_lit((@_f.clauses)[@k], self.assignments, step.lit),
         _ => true
-        /*
-        (@_f.clauses)[@k].post_unit(*_a) &&
-            exists<i: Int> 0 <= i && i < (@(@_f.clauses)[@k]).len() &&
-                (@(@_f.clauses)[@k])[i].polarity === lit.polarity &&
-                @(@(@_f.clauses)[@k])[i].idx === @lit.idx &&
-                (@(@_f.clauses)[@k])[i].sat(*_a)  
-                */
     })]
     #[requires(step.invariant(*_f))]
     #[requires(step.lit.invariant(@_f.num_vars))]
@@ -185,17 +165,14 @@ impl NTrail {
     #[ensures((forall<j : Int> 0 <= j && j < (@self.assignments).len() &&
         j != @step.lit.idx ==> (@self.assignments)[j] === (@(^self).assignments)[j]))]
     #[ensures(step.lit.sat((^self).assignments))]
-
     #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
     #[ensures((^self).invariant(*_f))]
     pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
         //self.trail_index[step.assigned_lit.index()] = self.steps.len() as _;
         //debug_assert!(!self.assigned.is_assigned(step.assigned_lit.var()));
-        //let old_self = Ghost::record(&self);
         let trail = &self.trail;
         self.assignments.set_assignment_new(step.lit, _f, trail);
-        //self.assignments.pos(bingo);
         proof_assert!(!step.lit.idx_in_trail(self.trail));
         proof_assert!(self.lit_is_unique());
         self.trail.push(step);
@@ -206,6 +183,55 @@ impl NTrail {
         proof_assert!(crefs_in_range(@self.trail, *_f)); // This is checking out somehow?
     }
 
+    #[trusted] // OK
+    #[requires((@self.decisions).len() > 0)]
+    #[requires(_f.invariant())]
+    #[requires((@self.trail).len() < @_f.num_vars)]
+    #[requires(lit.invariant(@_f.num_vars))]
+    #[requires(self.invariant(*_f))]
+    #[requires(lit.invariant(@_f.num_vars))]
+    #[requires(!lit.idx_in_trail(self.trail))]
+    #[requires(unset((@self.assignments)[@lit.idx]))]
+    #[ensures((forall<j : Int> 0 <= j && j < (@self.assignments).len() &&
+        j != @lit.idx ==> (@self.assignments)[j] === (@(^self).assignments)[j]))]
+    #[ensures(lit.sat((^self).assignments))]
+    #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
+    #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
+    #[ensures((^self).invariant(*_f))]
+    pub fn enq_decision(&mut self, lit: Lit, _f: &Formula) {
+        //self.decisions.push(self.steps.len() as LitIdx);
+        let dlevel = self.decisions.len() - 1; // Not doing this results in a Why3 error. Todo: Yell at Xavier
+        self.enq_assignment(Step {
+            lit: lit,
+            decision_level: dlevel,//self.decision_level(),
+            reason: Reason::Decision,
+        }, _f);
+    }
+    // Maybe remove this, I dunno
+    #[trusted] // OK
+    #[requires((@self.decisions).len() === 1)]
+    #[requires(_f.invariant())]
+    #[requires((@self.trail).len() < @_f.num_vars)]
+    #[requires(lit.invariant(@_f.num_vars))]
+    #[requires(self.invariant(*_f))]
+    #[requires(lit.invariant(@_f.num_vars))]
+    #[requires(!lit.idx_in_trail(self.trail))]
+    #[requires(unset((@self.assignments)[@lit.idx]))]
+    #[ensures((forall<j : Int> 0 <= j && j < (@self.assignments).len() &&
+        j != @lit.idx ==> (@self.assignments)[j] === (@(^self).assignments)[j]))]
+    #[ensures(lit.sat((^self).assignments))]
+    #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
+    #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
+    #[ensures((^self).invariant(*_f))]
+    pub fn enq_unit(&mut self, lit: Lit, _f: &Formula) {
+        self.enq_assignment(Step {
+            lit: lit,
+            decision_level: 0,//self.decision_level(),
+            reason: Reason::Unit,
+        }, _f);
+
+    }
+
     /*
     pub fn decision_level(&self) -> LitIdx {
         (self.decisions.len() - 1) as LitIdx
@@ -214,25 +240,7 @@ impl NTrail {
     /*
     // Requires backtracked
     // Requires unset
-    pub fn enq_unit(&mut self, lit: Lit) {
-        self.enq_assignment(Step {
-            lit: lit,
-            decision_level: 0,//self.decision_level(),
-            reason: Reason::Unit,
-        })
 
-    }
-
-    // Requires unset
-    pub fn enq_decision(&mut self, lit: Lit) {
-        //self.decisions.push(self.steps.len() as LitIdx);
-        let dlevel = self.decisions.len() - 1; // Not doing this results in a Why3 error. Todo: Yell at Xavier
-        self.enq_assignment(Step {
-            lit: lit,
-            decision_level: dlevel,//self.decision_level(),
-            reason: Reason::Decision,
-        })
-    }
     */
     
 

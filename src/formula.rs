@@ -11,6 +11,12 @@ use crate::solver_dpll::*;
 use crate::watches::*;
 use crate::trail::*;
 
+#[cfg(contracts)]
+use crate::logic::{
+    logic_assignments::*,
+    logic_clause::*,
+};
+
 pub struct Formula {
     pub clauses: Vec<Clause>,
     pub num_vars: usize,

@@ -6,9 +6,16 @@ use crate::lit::*;
 use crate::assignments::*;
 use crate::formula::*;
 use crate::clause::*;
-use crate::logic::*;
+//use crate::logic::*;
 use crate::util::*;
 use crate::ntrail::*;
+
+#[cfg(contracts)]
+use crate::logic::{
+    logic_clause::*,
+    logic::*,
+};
+
 
 #[predicate]
 pub fn crefs_in_range(trail: Seq<Step>, f: Formula) -> bool {
