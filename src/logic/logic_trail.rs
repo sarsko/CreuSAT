@@ -46,8 +46,10 @@ impl Trail {
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
-            self.assignments.invariant(f) &&
-            trail_invariant(@self.trail, f) //&&
+            self.assignments.invariant(f) 
+            && trail_invariant(@self.trail, f)
+            && lit_to_level_invariant(@self.lit_to_level, f)
+            && decisions_invariant(@self.decisions, @self.trail)
             // added, watch out
             && self.lit_not_in_less(f)
             && self.lit_is_unique()
@@ -79,6 +81,31 @@ impl Trail {
     }
 }
 
+#[predicate]
+pub fn trail_invariant(trail: Seq<Step>, f: Formula) -> bool {
+    pearlite! {
+        trail.len() <= @f.num_vars && // Is this really needed?
+        crefs_in_range(trail, f)
+    }
+}
+
+#[predicate]
+pub fn decisions_invariant(decisions: Seq<usize>, trail: Seq<Step>) -> bool {
+    pearlite! {
+        forall<i: Int> 0 <= i && i < decisions.len() ==> 
+            @decisions[i] <= trail.len()
+        // Might want to add some semantics? Or nah?
+    }
+}
+
+
+#[predicate]
+pub fn lit_to_level_invariant(lit_to_level: Seq<usize>, f: Formula) -> bool {
+    pearlite! {
+        lit_to_level.len() === @f.num_vars
+        // Might want to add some semantics? Or nah?
+    }
+}
 
 #[predicate]
 pub fn crefs_in_range(trail: Seq<Step>, f: Formula) -> bool {
@@ -88,13 +115,6 @@ pub fn crefs_in_range(trail: Seq<Step>, f: Formula) -> bool {
     }
 }
 
-#[predicate]
-pub fn trail_invariant(trail: Seq<Step>, f: Formula) -> bool {
-    pearlite! {
-        trail.len() <= @f.num_vars &&
-        crefs_in_range(trail, f)
-    }
-}
 
 #[predicate]
 pub fn trail_entries_are_assigned_inner(t: Seq<Step>, a: Seq<AssignedState>) -> bool {
@@ -189,8 +209,7 @@ pub fn long_are_post_unit_inner_new(trail: Seq<Step>, f: Formula, a: Seq<Assigne
     }
 }
 
-
-#[trusted] // OK
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[logic]
 #[requires(f.invariant())]
 #[requires(lit.invariant(@f.num_vars))]
@@ -202,10 +221,17 @@ match (@t.trail)[i].reason {
     _ => true,
 }
 )]
+#[ensures(forall<i: Int> 0 <= i && i < (@t.trail).len() ==> 
+match (@t.trail)[i].reason {
+    Reason::Long(k) => ((@f.clauses)[@k].post_unit_inner(@t.assignments) && !lit.lit_idx_in((@f.clauses)[@k])) ==> 
+                (@f.clauses)[@k].post_unit_inner((@t.assignments).set(@lit.idx, 2u8)),
+    _ => true,
+}
+)]
 fn lemma_trail_post(f: Formula, lit: Lit, t: Trail) {}
 
 
-#[trusted] // OK
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[logic]
 #[requires(t.invariant(f))]
 #[requires(f.invariant())]
@@ -225,7 +251,7 @@ fn lemma_trail_only_last(f: Formula, lit: Lit, t: Trail) {}
 // OK well I guess this approach should work
 // Just gotta combine this with the pop lemma and then
 // Prove the invariants everywhere lol
-#[trusted] // OK
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[logic]
 #[requires(f.invariant())]
 #[requires(t.lit_not_in_less(f))]
@@ -241,13 +267,21 @@ fn lemma_trail_only_last(f: Formula, lit: Lit, t: Trail) {}
         _ => true,
     }
 )]
+#[ensures(forall<i: Int> 0 <= i && i < (@t.trail).len() - 1 ==> 
+    match (@t.trail)[i].reason {
+        Reason::Long(k) => (@f.clauses)[@k].post_unit_inner(@t.assignments) ==> 
+                (@f.clauses)[@k].post_unit_inner((@t.assignments).set(@lit.idx, 2u8)),
+        _ => true,
+    }
+)]
 fn lemma_trail_fin(t: Trail, f: Formula, lit: Lit) {
     lemma_trail_post(f, lit, t);
     lemma_trail_only_last(f, lit, t);
 }
 
 // Checks out, but takes a surprising amount of time
-#[trusted] // OK
+//#[trusted] // OK
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[logic]
 #[requires(f.invariant())]
 #[requires(t.invariant(f))]
@@ -263,14 +297,22 @@ fn lemma_trail_fin(t: Trail, f: Formula, lit: Lit) {
         _ => true,
     }
 )]
+#[requires(forall<i: Int> 0 <= i && i < (@t.trail).len() - 1 ==> 
+    match (@t.trail)[i].reason {
+        Reason::Long(k) => (@f.clauses)[@k].post_unit_inner(@t.assignments) ==> 
+                (@f.clauses)[@k].post_unit_inner((@t.assignments).set(@lit.idx, 2u8)),
+        _ => true,
+    }
+)]
 #[requires(long_are_post_unit_inner(@t.trail, f, @t.assignments))]
+#[ensures(long_are_post_unit_inner(pop(@t.trail), f, (@t.assignments).set(@lit.idx, 2u8)))]
 #[ensures(long_are_post_unit_inner(pop(@t.trail), f, (@t.assignments).set(@lit.idx, 3u8)))]
 fn lemma_trail_fin2(t: Trail, f: Formula, lit: Lit) {
     lemma_trail_post(f, lit, t);
     lemma_trail_only_last(f, lit, t);
 }
 
-#[trusted] // Dunno why this isnt checking out
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[logic]
 #[requires(f.invariant())]
 #[requires(t.invariant(f))]
@@ -281,6 +323,7 @@ fn lemma_trail_fin2(t: Trail, f: Formula, lit: Lit) {
 #[requires(lit === (@t.trail)[(@t.trail).len() - 1].lit)]
 #[requires(long_are_post_unit_inner(@t.trail, f, @t.assignments))]
 #[ensures(long_are_post_unit_inner(pop(@t.trail), f, (@t.assignments).set(@lit.idx, 3u8)))]
+#[ensures(long_are_post_unit_inner(pop(@t.trail), f, (@t.assignments).set(@lit.idx, 2u8)))]
 fn lemma_trail_fin3(t: Trail, f: Formula, lit: Lit) {
     //lemma_trail_post(f, lit, t);
     //lemma_trail_only_last(f, lit, t);
@@ -289,7 +332,8 @@ fn lemma_trail_fin3(t: Trail, f: Formula, lit: Lit) {
 }
 
 // OK to pop, but need to fix wipe. 
-#[trusted] // OK
+//#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[logic]
 #[requires(t.invariant(f))]
 #[requires(t.lit_not_in_less(f))]
@@ -298,10 +342,10 @@ fn lemma_trail_fin3(t: Trail, f: Formula, lit: Lit) {
 #[requires(l === (@t.trail)[(@t.trail).len() - 1].lit)]
 #[requires(long_are_post_unit_inner(@t.trail, f, @t.assignments))]
 #[ensures(long_are_post_unit_inner(pop(@t.trail), f, @t.assignments))]
-fn lemma_pop_no_unass_is_ok(t: Trail, f: Formula, l: Lit) {
-}
+fn lemma_pop_no_unass_is_ok(t: Trail, f: Formula, l: Lit) {}
 
-#[trusted] //OK
+//#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[logic]
 #[requires(f.invariant())]
 #[requires(t.invariant(f))]
@@ -311,8 +355,8 @@ fn lemma_pop_no_unass_is_ok(t: Trail, f: Formula, l: Lit) {
 #[requires(l.invariant(@f.num_vars))]
 #[requires(l === (@t.trail)[(@t.trail).len() - 1].lit)]
 #[requires(long_are_post_unit_inner(@t.trail, f, @t.assignments))]
-#[ensures(long_are_post_unit_inner(pop(@t.trail), f, 
-(@t.assignments).set(@l.idx, 3u8)))]
+#[ensures(long_are_post_unit_inner(pop(@t.trail), f, (@t.assignments).set(@l.idx, 3u8)))]
+#[ensures(long_are_post_unit_inner(pop(@t.trail), f, (@t.assignments).set(@l.idx, 2u8)))]
 pub fn lemma_backtrack_ok(t: Trail, f: Formula, l: Lit) {
     lemma_pop_no_unass_is_ok(t, f, l);
     lemma_trail_fin(t, f, l);
@@ -321,7 +365,7 @@ pub fn lemma_backtrack_ok(t: Trail, f: Formula, l: Lit) {
 
 
 // UNUSED
-#[trusted] // OK
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), not(untrust_all)), trusted)]
 #[logic]
 #[requires(c.invariant(@f.num_vars))]
 //#[requires(a.invariant(f))] // Don't even need this
@@ -329,7 +373,7 @@ pub fn lemma_backtrack_ok(t: Trail, f: Formula, l: Lit) {
 #[ensures(forall<i: Int> 0 <= i && i < (@c).len() ==> !(@c)[i].unset(t.assignments))]
 fn lemma_post_unit_no_unset(c: Clause, t: Trail, f: Formula) {}
 
-#[trusted] // OK
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), not(untrust_all)), trusted)]
 #[logic]
 //#[requires(trail_invariant(v, f))]
 //#[requires(crefs_in_range(v, f))]
@@ -347,7 +391,7 @@ fn lemma_post_unit_no_unset(c: Clause, t: Trail, f: Formula) {}
 )]
 fn lemma_assign_maintains_post_for_each(f: Formula, a: Assignments, lit: Lit) {}
 
-#[trusted] // OK
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), not(untrust_all)), trusted)]
 #[logic]
 #[requires(a.invariant(f))]
 #[requires(f.invariant())]
@@ -368,7 +412,7 @@ fn lemma_assign_maintains_post_for_each(f: Formula, a: Assignments, lit: Lit) {}
 #[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 0u8)))]
 fn lemma_assign_maintains_for_each_to_post(v: Seq<Step>, f: Formula, a: Assignments, lit: Lit) {}
 
-#[trusted] // OK
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), not(untrust_all)), trusted)]
 #[logic]
 #[requires(a.invariant(f))]
 #[requires(f.invariant())]

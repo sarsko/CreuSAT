@@ -29,11 +29,11 @@ pub enum ConflictResult {
     Continue,
 }
 
-#[trusted] // OK
-#[ensures(result === (@f.clauses)[@idx].unsat(*a))]
+#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(@idx < (@f.clauses).len())]
+#[ensures(result === (@f.clauses)[@idx].unsat(*a))]
 pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     let clause = &f.clauses[idx];
     let mut i: usize = 0;
@@ -74,7 +74,7 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
 }
 */
 
-#[trusted] // OK [04.04]
+#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
 /*
 #[ensures(match result {
     Some(false) => { (^f).unsat(^a)},
@@ -143,6 +143,7 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
     None
 }
 
+#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
 /*
 #[trusted] // OK [04.04]
 #[requires(@f.num_vars < @usize::MAX/2)]
@@ -183,8 +184,8 @@ fn unit_prop_step(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
 }
 
 
+#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
 /*
-#[trusted] // OK [04.04]
 #[requires(@f.num_vars < @usize::MAX/2)]
 //#[ensures(result ==> !(^f).unsat(^a))]
 #[requires(f.invariant())]
@@ -240,6 +241,7 @@ fn unit_prop_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
 
 
 //Precond is not proivng on Mac(but OK on Linux)
+#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
 /*
 #[trusted] // OK [04.04]
 #[requires(@f.num_vars < @usize::MAX/2)]
@@ -307,6 +309,7 @@ fn outer_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) ->
     SatResult::Unknown
 }
 
+#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
 /*
 #[trusted] // OK [04.04]
 #[requires(@f.num_vars < @usize::MAX/2)]
@@ -366,7 +369,7 @@ fn inner(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) -> SatR
     }
 }
 
-#[trusted] // OK (but no ensures) xxTODOxx
+#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
 #[requires(forall<i: Int> 0 <= i && i < (@units).len() ==>
     @(@units)[i].idx < @f.num_vars
 )]

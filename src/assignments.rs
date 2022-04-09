@@ -145,6 +145,7 @@ impl PartialAssignment {
     */
 
     #[inline(always)]
+    #[cfg_attr(contracts, trusted)]
     /*
     #[trusted] // Post failing(as expected)
     #[requires(lit.invariant(@_f.num_vars))]

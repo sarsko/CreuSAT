@@ -47,16 +47,14 @@ pub struct Trail {
     pub lit_to_level: Vec<usize>, // usize::MAX if unassigned
     pub trail: Vec<Step>,
     pub curr_i: usize,
-
-    /// Trail indices of decisions.
-    ///
-    /// The first entry does not represent a decision and is fixed at 0 so that each entry on the
-    /// trail has a preceding entry in this list and so that the decision at level `n` corresponds
-    /// to the index `n`.
-    decisions: Vec<usize>,
+    pub decisions: Vec<usize>,
 }
 
 impl Trail {
+    #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
+    #[inline(always)]
+    #[requires((@self.decisions).len() > 0)]
+    #[ensures(@result === (@self.decisions).len() - 1)]
     pub fn decision_level(&self) -> usize {
         self.decisions.len() - 1
     }
@@ -65,6 +63,9 @@ impl Trail {
     #[ensures((@result.trail).len() === 1)]
     #[ensures(result.trail_sem_invariant(*f, *_a))]
     */
+    #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
+    #[requires(a.invariant(*f))]
+    #[ensures(result.invariant(*f))]
     pub fn new(f: &Formula, a: Assignments) -> Trail {
         let a_len = a.len();
         Trail {
@@ -86,23 +87,33 @@ impl Trail {
     // Okay so this checks out on the Linux, but it takes time. I believe it is due to the spec
     // of pop being "too weak". Vytautas told me to complain more, so I'll complain to Xavier.
     // Also: on the Mac the other Assertion fails, so the whole thing should be looked into.
-    #[trusted] // Seems like this just takes forever, but checks out
-    #[inline(always)]
+    // Should be good. Pop assertion takes forever lol. Either update spec for pop, or
+    // add a lemma that says that pop on a seq of positive length is eq to subseq
+    #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
+    //#[inline(always)]
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
-    #[requires(self.lit_not_in_less(*f))]
-    #[requires(self.lit_is_unique())]
+    #[ensures((^self).invariant(*f))] // added since last run
+    //#[requires(self.lit_not_in_less(*f))]
+    //#[requires(self.lit_is_unique())]
     #[requires((@self.trail).len() > 0)]
     #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
+    #[ensures((@self.trail).len() === (@(^self).trail).len() + 1)] // added
     fn backstep(&mut self, f: &Formula) {
         let old_t = Ghost::record(&self);
         //proof_assert!(self === @old_t);
         let last = self.trail.pop();
         match last {
             Some(step) => {
-                self.assignments.0[step.lit.idx] += 2; // TODO: Phase saving
-                proof_assert!(@self.assignments == (@(@old_t).assignments).set(@step.lit.idx, 3u8));
+                // TODO: Phase saving
+                if self.assignments.0[step.lit.idx] < 2 {
+                    self.assignments.0[step.lit.idx] += 2; // TODO: Prove safety
+                } else {
+                    self.assignments.0[step.lit.idx] = 3; // TODO lol
+                }
+                proof_assert!(@self.assignments == (@(@old_t).assignments).set(@step.lit.idx, 3u8) ||
+                @self.assignments == (@(@old_t).assignments).set(@step.lit.idx, 2u8));
                 proof_assert!(@self.trail === pop(@(@old_t).trail));
                 proof_assert!(^@old_t === ^self);
                 proof_assert!((lemma_backtrack_ok(*self, *f, step.lit)); true);
@@ -114,15 +125,13 @@ impl Trail {
         }
     }
 
-    /*
+    #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
+    #[requires((@self.decisions).len() > @level)]
     #[requires(f.invariant())]
-    #[requires(self.invariant(*f))]
-    #[requires(self.lit_not_in_less(*f))]
-    #[requires(self.lit_is_unique())]
+    #[maintains((mut self).invariant(*f))]
     #[requires((@self.trail).len() > 0)]
     #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
-    */
     // Backtracks to the start of level
     pub fn backtrack_to(&mut self, level: usize, f: &Formula) {
         let old_t = Ghost::record(&self);
@@ -130,9 +139,17 @@ impl Trail {
         let how_many = self.trail.len() - self.decisions[level];
         //let mut i = 0;
         //let mut i = self.trail.len() - 1;
-        let len = self.trail.len();
+        //let len = self.trail.len();
+        // TODO: This correctly fails on the decision invariant.
+        // Have to do the proof or do some cheese
         let mut des = self.decisions[level];
-        let mut i = 0 ;
+        let mut i: usize = 0 ;
+        #[invariant(i_less2, @i <= (@(@old_t).trail).len())]
+        #[invariant(i_less, i <= how_many)]
+        #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
+        #[invariant(inv, self.invariant(*f))]
+        #[invariant(len_is, (@self.trail).len() === (@(@old_t).trail).len() - @i)]
+        #[invariant(proph, ^@old_t === ^self)]
         while i < how_many {
             self.backstep(f);
             i += 1;
@@ -155,6 +172,9 @@ impl Trail {
         self.trail.truncate(des);
         */
         self.assignments.1 = 0; // TODO 
+        #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
+        #[invariant(inv, self.invariant(*f))]
+        #[invariant(proph, ^@old_t === ^self)]
         while self.decisions.len() > level {
             self.decisions.pop();
         }
@@ -186,7 +206,6 @@ impl Trail {
         }
         */
         //self.curr_i = des//self.trail.len();
-
     }
 
     // Requires step.lit to be unasigned
@@ -226,6 +245,7 @@ impl Trail {
         proof_assert!(crefs_in_range(@self.trail, *_f)); // This is checking out somehow?
     }
 
+    #[trusted] // TMP
     #[inline(always)]
     pub fn enq_assignment2(&mut self, step: Step, _f: &Formula) {
         self.lit_to_level[step.lit.idx] = self.decision_level();
