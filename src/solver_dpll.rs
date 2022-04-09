@@ -12,10 +12,10 @@ use crate::trail::*;
 use crate::watches::*;
 
 
-#[ensures(result === (@f.clauses)[@idx].sat(*a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(@idx < (@f.clauses).len())]
+#[ensures(result === (@f.clauses)[@idx].sat(*a))]
 pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     let clause = &f.clauses[idx];
     let mut i: usize = 0;
@@ -29,10 +29,10 @@ pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     return false;
 }
 
-#[ensures(result === (@f.clauses)[@idx].unsat(*a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(@idx < (@f.clauses).len())]
+#[ensures(result === (@f.clauses)[@idx].unsat(*a))]
 pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     let clause = &f.clauses[idx];
     let mut i: usize = 0;
@@ -47,13 +47,15 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 }
 
 #[requires(f.invariant())]
-#[requires(a.invariant(*f))]
 #[requires(d.invariant(@f.num_vars))]
-#[requires(t.invariant(*f))]
+//#[requires(t.invariant(*f))]
+//#[ensures((^t).invariant(*f))]
+//#[requires(a.invariant(*f))]
+//#[ensures((^a).invariant(*f))]
+#[maintains((mut t).invariant(*f))]
+#[maintains((mut a).invariant(*f))]
 #[requires((@t.trail).len() > 0)]
 #[ensures((@(^t).trail).len() >= (@t.trail).len())]
-#[ensures((^t).invariant(*f))]
-#[ensures((^a).invariant(*f))]
 //#[ensures((^d).invariant())]
 #[ensures(result === true ==> f.eventually_sat(*a))]
 #[ensures(result === false ==> !f.eventually_sat_complete(*a))]

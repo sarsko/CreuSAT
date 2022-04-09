@@ -138,12 +138,13 @@ impl Assignments {
     }
 
     //#[trusted] // OK
+    //#[requires(self.invariant(*_f))]
+    //#[ensures((^self).invariant(*_f))]
+    #[maintains((mut self).invariant(*_f))]
     #[requires(!self.complete())]
-    #[requires(self.invariant(*_f))]
     #[requires(d.invariant((@self).len()))]
     #[ensures(@result < (@self).len() && unset((@self)[@result]))]
     #[ensures(@self === @^self)]
-    #[ensures((^self).invariant(*_f))]
     pub fn find_unassigned(&mut self, d: &Decisions, _f: &Formula) -> usize {
         let mut i: usize = self.1;
         #[invariant(i_bound, @i <= (@d.lit_order).len())]
@@ -171,14 +172,16 @@ impl Assignments {
     }
 
     //#[trusted] // OK
+    //#[requires(t.invariant(*f))]
+    //#[requires(self.invariant(*f))]
+    //#[ensures((^t).invariant(*f))]
+    //#[ensures((^self).invariant(*f))]
+    #[maintains((mut t).invariant(*f))]
+    #[maintains((mut self).invariant(*f))]
     #[requires(f.invariant())]
-    #[requires(self.invariant(*f))]
     #[requires(0 <= @i && @i < (@f.clauses).len())]
-    #[requires(t.invariant(*f))]
     #[requires((@t.trail).len() > 0)]
     #[ensures((@(^t).trail).len() === (@t.trail).len())]
-    #[ensures((^t).invariant(*f))]
-    #[ensures((^self).invariant(*f))]
     #[ensures((*self).compatible(^self))]
     #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))] 
     #[ensures((result === ClauseState::Unit)    ==> (@f.clauses)[@i].unit(*self) && !(self).complete())]
