@@ -343,9 +343,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
                 
         let ante = match &trail.trail[i].reason {
             Reason::Long(c) => &f.clauses[*c],
-            o => {
-                panic!("Sarek is such a fucking retard(trail is messed up)"); 
-                return Conflict::Panic}, // nnTODOnn // This never happens, but is an entirely new proof
+            o => {return Conflict::Panic}, // nnTODOnn // This never happens, but is an entirely new proof
             //o => panic!(),
         };
         //proof_assert!(exists<j: Int> 0 <= j && j < (@clause).len() && (@clause)[j].idx === lit.idx);
@@ -372,7 +370,6 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
         #[invariant(j_bound2, 0 <= @j && @j <= (@(@trail.trail)[@i]).len())]
         #[invariant(cnt_bound, @cnt <= @k)]
         while k < clause.rest.len() {
-            let decision_level = trail.decision_level();
             //if trail.vardata[clause.rest[k].idx].0 == decisionlevel {
             //if trail.lit_to_level[clause.rest[k].idx] == decisionlevel {
             if trail.lit_to_level[clause.rest[k].idx] == decisionlevel {

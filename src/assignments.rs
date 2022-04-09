@@ -243,6 +243,7 @@ impl PartialAssignment {
         #[invariant(prev, forall<j: Int> 0 <= j && j < @i ==> !unset((@self)[j]))]
         while i < self.0.len() {
             if self.0[i] >= 2 {
+                panic!("Error in assignments");
                 return Some(i);
             }
             i += 1;

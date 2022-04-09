@@ -134,7 +134,12 @@ impl Trail {
         let mut i = 0;
         let des = self.decisions[level];
         while i < len {
-            self.assignments.0[self.trail[i].lit.idx] += 2;
+            // This whole thing should not be possible, and means that I am doing something wrong somewhere
+            if self.assignments.0[self.trail[i].lit.idx] < 2 {
+                self.assignments.0[self.trail[i].lit.idx] += 2;
+                //println!("{:?}", self.trail);
+                //panic!("Backtracked on an unset value");
+            }
             self.lit_to_level[self.trail[i].lit.idx] = usize::MAX;
             //self.assignments.0[self.trail[i].lit.idx] = 3; // TODO: Phase saving
         //while self.trail.len() > 0 && self.trail[self.trail.len() - 1].decision_level > level{ // TODO: >= ?
@@ -142,6 +147,7 @@ impl Trail {
             //self.trail.pop();
             i += 1;
         }
+        self.assignments.1 = 0; // TODO (Same as CDCL. Somehow still slower)
         self.trail.truncate(des);
         use ::std::cmp::max;
         self.decisions.truncate(max(level, 1));
@@ -197,6 +203,22 @@ impl Trail {
         proof_assert!(crefs_in_range(@self.trail, *_f)); // This is checking out somehow?
     }
 
+    #[inline(always)]
+    pub fn enq_assignment2(&mut self, step: Step, _f: &Formula) {
+        self.lit_to_level[step.lit.idx] = self.decision_level();
+        //self.assignments.0[step.lit.idx] = step.lit.polarity as u8;
+        self.assignments.0[step.lit.idx] -= 2;
+        if step.lit.polarity {
+            println!("{:?}", self.assignments.0[step.lit.idx]);
+            assert!(self.assignments.0[step.lit.idx] == 1);
+        }
+        else {
+            println!("{:?}", self.assignments.0[step.lit.idx]);
+            assert!(self.assignments.0[step.lit.idx] == 0);
+        }
+        self.trail.push(step);
+    }
+
 
     #[trusted] // OK
     #[requires((@self.decisions).len() > 0)]
@@ -217,7 +239,7 @@ impl Trail {
         let dlevel = self.decisions.len(); // Not doing this results in a Why3 error. Todo: Yell at Xavier
         // TODO Unsure if this is correct/the correct thing to track
         self.decisions.push(self.trail.len());
-        self.enq_assignment(Step {
+        self.enq_assignment2(Step {
             lit: lit,
             decision_level: dlevel,//self.decision_level(),
             reason: Reason::Decision,
