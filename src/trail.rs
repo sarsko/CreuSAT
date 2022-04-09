@@ -106,7 +106,7 @@ impl Trail {
                 proof_assert!(@self.trail === pop(@(@old_t).trail));
                 proof_assert!(^@old_t === ^self);
                 proof_assert!((lemma_backtrack_ok(*self, *f, step.lit)); true);
-                //self.lit_to_level[step.lit.idx] = usize::MAX;
+                self.lit_to_level[step.lit.idx] = usize::MAX;
             }
             None => {
                 panic!();
@@ -127,14 +127,19 @@ impl Trail {
     pub fn backtrack_to(&mut self, level: usize, f: &Formula) {
         let old_t = Ghost::record(&self);
         //proof_assert!(self === @old_t);
-        //let how_many = self.trail.len() - self.decisions[level];
+        let how_many = self.trail.len() - self.decisions[level];
         //let mut i = 0;
         //let mut i = self.trail.len() - 1;
         let len = self.trail.len();
         let mut des = self.decisions[level];
-        //let mut i = 0 ;
-        let mut i = des;
+        let mut i = 0 ;
+        while i < how_many {
+            self.backstep(f);
+            i += 1;
+        }
         //des = i;
+        /*
+        let mut i = des;
         while i < len {
             /*
             if self.assignments.0[self.trail[i].lit.idx] == 1 {
@@ -147,8 +152,9 @@ impl Trail {
             self.lit_to_level[self.trail[i].lit.idx] = usize::MAX;
             i += 1;
         }
-        self.assignments.1 = 0; // TODO 
         self.trail.truncate(des);
+        */
+        self.assignments.1 = 0; // TODO 
         use ::std::cmp::max;
         self.decisions.truncate(max(level, 1));
         /*
