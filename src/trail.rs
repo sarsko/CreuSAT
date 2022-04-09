@@ -125,21 +125,25 @@ impl Trail {
     */
     // Backtracks to the start of level
     pub fn backtrack_to(&mut self, level: usize, f: &Formula) {
+        // Something is going wrong in php4_3.cnf
         let old_t = Ghost::record(&self);
         //proof_assert!(self === @old_t);
         //let how_many = self.trail.len() - self.decisions[level];
         //let mut i = 0;
         //let mut i = self.trail.len() - 1;
         let len = self.trail.len();
-        let mut i = 0;
         let des = self.decisions[level];
+        //let mut i = 0 ;
+        let mut i = des;
         while i < len {
             // This whole thing should not be possible, and means that I am doing something wrong somewhere
-            if self.assignments.0[self.trail[i].lit.idx] < 2 {
+            //if self.assignments.0[self.trail[i].lit.idx] < 2 {
                 self.assignments.0[self.trail[i].lit.idx] += 2;
+            //}
+            //else {
                 //println!("{:?}", self.trail);
-                //panic!("Backtracked on an unset value");
-            }
+            //    panic!("Backtracked on an unset value");
+            //}
             self.lit_to_level[self.trail[i].lit.idx] = usize::MAX;
             //self.assignments.0[self.trail[i].lit.idx] = 3; // TODO: Phase saving
         //while self.trail.len() > 0 && self.trail[self.trail.len() - 1].decision_level > level{ // TODO: >= ?
@@ -188,15 +192,13 @@ impl Trail {
     #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
     #[ensures((^self).invariant(*_f))]
     pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
-        //self.trail_index[step.assigned_lit.index()] = self.steps.len() as _;
-        //debug_assert!(!self.assigned.is_assigned(step.assigned_lit.var()));
         self.lit_to_level[step.lit.idx] = self.decision_level();
         let trail = &self.trail;
         self.assignments.set_assignment_new(step.lit, _f, trail);
         proof_assert!(!step.lit.idx_in_trail(self.trail));
         proof_assert!(self.lit_is_unique());
         self.trail.push(step);
-        // These foure are not checking out
+        // These four are not checking out
         proof_assert!(self.lit_is_unique()); // Nope
         proof_assert!(self.lit_not_in_less(*_f)); // checking out on Linux
         proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments)); // Nope
@@ -206,16 +208,7 @@ impl Trail {
     #[inline(always)]
     pub fn enq_assignment2(&mut self, step: Step, _f: &Formula) {
         self.lit_to_level[step.lit.idx] = self.decision_level();
-        //self.assignments.0[step.lit.idx] = step.lit.polarity as u8;
         self.assignments.0[step.lit.idx] -= 2;
-        if step.lit.polarity {
-            println!("{:?}", self.assignments.0[step.lit.idx]);
-            assert!(self.assignments.0[step.lit.idx] == 1);
-        }
-        else {
-            println!("{:?}", self.assignments.0[step.lit.idx]);
-            assert!(self.assignments.0[step.lit.idx] == 0);
-        }
         self.trail.push(step);
     }
 
@@ -237,7 +230,6 @@ impl Trail {
     #[ensures((^self).invariant(*_f))]
     pub fn enq_decision(&mut self, lit: Lit, _f: &Formula) {
         let dlevel = self.decisions.len(); // Not doing this results in a Why3 error. Todo: Yell at Xavier
-        // TODO Unsure if this is correct/the correct thing to track
         self.decisions.push(self.trail.len());
         self.enq_assignment2(Step {
             lit: lit,
@@ -263,14 +255,13 @@ impl Trail {
     #[ensures((^self).invariant(*_f))]
     pub fn learn_unit(&mut self, lit: Lit, _f: &Formula) {
         if self.decision_level() > 0 {
-            self.backtrack_to(0, _f);
+            self.backtrack_to(1, _f);
         }
         self.enq_assignment(Step {
             lit: lit,
-            decision_level: 0,//self.decision_level(),
+            decision_level: 0,
             reason: Reason::Unit,
         }, _f);
-
     }
 
     

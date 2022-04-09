@@ -343,7 +343,9 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
                 
         let ante = match &trail.trail[i].reason {
             Reason::Long(c) => &f.clauses[*c],
-            o => {return Conflict::Panic}, // nnTODOnn // This never happens, but is an entirely new proof
+            o => {
+                panic!("Reason not long: {:?}", trail.trail[i]);
+                return Conflict::Panic}, // nnTODOnn // This never happens, but is an entirely new proof
             //o => panic!(),
         };
         //proof_assert!(exists<j: Int> 0 <= j && j < (@clause).len() && (@clause)[j].idx === lit.idx);
