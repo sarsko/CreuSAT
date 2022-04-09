@@ -15,10 +15,10 @@ use crate::{
 use crate::logic::{
     logic::*,
     logic_util::*,
-    logic_ntrail::*,
+    logic_trail::*,
 };
 
-#[derive(Debug, Eq, PartialEq)]
+//#[derive(Debug, Eq, PartialEq)]
 pub enum Reason {
     //Undefined,
     Decision,
@@ -32,7 +32,7 @@ pub struct Trail {
     pub vardata: Vec<(usize, Reason)>,
 }
 */
-#[derive(Debug)]
+//#[derive(Debug)]
 pub struct Step {
     pub lit: Lit,
     pub decision_level: usize,
@@ -69,7 +69,7 @@ impl Trail {
         let a_len = a.len();
         Trail {
             assignments: a,
-            lit_to_level: vec::from_elem(usize::MAX, a_len), // TODO
+            lit_to_level: vec::from_elem(usize::MAX, a_len), 
             trail: Vec::new(),
             curr_i: 0,
             decisions: vec::from_elem(0, 1),
@@ -155,8 +155,11 @@ impl Trail {
         self.trail.truncate(des);
         */
         self.assignments.1 = 0; // TODO 
-        use ::std::cmp::max;
-        self.decisions.truncate(max(level, 1));
+        while self.decisions.len() > level {
+            self.decisions.pop();
+        }
+        //use ::std::cmp::max;
+        //self.decisions.truncate(max(level, 1));
         /*
         use ::std::cmp::min;
         println!("{}", self.curr_i);

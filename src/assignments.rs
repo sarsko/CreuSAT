@@ -24,6 +24,7 @@ pub struct Assignments(pub Vec<AssignedState>, pub usize);
 
 
 impl Assignments {
+    #[trusted] // TODO
     #[inline(always)]
     pub fn len(&self) -> usize {
         self.0.len()
@@ -88,6 +89,7 @@ impl PartialAssignment {
 
 */
 
+/*
     #[inline]
     #[trusted] // OK [04.04]
     #[requires(lit.invariant(@_f.num_vars))]
@@ -140,8 +142,10 @@ impl PartialAssignment {
         proof_assert!(long_are_post_unit_inner(@_t.vardata, *_f, @self));
         //self.0[l.idx] = l.polarity as u8;
     }
+    */
 
     #[inline(always)]
+    /*
     #[trusted] // Post failing(as expected)
     #[requires(lit.invariant(@_f.num_vars))]
     #[requires(_f.invariant())]
@@ -162,6 +166,7 @@ impl PartialAssignment {
     #[ensures((forall<j : Int> 0 <= j && j < (@self).len() &&
         j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
     #[ensures(lit.sat(^self))]
+    */
     pub fn set_assignment_new(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {
         /*
         proof_assert!(@(@self)[@lit.idx] >= 2);
@@ -178,8 +183,7 @@ impl PartialAssignment {
         */
 
         // zzTODOzz 
-       self.0[lit.idx] = lit.polarity as u8;
-       /*
+       //self.0[lit.idx] = lit.polarity as u8;
         if lit.polarity {
             self.0[lit.idx] = 1;
             //proof_assert!(@self === (@@old_self).set(@lit.idx, 1u8));
@@ -187,6 +191,7 @@ impl PartialAssignment {
             self.0[lit.idx] = 0;
             //proof_assert!(@self === (@@old_self).set(@lit.idx, 0u8));
         }
+       /*
         */
         /*
         proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t.vardata, *_f, *@old_self, lit));true);

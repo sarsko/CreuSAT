@@ -13,7 +13,8 @@ use crate::logic::{
     logic_clause::*
 };
 
-#[derive(Debug)]
+//#[cfg_attr(not(contracts), derive(Debug))]
+//#[derive(Debug)]
 //#[derive(Clone)]
 pub struct Clause {
     //pub first: Lit,

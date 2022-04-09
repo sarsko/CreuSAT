@@ -8,6 +8,19 @@ pub struct Formula {
     pub num_vars: usize,
 }
 
+//#[derive(Debug)]
+#[cfg_attr(not(contracts), derive(Debug))]
+pub struct Test {
+    field: usize,
+}
+
+fn main(t: &Test)  {
+    if cfg!(not(contracts)) {
+        println!("{:?}", t)
+    } else {
+    }
+}
+
 pub trait Bing {
     fn bing(self) -> usize;
 }
@@ -50,13 +63,11 @@ impl<T: Bing + ?Sized> Bing for &mut T {
 
 
 
-#[ensures((*u).model()=== @u)]
-fn main(u: &&&&&&&&&&&&&&&&usize)  {
-}
 
 fn main3(u: & Vec<usize>)  {
     let b = u.bing();
 }
+/*
 
 #[requires(unset((@self.assignments)[@step.lit.idx]))]
 pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
@@ -69,3 +80,4 @@ pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
 }
 
 pub fn pos(&mut self, _t: &Vec<Step> ) {}
+*/

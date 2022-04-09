@@ -75,6 +75,7 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
 */
 
 #[trusted] // OK [04.04]
+/*
 #[ensures(match result {
     Some(false) => { (^f).unsat(^a)},
     Some(true)  => { true },
@@ -97,6 +98,7 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula)
 #[ensures((^w).invariant(^f))] 
 #[ensures((@(^t).trail).len() > 0)]
 #[ensures(f.equisat_compatible(^f))]
+*/
 fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches) -> Option<bool> {
     let res = analyze_conflict(f, t, cref);
     match res {
@@ -141,6 +143,7 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
     None
 }
 
+/*
 #[trusted] // OK [04.04]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[ensures(match result {
@@ -162,6 +165,7 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
 #[ensures((^t).invariant(^f))]
 #[ensures((^a).invariant(^f))]
 #[ensures(f.equisat(^f))]
+*/
 fn unit_prop_step(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) -> ConflictResult {
     match unit_propagate(f, t, w) {
     //match a.do_unit_propagation(f, t) {
@@ -179,6 +183,7 @@ fn unit_prop_step(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
 }
 
 
+/*
 #[trusted] // OK [04.04]
 #[requires(@f.num_vars < @usize::MAX/2)]
 //#[ensures(result ==> !(^f).unsat(^a))]
@@ -202,7 +207,9 @@ fn unit_prop_step(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
 #[ensures((^t).invariant(^f))]
 #[ensures((^a).invariant(^f))]
 #[ensures(f.equisat(^f))]
+*/
 fn unit_prop_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
+    /*
     let old_f = Ghost::record(&f);
     //let old_a = Ghost::record(&a);
     let old_t = Ghost::record(&t);
@@ -220,6 +227,7 @@ fn unit_prop_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
     #[invariant(trail_len, (@t.trail).len() > 0)]
     #[invariant(num_vars, @f.num_vars === @(@old_f).num_vars)]
     #[invariant(vardata_unchanged, (@t.vardata).len() === (@(@old_t).vardata).len())]
+    */
     loop {
         match unit_prop_step(f, d, t, w) {
             ConflictResult::Ok       => { return Some(true);  },
@@ -232,6 +240,7 @@ fn unit_prop_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
 
 
 //Precond is not proivng on Mac(but OK on Linux)
+/*
 #[trusted] // OK [04.04]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(f.invariant())]
@@ -258,6 +267,7 @@ fn unit_prop_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
     SatResult::Err      => { true }
 })]
 #[ensures(f.equisat(^f))]
+*/
 fn outer_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) -> SatResult {
     match unit_prop_loop(f, d, t, w) {
         Some(false) => return SatResult::Unsat,
@@ -277,7 +287,7 @@ fn outer_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) ->
             //t.assignments.0[next] -= 2;
             //t.enq_assignment(lit, Reason::Decision, f, a);
             t.enq_decision(lit, f);
-            proof_assert!(t.trail_sem_invariant(*f, *a));
+            //proof_assert!(t.trail_sem_invariant(*f, *a));
         },
         None => { 
             // This is gonna get broken if one changes the definition of unsat
@@ -297,6 +307,7 @@ fn outer_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) ->
     SatResult::Unknown
 }
 
+/*
 #[trusted] // OK [04.04]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(f.invariant())]
@@ -306,6 +317,7 @@ fn outer_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) ->
 #[requires((@t.trail).len() > 0)]
 #[requires(t.trail_sem_invariant(*f, *a))]
 #[requires(w.invariant(*f))]
+*/
 // No point in ensuring these for our uses, but they are strictly speaking ensured
 //#[ensures(@f.num_vars === @(^f).num_vars)]
 //#[ensures((^f).invariant())]
@@ -318,13 +330,16 @@ fn outer_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) ->
 //#[ensures((^d).invariant())]
 //#[ensures(result === true ==> f.eventually_sat(*a))]
 //#[ensures(result === false ==> !f.eventually_sat_complete(*a))]
+/*
 #[ensures(match result {
     SatResult::Sat(_) => { (^f).sat(^a) && f.equisat(^f) && f.eventually_sat_complete_no_ass()}, // TODO: + vec is assign
     SatResult::Unsat => { (^f).unsat(^a) }// && f.unsat(^a)}, // + add resolution from empty clause
     _ => true,
 })]
 #[ensures(f.equisat(^f))]
+*/
 fn inner(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) -> SatResult {
+    /*
     let old_f = Ghost::record(&f);
     //let old_a = Ghost::record(&a);
     let old_t = Ghost::record(&t);
@@ -342,6 +357,7 @@ fn inner(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) -> SatR
     #[invariant(trail_len, (@t.trail).len() > 0)]
     #[invariant(num_vars, @f.num_vars === @(@old_f).num_vars)]
     #[invariant(vardata_unchanged, (@t.vardata).len() === (@(@old_t).vardata).len())]
+    */
     loop {
         match outer_loop(f, d, t, w) {
             SatResult::Unknown => {}, // continue
@@ -375,10 +391,12 @@ pub fn solver(f: &mut Formula, units: &std::vec::Vec<Lit>) -> SatResult {
     // match. For the unsat case, not including a clause can't make a sat formula
     // unsat
     //learn_unit(&mut assignments, &mut trail, lit, f);
+    /*
     #[invariant(trail_inv, trail.invariant(*f))]
     #[invariant(trail_sem, trail.trail_sem_invariant(*f, assignments))]
     #[invariant(ass_inv, assignments.invariant(*f))]
     #[invariant(trail_len, (@trail.trail).len() === 1)]
+    */
     while i < units.len() {
         //trail.enq_assignment(units[i], Reason::Unit, f, &assignments);
         let lit = units[i];

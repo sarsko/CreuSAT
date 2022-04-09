@@ -278,9 +278,11 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
             *i -= 1;
             k = 0;
             let mut broken = false;
+            /*
             #[invariant(i_bound2, 0 <= @i && @i < (@trail.trail).len())]
             #[invariant(k_bound, 0 <= @k && @k <= (@c).len())]
             #[invariant(proph_i2, ^i === ^@old_i)]
+            */
             while k < c.rest.len() {
                 if trail.trail[*i].lit.idx == c.rest[k].idx {
                     assert!(trail.trail[*i].lit.polarity != (c.rest[k]).polarity);
@@ -299,6 +301,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
 }
 
 #[trusted] // OK
+/*
 #[requires(trail.trail_sem_invariant(*f, *a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
@@ -319,6 +322,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
     }, 
     _ => { true }
 })]
+*/
 pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.decision_level();
     if decisionlevel == 0 {
@@ -328,11 +332,13 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     let mut i = trail.trail.len();
     let mut clause = f.clauses[cref].clone();
     // Invariant impossible as it might be unary
+    /*
     #[invariant(clause_vars, clause.invariant_unary_ok(@f.num_vars))]
     #[invariant(clause_equi, equisat_extension_inner(clause, @f))]
     #[invariant(clause_unsat, clause.unsat(*a))]
     #[invariant(j_bound, 0 <= @j && @j <= (@(@trail.trail)[@i]).len())]
     #[invariant(i_bound, 0 <= @i && @i < (@trail.trail).len())]
+    */
     loop {
     //i = trail.trail.len() - 1;
     //j = trail.trail[i].len();
@@ -344,12 +350,12 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
         let ante = match &trail.trail[i].reason {
             Reason::Long(c) => &f.clauses[*c],
             o => {
-                panic!("Reason not long: {:?}", trail.trail[i]);
                 return Conflict::Panic}, // nnTODOnn // This never happens, but is an entirely new proof
             //o => panic!(),
         };
         //proof_assert!(exists<j: Int> 0 <= j && j < (@clause).len() && (@clause)[j].idx === lit.idx);
         //proof_assert!(exists<j: Int> 0 <= j && j < (@ante).len() && (@ante)[j].idx === lit.idx);
+        /*
         proof_assert!(ante.post_unit(*a)); // Ensured by trail.vardata
 
         proof_assert!(exists<i: Int>
@@ -359,6 +365,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
 
         proof_assert!(clause.same_idx_same_polarity_except(ante, @lit.idx));
         proof_assert!(exists<k: Int> 0 <= k && k < (@ante).len() && (@ante)[k].is_opp((@clause)[@c_idx]));
+        */
 
         // Have to do the whole proof of conflict analysis.
         // Add precond that cref is a conflict clause and have to do proof that choose_lit
@@ -368,9 +375,11 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
         clause = resolve(f, &clause, &ante, lit.idx, c_idx, &trail.assignments);
         let mut k: usize = 0;
         let mut cnt: usize = 0;
+        /*
         #[invariant(k_bound, @k <= (@clause.rest).len())]
         #[invariant(j_bound2, 0 <= @j && @j <= (@(@trail.trail)[@i]).len())]
         #[invariant(cnt_bound, @cnt <= @k)]
+        */
         while k < clause.rest.len() {
             //if trail.vardata[clause.rest[k].idx].0 == decisionlevel {
             //if trail.lit_to_level[clause.rest[k].idx] == decisionlevel {

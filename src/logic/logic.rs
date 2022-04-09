@@ -14,6 +14,7 @@ use crate::logic::{
     logic_assignments::*,
     logic_clause::*,
     logic_formula::*,
+    logic_trail::*,
 };
 
 
@@ -227,6 +228,7 @@ pub fn lemma_resolved_post_and_unsat_is_unsat(c: Clause, c2: Clause, c3: Clause,
 #[ensures(@(f2.0)[(f2.0).len()-1] === @c)]
 pub fn lemma_eq_formulas(f: (Seq<Clause>, Int), f2: (Seq<Clause>, Int), c: Clause) {}
 
+/*
 #[trusted] // OK
 #[logic]
 #[requires(t2.0 === t.0.push(l))]
@@ -235,6 +237,7 @@ pub fn lemma_eq_formulas(f: (Seq<Clause>, Int), f2: (Seq<Clause>, Int), c: Claus
 #[ensures(trail_invariant_full_no_sep(t, f))]
 #[ensures((t.0).len() + 1 === (t2.0).len())]
 pub fn lemma_eq_trail(t: (Seq<Vec<Lit>>, Seq<(usize, Reason)>), t2: (Seq<Vec<Lit>>, Seq<(usize, Reason)>), f: Formula, l: Vec<Lit>) {}
+*/
 
 #[trusted] // OK
 #[logic]
