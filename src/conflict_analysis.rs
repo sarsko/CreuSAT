@@ -341,8 +341,8 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             Some((a, b)) => (a, b),
         };
                 
-        let ante = match trail.trail[i].reason {
-            Reason::Long(c) => f.clauses[c].clone(),
+        let ante = match &trail.trail[i].reason {
+            Reason::Long(c) => &f.clauses[*c],
             o => {
                 panic!("Sarek is such a fucking retard(trail is messed up)"); 
                 return Conflict::Panic}, // nnTODOnn // This never happens, but is an entirely new proof

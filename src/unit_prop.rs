@@ -249,8 +249,8 @@ fn unit_prop_do_outer(f: &mut Formula, trail: &mut Trail, watches: &mut Watches,
     // Ok so the assertions except the unsat or unit(which doesnt assert) are just really slow
     // If we have gotten here, the clause is either all false or unit
     proof_assert!((@f.clauses)[@cref].unsat(*a) || ((@(@f.clauses)[@cref])[0]).unset(*a) || ((@(@f.clauses)[@cref])[1]).unset(*a));
-    //if first_lit.lit_unset(&trail.assignments) {
-    if f.clauses[cref].rest[0].lit_unset(&trail.assignments) {
+    if first_lit.lit_unset(&trail.assignments) {
+    //if f.clauses[cref].rest[0].lit_unset(&trail.assignments) {
         // zzTODOzz: Prove the runtime-check
         if second_lit.lit_unset(&trail.assignments) {
             panic!("Watches messed up?");
@@ -266,18 +266,17 @@ fn unit_prop_do_outer(f: &mut Formula, trail: &mut Trail, watches: &mut Watches,
         proof_assert!(clause_post_with_regards_to_lit(((@f.clauses)[@cref]), *a, first_lit));
         //trail.enq_assignment(first_lit, Reason::Long(cref), f, a);
         let step = Step {
-            //lit: first_lit,
-            lit: f.clauses[cref].rest[0],
+            lit: first_lit,
+            //lit: f.clauses[cref].rest[0],
             decision_level: trail.decision_level(),
             reason: Reason::Long(cref),
         };
 
         trail.enq_assignment(step, f);
-    //} else if f.clauses[cref].rest[1].lit_unset(a) {
         proof_assert!(trail.trail_sem_invariant(*f, *a));
         return Ok(true);    
-    //} else if second_lit.lit_unset(&trail.assignments) {
-    } else if f.clauses[cref].rest[1].lit_unset(&trail.assignments) {
+    } else if second_lit.lit_unset(&trail.assignments) {
+    //} else if f.clauses[cref].rest[1].lit_unset(&trail.assignments) {
         proof_assert!(!(@f.clauses)[@cref].unsat(*a) && true && true);
         proof_assert!((@f.clauses)[@cref].unit(*a));
         //a.set_assignment(second_lit, f);
@@ -287,8 +286,8 @@ fn unit_prop_do_outer(f: &mut Formula, trail: &mut Trail, watches: &mut Watches,
         proof_assert!(clause_post_with_regards_to_lit(((@f.clauses)[@cref]), *a, second_lit));
         //trail.enq_assignment(second_lit, Reason::Long(cref), f, a);
         let step = Step {
-            lit: f.clauses[cref].rest[1],
-            //lit: second_lit,
+            //lit: f.clauses[cref].rest[1],
+            lit: second_lit,
             decision_level: trail.decision_level(),
             reason: Reason::Long(cref),
         };

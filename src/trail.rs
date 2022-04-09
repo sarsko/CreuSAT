@@ -18,7 +18,7 @@ use crate::logic::{
     logic_ntrail::*,
 };
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum Reason {
     //Undefined,
     Decision,
@@ -135,6 +135,7 @@ impl Trail {
         let des = self.decisions[level];
         while i < len {
             self.assignments.0[self.trail[i].lit.idx] += 2;
+            self.lit_to_level[self.trail[i].lit.idx] = usize::MAX;
             //self.assignments.0[self.trail[i].lit.idx] = 3; // TODO: Phase saving
         //while self.trail.len() > 0 && self.trail[self.trail.len() - 1].decision_level > level{ // TODO: >= ?
             //self.backstep(f);
@@ -143,7 +144,7 @@ impl Trail {
         }
         self.trail.truncate(des);
         use ::std::cmp::max;
-        self.trail.truncate(max(level, 1));
+        self.decisions.truncate(max(level, 1));
         /*
         while self.decisions.len() > level { // TODO + 1?
             self.decisions.pop();
@@ -195,6 +196,7 @@ impl Trail {
         proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments)); // Nope
         proof_assert!(crefs_in_range(@self.trail, *_f)); // This is checking out somehow?
     }
+
 
     #[trusted] // OK
     #[requires((@self.decisions).len() > 0)]

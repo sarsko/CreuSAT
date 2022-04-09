@@ -141,7 +141,7 @@ impl PartialAssignment {
         //self.0[l.idx] = l.polarity as u8;
     }
 
-    #[inline]
+    #[inline(always)]
     #[trusted] // Post failing(as expected)
     #[requires(lit.invariant(@_f.num_vars))]
     #[requires(_f.invariant())]
@@ -178,7 +178,8 @@ impl PartialAssignment {
         */
 
         // zzTODOzz 
-       //self.0[lit.idx] = lit.polarity as u8;
+       self.0[lit.idx] = lit.polarity as u8;
+       /*
         if lit.polarity {
             self.0[lit.idx] = 1;
             //proof_assert!(@self === (@@old_self).set(@lit.idx, 1u8));
@@ -186,6 +187,7 @@ impl PartialAssignment {
             self.0[lit.idx] = 0;
             //proof_assert!(@self === (@@old_self).set(@lit.idx, 0u8));
         }
+        */
         /*
         proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t.vardata, *_f, *@old_self, lit));true);
         proof_assert!(^@old_self === ^self);

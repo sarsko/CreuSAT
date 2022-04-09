@@ -165,6 +165,7 @@ impl Decisions {
         self.start = tomove;
         */
     }
+/*
 
     #[trusted]
     pub fn increment_and_move(&mut self, f: &Formula, cref: usize) {
@@ -185,6 +186,7 @@ impl Decisions {
         }
         */
     }
+    */
 
     #[trusted]
     pub fn get_next(&mut self, a: &Assignments) -> Option<usize> {
