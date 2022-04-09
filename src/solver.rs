@@ -115,8 +115,9 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
             // TODO
             let cref = f.add_clause(clause, w, t);
             //a.cancel_until(t, 1, f);
-            t.backtrack_to(0, f);
-            //t.backtrack_to(1, f);
+            //t.backtrack_to(0, f);
+            t.backtrack_to(1, f);
+            //println!("{}", t.decision_level());
             /*
             t.backtrack_to(level, f);
             let step = Step{

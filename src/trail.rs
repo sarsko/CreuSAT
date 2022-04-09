@@ -125,36 +125,47 @@ impl Trail {
     */
     // Backtracks to the start of level
     pub fn backtrack_to(&mut self, level: usize, f: &Formula) {
-        // Something is going wrong in php4_3.cnf
         let old_t = Ghost::record(&self);
         //proof_assert!(self === @old_t);
         //let how_many = self.trail.len() - self.decisions[level];
         //let mut i = 0;
         //let mut i = self.trail.len() - 1;
         let len = self.trail.len();
-        let des = self.decisions[level];
+        let mut des = self.decisions[level];
         //let mut i = 0 ;
         let mut i = des;
+        //des = i;
         while i < len {
-            // This whole thing should not be possible, and means that I am doing something wrong somewhere
-            //if self.assignments.0[self.trail[i].lit.idx] < 2 {
+            /*
+            if self.assignments.0[self.trail[i].lit.idx] == 1 {
                 self.assignments.0[self.trail[i].lit.idx] += 2;
-            //}
-            //else {
-                //println!("{:?}", self.trail);
-            //    panic!("Backtracked on an unset value");
-            //}
+            } else {
+                self.assignments.0[self.trail[i].lit.idx] = 2;
+            }
+            */
+            self.assignments.0[self.trail[i].lit.idx] += 2;
             self.lit_to_level[self.trail[i].lit.idx] = usize::MAX;
-            //self.assignments.0[self.trail[i].lit.idx] = 3; // TODO: Phase saving
-        //while self.trail.len() > 0 && self.trail[self.trail.len() - 1].decision_level > level{ // TODO: >= ?
-            //self.backstep(f);
-            //self.trail.pop();
             i += 1;
         }
-        self.assignments.1 = 0; // TODO (Same as CDCL. Somehow still slower)
+        self.assignments.1 = 0; // TODO 
         self.trail.truncate(des);
         use ::std::cmp::max;
         self.decisions.truncate(max(level, 1));
+        /*
+        use ::std::cmp::min;
+        println!("{}", self.curr_i);
+        self.curr_i = min(self.curr_i, des);
+        if self.curr_i > 0 {
+            self.curr_i -= 1;
+            //self.curr_i = 0;
+            println!("{}", self.curr_i);
+            println!("{:?}", self.trail);
+            println!("{:?}", self.trail[self.curr_i]);
+        }
+        */
+        // I don't get why setting it to something other than 0 is incorrect
+        // Seems to be because we are not handling the asserting level.
+        self.curr_i = 0;
         /*
         while self.decisions.len() > level { // TODO + 1?
             self.decisions.pop();
@@ -165,7 +176,8 @@ impl Trail {
             self.decisions.push(0);
         }
         */
-        self.curr_i = des//self.trail.len();
+        //self.curr_i = des//self.trail.len();
+
     }
 
     // Requires step.lit to be unasigned
@@ -236,6 +248,7 @@ impl Trail {
             decision_level: dlevel,//self.decision_level(),
             reason: Reason::Decision,
         }, _f);
+
     }
     // Maybe remove this, I dunno
     #[trusted] // OK
@@ -262,6 +275,7 @@ impl Trail {
             decision_level: 0,
             reason: Reason::Unit,
         }, _f);
+        //self.decisions[0] += 1;
     }
 
     
