@@ -43,9 +43,7 @@ fn move_to_end(v: &mut Vec<Lit>, to_be_removed: usize,  _f: &Formula) {
 */
 // Both of these should be changed to unary_ok, but things are checking out somehow
 
-
-
-#[trusted] // OK [04.04]
+#[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
 #[ensures(result === (exists<i: Int> 0 <= i && i < (@v).len() && @(@v)[i].idx === @idx))]
 fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
     let mut i: usize = 0;
@@ -67,7 +65,9 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
 // resolve. Can be lifted if watches and literal reordering gets implemented
 // as we then have access to both resolve indexes everywhere.
 
-#[trusted] // OK [04.04] [[Doesnt check out on Mac [04.04] - struggling with the loop invariants, but that's it]]
+//#[trusted] // OK [04.04] [[Doesnt check out on Mac [04.04] - struggling with the loop invariants, but that's it]]
+#[trusted] // Come back to it later. Invariant is sticky
+#[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
 #[requires(_f.invariant())]
 #[requires(equisat_extension_inner(*c, @_f))]
 #[requires(o.in_formula(*_f))]
@@ -242,62 +242,61 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
     out
 }
 
-#[trusted] // OK [04.04]
-/*
+#[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
+//#[trusted] // OK [04.04]
 #[requires(trail.invariant(*_f))]
-#[requires(trail.trail_sem_invariant(*_f, *_a))]
-#[requires(c.unsat(*_a))]
-#[requires(@i < (@trail.trail).len())]
+//#[requires(trail.trail_sem_invariant(*_f, *_a))]
+#[requires(c.unsat(trail.assignments))]
+#[requires(@i <= (@trail.trail).len())]
 #[requires((@trail.trail).len() > 0)]
-#[requires(@j <= (@(@trail.trail)[@i]).len())]
+//#[requires(@j <= (@(@trail.trail)[@i]).len())]
 //#[requires(trail.trail_entries_are_assigned(*_a))] // This is gonna trickle up
 #[ensures(match result {
     None => true,
-    Some((l, r)) => @l.idx < (@trail.vardata).len() &&
-                    @r < (@c).len() &&
-                    @(@c)[@r].idx === @l.idx
+    Some(r) => //l.invariant(@_f.num_vars)
+                    //&&
+                    @r < (@c).len()
+                    && (@c)[@r].idx === (@trail.trail)[@i].lit.idx
 })]
 // Actually does it find this post due to trail_entries assigned + c.unsat(*a) (as one would like)?
 // That's some really cool stuff if so.
 #[ensures(match result {
-    Some((l, r)) => (@c)[@r].is_opp(l), // This will need a longer proof // Why is this passing? // TODO: It doesn't seem like a soundess issue, 
+    //Some((l, r)) => (@c)[@r].is_opp(l), // This will need a longer proof // Why is this passing? // TODO: It doesn't seem like a soundess issue, 
+    Some(r) => (@c)[@r].is_opp(l), // This will need a longer proof // Why is this passing? // TODO: It doesn't seem like a soundess issue, 
     None => true
 })]
 #[ensures(@^i < (@trail.trail).len())]
-#[ensures(@^j <= (@(@trail.trail)[@^i]).len() )]
-*/
-fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Option<(Lit, usize)> {
+//#[ensures(@^j <= (@(@trail.trail)[@^i]).len() )]
+fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Option<(usize)> {
+    /*
+    if *i == 0 {
+        return None;
+    }
+    */
     let old_i = Ghost::record(&i);
-    let (next, k) = {
-        let mut k: usize = 0;
+    let mut k: usize = 0;
+    /*
+    #[invariant(i_bound, 0 <= @i && @i < (@trail.trail).len())]
+    #[invariant(proph_i, ^i === ^@old_i)]
+    */
+    while *i > 0 {
+        *i -= 1;
+        k = 0;
+        let mut broken = false;
         /*
-        #[invariant(i_bound, 0 <= @i && @i < (@trail.trail).len())]
-        #[invariant(proph_i, ^i === ^@old_i)]
+        #[invariant(i_bound2, 0 <= @i && @i < (@trail.trail).len())]
+        #[invariant(k_bound, 0 <= @k && @k <= (@c).len())]
+        #[invariant(proph_i2, ^i === ^@old_i)]
         */
-        loop { 
-            *i -= 1;
-            k = 0;
-            let mut broken = false;
-            /*
-            #[invariant(i_bound2, 0 <= @i && @i < (@trail.trail).len())]
-            #[invariant(k_bound, 0 <= @k && @k <= (@c).len())]
-            #[invariant(proph_i2, ^i === ^@old_i)]
-            */
-            while k < c.rest.len() {
-                if trail.trail[*i].lit.idx == c.rest[k].idx {
-                    assert!(trail.trail[*i].lit.polarity != (c.rest[k]).polarity);
-                    broken = true;
-                    break;
-                }
-                k += 1;
+        while k < c.rest.len() {
+            if trail.trail[*i].lit.idx == c.rest[k].idx {
+                //assert!(trail.trail[*i].lit.polarity != (c.rest[k]).polarity);
+                return Some(k);
             }
-            if broken {
-                break;
-            }
+            k += 1;
         }
-       (trail.trail[*i].lit, k)
-    };
-    Some((next, k))
+    }
+    None
 }
 
 #[trusted] // OK
@@ -342,9 +341,9 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     loop {
     //i = trail.trail.len() - 1;
     //j = trail.trail[i].len();
-        let (lit, c_idx) = match choose_literal(&clause, trail, &mut i, f) {
+        let c_idx = match choose_literal(&clause, trail, &mut i, f) {
             None => return Conflict::Panic,
-            Some((a, b)) => (a, b),
+            Some(b) => b,
         };
                 
         let ante = match &trail.trail[i].reason {
@@ -372,7 +371,8 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
         // returns the conflicting literal. Then add the lemma that the clauses have no other opp lits
         // The good part is that we will get the backtracking level more or less for free
         
-        clause = resolve(f, &clause, &ante, lit.idx, c_idx, &trail.assignments);
+        //clause = resolve(f, &clause, &ante, lit.idx, c_idx, &trail.assignments);
+        clause = resolve(f, &clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
         let mut k: usize = 0;
         let mut cnt: usize = 0;
         /*
