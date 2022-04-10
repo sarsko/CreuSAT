@@ -27,20 +27,6 @@ pub enum Conflict {
     Panic,
 }
 
-/*
-#[requires(vars_in_range_inner(@v, @_f.num_vars))]
-#[requires(no_duplicate_indexes_inner(@v))]
-#[requires(@to_be_removed < (@v).len())]
-#[ensures((@^v).permutation_of(@v))]
-#[ensures(vars_in_range_inner(@^v, @_f.num_vars))]
-#[ensures(no_duplicate_indexes_inner(@^v))]
-#[ensures((@v).len() === (@^v).len() + 1)]
-fn move_to_end(v: &mut Vec<Lit>, to_be_removed: usize,  _f: &Formula) {
-    let end = v.len() - 1;
-    v.swap(to_be_removed, end);
-    //v.pop();
-}
-*/
 // Both of these should be changed to unary_ok, but things are checking out somehow
 
 #[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
@@ -58,12 +44,6 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
     }
     false
 }
-
-
-// Assignments has to be passed in as we either have to have access to it
-// in resolve, or we have to have access to the second resolve index outside of
-// resolve. Can be lifted if watches and literal reordering gets implemented
-// as we then have access to both resolve indexes everywhere.
 
 //#[trusted] // OK [04.04] [[Doesnt check out on Mac [04.04] - struggling with the loop invariants, but that's it]]
 #[trusted] // Come back to it later. Invariant is sticky
@@ -277,10 +257,10 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
 }
 
 #[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
-#[trusted] // OK
+//#[trusted] // OK
 //#[requires(trail.trail_sem_invariant(*f, *a))]
-#[requires(f.invariant())]
 //#[requires(a.invariant(*f))]
+#[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
 #[requires((@trail.decisions).len() > 0)]
 #[requires((@trail.trail).len() > 0)]
@@ -306,8 +286,6 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     }
     let mut i = trail.trail.len();
     let mut clause = f.clauses[cref].clone();
-    proof_assert!((@clause).len() > 0);
-    // Invariant impossible as it might be unary
     #[invariant(clause_vars, clause.invariant_unary_ok(@f.num_vars))]
     #[invariant(clause_equi, equisat_extension_inner(clause, @f))]
     #[invariant(clause_unsat, clause.unsat(trail.assignments))]
@@ -321,39 +299,14 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
                 
         let ante = match &trail.trail[i].reason {
             Reason::Long(c) => &f.clauses[*c],
-            o => {
-                return Conflict::Panic}, // nnTODOnn // This never happens, but is an entirely new proof
-            //o => panic!(),
+            o => {return Conflict::Panic}, // nnTODOnn // This never happens, but is an entirely new proof
         };
-        //proof_assert!(exists<j: Int> 0 <= j && j < (@clause).len() && (@clause)[j].idx === lit.idx);
-        //proof_assert!(exists<j: Int> 0 <= j && j < (@ante).len() && (@ante)[j].idx === lit.idx);
-        /*
-        proof_assert!(ante.post_unit(*a)); // Ensured by trail.vardata
-
-        proof_assert!(exists<i: Int>
-            0 <= i && i < (@ante).len() && @(@ante)[i].idx === @lit.idx && (@ante)[i].sat(*a)); // Also vardata
-        proof_assert!(clause.unsat(*a)); // OK
-        proof_assert!(lemma_same_pol(ante, clause, @a, @lit.idx);true);
-
-        proof_assert!(clause.same_idx_same_polarity_except(ante, @lit.idx));
-        proof_assert!(exists<k: Int> 0 <= k && k < (@ante).len() && (@ante)[k].is_opp((@clause)[@c_idx]));
-        */
-
-        // Have to do the whole proof of conflict analysis.
-        // Add precond that cref is a conflict clause and have to do proof that choose_lit
-        // returns the conflicting literal. Then add the lemma that the clauses have no other opp lits
-        // The good part is that we will get the backtracking level more or less for free
-        
-        //clause = resolve(f, &clause, &ante, lit.idx, c_idx, &trail.assignments);
         clause = resolve(f, &clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
         let mut k: usize = 0;
         let mut cnt: usize = 0;
         #[invariant(k_bound, @k <= (@clause.rest).len())]
-        //#[invariant(j_bound2, 0 <= @j && @j <= (@(@trail.trail)[@i]).len())]
         #[invariant(cnt_bound, @cnt <= @k)]
         while k < clause.rest.len() {
-            //if trail.vardata[clause.rest[k].idx].0 == decisionlevel {
-            //if trail.lit_to_level[clause.rest[k].idx] == decisionlevel {
             if trail.lit_to_level[clause.rest[k].idx] == decisionlevel {
                 cnt += 1;
             }
