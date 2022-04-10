@@ -31,6 +31,7 @@ pub fn partition_rev(v: Seq<(usize, usize)>, i: Int) -> bool {
 }
 
 #[logic]
+#[cfg_attr(all(any(trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[requires(s.len() > 0)]
 pub fn pop<T>(s: Seq<T>) -> Seq<T> {
     pearlite! {
@@ -39,12 +40,14 @@ pub fn pop<T>(s: Seq<T>) -> Seq<T> {
 }
 
 #[logic]
+#[cfg_attr(all(any(trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[requires(s.len() > 0)]
 pub fn last_idx<T>(s: Seq<T>) -> Int {
     pearlite! { s.len()-1 }
 }
 
 #[logic]
+#[cfg_attr(all(any(trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[requires(s.len() > 0)]
 pub fn last_elem<T>(s: Seq<T>) -> T {
     pearlite! { s[s.len()-1] }

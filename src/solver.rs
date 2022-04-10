@@ -47,58 +47,32 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     return true;
 }
 
-/*
-#[trusted] // Small --TODO--
-#[requires(f.invariant())]
-#[requires(a.invariant(*f))]
-#[requires(trail.invariant(*f))]
-#[requires((@trail.trail).len() > 0)]
-#[requires(trail.trail_sem_invariant(*f, *a))]
-#[requires(0 <= @lit.idx && @lit.idx < (@a).len())] // added
-#[ensures((^trail).trail_sem_invariant(*f, ^a))]
-#[ensures((@(^trail).trail).len() === 1)]
-//#[ensures(^f === *f)]
-//#[ensures(f.eventually_sat(*a) === (^f).eventually_sat(*a))]
-//#[ensures(f.eventually_sat_complete(*a) === (^f).eventually_sat_complete(*a))]
-#[ensures((^trail).invariant(*f))]
-#[ensures((^a).invariant(*f))]
-pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, f: &Formula) {
-    //a.cancel_until(trail, trail.trail.len(), 1, decisions);
-    a.cancel_until(trail, 1, f);
-    //a.cancel_long(trail);
-    // TODO set_assignment has unset as a precond.
-    // Is it really needed, though?
-    // Yes it is you dumbo, else the semantic invariants for trail will be broken
-    a.set_assignment(lit, f, trail); 
-    trail.enq_assignment(lit, Reason::Unit, f, a);
-}
-*/
+//#[requires(t.invariant(*f))]
+//#[ensures((^t).invariant(^f))]
+//#[requires(w.invariant(*f))]
+//#[ensures((^w).invariant(^f))] 
+//#[requires(a.invariant(*f))]
+//#[ensures((^a).invariant(^f))]
+//#[requires(t.trail_sem_invariant(*f, *a))] // added
+//#[ensures((^t).trail_sem_invariant(^f, ^a))] // added
 
 #[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
-/*
+#[maintains((mut f).invariant())]
+#[maintains((mut t).invariant(mut f))]
+#[maintains((mut w).invariant(mut f))]
+#[requires((@t.trail).len() > 0)]
+#[ensures((@(^t).trail).len() > 0)]
+// #[maintains((@(mut t).trail).len() > 0)] // Not supported pattern
+#[requires(@f.num_vars < @usize::MAX/2)]
+#[requires(@cref < (@f.clauses).len())]
+#[requires((@f.clauses)[@cref].unsat(t.assignments))] // added
+#[ensures(@f.num_vars === @(^f).num_vars)]
+#[ensures(f.equisat_compatible(^f))]
 #[ensures(match result {
-    Some(false) => { (^f).unsat(^a)},
+    Some(false) => { (^f).unsat((^t).assignments)},
     Some(true)  => { true },
     None        => { true }, // !(^f).unsat(^a)}, // we dont know this
 })]
-#[requires(@f.num_vars < @usize::MAX/2)]
-#[requires(f.invariant())]
-#[requires(a.invariant(*f))]
-#[requires(t.invariant(*f))]
-#[requires(w.invariant(*f))]
-#[requires((@t.trail).len() > 0)]
-#[requires(@cref < (@f.clauses).len())]
-#[requires((@f.clauses)[@cref].unsat(*a))] // added
-#[requires(t.trail_sem_invariant(*f, *a))] // added
-#[ensures((^t).trail_sem_invariant(^f, ^a))] // added
-#[ensures(@f.num_vars === @(^f).num_vars)]
-#[ensures((^f).invariant())]
-#[ensures((^a).invariant(^f))]
-#[ensures((^t).invariant(^f))]
-#[ensures((^w).invariant(^f))] 
-#[ensures((@(^t).trail).len() > 0)]
-#[ensures(f.equisat_compatible(^f))]
-*/
 fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches) -> Option<bool> {
     let res = analyze_conflict(f, t, cref);
     match res {
