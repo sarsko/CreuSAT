@@ -39,26 +39,19 @@ pub fn watches_crefs_in_range(w: Seq<Vec<Watcher>>, f: Formula) -> bool {
 }
 
 #[logic]
+#[cfg_attr(all(any(trust_watch, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[requires(w.len() > 0)]
 #[requires(watcher_crefs_in_range(w, f))]
 #[ensures(watcher_crefs_in_range(pop(w), f))]
 pub fn lemma_pop_watch_maintains_watcher_invariant(w: Seq<Watcher>, f: Formula) {}
 
 #[logic]
+#[cfg_attr(all(any(trust_watch, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[requires(watcher_crefs_in_range(w, f))]
 #[requires(@o.cref < (@f.clauses).len())]
 #[ensures(watcher_crefs_in_range(w.push(o), f))]
 pub fn lemma_push_maintains_watcher_invariant(w: Seq<Watcher>, f: Formula, o: Watcher) {}
 
-/*
-#[requires(watches_crefs_in_range(w, f))]
-#[requires(0 <= watchidx && watchidx < w.len())]
-#[requires((@w[watchidx]).len() > 0)]
-#[ensures(watches_crefs_in_range(w, f))]
-pub fn lemma_pop_watch_maintains_invariant(w: Seq<Vec<Watcher>>, f: Formula, watchidx: Int) {
-    lemma_pop_watch_maintains_watcher_invariant(w[watchidx], f);
-}
-*/
 
 impl Watches {
     #[predicate]

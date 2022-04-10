@@ -236,7 +236,7 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
     None => true
 })]
 #[ensures(@^i < (@trail.trail).len())]
-fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Option<(usize)> {
+fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Option<usize> {
     let old_i = Ghost::record(&i);
     #[invariant(i_bound, 0 <= @i && @i <= (@trail.trail).len())]
     #[invariant(proph_i, ^i === ^@old_i)]

@@ -47,7 +47,7 @@ pub struct Watches {
 #[requires(@cref < (@f.clauses).len())]
 #[requires(0 <= @k && @k < (@(@f.clauses)[@cref]).len())] // Changed
 #[requires((@(@f.clauses)[@cref]).len() >= 2)] // This was > 2 before ?
-#[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > 0)] 
+//#[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > 0)]  // removed since last run, but shoudln't matter
 #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)]
 //#[ensures(trail.trail_sem_invariant(*f, *a))]
 //#[ensures((*f).invariant())]

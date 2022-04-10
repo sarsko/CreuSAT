@@ -142,7 +142,7 @@ impl Trail {
         //let len = self.trail.len();
         // TODO: This correctly fails on the decision invariant.
         // Have to do the proof or do some cheese
-        let mut des = self.decisions[level];
+        let des = self.decisions[level];
         let mut i: usize = 0 ;
         #[invariant(i_less2, @i <= (@(@old_t).trail).len())]
         #[invariant(i_less, i <= how_many)]

@@ -351,7 +351,7 @@ fn inner(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) -> SatR
 pub fn solver(f: &mut Formula, units: &std::vec::Vec<Lit>) -> SatResult {
     // should do pure literal and identifying unit clauses in preproc
     let mut i = 0;
-    let mut assignments = Assignments::new(f);
+    let assignments = Assignments::new(f);
     let mut trail = Trail::new(f, assignments);
     if f.num_vars >= usize::MAX/2 {
         return SatResult::Err;

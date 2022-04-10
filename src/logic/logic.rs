@@ -95,6 +95,7 @@ pub fn lemma_swap_maintains_post_unit(c: Clause, c2: Clause, a: Int, b: Int, ass
 #[requires((@c2).exchange(@c, a, b))]
 #[requires(clause_post_with_regards_to(c, ass, j))]
 #[ensures(clause_post_with_regards_to(c2, ass, j))]
+#[ensures(clause_post_with_regards_to_inner(c2, @ass, j))]
 pub fn lemma_swap_maintains_post_with_regards_to(c: Clause, c2: Clause, a: Int, b: Int, ass: Assignments, j: Int) {
     lemma_swap_maintains_post_unit(c, c2, a, b, ass);
 }
