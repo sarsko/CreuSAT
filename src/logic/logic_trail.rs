@@ -40,6 +40,15 @@ impl Step {
         }
     }
 }
+/*
+#[predicate]
+pub fn trail_entries_are_assigned_inner(trail: Seq<Step>, a: Seq<AssignedState>) -> bool {
+    pearlite! {
+        forall<j: Int> 0 <= j && j < trail.len() ==>
+                a[@(@trail[j]).lit.idx] === bool_to_assignedstate((@trail[j]).lit.polarity)
+    }
+}
+*/
 
 // LOGIC
 impl Trail {
@@ -54,9 +63,17 @@ impl Trail {
             && self.lit_not_in_less(f)
             && self.lit_is_unique()
             && long_are_post_unit_inner(@self.trail, f, @self.assignments)
+            && self.trail_entries_are_assigned() // ADDED
             // I am not sure these will be needed
             //trail_entries_are_assigned_inner(@self.trail, @self.assignments) && // added
             //assignments_are_in_trail(@self.trail, @self.assignments) // added
+        }
+    }
+
+    #[predicate]
+    pub fn trail_entries_are_assigned(self) -> bool {
+        pearlite! {
+            trail_entries_are_assigned_inner(@self.trail, @self.assignments)
         }
     }
 
