@@ -12,24 +12,13 @@ use crate::logic::{
 };
 
 #[predicate]
-pub fn watches_invariant_internal(w: Seq<Vec<Watcher>>, n: Int) -> bool {
+pub fn watches_invariant_internal(w: Seq<Vec<Watcher>>, n: Int, f: Formula) -> bool {
     pearlite! {
-        2 * n === w.len() 
-    }
-}
-
-#[predicate]
-pub fn watches_invariant_internal2(w: Seq<Vec<Watcher>>, n: Int, f: Formula) -> bool {
-    pearlite! {
-        true
-        /*
         2 * n === w.len() &&
         forall<i: Int> 0 <= i && i < w.len() ==>
         forall<j: Int> 0 <= j && j < (@w[i]).len() ==>
             @(@w[i])[j].cref < (@f.clauses).len() && 
             (@(@f.clauses)[@(@w[i])[j].cref]).len() > 1
-            */
-
     }
 }
 

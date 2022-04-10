@@ -45,10 +45,10 @@ impl PartialEq for SatState {
 
 
 #[trusted] // OK // zzTODOzz check if this can be moved to clause
-#[ensures(result === (@f.clauses)[@idx].sat(*a))]
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(@idx < (@f.clauses).len())]
+#[ensures(result === (@f.clauses)[@idx].sat(*a))]
 pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
     let clause = &f.clauses[idx];
     let mut i: usize = 0;

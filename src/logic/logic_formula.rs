@@ -150,6 +150,7 @@ impl Formula {
         pearlite! {
             //(@f.clauses).len() > 0 && // added
             formula_invariant(@self)
+            //&& @self.num_vars < @usize::MAX/2 // Added this as it ends up being a pervasive condition otherwise
         }
     }
 
