@@ -17,42 +17,6 @@ use crate::logic::{
 };
 
 
-#[trusted] // OK
-/*
-#[requires(@f.num_vars < @usize::MAX/2)]
-#[requires(@lit.idx < @f.num_vars)]
-#[requires(trail.trail_sem_invariant(*f, *a))]
-#[requires(f.invariant())]
-#[requires(a.invariant(*f))]
-#[requires(trail.invariant(*f))]
-#[requires((@trail.trail).len() > 0)]
-#[requires(watches.invariant(*f))]
-#[requires(@cref < (@f.clauses).len())]
-#[requires(0 <= @k && @k < (@(@f.clauses)[@cref]).len())] // Changed
-#[requires((@(@f.clauses)[@cref]).len() > 2)]
-#[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > 0)] 
-#[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)]
-#[ensures((^watches).invariant(*f))]
-#[ensures(trail.trail_sem_invariant(*f, *a))]
-#[ensures((*f).invariant())]
-#[ensures(trail.invariant(*f))]
-#[ensures(a.invariant(*f))]
-*/
-fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit) {
-    let watchidx = lit.to_watchidx();
-    let end = watches.watches[watchidx].len() - 1;
-    watches.watches[watchidx].swap(j, end);
-    let curr_lit = f.clauses[cref].rest[k];
-    //watches.move_to_end(watchidx, j, curr_lit, f);
-    match watches.watches[watchidx].pop() {
-        Some(w) => {
-            watches.watches[curr_lit.to_neg_watchidx()].push(w);
-        },
-        None => {
-            panic!("Impossible");
-        }
-    }
-}
 
 // Takes a while, but is OK
 #[trusted] // OK

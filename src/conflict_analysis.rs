@@ -46,7 +46,7 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
 }
 
 //#[trusted] // OK [04.04] [[Doesnt check out on Mac [04.04] - struggling with the loop invariants, but that's it]]
-#[trusted] // Come back to it later. Invariant is sticky
+//#[trusted] // Come back to it later. Invariant is sticky
 #[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
 #[requires(_f.invariant())]
 #[requires(equisat_extension_inner(*c, @_f))]

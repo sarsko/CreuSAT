@@ -13,6 +13,7 @@ use crate::{
 #[cfg(contracts)]
 use crate::logic::{
     logic_watches::*,
+    logic_util::*,
 };
 
 
@@ -25,6 +26,64 @@ pub struct Watcher {
 
 pub struct Watches {
     pub watches: Vec<Vec<Watcher>>,
+}
+
+// Much ahoy for nothing?
+// Added a bunch of assertions and lemmas in an attempt to make it faster, but it helped less than desired(still needed for the current encoding)
+// The root cause seems to be that Why3 doesn't wan't to "peek" into things, so when I made abstraction
+// barriers for the invariants, stuff took forever. It checks out, but I should probably come back later and clean up
+#[cfg_attr(all(any(trust_watch, trust_all), not(untrust_all)), trusted)]
+//#[requires(watches.invariant(*f))]
+//#[ensures((^watches).invariant(*f))]
+#[maintains((mut watches).invariant(*f))]
+#[requires(@f.num_vars < @usize::MAX/2)]
+#[requires(@lit.idx < @f.num_vars)]
+//#[requires(trail.trail_sem_invariant(*f, *a))]
+//#[requires(trail.assignments.invariant(*f))]
+#[requires(f.invariant())]
+#[requires(trail.invariant(*f))]
+#[requires((@trail.trail).len() > 0)]
+#[requires(@cref < (@f.clauses).len())]
+#[requires(0 <= @k && @k < (@(@f.clauses)[@cref]).len())] // Changed
+#[requires((@(@f.clauses)[@cref]).len() >= 2)] // This was > 2 before ?
+#[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > 0)] 
+#[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)]
+//#[ensures(trail.trail_sem_invariant(*f, *a))]
+//#[ensures((*f).invariant())]
+//#[ensures(trail.invariant(*f))]
+//#[ensures(a.invariant(*f))]
+pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit) {
+    let watchidx = lit.to_watchidx();
+    let end = watches.watches[watchidx].len() - 1;
+    watches.watches[watchidx].swap(j, end);
+    let curr_lit = f.clauses[cref].rest[k];
+    //watches.move_to_end(watchidx, j, curr_lit, f);
+    proof_assert!(@watchidx < (@watches.watches).len());
+    let old_w = Ghost::record(&watches);
+    //proof_assert!(watcher_crefs_in_range((@(@(@old_w).watches)[@watchidx]), *f));
+    proof_assert!((@old_w).watches === watches.watches);
+    proof_assert!(watcher_crefs_in_range(@(@watches.watches)[@watchidx], *f));
+    match watches.watches[watchidx].pop() {
+        Some(w) => {
+            proof_assert!(^@old_w === ^watches);
+            proof_assert!(lemma_pop_watch_maintains_watcher_invariant(@(@(@old_w).watches)[@watchidx], *f); true);
+            proof_assert!(watcher_crefs_in_range(pop(@(@(@old_w).watches)[@watchidx]), *f));
+            proof_assert!(@(@watches.watches)[@watchidx] === pop(@(@(@old_w).watches)[@watchidx]));
+            proof_assert!(watcher_crefs_in_range(@(@watches.watches)[@watchidx], *f));
+            proof_assert!(watches.invariant(*f));
+            proof_assert!(curr_lit.to_neg_watchidx_logic() < (@watches.watches).len());
+
+            proof_assert!(watcher_crefs_in_range(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f));
+            proof_assert!(@w.cref < (@f.clauses).len());
+            proof_assert!(lemma_push_maintains_watcher_invariant(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f, w); true);
+            watches.watches[curr_lit.to_neg_watchidx()].push(w);
+            proof_assert!(watcher_crefs_in_range(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f));
+            proof_assert!(watches.invariant(*f));
+        },
+        None => {
+            panic!("Impossible");
+        }
+    }
 }
 
 
