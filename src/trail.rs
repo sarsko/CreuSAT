@@ -213,12 +213,14 @@ impl Trail {
 
     #[trusted] // OK (for now, gonna do some additions later)
     #[requires(_f.invariant())]
-    #[requires((@self.trail).len() < @_f.num_vars)]
+    #[requires((@self.trail).len() < @_f.num_vars)] // Is this len stuff even needed?
     #[requires(step.lit.invariant(@_f.num_vars))]
     #[requires(self.invariant(*_f))]
+    #[ensures((^self).invariant(*_f))]
     #[requires(match step.reason {
         Reason::Long(k) => 0 <= @k && @k < (@_f.clauses).len() &&
-        clause_post_with_regards_to_lit((@_f.clauses)[@k], self.assignments, step.lit),
+        (@_f.clauses)[@k].unit(self.assignments), // Changed
+        // wrong lol: clause_post_with_regards_to_lit((@_f.clauses)[@k], self.assignments, step.lit),
         _ => true
     })]
     #[requires(step.invariant(*_f))]
@@ -230,7 +232,14 @@ impl Trail {
     #[ensures(step.lit.sat((^self).assignments))]
     #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
-    #[ensures((^self).invariant(*_f))]
+    // TODO: added
+    #[ensures(match step.reason {
+        Reason::Long(k) => clause_post_with_regards_to_lit((@_f.clauses)[@k], (^self).assignments, step.lit),
+        _ => true
+    })]
+    #[ensures(
+        (@(^self).trail).len() === 1 + (@self.trail).len()
+    )]
     pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
         self.lit_to_level[step.lit.idx] = self.decision_level();
         let trail = &self.trail;
