@@ -60,8 +60,9 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 #[maintains((mut f).invariant())]
 #[maintains((mut t).invariant(mut f))]
 #[maintains((mut w).invariant(mut f))]
-#[requires((@t.trail).len() > 0)]
-#[ensures((@(^t).trail).len() > 0)]
+// Do we really req this?
+//#[requires((@t.trail).len() > 0)]
+//#[ensures((@(^t).trail).len() > 0)]
 // #[maintains((@(mut t).trail).len() > 0)] // Not supported pattern
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(@cref < (@f.clauses).len())]

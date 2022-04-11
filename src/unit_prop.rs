@@ -111,7 +111,7 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, lit:
 #[requires(@lit.idx < @f.num_vars)]
 //#[requires(0 < (@trail.trail).len() && (@trail.trail).len() < @f.num_vars)]
 //#[requires(0 < (@trail.trail).len())]
-#[requires((@trail.decisions).len() > 0)] //dunno, move this to invariant?
+//#[requires((@trail.decisions).len() > 0)] //dunno, move this to invariant?
 #[requires(watches.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
 #[ensures((^trail).decisions === trail.decisions)] // added
@@ -248,7 +248,7 @@ fn unit_prop_do_outer(f: &mut Formula, trail: &mut Trail, watches: &mut Watches,
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(@lit.idx < @f.num_vars)]
 //#[requires((@trail.trail).len() > 0)]
-#[requires((@trail.decisions).len() > 0)] //dunno, move this to invariant?
+//#[requires((@trail.decisions).len() > 0)] //dunno, move this to invariant?
 #[ensures(match result {
     Ok(()) => true,// !(^f).unsat(^a),
     Err(n) => @n < (@(^f).clauses).len() && (^f).unsat((^trail).assignments) && (@(^f).clauses)[@n].unsat((^trail).assignments),

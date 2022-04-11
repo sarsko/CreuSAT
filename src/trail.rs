@@ -53,8 +53,9 @@ pub struct Trail {
 impl Trail {
     #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
     #[inline(always)]
-    #[requires((@self.decisions).len() > 0)]
-    #[ensures(@result === (@self.decisions).len() - 1)]
+    //#[requires((@self.decisions).len() > 0)]
+    //#[ensures(@result === (@self.decisions).len() - 1)]
+    #[ensures(@result === (@self.decisions).len())]
     pub fn decision_level(&self) -> usize {
         //self.decisions.len() - 1
         self.decisions.len()
@@ -267,7 +268,7 @@ impl Trail {
 
 
     #[trusted] // OK
-    #[requires((@self.decisions).len() > 0)]
+    //#[requires((@self.decisions).len() > 0)]
     #[requires(_f.invariant())]
     //#[requires((@self.trail).len() < @_f.num_vars)] // does it?
     #[requires(lit.invariant(@_f.num_vars))]
@@ -282,8 +283,8 @@ impl Trail {
     #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
     #[ensures((^self).invariant(*_f))]
     pub fn enq_decision(&mut self, lit: Lit, _f: &Formula) {
-        let dlevel = self.decisions.len(); // Not doing this results in a Why3 error. Todo: Yell at Xavier
         self.decisions.push(self.trail.len());
+        let dlevel = self.decisions.len(); // Not doing this results in a Why3 error. Todo: Yell at Xavier
         self.enq_assignment2(Step {
             lit: lit,
             decision_level: dlevel,//self.decision_level(),
