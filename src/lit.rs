@@ -46,8 +46,8 @@ impl Lit {
         }
     }
 
-    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
     #[inline(always)]
+    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
     #[requires(self.invariant((@a).len()))]
     #[ensures(result === self.unset(*a))]
     pub fn lit_unset(self, a: &Assignments) -> bool {

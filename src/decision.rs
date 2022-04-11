@@ -35,7 +35,8 @@ pub struct Decisions {
 }
 
 impl Decisions {
-    #[trusted] // OK
+    // OK
+    #[cfg_attr(all(any(trust_decision, trust_all), not(untrust_all)), trusted)]
     #[requires(f.invariant())]
     #[ensures(result.invariant(@f.num_vars))]
     pub fn new(f: &Formula) -> Decisions {
@@ -71,6 +72,8 @@ impl Decisions {
             i += 1;
         }
         sort_reverse(&mut counts_with_index);
+        proof_assert!(forall<j: Int> 0 <= j && j < (@counts_with_index).len() ==> 
+            @(@counts_with_index)[j].1 < @f.num_vars);
         i = 0;
         #[invariant(i_bound, 0 <= @i && @i <= @f.num_vars)]
         #[invariant(lit_order_len, (@lit_order).len() == @f.num_vars)]
@@ -142,6 +145,7 @@ impl Decisions {
     }
     */
 
+    #[cfg_attr(all(any(trust_decision, trust_all), not(untrust_all)), trusted)]
     fn move_to_front(&mut self, tomove: usize) {
         /*
         let old_next = self.linked_list[tomove].next;
@@ -167,7 +171,7 @@ impl Decisions {
     }
 /*
 
-    #[trusted]
+    #[cfg_attr(all(any(trust_decision, trust_all), not(untrust_all)), trusted)]
     pub fn increment_and_move(&mut self, f: &Formula, cref: usize) {
         let clause = &f.clauses[cref];
         let mut i = 0;
@@ -188,7 +192,7 @@ impl Decisions {
     }
     */
 
-    #[trusted]
+    #[cfg_attr(all(any(trust_decision, trust_all), not(untrust_all)), trusted)]
     pub fn get_next(&mut self, a: &Assignments) -> Option<usize> {
         /*
         let mut head = Some(self.head);

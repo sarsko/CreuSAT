@@ -45,7 +45,6 @@ impl PartialEq for SatState {
 }
 
 
-
 impl Formula {
     #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
     #[requires(self.invariant())]
