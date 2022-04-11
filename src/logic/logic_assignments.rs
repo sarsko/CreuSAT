@@ -61,6 +61,7 @@ pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) 
 pub fn assignments_invariant(a: Seq<AssignedState>, f: Formula) -> bool {
     pearlite! {
         @f.num_vars === a.len()
+        && forall<i : Int> 0 <= i && i < a.len() ==> @a[i] <= 3 // NEW, may break stuff
     }
 }
 
@@ -70,6 +71,7 @@ impl Assignments {
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
             @f.num_vars === (@self).len() && @self.1 <= @f.num_vars
+        && forall<i : Int> 0 <= i && i < (@self).len() ==> @(@self)[i] <= 3 // NEW, may break stuff
         }
     }
 

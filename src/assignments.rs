@@ -16,7 +16,7 @@ use crate::logic::{
     logic::*,
     logic_assignments::*,
     logic_clause::*,
-    logic_trail::{trail_invariant, long_are_post_unit_inner_new},
+    logic_trail::*,//{trail_invariant, long_are_post_unit_inner_new},
 };
 
 pub type AssignedState = u8;
@@ -29,28 +29,6 @@ impl Assignments {
     pub fn len(&self) -> usize {
         self.0.len()
     }
-    /*
-    // Not used
-    #[trusted] // Broken atm, fix later
-    #[ensures(forall<i: Int> 0 <= i && i < (@self).len() ==> (@self)[i] === (@result)[i])]
-    #[ensures((@self).len() === (@result).len())]
-    #[ensures(@result.1 === @self.1)]
-    #[ensures(@*self == @result)]
-    pub fn clone(&self) -> Self {
-        let mut out = Vec::new();
-        let mut i: usize = 0;
-        #[invariant(loop_invariant, 0 <= @i && @i <= (@self).len())]
-        #[invariant(equality, forall<j: Int> 0 <= j && j < @i ==> (@out)[j] === (@self)[j])]
-        #[invariant(len, (@out).len() === @i)]
-        while i < self.0.len() {
-            let curr = self.0[i];
-            //out.push(curr.clone());
-            out.push(curr);
-            i += 1;
-        }
-        Assignments(out, self.1)
-    }
-    */
 
     /* Starlit:
 impl PartialAssignment {
@@ -89,118 +67,36 @@ impl PartialAssignment {
 
 */
 
-/*
-    #[inline]
-    #[trusted] // OK [04.04]
-    #[requires(lit.invariant(@_f.num_vars))]
-    #[requires(_t.trail_sem_invariant(*_f, *self))]
-    #[requires(_t.invariant(*_f))]
-    #[requires(_f.invariant())]
-    #[requires(self.invariant(*_f))]
-    #[requires(unset((@self)[@lit.idx]))] // Added, will break stuff further up
-    //#[ensures(self.compatible(^self))]
-    #[ensures((^self).invariant(*_f))]
-    #[ensures(@(@^self)[@lit.idx] === 1 || @(@^self)[@lit.idx] === 0)]
-    #[ensures((@^self).len() === (@self).len())]
-    #[ensures(_t.trail_sem_invariant(*_f, ^self))]
-    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() &&
-        j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
-    #[ensures(lit.sat(^self))]
-    pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Trail) {
-        /*
-        if !self.0[l.idx].is_none() {
-            panic!("Assignment already set. Attempting to set {:?}", l);
-        }
-        */
-        //assert!(self.0[l.idx].is_none());
-        proof_assert!(@(@self)[@lit.idx] >= 2);
-        let old_self = Ghost::record(&self);
-
-        proof_assert!(self.invariant(*_f));
-        proof_assert!(_f.invariant());
-        proof_assert!(vardata_invariant(@_t.vardata, @_f.num_vars));
-        proof_assert!(crefs_in_range(@_t.vardata, *_f));
-        proof_assert!(lit.invariant(@_f.num_vars));
-        proof_assert!(unset((@self)[@lit.idx]));
-        proof_assert!(long_are_post_unit_inner(@_t.vardata, *_f, @self));
-        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t.vardata, *_f, *self, lit));true);
-
-        // zzTODOzz 
-        self.0[lit.idx] = lit.polarity as u8;
-        /*
-        if lit.polarity {
-            self.0[lit.idx] = 1;
-            //proof_assert!(@self === (@@old_self).set(@lit.idx, 1u8));
-        } else {
-            self.0[lit.idx] = 0;
-            //proof_assert!(@self === (@@old_self).set(@lit.idx, 0u8));
-        }
-        */
-        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t.vardata, *_f, *@old_self, lit));true);
-        proof_assert!(^@old_self === ^self);
-
-        proof_assert!(long_are_post_unit_inner(@_t.vardata, *_f, @self));
-        //self.0[l.idx] = l.polarity as u8;
-    }
-    */
-
+    // OK
+    #[cfg_attr(all(any(trust_assignments, trust_all), not(untrust_all)), trusted)]
     #[inline(always)]
-    #[cfg_attr(contracts, trusted)]
-    /*
-    #[trusted] // Post failing(as expected)
+    #[maintains((mut self).invariant(*_f))]
     #[requires(lit.invariant(@_f.num_vars))]
     #[requires(_f.invariant())]
-    // TODO:
     #[requires(trail_invariant(@_t, *_f))] // #[requires(_t.invariant(*_f))]
-    //#[requires(_t.trail_sem_invariant(*_f, *self))]
-
-    #[requires(self.invariant(*_f))]//#[requires(a.invariant(f))]
     #[requires(unset((@self)[@lit.idx]))] // Added, will break stuff further up
-    #[ensures((^self).invariant(*_f))]
+    #[requires(long_are_post_unit_inner(@_t, *_f, @self))]
     #[ensures(@(@^self)[@lit.idx] === 1 || @(@^self)[@lit.idx] === 0)] // Is this needed?
     #[ensures((@^self).len() === (@self).len())]
-    /*
-    #[ensures(_t.trail_sem_invariant(*_f, ^self))]
-    */
-    #[requires(long_are_post_unit_inner_new(@_t, *_f, @self))]
-    #[ensures(long_are_post_unit_inner_new(@_t, *_f, @^self))]
+    #[ensures(long_are_post_unit_inner(@_t, *_f, @^self))]
     #[ensures((forall<j : Int> 0 <= j && j < (@self).len() &&
         j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
     #[ensures(lit.sat(^self))]
-    */
-    pub fn set_assignment_new(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {
-        /*
-        proof_assert!(@(@self)[@lit.idx] >= 2);
+    pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {
         let old_self = Ghost::record(&self);
-
-        proof_assert!(self.invariant(*_f));
-        proof_assert!(_f.invariant());
-        proof_assert!(vardata_invariant(@_t.vardata, @_f.num_vars));
-        proof_assert!(crefs_in_range(@_t.vardata, *_f));
-        proof_assert!(lit.invariant(@_f.num_vars));
-        proof_assert!(unset((@self)[@lit.idx]));
-        proof_assert!(long_are_post_unit_inner(@_t.vardata, *_f, @self));
-        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t.vardata, *_f, *self, lit));true);
-        */
-
+        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *self, lit));true);
         // zzTODOzz 
-       //self.0[lit.idx] = lit.polarity as u8;
+        //self.0[lit.idx] = lit.polarity as u8;
         if lit.polarity {
             self.0[lit.idx] = 1;
-            //proof_assert!(@self === (@@old_self).set(@lit.idx, 1u8));
+            proof_assert!(@self == (@@old_self).set(@lit.idx, 1u8));
         } else {
             self.0[lit.idx] = 0;
-            //proof_assert!(@self === (@@old_self).set(@lit.idx, 0u8));
+            proof_assert!(@self == (@@old_self).set(@lit.idx, 0u8));
         }
-       /*
-        */
-        /*
-        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t.vardata, *_f, *@old_self, lit));true);
+        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *@old_self, lit));true);
         proof_assert!(^@old_self === ^self);
-
-        proof_assert!(long_are_post_unit_inner(@_t.vardata, *_f, @self));
-        */
-        //self.0[l.idx] = l.polarity as u8;
+        proof_assert!(long_are_post_unit_inner(@_t, *_f, @self));
     }
 
     #[trusted] // OK

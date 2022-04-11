@@ -55,15 +55,26 @@ impl Trail {
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
+            self.invariant_no_decision(f)
+            && decisions_invariant(@self.decisions, @self.trail)
+            // I am not sure these will be needed
+            //trail_entries_are_assigned_inner(@self.trail, @self.assignments) && // added
+            //assignments_are_in_trail(@self.trail, @self.assignments) // added
+        }
+    }
+
+    #[predicate]
+    pub fn invariant_no_decision(self, f: Formula) -> bool {
+        pearlite! {
             self.assignments.invariant(f) 
             && trail_invariant(@self.trail, f)
             && lit_to_level_invariant(@self.lit_to_level, f)
-            && decisions_invariant(@self.decisions, @self.trail)
             // added, watch out
             && self.lit_not_in_less(f)
             && self.lit_is_unique()
             && long_are_post_unit_inner(@self.trail, f, @self.assignments)
             && self.trail_entries_are_assigned() // ADDED
+            && self.decisions_are_sorted() // NEW
             // I am not sure these will be needed
             //trail_entries_are_assigned_inner(@self.trail, @self.assignments) && // added
             //assignments_are_in_trail(@self.trail, @self.assignments) // added
@@ -74,6 +85,13 @@ impl Trail {
     pub fn trail_entries_are_assigned(self) -> bool {
         pearlite! {
             trail_entries_are_assigned_inner(@self.trail, @self.assignments)
+        }
+    }
+
+    #[predicate]
+    pub fn decisions_are_sorted(self) -> bool {
+        pearlite! {
+            sorted(@self.decisions)
         }
     }
 
@@ -101,7 +119,7 @@ impl Trail {
 #[predicate]
 pub fn trail_invariant(trail: Seq<Step>, f: Formula) -> bool {
     pearlite! {
-        trail.len() <= @f.num_vars && // Is this really needed?
+        //trail.len() <= @f.num_vars && // Is this really needed? // might reintroduce it. If so I'll do a proof in enq_assignments
         crefs_in_range(trail, f)
     }
 }
@@ -208,21 +226,10 @@ pub fn long_are_post_unit(trail: Trail, f: Formula) -> bool {
 pub fn long_are_post_unit_inner(trail: Seq<Step>, f: Formula, a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<j: Int> 0 <= j && j < trail.len() ==> 
-        match trail[j].reason { 
-            Reason::Long(k) => { clause_post_with_regards_to_inner((@f.clauses)[@k], a, @(trail)[j].lit.idx) },
-                _ => true,
-            }
-    }
-}
-
-#[predicate]
-pub fn long_are_post_unit_inner_new(trail: Seq<Step>, f: Formula, a: Seq<AssignedState>) -> bool {
-    pearlite! {
-        forall<j: Int> 0 <= j && j < trail.len() ==> 
-        match trail[j].reason { 
-            Reason::Long(k) => { clause_post_with_regards_to_inner((@f.clauses)[@k], a, @(trail)[j].lit.idx) },
-                _ => true,
-            }
+            match trail[j].reason { 
+                Reason::Long(k) => { clause_post_with_regards_to_inner((@f.clauses)[@k], a, @(trail)[j].lit.idx) },
+                    _ => true,
+                }
     }
 }
 
@@ -443,4 +450,21 @@ fn lemma_assign_maintains_for_each_to_post(v: Seq<Step>, f: Formula, a: Assignme
 pub fn lemma_assign_maintains_long_are_post_unit(v: Seq<Step>, f: Formula, a: Assignments, lit: Lit) {
     lemma_assign_maintains_post_for_each(f, a, lit);
     lemma_assign_maintains_for_each_to_post(v, f, a, lit);
+}
+
+// with lit unwrapped // TODO
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), not(untrust_all)), trusted)]
+#[logic]
+#[requires(a.invariant(f))]
+#[requires(f.invariant())]
+#[requires(trail_invariant(v, f))]
+#[requires(crefs_in_range(v, f))]
+#[requires(@idx < @f.num_vars)]
+#[requires(unset((@a)[@idx]))]
+#[requires(long_are_post_unit_inner(v, f, @a))]
+#[ensures(long_are_post_unit_inner(v, f, (@a).set(@idx, 1u8)))]
+#[ensures(long_are_post_unit_inner(v, f, (@a).set(@idx, 0u8)))]
+pub fn lemma_assign_maintains_long_are_post_unit2(v: Seq<Step>, f: Formula, a: Assignments, idx: usize) {
+    //lemma_assign_maintains_post_for_each(f, a, idx)
+    //lemma_assign_maintains_for_each_to_post(v, f, a, idx);
 }

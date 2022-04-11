@@ -211,10 +211,12 @@ fn outer_loop(f: &mut Formula, d: &Decisions, trail: &mut Trail, w: &mut Watches
             // zzTODOzz DO A PROOF HERE
             // Have to do a proof to an unassigned cannot affect any post_units
             // VC Checks out, but it is slow.
-            let lit = Lit{ idx: next, polarity: if trail.assignments.0[next] == 2 {false} else {true} }; // TODO encapsulate
+            // CHANGED
+            //let lit = Lit{ idx: next, polarity: if trail.assignments.0[next] == 2 {false} else {true} }; // TODO encapsulate
+            //trail.enq_decision(lit, f);
+            trail.enq_decision(next, f);
             //t.assignments.0[next] -= 2;
             //t.enq_assignment(lit, Reason::Decision, f, a);
-            trail.enq_decision(lit, f);
             //proof_assert!(t.trail_sem_invariant(*f, *a));
         },
         None => { 
