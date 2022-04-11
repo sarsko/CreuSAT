@@ -239,7 +239,8 @@ impl Trail {
     }
 
 
-    // OK on Linux(lit_not_in_less takes forever)
+    // Checks out on mac with introduction of lemma.
+    // Can be made even faster with some more lemmas.
     #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(_f.invariant())]
@@ -263,29 +264,23 @@ impl Trail {
         Reason::Long(k) => clause_post_with_regards_to_lit((@_f.clauses)[@k], (^self).assignments, step.lit),
         _ => true
     })]
-    #[ensures(
-        (@(^self).trail).len() === 1 + (@self.trail).len()
-    )]
+    #[ensures((@(^self).trail).len() === 1 + (@self.trail).len())]
     #[ensures((^self).decisions === self.decisions)] // added
     pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
         self.lit_to_level[step.lit.idx] = self.decision_level();
         let trail = &self.trail;
-        //proof_assert!(@_f.clauses)[@k].unit(self.assignments);
-        //proof_assert!(unset((@self.assignments)[@step.lit.idx]));
+        let old_self = Ghost::record(&self);
+        proof_assert!(unset((@(@old_self).assignments)[@step.lit.idx]));
         self.assignments.set_assignment(step.lit, _f, trail);
-        proof_assert!(self.lit_not_in_less(*_f)); // checking out on Linux
-        proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments)); // Nope
-        //proof_assert!((@self.trail).len() <= @_f.num_vars); // Either remove this or do a proof that it is impossible for it to be longer
-        proof_assert!(!step.lit.idx_in_trail(self.trail));
-        proof_assert!(self.lit_is_unique());
-        proof_assert!(match step.reason {
-            Reason::Long(k) => clause_post_with_regards_to_lit((@_f.clauses)[@k], self.assignments, step.lit),
-            _ => true
-        });
+        proof_assert!(lit_not_in_less_inner(@self.trail, *_f));
+        proof_assert!(step.invariant(*_f));
+        proof_assert!(lemma_push_maintains_lit_not_in_less(*self, *_f, step); true);
         self.trail.push(step);
-        proof_assert!(self.lit_not_in_less(*_f)); // Checks out on Linux. Takes way too long
+        proof_assert!((@(@old_self).trail).push(step) === @self.trail);
+        proof_assert!(^@old_self === ^self);
+        proof_assert!(lit_not_in_less_inner(@self.trail, *_f));
+        proof_assert!(self.lit_not_in_less(*_f)); 
         proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
-        //proof_assert!((@self.trail).len() <= @_f.num_vars && true); // Either remove this or do a proof that it is impossible for it to be longer
 
         // This is just the trail invariant unwrapped
         /*
@@ -301,7 +296,8 @@ impl Trail {
     }
 
 
-    // OK on Linux. As with the other, lit_not_in_less takes time
+    // Checks out on mac with introduction of lemma. For some reason trail_entries_are_assigned
+    // is now slowest. Should be solveable by another lemma
     #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
     #[requires(_f.invariant())]
     #[maintains((mut self).invariant(*_f))]
@@ -313,9 +309,7 @@ impl Trail {
     #[ensures(@(@(^self).assignments)[@idx] === 1 || @(@(^self).assignments)[@idx] === 0)] // Is this needed?
     #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
-    #[ensures(
-        (@(^self).trail).len() === 1 + (@self.trail).len()
-    )]
+    #[ensures((@(^self).trail).len() === 1 + (@self.trail).len())]
     pub fn enq_decision(&mut self, idx: usize, _f: &Formula) {
         let old_self = Ghost::record(&self);
         let trail_len = self.trail.len();
@@ -323,6 +317,8 @@ impl Trail {
         let dlevel = self.decisions.len(); // Not doing this results in a Why3 error. Todo: Yell at Xavier
         self.lit_to_level[idx] = dlevel;
         proof_assert!(lemma_assign_maintains_long_are_post_unit2(@self.trail, *_f, self.assignments, idx); true);
+        let old_self = Ghost::record(&self);
+        proof_assert!(unset((@(@old_self).assignments)[@idx]));
         self.assignments.0[idx] -= 2;
         proof_assert!(@self.assignments == (@(@old_self).assignments).set(@idx, 0u8) ||
                       @self.assignments == (@(@old_self).assignments).set(@idx, 1u8));
@@ -335,15 +331,23 @@ impl Trail {
             decision_level: dlevel,
             reason: Reason::Decision,
         };
+        proof_assert!(lit_not_in_less_inner(@self.trail, *_f));
+        proof_assert!(step.invariant(*_f));
+        proof_assert!(lemma_push_maintains_lit_not_in_less(*self, *_f, step); true);
         self.trail.push(step);
+        proof_assert!((@(@old_self).trail).push(step) === @self.trail);
+        proof_assert!(^@old_self === ^self);
+        proof_assert!(lit_not_in_less_inner(@self.trail, *_f));
+        proof_assert!(self.lit_not_in_less(*_f));
+        proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
         // This is just the trail invariant unwrapped
         proof_assert!(self.assignments.invariant(*_f));
         proof_assert!(trail_invariant(@self.trail, *_f));
         proof_assert!(lit_to_level_invariant(@self.lit_to_level, *_f));
         proof_assert!(decisions_invariant(@self.decisions, @self.trail));
-        proof_assert!(self.lit_not_in_less(*_f));
         proof_assert!(self.lit_is_unique());
-        proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
+        //proof_assert!(self.lit_not_in_less(*_f)); 
+        //proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
         proof_assert!(self.trail_entries_are_assigned());
     }
 

@@ -27,8 +27,6 @@ pub enum Conflict {
     Panic,
 }
 
-// Both of these should be changed to unary_ok, but things are checking out somehow
-
 #[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
 #[ensures(result === (exists<i: Int> 0 <= i && i < (@v).len() && @(@v)[i].idx === @idx))]
 fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {

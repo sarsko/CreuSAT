@@ -98,12 +98,8 @@ impl Trail {
     #[predicate]
     pub fn lit_not_in_less(self, f: Formula) -> bool {
         pearlite! {
-            forall<i: Int> 0 <= i && i < (@self.trail).len() ==>
-                forall<j: Int> 0 <= j && j < i ==>
-                match (@self.trail)[j].reason {
-                    Reason::Long(cref) => !(@self.trail)[i].lit.lit_idx_in((@f.clauses)[@cref]),
-                    _ => true,
-                }
+            // moved into function. May break stuff
+            lit_not_in_less_inner(@self.trail, f)
         }
     }
 
@@ -113,6 +109,18 @@ impl Trail {
         pearlite! {
             lit_is_unique_inner(@self.trail)
         }
+    }
+}
+
+#[predicate]
+pub fn lit_not_in_less_inner(t: Seq<Step>, f: Formula) -> bool {
+    pearlite! {
+        forall<i: Int> 0 <= i && i < t.len() ==>
+            forall<j: Int> 0 <= j && j < i ==>
+                match t[j].reason {
+                    Reason::Long(cref) => !(t)[i].lit.lit_idx_in((@f.clauses)[@cref]),
+                    _ => true,
+                }
     }
 }
 
@@ -389,13 +397,6 @@ pub fn lemma_backtrack_ok(t: Trail, f: Formula, l: Lit) {
 
 
 // UNUSED
-#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), not(untrust_all)), trusted)]
-#[logic]
-#[requires(c.invariant(@f.num_vars))]
-//#[requires(a.invariant(f))] // Don't even need this
-#[requires(c.post_unit(t.assignments))]
-#[ensures(forall<i: Int> 0 <= i && i < (@c).len() ==> !(@c)[i].unset(t.assignments))]
-fn lemma_post_unit_no_unset(c: Clause, t: Trail, f: Formula) {}
 
 #[cfg_attr(all(any(trust_trail, trust_all, trust_logic), not(untrust_all)), trusted)]
 #[logic]
@@ -467,4 +468,64 @@ pub fn lemma_assign_maintains_long_are_post_unit(v: Seq<Step>, f: Formula, a: As
 pub fn lemma_assign_maintains_long_are_post_unit2(v: Seq<Step>, f: Formula, a: Assignments, idx: usize) {
     //lemma_assign_maintains_post_for_each(f, a, idx)
     //lemma_assign_maintains_for_each_to_post(v, f, a, idx);
+}
+
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), not(untrust_all)), trusted)]
+#[logic]
+#[requires(c.invariant(@f.num_vars))]
+#[requires(c.post_unit(t.assignments))]
+#[ensures(forall<i: Int> 0 <= i && i < (@c).len() ==> !(@c)[i].unset(t.assignments))]
+fn lemma_post_unit_no_unset(c: Clause, t: Trail, f: Formula) {}
+
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), not(untrust_all)), trusted)]
+#[logic]
+#[requires(c.invariant(@f.num_vars))]
+#[requires(c.post_unit(t.assignments))]
+#[requires(idx < @f.num_vars)]
+#[requires(unset((@t.assignments)[idx]))]
+#[ensures(forall<i: Int> 0 <= i && i < (@c).len() ==> @(@c)[i].idx != idx)]
+fn lemma_idx_not_in_post_unit(c: Clause, t: Trail, f: Formula, idx: Int) {}
+
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), not(untrust_all)), trusted)]
+#[logic]
+//#[requires(f.invariant())]
+#[requires(t.invariant(f))]
+#[requires(step.invariant(f))]
+#[requires(unset((@t.assignments)[@step.lit.idx]))]
+#[ensures(forall<i: Int> 0 <= i && i < (@t.trail).len() ==>
+    match (@t.trail)[i].reason {
+        Reason::Long(cref) => 
+        forall<k: Int> 0 <= k && k < (@(@f.clauses)[@cref]).len() ==> 
+            (@(@f.clauses)[@cref])[k].idx != step.lit.idx,
+        _ => true,
+})]
+fn lemma_unset_to_forall(t: Trail, f: Formula, step: Step) {}
+
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), not(untrust_all)), trusted)]
+#[logic]
+//#[requires(f.invariant())]
+#[requires(t.invariant(f))]
+#[requires(unset((@t.assignments)[@step.lit.idx]))]
+#[requires(step.invariant(f))]
+#[requires(forall<i: Int> 0 <= i && i < (@t.trail).len() ==>
+    match (@t.trail)[i].reason {
+        Reason::Long(cref) => 
+            forall<k: Int> 0 <= k && k < (@(@f.clauses)[@cref]).len() ==> 
+                (@(@f.clauses)[@cref])[k].idx != step.lit.idx,
+            _ => true,
+})]
+#[ensures(lit_not_in_less_inner((@t.trail).push(step), f))]
+fn lemma_forall_to_unset_push(t: Trail, f: Formula, step: Step) {}
+
+#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), not(untrust_all)), trusted)]
+#[logic]
+#[requires(f.invariant())]
+#[requires(t.invariant(f))]
+#[requires(unset((@t.assignments)[@step.lit.idx]))]
+#[requires(step.invariant(f))]
+#[requires(lit_not_in_less_inner(@t.trail, f))]
+#[ensures(lit_not_in_less_inner((@t.trail).push(step), f))]
+pub fn lemma_push_maintains_lit_not_in_less(t: Trail, f: Formula, step: Step) {
+        lemma_unset_to_forall(t, f, step);
+        lemma_forall_to_unset_push(t, f, step);
 }
