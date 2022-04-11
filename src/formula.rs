@@ -1,3 +1,4 @@
+// Formula is Mac OK with an inline_full + split on VC #12 for add_clause 11.04 22.18
 extern crate creusot_contracts;
 
 use creusot_contracts::*;
@@ -33,7 +34,7 @@ pub enum SatState {
 }
 
 impl PartialEq for SatState {
-    #[trusted] // OK
+    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
     fn eq(&self, other: &Self) -> bool {
         return match (self, other) {
             (SatState::Unknown, SatState::Unknown)  => true,
@@ -119,7 +120,6 @@ impl Formula {
 // UNUSED
 impl Formula {
     // NONE OF THESE ARE IN USE
-    #[trusted] // OK
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[ensures(result === self.unsat(*a))]
@@ -138,7 +138,6 @@ impl Formula {
     }
 
 
-    #[trusted] // OK
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[ensures((result === SatState::Sat) === self.sat(*a))]

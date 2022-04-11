@@ -1,3 +1,4 @@
+// Wactches is Mac OK 11.04 22.22
 extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
@@ -8,7 +9,7 @@ use crate::logic::{
 };
 
 // Selection sort with larger elements first. Based on the one in Creusot repo by me and Xavier
-#[trusted] // OK
+#[cfg_attr(all(any(trust_util, trust_all), not(untrust_all)), trusted)]
 #[ensures(sorted_rev(@^v))]
 #[ensures((@^v).permutation_of(@v))]
 pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {

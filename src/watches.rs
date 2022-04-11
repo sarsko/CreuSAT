@@ -1,3 +1,4 @@
+// Wactches is Mac OK 11.04 22.10
 extern crate creusot_contracts;
 use creusot_contracts::*;
 use creusot_contracts::std::*;
@@ -33,7 +34,7 @@ pub struct Watches {
 // Added a bunch of assertions and lemmas in an attempt to make it faster, but it helped less than desired(still needed for the current encoding)
 // The root cause seems to be that Why3 doesn't wan't to "peek" into things, so when I made abstraction
 // barriers for the invariants, stuff took forever. It checks out, but I should probably come back later and clean up
-#[cfg_attr(all(any(trust_watch, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
 //#[requires(watches.invariant(*f))]
 //#[ensures((^watches).invariant(*f))]
 #[maintains((mut watches).invariant(*f))]
@@ -89,9 +90,8 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
 
 
 impl Watches {
-    // The way clauses are made and added should really be changed - builder pattern?
     // OK
-    #[cfg_attr(all(any(trust_watch, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
     #[ensures(result.invariant(*f))]
     pub fn new(f: &Formula) -> Watches {
         let mut i: usize = 0;
@@ -109,7 +109,7 @@ impl Watches {
     // This whole should be updated/merged with formula add_clause
     // We watch the negated literal for updates
     // OK
-    #[cfg_attr(all(any(trust_watch, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(@cref < (@_f.clauses).len())]
     #[requires(@lit.idx < @usize::MAX/2)]
@@ -120,7 +120,7 @@ impl Watches {
     }
 
     // OK
-    #[cfg_attr(all(any(trust_watch, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(@new_lit.idx < @usize::MAX/2)]
     #[requires(new_lit.to_neg_watchidx_logic() < (@self.watches).len())]
@@ -134,14 +134,13 @@ impl Watches {
 
     // Requires duplicates to be removed
     // OK
-    #[cfg_attr(all(any(trust_watch, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
     #[maintains((mut self).invariant(*f))]
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(f.invariant())]
     pub fn init_watches(&mut self, f: &Formula) {
         let old_w = Ghost::record(&self); 
         let mut i = 0;
-        //#[invariant(watchidx, f.idxs_in_range())]  // #[trusted] // OK
         #[invariant(watch_inv, self.invariant(*f))]
         #[invariant(same_len, (@self.watches).len() === 2 * @f.num_vars)]
         #[invariant(proph, ^self === ^@old_w)]

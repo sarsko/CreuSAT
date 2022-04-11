@@ -2,13 +2,10 @@ extern crate creusot_contracts;
 use creusot_contracts::*;
 use creusot_contracts::std::*;
 
-//use crate::lit::*;
-//use crate::clause::*;
 use crate::{
     assignments::*,
     decision::*,
     formula::*,
-    //trail::*,
     trail::{ Trail, Step },
 };
 
@@ -71,10 +68,11 @@ impl Assignments {
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
             @f.num_vars === (@self).len() && @self.1 <= @f.num_vars
-        && forall<i : Int> 0 <= i && i < (@self).len() ==> @(@self)[i] <= 3 // NEW, may break stuff
+            && forall<i : Int> 0 <= i && i < (@self).len() ==> @(@self)[i] <= 3 // NEW, may break stuff
         }
     }
 
+    // I believe all of these can be removed ?
     #[predicate]
     pub fn compatible(self, a2: Assignments) -> bool {
         pearlite! { compatible_inner(@self, @a2) }

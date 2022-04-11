@@ -2,15 +2,6 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-/*
-#[trusted]
-#[ensures(@l <= @result && @result  < @u)]
-fn rand_in_range(l: usize, u: usize) -> usize {
-    use creusot_contracts::rand::Rng;
-    rand::thread_rng().gen_range(l..u)
-}
-*/
-
 #[predicate]
 pub fn sorted_range_rev(s: Seq<(usize, usize)>, l: Int, u: Int) -> bool {
     pearlite! {

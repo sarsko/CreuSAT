@@ -305,7 +305,6 @@ fn lemma_trail_fin(t: Trail, f: Formula, lit: Lit) {
 }
 
 // Checks out, but takes a surprising amount of time
-//#[trusted] // OK
 #[cfg_attr(all(any(trust_trail, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[logic]
 #[requires(f.invariant())]

@@ -1,3 +1,4 @@
+// Assignments is Mac OK 11.04 22.17
 extern crate creusot_contracts;
 use creusot_contracts::*;
 use creusot_contracts::std::*;
@@ -22,8 +23,7 @@ pub type AssignedState = u8;
 // A.1 is temporary
 pub struct Assignments(pub Vec<AssignedState>, pub usize);
 
-
-#[trusted]
+#[cfg_attr(not(untrust_perm), trusted)]
 #[ensures(@l <= @result && @result  < @u)]
 fn rand_in_range(l: usize, u: usize) -> u8 {
     use creusot_contracts::rand::Rng;

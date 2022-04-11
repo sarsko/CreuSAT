@@ -144,7 +144,7 @@ impl Formula {
     }
 
     #[predicate]
-    #[trusted] // OK
+    #[cfg_attr(all(any(trust_formula, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
     #[ensures(result === self.invariant_old())]
     pub fn invariant(self) -> bool {
         pearlite! {
@@ -187,7 +187,7 @@ impl Formula {
     }
 
     #[predicate]
-    #[trusted] // OK
+    #[cfg_attr(all(any(trust_formula, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
     #[ensures(result === self.sat_inner(@a))]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! { 

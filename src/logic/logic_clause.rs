@@ -32,7 +32,6 @@ pub fn vars_in_range_inner(s: Seq<Lit>, n: Int) -> bool {
     }
 }
 
-// This is new and will lead to a bunch of new pres/posts
 #[predicate]
 pub fn at_least_binary(s: Seq<Lit>) -> bool {
     pearlite! {
@@ -43,25 +42,24 @@ pub fn at_least_binary(s: Seq<Lit>) -> bool {
 #[predicate]
 pub fn invariant_unary_ok_internal(s: Seq<Lit>, n: Int) -> bool {
     pearlite! {
-        vars_in_range_inner(s, n) && no_duplicate_indexes_inner(s)
+           vars_in_range_inner(s, n) 
+        && no_duplicate_indexes_inner(s)
     }
-
 }
 
 #[predicate]
 pub fn invariant_internal(s: Seq<Lit>, n: Int) -> bool {
     pearlite! {
-        vars_in_range_inner(s, n) && no_duplicate_indexes_inner(s)
+           vars_in_range_inner(s, n) 
+        && no_duplicate_indexes_inner(s)
         && at_least_binary(s)
     }
-
 }
 
 #[predicate]
 pub fn equisat_extension_inner(c: Clause, f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
         eventually_sat_complete_no_ass(f) ==> eventually_sat_complete_no_ass((f.0.push(c), f.1))
-        //f.eventually_sat_complete_no_ass() ==> eventually_sat_complete_no_ass(f)
     }
 }
 
@@ -82,29 +80,6 @@ pub fn no_duplicate_indexes_inner(s: Seq<Lit>) -> bool {
 
 // The states for doing cdcl stuff
 impl Clause {
-    #[predicate]
-    pub fn unit_inner2(self, a: Seq<AssignedState>) -> bool {
-        pearlite! {
-            exists<i: Int> 0 <= i && i < (@self).len() && 
-                (@self)[i].unset_inner(a) && forall<j: Int> 0 <= j && j < (@self).len() &&
-                j != i ==> (@self)[j].unsat_inner(a)
-            /*
-            self.vars_in_range(a.len()) &&
-                !self.sat_inner(a) && 
-                    exists<i: Int> 0 <= i && i < (@self).len() &&
-                        (@self)[i].unset_inner(a) && 
-                            (forall<j: Int> 0 <= j && j < (@self).len() && j != i ==>
-                                !(@self)[j].unset_inner(a))
-                                */
-        }
-    }
-    #[predicate]
-    pub fn unit2(self, a: Assignments) -> bool {
-        pearlite! {
-            self.unit_inner2(@a)
-        }
-    }
-
     #[predicate]
     pub fn post_unit_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {

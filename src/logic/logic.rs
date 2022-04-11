@@ -229,17 +229,6 @@ pub fn lemma_resolved_post_and_unsat_is_unsat(c: Clause, c2: Clause, c3: Clause,
 #[ensures(@(f2.0)[(f2.0).len()-1] === @c)]
 pub fn lemma_eq_formulas(f: (Seq<Clause>, Int), f2: (Seq<Clause>, Int), c: Clause) {}
 
-/*
-#[trusted] // OK
-#[logic]
-#[requires(t2.0 === t.0.push(l))]
-#[requires(t2.1 === t.1)]
-#[requires(trail_invariant_full_no_sep(t2, f))]
-#[ensures(trail_invariant_full_no_sep(t, f))]
-#[ensures((t.0).len() + 1 === (t2.0).len())]
-pub fn lemma_eq_trail(t: (Seq<Vec<Lit>>, Seq<(usize, Reason)>), t2: (Seq<Vec<Lit>>, Seq<(usize, Reason)>), f: Formula, l: Vec<Lit>) {}
-*/
-
 #[cfg_attr(all(any(trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[logic]
 #[requires(formula_invariant(f))]
