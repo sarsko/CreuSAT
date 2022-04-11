@@ -24,8 +24,8 @@ pub struct Lit {
 
 
 impl Lit {
-    #[trusted] // OK
     #[inline(always)]
+    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
     #[requires(self.invariant((@a).len()))]
     #[ensures(result === self.sat(*a))]
     pub fn lit_sat(self, a: &Assignments) -> bool {
@@ -35,8 +35,8 @@ impl Lit {
         }
     }
 
-    #[trusted] // OK
     #[inline(always)]
+    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
     #[requires(self.invariant((@a).len()))]
     #[ensures(result === self.unsat(*a))]
     pub fn lit_unsat(self, a: &Assignments) -> bool {
@@ -46,7 +46,7 @@ impl Lit {
         }
     }
 
-    #[trusted] // OK
+    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
     #[inline(always)]
     #[requires(self.invariant((@a).len()))]
     #[ensures(result === self.unset(*a))]
@@ -55,7 +55,7 @@ impl Lit {
     }
     
     // Gets the index of the literal in the representation used for the watchlist
-    #[trusted] // OK
+    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
     #[requires(@self.idx < @usize::MAX/2)]
     #[ensures(@result === self.to_watchidx_logic())]
     #[ensures(@result === @self.idx * 2 + if self.polarity { 0 } else { 1 })]
@@ -63,7 +63,7 @@ impl Lit {
         self.idx * 2 + if self.polarity { 0 } else { 1 }
     }
     // Gets the index of the literal of the opposite polarity(-self) in the representation used for the watchlist
-    #[trusted] // OK
+    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
     #[requires(@self.idx < @usize::MAX/2)]
     #[ensures(@result === self.to_neg_watchidx_logic())]
     #[ensures(@result === @self.idx * 2 + if self.polarity { 1 } else { 0 })]
@@ -73,8 +73,9 @@ impl Lit {
 }
 
 impl PartialEq for Lit {
-    #[trusted] // OK
-    #[ensures(result === (*self === *other))]
+    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
+    #[ensures(result === (self.idx == other.idx && self.polarity == other.polarity))]
+    //#[ensures(result === (*self === *other))] // :(
     fn eq(&self, other: &Lit) -> bool {
         self.idx == other.idx && self.polarity == other.polarity
     } 
@@ -84,7 +85,7 @@ impl ops::Not for Lit {
     type Output = Lit;
 
     #[inline]
-    #[trusted] // OK
+    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
     #[ensures(@result.idx === @self.idx)]
     #[ensures(result.polarity === !self.polarity)]
     fn not(self) -> Lit {
