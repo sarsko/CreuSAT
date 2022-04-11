@@ -43,7 +43,7 @@ pub struct Watches {
 //#[requires(trail.assignments.invariant(*f))]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
-#[requires((@trail.trail).len() > 0)]
+//#[requires((@trail.trail).len() > 0)]
 #[requires(@cref < (@f.clauses).len())]
 #[requires(0 <= @k && @k < (@(@f.clauses)[@cref]).len())] // Changed
 #[requires((@(@f.clauses)[@cref]).len() >= 2)] // This was > 2 before ?

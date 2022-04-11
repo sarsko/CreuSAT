@@ -56,7 +56,8 @@ impl Trail {
     #[requires((@self.decisions).len() > 0)]
     #[ensures(@result === (@self.decisions).len() - 1)]
     pub fn decision_level(&self) -> usize {
-        self.decisions.len() - 1
+        //self.decisions.len() - 1
+        self.decisions.len()
     }
     /*
     #[ensures(result.invariant(*f))]
@@ -73,7 +74,7 @@ impl Trail {
             lit_to_level: vec::from_elem(usize::MAX, a_len), 
             trail: Vec::new(),
             curr_i: 0,
-            decisions: vec::from_elem(0, 1),
+            decisions: Vec::new(),//vec::from_elem(0, 1),
         }
     }
     
@@ -213,7 +214,8 @@ impl Trail {
 
     #[trusted] // OK (for now, gonna do some additions later)
     #[requires(_f.invariant())]
-    #[requires((@self.trail).len() < @_f.num_vars)] // Is this len stuff even needed?
+    // Okay lets try removing the len stuff and then prove that it is impossible due to the invariants
+    //#[requires((@self.trail).len() < @_f.num_vars)] // Is this len stuff even needed?
     #[requires(step.lit.invariant(@_f.num_vars))]
     #[requires(self.invariant(*_f))]
     #[ensures((^self).invariant(*_f))]
@@ -240,6 +242,7 @@ impl Trail {
     #[ensures(
         (@(^self).trail).len() === 1 + (@self.trail).len()
     )]
+    #[ensures((^self).decisions === self.decisions)] // added
     pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
         self.lit_to_level[step.lit.idx] = self.decision_level();
         let trail = &self.trail;
@@ -266,7 +269,7 @@ impl Trail {
     #[trusted] // OK
     #[requires((@self.decisions).len() > 0)]
     #[requires(_f.invariant())]
-    #[requires((@self.trail).len() < @_f.num_vars)]
+    //#[requires((@self.trail).len() < @_f.num_vars)] // does it?
     #[requires(lit.invariant(@_f.num_vars))]
     #[requires(self.invariant(*_f))]
     #[requires(lit.invariant(@_f.num_vars))]
@@ -290,9 +293,9 @@ impl Trail {
     }
     // Maybe remove this, I dunno
     #[trusted] // OK
-    #[requires((@self.decisions).len() === 1)]
+    //#[requires((@self.decisions).len() === 1)] // wrong no? 
     #[requires(_f.invariant())]
-    #[requires((@self.trail).len() < @_f.num_vars)]
+    //#[requires((@self.trail).len() < @_f.num_vars)] // nah
     #[requires(lit.invariant(@_f.num_vars))]
     #[requires(self.invariant(*_f))]
     #[requires(lit.invariant(@_f.num_vars))]
@@ -306,7 +309,7 @@ impl Trail {
     #[ensures((^self).invariant(*_f))]
     pub fn learn_unit(&mut self, lit: Lit, _f: &Formula) {
         if self.decision_level() > 0 {
-            self.backtrack_to(1, _f);
+            self.backtrack_to(0, _f);
         }
         self.enq_assignment(Step {
             lit: lit,
