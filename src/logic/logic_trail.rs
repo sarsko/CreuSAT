@@ -196,8 +196,8 @@ pub fn lit_is_unique_inner(trail: Seq<Step>) -> bool {
 #[predicate]
 pub fn long_are_post_unit(trail: Trail, f: Formula) -> bool {
     pearlite! {
-        forall<j: Int> 0 <= j && j < (@trail.trail).len() ==> match
-        (@trail.trail)[j].reason { 
+        forall<j: Int> 0 <= j && j < (@trail.trail).len() ==> 
+        match (@trail.trail)[j].reason { 
             Reason::Long(k) => { clause_post_with_regards_to((@f.clauses)[@k], trail.assignments, @(@trail.trail)[j].lit.idx) },
                 _ => true,
             }
@@ -207,8 +207,8 @@ pub fn long_are_post_unit(trail: Trail, f: Formula) -> bool {
 #[predicate]
 pub fn long_are_post_unit_inner(trail: Seq<Step>, f: Formula, a: Seq<AssignedState>) -> bool {
     pearlite! {
-        forall<j: Int> 0 <= j && j < trail.len() ==> match
-        trail[j].reason { 
+        forall<j: Int> 0 <= j && j < trail.len() ==> 
+        match trail[j].reason { 
             Reason::Long(k) => { clause_post_with_regards_to_inner((@f.clauses)[@k], a, @(trail)[j].lit.idx) },
                 _ => true,
             }
@@ -218,8 +218,8 @@ pub fn long_are_post_unit_inner(trail: Seq<Step>, f: Formula, a: Seq<AssignedSta
 #[predicate]
 pub fn long_are_post_unit_inner_new(trail: Seq<Step>, f: Formula, a: Seq<AssignedState>) -> bool {
     pearlite! {
-        forall<j: Int> 0 <= j && j < trail.len() ==> match
-        trail[j].reason { 
+        forall<j: Int> 0 <= j && j < trail.len() ==> 
+        match trail[j].reason { 
             Reason::Long(k) => { clause_post_with_regards_to_inner((@f.clauses)[@k], a, @(trail)[j].lit.idx) },
                 _ => true,
             }

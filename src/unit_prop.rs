@@ -102,7 +102,8 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, lit:
 }
 
 // Okay so the function should really be split up, now it takes too long.
-//#[cfg_attr(all(any(trust_unit_prop, trust_all), not(untrust_all)), trusted)]
+// OK on Mac
+#[cfg_attr(all(any(trust_unit_prop, trust_all), not(untrust_all)), trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
@@ -240,7 +241,7 @@ fn unit_prop_do_outer(f: &mut Formula, trail: &mut Trail, watches: &mut Watches,
 }
 
 
-// OK
+// OK on Mac
 #[cfg_attr(all(any(trust_unit_prop, trust_all), not(untrust_all)), trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
@@ -288,52 +289,32 @@ fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Wat
     Ok(())
 }
 
-// TRAIL TODO
-// Gotta add some pres in solver_dpll
-#[trusted] // OK
-/*
+// OK on Mac
+#[cfg_attr(all(any(trust_unit_prop, trust_all), not(untrust_all)), trusted)]
+#[maintains((mut f).invariant())]
+#[maintains((mut trail).invariant(mut f))]
+#[maintains((mut watches).invariant(mut f))]
 #[requires(@f.num_vars < @usize::MAX/2)] 
-#[requires(trail.trail_sem_invariant(*f, *a))]
-#[ensures((^trail).trail_sem_invariant(^f, ^a))]
-#[requires(f.invariant())]
-#[requires(a.invariant(*f))]
-#[requires(trail.invariant(*f))]
-#[requires((@trail.trail).len() > 0)]
-#[requires(watches.invariant(*f))]
-#[ensures((^watches).invariant(^f))]
-#[ensures((@(^trail).trail).len() === (@trail.trail).len())]
 #[ensures(match result {
     Ok(()) => true, // !(^f).unsat(^a),
-    Err(n) => @n < (@(^f).clauses).len() && (^f).unsat(^a) && (@(^f).clauses)[@n].unsat(^a),
+    Err(n) => @n < (@(^f).clauses).len() && (^f).unsat((^trail).assignments) && (@(^f).clauses)[@n].unsat((^trail).assignments),
 })]
 #[ensures(@f.num_vars === @(^f).num_vars)]
-#[ensures((^f).invariant())]
-#[ensures((^trail).invariant(^f))]
-#[ensures((^a).invariant(^f))]
 #[ensures(f.equisat(^f))]
-*/
 pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
     let mut i = trail.curr_i; 
     let old_trail = Ghost::record(&trail);
     let old_f = Ghost::record(&f);
-    //let old_a = Ghost::record(&a);
     let old_w = Ghost::record(&watches);
-    /*
-    #[invariant(trail_sem, trail.trail_sem_invariant(*f, *a))]
+    #[invariant(f_inv, f.invariant())]
     #[invariant(trail_inv, trail.invariant(*f))]
-    #[invariant(trail_len, (@trail.trail).len() === (@(@old_trail).trail).len())]
     #[invariant(watch_len, (@watches.watches).len() === (@(@old_w).watches).len())]
     #[invariant(watch_inv, watches.invariant(*f))]
     #[invariant(f_equi, (@old_f).equisat(*f))]
-    #[invariant(f_inv, f.invariant())]
-    #[invariant(ass_inv, a.invariant(*f))]
-    #[invariant(a_compat, (@old_a).compatible(*a))]
     #[invariant(nvars_unch, @f.num_vars === @(@old_f).num_vars)]
     #[invariant(proph_t, ^trail === ^@old_trail)]
     #[invariant(proph_f, ^f === ^@old_f)]
-    #[invariant(proph_a, ^a === ^@old_a)]
     #[invariant(proph_w, ^watches === ^@old_w)]
-    */
     while i < trail.trail.len() {
         let lit = trail.trail[i].lit;
         match unit_prop_current_level(f, trail, watches, lit) {
