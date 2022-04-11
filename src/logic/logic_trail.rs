@@ -143,6 +143,7 @@ pub fn lit_to_level_invariant(lit_to_level: Seq<usize>, f: Formula) -> bool {
 }
 
 #[predicate]
+//#[ensures(result === (forall<i: Int> 0 <= i && i < trail.len() ==> trail[i].invariant(f)))]
 pub fn crefs_in_range(trail: Seq<Step>, f: Formula) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < trail.len() ==>

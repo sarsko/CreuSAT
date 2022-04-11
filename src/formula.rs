@@ -17,6 +17,7 @@ use crate::logic::{
     logic_assignments::*,
     logic_clause::*,
     logic_formula::*,
+    logic_trail::*,//tmp?
 };
 
 pub struct Formula {
@@ -44,47 +45,43 @@ impl PartialEq for SatState {
 }
 
 
-#[trusted] // OK // zzTODOzz check if this can be moved to clause
-#[requires(f.invariant())]
-#[requires(a.invariant(*f))]
-#[requires(@idx < (@f.clauses).len())]
-#[ensures(result === (@f.clauses)[@idx].sat(*a))]
-pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
-    let clause = &f.clauses[idx];
-    let mut i: usize = 0;
-    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==> !(@clause)[j].sat(*a))]
-    while i < clause.rest.len() {
-        if clause.rest[i].lit_sat(a) {
-            return true;
-        }
-        i += 1;
-    }
-    return false;
-}
 
 impl Formula {
-    #[trusted] // OK[04.04]
+    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
+    #[requires(self.invariant())]
+    #[requires(a.invariant(*self))]
+    #[requires(@idx < (@self.clauses).len())]
+    #[ensures(result === (@self.clauses)[@idx].sat(*a))]
+    pub fn is_clause_sat(&self, idx: usize, a: &Assignments) -> bool {
+        let clause = &self.clauses[idx];
+        let mut i: usize = 0;
+        #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==> !(@clause)[j].sat(*a))]
+        while i < clause.rest.len() {
+            if clause.rest[i].lit_sat(a) {
+                return true;
+            }
+            i += 1;
+        }
+        return false;
+    }
+
+    // Needs some help on inlining/splitting, but checks out
+    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
     #[maintains((mut self).invariant())]
     #[maintains(_t.invariant(mut self))]
     #[maintains((mut watches).invariant(mut self))] // new
-    //#[requires(_t.invariant(*self))]
-    //#[ensures(_t.invariant(*self))]
-    //#[requires(watches.invariant(*self))] // new
-    //#[ensures((^watches).invariant(^self))] // new
-    //#[requires(self.invariant())]
-    //#[ensures((^self).invariant())]
     #[requires((@clause).len() >= 2)]
+    #[requires(@self.num_vars < @usize::MAX/2)]
     #[requires(vars_in_range_inner(@clause, @self.num_vars))]
     #[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(equisat_extension_inner(clause, @self))]
     #[ensures(@self.num_vars === @(^self).num_vars)]
-    //#[ensures(self.equisat_compatible(^self))] // really just need equisat
+    #[ensures(self.equisat_compatible(^self))]
     #[ensures(self.equisat(^self))] // Added/changed
     #[ensures(@result === (@self.clauses).len())]
     #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
-    //#[ensures(f.eventually_sat(*a) === (^f).eventually_sat(*a))]
-    //#[ensures(f.eventually_sat_complete(*a) === (^f).eventually_sat_complete(*a))]
     pub fn add_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
+        let old_self = Ghost::record(&self);
         let cref = self.clauses.len();
         // The weird assignment to first_/second_lit is because otherwise we break the precond for
         // add_watcher that the cref should be less than f.clauses.len(). We can't update the watches
@@ -95,9 +92,14 @@ impl Formula {
         self.clauses.push(clause);
         watches.add_watcher(first_lit, cref, self);
         watches.add_watcher(second_lit, cref, self);
+        proof_assert!(^@old_self === ^self);
+        proof_assert!((@old_self).equisat_compatible(*self));
+        // This is just the trail invariant unwrapped
+        proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
-    #[trusted] // OK[04.04]
+
+    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[ensures(result === self.sat(*a))]
@@ -105,7 +107,7 @@ impl Formula {
         let mut i: usize = 0;
         #[invariant(prev, forall<k: Int> 0 <= k && k < @i ==> (@self.clauses)[k].sat(*a))]
         while i < self.clauses.len() {
-            if !is_clause_sat(self, i, a) {
+            if !self.is_clause_sat(i, a) {
                 return false;
             }
             i += 1
