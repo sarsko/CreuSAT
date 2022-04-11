@@ -283,6 +283,7 @@ fn inner(formula: &mut Formula, decisions: &Decisions, trail: &mut Trail, watche
 }
 
 // TODO on this. Look at it after figuring out UNSAT
+// (does check out btw)
 #[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
 #[requires(forall<i: Int> 0 <= i && i < (@units).len() ==>
     @(@units)[i].idx < @f.num_vars
