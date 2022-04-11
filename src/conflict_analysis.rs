@@ -228,14 +228,15 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
 #[requires(trail.invariant(*_f))]
 #[requires(c.unsat(trail.assignments))]
 #[requires(@i <= (@trail.trail).len())]
-#[requires((@trail.trail).len() > 0)]
+// removed since last time
+//#[requires((@trail.trail).len() > 0)] // Do I really need this?
 #[ensures(match result {
     Some(r) =>  @r < (@c).len()
                 && (@c)[@r].is_opp((@trail.trail)[@^i].lit)
                 && (@c)[@r].idx === (@trail.trail)[@^i].lit.idx,
     None => true
 })]
-#[ensures(@^i < (@trail.trail).len())]
+#[ensures(@^i < (@trail.trail).len())] // not correct anymore
 fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Option<usize> {
     let old_i = Ghost::record(&i);
     #[invariant(i_bound, 0 <= @i && @i <= (@trail.trail).len())]
@@ -262,12 +263,13 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
 //#[requires(a.invariant(*f))]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
-#[requires((@trail.decisions).len() > 0)]
-#[requires((@trail.trail).len() > 0)]
+// removed since last time, have to prove again
+//#[requires((@trail.decisions).len() > 0)]
+//#[requires((@trail.trail).len() > 0)] // Nah, aint right when dlevel = 0
 #[requires(@cref < (@f.clauses).len())]
 #[requires((@f.clauses)[@cref].unsat(trail.assignments))]
 #[ensures(match result {
-    //Conflict::Ground => f.unsat(*a), // Either have to do proof on this seperately or reforumlate
+    Conflict::Ground => true,//f.unsat(*a), // Either have to do proof on this seperately or reforumlate
     Conflict::Unit(lit) => {0 <= @lit.idx && @lit.idx < (@trail.assignments).len()}, // know lit can be learned
     Conflict::Learned(level, lit, clause) => {
         //@level > 0 && @level <= (@trail.trail).len() && // Don't need atm
@@ -278,6 +280,11 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
         equisat_extension_inner(clause, @f)
     }, 
     _ => { true }
+})]
+// new
+#[ensures(match result {
+    Conflict::Ground => (@trail.decisions).len() === 0,
+    _ => {(@trail.decisions).len() > 0 }
 })]
 pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.decision_level();
@@ -309,6 +316,9 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
         while k < clause.rest.len() {
             if trail.lit_to_level[clause.rest[k].idx] == decisionlevel {
                 cnt += 1;
+                if cnt > 1 {
+                    break;
+                }
             }
             k += 1;
         }

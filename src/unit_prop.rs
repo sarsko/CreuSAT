@@ -237,7 +237,7 @@ fn unit_prop_do_outer(f: &mut Formula, trail: &mut Trail, watches: &mut Watches,
         //proof_assert!((@f.clauses)[@cref].unsat(*a));
         return Err(cref);
     }
-    Ok(true)
+    //Ok(true)
 }
 
 

@@ -64,19 +64,22 @@ pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 
 impl Formula {
     #[trusted] // OK[04.04]
-    #[requires(@self.num_vars < @usize::MAX/2)]
-    #[requires(self.invariant())]
-    #[requires(_t.invariant(*self))]
+    #[maintains((mut self).invariant())]
+    #[maintains(_t.invariant(mut self))]
+    #[maintains((mut watches).invariant(mut self))] // new
+    //#[requires(_t.invariant(*self))]
+    //#[ensures(_t.invariant(*self))]
+    //#[requires(watches.invariant(*self))] // new
+    //#[ensures((^watches).invariant(^self))] // new
+    //#[requires(self.invariant())]
+    //#[ensures((^self).invariant())]
     #[requires((@clause).len() >= 2)]
     #[requires(vars_in_range_inner(@clause, @self.num_vars))]
     #[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(equisat_extension_inner(clause, @self))]
-    #[requires(watches.invariant(*self))] // new
-    #[ensures((^watches).invariant(^self))] // new
     #[ensures(@self.num_vars === @(^self).num_vars)]
-    #[ensures((^self).invariant())]
-    #[ensures(_t.invariant(*self))]
-    #[ensures(self.equisat_compatible(^self))]
+    //#[ensures(self.equisat_compatible(^self))] // really just need equisat
+    #[ensures(self.equisat(^self))] // Added/changed
     #[ensures(@result === (@self.clauses).len())]
     #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
     //#[ensures(f.eventually_sat(*a) === (^f).eventually_sat(*a))]
@@ -100,9 +103,7 @@ impl Formula {
     #[ensures(result === self.sat(*a))]
     pub fn is_sat(&self, a: &Assignments) -> bool {
         let mut i: usize = 0;
-        #[invariant(prev,
-            forall<k: Int> 0 <= k && k < @i ==>
-            (@self.clauses)[k].sat(*a))]
+        #[invariant(prev, forall<k: Int> 0 <= k && k < @i ==> (@self.clauses)[k].sat(*a))]
         while i < self.clauses.len() {
             if !is_clause_sat(self, i, a) {
                 return false;

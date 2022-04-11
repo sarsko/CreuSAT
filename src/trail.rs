@@ -98,7 +98,7 @@ impl Trail {
     #[ensures((^self).invariant(*f))] // added since last run
     //#[requires(self.lit_not_in_less(*f))]
     //#[requires(self.lit_is_unique())]
-    #[requires((@self.trail).len() > 0)]
+    #[requires((@self.trail).len() > 0)] // removed
     #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
     #[ensures((@self.trail).len() === (@(^self).trail).len() + 1)] // added
@@ -131,7 +131,7 @@ impl Trail {
     #[requires((@self.decisions).len() > @level)]
     #[requires(f.invariant())]
     #[maintains((mut self).invariant(*f))]
-    #[requires((@self.trail).len() > 0)]
+    //#[requires((@self.trail).len() > 0)] // removed
     #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
     // Backtracks to the start of level
@@ -294,24 +294,24 @@ impl Trail {
     }
     // Maybe remove this, I dunno
     #[trusted] // OK
+    #[maintains((mut self).invariant(*_f))]
+    //#[requires(self.invariant(*_f))]
+    //#[ensures((^self).invariant(*_f))]
     //#[requires((@self.decisions).len() === 1)] // wrong no? 
-    #[requires(_f.invariant())]
     //#[requires((@self.trail).len() < @_f.num_vars)] // nah
+    #[requires(_f.invariant())]
     #[requires(lit.invariant(@_f.num_vars))]
-    #[requires(self.invariant(*_f))]
-    #[requires(lit.invariant(@_f.num_vars))]
-    #[requires(!lit.idx_in_trail(self.trail))]
-    #[requires(unset((@self.assignments)[@lit.idx]))]
+    #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
     #[ensures((forall<j : Int> 0 <= j && j < (@self.assignments).len() &&
         j != @lit.idx ==> (@self.assignments)[j] === (@(^self).assignments)[j]))]
     #[ensures(lit.sat((^self).assignments))]
-    #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
-    #[ensures((^self).invariant(*_f))]
     pub fn learn_unit(&mut self, lit: Lit, _f: &Formula) {
         if self.decision_level() > 0 {
             self.backtrack_to(0, _f);
         }
+        //proof_assert!(unset((@self.assignments)[@lit.idx])); // TODO
+        //proof_assert!(!lit.idx_in_trail(self.trail)); // TODO
         self.enq_assignment(Step {
             lit: lit,
             decision_level: 0,
