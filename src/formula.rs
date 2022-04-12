@@ -65,6 +65,26 @@ impl Formula {
         return false;
     }
 
+    /*
+    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
+    #[requires(selff.invariant())]
+    #[requires(a.invariant(*f))]
+    #[requires(@idx < (@self.clauses).len())]
+    #[ensures(result === (@self.clauses)[@idx].unsat(*a))]
+    pub fn is_clause_unsat(&self, idx: usize, a: &Assignments) -> bool {
+        let clause = &self.clauses[idx];
+        let mut i: usize = 0;
+        #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==> (@clause)[j].unsat(*a))]
+        while i < clause.rest.len() {
+            if !clause.rest[i].lit_unsat(a) {
+                return false;
+            }
+            i += 1;
+        }
+        return true;
+    }
+    */
+
     // Needs some help on inlining/splitting, but checks out
     #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
     #[maintains((mut self).invariant())]
