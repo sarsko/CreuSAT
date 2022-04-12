@@ -86,6 +86,7 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
 
             let cref = f.add_clause(clause, w, t);
 
+            t.backtrack_to(level, f);
             /*
             let step = Step {
                 lit: lit,
@@ -94,6 +95,7 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
             };
             t.enq_assignment(step, f);
             */
+
             //decisions.increment_and_move(f, cref);
             //a.cancel_until(t, level, f);
             //t.add_level(f);
