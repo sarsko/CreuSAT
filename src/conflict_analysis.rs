@@ -290,6 +290,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     }
     let mut i = trail.trail.len();
     let mut clause = f.clauses[cref].clone();
+    let mut s_idx = 0;
     #[invariant(clause_vars, clause.invariant_unary_ok(@f.num_vars))]
     #[invariant(clause_equi, equisat_extension_inner(clause, @f))]
     #[invariant(clause_unsat, clause.unsat(trail.assignments))]
@@ -316,18 +317,34 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
                 if cnt > 1 {
                     break;
                 }
+                //s_idx = k;
             }
             k += 1;
         }
         if cnt == 1 {
+            //clause.rest.swap(0, s_idx);
             break;
         }
     }
-    // TODO: Get level and return asserting level
 
     if clause.rest.len() == 1 {
         Conflict::Unit(clause.rest[0])
     } else {
-        Conflict::Learned(cref, clause.rest[0], clause)
+        /*
+        let mut max_i = 1;
+        let mut max_level = trail.lit_to_level[clause.rest[1].idx];
+        i = 2;
+        while i < clause.rest.len() {
+            let level = trail.lit_to_level[clause.rest[i].idx];
+            if level > max_level {
+                max_level = level;
+                max_i = i;
+            }
+            i += 1;
+        }
+        clause.rest.swap(1, max_i);
+        */
+        //Conflict::Learned(max_level, clause.rest[0], clause)
+        Conflict::Learned(0, clause.rest[0], clause)
     }
 }

@@ -84,25 +84,16 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
             // and is very simple. If I make the proof of resolution from init to empty clause/
             // ground conflict work, then everything else can be treated as optimizations
 
-            // TODO
             let cref = f.add_clause(clause, w, t);
-            //a.cancel_until(t, 1, f);
 
-            // TODO: Has to be gotten from post of analyze
-            //proof_assert!((@t.decisions).len() > @level);
-            proof_assert!((@t.decisions).len() > 0);
-            t.backtrack_to(0, f);
-            //t.backtrack_to(1, f);
             /*
-            t.backtrack_to(level, f);
-            let step = Step{
+            let step = Step {
                 lit: lit,
                 decision_level: level,
                 reason: Reason::Long(cref),
             };
             t.enq_assignment(step, f);
             */
-
             //decisions.increment_and_move(f, cref);
             //a.cancel_until(t, level, f);
             //t.add_level(f);
