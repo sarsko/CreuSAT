@@ -1,0 +1,20 @@
+#!/bin/bash
+
+pushd $(dirname $1) > /dev/null
+INPUTPATH=$(pwd)/$(basename $1)
+popd > /dev/null
+SCRIPTPATH=~/Code/creusot
+pushd $SCRIPTPATH > /dev/null
+cargo run --bin creusot-rustc -- \
+  -Z \
+  --extern creusot_contracts=./target/debug/libcreusot_contracts.rlib \
+  --cfg contracts \
+  --cfg trust_solver \
+  --cfg trust_trail \
+  --cfg trust_logic \
+  --cfg trust_conflict \
+  -Ldependency=./target/debug/deps/ \
+  --crate-type=lib \
+  --out-dir ../. \
+  $INPUTPATH
+popd > /dev/null

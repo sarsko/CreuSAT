@@ -18,7 +18,7 @@ use crate::logic::{
     logic_assignments::*,
 };
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 impl Model for Formula {
     type ModelTy = (Seq<Clause>, Int);
 

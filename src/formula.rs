@@ -13,7 +13,7 @@ use crate::{
     watches::*,
 };
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::{
     logic_assignments::*,
     logic_clause::*,

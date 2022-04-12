@@ -10,7 +10,7 @@ use crate::{
     util::{sort_reverse},
 };
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::{
     logic_util::*,
     logic_decision::*,

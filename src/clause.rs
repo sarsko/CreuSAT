@@ -8,7 +8,7 @@ use crate::{
     lit::*,
 };
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::{
     logic_clause::*
 };

@@ -16,7 +16,7 @@ use crate::{
 };
 
 // Tmp
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::{
     logic::*,
 };

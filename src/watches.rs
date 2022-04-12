@@ -11,7 +11,7 @@ use crate::{
     clause::*,
 };
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::{
     logic_watches::*,
     logic_util::*,
@@ -74,7 +74,7 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
             proof_assert!(watches.invariant(*f));
         },
         None => {
-            panic!("Impossible");
+            unreachable!();
         }
     }
 }

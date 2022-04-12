@@ -11,7 +11,7 @@ use crate::{
     util::*,
 };
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::{
     logic::*,
     logic_util::*,

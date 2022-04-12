@@ -1,0 +1,151 @@
+Searching 9787 files for "cfg(not(contract" (case sensitive)
+
+/Users/xavier/Code/sat/src/main.rs:
+    6  //#[global_allocator]
+    7  //static GLOBAL: jemallocator::Jemalloc = jemallocator::Jemalloc;
+    8: #[cfg(not(contracts))]
+    9  fn main() {
+   10      let matches = App::new("\nA minimal SAT solver with no name")
+
+/Users/xavier/Code/sat/src/parser.rs:
+   13  
+   14  
+   15: #[cfg(not(contracts))]
+   16  fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
+   17  where
+   ..
+   22  }
+   23  
+   24: #[cfg(not(contracts))]
+   25  pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
+   26      /*
+   ..
+   86  }
+   87  
+   88: #[cfg(not(contracts))]
+   89  // TODO, fix it so that 0 and 1 len clauses are supported
+   90  /// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
+
+4 matches across 2 files
+
+
+Searching 9787 files for "cfg(contracts" (case sensitive)
+
+/Users/xavier/Code/sat/src/assignments.rs:
+   12  };
+   13  
+   14: #[cfg(contracts)]
+   15  use crate::logic::{
+   16      logic::*,
+
+/Users/xavier/Code/sat/src/clause.rs:
+    9  };
+   10  
+   11: #[cfg(contracts)]
+   12  use crate::logic::{
+   13      logic_clause::*
+
+/Users/xavier/Code/sat/src/conflict_analysis.rs:
+   11  };
+   12  
+   13: #[cfg(contracts)]
+   14  use crate::logic::{
+   15      logic_clause::*,
+
+/Users/xavier/Code/sat/src/decision.rs:
+   11  };
+   12  
+   13: #[cfg(contracts)]
+   14  use crate::logic::{
+   15      logic_util::*,
+
+/Users/xavier/Code/sat/src/formula.rs:
+   14  };
+   15  
+   16: #[cfg(contracts)]
+   17  use crate::logic::{
+   18      logic_assignments::*,
+
+/Users/xavier/Code/sat/src/lit.rs:
+   12  };
+   13  
+   14: #[cfg(contracts)]
+   15  use crate::logic::{
+   16      logic_lit::*,
+
+/Users/xavier/Code/sat/src/solver.rs:
+   17  
+   18  // Tmp
+   19: #[cfg(contracts)]
+   20  use crate::logic::{
+   21      logic::*,
+
+/Users/xavier/Code/sat/src/trail.rs:
+   12  };
+   13  
+   14: #[cfg(contracts)]
+   15  use crate::logic::{
+   16      logic::*,
+
+/Users/xavier/Code/sat/src/trail_old.rs:
+   35  
+   36  
+   37: #[cfg(contracts)]
+   38  impl Model for Trail {
+   39      type ModelTy = (Seq<Vec<Lit>>, Seq<(usize, Reason)>);
+
+/Users/xavier/Code/sat/src/util.rs:
+    4  use creusot_contracts::*;
+    5  
+    6: #[cfg(contracts)]
+    7  use crate::logic::{
+    8      logic_util::*,
+
+/Users/xavier/Code/sat/src/watches.rs:
+   12  };
+   13  
+   14: #[cfg(contracts)]
+   15  use crate::logic::{
+   16      logic_watches::*,
+
+/Users/xavier/Code/sat/src/logic/logic_assignments.rs:
+   15  };
+   16  
+   17: #[cfg(contracts)]
+   18  impl Model for Assignments {
+   19      type ModelTy = Seq<AssignedState>;
+
+/Users/xavier/Code/sat/src/logic/logic_clause.rs:
+   10  };
+   11  
+   12: #[cfg(contracts)]
+   13  use crate::logic::{
+   14      logic_formula::*,
+   15  };
+   16  
+   17: #[cfg(contracts)]
+   18  impl Model for Clause {
+   19      type ModelTy = Seq<Lit>;
+
+/Users/xavier/Code/sat/src/logic/logic_conflict_analysis.rs:
+   12  };
+   13  
+   14: #[cfg(contracts)]
+   15  use crate::logic::{
+   16      logic_clause::*,
+
+/Users/xavier/Code/sat/src/logic/logic_formula.rs:
+   19  };
+   20  
+   21: #[cfg(contracts)]
+   22  impl Model for Formula {
+   23      type ModelTy = (Seq<Clause>, Int);
+
+/Users/xavier/Code/sat/src/logic/logic_trail.rs:
+   11  };
+   12  
+   13: #[cfg(contracts)]
+   14  use crate::logic::{
+   15      logic_clause::*,
+
+17 matches across 16 files

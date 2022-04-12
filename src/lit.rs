@@ -11,7 +11,7 @@ use crate::{
     trail::*,
 };
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::{
     logic_lit::*,
 };

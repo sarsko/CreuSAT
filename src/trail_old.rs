@@ -34,7 +34,7 @@ pub struct Trail {
 }
 
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 impl Model for Trail {
     type ModelTy = (Seq<Vec<Lit>>, Seq<(usize, Reason)>);
 
