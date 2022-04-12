@@ -33,7 +33,7 @@ impl Clone for Clause {
         Clause {
             rest: self.rest.clone()
         }
-}
+    }
 }
 
 //#[derive(Copy, Clone, Eq)]
@@ -61,5 +61,46 @@ impl Clause {
             rest: vec[2..].to_vec()
         }
         */
+    }
+
+    // TODO on the invariant. Probs gonna need a lemma
+    // They check out on Linux
+    #[inline(always)]
+    #[cfg_attr(all(any(trust_clause, trust_all), not(untrust_all)), trusted)]
+    #[maintains((mut self).invariant_unary_ok(@_f.num_vars))]
+    #[requires((@self).len() > 0)]
+    #[requires(@idx < (@self.rest).len())]
+    #[ensures(forall<i: Int> 0 <= i && i < (@(^self).rest).len() ==> 
+        exists<j: Int> 0 <= j && j < (@self.rest).len() && (@(^self))[i] === (@self)[j])]
+    #[ensures(forall<i: Int> 0 <= i && i < (@(self).rest).len() ==> 
+        exists<j: Int> 0 <= j && j < (@(^self).rest).len() && (@(^self))[i] === (@self)[j])]
+    #[ensures((@(^self).rest).len() === (@self.rest).len())]
+    fn move_to_end(&mut self, idx: usize, _f: &Formula) {
+        let old_self = Ghost::record(&self);
+        let end = self.rest.len() - 1;
+        self.rest.swap(idx, end);
+        /*
+        proof_assert!((@self).permutation_of(@@old_self));
+        proof_assert!(^@old_self === ^self);
+        proof_assert!(forall<i: Int> 0 <= i && i < (@(self).rest).len() ==> 
+            exists<j: Int> 0 <= j && j < (@(@old_self).rest).len() && (@(self))[i] === (@(@old_self))[j]);
+        proof_assert!(forall<i: Int> 0 <= i && i < (@(@old_self).rest).len() ==> 
+            exists<j: Int> 0 <= j && j < (@self.rest).len() && (@(self))[i] === (@(@old_self))[j]);
+        proof_assert!((@(@old_self).rest).len() === (@self.rest).len());
+        */
+    }
+
+    // They check out on Linux
+    #[inline(always)]
+    #[cfg_attr(all(any(trust_clause, trust_all), not(untrust_all)), trusted)]
+    #[maintains((mut self).invariant_unary_ok(@_f.num_vars))]
+    #[requires((@self).len() > 0)]
+    #[requires(@idx < (@self.rest).len())]
+    #[ensures(forall<i: Int> 0 <= i && i < (@(^self).rest).len() ==> 
+    exists<j: Int> 0 <= j && j < (@self.rest).len() && (@(^self))[i] === (@self)[j])]
+    #[ensures((@(^self).rest).len() + 1 === (@self.rest).len())]
+    pub fn remove_from_clause(&mut self, idx: usize, _f: &Formula) {
+        self.move_to_end(idx, _f);
+        self.rest.pop();
     }
 }

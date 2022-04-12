@@ -96,10 +96,10 @@ pub fn preproc_and_solve(
         clauses: Vec::new(),
         num_vars: num_literals,
     };
-    let mut units = vec![];
     for clause in clauses {
         let mut currclause: Vec<Lit2> = vec![];
         for lit in clause {
+            assert!(*lit != 0);
             if *lit < 0 {
                 let new_lit = Lit2 {
                     idx: ((lit.abs() - 1) as usize),
@@ -116,14 +116,12 @@ pub fn preproc_and_solve(
         }
         if currclause.len() == 0 {
             return false;
-        } else if currclause.len() == 1 {
-            units.push(currclause[0]);
         } else {
             let clause2: Clause2 = Clause2::clause_from_vec(&currclause);
             formula.clauses.push(clause2);
         }
     }
-    match solver(&mut formula, &units){
+    match solver(&mut formula){
         SatResult::Sat(_) => true,
         SatResult::Unsat => false,
         _ => panic!("Sarek should really make the parser non-binary"),

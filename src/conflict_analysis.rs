@@ -221,20 +221,69 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
     out
 }
 
+// Started on this, but can't be bothered finishing it now
+// So the great thing is that this seems to not be any faster?
+#[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
+#[requires(_f.invariant())]
+#[requires(equisat_extension_inner(*c, @_f))]
+#[ensures(equisat_extension_inner(^c, @_f))]
+#[maintains((mut c).unsat_inner(@_a))]
+#[maintains((mut c).invariant_unary_ok(@_f.num_vars))]
+#[maintains((mut c).vars_in_range(@_f.num_vars))]
+#[requires(o.in_formula(*_f))]
+#[requires(@c_idx < (@c).len() && @(@c)[@c_idx].idx === @idx &&
+    (exists<k: Int> 0 <= k && k < (@o).len() &&
+        (@o)[k].is_opp((@c)[@c_idx]))
+)]
+#[requires(forall<j: Int, k: Int> 0 <= j && j < (@o).len() && 0 <= k && k < (@c).len() &&
+    k != @c_idx && @(@o)[j].idx != @idx ==> !(@c)[k].is_opp((@o)[j]))]
+#[requires(c.same_idx_same_polarity_except(*o, @idx))]
+#[requires(@idx < @_f.num_vars)]
+#[requires(o.post_unit_inner(@_a))]
+#[requires(o.invariant_unary_ok(@_f.num_vars))]
+#[ensures((@c).len() > 0)] // TODO: Need to prove this
+fn resolve_mut(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, _a: &Assignments) {
+    let mut i: usize = 0;
+    let old_c = Ghost::record(&c);
+    c.remove_from_clause(c_idx, _f);
+    proof_assert!(forall<j: Int> 0 <= j && j < (@c).len() ==> 
+        (@c)[j].invariant(@_f.num_vars));
+    proof_assert!(forall<j: Int, k: Int> 0 <= j && j < (@c).len() && 0 <= k && k < j ==>
+        @(@c)[j].idx != @(@c)[k].idx);
+    proof_assert!(forall<j: Int> 0 <= j && j < (@c).len() ==> @(@c)[j].idx != @idx); // TODO on this one
+    proof_assert!(forall<j: Int> 0 <= j && j < @i && @(@@old_c)[j].idx != @idx ==> 
+        (@@old_c)[j].lit_in_internal(@c));
+    proof_assert!(forall<j: Int> 0 <= j && j < (@c).len() ==> (@c)[j].lit_in(*c));
+    proof_assert!(forall<j: Int> 0 <= j && j < @i && j != @c_idx ==> 
+        (@@old_c)[j].lit_in_internal(@c));
+    proof_assert!(^@old_c === ^c);
+    /*
+    while i < o.rest.len() {
+        if idx_in(&c.rest, o.rest[i].idx) {
+        } else if o.rest[i].idx == idx {
+        } else {
+            c.rest.push(o.rest[i]);
+        }
+        i += 1;
+    }
+    */
+}
+
 // OK
 #[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
 #[requires(trail.invariant(*_f))]
 #[requires(c.unsat(trail.assignments))]
-#[requires(@i <= (@trail.trail).len())]
-// removed since last time
-//#[requires((@trail.trail).len() > 0)] // Do I really need this?
+#[requires(@i <= (@trail.trail).len())] // not needed?
+#[requires((@trail.trail).len() > 0)] // Do I really need this?
 #[ensures(match result {
     Some(r) =>  @r < (@c).len()
                 && (@c)[@r].is_opp((@trail.trail)[@^i].lit)
-                && (@c)[@r].idx === (@trail.trail)[@^i].lit.idx,
+                && (@c)[@r].idx === (@trail.trail)[@^i].lit.idx
+                //&& c.same_idx_same_polarity_except(*o, @r)
+                ,
     None => true
 })]
-#[ensures(@^i < (@trail.trail).len())] // not correct anymore
+#[ensures(@^i < (@trail.trail).len())] // Not needed?
 fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Option<usize> {
     let old_i = Ghost::record(&i);
     #[invariant(i_bound, 0 <= @i && @i <= (@trail.trail).len())]
@@ -255,14 +304,10 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
     None
 }
 
+// OK
 #[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
-//#[requires(trail.trail_sem_invariant(*f, *a))]
-//#[requires(a.invariant(*f))]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
-// removed since last time, have to prove again
-//#[requires((@trail.decisions).len() > 0)]
-//#[requires((@trail.trail).len() > 0)] // Nah, aint right when dlevel = 0
 #[requires(@cref < (@f.clauses).len())]
 #[requires((@f.clauses)[@cref].unsat(trail.assignments))]
 #[ensures(match result {
@@ -297,16 +342,19 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     #[invariant(clause_len, (@clause).len() > 0)]
     #[invariant(i_bound, 0 <= @i && @i <= (@trail.trail).len())]
     while i > 0 {
+        proof_assert!((@trail.trail).len() > 0);
         let c_idx = match choose_literal(&clause, trail, &mut i, f) {
             None => return Conflict::Panic,
             Some(b) => b,
         };
-                
+        proof_assert!(@i < (@trail.trail).len());
         let ante = match &trail.trail[i].reason {
             Reason::Long(c) => &f.clauses[*c],
             o => {return Conflict::Panic}, // nnTODOnn // This never happens, but is an entirely new proof
         };
+        proof_assert!(clause.same_idx_same_polarity_except(*ante, @(@trail.trail)[@i].lit.idx));
         clause = resolve(f, &clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
+        //resolve_mut(f, &mut clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
         let mut k: usize = 0;
         let mut cnt: usize = 0;
         #[invariant(k_bound, @k <= (@clause.rest).len())]

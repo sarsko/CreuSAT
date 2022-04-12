@@ -84,7 +84,8 @@ impl Assignments {
         #[invariant(all_less, forall<j: Int> 0 <= j && j < @i ==> @(@assign)[j] <= 3)]
         while i < f.num_vars {
             // Having it random didnt really help
-            let n = rand_in_range(2,4);
+            //let n = rand_in_range(2,4);
+            let n = 3;
             assign.push(n);
             i += 1
         }

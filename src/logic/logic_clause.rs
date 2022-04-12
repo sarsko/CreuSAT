@@ -32,12 +32,6 @@ pub fn vars_in_range_inner(s: Seq<Lit>, n: Int) -> bool {
     }
 }
 
-#[predicate]
-pub fn at_least_binary(s: Seq<Lit>) -> bool {
-    pearlite! {
-        s.len() >= 2
-    }
-}
 
 #[predicate]
 pub fn invariant_unary_ok_internal(s: Seq<Lit>, n: Int) -> bool {
@@ -52,7 +46,7 @@ pub fn invariant_internal(s: Seq<Lit>, n: Int) -> bool {
     pearlite! {
            vars_in_range_inner(s, n) 
         && no_duplicate_indexes_inner(s)
-        && at_least_binary(s)
+        //&& at_least_binary(s) // REMOVED.
     }
 }
 

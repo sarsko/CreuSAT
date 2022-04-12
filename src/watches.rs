@@ -34,26 +34,17 @@ pub struct Watches {
 // Added a bunch of assertions and lemmas in an attempt to make it faster, but it helped less than desired(still needed for the current encoding)
 // The root cause seems to be that Why3 doesn't wan't to "peek" into things, so when I made abstraction
 // barriers for the invariants, stuff took forever. It checks out, but I should probably come back later and clean up
+// #10 and #19 just take some time, but check out on Mac
 #[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
-//#[requires(watches.invariant(*f))]
-//#[ensures((^watches).invariant(*f))]
 #[maintains((mut watches).invariant(*f))]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(@lit.idx < @f.num_vars)]
-//#[requires(trail.trail_sem_invariant(*f, *a))]
-//#[requires(trail.assignments.invariant(*f))]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
-//#[requires((@trail.trail).len() > 0)]
 #[requires(@cref < (@f.clauses).len())]
 #[requires(0 <= @k && @k < (@(@f.clauses)[@cref]).len())] // Changed
 #[requires((@(@f.clauses)[@cref]).len() >= 2)] // This was > 2 before ?
-//#[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > 0)]  // removed since last run, but shoudln't matter
 #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)]
-//#[ensures(trail.trail_sem_invariant(*f, *a))]
-//#[ensures((*f).invariant())]
-//#[ensures(trail.invariant(*f))]
-//#[ensures(a.invariant(*f))]
 pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit) {
     let watchidx = lit.to_watchidx();
     let end = watches.watches[watchidx].len() - 1;
@@ -109,18 +100,19 @@ impl Watches {
     // This whole should be updated/merged with formula add_clause
     // We watch the negated literal for updates
     // OK
-    #[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
+    //#[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(@cref < (@_f.clauses).len())]
     #[requires(@lit.idx < @usize::MAX/2)]
     #[requires(lit.to_neg_watchidx_logic() < (@self.watches).len())]
+    #[requires((@(@_f.clauses)[@cref]).len() > 1)]
     #[ensures((@self.watches).len() === (@(^self).watches).len())]
     pub fn add_watcher(&mut self, lit: Lit, cref: usize, _f: &Formula) {
         self.watches[lit.to_neg_watchidx()].push(Watcher { cref });
     }
 
     // OK
-    #[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
+    //#[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(@new_lit.idx < @usize::MAX/2)]
     #[requires(new_lit.to_neg_watchidx_logic() < (@self.watches).len())]
@@ -146,8 +138,10 @@ impl Watches {
         #[invariant(proph, ^self === ^@old_w)]
         while i < f.clauses.len() {
             let clause = &f.clauses[i];
-            self.add_watcher(clause.rest[0], i, f);
-            self.add_watcher(clause.rest[1], i, f);
+            if clause.rest.len() > 1 {
+                self.add_watcher(clause.rest[0], i, f);
+                self.add_watcher(clause.rest[1], i, f);
+            }
             i += 1;
         }
     }

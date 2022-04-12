@@ -259,40 +259,33 @@ fn inner(formula: &mut Formula, decisions: &Decisions, trail: &mut Trail, watche
 // TODO on this. Look at it after figuring out UNSAT
 // (does check out btw)
 #[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
-#[requires(forall<i: Int> 0 <= i && i < (@units).len() ==>
-    @(@units)[i].idx < @f.num_vars
-)]
-#[requires(f.invariant())] // Not fully correct, need a smaller invariant
-pub fn solver(f: &mut Formula, units: &std::vec::Vec<Lit>) -> SatResult {
-    // should do pure literal and identifying unit clauses in preproc
+#[requires(f.invariant())]
+pub fn solver(f: &mut Formula) -> SatResult {
+    // Swapping to not needing binary clauses seem to have gone fine.
+    // Should undo the split to units, then do an init function which
+    // watches the at least binary clauses and adds the units as unit.
+    // As for the learnt units, I think those should be added to the formula as well,
+    // and then finally one does a resolution from the last conflict to the empty clause,
+    // which combined with transitive equisat means that the formula is unsat.
+    // Great success,
     let mut i = 0;
     let assignments = Assignments::new(f);
     let mut trail = Trail::new(f, assignments);
     if f.num_vars >= usize::MAX/2 {
         return SatResult::Err;
     }
+    // Should ideally do a check for if num_vars is correct and everything here. Ah well, todo
     if f.num_vars == 0 {
         return SatResult::Sat(Vec::new());
     }
+    let decisions = Decisions::new(f);
     let mut watches = Watches::new(f);
     watches.init_watches(f);
-    let decisions = Decisions::new(f);
-    // Todo on this
-    // Okay so actually this is fine for semantics, we just have to include
-    // it in the final check for sat and then return an error if they don't
-    // match. For the unsat case, not including a clause can't make a sat formula
-    // unsat
-    //learn_unit(&mut assignments, &mut trail, lit, f);
-    #[invariant(trail_inv, trail.invariant(*f))]
-    while i < units.len() {
-        let lit = units[i];
-        trail.learn_unit(lit, f);
-        i += 1;
+    match trail.learn_units(f) {
+        false => {
+            return SatResult::Unsat; // TODO on proving this(should be simple, we have conflict between two units(make it a special enum?))
+        }
+        true => {},
     }
-    /*
-    if units.len() > 0 {
-        panic!();
-    }
-    */
     inner(f, &decisions, &mut trail, &mut watches)
 }

@@ -19,6 +19,7 @@ use crate::logic::{
 };
 
 //#[derive(Debug, Eq, PartialEq)]
+//#[derive(Eq, PartialEq)]
 pub enum Reason {
     //Undefined,
     Decision,
@@ -372,4 +373,52 @@ impl Trail {
             reason: Reason::Unit,
         }, _f);
     }
+
+    // TODO on returning something better than false
+    #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
+    #[requires(f.invariant())]
+    #[maintains((mut self).invariant(*f))]
+    pub fn learn_units(&mut self, f: &Formula) -> bool {
+        let mut i = 0;
+        let old_self = Ghost::record(&self);
+        #[invariant(self_inv, self.invariant(*f))]
+        #[invariant(proph, ^@old_self === ^self)]
+        while i < f.clauses.len() {
+            let clause = &f.clauses[i];
+            if clause.rest.len() == 1 {
+                let lit = clause.rest[0];
+                if lit.lit_unset(&self.assignments) {
+                    return false;
+                }
+                self.learn_unit(lit, f);
+            }
+            i += 1;
+        }
+        return true;
+    }
+
+    /*
+    #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
+    #[maintains((mut self).invariant(*f))]
+    #[requires(f.invariant())]
+    #[requires(lit.invariant(@.num_vars))]
+    #[ensures(lit.sat((^self).assignments))]
+    #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
+    #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
+    pub fn learn_unit_add_to_formula(&mut self, lit: Lit, f: &Formula) {
+        if self.decision_level() > 0 {
+            self.backtrack_to(0, _f);
+        }
+        // I have to do a proof here that it is unset after ->
+        // will need another requires
+        proof_assert!(unset((@self.assignments)[@lit.idx])); // TODO
+        proof_assert!(!lit.idx_in_trail(self.trail)); // TODO
+        let cref = f.add_unwatched_clause(lit);
+        self.enq_assignment(Step {
+            lit: lit,
+            decision_level: 0,
+            reason: Reason::Unit(cref),
+        }, _f);
+    }
+    */
 }
