@@ -23,7 +23,7 @@ use crate::logic::{
 pub enum Reason {
     //Undefined,
     Decision,
-    Unit,
+    Unit(usize),
     Long(usize),
 }
 
@@ -353,13 +353,40 @@ impl Trail {
     }
 
     #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
+    #[maintains((mut self).invariant(*f))]
+    #[requires(f.invariant())]
+    #[requires(@cref < (@f.clauses).len())]
+    #[requires((@(@f.clauses)[@cref]).len() == 1)]
+    #[requires((@f.clauses)[@cref].invariant(@f.num_vars))]
+    // unsure which of these is wanted
+    //#[ensures(@f.clauses)[@cref].sat((^self).assignments))]
+    #[ensures((@(@f.clauses)[@cref])[0].sat((^self).assignments))]
+    #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
+    #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
+    pub fn learn_unit(&mut self, cref: usize, f: &Formula) {
+        if self.decision_level() > 0 {
+            self.backtrack_to(0, f);
+        }
+        // I have to do a proof here that it is unset after ->
+        // will need another requires
+        //proof_assert!(unset((@self.assignments)[@lit.idx])); // TODO
+        //proof_assert!(!lit.idx_in_trail(self.trail)); // TODO
+        self.enq_assignment(Step {
+            lit: f.clauses[cref].rest[0],
+            decision_level: 0,
+            reason: Reason::Unit(cref),
+        }, f);
+    }
+
+    /*
+    #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(_f.invariant())]
     #[requires(lit.invariant(@_f.num_vars))]
     #[ensures(lit.sat((^self).assignments))]
-    #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
-    #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
-    pub fn learn_unit(&mut self, lit: Lit, _f: &Formula) {
+    #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
+    #[ensures(long_are_post_unit_inner((@(^self).trail), ^f, (@(^self).assignments)))]
+    pub fn add_and_enq_unit(&mut self, lit: Lit, f: &mut Formula) {
         if self.decision_level() > 0 {
             self.backtrack_to(0, _f);
         }
@@ -370,9 +397,10 @@ impl Trail {
         self.enq_assignment(Step {
             lit: lit,
             decision_level: 0,
-            reason: Reason::Unit,
+            reason: Reason::Unit(cref),
         }, _f);
     }
+    */
 
     // TODO on returning something better than false
     #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
@@ -390,7 +418,7 @@ impl Trail {
                 if lit.lit_unset(&self.assignments) {
                     return false;
                 }
-                self.learn_unit(lit, f);
+                self.learn_unit(i, f);
             }
             i += 1;
         }

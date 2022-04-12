@@ -119,11 +119,12 @@ impl Formula {
         cref
     }
 
-    /*
-    //#[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
+    // Passing, but needs the same help as add_clause
+    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
     #[maintains((mut self).invariant())]
     #[maintains(_t.invariant(mut self))]
-    #[requires((@clause).len() >= 2)]
+    #[requires((@clause).len() == 1)]
+    #[requires(clause.invariant(@self.num_vars))]
     #[requires(@self.num_vars < @usize::MAX/2)]
     #[requires(vars_in_range_inner(@clause, @self.num_vars))]
     #[requires(no_duplicate_indexes_inner(@clause))]
@@ -133,13 +134,15 @@ impl Formula {
     #[ensures(self.equisat(^self))] // Added/changed
     #[ensures(@result === (@self.clauses).len())]
     #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
-    pub fn add_unwatched_clause(&mut self, clause: Clause, _t: &Trail) -> usize {
-        //let old_self = Ghost::record(&self);
+    pub fn add_unit(&mut self, clause: Clause, _t: &Trail) -> usize {
+        let old_self = Ghost::record(&self);
         let cref = self.clauses.len();
         self.clauses.push(clause);
+        proof_assert!(^@old_self === ^self);
+        proof_assert!((@old_self).equisat_compatible(*self));
+        proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
-    */
 
     #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
     #[requires(self.invariant())]

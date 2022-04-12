@@ -21,9 +21,9 @@ use crate::logic::{
 //#[derive(Debug)]
 pub enum Conflict {
     Ground,
-    Unit(Lit),
+    Unit(Clause),
     //Learned(usize, Lit, Vec<Lit>),
-    Learned(usize, Lit, Clause),
+    Learned(usize, Clause),
     Panic,
 }
 
@@ -65,7 +65,12 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
 #[requires(o.invariant_unary_ok(@_f.num_vars))]
 #[requires(c.unsat_inner(@_a))]
 #[ensures(result.unsat_inner(@_a))]
-#[ensures((@result).len() > 0)] // TODO: Need to prove this
+//#[ensures((@result).len() > 0)] // TODO: Need to prove this
+// Okay so to prove the length, we have to prove that the resolved clause is at minimum the length of the
+// the second clause - 1, which is a long, and all longs are at least of length 2(this should be made and invariant if
+// it isnt already)
+// Requires long(o)
+#[ensures((@result).len() >= (@o).len() - 1)] // TODO: Need to prove this
 fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &Assignments) -> Clause {
     let mut new: Vec<Lit> = Vec::new();
     let mut i: usize = 0;
@@ -304,6 +309,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
     None
 }
 
+// Been updates here, gotta check that they are proving
 // OK
 #[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
 #[requires(f.invariant())]
@@ -312,14 +318,21 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
 #[requires((@f.clauses)[@cref].unsat(trail.assignments))]
 #[ensures(match result {
     Conflict::Ground => true,//f.unsat(*a), // Either have to do proof on this seperately or reforumlate
-    Conflict::Unit(lit) => {0 <= @lit.idx && @lit.idx < (@trail.assignments).len()}, // know lit can be learned
-    Conflict::Learned(level, lit, clause) => {
+    Conflict::Unit(clause) => {
+        //0 <= @lit.idx && @lit.idx < (@trail.assignments).len()
+        clause.invariant(@f.num_vars)//@lit.idx < (@trail.assignments).len()  // can be changed to lit in or something
+        && (@clause).len() == 1
+        && vars_in_range_inner(@clause, @f.num_vars)
+        && no_duplicate_indexes_inner(@clause)
+        && equisat_extension_inner(clause, @f)
+    }, 
+    Conflict::Learned(level, clause) => {
         //@level > 0 && @level <= (@trail.trail).len() && // Don't need atm
-        @lit.idx < (@trail.assignments).len() && // can be changed to lit in or somet
-        (@clause).len() > 1 &&
-        vars_in_range_inner(@clause, @f.num_vars) &&
-        no_duplicate_indexes_inner(@clause) &&
-        equisat_extension_inner(clause, @f)
+        clause.invariant(@f.num_vars)//@lit.idx < (@trail.assignments).len()  // can be changed to lit in or something
+        && (@clause).len() > 1 
+        && vars_in_range_inner(@clause, @f.num_vars)
+        && no_duplicate_indexes_inner(@clause)
+        && equisat_extension_inner(clause, @f)
     }, 
     _ => { true }
 })]
@@ -331,7 +344,10 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
 pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.decision_level();
     if decisionlevel == 0 {
-        return Conflict::Ground;
+        return match derive_empty_formula(f, trail, cref) {
+            true  => Conflict::Ground,
+            false => Conflict::Panic,
+        };
     }
     let mut i = trail.trail.len();
     let mut clause = f.clauses[cref].clone();
@@ -376,7 +392,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     }
 
     if clause.rest.len() == 1 {
-        Conflict::Unit(clause.rest[0])
+        Conflict::Unit(clause)
     } else {
         /*
         let mut max_i = 1;
@@ -393,6 +409,39 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
         clause.rest.swap(1, max_i);
         */
         //Conflict::Learned(max_level, clause.rest[0], clause)
-        Conflict::Learned(0, clause.rest[0], clause)
+        Conflict::Learned(0, clause)
     }
 }
+
+// Just analyze_conflict without a stopping condition(and with accepting units for resolution)
+pub fn derive_empty_formula(f: &Formula, trail: &Trail, cref: usize) -> bool {
+    let mut i = trail.trail.len();
+    let mut clause = f.clauses[cref].clone();
+    let mut s_idx = 0;
+    #[invariant(clause_vars, clause.invariant_unary_ok(@f.num_vars))]
+    #[invariant(clause_equi, equisat_extension_inner(clause, @f))]
+    #[invariant(clause_unsat, clause.unsat(trail.assignments))]
+    #[invariant(clause_len, (@clause).len() > 0)]
+    #[invariant(i_bound, 0 <= @i && @i <= (@trail.trail).len())]
+    while i > 0 {
+        proof_assert!((@trail.trail).len() > 0);
+        let c_idx = match choose_literal(&clause, trail, &mut i, f) {
+            None => return false,
+            Some(b) => b,
+        };
+        proof_assert!(@i < (@trail.trail).len());
+        let ante = match &trail.trail[i].reason {
+            Reason::Long(c) => &f.clauses[*c],
+            Reason::Unit(c) => &f.clauses[*c],
+            o => {return false}, // nnTODOnn // This never happens, but is an entirely new proof
+        };
+        proof_assert!(clause.same_idx_same_polarity_except(*ante, @(@trail.trail)[@i].lit.idx));
+        clause = resolve(f, &clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
+        //resolve_mut(f, &mut clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
+        if clause.rest.len() == 0 {
+            return true;
+        }
+    }
+    return false;
+}
+

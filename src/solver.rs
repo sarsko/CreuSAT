@@ -56,11 +56,12 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
         Conflict::Ground => { 
             return Some(false);
         },
-        Conflict::Unit(lit) => {
+        Conflict::Unit(clause) => {
             // Have to do a proof that it isnt already unit?
-            t.learn_unit(lit, f);
+            let cref = f.add_unit(clause, t);
+            t.learn_unit(cref, f);
         }
-        Conflict::Learned(level, lit, clause) => {
+        Conflict::Learned(level, clause) => {
             // Okay so doing a full search restart every time is a lot less slow than expected
             // and is very simple. If I make the proof of resolution from init to empty clause/
             // ground conflict work, then everything else can be treated as optimizations
@@ -269,8 +270,7 @@ pub fn solver(f: &mut Formula) -> SatResult {
     // which combined with transitive equisat means that the formula is unsat.
     // Great success,
     let mut i = 0;
-    let assignments = Assignments::new(f);
-    let mut trail = Trail::new(f, assignments);
+    let mut trail = Trail::new(f, Assignments::new(f));
     if f.num_vars >= usize::MAX/2 {
         return SatResult::Err;
     }

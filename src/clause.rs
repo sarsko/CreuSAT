@@ -46,6 +46,10 @@ pub enum ClauseState {
 }
 
 impl Clause {
+    pub fn make_unit_clause(lit: Lit) -> Clause {
+        Clause{ rest: vec::from_elem(lit, 1) }
+    }
+
     // TODO
     // Better to just fix the parser. Gotta have a decent parser by delivery anyways
     #[inline]
