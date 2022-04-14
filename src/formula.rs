@@ -133,6 +133,7 @@ impl Formula {
     #[ensures(self.equisat_compatible(^self))]
     #[ensures(self.equisat(^self))] // Added/changed
     #[ensures(@result === (@self.clauses).len())]
+    #[ensures((@(@(^self).clauses)[@result]).len() == 1)]
     #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
     pub fn add_unit(&mut self, clause: Clause, _t: &Trail) -> usize {
         let old_self = Ghost::record(&self);

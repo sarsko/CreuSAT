@@ -309,7 +309,6 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
     None
 }
 
-// Been updates here, gotta check that they are proving
 // OK
 #[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
 #[requires(f.invariant())]
@@ -317,18 +316,17 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
 #[requires(@cref < (@f.clauses).len())]
 #[requires((@f.clauses)[@cref].unsat(trail.assignments))]
 #[ensures(match result {
-    Conflict::Ground => true,//f.unsat(*a), // Either have to do proof on this seperately or reforumlate
+    Conflict::Ground => f.not_satisfiable(),
     Conflict::Unit(clause) => {
-        //0 <= @lit.idx && @lit.idx < (@trail.assignments).len()
-        clause.invariant(@f.num_vars)//@lit.idx < (@trail.assignments).len()  // can be changed to lit in or something
+        clause.invariant(@f.num_vars)
         && (@clause).len() == 1
         && vars_in_range_inner(@clause, @f.num_vars)
         && no_duplicate_indexes_inner(@clause)
         && equisat_extension_inner(clause, @f)
     }, 
     Conflict::Learned(level, clause) => {
-        //@level > 0 && @level <= (@trail.trail).len() && // Don't need atm
-        clause.invariant(@f.num_vars)//@lit.idx < (@trail.assignments).len()  // can be changed to lit in or something
+        clause.invariant(@f.num_vars)
+        && @level < (@trail.decisions).len() //added
         && (@clause).len() > 1 
         && vars_in_range_inner(@clause, @f.num_vars)
         && no_duplicate_indexes_inner(@clause)
@@ -336,10 +334,10 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
     }, 
     _ => { true }
 })]
-// new
 #[ensures(match result {
     Conflict::Ground => (@trail.decisions).len() === 0,
-    _ => {(@trail.decisions).len() > 0 }
+    Conflict::Panic  => true,
+    _                => {(@trail.decisions).len() > 0 },
 })]
 pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.decision_level();
@@ -414,10 +412,19 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
 }
 
 // Just analyze_conflict without a stopping condition(and with accepting units for resolution)
+// OK
+#[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
+#[requires(f.invariant())]
+#[requires(trail.invariant(*f))]
+#[requires(@cref < (@f.clauses).len())]
+#[requires((@f.clauses)[@cref].unsat(trail.assignments))]
+#[ensures(match result {
+    true  => f.not_satisfiable(),
+    false => true,
+})]
 pub fn derive_empty_formula(f: &Formula, trail: &Trail, cref: usize) -> bool {
     let mut i = trail.trail.len();
     let mut clause = f.clauses[cref].clone();
-    let mut s_idx = 0;
     #[invariant(clause_vars, clause.invariant_unary_ok(@f.num_vars))]
     #[invariant(clause_equi, equisat_extension_inner(clause, @f))]
     #[invariant(clause_unsat, clause.unsat(trail.assignments))]
@@ -433,7 +440,7 @@ pub fn derive_empty_formula(f: &Formula, trail: &Trail, cref: usize) -> bool {
         let ante = match &trail.trail[i].reason {
             Reason::Long(c) => &f.clauses[*c],
             Reason::Unit(c) => &f.clauses[*c],
-            o => {return false}, // nnTODOnn // This never happens, but is an entirely new proof
+            o               => return false, // nnTODOnn // This never happens, but is an entirely new proof
         };
         proof_assert!(clause.same_idx_same_polarity_except(*ante, @(@trail.trail)[@i].lit.idx));
         clause = resolve(f, &clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
@@ -444,4 +451,3 @@ pub fn derive_empty_formula(f: &Formula, trail: &Trail, cref: usize) -> bool {
     }
     return false;
 }
-

@@ -22,7 +22,14 @@ impl Reason {
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
             match self {
-                Reason::Long(i) => 0 <= @i && @i < (@f.clauses).len(),
+                Reason::Long(i) => 
+                    (0 <= @i && @i < (@f.clauses).len())
+                    && (@(@f.clauses)[@i]).len() > 1
+                ,
+                Reason::Unit(i) => 
+                    (0 <= @i && @i < (@f.clauses).len())
+                    && (@(@f.clauses)[@i]).len() == 1
+                ,
                 _ => true
             }
         }
@@ -75,6 +82,7 @@ impl Trail {
             && long_are_post_unit_inner(@self.trail, f, @self.assignments)
             && self.trail_entries_are_assigned() // ADDED
             && self.decisions_are_sorted() // NEW
+            && unit_are_sat(@self.trail, f, self.assignments)
             // I am not sure these will be needed
             //trail_entries_are_assigned_inner(@self.trail, @self.assignments) && // added
             //assignments_are_in_trail(@self.trail, @self.assignments) // added
@@ -237,6 +245,19 @@ pub fn long_are_post_unit_inner(trail: Seq<Step>, f: Formula, a: Seq<AssignedSta
         forall<j: Int> 0 <= j && j < trail.len() ==> 
             match trail[j].reason { 
                 Reason::Long(k) => { clause_post_with_regards_to_inner((@f.clauses)[@k], a, @(trail)[j].lit.idx) },
+                    _ => true,
+                }
+    }
+}
+
+#[predicate]
+pub fn unit_are_sat(trail: Seq<Step>, f: Formula, a: Assignments) -> bool {
+    pearlite! {
+        forall<j: Int> 0 <= j && j < trail.len() ==> 
+            match trail[j].reason { 
+                Reason::Unit(k) => { 
+                    trail[j].lit === (@(@f.clauses)[@k])[0]
+                    && (@(@f.clauses)[@k])[0].sat(a) },
                     _ => true,
                 }
     }

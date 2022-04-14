@@ -1,4 +1,4 @@
-// Wactches is Mac OK 11.04 22.10
+// Wactches is Mac OK 11.04 22.10 and 13.04 12:25
 extern crate creusot_contracts;
 use creusot_contracts::*;
 use creusot_contracts::std::*;
@@ -100,7 +100,7 @@ impl Watches {
     // This whole should be updated/merged with formula add_clause
     // We watch the negated literal for updates
     // OK
-    //#[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(@cref < (@_f.clauses).len())]
     #[requires(@lit.idx < @usize::MAX/2)]
@@ -112,7 +112,7 @@ impl Watches {
     }
 
     // OK
-    //#[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(@new_lit.idx < @usize::MAX/2)]
     #[requires(new_lit.to_neg_watchidx_logic() < (@self.watches).len())]

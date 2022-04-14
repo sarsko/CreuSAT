@@ -32,8 +32,12 @@ impl Model for Formula {
 pub fn formula_invariant(f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
         //(@f.clauses).len() > 0 && // added
-        forall<i: Int> 0 <= i && i < f.0.len() ==>
-            f.0[i].invariant(f.1)
+        (forall<i: Int> 0 <= i && i < f.0.len() ==>
+            f.0[i].invariant(f.1))
+        &&
+        // Added, will break stuff
+        (forall<i: Int> 0 <= i && i < f.0.len() ==>
+            (@f.0[i]).len() > 0)
     }
 }
 
@@ -138,8 +142,11 @@ impl Formula {
     pub fn invariant_old(self) -> bool {
         pearlite! {
             //(@f.clauses).len() > 0 && // added
-            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
-                (@self.clauses)[i].invariant(@self.num_vars)
+            (forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+                (@self.clauses)[i].invariant(@self.num_vars))
+            &&
+            (forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+                (@(@self.clauses)[i]).len() > 0)
         }
     }
 
@@ -208,6 +215,14 @@ impl Formula {
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! {
             self.unsat_inner(@a)
+        }
+    }
+
+    #[predicate]
+    pub fn not_satisfiable(self) -> bool {
+        pearlite! {
+            exists<c: Clause> (@c).len() == 0 
+            && c.equisat_extension(self)
         }
     }
 }

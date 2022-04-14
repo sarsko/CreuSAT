@@ -19,10 +19,11 @@ use crate::{
 #[cfg(contracts)]
 use crate::logic::{
     logic::*,
+    logic_formula::*,
 };
 
 pub enum SatResult {
-    Sat(Vec<Lit>),
+    Sat(Vec<AssignedState>),
     Unsat,
     Unknown,
     Err,
@@ -46,9 +47,9 @@ pub enum ConflictResult {
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures(f.equisat(^f))]
 #[ensures(match result {
-    Some(false) => { false }, // Something has to be gotten from analyze conflict // This is wrong: (^f).unsat((^t).assignments)},
+    Some(false) => { (^f).not_satisfiable() }, 
     Some(true)  => { true },
-    None        => { true }, // !(^f).unsat(^a)}, // we dont know this
+    None        => { true },
 })]
 fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches) -> Option<bool> {
     let res = analyze_conflict(f, t, cref);
@@ -90,7 +91,7 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
     None
 }
 
-// OK - Todo on unsat
+// OK
 #[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut w).invariant(mut f))]
@@ -100,7 +101,7 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures(f.equisat(^f))]
 #[ensures(match result {
-    ConflictResult::Ground => { false }, // TODO on the unsat condition
+    ConflictResult::Ground => { (^f).not_satisfiable() },
     _                      => { true }
 })]
 fn unit_prop_step(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) -> ConflictResult {
@@ -117,7 +118,7 @@ fn unit_prop_step(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
     }
 }
 
-// OK - TODO on the unsat condition
+// OK
 #[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut t).invariant(mut f))]
@@ -125,7 +126,7 @@ fn unit_prop_step(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
 #[requires(d.invariant(@f.num_vars))]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[ensures(match result {
-    Some(false) => { false }, // TODO
+    Some(false) => { (^f).not_satisfiable() },
     Some(true)  => { true },
     None        => { true }, 
 })]
@@ -154,7 +155,7 @@ fn unit_prop_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
 }
 
 
-// Ok. Again todo on post unsat
+// OK
 #[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
@@ -167,7 +168,7 @@ fn unit_prop_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
     SatResult::Sat(_)   => { (^f).sat((^trail).assignments) 
         && ((^trail).assignments).complete() // Do I really need this for anything?
     }, // TODO: Vec is sat assign
-    SatResult::Unsat    => { false }, // TODO
+    SatResult::Unsat    => { (^f).not_satisfiable() },
     SatResult::Unknown  => { true }
     SatResult::Err      => { true }
 })]
@@ -212,7 +213,7 @@ fn outer_loop(f: &mut Formula, d: &Decisions, trail: &mut Trail, w: &mut Watches
     SatResult::Unknown
 }
 
-// OK (again TODO on unsat)
+// OK
 #[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
 #[requires(@formula.num_vars < @usize::MAX/2)]
 #[requires(formula.invariant())]
@@ -233,7 +234,7 @@ fn outer_loop(f: &mut Formula, d: &Decisions, trail: &mut Trail, w: &mut Watches
 //#[ensures(result === false ==> !f.eventually_sat_complete(*a))]
 #[ensures(match result {
     SatResult::Sat(_) => { (^formula).sat((^trail).assignments) && formula.equisat(^formula) && formula.eventually_sat_complete_no_ass()}, // TODO: + vec is assign
-    SatResult::Unsat => { false }// && f.unsat(^a)}, // + add resolution from empty clause
+    SatResult::Unsat => { (^formula).not_satisfiable() && formula.equisat(^formula) }
     _ => true,
 })]
 #[ensures(formula.equisat(^formula))]
@@ -259,9 +260,14 @@ fn inner(formula: &mut Formula, decisions: &Decisions, trail: &mut Trail, watche
 
 // TODO on this. Look at it after figuring out UNSAT
 // (does check out btw)
-#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
-#[requires(f.invariant())]
-pub fn solver(f: &mut Formula) -> SatResult {
+//#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
+#[requires(formula.invariant())]
+#[ensures(match result {
+    SatResult::Sat(assn) => { formula_sat_inner(@(^formula), @assn) && formula.equisat(^formula) && formula.eventually_sat_complete_no_ass()}, // TODO: + vec is assign
+    SatResult::Unsat => { (^formula).not_satisfiable() && formula.equisat(^formula) }
+    _ => true,
+})]
+pub fn solver(formula: &mut Formula) -> SatResult {
     // Swapping to not needing binary clauses seem to have gone fine.
     // Should undo the split to units, then do an init function which
     // watches the at least binary clauses and adds the units as unit.
@@ -270,22 +276,22 @@ pub fn solver(f: &mut Formula) -> SatResult {
     // which combined with transitive equisat means that the formula is unsat.
     // Great success,
     let mut i = 0;
-    let mut trail = Trail::new(f, Assignments::new(f));
-    if f.num_vars >= usize::MAX/2 {
+    let mut trail = Trail::new(formula, Assignments::new(formula));
+    if formula.num_vars >= usize::MAX/2 {
         return SatResult::Err;
     }
     // Should ideally do a check for if num_vars is correct and everything here. Ah well, todo
-    if f.num_vars == 0 {
+    if formula.num_vars == 0 {
         return SatResult::Sat(Vec::new());
     }
-    let decisions = Decisions::new(f);
-    let mut watches = Watches::new(f);
-    watches.init_watches(f);
-    match trail.learn_units(f) {
+    let decisions = Decisions::new(formula);
+    let mut watches = Watches::new(formula);
+    watches.init_watches(formula);
+    match trail.learn_units(formula) {
         false => {
             return SatResult::Unsat; // TODO on proving this(should be simple, we have conflict between two units(make it a special enum?))
         }
         true => {},
     }
-    inner(f, &decisions, &mut trail, &mut watches)
+    inner(formula, &decisions, &mut trail, &mut watches)
 }
