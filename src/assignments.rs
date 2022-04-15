@@ -85,7 +85,7 @@ impl Assignments {
         while i < f.num_vars {
             // Having it random didnt really help
             //let n = rand_in_range(2,4);
-            let n = 3;
+            let n = 2;
             assign.push(n);
             i += 1
         }

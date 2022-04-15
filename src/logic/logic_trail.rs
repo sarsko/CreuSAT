@@ -71,6 +71,24 @@ impl Trail {
     }
 
     #[predicate]
+    pub fn invariant_swap(self, f: Formula) -> bool {
+        pearlite! {
+            self.assignments.invariant(f) 
+            && trail_invariant(@self.trail, f)
+            && lit_to_level_invariant(@self.lit_to_level, f)
+            && decisions_invariant(@self.decisions, @self.trail)
+            // added, watch out
+            && self.lit_not_in_less(f)
+            && self.lit_is_unique()
+            && long_are_post_unit_inner(@self.trail, f, @self.assignments)
+            && self.trail_entries_are_assigned() // ADDED
+            // I am not sure these will be needed
+            //trail_entries_are_assigned_inner(@self.trail, @self.assignments) && // added
+            //assignments_are_in_trail(@self.trail, @self.assignments) // added
+        }
+    }
+
+    #[predicate]
     pub fn invariant_no_decision(self, f: Formula) -> bool {
         pearlite! {
             self.assignments.invariant(f) 

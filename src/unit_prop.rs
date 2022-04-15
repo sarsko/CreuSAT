@@ -61,6 +61,88 @@ fn unit_prop_check_rest(f: &mut Formula, trail: &Trail, watches: &mut Watches, c
 fn lemma_swap_ok(t: Trail, c: Clause, i: Int, j: Int, c2: Clause) {}
 */
 
+// Okay so somehow allowing units completely broke the swap function, and I cannot see why.
+// I'll come back later and fix it.
+#[cfg_attr(all(any(trust_unit_prop, trust_all), not(untrust_all)), trusted)]
+#[inline(always)]
+#[maintains((*trail).invariant(mut f))]
+/*
+#[ensures(trail.invariant_swap(^f)/*trail.assignments.invariant(^f) 
+&& trail_invariant(@trail.trail, ^f)
+&& lit_to_level_invariant(@trail.lit_to_level, ^f)
+&& decisions_invariant(@trail.decisions, @trail.trail)
+&& trail.lit_not_in_less(^f)
+&& trail.lit_is_unique()
+&& long_are_post_unit_inner(@trail.trail, ^f, @trail.assignments)
+&& trail.trail_entries_are_assigned()
+&& trail.decisions_are_sorted() 
+&& unit_are_sat(@trail.trail, ^f, trail.assignments)*/
+)]
+*/
+/*
+#[ensures(
+    tail.invariant_no_decision(*f)
+
+)]
+*/
+/*
+self.assignments.invariant(f) 
+&& trail_invariant(@self.trail, f)
+&& lit_to_level_invariant(@self.lit_to_level, f)
+&& decisions_invariant(@self.decisions, @self.trail)
+// added, watch out
+&& self.lit_not_in_less(f)
+&& self.lit_is_unique()
+&& long_are_post_unit_inner(@self.trail, f, @self.assignments)
+&& self.trail_entries_are_assigned() // ADDED
+*/
+
+#[maintains((mut f).invariant())]
+#[maintains((*watches).invariant(mut f))]
+#[requires((@(@f.clauses)[@cref]).len() >= 2)]
+#[requires((@(@f.clauses)[@cref]).len() > @k)]
+#[requires((@(@f.clauses)[@cref]).len() > @n)]
+#[requires(@f.num_vars < @usize::MAX/2)]
+#[requires(@lit.idx < @f.num_vars)]
+#[requires(@cref < (@f.clauses).len())]
+#[ensures(@f.num_vars === @(^f).num_vars)]
+#[ensures((@f.clauses).len() === (@(^f).clauses).len())]
+#[ensures((@(@f.clauses)[@cref]).len() === (@(@(^f).clauses)[@cref]).len())]
+#[ensures(f.equisat(^f))]
+fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, lit: Lit, j: usize, k: usize, n: usize) {
+    let old_f = Ghost::record(&f);
+    let second_lit = Ghost::record(&f.clauses[cref].rest[k]);
+    proof_assert!((@(@f.clauses)[@cref]).len() >= 2);
+    f.clauses[cref].rest.swap(n, k);
+    // Ill leave this here to clean up in later
+    proof_assert!((@(@old_f).clauses).len() === (@f.clauses).len());
+    proof_assert!(forall<i: Int> 0 <= i && i < (@(@old_f).clauses).len() && i != @cref ==>
+        (@(@(@old_f).clauses)[i]) === (@(@f.clauses)[i]));
+    proof_assert!((@(@(@old_f).clauses)[@cref]).permut((@(@f.clauses)[@cref]), 0, (@(@f.clauses)[@cref]).len()));
+    proof_assert!(@(@old_f).num_vars === @f.num_vars);
+    proof_assert!(lemma_swap_clause_no_dups(((@(@old_f).clauses)[@cref]), ((@f.clauses)[@cref]), @n, @k); true);
+    proof_assert!(lemma_swap_maintains_post_unit(((@(@old_f).clauses)[@cref]), ((@f.clauses)[@cref]), @n, @k, trail.assignments); true);
+    // Not sure if this really helps, as we are sort of "short circuiting" the j
+    /*
+    #[requires((@c).len() >= 2)]
+    #[requires((@c2).len() === (@c).len())]
+    #[requires((@c2).exchange(@c, a, b))]
+    #[requires(clause_post_with_regards_to(c, ass, j))]
+    #[ensures(clause_post_with_regards_to(c2, ass, j))]
+    #[ensures(clause_post_with_regards_to_inner(c2, @ass, j))]
+    */
+    proof_assert!(lemma_swap_maintains_post_with_regards_to(((@(@old_f).clauses)[@cref]), ((@f.clauses)[@cref]), @n, @k, trail.assignments, @(@second_lit).idx); true);
+    // Can add a lemma here to make the formula invariant faster
+    proof_assert!(lemma_permut_clause_in_formula_maintains_sat(*@old_f, *f, @cref); true);
+    proof_assert!(lemma_permut_clause_in_formula_maintains_unsat(*@old_f, *f, @cref); true);
+    proof_assert!(^@old_f === ^f);
+    proof_assert!((@(@f.clauses)[@cref]).len() > 1);
+    proof_assert!(vars_in_range_inner(@(@f.clauses)[@cref], @f.num_vars));
+    proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
+    proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments)); // No
+}
+
+/*
 // OK
 //#[cfg_attr(all(any(trust_unit_prop, trust_all), not(any(untrust_all, todo))), trusted)]
 #[inline(always)]
@@ -188,6 +270,7 @@ fn swap_one_k(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, li
     proof_assert!(trail.trail_entries_are_assigned());
     */
 }
+*/
 
 // Okay so the function should really be split up, now it takes too long.
 // OK on Mac

@@ -146,7 +146,8 @@ impl Formula {
                 (@self.clauses)[i].invariant(@self.num_vars))
             &&
             (forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
-                (@(@self.clauses)[i]).len() > 0)
+                (@(@self.clauses)[i]).len() >= 1)
+
         }
     }
 
