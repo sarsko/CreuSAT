@@ -254,20 +254,14 @@ fn inner(formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut 
     _ => true,
 })]
 pub fn solver(formula: &mut Formula) -> SatResult {
-    let mut i = 0;
     let mut trail = Trail::new(formula, Assignments::new(formula));
     if formula.num_vars >= usize::MAX/2 {
         return SatResult::Err;
     }
-    // Should ideally do a check for if num_vars is correct and everything here. Ah well, todo
-    if formula.num_vars == 0 {
-        if formula.clauses.len() == 0 {
-            let a: Vec<AssignedState> = Vec::new();
-            proof_assert!(formula_sat_inner(@formula, @a));
-            return SatResult::Sat(a);
-        } else {
-            return SatResult::Err;
-        }
+    // Should do a check for if num_vars is correct and everything here. Ah well, todo
+    if formula.clauses.len() == 0 {
+        let a: Vec<AssignedState> = Vec::new();
+        return SatResult::Sat(a);
     }
     let decisions = Decisions::new(formula);
     let mut watches = Watches::new(formula);

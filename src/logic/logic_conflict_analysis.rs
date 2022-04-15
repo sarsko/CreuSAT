@@ -57,3 +57,23 @@ pub fn lemma_idx(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_id
 pub fn lemma_idx2(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_idx: Int, _f: Formula) {
     lemma_idx(c, o, new, i, idx, c_idx, _f);
 }
+
+//#[cfg_attr(all(any(trust_conflict, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
+#[logic]
+#[requires(c.invariant(a.len()))]
+#[requires(c2.invariant(a.len()))]
+#[requires(0 <= c_idx && c_idx < (@c).len())]
+#[requires(0 <= c2_idx && c2_idx < (@c2).len())]
+#[requires(c3.resolvent_of(c, c2, c2_idx, c_idx))]
+//#[ensures((@c3).len() >= (@c2).len() - 1)]
+#[ensures((forall<i: Int> 0 <= i && i < (@c ).len() && i != c_idx ==> (@c   )[i].lit_in(c3)))]
+pub fn lemma_resolved_len(c: Clause, c2: Clause, c3: Clause, a: Seq<AssignedState>, c_idx: Int, c2_idx: Int) {}
+
+/*
+#[requires(c.invariant(a.len()))]
+#[requires(c2.invariant(a.len()))]
+#[requires(0 <= c_idx && c_idx < (@c).len())]
+#[requires((forall<i: Int> 0 <= i && i < (@c ).len() && i != c_idx ==> (@c   )[i].lit_in(c3)))]
+#[ensures((@c3).len() + 1 >= (@c).len())]
+pub fn lemma_resolved_len2(c: Clause, c2: Clause, c3: Clause, a: Seq<AssignedState>, c_idx: Int, c2_idx: Int) {}
+*/
