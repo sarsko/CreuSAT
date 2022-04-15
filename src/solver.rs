@@ -159,7 +159,7 @@ fn unit_prop_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
 
 
 // OK
-#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all, runtime_check)), trusted)]
+#[cfg_attr(all(any(trust_solver, trust_all), not(any(untrust_all, runtime_check))), trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut w).invariant(mut f))]
