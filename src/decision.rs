@@ -16,26 +16,23 @@ use crate::logic::{
     logic_decision::*,
 };
 
-/*
-//#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Node {
     pub next: Option<usize>,
     pub prev: Option<usize>,
     pub ts: usize,
 }
-*/
 
 pub struct Decisions {
     pub lit_order: Vec<usize>,
-    /*
     pub linked_list: Vec<Node>,
     timestamp: usize,
     pub start: usize,
     pub head: usize
-    */
 }
 
 impl Decisions {
+    /*
     // OK
     #[cfg_attr(all(any(trust_decision, trust_all), not(untrust_all)), trusted)]
     #[requires(f.invariant())]
@@ -86,16 +83,13 @@ impl Decisions {
         }
         Decisions{lit_order: lit_order}
     }
-    /*
+    */
     pub fn new(f: &Formula) -> Decisions {
-        /*
         let mut lit_order = vec![0; f.num_vars];
         let mut counts = vec![0; f.num_vars];
         let mut i = 0;  
         while i < f.num_vars {
             let curr_clause = &f.clauses[i];
-            counts[curr_clause.first.idx] += 1;
-            counts[curr_clause.second.idx] += 1;
             let mut j = 0;
             while j < curr_clause.rest.len() {
                 counts[curr_clause.rest[j].idx] += 1;
@@ -135,20 +129,17 @@ impl Decisions {
             i += 1;
         }
         Decisions {
-            //lit_order: lit_order,
+            lit_order: lit_order,
             //loc_of_lit: loc_of_lit,
             linked_list: linked_list,
             timestamp: f.num_vars + 1,
             start: head,
             head: head,
         }
-        */
     }
-    */
 
     #[cfg_attr(all(any(trust_decision, trust_all), not(untrust_all)), trusted)]
     fn move_to_front(&mut self, tomove: usize) {
-        /*
         let old_next = self.linked_list[tomove].next;
         match self.linked_list[tomove].prev {
             Some(prev) => {
@@ -168,9 +159,7 @@ impl Decisions {
         self.linked_list[tomove].ts = self.timestamp;
         self.timestamp += 1;
         self.start = tomove;
-        */
     }
-/*
 
     #[cfg_attr(all(any(trust_decision, trust_all), not(untrust_all)), trusted)]
     pub fn increment_and_move(&mut self, f: &Formula, cref: usize) {
@@ -191,11 +180,9 @@ impl Decisions {
         }
         */
     }
-    */
 
     #[cfg_attr(all(any(trust_decision, trust_all), not(untrust_all)), trusted)]
     pub fn get_next(&mut self, a: &Assignments) -> Option<usize> {
-        /*
         let mut head = Some(self.head);
         while head != None {
             if a.0[head.unwrap()] >= 2 {
@@ -204,7 +191,6 @@ impl Decisions {
             }
             head = self.linked_list[head.unwrap()].next;
         }
-        */
         return None;
     }
 }

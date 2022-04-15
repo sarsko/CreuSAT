@@ -51,7 +51,7 @@ pub enum ConflictResult {
     Some(true)  => { true },
     None        => { true },
 })]
-fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches) -> Option<bool> {
+fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches, d: &mut Decisions) -> Option<bool> {
     let res = analyze_conflict(f, t, cref);
     match res {
         Conflict::Ground => { 
@@ -60,7 +60,7 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
         Conflict::Unit(clause) => {
             // Have to do a proof that it isnt already unit?
             let cref = f.add_unit(clause, t);
-            match t.learn_unit(cref, f) {
+            match t.learn_unit(cref, f, d) {
                 Err(_) => return Some(true),
                 Ok(_) => {},
             }
@@ -71,8 +71,9 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
             // ground conflict work, then everything else can be treated as optimizations
 
             let cref = f.add_clause(clause, w, t);
+            d.increment_and_move(f, cref);
 
-            t.backtrack_to(level, f);
+            t.backtrack_to(level, f, d);
             /*
             let step = Step {
                 lit: lit,
@@ -107,12 +108,12 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
     ConflictResult::Ground => { (^f).not_satisfiable() },
     _                      => { true }
 })]
-fn unit_prop_step(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) -> ConflictResult {
+fn unit_prop_step(f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> ConflictResult {
     return match unit_propagate(f, t, w) {
     //match a.do_unit_propagation(f, t) {
         Ok(_) => ConflictResult::Ok,
         Err(cref) => {
-            match handle_conflict(f, t, cref, w) {
+            match handle_conflict(f, t, cref, w, d) {
                 Some(false) => ConflictResult::Ground,
                 Some(true)  => ConflictResult::Err,
                 None        => ConflictResult::Continue,
@@ -135,7 +136,7 @@ fn unit_prop_step(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
 })]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures(f.equisat(^f))]
-fn unit_prop_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
+fn unit_prop_loop(f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
     let old_f = Ghost::record(&f);
     let old_t = Ghost::record(&t);
     let old_w = Ghost::record(&w);
@@ -175,7 +176,7 @@ fn unit_prop_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
     SatResult::Unknown  => { true }
     SatResult::Err      => { true }
 })]
-fn outer_loop(f: &mut Formula, d: &Decisions, trail: &mut Trail, w: &mut Watches) -> SatResult {
+fn outer_loop(f: &mut Formula, d: &mut Decisions, trail: &mut Trail, w: &mut Watches) -> SatResult {
     match unit_prop_loop(f, d, trail, w) {
         Some(false) => return SatResult::Unsat,
         None        => return SatResult::Err,
@@ -183,6 +184,7 @@ fn outer_loop(f: &mut Formula, d: &Decisions, trail: &mut Trail, w: &mut Watches
     }
     //proof_assert!(!a.complete() || !f.unsat(*a)); // Need to get from unit_prop_loop
     match trail.assignments.find_unassigned(d, f) {
+    //match d.get_next(&trail.assignments) {
         Some(next) => {
             //let dlevel = t.trail.len();
             //t.trail.push(Vec::new());
@@ -238,7 +240,7 @@ fn inner(formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut 
     #[invariant(maintains_w, watches.invariant(*formula))]
     #[invariant(prophf, ^formula === ^@old_f)]
     loop {
-        match outer_loop(formula, &decisions, &mut trail, &mut watches) {
+        match outer_loop(formula, &mut decisions, &mut trail, &mut watches) {
             SatResult::Unknown => {}, // continue
             SatResult::Sat(_) => {return SatResult::Sat(trail.assignments.0);},
             o => return o,
@@ -263,10 +265,10 @@ pub fn solver(formula: &mut Formula) -> SatResult {
         let a: Vec<AssignedState> = Vec::new();
         return SatResult::Sat(a);
     }
-    let decisions = Decisions::new(formula);
+    let mut decisions = Decisions::new(formula);
     let mut watches = Watches::new(formula);
     watches.init_watches(formula);
-    match trail.learn_units(formula) {
+    match trail.learn_units(formula, &mut decisions) {
         Some(cref) => {
             if derive_empty_formula(formula, &trail, cref) {
                 return SatResult::Unsat;
