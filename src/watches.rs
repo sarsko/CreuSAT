@@ -50,10 +50,8 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
     let end = watches.watches[watchidx].len() - 1;
     watches.watches[watchidx].swap(j, end);
     let curr_lit = f.clauses[cref].rest[k];
-    //watches.move_to_end(watchidx, j, curr_lit, f);
     proof_assert!(@watchidx < (@watches.watches).len());
     let old_w = Ghost::record(&watches);
-    //proof_assert!(watcher_crefs_in_range((@(@(@old_w).watches)[@watchidx]), *f));
     proof_assert!((@old_w).watches === watches.watches);
     proof_assert!(watcher_crefs_in_range(@(@watches.watches)[@watchidx], *f));
     match watches.watches[watchidx].pop() {

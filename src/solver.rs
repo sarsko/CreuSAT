@@ -249,7 +249,7 @@ fn inner(formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut 
 #[cfg_attr(all(any(trust_solver, trust_all), not(any(untrust_all))), trusted)]
 #[requires(formula.invariant())]
 #[ensures(match result {
-    SatResult::Sat(assn) => { formula_sat_inner(@(^formula), @assn) && formula.equisat(^formula) && formula.eventually_sat_complete_no_ass()}, // TODO: + vec is assign
+    SatResult::Sat(assn) => { formula_sat_inner(@(^formula), @assn) && formula.equisat(^formula) }, 
     SatResult::Unsat => { (^formula).not_satisfiable() && formula.equisat(^formula) }
     _ => true,
 })]

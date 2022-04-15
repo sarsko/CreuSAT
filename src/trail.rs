@@ -85,7 +85,7 @@ impl Trail {
 
     // For some reason the post takes forever(but it solved on Mac with auto level 3)
     #[cfg_attr(all(any(trust_trail, trust_all), not(any(untrust_all))), trusted)]
-    //#[inline(always)]
+    #[inline(always)]
     #[requires(f.invariant())]
     #[requires(self.invariant_no_decision(*f))]
     #[ensures((^self).invariant_no_decision(*f))] // added since last run
@@ -98,7 +98,6 @@ impl Trail {
         let last = self.trail.pop();
         match last {
             Some(step) => {
-                // TODO: Phase saving
                 if self.assignments.0[step.lit.idx] < 2 {
                     self.assignments.0[step.lit.idx] += 2; // TODO: Prove safety
                 } else {

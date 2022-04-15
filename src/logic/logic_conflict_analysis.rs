@@ -58,6 +58,7 @@ pub fn lemma_idx2(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_i
     lemma_idx(c, o, new, i, idx, c_idx, _f);
 }
 
+/*
 //#[cfg_attr(all(any(trust_conflict, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[logic]
 #[requires(c.invariant(a.len()))]
@@ -68,6 +69,7 @@ pub fn lemma_idx2(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_i
 //#[ensures((@c3).len() >= (@c2).len() - 1)]
 #[ensures((forall<i: Int> 0 <= i && i < (@c ).len() && i != c_idx ==> (@c   )[i].lit_in(c3)))]
 pub fn lemma_resolved_len(c: Clause, c2: Clause, c3: Clause, a: Seq<AssignedState>, c_idx: Int, c2_idx: Int) {}
+*/
 
 /*
 #[requires(c.invariant(a.len()))]
