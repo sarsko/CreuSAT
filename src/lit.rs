@@ -54,6 +54,14 @@ impl Lit {
     pub fn lit_unset(self, a: &Assignments) -> bool {
         a.0[self.idx] >= 2
     }
+
+    #[inline(always)]
+    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
+    #[requires(self.invariant((@a).len()))]
+    #[ensures(result === !self.unset(*a))]
+    pub fn lit_set(self, a: &Assignments) -> bool {
+        a.0[self.idx] < 2
+    }
     
     // Gets the index of the literal in the representation used for the watchlist
     #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]

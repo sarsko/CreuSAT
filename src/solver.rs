@@ -60,7 +60,10 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
         Conflict::Unit(clause) => {
             // Have to do a proof that it isnt already unit?
             let cref = f.add_unit(clause, t);
-            t.learn_unit(cref, f);
+            match t.learn_unit(cref, f) {
+                Err(_) => return Some(true),
+                Ok(_) => {},
+            }
         }
         Conflict::Learned(level, clause) => {
             // Okay so doing a full search restart every time is a lot less slow than expected
@@ -156,7 +159,7 @@ fn unit_prop_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
 
 
 // OK
-#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all, runtime_check)), trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut w).invariant(mut f))]
@@ -204,7 +207,7 @@ fn outer_loop(f: &mut Formula, d: &Decisions, trail: &mut Trail, w: &mut Watches
             //proof_assert!(!f.unsat(*a));
             //proof_assert!(lemma_complete_and_not_unsat_implies_sat(*f, @a); true);
             if f.is_sat(&trail.assignments) {
-                return SatResult::Sat(Vec::new()); // TODO add sat assignment
+                return SatResult::Sat(Vec::new());
             } else {
                 return SatResult::Err; // This should never happen
             }

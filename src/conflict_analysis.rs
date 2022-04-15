@@ -67,7 +67,7 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
 #[ensures(result.unsat_inner(@_a))]
 //#[ensures((@result).len() > 0)] // TODO: Need to prove this
 // Okay so to prove the length, we have to prove that the resolved clause is at minimum the length of the
-// the second clause - 1, which is a long, and all longs are at least of length 2(this should be made and invariant if
+// the second clause - 1, which is a long, and all longs are at least of length 2(this should be made an invariant if
 // it isnt already)
 // Requires long(o)
 #[ensures((@result).len() >= (@o).len() - 1)] // TODO: Need to prove this
@@ -277,7 +277,7 @@ fn resolve_mut(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usiz
 */
 
 // OK
-#[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all, runtime_check)), trusted)]
 #[requires(trail.invariant(*_f))]
 #[requires(c.unsat(trail.assignments))]
 #[requires(@i <= (@trail.trail).len())] // not needed?
@@ -312,7 +312,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
 }
 
 // OK
-#[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all, runtime_check)), trusted)]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
@@ -415,7 +415,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
 
 // Just analyze_conflict without a stopping condition(and with accepting units for resolution)
 // OK
-#[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all, runtime_check)), trusted)]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]

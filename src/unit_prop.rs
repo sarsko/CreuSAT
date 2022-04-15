@@ -53,7 +53,7 @@ fn unit_prop_check_rest(f: &mut Formula, trail: &Trail, watches: &mut Watches, c
 }
 
 // OK
-#[cfg_attr(all(any(trust_unit_prop, trust_all), not(any(untrust_all, todo))), trusted)]
+//#[cfg_attr(all(any(trust_unit_prop, trust_all), not(any(untrust_all, todo))), trusted)]
 #[inline(always)]
 #[maintains((*trail).invariant(mut f))]
 #[maintains((mut f).invariant())]
