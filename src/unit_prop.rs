@@ -63,7 +63,7 @@ fn lemma_swap_ok(t: Trail, c: Clause, i: Int, j: Int, c2: Clause) {}
 
 // Okay so somehow allowing units completely broke the swap function, and I cannot see why.
 // I'll come back later and fix it.
-#[cfg_attr(all(any(trust_unit_prop, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(all(any(trust_unit_prop, trust_all), not(any(untrust_all, todo))), trusted)]
 #[inline(always)]
 #[maintains((*trail).invariant(mut f))]
 /*
@@ -281,11 +281,9 @@ fn swap_one_k(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, li
 #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)] // Added. Unsure if this is the correct way to formulate it
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(@lit.idx < @f.num_vars)]
-//#[requires(0 < (@trail.trail).len() && (@trail.trail).len() < @f.num_vars)]
-//#[requires(0 < (@trail.trail).len())]
-//#[requires((@trail.decisions).len() > 0)] //dunno, move this to invariant?
 #[requires(watches.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
+#[requires((@(@f.clauses)[@cref]).len() >= 2)]
 #[ensures((^trail).decisions === trail.decisions)] // added
 #[ensures(match result {
     Ok(true) => true, // This not generally true (@(^trail).trail).len() === 1 + (@trail.trail).len(),
@@ -419,8 +417,6 @@ fn unit_prop_do_outer(f: &mut Formula, trail: &mut Trail, watches: &mut Watches,
 #[maintains((mut watches).invariant(mut f))]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(@lit.idx < @f.num_vars)]
-//#[requires((@trail.trail).len() > 0)]
-//#[requires((@trail.decisions).len() > 0)] //dunno, move this to invariant?
 #[ensures(match result {
     Ok(()) => true,// !(^f).unsat(^a),
     Err(n) => @n < (@(^f).clauses).len() && (^f).unsat((^trail).assignments) && (@(^f).clauses)[@n].unsat((^trail).assignments),
@@ -447,10 +443,10 @@ fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Wat
     #[invariant(proph_f, ^f === ^@old_f)]
     #[invariant(proph_w, ^watches === ^@old_w)]
     while j < watches.watches[watchidx].len() {
-        let cref = watches.watches[watchidx][j].cref; // new
+        let cref = watches.watches[watchidx][j].cref;
         match unit_prop_do_outer(f, trail, watches, cref, lit, j) {
             Ok(true) => { j += 1; },
-            Ok(false) => { }, // Is this still correct?
+            Ok(false) => { },
             Err(cref) => {
                 return Err(cref);
             }
