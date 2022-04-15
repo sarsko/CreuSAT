@@ -88,6 +88,7 @@ pub fn lemma_swap_maintains_post_unit(c: Clause, c2: Clause, a: Int, b: Int, ass
     lemma_swap_clause_no_dups(c, c2, a, b);
 }
 
+
 #[cfg_attr(all(any(trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[logic]
 #[requires((@c).len() >= 2)]
