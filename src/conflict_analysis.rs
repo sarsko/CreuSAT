@@ -43,9 +43,7 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
     false
 }
 
-// OK [04.04] [[Doesnt check out on Mac [04.04] - struggling with the loop invariants, but that's it]]
-// Come back to it later. Invariant is sticky
-//#[cfg_attr(all(any(trust_conflict, trust_all), not(any(untrust_all, todo))), trusted)]
+#[cfg_attr(all(any(trust_conflict, trust_all), not(any(untrust_all))), trusted)]
 #[requires(_f.invariant())]
 #[requires(equisat_extension_inner(*c, @_f))]
 #[requires(o.in_formula(*_f))]
@@ -57,11 +55,8 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
     k != @c_idx && @(@o)[j].idx != @idx ==> !(@c)[k].is_opp((@o)[j]))]
 #[requires(c.same_idx_same_polarity_except(*o, @idx))]
 #[requires(@idx < @_f.num_vars)]
-//#[ensures(result.invariant_unary_ok(@_f.num_vars))]
 #[requires(o.post_unit_inner(@_a))]
 #[requires(c.unsat_inner(@_a))]
-//#[requires(c.invariant_unary_ok(@_f.num_vars))]
-//#[requires(o.invariant_unary_ok(@_f.num_vars))]
 #[requires(c.invariant(@_f.num_vars))]
 #[requires(o.invariant(@_f.num_vars))]
 #[ensures(result.unsat_inner(@_a))]
@@ -324,7 +319,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
 }
 
 // OK
-//#[cfg_attr(all(any(trust_conflict, trust_all), not(any(untrust_all, runtime_check))), trusted)]
+#[cfg_attr(all(any(trust_conflict, trust_all), not(any(untrust_all, runtime_check))), trusted)]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
@@ -367,7 +362,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     #[invariant(clause_vars, clause.invariant_unary_ok(@f.num_vars))]
     #[invariant(clause_equi, equisat_extension_inner(clause, @f))]
     #[invariant(clause_unsat, clause.unsat(trail.assignments))]
-    #[invariant(clause_len, (@clause).len() > 0)]
+    //#[invariant(clause_len, (@clause).len() > 0)]
     #[invariant(i_bound, 0 <= @i && @i <= (@trail.trail).len())]
     while i > 0 {
         proof_assert!((@trail.trail).len() > 0);
@@ -382,9 +377,6 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
         };
         proof_assert!(clause.same_idx_same_polarity_except(*ante, @(@trail.trail)[@i].lit.idx));
         clause = resolve(f, &clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
-        if clause.rest.len() == 0 {
-            return Conflict::Panic; // Okay this is just pure lazyness
-        }
         //resolve_mut(f, &mut clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
         let mut k: usize = 0;
         let mut cnt: usize = 0;
@@ -404,6 +396,9 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             //clause.rest.swap(0, s_idx);
             break;
         }
+    }
+    if clause.rest.len() == 0 {
+        return Conflict::Panic; // Okay this is just pure lazyness
     }
 
     if clause.rest.len() == 1 {
