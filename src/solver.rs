@@ -246,10 +246,7 @@ fn inner(formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut 
     }
 }
 
-// TODO
-// TODO on this. Look at it after figuring out UNSAT
-// (does check out btw)
-#[cfg_attr(all(any(trust_solver, trust_all), not(any(untrust_all, todo))), trusted)]
+#[cfg_attr(all(any(trust_solver, trust_all), not(any(untrust_all))), trusted)]
 #[requires(formula.invariant())]
 #[ensures(match result {
     SatResult::Sat(assn) => { formula_sat_inner(@(^formula), @assn) && formula.equisat(^formula) && formula.eventually_sat_complete_no_ass()}, // TODO: + vec is assign
@@ -257,13 +254,6 @@ fn inner(formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut 
     _ => true,
 })]
 pub fn solver(formula: &mut Formula) -> SatResult {
-    // Swapping to not needing binary clauses seem to have gone fine.
-    // Should undo the split to units, then do an init function which
-    // watches the at least binary clauses and adds the units as unit.
-    // As for the learnt units, I think those should be added to the formula as well,
-    // and then finally one does a resolution from the last conflict to the empty clause,
-    // which combined with transitive equisat means that the formula is unsat.
-    // Great success,
     let mut i = 0;
     let mut trail = Trail::new(formula, Assignments::new(formula));
     if formula.num_vars >= usize::MAX/2 {
@@ -283,11 +273,15 @@ pub fn solver(formula: &mut Formula) -> SatResult {
     let mut watches = Watches::new(formula);
     watches.init_watches(formula);
     match trail.learn_units(formula) {
-        false => {
-            proof_assert!((^formula).not_satisfiable());
-            return SatResult::Unsat; // TODO on proving this(should be simple, we have conflict between two units(make learn units return a cref and call derive_empty? make it a special enum?))
+        Some(cref) => {
+            if derive_empty_formula(formula, &trail, cref) {
+                return SatResult::Unsat;
+            } else {
+                // There is absolutely no way that this can happen, and it should pe provable
+                return SatResult::Err;
+            }
         }
-        true => {},
+        None => {},
     }
     inner(formula, decisions, trail, watches)
 }

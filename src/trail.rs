@@ -418,11 +418,17 @@ impl Trail {
     }
     */
 
-    // TODO on returning something better than false
     #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
-    #[requires(f.invariant())]
     #[maintains((mut self).invariant(*f))]
-    pub fn learn_units(&mut self, f: &Formula) -> bool {
+    #[requires(f.invariant())]
+    #[ensures(match result {
+        Some(cref) => @cref < (@f.clauses).len()
+                   && (@(@f.clauses)[@cref]).len() == 1
+                   && (@f.clauses)[@cref].unsat((^self).assignments)
+                   && (@(@f.clauses)[@cref])[0].unsat((^self).assignments),
+        _ => true,
+    })]
+    pub fn learn_units(&mut self, f: &Formula) -> Option<usize> {
         let mut i = 0;
         let old_self = Ghost::record(&self);
         #[invariant(self_inv, self.invariant(*f))]
@@ -431,13 +437,17 @@ impl Trail {
             let clause = &f.clauses[i];
             if clause.rest.len() == 1 {
                 let lit = clause.rest[0];
-                if lit.lit_unset(&self.assignments) {
-                    return false;
+                // This check should be removed by an invariant that the formula only contains unique clauses
+                if lit.lit_set(&self.assignments) {
+                    if lit.lit_unsat(&self.assignments) {
+                        return Some(i);
+                    }
+                } else {
+                    self.learn_unit(i, f);
                 }
-                self.learn_unit(i, f);
             }
             i += 1;
         }
-        return true;
+        return None;
     }
 }
