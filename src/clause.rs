@@ -70,8 +70,7 @@ impl Clause {
         */
     }
 
-    // TODO on the invariant. Probs gonna need a lemma
-    // They check out on Linux
+    // OK with split + split + CVC4 for 4.49 seconds on Mac 
     #[inline(always)]
     #[cfg_attr(all(any(trust_clause, trust_all), not(untrust_all)), trusted)]
     #[maintains((mut self).invariant_unary_ok(@_f.num_vars))]
@@ -86,9 +85,9 @@ impl Clause {
         let old_self = Ghost::record(&self);
         let end = self.rest.len() - 1;
         self.rest.swap(idx, end);
+        proof_assert!(^@old_self === ^self);
         /*
         proof_assert!((@self).permutation_of(@@old_self));
-        proof_assert!(^@old_self === ^self);
         proof_assert!(forall<i: Int> 0 <= i && i < (@(self).rest).len() ==> 
             exists<j: Int> 0 <= j && j < (@(@old_self).rest).len() && (@(self))[i] === (@(@old_self))[j]);
         proof_assert!(forall<i: Int> 0 <= i && i < (@(@old_self).rest).len() ==> 

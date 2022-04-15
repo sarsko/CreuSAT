@@ -45,7 +45,7 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
 
 // OK [04.04] [[Doesnt check out on Mac [04.04] - struggling with the loop invariants, but that's it]]
 // Come back to it later. Invariant is sticky
-#[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(all(any(trust_conflict, trust_all), not(any(untrust_all, todo))), trusted)]
 #[requires(_f.invariant())]
 #[requires(equisat_extension_inner(*c, @_f))]
 #[requires(o.in_formula(*_f))]
@@ -226,6 +226,7 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
     out
 }
 
+/*
 // Started on this, but can't be bothered finishing it now
 // So the great thing is that this seems to not be any faster?
 #[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
@@ -273,6 +274,7 @@ fn resolve_mut(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usiz
     }
     */
 }
+*/
 
 // OK
 #[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]

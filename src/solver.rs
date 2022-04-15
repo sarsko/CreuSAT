@@ -220,47 +220,33 @@ fn outer_loop(f: &mut Formula, d: &Decisions, trail: &mut Trail, w: &mut Watches
 #[requires(decisions.invariant(@formula.num_vars))]
 #[requires(trail.invariant(*formula))]
 #[requires(watches.invariant(*formula))]
-// No point in ensuring these for our uses, but they are strictly speaking ensured
-//#[ensures(@f.num_vars === @(^f).num_vars)]
-//#[ensures((^f).invariant())]
-//#[ensures(^f === *f)]
-//#[ensures(f.eventually_sat(*a) === (^f).eventually_sat(*a))]
-//#[ensures(f.eventually_sat_complete(*a) === (^f).eventually_sat_complete(*a))]
-//#[ensures((@(^t).trail).len() >= (@t.trail).len())]
-//#[ensures((^t).invariant(^f))]
-//#[ensures((^a).invariant(^f))]
-//#[ensures((^d).invariant())]
-//#[ensures(result === true ==> f.eventually_sat(*a))]
-//#[ensures(result === false ==> !f.eventually_sat_complete(*a))]
 #[ensures(match result {
-    SatResult::Sat(_) => { (^formula).sat((^trail).assignments) && formula.equisat(^formula) && formula.eventually_sat_complete_no_ass()}, // TODO: + vec is assign
+    SatResult::Sat(v) => { (^formula).sat_inner(@v) && formula.equisat(^formula) && formula.eventually_sat_complete_no_ass()},
     SatResult::Unsat => { (^formula).not_satisfiable() && formula.equisat(^formula) }
     _ => true,
 })]
 #[ensures(formula.equisat(^formula))]
-fn inner(formula: &mut Formula, decisions: &Decisions, trail: &mut Trail, watches: &mut Watches) -> SatResult {
+fn inner(formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut watches: Watches) -> SatResult {
     let old_f = Ghost::record(&formula);
-    let old_t = Ghost::record(&trail);
-    let old_w = Ghost::record(&watches);
     #[invariant(equi, (@old_f).equisat(*formula))]
     #[invariant(num_vars, @formula.num_vars === @(@old_f).num_vars)]
     #[invariant(maintains_f, formula.invariant())]
     #[invariant(maintains_t, trail.invariant(*formula))]
     #[invariant(maintains_w, watches.invariant(*formula))]
     #[invariant(prophf, ^formula === ^@old_f)]
-    #[invariant(propht, ^trail === ^@old_t)]
-    #[invariant(prophw, ^watches === ^@old_w)]
     loop {
-        match outer_loop(formula, decisions, trail, watches) {
+        match outer_loop(formula, &decisions, &mut trail, &mut watches) {
             SatResult::Unknown => {}, // continue
+            SatResult::Sat(_) => {return SatResult::Sat(trail.assignments.0);},
             o => return o,
         }
     }
 }
 
+// TODO
 // TODO on this. Look at it after figuring out UNSAT
 // (does check out btw)
-//#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(all(any(trust_solver, trust_all), not(any(untrust_all, todo))), trusted)]
 #[requires(formula.invariant())]
 #[ensures(match result {
     SatResult::Sat(assn) => { formula_sat_inner(@(^formula), @assn) && formula.equisat(^formula) && formula.eventually_sat_complete_no_ass()}, // TODO: + vec is assign
@@ -282,16 +268,23 @@ pub fn solver(formula: &mut Formula) -> SatResult {
     }
     // Should ideally do a check for if num_vars is correct and everything here. Ah well, todo
     if formula.num_vars == 0 {
-        return SatResult::Sat(Vec::new());
+        if formula.clauses.len() == 0 {
+            let a: Vec<AssignedState> = Vec::new();
+            proof_assert!(formula_sat_inner(@formula, @a));
+            return SatResult::Sat(a);
+        } else {
+            return SatResult::Err;
+        }
     }
     let decisions = Decisions::new(formula);
     let mut watches = Watches::new(formula);
     watches.init_watches(formula);
     match trail.learn_units(formula) {
         false => {
-            return SatResult::Unsat; // TODO on proving this(should be simple, we have conflict between two units(make it a special enum?))
+            proof_assert!((^formula).not_satisfiable());
+            return SatResult::Unsat; // TODO on proving this(should be simple, we have conflict between two units(make learn units return a cref and call derive_empty? make it a special enum?))
         }
         true => {},
     }
-    inner(formula, &decisions, &mut trail, &mut watches)
+    inner(formula, decisions, trail, watches)
 }

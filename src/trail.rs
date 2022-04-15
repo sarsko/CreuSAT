@@ -88,7 +88,7 @@ impl Trail {
     // add a lemma that says that pop on a seq of positive length is eq to subseq
 
     // Okay so if one updates the spec for pop it checks out
-    #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(all(any(trust_trail, trust_all), not(any(untrust_all, todo))), trusted)]
     //#[inline(always)]
     #[requires(f.invariant())]
     #[requires(self.invariant_no_decision(*f))]
@@ -117,13 +117,14 @@ impl Trail {
                 proof_assert!(^@old_t === ^self);
                 proof_assert!((lemma_backtrack_ok(*self, *f, step.lit)); true);
                 self.lit_to_level[step.lit.idx] = usize::MAX;
+                proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments) && true);
             }
             None => {
                 //panic!(); // does it matter?
                 // Could add a req on trail len and prove that this doesn't happen, but
                 // not sure if it really is needed.
                 proof_assert!(@self.trail == @(@old_t).trail);
-                proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
+                proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments) && true && true);
             }
         }
         proof_assert!(self.assignments.invariant(*f));
@@ -137,7 +138,7 @@ impl Trail {
     }
 
     // Only pop FAILING 
-    #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(all(any(trust_trail, trust_all), not(any(untrust_all, todo))), trusted)]
     #[requires((@self.decisions).len() > @level)]
     #[requires(f.invariant())]
     #[maintains((mut self).invariant(*f))]
@@ -242,7 +243,7 @@ impl Trail {
 
     // Checks out on mac with introduction of lemma.
     // Can be made even faster with some more lemmas.
-    #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(all(any(trust_trail, trust_all), not(any(untrust_all, todo))), trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(_f.invariant())]
     #[requires(step.lit.invariant(@_f.num_vars))]
@@ -352,7 +353,7 @@ impl Trail {
         proof_assert!(self.trail_entries_are_assigned());
     }
 
-    #[cfg_attr(all(any(trust_trail, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(all(any(trust_trail, trust_all), not(any(untrust_all, todo))), trusted)]
     #[maintains((mut self).invariant(*f))]
     #[requires(f.invariant())]
     #[requires(@cref < (@f.clauses).len())]

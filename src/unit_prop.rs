@@ -33,7 +33,7 @@ use crate::logic::{
 #[ensures(f.equisat(^f))]
 #[ensures((@f.clauses).len() === (@(^f).clauses).len())]
 #[ensures(match result {
-    Ok(_) => true, // not correct -> //(@(@(^f).clauses)[@cref])[@k].sat(*a)  || (@(@(^f).clauses)[@cref])[@k].unset(*a)
+    Ok(_) => true, 
     Err(_) => (@(@(^f).clauses)[@cref])[@k].unsat(trail.assignments) && ^f === *f && *watches === ^watches
 })]
 #[ensures((@(@(^f).clauses)[@cref]).len() === (@(@f.clauses)[@cref]).len())] // ADDDED, will need proving
@@ -53,7 +53,7 @@ fn unit_prop_check_rest(f: &mut Formula, trail: &Trail, watches: &mut Watches, c
 }
 
 // OK
-#[cfg_attr(all(any(trust_unit_prop, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(all(any(trust_unit_prop, trust_all), not(any(untrust_all, todo))), trusted)]
 #[inline(always)]
 #[maintains((*trail).invariant(mut f))]
 #[maintains((mut f).invariant())]
@@ -103,7 +103,7 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, lit:
 
 // Okay so the function should really be split up, now it takes too long.
 // OK on Mac
-#[cfg_attr(all(any(trust_unit_prop, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(all(any(trust_unit_prop, trust_all), not(any(untrust_all, todo))), trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]

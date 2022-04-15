@@ -15,7 +15,7 @@ use crate::logic::{
 #[predicate]
 pub fn watches_invariant_internal(w: Seq<Vec<Watcher>>, n: Int, f: Formula) -> bool {
     pearlite! {
-        2 * (@f.num_vars) === w.len() &&
+        2 * n === w.len() &&
         forall<i: Int> 0 <= i && i < w.len() ==>
         forall<j: Int> 0 <= j && j < (@w[i]).len() ==>
             (@(@w[i])[j].cref < (@f.clauses).len() && 
