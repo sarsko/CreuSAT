@@ -62,7 +62,7 @@ impl Lit {
     #[predicate]
     fn vars_in_range(self, n: Int) -> bool {
         pearlite! {
-            0 <= @self.var && @self.var < n
+            @self.var < n
         }
     }
 }
@@ -101,7 +101,7 @@ fn interp_clause(a: &Assignment, c: &Clause) -> bool {
     let mut i: usize = 0;
     let clause_len = c.0.len();
     #[invariant(prev_not_sat, forall<j: Int> 0 <= j && j < @i ==> !(@c.0)[j].sat(*a))]
-    #[invariant(loop_invariant, 0 <= @i && @i <= @clause_len)]
+    #[invariant(loop_invariant, @i <= @clause_len)]
     while i < clause_len {
         let l = a.0[c.0[i].var];
         let r = c.0[i].value;
@@ -119,7 +119,7 @@ fn interp_clause(a: &Assignment, c: &Clause) -> bool {
 fn interp_formula(a: &Assignment, f: &Formula) -> bool {
     let mut i: usize = 0;
     #[invariant(prev_sat, forall<j: Int> 0 <= j && j < @i ==> (@f.clauses)[j].sat(*a))]
-    #[invariant(loop_invariant, 0 <= @i && @i <= (@f.clauses).len())]
+    #[invariant(loop_invariant, @i <= (@f.clauses).len())]
     while i < f.clauses.len() {
         if !interp_clause(a, &f.clauses[i]) {
             return false;
@@ -145,29 +145,24 @@ fn set(pa: &Pasn, b: bool) -> Pasn {
 #[requires(pa.invariant(@f.num_vars))]
 #[requires(f.invariant())]
 #[ensures(!result === forall<a: Assignment> a.compatible(pa) ==> !f.sat(a))]
-//#[ensures( result ==> exists<a: Assignment> f.sat(a))]
 fn inner(f: &Formula, pa: Pasn) -> bool {
     if pa.ix == pa.assign.len() {
         return interp_formula(&Assignment(pa.assign), f);
     } else {
-        if inner(f, set(&pa, true)) {
-            return true;
-        } else {
-            return inner(f, set(&pa, false));
-        }
+        return inner(f, set(&pa, true)) || inner(f, set(&pa, false));
     }
 }
 
 #[ensures(!result ==> forall<a: Assignment> (@a.0).len() === @f.num_vars ==> !f.sat(a))]
-#[ensures(result ==> @f.num_vars === 0 || exists<a: Assignment> f.sat(a))]
+#[ensures( result ==> exists<a: Assignment> f.sat(a))]
 #[requires(f.invariant())]
 pub fn solver(f: &Formula) -> bool {
-    if f.num_vars == 0 {
+    if f.clauses.len() == 0 {
         return true;
     }
     let mut assign: Vec<bool> = Vec::new();
     let mut i: usize = 0;
-    #[invariant(loop_invariant, 0 <= @i && @i <= @f.num_vars)]
+    #[invariant(loop_invariant, @i <= @f.num_vars)]
     #[invariant(len_invariant, (@assign).len() === @i)]
     while i < f.num_vars {
         assign.push(false);
