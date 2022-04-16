@@ -93,6 +93,7 @@ impl Assignments {
     }
 
     // OK
+    /*
     #[cfg_attr(all(any(trust_assignments, trust_all), not(untrust_all)), trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(d.invariant((@self).len()))]
@@ -126,4 +127,5 @@ impl Assignments {
         }
         None
     }
+    */
 }

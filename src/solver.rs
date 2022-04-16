@@ -70,25 +70,16 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches,
             // and is very simple. If I make the proof of resolution from init to empty clause/
             // ground conflict work, then everything else can be treated as optimizations
 
+            let lit = clause.rest[0];
             let cref = f.add_clause(clause, w, t);
-            d.increment_and_move(f, cref);
-
             t.backtrack_to(level, f, d);
-            /*
             let step = Step {
                 lit: lit,
                 decision_level: level,
                 reason: Reason::Long(cref),
             };
             t.enq_assignment(step, f);
-            */
-
-            //decisions.increment_and_move(f, cref);
-            //a.cancel_until(t, level, f);
-            //t.add_level(f);
-            //a.set_assignment(lit, f);
-            //proof_assert!(@cref < (@f.clauses).len());
-            //t.enq_assignment(lit, reason::long(cref), f);
+            d.increment_and_move(f, cref);
         }
         Conflict::Panic => { return Some(true); }
     }
@@ -183,8 +174,8 @@ fn outer_loop(f: &mut Formula, d: &mut Decisions, trail: &mut Trail, w: &mut Wat
         _ => {}
     }
     //proof_assert!(!a.complete() || !f.unsat(*a)); // Need to get from unit_prop_loop
-    match trail.assignments.find_unassigned(d, f) {
-    //match d.get_next(&trail.assignments) {
+    //match trail.assignments.find_unassigned(d, f) {
+    match d.get_next(&trail.assignments) {
         Some(next) => {
             //let dlevel = t.trail.len();
             //t.trail.push(Vec::new());

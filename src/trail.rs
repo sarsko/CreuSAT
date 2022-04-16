@@ -183,7 +183,7 @@ impl Trail {
         }
         self.trail.truncate(des);
         */
-        self.assignments.1 = 0; // TODO 
+        //self.assignments.1 = 0; // TODO 
         // Prove this later
         #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
         #[invariant(inv, self.invariant_no_decision(*f))]
@@ -245,17 +245,7 @@ impl Trail {
         proof_assert!(self.lit_is_unique());
         proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
         proof_assert!(self.trail_entries_are_assigned());
-        //use ::std::cmp::max;
-        //self.decisions.truncate(max(level, 1));
-        /*
-        if self.decisions.len() == 0 {
-            self.decisions.push(0);
-        }
-        */
-        //self.curr_i = des//self.trail.len();
-        // I don't get why setting it to something other than 0 is incorrect
-        // Seems to be because we are not handling the asserting level.
-        self.curr_i = 0;
+        self.curr_i = self.trail.len();
     }
 
 
