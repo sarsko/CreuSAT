@@ -4,8 +4,8 @@ use crate::assignments::*;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Node {
-    pub next: Option<usize>,
-    pub prev: Option<usize>,
+    pub next: usize,
+    pub prev: usize,
     pub ts: usize,
 }
 
@@ -18,6 +18,8 @@ pub struct Decisions {
     pub start: usize,
     pub head: usize
 }
+
+const INVALID: usize = usize::MAX;
 
 impl Decisions {
     pub fn new(f: &Formula) -> Decisions {
@@ -47,21 +49,21 @@ impl Decisions {
             lit_order[i] = counts_with_index[i].1;
             i += 1;
         }
-        let mut linked_list = vec![Node{ next: None, prev: None, ts: 0 }; f.num_vars];
+        let mut linked_list = vec![Node{ next: INVALID, prev: INVALID, ts: 0 }; f.num_vars];
         i = 0;
         let mut head = 0;
         while i < f.num_vars {
             let j = lit_order[i];
             if i == 0 {
-                linked_list[j].next = Some(lit_order[i + 1]);
-                linked_list[j].prev = None;
+                linked_list[j].next = lit_order[i + 1];
+                linked_list[j].prev = INVALID;
                 head = j;
             } else if i == f.num_vars - 1 {
-                linked_list[j].next = None;
-                linked_list[j].prev = Some(lit_order[i - 1]);
+                linked_list[j].next = INVALID;
+                linked_list[j].prev = lit_order[i - 1];
             } else {
-                linked_list[j].next = Some(lit_order[i + 1]);
-                linked_list[j].prev = Some(lit_order[i - 1]);
+                linked_list[j].next = lit_order[i + 1];
+                linked_list[j].prev = lit_order[i - 1];
             }
             linked_list[j].ts = f.num_vars - i;
             i += 1;
@@ -78,21 +80,18 @@ impl Decisions {
 
     fn move_to_front(&mut self, tomove: usize) {
         let old_next = self.linked_list[tomove].next;
-        match self.linked_list[tomove].prev {
-            Some(prev) => {
-                self.linked_list[prev].next = self.linked_list[tomove].next;
-            }
-            None => {assert!(tomove == self.start); return;}, // We are already head
+        let prev = self.linked_list[tomove].prev;
+        if prev == INVALID {
+            assert!(tomove == self.start); 
+            return; // We are already head
         }
-        match old_next {
-            Some(next) => {
-                self.linked_list[next].prev = self.linked_list[tomove].prev;
-            }
-            None => {},
+        self.linked_list[prev].next = old_next;
+        if old_next != INVALID {
+            self.linked_list[old_next].prev = prev;
         }
-        self.linked_list[tomove].prev = None;
-        self.linked_list[self.start].prev = Some(tomove);
-        self.linked_list[tomove].next = Some(self.start);
+        self.linked_list[tomove].prev = INVALID;
+        self.linked_list[self.start].prev = tomove;
+        self.linked_list[tomove].next = self.start;
         self.linked_list[tomove].ts = self.timestamp;
         self.timestamp += 1;
         self.start = tomove;
@@ -110,13 +109,13 @@ impl Decisions {
     }
 
     pub fn get_next(&mut self, a: &Assignments) -> Option<usize> {
-        let mut head = Some(self.head);
-        while head != None {
-            if a.0[head.unwrap()] >= 2 {
-                self.head = head.unwrap();
-                return head;
+        let mut head = self.head;
+        while head != INVALID {
+            if a.0[head] >= 2 {
+                self.head = head;
+                return Some(head);
             }
-            head = self.linked_list[head.unwrap()].next;
+            head = self.linked_list[head].next;
         }
         return None;
     }
