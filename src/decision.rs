@@ -83,32 +83,39 @@ impl Decisions {
     }
 
     fn move_to_front(&mut self, tomove: usize, a: &Assignments) {
-        let mut moving = &mut self.linked_list[tomove];
-        let prev = moving.prev;
-        if prev == INVALID {
-            //assert!(tomove == self.start); 
-            return; // We are already head
-        }
-        let old_next = moving.next;
-        moving.prev = INVALID;
-        moving.next = self.start;
-        moving.ts = self.timestamp;
-        self.linked_list[self.start].prev = tomove;
-        self.timestamp += 1;
-        self.start = tomove;
-        self.linked_list[prev].next = old_next;
-        if old_next != INVALID {
-            self.linked_list[old_next].prev = prev;
-        }
-        if a.0[tomove] >= 2 {
-            self.search = tomove;
+        unsafe {
+            let mut moving = &mut self.linked_list.get_unchecked_mut(tomove);
+            let prev = moving.prev;
+            if prev == INVALID {
+                //assert!(tomove == self.start); 
+                return; // We are already head
+            }
+            let old_next = moving.next;
+            moving.prev = INVALID;
+            moving.next = self.start;
+            moving.ts = self.timestamp;
+            self.linked_list.get_unchecked_mut(self.start).prev = tomove;
+            self.timestamp += 1;
+            self.start = tomove;
+            self.linked_list.get_unchecked_mut(prev).next = old_next;
+            if old_next != INVALID {
+                self.linked_list.get_unchecked_mut(old_next).prev = prev;
+            }
+            /*
+            // Why does Satch do this? It should be impossible...?
+            if a.0.get_unchecked(tomove) >= &2 {
+                panic!();
+                self.search = tomove;
+            }
+            */
         }
     }
 
     pub fn increment_and_move(&mut self, f: &Formula, cref: usize, a: &Assignments) {
         let clause = &f.clauses[cref];
         let mut i = 0;
-        while i < clause.rest.len() && i < 6 {
+        let end = std::cmp::min(clause.rest.len(), 8);
+        while i < end {
             self.move_to_front(clause.rest[i].idx, a);
             i += 1;
         }
@@ -117,11 +124,13 @@ impl Decisions {
     pub fn get_next(&mut self, a: &Assignments) -> Option<usize> {
         let mut curr = self.search;
         while curr != INVALID {
-            if a.0[curr] >= 2 {
-                self.search = curr;
-                return Some(curr);
+            unsafe {
+                if a.0.get_unchecked(curr) >= &2 {
+                    self.search = self.linked_list.get_unchecked(curr).next;
+                    return Some(curr);
+                }
+                curr = self.linked_list.get_unchecked(curr).next;
             }
-            curr = self.linked_list[curr].next;
         }
         return None;
     }
