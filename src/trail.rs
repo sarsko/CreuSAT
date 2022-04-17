@@ -147,8 +147,8 @@ impl Trail {
         let how_many = self.trail.len() - self.decisions[level];
         let des = self.decisions[level];
         let mut i: usize = 0 ;
-        let mut timestamp = d.linked_list[d.head].ts;
-        let mut curr = d.head;
+        let mut curr = d.search;
+        let mut timestamp = d.linked_list[curr].ts;
         #[invariant(i_less2, @i <= (@(@old_t).trail).len())]
         #[invariant(i_less, i <= how_many)]
         #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
@@ -164,7 +164,7 @@ impl Trail {
             }
             i += 1;
         }
-        d.head = curr;
+        d.search = curr;
 
         //des = i;
         /*

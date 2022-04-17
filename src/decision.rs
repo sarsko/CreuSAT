@@ -16,7 +16,8 @@ pub struct Decisions {
     pub linked_list: Vec<Node>,
     timestamp: usize,
     pub start: usize,
-    pub head: usize
+    pub search: usize,
+    //pub head: usize
 }
 
 const INVALID: usize = usize::MAX;
@@ -43,6 +44,7 @@ impl Decisions {
         }
         counts_with_index.sort_by_key(|k| -k.0);
         i = 0;
+        //println!("{:?}", counts_with_index);
         while i < f.num_vars {
             lit_order[i] = counts_with_index[i].1;
             i += 1;
@@ -66,52 +68,60 @@ impl Decisions {
             linked_list[j].ts = f.num_vars - i;
             i += 1;
         }
+
+        //println!("{:?}", head);
+        //println!("{:?}", linked_list[head]);
         Decisions {
             //lit_order: lit_order,
             //loc_of_lit: loc_of_lit,
             linked_list: linked_list,
             timestamp: f.num_vars + 1,
             start: head,
-            head: head,
+            search: head,
+            //head: head,
         }
     }
 
-    fn move_to_front(&mut self, tomove: usize) {
-        let old_next = self.linked_list[tomove].next;
-        let prev = self.linked_list[tomove].prev;
+    fn move_to_front(&mut self, tomove: usize, a: &Assignments) {
+        let mut moving = &mut self.linked_list[tomove];
+        let prev = moving.prev;
         if prev == INVALID {
-            assert!(tomove == self.start); 
+            //assert!(tomove == self.start); 
             return; // We are already head
         }
+        let old_next = moving.next;
+        moving.prev = INVALID;
+        moving.next = self.start;
+        moving.ts = self.timestamp;
+        self.linked_list[self.start].prev = tomove;
+        self.timestamp += 1;
+        self.start = tomove;
         self.linked_list[prev].next = old_next;
         if old_next != INVALID {
             self.linked_list[old_next].prev = prev;
         }
-        self.linked_list[tomove].prev = INVALID;
-        self.linked_list[self.start].prev = tomove;
-        self.linked_list[tomove].next = self.start;
-        self.linked_list[tomove].ts = self.timestamp;
-        self.timestamp += 1;
-        self.start = tomove;
+        if a.0[tomove] >= 2 {
+            self.search = tomove;
+        }
     }
 
-    pub fn increment_and_move(&mut self, f: &Formula, cref: usize) {
+    pub fn increment_and_move(&mut self, f: &Formula, cref: usize, a: &Assignments) {
         let clause = &f.clauses[cref];
         let mut i = 0;
-        while i < clause.rest.len() {
-            self.move_to_front(clause.rest[i].idx);
+        while i < clause.rest.len() && i < 6 {
+            self.move_to_front(clause.rest[i].idx, a);
             i += 1;
         }
     }
 
     pub fn get_next(&mut self, a: &Assignments) -> Option<usize> {
-        let mut head = self.head;
-        while head != INVALID {
-            if a.0[head] >= 2 {
-                self.head = head;
-                return Some(head);
+        let mut curr = self.search;
+        while curr != INVALID {
+            if a.0[curr] >= 2 {
+                self.search = curr;
+                return Some(curr);
             }
-            head = self.linked_list[head].next;
+            curr = self.linked_list[curr].next;
         }
         return None;
     }

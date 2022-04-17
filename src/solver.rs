@@ -79,7 +79,7 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches,
                 reason: Reason::Long(cref),
             };
             t.enq_assignment(step, f);
-            d.increment_and_move(f, cref);
+            d.increment_and_move(f, cref, &t.assignments);
         }
         Conflict::Panic => { return Some(true); }
     }
