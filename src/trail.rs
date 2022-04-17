@@ -19,7 +19,7 @@ use crate::logic::{
     logic_trail::*,
 };
 
-//#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 //#[derive(Eq, PartialEq)]
 pub enum Reason {
     //Undefined,
@@ -34,7 +34,7 @@ pub struct Trail {
     pub vardata: Vec<(usize, Reason)>,
 }
 */
-//#[derive(Debug)]
+#[derive(Debug)]
 pub struct Step {
     pub lit: Lit,
     pub decision_level: usize,

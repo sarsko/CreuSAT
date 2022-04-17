@@ -198,6 +198,7 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
         i += 1;
     }
     let out = Clause {
+        deleted: false,
         rest: new,
     };
     proof_assert!(@out === @new);

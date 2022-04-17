@@ -14,9 +14,10 @@ use crate::logic::{
 };
 
 //#[cfg_attr(not(contracts), derive(Debug))]
-//#[derive(Debug)]
+#[derive(Debug)]
 //#[derive(Clone)]
 pub struct Clause {
+    pub deleted: bool,
     //pub first: Lit,
     //pub second: Lit,
     pub rest: Vec<Lit>
@@ -31,6 +32,7 @@ impl Clone for Clause {
     #[ensures(result === *self)]
     fn clone(&self) -> Self {
         Clause {
+            deleted: self.deleted,
             rest: self.rest.clone()
         }
     }
@@ -108,7 +110,10 @@ impl Clause {
     //#[ensures(result.invariant(@_f.num_vars))]
     //#[ensures((@result).len() >= 2)]
     pub fn clause_from_vec(vec: &std::vec::Vec<Lit>) -> Clause {
-        Clause { rest: vec.clone() }
+        Clause { 
+            deleted: false,
+            rest: vec.clone() 
+        }
         /*
         Clause {
             first: vec[0],

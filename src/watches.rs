@@ -20,11 +20,13 @@ use crate::logic::{
 
 // Lets try this scheme and see how well it fares
 // Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
+#[derive(Debug)]
 pub struct Watcher {
     pub cref: usize,
     //blocker: Lit,
 }
 
+#[derive(Debug)]
 pub struct Watches {
     pub watches: Vec<Vec<Watcher>>,
 }
@@ -156,7 +158,7 @@ impl Watches {
     #[requires((@(@f.clauses)[@cref]).len() >= 2)] // This was > 2 before ?
     #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)]
     pub fn unwatch(&mut self, f: &Formula, trail: &Trail, cref: usize, lit: Lit) {
-        let watchidx = lit.to_watchidx();
+        let watchidx = lit.to_neg_watchidx();
         let mut i: usize = 0;
         while i < self.watches[watchidx].len() {
             if self.watches[watchidx][i].cref == cref {
@@ -188,9 +190,10 @@ impl Watches {
                         //panic!("Impossible");
                     }
                 }
-                break;
+                return;
             }
             i += 1;
         }
+        panic!();
     }
 }

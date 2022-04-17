@@ -199,7 +199,7 @@ impl Formula {
     //#[ensures(@self.num_vars === @(^self).num_vars)]
     //#[ensures(self.equisat_compatible(^self))]
     //#[ensures(self.equisat(^self))] // Added/changed
-    pub fn simplify_formula(&self, watches: &mut Watches, t: &Trail) {
+    pub fn simplify_formula(&mut self, watches: &mut Watches, t: &Trail) {
         // unwatch trivially SAT
         self.delete_clauses(watches, t);
         // Ideally remove UNSAT lits
@@ -214,13 +214,16 @@ impl Formula {
     //#[ensures(@self.num_vars === @(^self).num_vars)]
     //#[ensures(self.equisat_compatible(^self))]
     //#[ensures(self.equisat(^self))] // Added/changed
-    pub fn delete_clauses(&self, watches: &mut Watches, t: &Trail) {
+    pub fn delete_clauses(&mut self, watches: &mut Watches, t: &Trail) {
         // unwatch trivially SAT
         let mut i = 0;
         while i < self.clauses.len() {
-            if self.clauses[i].len() > 1 && self.is_clause_sat(i, &t.assignments) {
-                watches.unwatch(self, t, i, self.clauses[i].rest[0]);
-                watches.unwatch(self, t, i, self.clauses[i].rest[1]);
+            if !self.clauses[i].deleted {
+                if self.clauses[i].len() > 1 && self.is_clause_sat(i, &t.assignments) {
+                    watches.unwatch(self, t, i, self.clauses[i].rest[0]);
+                    watches.unwatch(self, t, i, self.clauses[i].rest[1]);
+                    self.clauses[i].deleted = true;
+                }
             }
             i += 1;
         }
