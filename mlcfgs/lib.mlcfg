@@ -128,6 +128,12 @@ module Type
     | Lib_Formula_SatState_Sat
     | Lib_Formula_SatState_Unsat
     
+  type lib_solver_satresult  = 
+    | Lib_Solver_SatResult_Sat (creusotcontracts_std1_vec_vec uint8)
+    | Lib_Solver_SatResult_Unsat
+    | Lib_Solver_SatResult_Unknown
+    | Lib_Solver_SatResult_Err
+    
   type lib_watches_watcher  = 
     | Lib_Watches_Watcher usize
     
@@ -151,33 +157,9 @@ module Type
     | Lib_Solver_ConflictResult_Ground
     | Lib_Solver_ConflictResult_Continue
     
-  type lib_solver_satresult  = 
-    | Lib_Solver_SatResult_Sat (creusotcontracts_std1_vec_vec uint8)
-    | Lib_Solver_SatResult_Unsat
-    | Lib_Solver_SatResult_Unknown
-    | Lib_Solver_SatResult_Err
-    
   type core_result_result 't 'e = 
     | Core_Result_Result_Ok 't
     | Core_Result_Result_Err 'e
-    
-end
-module Lib_Assignments_RandInRange_Interface
-  use mach.int.UInt64
-  use prelude.UInt8
-  use mach.int.Int
-  use prelude.Prelude
-  val rand_in_range [@cfg:stackify] (l : usize) (u : usize) : uint8
-    ensures { UInt64.to_int l <= UInt8.to_int result && UInt8.to_int result < UInt64.to_int u }
-    
-end
-module Lib_Assignments_RandInRange
-  use mach.int.UInt64
-  use prelude.UInt8
-  use mach.int.Int
-  use prelude.Prelude
-  val rand_in_range [@cfg:stackify] (l : usize) (u : usize) : uint8
-    ensures { UInt64.to_int l <= UInt8.to_int result && UInt8.to_int result < UInt64.to_int u }
     
 end
 module CreusotContracts_Logic_Model_Model_ModelTy
@@ -858,6 +840,99 @@ module Lib_Clause_Impl0_Clone
     ensures { result = self }
     
 end
+module Lib_Clause_Impl1_CheckClauseInvariant_Interface
+  use mach.int.UInt64
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  clone Lib_Logic_LogicClause_Impl2_Invariant_Interface as Invariant0
+  val check_clause_invariant [@cfg:stackify] (self : Type.lib_clause_clause) (n : usize) : bool
+    ensures { result = Invariant0.invariant' self (UInt64.to_int n) }
+    
+end
+module Lib_Clause_Impl1_CheckClauseInvariant
+  use mach.int.UInt64
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  clone Lib_Logic_LogicLit_Impl1_Invariant as Invariant1
+  clone Lib_Logic_LogicClause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant1.invariant'
+  clone Lib_Logic_LogicClause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
+  clone Lib_Logic_LogicClause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
+  predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.lib_lit_lit
+  clone Lib_Logic_LogicClause_Impl0_Model as Model0 with function Model0.model = Model1.model
+  clone Lib_Logic_LogicClause_Impl2_Invariant as Invariant0 with function Model0.model = Model0.model,
+  predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  val check_clause_invariant [@cfg:stackify] (self : Type.lib_clause_clause) (n : usize) : bool
+    ensures { result = Invariant0.invariant' self (UInt64.to_int n) }
+    
+end
+module Lib_Logic_LogicClause_Impl2_NoDuplicateIndexes_Interface
+  use Type
+  predicate no_duplicate_indexes (self : Type.lib_clause_clause)
+end
+module Lib_Logic_LogicClause_Impl2_NoDuplicateIndexes
+  use Type
+  clone Lib_Logic_LogicClause_NoDuplicateIndexesInner_Interface as NoDuplicateIndexesInner0
+  clone Lib_Logic_LogicClause_Impl0_Model_Interface as Model0
+  predicate no_duplicate_indexes (self : Type.lib_clause_clause) = 
+    NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model0.model self)
+end
+module Lib_Clause_Impl1_NoDuplicates_Interface
+  use prelude.Prelude
+  use Type
+  clone Lib_Logic_LogicClause_Impl2_NoDuplicateIndexes_Interface as NoDuplicateIndexes0
+  val no_duplicates [@cfg:stackify] (self : Type.lib_clause_clause) : bool
+    ensures { result = NoDuplicateIndexes0.no_duplicate_indexes self }
+    
+end
+module Lib_Clause_Impl1_NoDuplicates
+  use prelude.Prelude
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.lib_lit_lit
+  clone Lib_Logic_LogicClause_Impl0_Model as Model0 with function Model0.model = Model1.model
+  clone Lib_Logic_LogicClause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
+  clone Lib_Logic_LogicClause_Impl2_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model0.model,
+  predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner
+  val no_duplicates [@cfg:stackify] (self : Type.lib_clause_clause) : bool
+    ensures { result = NoDuplicateIndexes0.no_duplicate_indexes self }
+    
+end
+module Lib_Logic_LogicClause_Impl0_ModelTy
+  use seq.Seq
+  use Type
+  type modelTy  = 
+    Seq.seq (Type.lib_lit_lit)
+end
+module Lib_Clause_Impl1_Len_Interface
+  use mach.int.UInt64
+  use seq.Seq
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  clone Lib_Logic_LogicClause_Impl0_ModelTy as ModelTy0
+  clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model0 with type t = Type.lib_clause_clause,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  val len [@cfg:stackify] (self : Type.lib_clause_clause) : usize
+    ensures { UInt64.to_int result = Seq.length (Model0.model self) }
+    
+end
+module Lib_Clause_Impl1_Len
+  use mach.int.UInt64
+  use seq.Seq
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.lib_lit_lit
+  clone Lib_Logic_LogicClause_Impl0_Model as Model1 with function Model0.model = Model2.model
+  clone Lib_Logic_LogicClause_Impl0_ModelTy as ModelTy0
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.lib_clause_clause,
+  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model1.model
+  val len [@cfg:stackify] (self : Type.lib_clause_clause) : usize
+    ensures { UInt64.to_int result = Seq.length (Model0.model self) }
+    
+end
 module Lib_Clause_Impl1_ClauseFromVec_Interface
   use prelude.Prelude
   use Type
@@ -883,17 +958,6 @@ module Lib_Logic_LogicClause_Impl2_VarsInRange
   predicate vars_in_range (self : Type.lib_clause_clause) (n : int) = 
     VarsInRangeInner0.vars_in_range_inner (Model0.model self) n
 end
-module Lib_Logic_LogicClause_Impl2_NoDuplicateIndexes_Interface
-  use Type
-  predicate no_duplicate_indexes (self : Type.lib_clause_clause)
-end
-module Lib_Logic_LogicClause_Impl2_NoDuplicateIndexes
-  use Type
-  clone Lib_Logic_LogicClause_NoDuplicateIndexesInner_Interface as NoDuplicateIndexesInner0
-  clone Lib_Logic_LogicClause_Impl0_Model_Interface as Model0
-  predicate no_duplicate_indexes (self : Type.lib_clause_clause) = 
-    NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model0.model self)
-end
 module Lib_Logic_LogicClause_Impl2_InvariantUnaryOk_Interface
   use Type
   use mach.int.Int
@@ -906,12 +970,6 @@ module Lib_Logic_LogicClause_Impl2_InvariantUnaryOk
   clone Lib_Logic_LogicClause_Impl2_VarsInRange_Interface as VarsInRange0
   predicate invariant_unary_ok (self : Type.lib_clause_clause) (n : int) = 
     VarsInRange0.vars_in_range self n && NoDuplicateIndexes0.no_duplicate_indexes self
-end
-module Lib_Logic_LogicClause_Impl0_ModelTy
-  use seq.Seq
-  use Type
-  type modelTy  = 
-    Seq.seq (Type.lib_lit_lit)
 end
 module Lib_Clause_Impl1_MoveToEnd_Interface
   use mach.int.UInt64
@@ -1787,7 +1845,7 @@ module Lib_ConflictAnalysis_AnalyzeConflict_Interface
     ensures { match (result) with
       | Type.Lib_ConflictAnalysis_Conflict_Ground -> NotSatisfiable0.not_satisfiable f
       | Type.Lib_ConflictAnalysis_Conflict_Unit clause -> Invariant2.invariant' clause (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f)) && Seq.length (Model2.model clause) = 1 && VarsInRangeInner0.vars_in_range_inner (Model2.model clause) (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f)) && NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model2.model clause) && EquisatExtensionInner0.equisat_extension_inner clause (Model3.model f)
-      | Type.Lib_ConflictAnalysis_Conflict_Learned level clause -> Invariant2.invariant' clause (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f)) && UInt64.to_int level < Seq.length (Model1.model (Type.lib_trail_trail_Trail_decisions trail)) && Seq.length (Model2.model clause) > 1 && VarsInRangeInner0.vars_in_range_inner (Model2.model clause) (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f)) && NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model2.model clause) && EquisatExtensionInner0.equisat_extension_inner clause (Model3.model f)
+      | Type.Lib_ConflictAnalysis_Conflict_Learned level clause -> Invariant2.invariant' clause (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f)) && Seq.length (Model2.model clause) > 1 && UInt64.to_int level < Seq.length (Model1.model (Type.lib_trail_trail_Trail_decisions trail)) && VarsInRangeInner0.vars_in_range_inner (Model2.model clause) (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f)) && NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model2.model clause) && EquisatExtensionInner0.equisat_extension_inner clause (Model3.model f)
       | _ -> true
       end }
     
@@ -1901,7 +1959,7 @@ module Lib_ConflictAnalysis_AnalyzeConflict
     ensures { match (result) with
       | Type.Lib_ConflictAnalysis_Conflict_Ground -> NotSatisfiable0.not_satisfiable f
       | Type.Lib_ConflictAnalysis_Conflict_Unit clause -> Invariant2.invariant' clause (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f)) && Seq.length (Model2.model clause) = 1 && VarsInRangeInner0.vars_in_range_inner (Model2.model clause) (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f)) && NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model2.model clause) && EquisatExtensionInner0.equisat_extension_inner clause (Model3.model f)
-      | Type.Lib_ConflictAnalysis_Conflict_Learned level clause -> Invariant2.invariant' clause (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f)) && UInt64.to_int level < Seq.length (Model1.model (Type.lib_trail_trail_Trail_decisions trail)) && Seq.length (Model2.model clause) > 1 && VarsInRangeInner0.vars_in_range_inner (Model2.model clause) (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f)) && NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model2.model clause) && EquisatExtensionInner0.equisat_extension_inner clause (Model3.model f)
+      | Type.Lib_ConflictAnalysis_Conflict_Learned level clause -> Invariant2.invariant' clause (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f)) && Seq.length (Model2.model clause) > 1 && UInt64.to_int level < Seq.length (Model1.model (Type.lib_trail_trail_Trail_decisions trail)) && VarsInRangeInner0.vars_in_range_inner (Model2.model clause) (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars f)) && NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model2.model clause) && EquisatExtensionInner0.equisat_extension_inner clause (Model3.model f)
       | _ -> true
       end }
     
@@ -2105,6 +2163,79 @@ module Lib_Formula_Impl0_Eq
   use prelude.Prelude
   use Type
   val eq [@cfg:stackify] (self : Type.lib_formula_satstate) (other : Type.lib_formula_satstate) : bool
+end
+module Lib_Formula_Impl1_CheckFormulaInvariant_Interface
+  use Type
+  use mach.int.UInt64
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.Int32
+  use prelude.UInt8
+  clone Lib_Logic_LogicFormula_Impl1_InvariantOld_Interface as InvariantOld0
+  clone Lib_Logic_LogicFormula_Impl1_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  axiom .
+  clone Lib_Logic_LogicFormula_Impl1_NotSatisfiable_Interface as NotSatisfiable0
+  clone Lib_Logic_LogicFormula_FormulaSatInner_Interface as FormulaSatInner0
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = uint8
+  clone Lib_Logic_LogicFormula_Impl0_ModelTy as ModelTy0
+  clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model0 with type t = Type.lib_formula_formula,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  val check_formula_invariant [@cfg:stackify] (self : Type.lib_formula_formula) : Type.lib_solver_satresult
+    ensures { match (result) with
+      | Type.Lib_Solver_SatResult_Sat assn -> FormulaSatInner0.formula_sat_inner (Model0.model self) (Model1.model assn)
+      | Type.Lib_Solver_SatResult_Unsat -> NotSatisfiable0.not_satisfiable self
+      | Type.Lib_Solver_SatResult_Unknown -> Invariant0.invariant' self && UInt64.to_int (Type.lib_formula_formula_Formula_num_vars self) < div 18446744073709551615 2
+      | Type.Lib_Solver_SatResult_Err -> true
+      end }
+    
+end
+module Lib_Formula_Impl1_CheckFormulaInvariant
+  use Type
+  use mach.int.UInt64
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.Int32
+  use prelude.UInt8
+  clone Lib_Logic_LogicLit_Impl1_Invariant as Invariant2
+  clone Lib_Logic_LogicClause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant2.invariant'
+  clone Lib_Logic_Logic_Unset as Unset0
+  clone Lib_Logic_LogicAssignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
+  clone Lib_Logic_LogicClause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
+  clone Lib_Logic_LogicClause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
+  predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = Type.lib_lit_lit
+  clone Lib_Logic_LogicClause_Impl0_Model as Model3 with function Model0.model = Model5.model
+  clone Lib_Logic_LogicClause_Impl2_Invariant as Invariant1 with function Model0.model = Model3.model,
+  predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
+  clone Lib_Logic_LogicLit_Impl1_SatInner as SatInner1
+  clone Lib_Logic_LogicClause_Impl2_SatInner as SatInner0 with function Model0.model = Model3.model,
+  predicate SatInner0.sat_inner = SatInner1.sat_inner
+  clone Lib_Logic_LogicFormula_FormulaSatInner as FormulaSatInner0 with predicate SatInner0.sat_inner = SatInner0.sat_inner
+  clone Lib_Logic_LogicFormula_EventuallySatCompleteNoAss as EventuallySatCompleteNoAss0 with predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner,
+  predicate FormulaSatInner0.formula_sat_inner = FormulaSatInner0.formula_sat_inner
+  clone Lib_Logic_LogicClause_EquisatExtensionInner as EquisatExtensionInner0 with predicate EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass = EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = Type.lib_clause_clause
+  clone Lib_Logic_LogicFormula_Impl1_InvariantOld as InvariantOld0 with function Model0.model = Model4.model,
+  predicate Invariant0.invariant' = Invariant1.invariant', function Model1.model = Model3.model
+  clone Lib_Logic_LogicFormula_Impl1_Invariant as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
+  axiom .
+  clone Lib_Logic_LogicFormula_Impl0_Model as Model2 with function Model0.model = Model4.model
+  clone Lib_Logic_LogicClause_Impl2_EquisatExtension as EquisatExtension0 with function Model0.model = Model2.model,
+  predicate EquisatExtensionInner0.equisat_extension_inner = EquisatExtensionInner0.equisat_extension_inner
+  clone Lib_Logic_LogicFormula_Impl1_NotSatisfiable as NotSatisfiable0 with function Model0.model = Model3.model,
+  predicate EquisatExtension0.equisat_extension = EquisatExtension0.equisat_extension
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = uint8
+  clone Lib_Logic_LogicFormula_Impl0_ModelTy as ModelTy0
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.lib_formula_formula,
+  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model2.model
+  val check_formula_invariant [@cfg:stackify] (self : Type.lib_formula_formula) : Type.lib_solver_satresult
+    ensures { match (result) with
+      | Type.Lib_Solver_SatResult_Sat assn -> FormulaSatInner0.formula_sat_inner (Model0.model self) (Model1.model assn)
+      | Type.Lib_Solver_SatResult_Unsat -> NotSatisfiable0.not_satisfiable self
+      | Type.Lib_Solver_SatResult_Unknown -> Invariant0.invariant' self && UInt64.to_int (Type.lib_formula_formula_Formula_num_vars self) < div 18446744073709551615 2
+      | Type.Lib_Solver_SatResult_Err -> true
+      end }
+    
 end
 module Lib_Logic_LogicClause_Impl2_Sat_Interface
   use Type
@@ -2760,6 +2891,26 @@ module Lib_Lit_Impl3_Clone
     return _0
   }
   
+end
+module Lib_Lit_Impl0_CheckLitInvariant_Interface
+  use mach.int.UInt64
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  clone Lib_Logic_LogicLit_Impl1_Invariant_Interface as Invariant0
+  val check_lit_invariant [@cfg:stackify] (self : Type.lib_lit_lit) (n : usize) : bool
+    ensures { result = Invariant0.invariant' self (UInt64.to_int n) }
+    
+end
+module Lib_Lit_Impl0_CheckLitInvariant
+  use mach.int.UInt64
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  clone Lib_Logic_LogicLit_Impl1_Invariant as Invariant0
+  val check_lit_invariant [@cfg:stackify] (self : Type.lib_lit_lit) (n : usize) : bool
+    ensures { result = Invariant0.invariant' self (UInt64.to_int n) }
+    
 end
 module Lib_Lit_Impl0_LitSat_Interface
   use seq.Seq
@@ -5860,8 +6011,8 @@ module Lib_Solver_OuterLoop_Interface
   clone Lib_Logic_LogicWatches_Impl0_Invariant_Interface as Invariant1
   clone Lib_Logic_LogicDecision_Impl0_Invariant_Interface as Invariant0
   val outer_loop [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (d : Type.lib_decision_decisions) (trail : borrowed (Type.lib_trail_trail)) (w : borrowed (Type.lib_watches_watches)) : Type.lib_solver_satresult
-    requires {UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)) < div 18446744073709551615 2}
     requires {Invariant0.invariant' d (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)))}
+    requires {UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)) < div 18446744073709551615 2}
     requires {Invariant1.invariant' ( * w) ( * f)}
     requires {Invariant2.invariant' ( * trail) ( * f)}
     requires {Invariant3.invariant' ( * f)}
@@ -5983,8 +6134,8 @@ module Lib_Solver_OuterLoop
   predicate DecisionsInvariant0.decisions_invariant = DecisionsInvariant0.decisions_invariant
   clone Lib_Logic_LogicDecision_Impl0_Invariant as Invariant0 with function Model0.model = Model0.model
   val outer_loop [@cfg:stackify] (f : borrowed (Type.lib_formula_formula)) (d : Type.lib_decision_decisions) (trail : borrowed (Type.lib_trail_trail)) (w : borrowed (Type.lib_watches_watches)) : Type.lib_solver_satresult
-    requires {UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)) < div 18446744073709551615 2}
     requires {Invariant0.invariant' d (UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)))}
+    requires {UInt64.to_int (Type.lib_formula_formula_Formula_num_vars ( * f)) < div 18446744073709551615 2}
     requires {Invariant1.invariant' ( * w) ( * f)}
     requires {Invariant2.invariant' ( * trail) ( * f)}
     requires {Invariant3.invariant' ( * f)}
@@ -6157,11 +6308,7 @@ module Lib_Solver_Solver_Interface
   clone Lib_Logic_LogicFormula_FormulaSatInner_Interface as FormulaSatInner0
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = uint8
   clone Lib_Logic_LogicFormula_Impl0_Model_Interface as Model0
-  clone Lib_Logic_LogicFormula_Impl1_InvariantOld_Interface as InvariantOld0
-  clone Lib_Logic_LogicFormula_Impl1_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
   val solver [@cfg:stackify] (formula : borrowed (Type.lib_formula_formula)) : Type.lib_solver_satresult
-    requires {Invariant0.invariant' ( * formula)}
     ensures { match (result) with
       | Type.Lib_Solver_SatResult_Sat assn -> FormulaSatInner0.formula_sat_inner (Model0.model ( ^ formula)) (Model1.model assn) && Equisat0.equisat ( * formula) ( ^ formula)
       | Type.Lib_Solver_SatResult_Unsat -> NotSatisfiable0.not_satisfiable ( ^ formula) && Equisat0.equisat ( * formula) ( ^ formula)
@@ -6174,17 +6321,10 @@ module Lib_Solver_Solver
   use prelude.Prelude
   use mach.int.Int
   use prelude.UInt8
-  clone Lib_Logic_LogicLit_Impl1_Invariant as Invariant2
-  clone Lib_Logic_LogicClause_VarsInRangeInner as VarsInRangeInner0 with predicate Invariant0.invariant' = Invariant2.invariant'
-  clone Lib_Logic_LogicClause_NoDuplicateIndexesInner as NoDuplicateIndexesInner0
-  clone Lib_Logic_LogicClause_InvariantInternal as InvariantInternal0 with predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
-  predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner
   clone Lib_Logic_Logic_Unset as Unset0
   clone Lib_Logic_LogicAssignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = Type.lib_lit_lit
   clone Lib_Logic_LogicClause_Impl0_Model as Model3 with function Model0.model = Model4.model
-  clone Lib_Logic_LogicClause_Impl2_Invariant as Invariant1 with function Model0.model = Model3.model,
-  predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
   clone Lib_Logic_LogicLit_Impl1_SatInner as SatInner1
   clone Lib_Logic_LogicClause_Impl2_SatInner as SatInner0 with function Model0.model = Model3.model,
   predicate SatInner0.sat_inner = SatInner1.sat_inner
@@ -6199,17 +6339,12 @@ module Lib_Solver_Solver
   clone Lib_Logic_LogicFormula_Impl1_EventuallySatCompleteNoAss as EventuallySatCompleteNoAss0 with predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
   clone Lib_Logic_LogicFormula_Impl1_Equisat as Equisat0 with predicate EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass = EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass
-  clone Lib_Logic_LogicFormula_Impl1_InvariantOld as InvariantOld0 with function Model0.model = Model2.model,
-  predicate Invariant0.invariant' = Invariant1.invariant', function Model1.model = Model3.model
-  clone Lib_Logic_LogicFormula_Impl1_Invariant as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
-  axiom .
   clone Lib_Logic_LogicFormula_Impl0_Model as Model0 with function Model0.model = Model2.model
   clone Lib_Logic_LogicClause_Impl2_EquisatExtension as EquisatExtension0 with function Model0.model = Model0.model,
   predicate EquisatExtensionInner0.equisat_extension_inner = EquisatExtensionInner0.equisat_extension_inner
   clone Lib_Logic_LogicFormula_Impl1_NotSatisfiable as NotSatisfiable0 with function Model0.model = Model3.model,
   predicate EquisatExtension0.equisat_extension = EquisatExtension0.equisat_extension
   val solver [@cfg:stackify] (formula : borrowed (Type.lib_formula_formula)) : Type.lib_solver_satresult
-    requires {Invariant0.invariant' ( * formula)}
     ensures { match (result) with
       | Type.Lib_Solver_SatResult_Sat assn -> FormulaSatInner0.formula_sat_inner (Model0.model ( ^ formula)) (Model1.model assn) && Equisat0.equisat ( * formula) ( ^ formula)
       | Type.Lib_Solver_SatResult_Unsat -> NotSatisfiable0.not_satisfiable ( ^ formula) && Equisat0.equisat ( * formula) ( ^ formula)
@@ -7827,6 +7962,24 @@ module Lib_UnitProp_UnitPropagate
     ensures { Invariant0.invariant' ( ^ watches) ( ^ f) }
     ensures { Invariant1.invariant' ( ^ trail) ( ^ f) }
     ensures { Invariant2.invariant' ( ^ f) }
+    
+end
+module Lib_Util_RandInRange_Interface
+  use mach.int.UInt64
+  use prelude.UInt8
+  use mach.int.Int
+  use prelude.Prelude
+  val rand_in_range [@cfg:stackify] (l : usize) (u : usize) : uint8
+    ensures { UInt64.to_int l <= UInt8.to_int result && UInt8.to_int result < UInt64.to_int u }
+    
+end
+module Lib_Util_RandInRange
+  use mach.int.UInt64
+  use prelude.UInt8
+  use mach.int.Int
+  use prelude.Prelude
+  val rand_in_range [@cfg:stackify] (l : usize) (u : usize) : uint8
+    ensures { UInt64.to_int l <= UInt8.to_int result && UInt8.to_int result < UInt64.to_int u }
     
 end
 module CreusotContracts_Logic_Seq_Impl1_PermutationOf_Interface
