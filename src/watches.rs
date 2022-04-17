@@ -78,6 +78,7 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
 }
 
 
+
 impl Watches {
     // OK
     #[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
@@ -139,6 +140,55 @@ impl Watches {
             if clause.rest.len() > 1 {
                 self.add_watcher(clause.rest[0], i, f);
                 self.add_watcher(clause.rest[1], i, f);
+            }
+            i += 1;
+        }
+    }
+
+    #[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
+    #[maintains((mut watches).invariant(*f))]
+    #[requires(@f.num_vars < @usize::MAX/2)]
+    #[requires(@lit.idx < @f.num_vars)]
+    #[requires(f.invariant())]
+    #[requires(trail.invariant(*f))]
+    #[requires(@cref < (@f.clauses).len())]
+    #[requires(0 <= @k && @k < (@(@f.clauses)[@cref]).len())] // Changed
+    #[requires((@(@f.clauses)[@cref]).len() >= 2)] // This was > 2 before ?
+    #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)]
+    pub fn unwatch(&mut self, f: &Formula, trail: &Trail, cref: usize, lit: Lit) {
+        let watchidx = lit.to_watchidx();
+        let mut i: usize = 0;
+        while i < self.watches[watchidx].len() {
+            if self.watches[watchidx][i].cref == cref {
+                let end = self.watches[watchidx].len() - 1;
+                self.watches[watchidx].swap(i, end);
+                //proof_assert!(@watchidx < (@watches.watches).len());
+                //let old_w = Ghost::record(&watches);
+                //proof_assert!((@old_w).watches === watches.watches);
+                //proof_assert!(watcher_crefs_in_range(@(@watches.watches)[@watchidx], *f));
+                match self.watches[watchidx].pop() {
+                    Some(w) => {
+                        /*
+                        proof_assert!(^@old_w === ^watches);
+                        proof_assert!(lemma_pop_watch_maintains_watcher_invariant(@(@(@old_w).watches)[@watchidx], *f); true);
+                        proof_assert!(watcher_crefs_in_range(pop(@(@(@old_w).watches)[@watchidx]), *f));
+                        proof_assert!(@(@watches.watches)[@watchidx] === pop(@(@(@old_w).watches)[@watchidx]));
+                        proof_assert!(watcher_crefs_in_range(@(@watches.watches)[@watchidx], *f));
+                        proof_assert!(watches.invariant(*f));
+                        proof_assert!(curr_lit.to_neg_watchidx_logic() < (@watches.watches).len());
+
+                        proof_assert!(watcher_crefs_in_range(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f));
+                        proof_assert!(@w.cref < (@f.clauses).len());
+                        proof_assert!(lemma_push_maintains_watcher_invariant(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f, w); true);
+                        proof_assert!(watcher_crefs_in_range(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f));
+                        proof_assert!(watches.invariant(*f));
+                        */
+                    },
+                    None => {
+                        //panic!("Impossible");
+                    }
+                }
+                break;
             }
             i += 1;
         }

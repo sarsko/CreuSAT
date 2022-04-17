@@ -63,6 +63,7 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
                 Err(_) => return Some(true),
                 Ok(_)  => {},
             }
+            f.simplify_formula(w, t);
         }
         Conflict::Learned(level, clause) => {
             // Okay so doing a full search restart every time is a lot less slow than expected
