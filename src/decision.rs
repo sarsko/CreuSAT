@@ -37,7 +37,7 @@ pub struct Decisions {
 
 impl Decisions {
     // OK
-    #[cfg_attr(all(any(trust_decision, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(all(any(trust_decision, trust_all), not(any(untrust_all, runtime_check))), trusted)]
     #[requires(f.invariant())]
     #[ensures(result.invariant(@f.num_vars))]
     pub fn new(f: &Formula) -> Decisions {

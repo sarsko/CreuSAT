@@ -1,4 +1,3 @@
-// Watches is Mac OK 11.04 22.13
 extern crate creusot_contracts;
 use creusot_contracts::*;
 use creusot_contracts::std::*;
@@ -25,6 +24,13 @@ pub struct Lit {
 
 
 impl Lit {
+    #[inline(always)]
+    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
+    #[ensures(result === self.invariant(@n))]
+    pub fn check_lit_invariant(&self, n: usize) -> bool {
+        return self.idx < n;
+    }
+    
     #[inline(always)]
     #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
     #[requires(self.invariant((@a).len()))]

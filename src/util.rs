@@ -8,7 +8,16 @@ use crate::logic::{
     logic_util::*,
 };
 
-// Selection sort with larger elements first. Based on the one in Creusot repo by me and Xavier
+// Not used anymore at the moment
+#[cfg_attr(not(untrust_perm), trusted)]
+#[ensures(@l <= @result && @result  < @u)]
+pub fn rand_in_range(l: usize, u: usize) -> u8 {
+    use creusot_contracts::rand::Rng;
+    let n = rand::thread_rng().gen_range(l..u);
+    n as u8
+}
+
+// Selection sort with larger elements first. Based on the one in the Creusot repo by me and Xavier
 #[cfg_attr(all(any(trust_util, trust_all), not(untrust_all)), trusted)]
 #[ensures(sorted_rev(@^v))]
 #[ensures((@^v).permutation_of(@v))]

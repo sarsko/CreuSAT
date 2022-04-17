@@ -1,4 +1,3 @@
-// Formula is Mac OK with an inline_full + split on VC #12 for add_clause 11.04 22.18
 extern crate creusot_contracts;
 
 use creusot_contracts::*;
@@ -47,6 +46,36 @@ impl PartialEq for SatState {
 
 
 impl Formula {
+    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
+    #[ensures(match result {
+        SatResult::Sat(assn) => { formula_sat_inner(@self, @assn) }, 
+        SatResult::Unsat     => { self.not_satisfiable() },
+        SatResult::Unknown   => { self.invariant() && @self.num_vars < @usize::MAX/2 },
+        SatResult::Err       => { true },
+    })]
+    pub fn check_formula_invariant(&self) -> SatResult {
+        if self.num_vars >= usize::MAX/2 {
+            return SatResult::Err;
+        }
+        if self.clauses.len() == 0 {
+            return SatResult::Sat(Vec::new());
+        }
+        let mut i: usize = 0;
+        #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@self.clauses)[j].invariant(@self.num_vars))]
+        #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@(@self.clauses)[j]).len() > 0)]
+        while i < self.clauses.len() {
+            if !self.clauses[i].check_clause_invariant(self.num_vars) {
+                return SatResult::Err;
+            }
+            if self.clauses[i].len() == 0 {
+                return SatResult::Unsat;
+            }
+            i += 1;
+        }
+        return SatResult::Unknown;
+
+    }
+
     #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]

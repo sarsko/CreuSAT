@@ -76,8 +76,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
         return Err("File not found!".to_string());
     }
     if !num_lits_set {
-        // tmp
-        //return Err("Error in input file - no p line".to_string());
+        return Err("Error in input file - no p line".to_string());
     }
     if curr_clause.len() > 0 {
         return Err("Error in input file - last clause not terminated".to_string());

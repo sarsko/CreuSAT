@@ -36,7 +36,7 @@ pub enum ConflictResult {
     Continue,
 }
 
-// This is OK except that we don't have a notion for unsat
+// OK
 #[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut t).invariant(mut f))]
@@ -58,11 +58,10 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
             return Some(false);
         },
         Conflict::Unit(clause) => {
-            // Have to do a proof that it isnt already unit?
             let cref = f.add_unit(clause, t);
             match t.learn_unit(cref, f) {
                 Err(_) => return Some(true),
-                Ok(_) => {},
+                Ok(_)  => {},
             }
         }
         Conflict::Learned(level, clause) => {
@@ -71,7 +70,6 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
             // ground conflict work, then everything else can be treated as optimizations
 
             let cref = f.add_clause(clause, w, t);
-
             t.backtrack_to(level, f);
             /*
             let step = Step {
@@ -81,13 +79,7 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
             };
             t.enq_assignment(step, f);
             */
-
             //decisions.increment_and_move(f, cref);
-            //a.cancel_until(t, level, f);
-            //t.add_level(f);
-            //a.set_assignment(lit, f);
-            //proof_assert!(@cref < (@f.clauses).len());
-            //t.enq_assignment(lit, reason::long(cref), f);
         }
         Conflict::Panic => { return Some(true); }
     }
@@ -109,7 +101,6 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
 })]
 fn unit_prop_step(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) -> ConflictResult {
     return match unit_propagate(f, t, w) {
-    //match a.do_unit_propagation(f, t) {
         Ok(_) => ConflictResult::Ok,
         Err(cref) => {
             match handle_conflict(f, t, cref, w) {
@@ -163,14 +154,13 @@ fn unit_prop_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut w).invariant(mut f))]
-#[requires(d.invariant(@f.num_vars))]
 #[requires(@f.num_vars < @usize::MAX/2)]
+#[requires(d.invariant(@f.num_vars))]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures(f.equisat(^f))]
 #[ensures(match result {
     SatResult::Sat(_)   => { (^f).sat((^trail).assignments) 
-        && ((^trail).assignments).complete() // Do I really need this for anything?
-    }, // TODO: Vec is sat assign
+                        &&  ((^trail).assignments).complete() }, // Do I really need this for anything?
     SatResult::Unsat    => { (^f).not_satisfiable() },
     SatResult::Unknown  => { true }
     SatResult::Err      => { true }
@@ -184,25 +174,11 @@ fn outer_loop(f: &mut Formula, d: &Decisions, trail: &mut Trail, w: &mut Watches
     //proof_assert!(!a.complete() || !f.unsat(*a)); // Need to get from unit_prop_loop
     match trail.assignments.find_unassigned(d, f) {
         Some(next) => {
-            //let dlevel = t.trail.len();
-            //t.trail.push(Vec::new());
-            //t.add_level(f);
-            // zzTODOzz DO A PROOF HERE
-            // Have to do a proof to an unassigned cannot affect any post_units
-            // VC Checks out, but it is slow.
-            // CHANGED
-            //let lit = Lit{ idx: next, polarity: if trail.assignments.0[next] == 2 {false} else {true} }; // TODO encapsulate
             //trail.enq_decision(lit, f);
             trail.enq_decision(next, f);
             //t.assignments.0[next] -= 2;
-            //t.enq_assignment(lit, Reason::Decision, f, a);
-            //proof_assert!(t.trail_sem_invariant(*f, *a));
         },
         None => { 
-            // This is gonna get broken if one changes the definition of unsat
-            // Okay so this got broken from unit prop not returning full eval anymore.
-            // Seems like we either have to become ternary and do a check(which cannot fail)
-            // or do a rather long proof about the correctness of watched literals
             //proof_assert!(a.complete());
             //proof_assert!(!f.unsat(*a));
             //proof_assert!(lemma_complete_and_not_unsat_implies_sat(*f, @a); true);
@@ -240,29 +216,25 @@ fn inner(formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut 
     loop {
         match outer_loop(formula, &decisions, &mut trail, &mut watches) {
             SatResult::Unknown => {}, // continue
-            SatResult::Sat(_) => {return SatResult::Sat(trail.assignments.0);},
-            o => return o,
+            SatResult::Sat(_)  => { return SatResult::Sat(trail.assignments.0); },
+            o                  => { return o; },
         }
     }
 }
 
+
 #[cfg_attr(all(any(trust_solver, trust_all), not(any(untrust_all))), trusted)]
-#[requires(formula.invariant())]
 #[ensures(match result {
     SatResult::Sat(assn) => { formula_sat_inner(@(^formula), @assn) && formula.equisat(^formula) }, 
-    SatResult::Unsat => { (^formula).not_satisfiable() && formula.equisat(^formula) }
-    _ => true,
+    SatResult::Unsat     => { (^formula).not_satisfiable() && formula.equisat(^formula) },
+    _                    => { true },
 })]
 pub fn solver(formula: &mut Formula) -> SatResult {
+    match formula.check_formula_invariant() {
+        SatResult::Unknown => {},
+        o                  => { return o },
+    }
     let mut trail = Trail::new(formula, Assignments::new(formula));
-    if formula.num_vars >= usize::MAX/2 {
-        return SatResult::Err;
-    }
-    // Should do a check for if num_vars is correct and everything here. Ah well, todo
-    if formula.clauses.len() == 0 {
-        let a: Vec<AssignedState> = Vec::new();
-        return SatResult::Sat(a);
-    }
     let decisions = Decisions::new(formula);
     let mut watches = Watches::new(formula);
     watches.init_watches(formula);
