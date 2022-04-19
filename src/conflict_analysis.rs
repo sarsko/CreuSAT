@@ -199,6 +199,7 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
     }
     let out = Clause {
         deleted: false,
+        glue: 0,
         rest: new,
     };
     proof_assert!(@out === @new);
@@ -419,6 +420,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
         clause.rest.swap(1, max_i);
         */
         //Conflict::Learned(max_level, clause.rest[0], clause)
+        // TODO: update glue
         Conflict::Learned(0, clause)
     }
 }

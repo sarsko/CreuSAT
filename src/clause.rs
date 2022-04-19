@@ -18,6 +18,7 @@ use crate::logic::{
 //#[derive(Clone)]
 pub struct Clause {
     pub deleted: bool,
+    pub glue: usize,
     //pub first: Lit,
     //pub second: Lit,
     pub rest: Vec<Lit>
@@ -33,6 +34,7 @@ impl Clone for Clause {
     fn clone(&self) -> Self {
         Clause {
             deleted: self.deleted,
+            glue: self.glue,
             rest: self.rest.clone()
         }
     }
@@ -112,6 +114,7 @@ impl Clause {
     pub fn clause_from_vec(vec: &std::vec::Vec<Lit>) -> Clause {
         Clause { 
             deleted: false,
+            glue: 0,
             rest: vec.clone() 
         }
         /*
