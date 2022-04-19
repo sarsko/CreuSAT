@@ -417,10 +417,9 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             i += 1;
         }
         clause.rest.swap(1, max_i);
-        */
-        //Conflict::Learned(max_level, clause.rest[0], clause)
+        Conflict::Learned(max_level, clause)
         // TODO: update glue
-        Conflict::Learned(0, clause)
+        //Conflict::Learned(0, clause)
     }
 }
 
