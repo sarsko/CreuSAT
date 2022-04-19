@@ -15,6 +15,16 @@ fn test_all_unsat() {
     test_all_path("tests/cnf/unsat", false, 500);
 }
 
+#[test]
+fn test_satcomp_easy_sat() {
+    test_all_path("tests/mfleury/SAT-2009-preprocessed/easy/sat", true, 1);
+}
+
+#[test]
+fn test_satcomp_easy_unsat() {
+    test_all_path("tests/mfleury/SAT-2009-preprocessed/easy/unsat", false, 1);
+}
+
 // paths: Path to directory to be read, 
 // expected: expected value for the assertion,
 // verbosity: 0 for no prints, else every nth test will result in a print
@@ -27,6 +37,9 @@ fn test_all_path(paths_in: &str, expected: bool, verbosity: usize) {
     for path in paths {
         let tmp = path.unwrap().path();
         let path = tmp.to_str().unwrap();
+        if verbosity == 1 {
+            writeln!(&mut out, "Testing: {}", path);
+        }
         let res = parse_cnf(path);
         match res {
             Ok((mut clauses, num_literals)) => {
