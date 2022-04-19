@@ -14,9 +14,11 @@ use crate::logic::{
 };
 
 //#[cfg_attr(not(contracts), derive(Debug))]
-//#[derive(Debug)]
+#[derive(Debug)]
 //#[derive(Clone)]
 pub struct Clause {
+    pub deleted: bool,
+    pub glue: usize,
     //pub first: Lit,
     //pub second: Lit,
     pub rest: Vec<Lit>
@@ -31,6 +33,8 @@ impl Clone for Clause {
     #[ensures(result === *self)]
     fn clone(&self) -> Self {
         Clause {
+            deleted: self.deleted,
+            glue: self.glue,
             rest: self.rest.clone()
         }
     }
@@ -46,6 +50,54 @@ pub enum ClauseState {
 }
 
 impl Clause {
+    #[cfg_attr(all(any(trust_clause, trust_all), not(untrust_all)), trusted)]
+    #[ensures(result === self.invariant(@n))]
+    pub fn check_clause_invariant(&self, n: usize) -> bool {
+        let mut i: usize = 0;
+        #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@self)[j].invariant(@n))]
+        while i < self.len() {
+            if !self.rest[i].check_lit_invariant(n){
+                return false;
+            }
+            i += 1;
+        }
+        if self.no_duplicates() {
+            return true;
+        }
+        return false;
+    }
+
+
+    #[cfg_attr(all(any(trust_clause, trust_all), not(untrust_all)), trusted)]
+    #[ensures(result === self.no_duplicate_indexes())]
+    pub fn no_duplicates(&self) -> bool {
+        let mut i: usize = 0;
+        #[invariant(no_dups, 
+            forall<j: Int, k: Int> 0 <= j && j < @i &&
+             0 <= k && k < j ==> (@self)[j].idx != (@self)[k].idx)]
+        while i < self.rest.len() {
+            let lit1 = self.rest[i];
+            let mut j: usize = 0;
+            #[invariant(inv, forall<k: Int> 0 <= k && k < @j ==> lit1.idx != (@self)[k].idx)]
+            while j < i {
+                let lit2 = self.rest[j];
+                if lit1.idx == lit2.idx {
+                    return false;
+                }
+                j += 1;
+            }
+            i += 1;
+        }
+        return true;
+    }
+
+    #[inline(always)]
+    #[cfg_attr(all(any(trust_assignments, trust_all), not(untrust_all)), trusted)]
+    #[ensures(@result === (@self).len())]
+    pub fn len(&self) -> usize {
+        self.rest.len()
+    }
+    
     /*
     #[cfg_attr(all(any(trust_clause, trust_all), not(untrust_all)), trusted)]
     pub fn make_unit_clause(lit: Lit) -> Clause {
@@ -60,7 +112,11 @@ impl Clause {
     //#[ensures(result.invariant(@_f.num_vars))]
     //#[ensures((@result).len() >= 2)]
     pub fn clause_from_vec(vec: &std::vec::Vec<Lit>) -> Clause {
-        Clause { rest: vec.clone() }
+        Clause { 
+            deleted: false,
+            glue: 0,
+            rest: vec.clone() 
+        }
         /*
         Clause {
             first: vec[0],

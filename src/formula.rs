@@ -1,4 +1,3 @@
-// Formula is Mac OK with an inline_full + split on VC #12 for add_clause 11.04 22.18
 extern crate creusot_contracts;
 
 use creusot_contracts::*;
@@ -47,6 +46,36 @@ impl PartialEq for SatState {
 
 
 impl Formula {
+    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
+    #[ensures(match result {
+        SatResult::Sat(assn) => { formula_sat_inner(@self, @assn) }, 
+        SatResult::Unsat     => { self.not_satisfiable() },
+        SatResult::Unknown   => { self.invariant() && @self.num_vars < @usize::MAX/2 },
+        SatResult::Err       => { true },
+    })]
+    pub fn check_formula_invariant(&self) -> SatResult {
+        if self.num_vars >= usize::MAX/2 {
+            return SatResult::Err;
+        }
+        if self.clauses.len() == 0 {
+            return SatResult::Sat(Vec::new());
+        }
+        let mut i: usize = 0;
+        #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@self.clauses)[j].invariant(@self.num_vars))]
+        #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@(@self.clauses)[j]).len() > 0)]
+        while i < self.clauses.len() {
+            if !self.clauses[i].check_clause_invariant(self.num_vars) {
+                return SatResult::Err;
+            }
+            if self.clauses[i].len() == 0 {
+                return SatResult::Unsat;
+            }
+            i += 1;
+        }
+        return SatResult::Unknown;
+
+    }
+
     #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
@@ -159,6 +188,74 @@ impl Formula {
             i += 1
         }
         return true;
+    }
+
+    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
+    #[requires(self.invariant())]
+    #[requires(t.invariant(*self))]
+    //#[maintains((mut self).invariant())]
+    //#[maintains(t.invariant(mut self))]
+    #[maintains((mut watches).invariant(* self))]
+    //#[ensures(@self.num_vars === @(^self).num_vars)]
+    //#[ensures(self.equisat_compatible(^self))]
+    //#[ensures(self.equisat(^self))] // Added/changed
+    pub fn simplify_formula(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
+        // unwatch trivially SAT
+        self.delete_clauses(watches, t, s);
+        // Ideally remove UNSAT lits
+    }
+
+    fn delete_clause(&mut self, cref: usize, watches: &mut Watches, t: &Trail, s: &mut Solver) {
+        watches.unwatch(self, t, cref, self.clauses[cref].rest[0]);
+        watches.unwatch(self, t, cref, self.clauses[cref].rest[1]);
+        self.clauses[cref].deleted = true;
+    }
+
+    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
+    #[requires(self.invariant())]
+    #[requires(t.invariant(*self))]
+    //#[maintains((mut self).invariant())]
+    //#[maintains(t.invariant(mut self))]
+    #[maintains((mut watches).invariant(* self))]
+    //#[ensures(@self.num_vars === @(^self).num_vars)]
+    //#[ensures(self.equisat_compatible(^self))]
+    //#[ensures(self.equisat(^self))] // Added/changed
+    pub fn reduceDB(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
+        s.maxLemmas += 300;
+        s.nLemmas = 0;
+        let mut i = s.initialLen;
+        while i < self.clauses.len() {
+            if !self.clauses[i].deleted {
+               if self.clauses[i].len() > 12 {
+                   self.delete_clause(i, watches, t, s);
+               } 
+            }
+            i += 1;
+        }
+    }
+
+    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
+    #[requires(self.invariant())]
+    #[requires(t.invariant(*self))]
+    //#[maintains((mut self).invariant())]
+    //#[maintains(t.invariant(mut self))]
+    #[maintains((mut watches).invariant(* self))]
+    //#[ensures(@self.num_vars === @(^self).num_vars)]
+    //#[ensures(self.equisat_compatible(^self))]
+    //#[ensures(self.equisat(^self))] // Added/changed
+    pub fn delete_clauses(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
+        // unwatch trivially SAT
+        let mut i = 0;
+        while i < self.clauses.len() {
+            if !self.clauses[i].deleted {
+                if self.clauses[i].len() > 1 && self.is_clause_sat(i, &t.assignments) {
+                   self.delete_clause(i, watches, t, s);
+                }
+            }
+            i += 1;
+        }
+
+        // Ideally remove UNSAT lits
     }
 }
 

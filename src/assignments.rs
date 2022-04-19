@@ -1,4 +1,3 @@
-// Assignments is Mac OK 11.04 22.17
 extern crate creusot_contracts;
 use creusot_contracts::*;
 use creusot_contracts::std::*;
@@ -16,20 +15,12 @@ use crate::logic::{
     logic::*,
     logic_assignments::*,
     logic_clause::*,
-    logic_trail::*,//{trail_invariant, long_are_post_unit_inner_new},
+    logic_trail::*,
 };
 
 pub type AssignedState = u8;
 // A.1 is temporary
 pub struct Assignments(pub Vec<AssignedState>, pub usize);
-
-#[cfg_attr(not(untrust_perm), trusted)]
-#[ensures(@l <= @result && @result  < @u)]
-fn rand_in_range(l: usize, u: usize) -> u8 {
-    use creusot_contracts::rand::Rng;
-    let n = rand::thread_rng().gen_range(l..u);
-    n as u8
-}
 
 impl Assignments {
     // Ok
@@ -47,7 +38,7 @@ impl Assignments {
     #[requires(lit.invariant(@_f.num_vars))]
     #[requires(_f.invariant())]
     #[requires(trail_invariant(@_t, *_f))] 
-    #[requires(unset((@self)[@lit.idx]))] // Added, will break stuff further up
+    #[requires(unset((@self)[@lit.idx]))]
     #[requires(long_are_post_unit_inner(@_t, *_f, @self))]
     #[ensures(@(@^self)[@lit.idx] === 1 || @(@^self)[@lit.idx] === 0)]
     #[ensures((@^self).len() === (@self).len())]
@@ -108,9 +99,7 @@ impl Assignments {
         while i < d.lit_order.len() {
             let curr = self.0[d.lit_order[i]];
             if curr >= 2 {
-                //let b = curr != 2;
                 self.1 = i + 1;
-                //return Some(Lit{ idx: d.lit_order[i], polarity: b });
                 return Some(d.lit_order[i]);
             }
             i += 1;

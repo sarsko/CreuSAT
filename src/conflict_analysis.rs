@@ -22,7 +22,6 @@ use crate::logic::{
 pub enum Conflict {
     Ground,
     Unit(Clause),
-    //Learned(usize, Lit, Vec<Lit>),
     Learned(usize, Clause),
     Panic,
 }
@@ -199,6 +198,8 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
         i += 1;
     }
     let out = Clause {
+        deleted: false,
+        glue: 0,
         rest: new,
     };
     proof_assert!(@out === @new);
@@ -327,16 +328,16 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
 #[ensures(match result {
     Conflict::Ground => f.not_satisfiable(),
     Conflict::Unit(clause) => {
-        clause.invariant(@f.num_vars)
+           clause.invariant(@f.num_vars)
         && (@clause).len() == 1
         && vars_in_range_inner(@clause, @f.num_vars)
         && no_duplicate_indexes_inner(@clause)
         && equisat_extension_inner(clause, @f)
     }, 
     Conflict::Learned(level, clause) => {
-        clause.invariant(@f.num_vars)
-        && @level < (@trail.decisions).len() //added
+           clause.invariant(@f.num_vars)
         && (@clause).len() > 1 
+        && @level < (@trail.decisions).len() //added
         && vars_in_range_inner(@clause, @f.num_vars)
         && no_duplicate_indexes_inner(@clause)
         && equisat_extension_inner(clause, @f)
@@ -367,13 +368,13 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     while i > 0 {
         proof_assert!((@trail.trail).len() > 0);
         let c_idx = match choose_literal(&clause, trail, &mut i, f) {
-            None => return Conflict::Panic,
             Some(b) => b,
+            None    => return Conflict::Panic,
         };
         proof_assert!(@i < (@trail.trail).len());
         let ante = match &trail.trail[i].reason {
             Reason::Long(c) => &f.clauses[*c],
-            o => {return Conflict::Panic}, // nnTODOnn // This never happens, but is an entirely new proof
+            o               => { return Conflict::Panic }, // nnTODOnn // This never happens, but is an entirely new proof
         };
         proof_assert!(clause.same_idx_same_polarity_except(*ante, @(@trail.trail)[@i].lit.idx));
         clause = resolve(f, &clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
@@ -416,8 +417,10 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             i += 1;
         }
         clause.rest.swap(1, max_i);
-        Conflict::Learned(max_level, clause)
-        //Conflict::Learned(0, clause)
+        */
+        //Conflict::Learned(max_level, clause.rest[0], clause)
+        // TODO: update glue
+        Conflict::Learned(0, clause)
     }
 }
 
@@ -443,8 +446,8 @@ pub fn derive_empty_formula(f: &Formula, trail: &Trail, cref: usize) -> bool {
     while i > 0 {
         proof_assert!((@trail.trail).len() > 0);
         let c_idx = match choose_literal(&clause, trail, &mut i, f) {
-            None => return false,
             Some(b) => b,
+            None    => return false,
         };
         proof_assert!(@i < (@trail.trail).len());
         let ante = match &trail.trail[i].reason {
