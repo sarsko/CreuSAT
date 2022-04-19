@@ -2612,36 +2612,38 @@ end
 module CreusotContracts_Std1_Vec_Impl1_Pop_Interface
   type t   
   use Type
-  use seq.Seq
   use mach.int.Int
   use mach.int.Int32
+  use seq.Seq
+  use seq_ext.SeqExt
   use prelude.Prelude
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = t
   clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = t
-  clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model0 with type t = Type.creusotcontracts_std1_vec_vec t,
+  clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model1 with type t = Type.creusotcontracts_std1_vec_vec t,
   type ModelTy0.modelTy = ModelTy0.modelTy
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t
   val pop [@cfg:stackify] (self : borrowed (Type.creusotcontracts_std1_vec_vec t)) : Type.core_option_option t
     ensures { match (result) with
-      | Type.Core_Option_Option_Some t -> Model0.model self = Seq.snoc (Model1.model ( ^ self)) t
-      | Type.Core_Option_Option_None -> Seq.length (Model0.model self) = Seq.length (Model1.model ( ^ self)) && Seq.length (Model0.model self) = 0
+      | Type.Core_Option_Option_Some t -> Model0.model ( ^ self) = SeqExt.subsequence (Model1.model self) 0 (Seq.length (Model1.model self) - 1) && Model1.model self = Seq.snoc (Model0.model ( ^ self)) t
+      | Type.Core_Option_Option_None -> Seq.length (Model1.model self) = Seq.length (Model0.model ( ^ self)) && Seq.length (Model1.model self) = 0
       end }
     
 end
 module CreusotContracts_Std1_Vec_Impl1_Pop
   type t   
   use Type
-  use seq.Seq
   use mach.int.Int
   use mach.int.Int32
+  use seq.Seq
+  use seq_ext.SeqExt
   use prelude.Prelude
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = t
   clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = t
-  clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model0 with type t = Type.creusotcontracts_std1_vec_vec t,
+  clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model1 with type t = Type.creusotcontracts_std1_vec_vec t,
   type ModelTy0.modelTy = ModelTy0.modelTy
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t
   val pop [@cfg:stackify] (self : borrowed (Type.creusotcontracts_std1_vec_vec t)) : Type.core_option_option t
     ensures { match (result) with
-      | Type.Core_Option_Option_Some t -> Model0.model self = Seq.snoc (Model1.model ( ^ self)) t
-      | Type.Core_Option_Option_None -> Seq.length (Model0.model self) = Seq.length (Model1.model ( ^ self)) && Seq.length (Model0.model self) = 0
+      | Type.Core_Option_Option_Some t -> Model0.model ( ^ self) = SeqExt.subsequence (Model1.model self) 0 (Seq.length (Model1.model self) - 1) && Model1.model self = Seq.snoc (Model0.model ( ^ self)) t
+      | Type.Core_Option_Option_None -> Seq.length (Model1.model self) = Seq.length (Model0.model ( ^ self)) && Seq.length (Model1.model self) = 0
       end }
     
 end
@@ -2695,7 +2697,7 @@ module Lib_Clause_Impl1_RemoveFromClause
   clone CreusotContracts_Logic_Model_Impl1_Model as Model3 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_lit_lit),
   type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model0.model
   clone CreusotContracts_Std1_Vec_Impl1_Pop_Interface as Pop0 with type t = Type.lib_lit_lit,
-  function Model0.model = Model3.model, function Model1.model = Model0.model
+  function Model0.model = Model0.model, function Model1.model = Model3.model
   clone Lib_Clause_Impl1_MoveToEnd_Interface as MoveToEnd0 with function Model0.model = Model0.model,
   function Model1.model = Model1.model,
   predicate InvariantUnaryOk0.invariant_unary_ok = InvariantUnaryOk0.invariant_unary_ok,
@@ -4802,30 +4804,30 @@ module Lib_Logic_LogicTrail_Impl2_Invariant
   predicate invariant' (self : Type.lib_trail_trail) (f : Type.lib_formula_formula) = 
     InvariantNoDecision0.invariant_no_decision self f && DecisionsInvariant0.decisions_invariant (Model0.model (Type.lib_trail_trail_Trail_decisions self)) (Model1.model (Type.lib_trail_trail_Trail_trail self))
 end
-module CreusotContracts_Logic_Int_Impl9_ModelTy
+module CreusotContracts_Logic_Int_Impl11_ModelTy
   use mach.int.Int
   type modelTy  = 
     int
 end
-module CreusotContracts_Logic_Int_Impl9_Model_Interface
+module CreusotContracts_Logic_Int_Impl11_Model_Interface
   use mach.int.Int
   use prelude.Prelude
   use mach.int.UInt64
   function model (self : usize) : int
 end
-module CreusotContracts_Logic_Int_Impl9_Model
+module CreusotContracts_Logic_Int_Impl11_Model
   use mach.int.Int
   use prelude.Prelude
   use mach.int.UInt64
   function model (self : usize) : int = 
     UInt64.to_int self
 end
-module CreusotContracts_Logic_Int_Impl9
+module CreusotContracts_Logic_Int_Impl11
   use mach.int.Int
   use prelude.Prelude
   use mach.int.UInt64
-  clone CreusotContracts_Logic_Int_Impl9_Model as Model0
-  clone CreusotContracts_Logic_Int_Impl9_ModelTy as ModelTy0
+  clone CreusotContracts_Logic_Int_Impl11_Model as Model0
+  clone CreusotContracts_Logic_Int_Impl11_ModelTy as ModelTy0
   clone CreusotContracts_Logic_Model_Model_Model as Model1 with type self = usize, function model = Model0.model,
   type ModelTy0.modelTy = ModelTy0.modelTy
   clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = usize, type modelTy = ModelTy0.modelTy
@@ -4843,7 +4845,7 @@ module Lib_ConflictAnalysis_ChooseLiteral_Interface
   type ModelTy0.modelTy = ModelTy1.modelTy
   clone Lib_Logic_LogicTrail_Impl2_Invariant_Interface as Invariant0
   clone Lib_Logic_LogicClause_Impl2_Unsat_Interface as Unsat0
-  clone CreusotContracts_Logic_Int_Impl9_ModelTy as ModelTy0
+  clone CreusotContracts_Logic_Int_Impl11_ModelTy as ModelTy0
   clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model1 with type t = usize,
   type ModelTy0.modelTy = ModelTy0.modelTy
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.lib_trail_step
@@ -4934,8 +4936,8 @@ module Lib_ConflictAnalysis_ChooseLiteral
   clone Lib_Logic_LogicTrail_Impl2_Invariant as Invariant0 with predicate InvariantNoDecision0.invariant_no_decision = InvariantNoDecision0.invariant_no_decision,
   function Model0.model = Model7.model, function Model1.model = Model1.model,
   predicate DecisionsInvariant0.decisions_invariant = DecisionsInvariant0.decisions_invariant
-  clone CreusotContracts_Logic_Int_Impl9_Model as Model4
-  clone CreusotContracts_Logic_Int_Impl9_ModelTy as ModelTy0
+  clone CreusotContracts_Logic_Int_Impl11_Model as Model4
+  clone CreusotContracts_Logic_Int_Impl11_ModelTy as ModelTy0
   clone CreusotContracts_Logic_Model_Impl1_Model as Model0 with type t = usize,
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model4.model
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve9 with type t = ()
@@ -5344,7 +5346,7 @@ module Lib_ConflictAnalysis_DeriveEmptyFormula
   clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.lib_formula_formula,
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model4.model
   use mach.int.Int64
-  clone CreusotContracts_Logic_Int_Impl9_Model as Model15
+  clone CreusotContracts_Logic_Int_Impl11_Model as Model15
   clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy6 with type t = Type.lib_lit_lit
   clone Lib_Logic_LogicAssignments_Impl0_ModelTy as ModelTy5
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve12 with type t = Type.lib_assignments_assignments
@@ -5358,7 +5360,7 @@ module Lib_ConflictAnalysis_DeriveEmptyFormula
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve4 with type t = Type.lib_formula_formula
   clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve3 with type t = usize
   clone Lib_Logic_LogicClause_Impl0_ModelTy as ModelTy4
-  clone CreusotContracts_Logic_Int_Impl9_ModelTy as ModelTy3
+  clone CreusotContracts_Logic_Int_Impl11_ModelTy as ModelTy3
   clone CreusotContracts_Logic_Model_Impl1_Model as Model11 with type t = usize,
   type ModelTy0.modelTy = ModelTy3.modelTy, function Model0.model = Model15.model
   clone Lib_Logic_LogicLit_Impl1_IsOpp as IsOpp0
@@ -5876,7 +5878,7 @@ module Lib_ConflictAnalysis_AnalyzeConflict
   clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.lib_formula_formula,
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model6.model
   use mach.int.Int64
-  clone CreusotContracts_Logic_Int_Impl9_Model as Model16
+  clone CreusotContracts_Logic_Int_Impl11_Model as Model16
   clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy7 with type t = usize
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve16 with type t = Type.lib_lit_lit
   clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy6 with type t = Type.lib_lit_lit
@@ -5890,7 +5892,7 @@ module Lib_ConflictAnalysis_AnalyzeConflict
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve8 with type t = Type.lib_clause_clause
   clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve7 with type t = usize
   clone Lib_Logic_LogicClause_Impl0_ModelTy as ModelTy4
-  clone CreusotContracts_Logic_Int_Impl9_ModelTy as ModelTy3
+  clone CreusotContracts_Logic_Int_Impl11_ModelTy as ModelTy3
   clone CreusotContracts_Logic_Model_Impl1_Model as Model11 with type t = usize,
   type ModelTy0.modelTy = ModelTy3.modelTy, function Model0.model = Model16.model
   clone Lib_Logic_LogicLit_Impl1_IsOpp as IsOpp0
@@ -13736,7 +13738,7 @@ module Lib_Trail_Impl0_Backstep
   clone CreusotContracts_Logic_Model_Impl1_Model as Model9 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_trail_step),
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model2.model
   clone CreusotContracts_Std1_Vec_Impl1_Pop_Interface as Pop1 with type t = Type.lib_trail_step,
-  function Model0.model = Model9.model, function Model1.model = Model2.model
+  function Model0.model = Model2.model, function Model1.model = Model9.model
   clone CreusotContracts_Logic_Ghost_Impl1_Record_Interface as Record0 with type t = borrowed (Type.lib_trail_trail),
   function Model0.model = Model1.model
   clone CreusotContracts_Logic_Model_Impl1_Model as Model11 with type t = Type.creusotcontracts_std1_vec_vec uint8,
@@ -14069,8 +14071,8 @@ module Lib_Trail_Impl0_BacktrackTo
   clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve0 with type t = borrowed (Type.lib_trail_trail)
   clone CreusotContracts_Logic_Model_Impl1_Model as Model11 with type t = Type.creusotcontracts_std1_vec_vec usize,
   type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model3.model
-  clone CreusotContracts_Std1_Vec_Impl1_Pop_Interface as Pop1 with type t = usize,
-  function Model0.model = Model11.model, function Model1.model = Model3.model
+  clone CreusotContracts_Std1_Vec_Impl1_Pop_Interface as Pop1 with type t = usize, function Model0.model = Model3.model,
+  function Model1.model = Model11.model
   clone CreusotContracts_Logic_Model_Impl0_Model as Model10 with type t = Type.creusotcontracts_std1_vec_vec usize,
   type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model3.model
   clone CreusotContracts_Std1_Vec_Impl1_Len_Interface as Len1 with type t = usize, function Model0.model = Model10.model
@@ -16016,7 +16018,7 @@ module Lib_Watches_UpdateWatch
   clone CreusotContracts_Std1_Vec_Impl1_Push_Interface as Push0 with type t = Type.lib_watches_watcher,
   function Model0.model = Model2.model, function Model1.model = Model14.model
   clone CreusotContracts_Std1_Vec_Impl1_Pop_Interface as Pop1 with type t = Type.lib_watches_watcher,
-  function Model0.model = Model14.model, function Model1.model = Model2.model
+  function Model0.model = Model2.model, function Model1.model = Model14.model
   clone CreusotContracts_Std1_Vec_Impl1_Swap_Interface as Swap0 with type t = Type.lib_watches_watcher,
   function Model0.model = Model14.model, function Model1.model = Model2.model
   clone CreusotContracts_Logic_Model_Impl0_Model as Model12 with type t = Type.creusotcontracts_std1_vec_vec (Type.lib_watches_watcher),
