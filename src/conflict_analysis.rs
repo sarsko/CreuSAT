@@ -389,12 +389,12 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
                 if cnt > 1 {
                     break;
                 }
-                //s_idx = k;
+                s_idx = k;
             }
             k += 1;
         }
         if cnt == 1 {
-            //clause.rest.swap(0, s_idx);
+            clause.rest.swap(0, s_idx);
             break;
         }
     }
@@ -405,7 +405,6 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     if clause.rest.len() == 1 {
         Conflict::Unit(clause)
     } else {
-        /*
         let mut max_i = 1;
         let mut max_level = trail.lit_to_level[clause.rest[1].idx];
         i = 2;

@@ -36,6 +36,50 @@ pub enum ConflictResult {
     Continue,
 }
 
+// This is OK except that we don't have a notion for unsat
+#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
+#[maintains((mut f).invariant())]
+#[maintains((mut t).invariant(mut f))]
+#[maintains((mut w).invariant(mut f))]
+#[requires(@f.num_vars < @usize::MAX/2)]
+#[requires(@cref < (@f.clauses).len())]
+#[requires((@f.clauses)[@cref].unsat(t.assignments))] // added
+#[ensures(@f.num_vars === @(^f).num_vars)]
+#[ensures(f.equisat(^f))]
+#[ensures(match result {
+    Some(false) => { (^f).not_satisfiable() }, 
+    Some(true)  => { true },
+    None        => { true },
+})]
+fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches, d: &mut Decisions) -> Option<bool> {
+    let res = analyze_conflict(f, t, cref);
+    match res {
+        Conflict::Ground => { 
+            return Some(false);
+        },
+        Conflict::Unit(clause) => {
+            // Have to do a proof that it isnt already unit?
+            let cref = f.add_unit(clause, t);
+            match t.learn_unit(cref, f, d) {
+                Err(_) => return Some(true),
+                Ok(_) => {},
+            }
+        }
+        Conflict::Learned(level, clause) => {
+            // Okay so doing a full search restart every time is a lot less slow than expected
+            // and is very simple. If I make the proof of resolution from init to empty clause/
+            // ground conflict work, then everything else can be treated as optimizations
+
+            let lit = clause.rest[0];
+            let cref = f.add_clause(clause, w, t);
+            t.backtrack_to(level, f, d);
+            let step = Step {
+                lit: lit,
+                decision_level: level,
+                reason: Reason::Long(cref),
+            };
+            t.enq_assignment(step, f);
+            d.increment_and_move(f, cref, &t.assignments);
 pub struct Solver {
     pub nLemmas: usize,
     pub maxLemmas: usize,
@@ -268,11 +312,10 @@ pub fn solver(formula: &mut Formula) -> SatResult {
         SatResult::Unknown => {},
         o                  => { return o },
     }
-    let mut trail = Trail::new(formula, Assignments::new(formula));
-    let decisions = Decisions::new(formula);
+    let mut decisions = Decisions::new(formula);
     let mut watches = Watches::new(formula);
     watches.init_watches(formula);
-    match trail.learn_units(formula) {
+    match trail.learn_units(formula, &mut decisions) {
         Some(cref) => {
             if derive_empty_formula(formula, &trail, cref) {
                 return SatResult::Unsat;
