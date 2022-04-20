@@ -5,7 +5,7 @@ use creusot_contracts::*;
 
 use crate::{clause::*, decision::*, formula::*, lit::*, trail::*};
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::{
     logic::*,
     logic_assignments::*,
@@ -28,7 +28,7 @@ fn rand_in_range(l: usize, u: usize) -> u8 {
 impl Assignments {
     // Ok
     #[inline(always)]
-    #[cfg_attr(all(any(trust_assignments, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_assignment", trusted)]
     #[ensures(@result === (@self).len())]
     pub fn len(&self) -> usize {
         self.0.len()
@@ -36,7 +36,7 @@ impl Assignments {
 
     // OK
     #[inline(always)]
-    #[cfg_attr(all(any(trust_assignments, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_assignment", trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(lit.invariant(@_f.num_vars))]
     #[requires(_f.invariant())]
@@ -67,7 +67,7 @@ impl Assignments {
     }
 
     // OK
-    #[cfg_attr(all(any(trust_assignments, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_assignment", trusted)]
     #[requires(f.invariant())]
     #[ensures(result.invariant(*f))]
     pub fn new(f: &Formula) -> Self {
@@ -87,7 +87,7 @@ impl Assignments {
     }
 
     // OK
-    #[cfg_attr(all(any(trust_assignments, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_assignment", trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(d.invariant((@self).len()))]
     #[ensures(match result {

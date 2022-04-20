@@ -11,7 +11,7 @@ use crate::{
 
 use crate::logic::{logic::*, logic_formula::*};
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 impl Model for Assignments {
     type ModelTy = Seq<AssignedState>;
 

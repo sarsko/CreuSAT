@@ -12,7 +12,7 @@ use crate::logic::{
 };
 
 // OK
-#[cfg_attr(all(any(trust_unit_prop, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains(trail.invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
@@ -56,7 +56,7 @@ fn unit_prop_check_rest(
     return Err(());
 }
 
-#[cfg_attr(all(any(trust_unit_prop, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((*trail).invariant(mut f))]
 #[maintains((mut f).invariant())]
 #[maintains((*watches).invariant(mut f))]
@@ -83,7 +83,7 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
 
 /*
 // OK
-//#[cfg_attr(all(any(trust_unit_prop, trust_all), not(untrust_all)), trusted)]
+//#[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((*trail).invariant(mut f))]
 #[maintains((mut f).invariant())]
 #[maintains((*watches).invariant(mut f))]
@@ -108,7 +108,7 @@ fn swap_zero_one(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize)
 */
 
 // OK on Mac
-#[cfg_attr(all(any(trust_unit_prop, trust_all), not(any(untrust_all))), trusted)]
+#[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
@@ -236,7 +236,7 @@ fn unit_prop_do_outer(
 }
 
 // OK on Mac
-#[cfg_attr(all(any(trust_unit_prop, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
@@ -287,7 +287,7 @@ fn unit_prop_current_level(
 }
 
 // OK on Mac
-#[cfg_attr(all(any(trust_unit_prop, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]

@@ -6,7 +6,7 @@ use creusot_contracts::*;
 
 use crate::{assignments::*, clause::*, lit::*, solver::*, trail::*, watches::*};
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::{
     logic_assignments::*,
     logic_clause::*,
@@ -27,7 +27,7 @@ pub enum SatState {
 }
 
 impl PartialEq for SatState {
-    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_formula", trusted)]
     fn eq(&self, other: &Self) -> bool {
         return match (self, other) {
             (SatState::Unknown, SatState::Unknown) => true,
@@ -39,7 +39,7 @@ impl PartialEq for SatState {
 }
 
 impl Formula {
-    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_formula", trusted)]
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[requires(@idx < (@self.clauses).len())]
@@ -58,7 +58,7 @@ impl Formula {
     }
 
     /*
-    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_formula", trusted)]
     #[requires(selff.invariant())]
     #[requires(a.invariant(*f))]
     #[requires(@idx < (@self.clauses).len())]
@@ -78,7 +78,7 @@ impl Formula {
     */
 
     // Needs some help on inlining/splitting, but checks out
-    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains(_t.invariant(mut self))]
     #[maintains((mut watches).invariant(mut self))] // new
@@ -112,7 +112,7 @@ impl Formula {
     }
 
     // Passing, but needs the same help as add_clause
-    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains(_t.invariant(mut self))]
     #[requires((@clause).len() == 1)]
@@ -137,7 +137,7 @@ impl Formula {
         cref
     }
 
-    #[cfg_attr(all(any(trust_formula, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_formula", trusted)]
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[ensures(result === self.sat(*a))]

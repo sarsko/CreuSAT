@@ -11,7 +11,7 @@ pub type Literal = i32;
 pub type Clause = Vec<Literal>;
 pub type Clauses = Vec<Clause>;
 
-#[cfg(not(contracts))]
+#[cfg(not(feature = "contracts"))]
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where
     P: AsRef<Path>,
@@ -20,7 +20,7 @@ where
     Ok(io::BufReader::new(file).lines())
 }
 
-#[cfg(not(contracts))]
+#[cfg(not(feature = "contracts"))]
 pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
     /*
     let mut problem_type = "";
@@ -93,7 +93,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
     Ok((out_clauses, num_literals as usize))
 }
 
-#[cfg(not(contracts))]
+#[cfg(not(feature = "contracts"))]
 // TODO, fix it so that 0 and 1 len clauses are supported
 /// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
 pub fn preproc_and_solve(

@@ -5,7 +5,7 @@ use creusot_contracts::*;
 
 use crate::{assignments::*, formula::*, lit::*, util::sort_reverse};
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::{logic_decision::*, logic_util::*};
 
 /*
@@ -29,7 +29,7 @@ pub struct Decisions {
 
 impl Decisions {
     // OK
-    #[cfg_attr(all(any(trust_decision, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_decision", trusted)]
     #[requires(f.invariant())]
     #[ensures(result.invariant(@f.num_vars))]
     pub fn new(f: &Formula) -> Decisions {
@@ -140,7 +140,8 @@ impl Decisions {
     }
     */
 
-    #[cfg_attr(all(any(trust_decision, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_decision", trusted)]
+
     fn move_to_front(&mut self, tomove: usize) {
         /*
         let old_next = self.linked_list[tomove].next;
@@ -166,7 +167,8 @@ impl Decisions {
     }
     /*
 
-    #[cfg_attr(all(any(trust_decision, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_decision", trusted)]
+
     pub fn increment_and_move(&mut self, f: &Formula, cref: usize) {
         let clause = &f.clauses[cref];
         let mut i = 0;
@@ -187,7 +189,8 @@ impl Decisions {
     }
     */
 
-    #[cfg_attr(all(any(trust_decision, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_decision", trusted)]
+
     pub fn get_next(&mut self, a: &Assignments) -> Option<usize> {
         /*
         let mut head = Some(self.head);

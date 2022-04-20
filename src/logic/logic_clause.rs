@@ -4,10 +4,10 @@ use creusot_contracts::*;
 
 use crate::{assignments::*, clause::*, formula::*, lit::*};
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::logic_formula::*;
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 impl Model for Clause {
     type ModelTy = Seq<Lit>;
 

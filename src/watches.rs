@@ -5,7 +5,7 @@ use creusot_contracts::*;
 
 use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*};
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::{logic_util::*, logic_watches::*};
 
 // Lets try this scheme and see how well it fares
@@ -25,7 +25,7 @@ pub struct Watches {
 // The root cause seems to be that Why3 doesn't wan't to "peek" into things, so when I made abstraction
 // barriers for the invariants, stuff took forever. It checks out, but I should probably come back later and clean up
 // #10 and #19 just take some time, but check out on Mac
-#[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(feature = "trust_watches", trusted)]
 #[maintains((mut watches).invariant(*f))]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(@lit.idx < @f.num_vars)]
@@ -70,14 +70,14 @@ pub fn update_watch(
             proof_assert!(watches.invariant(*f));
         }
         None => {
-            panic!("Impossible");
+            unreachable!();
         }
     }
 }
 
 impl Watches {
     // OK
-    #[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_watches", trusted)]
     #[ensures(result.invariant(*f))]
     pub fn new(f: &Formula) -> Watches {
         let mut i: usize = 0;
@@ -95,7 +95,7 @@ impl Watches {
     // This whole should be updated/merged with formula add_clause
     // We watch the negated literal for updates
     // OK
-    #[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_watches", trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(@cref < (@_f.clauses).len())]
     #[requires(@lit.idx < @usize::MAX/2)]
@@ -107,7 +107,7 @@ impl Watches {
     }
 
     // OK
-    #[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_watches", trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(@new_lit.idx < @usize::MAX/2)]
     #[requires(new_lit.to_neg_watchidx_logic() < (@self.watches).len())]
@@ -121,7 +121,7 @@ impl Watches {
 
     // Requires duplicates to be removed
     // OK
-    #[cfg_attr(all(any(trust_watches, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_watches", trusted)]
     #[maintains((mut self).invariant(*f))]
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(f.invariant())]

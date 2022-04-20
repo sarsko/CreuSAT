@@ -8,7 +8,7 @@ use crate::{
 };
 
 // Tmp
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::{logic::*, logic_formula::*};
 
 pub enum SatResult {
@@ -26,7 +26,7 @@ pub enum ConflictResult {
 }
 
 // This is OK except that we don't have a notion for unsat
-#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(feature = "trust_solver", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut t).invariant(mut f))]
 #[maintains((mut w).invariant(mut f))]
@@ -86,7 +86,7 @@ fn handle_conflict(f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches)
 }
 
 // OK
-#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(feature = "trust_solver", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut w).invariant(mut f))]
 #[maintains((mut t).invariant(mut f))]
@@ -116,7 +116,7 @@ fn unit_prop_step(
 }
 
 // OK
-#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(feature = "trust_solver", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut t).invariant(mut f))]
 #[maintains((mut w).invariant(mut f))]
@@ -158,10 +158,7 @@ fn unit_prop_loop(f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches
 }
 
 // OK
-#[cfg_attr(
-    all(any(trust_solver, trust_all), not(any(untrust_all, runtime_check))),
-    trusted
-)]
+#[cfg_attr(feature = "trust_solver", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut w).invariant(mut f))]
@@ -219,7 +216,7 @@ fn outer_loop(f: &mut Formula, d: &Decisions, trail: &mut Trail, w: &mut Watches
 }
 
 // OK
-#[cfg_attr(all(any(trust_solver, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(feature = "trust_solver", trusted)]
 #[requires(@formula.num_vars < @usize::MAX/2)]
 #[requires(formula.invariant())]
 #[requires(decisions.invariant(@formula.num_vars))]
@@ -255,7 +252,7 @@ fn inner(
     }
 }
 
-#[cfg_attr(all(any(trust_solver, trust_all), not(any(untrust_all))), trusted)]
+#[cfg_attr(feature = "trust_solved", trusted)]
 #[requires(formula.invariant())]
 #[ensures(match result {
     SatResult::Sat(assn) => { formula_sat_inner(@(^formula), @assn) && formula.equisat(^formula) },

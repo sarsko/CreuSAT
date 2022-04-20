@@ -6,7 +6,7 @@ use creusot_contracts::*;
 
 use crate::{assignments::*, clause::*, trail::*};
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::logic_lit::*;
 
 #[derive(Clone, Copy)]
@@ -18,7 +18,7 @@ pub struct Lit {
 
 impl Lit {
     #[inline(always)]
-    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_lit", trusted)]
     #[requires(self.invariant((@a).len()))]
     #[ensures(result === self.sat(*a))]
     pub fn lit_sat(self, a: &Assignments) -> bool {
@@ -29,7 +29,7 @@ impl Lit {
     }
 
     #[inline(always)]
-    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_lit", trusted)]
     #[requires(self.invariant((@a).len()))]
     #[ensures(result === self.unsat(*a))]
     pub fn lit_unsat(self, a: &Assignments) -> bool {
@@ -40,7 +40,7 @@ impl Lit {
     }
 
     #[inline(always)]
-    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_lit", trusted)]
     #[requires(self.invariant((@a).len()))]
     #[ensures(result === self.unset(*a))]
     pub fn lit_unset(self, a: &Assignments) -> bool {
@@ -48,7 +48,7 @@ impl Lit {
     }
 
     #[inline(always)]
-    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_lit", trusted)]
     #[requires(self.invariant((@a).len()))]
     #[ensures(result === !self.unset(*a))]
     pub fn lit_set(self, a: &Assignments) -> bool {
@@ -56,7 +56,7 @@ impl Lit {
     }
 
     // Gets the index of the literal in the representation used for the watchlist
-    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_lit", trusted)]
     #[requires(@self.idx < @usize::MAX/2)]
     #[ensures(@result === self.to_watchidx_logic())]
     #[ensures(@result === @self.idx * 2 + if self.polarity { 0 } else { 1 })]
@@ -64,7 +64,7 @@ impl Lit {
         self.idx * 2 + if self.polarity { 0 } else { 1 }
     }
     // Gets the index of the literal of the opposite polarity(-self) in the representation used for the watchlist
-    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_lit", trusted)]
     #[requires(@self.idx < @usize::MAX/2)]
     #[ensures(@result === self.to_neg_watchidx_logic())]
     #[ensures(@result === @self.idx * 2 + if self.polarity { 1 } else { 0 })]
@@ -74,7 +74,7 @@ impl Lit {
 }
 
 impl PartialEq for Lit {
-    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_lit", trusted)]
     #[ensures(result === (self.idx == other.idx && self.polarity == other.polarity))]
     //#[ensures(result === (*self === *other))] // :(
     fn eq(&self, other: &Lit) -> bool {
@@ -86,7 +86,7 @@ impl ops::Not for Lit {
     type Output = Lit;
 
     #[inline]
-    #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_lit", trusted)]
     #[ensures(@result.idx === @self.idx)]
     #[ensures(result.polarity === !self.polarity)]
     fn not(self) -> Lit {

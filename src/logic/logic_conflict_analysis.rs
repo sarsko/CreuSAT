@@ -4,16 +4,10 @@ use creusot_contracts::*;
 
 use crate::{assignments::*, clause::*, conflict_analysis::*, formula::*, lit::*, trail::*};
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::{logic::*, logic_clause::*};
 
-#[cfg_attr(
-    all(
-        any(trust_conflict, trust_all, trust_logic),
-        all(not(untrust_all), not(untrust_all_logic))
-    ),
-    trusted
-)]
+#[cfg_attr(feature = "trust_conflict_logic", trusted)]
 #[logic]
 //#[requires(@v[i].idx === idx)]
 #[requires(0 <= c_idx && c_idx < c.len() && @(c)[c_idx].idx === idx &&
@@ -43,13 +37,7 @@ pub fn lemma_idx(
 }
 
 // OK [04.04] [[Doesnt check out on Mac [04.04]. Super easy on Linux]]
-#[cfg_attr(
-    all(
-        any(trust_conflict, trust_all, trust_logic),
-        all(not(untrust_all), not(untrust_all_logic))
-    ),
-    trusted
-)]
+#[cfg_attr(feature = "trust_conflict_logic", trusted)]
 #[logic]
 //#[requires(@v[i].idx === idx)]
 #[requires(0 <= c_idx && c_idx < c.len() && @(c)[c_idx].idx === idx &&
@@ -78,7 +66,6 @@ pub fn lemma_idx2(
 }
 
 /*
-//#[cfg_attr(all(any(trust_conflict, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[logic]
 #[requires(c.invariant(a.len()))]
 #[requires(c2.invariant(a.len()))]

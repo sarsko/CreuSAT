@@ -3,11 +3,11 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::logic_util::*;
 
 // Selection sort with larger elements first. Based on the one in Creusot repo by me and Xavier
-#[cfg_attr(all(any(trust_util, trust_all), not(untrust_all)), trusted)]
+#[cfg_attr(feature = "trust_util", trusted)]
 #[ensures(sorted_rev(@^v))]
 #[ensures((@^v).permutation_of(@v))]
 pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {

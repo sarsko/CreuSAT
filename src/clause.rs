@@ -4,7 +4,7 @@ use creusot_contracts::*;
 
 use crate::{assignments::*, formula::*, lit::*};
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 use crate::logic::logic_clause::*;
 
 //#[cfg_attr(not(contracts), derive(Debug))]
@@ -40,33 +40,15 @@ pub enum ClauseState {
 }
 
 impl Clause {
-    /*
-    #[cfg_attr(all(any(trust_clause, trust_all), not(untrust_all)), trusted)]
-    pub fn make_unit_clause(lit: Lit) -> Clause {
-        Clause{ rest: vec::from_elem(lit, 1) }
-    }
-    */
-
-    // TODO
-    // Better to just fix the parser. Gotta have a decent parser by delivery anyways
     #[inline]
     #[trusted]
-    //#[ensures(result.invariant(@_f.num_vars))]
-    //#[ensures((@result).len() >= 2)]
     pub fn clause_from_vec(vec: &std::vec::Vec<Lit>) -> Clause {
         Clause { rest: vec.clone() }
-        /*
-        Clause {
-            first: vec[0],
-            second: vec[1],
-            rest: vec[2..].to_vec()
-        }
-        */
     }
 
     // OK with split + split + CVC4 for 4.49 seconds on Mac
     #[inline(always)]
-    #[cfg_attr(all(any(trust_clause, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_clause", trusted)]
     #[maintains((mut self).invariant_unary_ok(@_f.num_vars))]
     #[requires((@self).len() > 0)]
     #[requires(@idx < (@self.rest).len())]
@@ -92,7 +74,7 @@ impl Clause {
 
     // They check out on Linux
     #[inline(always)]
-    #[cfg_attr(all(any(trust_clause, trust_all), not(untrust_all)), trusted)]
+    #[cfg_attr(feature = "trust_clause", trusted)]
     #[maintains((mut self).invariant_unary_ok(@_f.num_vars))]
     #[requires((@self).len() > 0)]
     #[requires(@idx < (@self.rest).len())]

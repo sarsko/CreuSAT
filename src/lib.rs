@@ -1,6 +1,8 @@
 #![feature(type_ascription)]
-#![feature(stmt_expr_attributes)]
-#![feature(proc_macro_hygiene)]
+#![cfg_attr(
+    not(feature = "contracts"),
+    feature(stmt_expr_attributes, proc_macro_hygiene)
+)]
 #![allow(unused_imports)]
 #![recursion_limit = "512"]
 extern crate creusot_contracts;
