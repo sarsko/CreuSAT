@@ -137,19 +137,15 @@ impl Decisions {
         let mut counts_with_index = vec![(0, 0); clause.rest.len()];
         let mut i = 0;
         while i < clause.rest.len() {
-            counts_with_index[i] = (self.linked_list[i].ts, clause.rest[i].idx);
+            counts_with_index[i] = (self.linked_list[clause.rest[i].idx].ts, clause.rest[i].idx);
             i += 1;
         }
         counts_with_index.sort_by_key(|k| k.0);
-        //counts_with_index.reverse();
-        //println!("{:?}", counts_with_index);
         i = 0;
-        //println!("{:?}", self.linked_list);
         while i < counts_with_index.len() {
             self.move_to_front(counts_with_index[i].1);
             i += 1;
         }
-        //println!("{:?}", self.linked_list);
     }
 
     pub fn get_next(&mut self, a: &Assignments) -> Option<usize> {
