@@ -1,4 +1,3 @@
-// Wactches is Mac OK 11.04 22.22
 extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
@@ -26,6 +25,35 @@ pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
         #[invariant(max_bound, @i <= @max && @max < @j)]
         while j < v.len() {
             if v[j].0 > v[max].0 {
+                max = j;
+            }
+            j += 1;
+        }
+        v.swap(i, max);
+        i += 1;
+    }
+}
+
+// Regular selection sort. Based on the one in Creusot repo by me and Xavier
+#[cfg_attr(feature = "trust_util", trusted)]
+#[ensures(sorted_tuple_first(@^v))]
+#[ensures((@^v).permutation_of(@v))]
+pub fn sort(v: &mut Vec<(usize, usize)>) {
+    let mut i: usize = 0;
+    let old_v = Ghost::record(&v);
+    #[invariant(proph_const, ^v === ^@old_v)]
+    #[invariant(permutation, (@v).permutation_of(@*@old_v))]
+    #[invariant(i_bound, @i <= (@v).len())]
+    #[invariant(sorted, sorted_range_tuple_first(@v, 0, @i))]
+    #[invariant(partition, partition(@v, @i))]
+    while i < v.len() {
+        let mut max = i;
+        let mut j = i + 1;
+        #[invariant(max_is_max, forall<k: Int> @i <= k && k < @j ==> (@v)[@max].0 <= (@v)[k].0)]
+        #[invariant(j_bound, @i <= @j && @j <= (@v).len())]
+        #[invariant(max_bound, @i <= @max && @max < @j)]
+        while j < v.len() {
+            if v[j].0 < v[max].0 {
                 max = j;
             }
             j += 1;

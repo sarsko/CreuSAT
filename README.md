@@ -7,17 +7,28 @@ It is formally verified using [Creusot](https://github.com/xldenis/creusot)
 
 ## What does that mean?
 
-It means that it solves the [Boolean satisfiability problem](https://en.wikipedia.org/wiki/Boolean_satisfiability_problem) and
+It means that it solves the [Boolean satisfiability problem](https://en.wikipedia.org/wiki/Boolean_satisfiability_problem)(also known as SAT) and
 that if it states that the formula is satisfiable(SAT), then we **know** that the formula is SAT, and if it states that the formula
-is unsatisfiable(UNSAT), then we **know** that the formula is UNSAT.
+is unsatisfiable(UNSAT), then we **know** that the formula is UNSAT. Also, the solver is statically proven to be free of runtime panics, which means that it cannot crash.
+
+## Ah, nice. What features does it have?
+
+It currently has the following features:
+- Clause analysis with clause learning
+- Unit propagation with two watched literals
+- The Variable Move To Front(VMTF) decision heuristic
+- Phase saving
+- Backtracking of the trail to asserting level
 
 ## Cool. Is it any good?
 
 !TODO
 
-## How do I run it?
+## Pretty impressive. How do I run it?
 
-It can be built with:
+Firstly you'll need to [get Rust](https://www.rust-lang.org/tools/install)
+
+Then afterwards, the solver can be built with:
 ```
 cargo build
 ```
@@ -33,13 +44,26 @@ where the provided file must be a correctly formatted [DIMACS CNF](https://peopl
 
 ## How do I prove the solver?
 
-1. Follow the installation procedure for [Creusot](https://github.com/xldenis/creusot#installing)
-2. Clone this repo
-3. Run:
+To prove it you'll need to have the following installed:
+1. [Rust](https://www.rust-lang.org/tools/install)
+2. [Why3](todo!) and some SMT-solvers. I recommend:
+   - Z3
+   - CVC4
+   - Alt-Ergo
+3. [Creusot](https://github.com/xldenis/creusot#installing)
+
+CreuSAT is using [Cargo Make](https://github.com/sagiegurari/cargo-make) to make building easier. It can be insalled by running:
 ```
-~/[PATH_TO_CREUSOT]/creusot/mlcfg ~/[PATH_TO_THIS_REPO]/sat/src/lib.rs > ~/[PATH_TO_THIS_REPO]/sat/mlcfgs/lib.mlcfg && ~/[PATH_TO_CREUSOT]/creusot/ide ~/[PATH_TO_THIS_REPO]/sat/mlcfgs/lib.mlcfg
+cargo install --force cargo-make
 ```
-4. Prove the solver in the Why3 IDE. It should work to select the lib.mlcfg node and press <kbd>3</kbd>
+After installing Cargo Make, simply run:
+```
+cargo make prove
+```
+
+And hopefully the Why3 IDE will appear. If not, then most likely something is not installed or pathed correctly, or I have given the wrong instructions(sorry).
+
+If the Why3 IDE appears, then it should work to press <kbd>3</kbd> and wait a bit. If you are doing the proof from scratch, then you will need to wait a while.
 
 ## Creusot seems really cool! How can I learn it?
 

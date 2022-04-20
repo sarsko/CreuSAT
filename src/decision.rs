@@ -3,34 +3,94 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::{assignments::*, formula::*, lit::*, util::sort_reverse};
+use crate::{assignments::*, formula::*, lit::*, util::*};
 
 #[cfg(feature = "contracts")]
-use crate::logic::{logic_decision::*, logic_util::*};
+use crate::logic::{logic_decision::*, logic_util::*, logic::unset};
 
-/*
 //#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Clone, Copy)]
 pub struct Node {
-    pub next: Option<usize>,
-    pub prev: Option<usize>,
+    pub next: usize,
+    pub prev: usize,
     pub ts: usize,
 }
-*/
+
+impl Default for Node {
+    #[ensures(@result.next === 0)]
+    #[ensures(@result.prev === 0)]
+    #[ensures(@result.ts   === 0)]
+    fn default() -> Self { 
+        Node {
+            next: 0,
+            prev: 0,
+            ts: 0,
+        }
+     }
+}
 
 pub struct Decisions {
     pub lit_order: Vec<usize>,
-    /*
     pub linked_list: Vec<Node>,
     timestamp: usize,
     pub start: usize,
-    pub head: usize
-    */
+    pub search: usize
 }
 
+//pub const INVALID: usize = usize::MAX;
+
 impl Decisions {
-    // OK
+    // It is possible to sacrifice some readability for a tad faster proofs here(by adding assertions).
     #[cfg_attr(feature = "trust_decision", trusted)]
     #[requires(f.invariant())]
+    #[requires(0 < @f.num_vars && @f.num_vars < @usize::MAX/2)]
+    #[requires((@lit_order).len() === @f.num_vars &&
+            forall<i: Int> 0 <= i && i < (@lit_order).len() ==>
+                @(@lit_order)[i] < @f.num_vars)]
+    #[ensures(result.invariant(@f.num_vars))]
+    pub fn make_linked_list(f: &Formula, lit_order: Vec<usize>) -> Decisions {
+        let INVALID: usize = usize::MAX;
+        let mut linked_list: Vec<Node> = vec::from_elem(Default::default(), f.num_vars);
+        let mut i: usize = 0;
+        let mut head: usize = 0;
+        #[invariant(len_ok, (@linked_list).len() == @f.num_vars)]
+        #[invariant(head_ok, @head < @f.num_vars)]
+        #[invariant(inv, forall<j: Int> 0 <= j && j < @f.num_vars ==>
+                ((@(@linked_list)[j].next == @usize::MAX || @(@linked_list)[j].next < @f.num_vars)
+                && (@(@linked_list)[j].prev == @usize::MAX || @(@linked_list)[j].prev < @f.num_vars)))]
+        while i < f.num_vars {
+            let j = lit_order[i];
+            if i == 0 {
+                if f.num_vars > 1 {
+                    linked_list[j].next = lit_order[1];
+                } else {
+                    linked_list[j].next = INVALID;
+                }
+                linked_list[j].prev = INVALID;
+                head = j;
+            } else if i == f.num_vars - 1 {
+                linked_list[j].next = INVALID;
+                linked_list[j].prev = lit_order[i - 1];
+            } else {
+                linked_list[j].next = lit_order[i + 1];
+                linked_list[j].prev = lit_order[i - 1];
+            }
+            linked_list[j].ts = f.num_vars - i;
+            i += 1;
+        }
+        Decisions {
+            lit_order: lit_order,
+            //loc_of_lit: loc_of_lit,
+            linked_list: linked_list,
+            timestamp: f.num_vars + 1,
+            start: head,
+            search: head,
+        }
+    }
+
+    #[cfg_attr(feature = "trust_decision", trusted)]
+    #[requires(f.invariant())]
+    #[requires(0 < @f.num_vars && @f.num_vars < @usize::MAX/2)]
     #[ensures(result.invariant(@f.num_vars))]
     pub fn new(f: &Formula) -> Decisions {
         let mut lit_order: Vec<usize> = vec::from_elem(0, f.num_vars);
@@ -76,132 +136,126 @@ impl Decisions {
             lit_order[i] = counts_with_index[i].1;
             i += 1;
         }
-        Decisions {
-            lit_order: lit_order,
-        }
+        Self::make_linked_list(f, lit_order)
     }
-    /*
-    pub fn new(f: &Formula) -> Decisions {
-        /*
-        let mut lit_order = vec![0; f.num_vars];
-        let mut counts = vec![0; f.num_vars];
-        let mut i = 0;
-        while i < f.num_vars {
-            let curr_clause = &f.clauses[i];
-            counts[curr_clause.first.idx] += 1;
-            counts[curr_clause.second.idx] += 1;
-            let mut j = 0;
-            while j < curr_clause.rest.len() {
-                counts[curr_clause.rest[j].idx] += 1;
-                j += 1;
-            }
-            i += 1;
-        }
-        let mut counts_with_index = vec![(0, 0); f.num_vars];
-        i = 0;
-        while i < f.num_vars {
-            counts_with_index[i] = (counts[i], i);
-            i += 1;
-        }
-        counts_with_index.sort_by_key(|k| -k.0);
-        i = 0;
-        while i < f.num_vars {
-            lit_order[i] = counts_with_index[i].1;
-            i += 1;
-        }
-        let mut linked_list = vec![Node{ next: None, prev: None, ts: 0 }; f.num_vars];
-        i = 0;
-        let mut head = 0;
-        while i < f.num_vars {
-            let j = lit_order[i];
-            if i == 0 {
-                linked_list[j].next = Some(lit_order[i + 1]);
-                linked_list[j].prev = None;
-                head = j;
-            } else if i == f.num_vars - 1 {
-                linked_list[j].next = None;
-                linked_list[j].prev = Some(lit_order[i - 1]);
+
+    #[cfg_attr(feature = "trust_decision", trusted)]
+    #[maintains((mut self).invariant(@_f.num_vars))]
+    #[requires((@self.linked_list).len() < @usize::MAX)]
+    #[ensures(@(^self).timestamp === (@self.linked_list).len() + 1)]
+    #[ensures((@(^self).linked_list).len() === (@self.linked_list).len())]
+    fn rescore(&mut self, _f: &Formula) {
+        let INVALID: usize = usize::MAX;
+        let old_self = Ghost::record(&self);
+        let mut curr_score = self.linked_list.len();
+        let mut i: usize = 0;
+        let mut curr = self.start;
+        #[invariant(curr_ok, curr == usize::MAX || @curr < (@self.linked_list).len())]
+        #[invariant(proph, ^@old_self === ^self)]
+        #[invariant(unch, forall<j: Int> 0 <= j && j < (@self.linked_list).len() ==>
+            ((@self.linked_list)[j].next === (@(@old_self).linked_list)[j].next
+            && (@self.linked_list)[j].prev === (@(@old_self).linked_list)[j].prev)
+        )]
+        #[invariant(inv, self.invariant(@_f.num_vars))]
+        while curr != INVALID {
+            self.linked_list[curr].ts = curr_score;
+            if curr_score > 0 {
+                curr_score -= 1;
             } else {
-                linked_list[j].next = Some(lit_order[i + 1]);
-                linked_list[j].prev = Some(lit_order[i - 1]);
+                break;
             }
-            linked_list[j].ts = f.num_vars - i;
-            i += 1;
+            curr = self.linked_list[curr].next;
         }
-        Decisions {
-            //lit_order: lit_order,
-            //loc_of_lit: loc_of_lit,
-            linked_list: linked_list,
-            timestamp: f.num_vars + 1,
-            start: head,
-            head: head,
-        }
-        */
+        self.timestamp = self.linked_list.len() + 1;
     }
-    */
 
     #[cfg_attr(feature = "trust_decision", trusted)]
-
-    fn move_to_front(&mut self, tomove: usize) {
-        /*
-        let old_next = self.linked_list[tomove].next;
-        match self.linked_list[tomove].prev {
-            Some(prev) => {
-                self.linked_list[prev].next = self.linked_list[tomove].next;
-            }
-            None => {assert!(tomove == self.start); return;}, // We are already head
+    #[requires((@self.linked_list).len() < @usize::MAX)]
+    #[requires(@tomove < (@self.linked_list).len())]
+    #[maintains((mut self).invariant(@_f.num_vars))]
+    fn move_to_front(&mut self, tomove: usize, _f: &Formula) {
+        let INVALID: usize = usize::MAX;
+        if tomove == self.start {
+            return;
         }
-        match old_next {
-            Some(next) => {
-                self.linked_list[next].prev = self.linked_list[tomove].prev;
-            }
-            None => {},
+        let mut moving = &mut self.linked_list[tomove];
+        let prev = moving.prev;
+        let old_next = moving.next;
+        moving.prev = INVALID;
+        moving.next = self.start;
+        moving.ts = self.timestamp;
+        if self.timestamp == usize::MAX {
+            self.rescore(_f);
+        } else {
+            self.timestamp += 1;
         }
-        self.linked_list[tomove].prev = None;
-        self.linked_list[self.start].prev = Some(tomove);
-        self.linked_list[tomove].next = Some(self.start);
-        self.linked_list[tomove].ts = self.timestamp;
-        self.timestamp += 1;
+        proof_assert!(@self.start < (@_f.num_vars));
+        self.linked_list[self.start].prev = tomove;
         self.start = tomove;
-        */
-    }
-    /*
-
-    #[cfg_attr(feature = "trust_decision", trusted)]
-
-    pub fn increment_and_move(&mut self, f: &Formula, cref: usize) {
-        let clause = &f.clauses[cref];
-        let mut i = 0;
-        while i < 8 && i < clause.rest.len() {
-            self.move_to_front(clause.rest[i].idx);
-            i += 1;
+        if prev != INVALID { // lazy, should prove
+            self.linked_list[prev].next = old_next;
+        }
+        if old_next != INVALID {
+            self.linked_list[old_next].prev = prev;
         }
         /*
-        let clause = &f.clauses[cref];
-        self.move_to_front(clause.first.idx);
-        self.move_to_front(clause.second.idx);
-        let mut i = 0;
-        while i < 3 && i < clause.rest.len() {
-            self.move_to_front(clause.rest[i].idx);
-            i += 1;
+        // Why does Satch do this? It should be impossible...?
+        if a.0.get_unchecked(tomove) >= &2 {
+            panic!();
+            self.search = tomove;
         }
         */
     }
-    */
 
     #[cfg_attr(feature = "trust_decision", trusted)]
+    #[requires(f.invariant())]
+    #[requires(a.invariant(*f))]
+    #[requires(@cref < (@f.clauses).len())]
+    #[maintains((mut self).invariant(@f.num_vars))]
+    pub fn increment_and_move(&mut self, f: &Formula, cref: usize, a: &Assignments) {
+        let clause = &f.clauses[cref];
+        let mut counts_with_index: Vec<(usize, usize)> = vec::from_elem((0, 0), clause.rest.len());
+        let old_self = Ghost::record(&self);
+        let mut i: usize = 0;
+        #[invariant(unch, @old_self === self)]
+        #[invariant(proph, ^@old_self === ^self)]
+        #[invariant(len_same, (@clause).len() === (@counts_with_index).len())]
+        #[invariant(all_less, forall<j: Int> 0 <= j && j < @i ==>
+            @(@counts_with_index)[j].1 < (@self.linked_list).len()
+        )]
+        while i < clause.rest.len() {
+            counts_with_index[i] = (self.linked_list[clause.rest[i].idx].ts, clause.rest[i].idx);
+            i += 1;
+        }
+        sort(&mut counts_with_index);
+        i = 0;
+        #[invariant(proph, ^@old_self === ^self)]
+        #[invariant(inv, self.invariant(@f.num_vars))]
+        #[invariant(len_same, (@clause).len() === (@counts_with_index).len())]
+        while i < counts_with_index.len() {
+            self.move_to_front(counts_with_index[i].1, f);
+            i += 1;
+        }
+    }
 
-    pub fn get_next(&mut self, a: &Assignments) -> Option<usize> {
-        /*
-        let mut head = Some(self.head);
-        while head != None {
-            if a.0[head.unwrap()] >= 2 {
-                self.head = head.unwrap();
-                return head;
+    #[cfg_attr(feature = "trust_decision", trusted)]
+    #[maintains((mut self).invariant(@_f.num_vars))]
+    #[requires(a.invariant(*_f))]
+    #[ensures(match result {
+        Some(k) => unset((@a)[@k]),
+        None    => true,
+    })]
+    pub fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize> {
+        let INVALID: usize = usize::MAX;
+        let mut curr = self.search;
+        #[invariant(inv, curr == usize::MAX || @curr < (@a).len())]
+        while curr != INVALID {
+            if a.0[curr] >= 2 {
+                self.search = self.linked_list[curr].next;
+                return Some(curr);
             }
-            head = self.linked_list[head.unwrap()].next;
+            curr = self.linked_list[curr].next;
         }
-        */
         return None;
     }
 }
