@@ -1,5 +1,5 @@
-use std::{ops, fmt};
 use crate::assignments::*;
+use std::{fmt, ops};
 
 #[derive(Clone, Copy, Eq, PartialEq, Hash)]
 pub struct Lit {

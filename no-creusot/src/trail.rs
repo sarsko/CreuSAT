@@ -10,7 +10,9 @@ pub enum Reason {
 }
 
 impl Default for Reason {
-    fn default() -> Self { Reason::Undefined }
+    fn default() -> Self {
+        Reason::Undefined
+    }
 }
 
 pub struct Trail {

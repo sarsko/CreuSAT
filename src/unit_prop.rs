@@ -1,20 +1,13 @@
 // Just swap missing (15.04, 16:31)
 extern crate creusot_contracts;
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
-use crate::{
-    lit::*,
-    clause::*,
-    assignments::*,
-    formula::*,
-    trail::*,
-    watches::*,
-};
+use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*, watches::*};
 
 use crate::logic::{
-    logic_clause::*,
     logic::*,
+    logic_clause::*,
     logic_trail::*, //tmp
 };
 
@@ -34,14 +27,24 @@ use crate::logic::{
 #[ensures(f.equisat(^f))]
 #[ensures((@f.clauses).len() === (@(^f).clauses).len())]
 #[ensures(match result {
-    Ok(_) => true, 
+    Ok(_) => true,
     Err(_) => (@(@(^f).clauses)[@cref])[@k].unsat(trail.assignments) && ^f === *f && *watches === ^watches
 })]
 #[ensures((@(@(^f).clauses)[@cref]).len() === (@(@f.clauses)[@cref]).len())] // ADDDED, will need proving
-fn unit_prop_check_rest(f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit) -> Result<(), ()> {
+fn unit_prop_check_rest(
+    f: &mut Formula,
+    trail: &Trail,
+    watches: &mut Watches,
+    cref: usize,
+    j: usize,
+    k: usize,
+    lit: Lit,
+) -> Result<(), ()> {
     let curr_lit = f.clauses[cref].rest[k];
-    if curr_lit.lit_unset(&trail.assignments) || curr_lit.lit_sat(&trail.assignments) { // Can swap to !unsat
-        if f.clauses[cref].rest[0].idx == lit.idx { // First
+    if curr_lit.lit_unset(&trail.assignments) || curr_lit.lit_sat(&trail.assignments) {
+        // Can swap to !unsat
+        if f.clauses[cref].rest[0].idx == lit.idx {
+            // First
             swap(f, trail, watches, cref, k, 0);
             update_watch(f, trail, watches, cref, j, 0, lit);
         } else {
@@ -104,13 +107,12 @@ fn swap_zero_one(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize)
 }
 */
 
-
 // OK on Mac
 #[cfg_attr(all(any(trust_unit_prop, trust_all), not(any(untrust_all))), trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
-#[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)] 
+#[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(@lit.idx < @f.num_vars)]
 #[requires(watches.invariant(*f))]
@@ -124,7 +126,14 @@ fn swap_zero_one(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize)
 })]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures(f.equisat(^f))]
-fn unit_prop_do_outer(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize) -> Result<bool, usize> {
+fn unit_prop_do_outer(
+    f: &mut Formula,
+    trail: &mut Trail,
+    watches: &mut Watches,
+    cref: usize,
+    lit: Lit,
+    j: usize,
+) -> Result<bool, usize> {
     let first_lit = f.clauses[cref].rest[0];
     if first_lit.lit_sat(&trail.assignments) {
         return Ok(true);
@@ -165,7 +174,7 @@ fn unit_prop_do_outer(f: &mut Formula, trail: &mut Trail, watches: &mut Watches,
                 proof_assert!((@old_trail).decisions === trail.decisions);
                 proof_assert!(*watches === *@old_w);
                 proof_assert!(*f === *@old_f);
-            },
+            }
             Ok(_) => {
                 return Ok(false);
             }
@@ -176,7 +185,7 @@ fn unit_prop_do_outer(f: &mut Formula, trail: &mut Trail, watches: &mut Watches,
     // If we have gotten here, the clause is either all false or unit
     proof_assert!((@f.clauses)[@cref].unsat(trail.assignments) || ((@(@f.clauses)[@cref])[0]).unset(trail.assignments) || ((@(@f.clauses)[@cref])[1]).unset(trail.assignments));
     if first_lit.lit_unset(&trail.assignments) {
-    //if f.clauses[cref].rest[0].lit_unset(&trail.assignments) {
+        //if f.clauses[cref].rest[0].lit_unset(&trail.assignments) {
         // zzTODOzz: Prove the runtime-check
         if second_lit.lit_unset(&trail.assignments) {
             return Ok(true);
@@ -194,9 +203,9 @@ fn unit_prop_do_outer(f: &mut Formula, trail: &mut Trail, watches: &mut Watches,
         trail.enq_assignment(step, f);
         proof_assert!(((@f.clauses)[@cref]).post_unit(trail.assignments) && true);
         proof_assert!(clause_post_with_regards_to_lit(((@f.clauses)[@cref]), trail.assignments, first_lit));
-        return Ok(true);    
+        return Ok(true);
     } else if second_lit.lit_unset(&trail.assignments) {
-    //} else if f.clauses[cref].rest[1].lit_unset(&trail.assignments) {
+        //} else if f.clauses[cref].rest[1].lit_unset(&trail.assignments) {
         proof_assert!(!(@f.clauses)[@cref].unsat(trail.assignments) && true && true);
         proof_assert!((@f.clauses)[@cref].unit(trail.assignments));
         let step = Step {
@@ -226,7 +235,6 @@ fn unit_prop_do_outer(f: &mut Formula, trail: &mut Trail, watches: &mut Watches,
     }
 }
 
-
 // OK on Mac
 #[cfg_attr(all(any(trust_unit_prop, trust_all), not(untrust_all)), trusted)]
 #[maintains((mut f).invariant())]
@@ -240,7 +248,12 @@ fn unit_prop_do_outer(f: &mut Formula, trail: &mut Trail, watches: &mut Watches,
 })]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures(f.equisat(^f))]
-fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, lit: Lit) -> Result<(), usize> {
+fn unit_prop_current_level(
+    f: &mut Formula,
+    trail: &mut Trail,
+    watches: &mut Watches,
+    lit: Lit,
+) -> Result<(), usize> {
     let mut j = 0;
     let watchidx = lit.to_watchidx();
     proof_assert!((@watches.watches).len() === 2 * @f.num_vars);
@@ -261,8 +274,10 @@ fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Wat
     while j < watches.watches[watchidx].len() {
         let cref = watches.watches[watchidx][j].cref;
         match unit_prop_do_outer(f, trail, watches, cref, lit, j) {
-            Ok(true) => { j += 1; },
-            Ok(false) => { },
+            Ok(true) => {
+                j += 1;
+            }
+            Ok(false) => {}
             Err(cref) => {
                 return Err(cref);
             }
@@ -276,15 +291,19 @@ fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Wat
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
-#[requires(@f.num_vars < @usize::MAX/2)] 
+#[requires(@f.num_vars < @usize::MAX/2)]
 #[ensures(match result {
     Ok(()) => true, // !(^f).unsat(^a),
     Err(n) => @n < (@(^f).clauses).len() && (^f).unsat((^trail).assignments) && (@(^f).clauses)[@n].unsat((^trail).assignments),
 })]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures(f.equisat(^f))]
-pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
-    let mut i = trail.curr_i; 
+pub fn unit_propagate(
+    f: &mut Formula,
+    trail: &mut Trail,
+    watches: &mut Watches,
+) -> Result<(), usize> {
+    let mut i = trail.curr_i;
     let old_trail = Ghost::record(&trail);
     let old_f = Ghost::record(&f);
     let old_w = Ghost::record(&watches);
@@ -300,7 +319,7 @@ pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches)
     while i < trail.trail.len() {
         let lit = trail.trail[i].lit;
         match unit_prop_current_level(f, trail, watches, lit) {
-            Ok(_) => {},
+            Ok(_) => {}
             Err(cref) => {
                 return Err(cref);
             }

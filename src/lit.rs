@@ -1,20 +1,13 @@
 // Watches is Mac OK 11.04 22.13
 extern crate creusot_contracts;
-use creusot_contracts::*;
-use creusot_contracts::std::*;
-
 use ::std::ops;
+use creusot_contracts::std::*;
+use creusot_contracts::*;
 
-use crate::{
-    assignments::*,
-    clause::*,
-    trail::*,
-};
+use crate::{assignments::*, clause::*, trail::*};
 
 #[cfg(contracts)]
-use crate::logic::{
-    logic_lit::*,
-};
+use crate::logic::logic_lit::*;
 
 #[derive(Clone, Copy)]
 //#[derive(Clone, Copy, Debug)]
@@ -23,7 +16,6 @@ pub struct Lit {
     pub polarity: bool,
 }
 
-
 impl Lit {
     #[inline(always)]
     #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
@@ -31,8 +23,8 @@ impl Lit {
     #[ensures(result === self.sat(*a))]
     pub fn lit_sat(self, a: &Assignments) -> bool {
         match self.polarity {
-            true  =>  (a.0[self.idx] == 1),
-            false =>  (a.0[self.idx] == 0),
+            true => (a.0[self.idx] == 1),
+            false => (a.0[self.idx] == 0),
         }
     }
 
@@ -42,8 +34,8 @@ impl Lit {
     #[ensures(result === self.unsat(*a))]
     pub fn lit_unsat(self, a: &Assignments) -> bool {
         match self.polarity {
-            true  =>  (a.0[self.idx] == 0),
-            false =>  (a.0[self.idx] == 1),
+            true => (a.0[self.idx] == 0),
+            false => (a.0[self.idx] == 1),
         }
     }
 
@@ -62,7 +54,7 @@ impl Lit {
     pub fn lit_set(self, a: &Assignments) -> bool {
         a.0[self.idx] < 2
     }
-    
+
     // Gets the index of the literal in the representation used for the watchlist
     #[cfg_attr(all(any(trust_lit, trust_all), not(untrust_all)), trusted)]
     #[requires(@self.idx < @usize::MAX/2)]
@@ -87,7 +79,7 @@ impl PartialEq for Lit {
     //#[ensures(result === (*self === *other))] // :(
     fn eq(&self, other: &Lit) -> bool {
         self.idx == other.idx && self.polarity == other.polarity
-    } 
+    }
 }
 
 impl ops::Not for Lit {

@@ -2,17 +2,25 @@
 /// It is a port of a verified WhyML solver, and is therefore
 /// an imperative implementation of a functional prgram.
 /// In other words: very naive, very slow.
-
 extern crate creusot_contracts;
 
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 struct Assignment(Vec<bool>);
-struct Lit { var: usize, value: bool }
+struct Lit {
+    var: usize,
+    value: bool,
+}
 struct Clause(Vec<Lit>);
-struct Pasn { assign: Vec<bool>, ix: usize }
-pub struct Formula { clauses: Vec<Clause>,  num_vars: usize }
+struct Pasn {
+    assign: Vec<bool>,
+    ix: usize,
+}
+pub struct Formula {
+    clauses: Vec<Clause>,
+    num_vars: usize,
+}
 
 impl Clause {
     #[predicate]
@@ -91,7 +99,10 @@ impl Clone for Pasn {
     #[trusted]
     #[ensures(*self === result)]
     fn clone(&self) -> Self {
-        Pasn { assign: self.assign.clone(), ix: self.ix }
+        Pasn {
+            assign: self.assign.clone(),
+            ix: self.ix,
+        }
     }
 }
 
@@ -168,6 +179,9 @@ pub fn solver(f: &Formula) -> bool {
         assign.push(false);
         i += 1
     }
-    let base = Pasn { assign: assign, ix: 0 };
+    let base = Pasn {
+        assign: assign,
+        ix: 0,
+    };
     inner(f, base)
 }

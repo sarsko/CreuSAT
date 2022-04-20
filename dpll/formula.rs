@@ -1,11 +1,11 @@
 extern crate creusot_contracts;
 
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
-use crate::lit::*;
-use crate::clause::*;
 use crate::assignments::*;
+use crate::clause::*;
+use crate::lit::*;
 use crate::logic::*;
 use crate::solver_dpll::*;
 
@@ -25,9 +25,9 @@ impl PartialEq for SatState {
     #[trusted] // OK
     fn eq(&self, other: &Self) -> bool {
         return match (self, other) {
-            (SatState::Unknown, SatState::Unknown)  => true,
-            (SatState::Sat,     SatState::Sat)      => true,
-            (SatState::Unsat,   SatState::Unsat)    => true,
+            (SatState::Unknown, SatState::Unknown) => true,
+            (SatState::Sat, SatState::Sat) => true,
+            (SatState::Unsat, SatState::Unsat) => true,
             _ => false,
         };
     }
@@ -77,7 +77,7 @@ impl Formula {
 
     #[predicate]
     pub fn sat(self, a: Assignments) -> bool {
-        pearlite! { 
+        pearlite! {
             self.sat_inner(@a)
         }
     }

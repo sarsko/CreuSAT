@@ -1,22 +1,16 @@
 // Assignments is Mac OK 11.04 22.17
 extern crate creusot_contracts;
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
-use crate::{
-    clause::*,
-    decision::*,
-    formula::*,
-    lit::*,
-    trail::*,
-};
+use crate::{clause::*, decision::*, formula::*, lit::*, trail::*};
 
 #[cfg(contracts)]
 use crate::logic::{
     logic::*,
     logic_assignments::*,
     logic_clause::*,
-    logic_trail::*,//{trail_invariant, long_are_post_unit_inner_new},
+    logic_trail::*, //{trail_invariant, long_are_post_unit_inner_new},
 };
 
 pub type AssignedState = u8;
@@ -46,7 +40,7 @@ impl Assignments {
     #[maintains((mut self).invariant(*_f))]
     #[requires(lit.invariant(@_f.num_vars))]
     #[requires(_f.invariant())]
-    #[requires(trail_invariant(@_t, *_f))] 
+    #[requires(trail_invariant(@_t, *_f))]
     #[requires(unset((@self)[@lit.idx]))] // Added, will break stuff further up
     #[requires(long_are_post_unit_inner(@_t, *_f, @self))]
     #[ensures(@(@^self)[@lit.idx] === 1 || @(@^self)[@lit.idx] === 0)]
@@ -58,7 +52,7 @@ impl Assignments {
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {
         let old_self = Ghost::record(&self);
         proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *self, lit));true);
-        // zzTODOzz 
+        // zzTODOzz
         //self.0[lit.idx] = lit.polarity as u8;
         if lit.polarity {
             self.0[lit.idx] = 1;

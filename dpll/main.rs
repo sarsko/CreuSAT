@@ -27,7 +27,11 @@ fn main() {
     let res = parse_cnf(filename);
     match res {
         Ok((mut clauses, num_literals)) => {
-            println!("c Parsed formula with {} clauses and {} literals", clauses.len(), num_literals);
+            println!(
+                "c Parsed formula with {} clauses and {} literals",
+                clauses.len(),
+                num_literals
+            );
             let result = preproc_and_solve(&mut clauses, num_literals);
 
             if result {
@@ -35,7 +39,7 @@ fn main() {
             } else {
                 println!("c UNSAT");
             }
-        },
+        }
         Err(e) => {
             println!("c Parser errored with message: {}", e);
         }

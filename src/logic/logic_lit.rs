@@ -1,13 +1,8 @@
 extern crate creusot_contracts;
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
-use crate::{
-    assignments::*,
-    clause::*,
-    lit::*,
-    trail::*,
-};
+use crate::{assignments::*, clause::*, lit::*, trail::*};
 
 // Logic
 impl Lit {
@@ -30,7 +25,6 @@ impl Lit {
             @self.idx === @o.idx && self.polarity != o.polarity
         }
     }
-
 
     #[predicate]
     pub fn lit_in_internal(self, c: Seq<Lit>) -> bool {

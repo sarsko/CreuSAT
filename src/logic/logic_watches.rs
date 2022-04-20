@@ -1,15 +1,10 @@
 extern crate creusot_contracts;
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
-use crate::{
-    formula::*,
-    watches::*,
-};
+use crate::{formula::*, watches::*};
 
-use crate::logic::{
-    logic_util::*,
-};
+use crate::logic::logic_util::*;
 
 // The n is here so that we can "hijack" it during initialization
 #[predicate]
@@ -18,7 +13,7 @@ pub fn watches_invariant_internal(w: Seq<Vec<Watcher>>, n: Int, f: Formula) -> b
         2 * n === w.len() &&
         forall<i: Int> 0 <= i && i < w.len() ==>
         forall<j: Int> 0 <= j && j < (@w[i]).len() ==>
-            (@(@w[i])[j].cref < (@f.clauses).len() && 
+            (@(@w[i])[j].cref < (@f.clauses).len() &&
             (@(@f.clauses)[@(@w[i])[j].cref]).len() > 1)
     }
 }
@@ -27,7 +22,7 @@ pub fn watches_invariant_internal(w: Seq<Vec<Watcher>>, n: Int, f: Formula) -> b
 pub fn watcher_crefs_in_range(w: Seq<Watcher>, f: Formula) -> bool {
     pearlite! {
         forall<j: Int> 0 <= j && j < w.len() ==>
-            @w[j].cref < (@f.clauses).len() 
+            @w[j].cref < (@f.clauses).len()
     }
 }
 
@@ -40,19 +35,30 @@ pub fn watches_crefs_in_range(w: Seq<Vec<Watcher>>, f: Formula) -> bool {
 }
 
 #[logic]
-#[cfg_attr(all(any(trust_watch, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
+#[cfg_attr(
+    all(
+        any(trust_watch, trust_all, trust_logic),
+        all(not(untrust_all), not(untrust_all_logic))
+    ),
+    trusted
+)]
 #[requires(w.len() > 0)]
 #[requires(watcher_crefs_in_range(w, f))]
 #[ensures(watcher_crefs_in_range(pop(w), f))]
 pub fn lemma_pop_watch_maintains_watcher_invariant(w: Seq<Watcher>, f: Formula) {}
 
 #[logic]
-#[cfg_attr(all(any(trust_watch, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
+#[cfg_attr(
+    all(
+        any(trust_watch, trust_all, trust_logic),
+        all(not(untrust_all), not(untrust_all_logic))
+    ),
+    trusted
+)]
 #[requires(watcher_crefs_in_range(w, f))]
 #[requires(@o.cref < (@f.clauses).len())]
 #[ensures(watcher_crefs_in_range(w.push(o), f))]
 pub fn lemma_push_maintains_watcher_invariant(w: Seq<Watcher>, f: Formula, o: Watcher) {}
-
 
 impl Watches {
     #[predicate]

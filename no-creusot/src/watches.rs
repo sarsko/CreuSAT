@@ -1,8 +1,8 @@
+use crate::assignments::*;
 use crate::formula::*;
 use crate::lit::*;
-use crate::assignments::*;
-use crate::trail::*;
-use crate::solver::*; // TODO move
+use crate::solver::*;
+use crate::trail::*; // TODO move
 
 // Lets try this scheme and see how well it fares
 // Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
@@ -28,7 +28,7 @@ impl Watches {
     // We watch the negated literal for updates
     #[inline]
     pub fn add_watcher(&mut self, lit: Lit, cref: usize) {
-        self.watches[lit.to_neg_watchidx()].push(Watcher {cref});
+        self.watches[lit.to_neg_watchidx()].push(Watcher { cref });
     }
 
     // This requires the literal to be watched, otherwise it will panic
@@ -52,7 +52,7 @@ impl Watches {
         match self.watches[old_idx].pop() {
             Some(w) => {
                 self.watches[new_lit.to_neg_watchidx()].push(w);
-            },
+            }
             None => {
                 unreachable!();
             }
@@ -100,7 +100,7 @@ impl Watches {
                     }
                     seen.insert(cref, seen[&cref] + 1);
                 }
-                else { 
+                else {
                     seen.insert(cref, 1);
                 }
             }
@@ -113,7 +113,7 @@ impl Watches {
                 if seen.contains_key(&cref) {
                     panic! ("{}\nThere exists duplicate watching of the same literal for the clause with cref: {:?}", s, cref);
                 }
-                else { 
+                else {
                     seen.insert(cref, 1);
                 }
             }

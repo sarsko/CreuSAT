@@ -1,20 +1,12 @@
 // Decision is Mac OK 11.04 22.13
 extern crate creusot_contracts;
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
-use crate::{
-    formula::*,
-    lit::*,
-    assignments::*,
-    util::{sort_reverse},
-};
+use crate::{assignments::*, formula::*, lit::*, util::sort_reverse};
 
 #[cfg(contracts)]
-use crate::logic::{
-    logic_util::*,
-    logic_decision::*,
-};
+use crate::logic::{logic_decision::*, logic_util::*};
 
 /*
 //#[derive(Debug, Clone, PartialEq, Eq)]
@@ -44,7 +36,7 @@ impl Decisions {
         let mut lit_order: Vec<usize> = vec::from_elem(0, f.num_vars);
         let mut counts: Vec<usize> = vec::from_elem(0, f.num_vars);
         let mut counts_with_index: Vec<(usize, usize)> = vec::from_elem((0, 0), f.num_vars);
-        let mut i: usize = 0;  
+        let mut i: usize = 0;
         #[invariant(i_bound, @i <= (@f.clauses).len())]
         #[invariant(counts_len1, (@counts).len() == @f.num_vars)]
         while i < f.clauses.len() {
@@ -55,7 +47,7 @@ impl Decisions {
             #[invariant(counts_len, (@counts).len() == @f.num_vars)]
             while j < curr_clause.rest.len() {
                 // Okay this is obviously provable, a vector cannot be longer than usize, and we don't allow duplicates, so we will
-                // never overflow, even if every clause contains a literal, 
+                // never overflow, even if every clause contains a literal,
                 if counts[curr_clause.rest[j].idx] < usize::MAX - 1 {
                     counts[curr_clause.rest[j].idx] += 1;
                 }
@@ -66,32 +58,34 @@ impl Decisions {
         i = 0;
         #[invariant(i_bound, @i <= @f.num_vars)]
         #[invariant(counts_with_idx_len, (@counts_with_index).len() == @f.num_vars)]
-        #[invariant(second_ok, forall<j: Int> 0 <= j && j < @f.num_vars ==> 
+        #[invariant(second_ok, forall<j: Int> 0 <= j && j < @f.num_vars ==>
             @(@counts_with_index)[j].1 < @f.num_vars)]
         while i < f.num_vars {
             counts_with_index[i] = (counts[i], i);
             i += 1;
         }
         sort_reverse(&mut counts_with_index);
-        proof_assert!(forall<j: Int> 0 <= j && j < (@counts_with_index).len() ==> 
+        proof_assert!(forall<j: Int> 0 <= j && j < (@counts_with_index).len() ==>
             @(@counts_with_index)[j].1 < @f.num_vars);
         i = 0;
         #[invariant(i_bound, 0 <= @i && @i <= @f.num_vars)]
         #[invariant(lit_order_len, (@lit_order).len() == @f.num_vars)]
-        #[invariant(second_ok, forall<j: Int> 0 <= j && j < @f.num_vars ==> 
+        #[invariant(second_ok, forall<j: Int> 0 <= j && j < @f.num_vars ==>
             @(@lit_order)[j] < @f.num_vars)]
         while i < f.num_vars {
             lit_order[i] = counts_with_index[i].1;
             i += 1;
         }
-        Decisions{lit_order: lit_order}
+        Decisions {
+            lit_order: lit_order,
+        }
     }
     /*
     pub fn new(f: &Formula) -> Decisions {
         /*
         let mut lit_order = vec![0; f.num_vars];
         let mut counts = vec![0; f.num_vars];
-        let mut i = 0;  
+        let mut i = 0;
         while i < f.num_vars {
             let curr_clause = &f.clauses[i];
             counts[curr_clause.first.idx] += 1;
@@ -170,7 +164,7 @@ impl Decisions {
         self.start = tomove;
         */
     }
-/*
+    /*
 
     #[cfg_attr(all(any(trust_decision, trust_all), not(untrust_all)), trusted)]
     pub fn increment_and_move(&mut self, f: &Formula, cref: usize) {

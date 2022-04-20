@@ -1,22 +1,19 @@
 extern crate creusot_contracts;
 
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
 use crate::{
     assignments::*,
     clause::*,
     formula::*,
     lit::*,
+    trail::*,
     //solver_dpll::*,
     watches::*,
-    trail::*,
 };
 
-use crate::logic::{
-    logic::*,
-    logic_assignments::*,
-};
+use crate::logic::{logic::*, logic_assignments::*};
 
 #[cfg(contracts)]
 impl Model for Formula {
@@ -90,7 +87,6 @@ pub fn equisat_compatible_inner(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) ->
     }
 }
 
-
 // Predicates
 impl Formula {
     // New stuff:
@@ -152,7 +148,13 @@ impl Formula {
     }
 
     #[predicate]
-    #[cfg_attr(all(any(trust_formula, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
+    #[cfg_attr(
+        all(
+            any(trust_formula, trust_all, trust_logic),
+            all(not(untrust_all), not(untrust_all_logic))
+        ),
+        trusted
+    )]
     #[ensures(result === self.invariant_old())]
     pub fn invariant(self) -> bool {
         pearlite! {
@@ -195,10 +197,16 @@ impl Formula {
     }
 
     #[predicate]
-    #[cfg_attr(all(any(trust_formula, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
+    #[cfg_attr(
+        all(
+            any(trust_formula, trust_all, trust_logic),
+            all(not(untrust_all), not(untrust_all_logic))
+        ),
+        trusted
+    )]
     #[ensures(result === self.sat_inner(@a))]
     pub fn sat(self, a: Assignments) -> bool {
-        pearlite! { 
+        pearlite! {
             //self.sat_inner(@a)
             formula_sat_inner(@self, @a)
         }
@@ -222,7 +230,7 @@ impl Formula {
     #[predicate]
     pub fn not_satisfiable(self) -> bool {
         pearlite! {
-            exists<c: Clause> (@c).len() == 0 
+            exists<c: Clause> (@c).len() == 0
             && c.equisat_extension(self)
         }
     }

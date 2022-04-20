@@ -1,19 +1,24 @@
 use crate::assignments::*;
 use crate::clause::*;
-use crate::formula::*;
-use crate::lit::*;
-use crate::trail::*;
-use crate::watches::*;
 use crate::conflict_analysis::*;
 use crate::decision::*;
+use crate::formula::*;
+use crate::lit::*;
 use crate::luby::*;
+use crate::trail::*;
+use crate::watches::*;
 
 // Move unit prop? Dunno where. Is it propagating over the assignments, the formula, or is it its own thing.
 // Currently leaning towards assignments, but it might also be its own thing. Ill have to think some more about it.
 
 // Requires all clauses to be at least binary.
 // Returns either () if the unit propagation went fine, or a cref if a conflict was found.
-fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
+fn unit_propagate(
+    f: &mut Formula,
+    a: &mut Assignments,
+    trail: &mut Trail,
+    watches: &mut Watches,
+) -> Result<(), usize> {
     let mut i = 0;
     let d = trail.trail.len() - 1;
     while i < trail.trail[d].len() {
@@ -40,7 +45,8 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
             let clause_len = f.clauses[cref].rest.len();
             while k < clause_len {
                 let curr_lit = f.clauses[cref].rest[k];
-                if a.0[curr_lit.idx] >= 2 || a.0[curr_lit.idx] == curr_lit.polarity as u8 { // Todo change
+                if a.0[curr_lit.idx] >= 2 || a.0[curr_lit.idx] == curr_lit.polarity as u8 {
+                    // Todo change
                     if first_lit.idx == lit.idx {
                         f.clauses[cref].first = curr_lit;
                         f.clauses[cref].rest[k] = first_lit;
@@ -55,7 +61,7 @@ fn unit_propagate(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watch
                     match watches.watches[watchidx].pop() {
                         Some(w) => {
                             watches.watches[curr_lit.to_neg_watchidx()].push(w);
-                        },
+                        }
                         None => {
                             unreachable!();
                         }
@@ -90,7 +96,13 @@ pub fn learn_unit(a: &mut Assignments, trail: &mut Trail, lit: Lit, decisions: &
     trail.enq_assignment(lit, Reason::Unit);
 }
 
-fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut Watches, decisions: &mut Decisions) -> bool {
+fn solve(
+    f: &mut Formula,
+    a: &mut Assignments,
+    trail: &mut Trail,
+    watches: &mut Watches,
+    decisions: &mut Decisions,
+) -> bool {
     let mut restart_delay = 10000;
     let mut num_conflicts = 0;
     let scale = 128;
@@ -98,10 +110,14 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
     loop {
         loop {
             match unit_propagate(f, a, trail, watches) {
-                Ok(_) => { break; },
+                Ok(_) => {
+                    break;
+                }
                 Err(cref) => {
                     match analyze_conflict(f, a, trail, cref) {
-                        Conflict::Ground => { return false; },
+                        Conflict::Ground => {
+                            return false;
+                        }
                         Conflict::Unit(lit) => {
                             //num_conflicts += 1;
                             num_conflicts = 0;
@@ -117,9 +133,9 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
                             trail.enq_assignment(lit, Reason::Long(cref));
                         }
                     }
-                },
+                }
             }
-        }    
+        }
         if num_conflicts >= restart_delay {
             num_conflicts = 0;
             restart_delay += scale * luby.advance();
@@ -131,7 +147,7 @@ fn solve(f: &mut Formula, a: &mut Assignments, trail: &mut Trail, watches: &mut 
             trail.enq_assignment(lit, Reason::Decision);
         } else {
             return true;
-        } 
+        }
     }
 }
 
@@ -149,5 +165,11 @@ pub fn solver(f: &mut Formula, units: &Vec<Lit>) -> bool {
     for unit in units {
         learn_unit(&mut assignments, &mut trail, *unit, &mut decisions);
     }
-    solve(f, &mut assignments, &mut trail, &mut watches, &mut decisions)
+    solve(
+        f,
+        &mut assignments,
+        &mut trail,
+        &mut watches,
+        &mut decisions,
+    )
 }

@@ -1,10 +1,10 @@
 extern crate creusot_contracts;
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
+use crate::assignments::*;
 use crate::formula::*;
 use crate::lit::*;
-use crate::assignments::*;
 use crate::util::*;
 
 /*
@@ -30,9 +30,9 @@ impl Decisions {
     #[predicate]
     pub fn invariant(self, n: Int) -> bool {
         pearlite! {
-            (@self.lit_order).len() === n && 
+            (@self.lit_order).len() === n &&
             forall<i: Int> 0 <= i && i < (@self.lit_order).len() ==>
-                @(@self.lit_order)[i] < n 
+                @(@self.lit_order)[i] < n
         }
     }
 }
@@ -45,7 +45,7 @@ impl Decisions {
         let mut lit_order: Vec<usize> = vec::from_elem(0, f.num_vars);
         let mut counts: Vec<usize> = vec::from_elem(0, f.num_vars);
         let mut counts_with_index: Vec<(usize, usize)> = vec::from_elem((0, 0), f.num_vars);
-        let mut i: usize = 0;  
+        let mut i: usize = 0;
         #[invariant(i_bound, @i <= (@f.clauses).len())]
         #[invariant(counts_len1, (@counts).len() == @f.num_vars)]
         while i < f.clauses.len() {
@@ -56,7 +56,7 @@ impl Decisions {
             #[invariant(counts_len, (@counts).len() == @f.num_vars)]
             while j < curr_clause.rest.len() {
                 // Okay this is obviously provable, a vector cannot be longer than usize, and we don't allow duplicates, so we will
-                // never overflow, even if every clause contains a literal, 
+                // never overflow, even if every clause contains a literal,
                 // "ugly" runtime check. No way that a formula ever has more than 2^64 instances of a variable, but no way to guarantee
                 // that it doesn't either. Runtime is not dominated by this function anyways, and it doesn't affect correctness.
                 if counts[curr_clause.rest[j].idx] < usize::MAX - 1 {
@@ -85,14 +85,16 @@ impl Decisions {
             lit_order[i] = counts_with_index[i].1;
             i += 1;
         }
-        Decisions{lit_order: lit_order}
+        Decisions {
+            lit_order: lit_order,
+        }
     }
     /*
     pub fn new(f: &Formula) -> Decisions {
         /*
         let mut lit_order = vec![0; f.num_vars];
         let mut counts = vec![0; f.num_vars];
-        let mut i = 0;  
+        let mut i = 0;
         while i < f.num_vars {
             let curr_clause = &f.clauses[i];
             counts[curr_clause.first.idx] += 1;

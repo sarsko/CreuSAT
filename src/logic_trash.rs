@@ -1,4 +1,3 @@
-
 /*
 #[logic]
 #[requires(c.no_duplicate_indexes())]
@@ -142,7 +141,14 @@ pub fn lemma_resolvent_of_equisat_extension_is_equisat2(f: (Seq<Clause>, Int), c
 #[requires(c3.resolvent_of_idx2(c, c2, idx, c_idx))]
 #[requires(eventually_sat_complete_no_ass(f))]
 #[ensures(eventually_sat_complete_no_ass(((f.0).push(c3), f.1)))]
-pub fn lemma_sat_gives_sat_double_index(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, idx: Int, c_idx: Int) {
+pub fn lemma_sat_gives_sat_double_index(
+    f: (Seq<Clause>, Int),
+    c: Clause,
+    c2: Clause,
+    c3: Clause,
+    idx: Int,
+    c_idx: Int,
+) {
     lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
     //lemma_sub_clause_not_sat2(c, c2, c3, a);
     //lemma_sub_clause_sat2(c, c2, c3, a, idx);
@@ -155,8 +161,15 @@ pub fn lemma_sat_gives_sat_double_index(f: (Seq<Clause>, Int), c: Clause, c2: Cl
 #[requires(c2.in_formula_inner(f))]
 #[requires(c3.resolvent_of_idx2(c, c2, idx, c_idx))]
 //#[ensures(equisat_compatible_inner(f, (f.0.push(c3), f.1)))]
-#[ensures(equisat_extension_inner(c3, f))] 
-pub fn lemma_extended_formula_is_equisat_compatible_new(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, idx: Int, c_idx: Int) {
+#[ensures(equisat_extension_inner(c3, f))]
+pub fn lemma_extended_formula_is_equisat_compatible_new(
+    f: (Seq<Clause>, Int),
+    c: Clause,
+    c2: Clause,
+    c3: Clause,
+    idx: Int,
+    c_idx: Int,
+) {
     lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
     //lemma_not_sat_gives_not_sat2(f, c, c2, c3, idx, a);
     //lemma_sat_gives_sat2(f, c, c2, c3, idx, a);
@@ -169,14 +182,19 @@ pub fn lemma_extended_formula_is_equisat_compatible_new(f: (Seq<Clause>, Int), c
 #[requires(c2.in_formula_inner(f))]
 #[requires(c3.resolvent_of_idx(c, c2, idx))]
 //#[ensures(equisat_compatible_inner(f, (f.0.push(c3), f.1)))]
-#[ensures(equisat_extension_inner(c3, f))] 
-pub fn lemma_extended_formula_is_equisat_compatible2(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, idx: Int, a: Assignments) {
+#[ensures(equisat_extension_inner(c3, f))]
+pub fn lemma_extended_formula_is_equisat_compatible2(
+    f: (Seq<Clause>, Int),
+    c: Clause,
+    c2: Clause,
+    c3: Clause,
+    idx: Int,
+    a: Assignments,
+) {
     lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
     //lemma_not_sat_gives_not_sat2(f, c, c2, c3, idx, a);
     //lemma_sat_gives_sat2(f, c, c2, c3, idx, a);
 }
-
-
 
 //#[trusted]
 #[logic]
@@ -186,7 +204,14 @@ pub fn lemma_extended_formula_is_equisat_compatible2(f: (Seq<Clause>, Int), c: C
 #[requires(c3.resolvent_of_idx2(c, c2, idx, c_idx))]
 #[ensures(equisat_extension_inner(c3, f))]
 //#[ensures(equisat_compatible_inner(f, (f.0.push(c3), f.1)))]
-pub fn lemma_resolvent_of_equisat_extension_is_equisat_new(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, idx: Int, c_idx: Int) {
+pub fn lemma_resolvent_of_equisat_extension_is_equisat_new(
+    f: (Seq<Clause>, Int),
+    c: Clause,
+    c2: Clause,
+    c3: Clause,
+    idx: Int,
+    c_idx: Int,
+) {
     lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
     lemma_not_sat_gives_not_sat(f, c, c2, c3);
     lemma_sat_gives_sat_double_index(f, c, c2, c3, idx, c_idx);
@@ -199,11 +224,18 @@ pub fn lemma_resolvent_of_equisat_extension_is_equisat_new(f: (Seq<Clause>, Int)
 #[requires(c.in_formula_inner(f))]
 #[requires(c2.in_formula_inner(f))]
 #[requires(c3.resolvent_of(c, c2, k, m))]
-#[ensures(equisat_extension_inner(c, f))] 
-pub fn lemma_resolvent_of_in_is_equisat(f: (Seq<Clause>, Int),  c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: Assignments) {
-    lemma_extended_formula_is_equisat_compatible(f,  c, c2, c3, k, m);
+#[ensures(equisat_extension_inner(c, f))]
+pub fn lemma_resolvent_of_in_is_equisat(
+    f: (Seq<Clause>, Int),
+    c: Clause,
+    c2: Clause,
+    c3: Clause,
+    k: Int,
+    m: Int,
+    a: Assignments,
+) {
+    lemma_extended_formula_is_equisat_compatible(f, c, c2, c3, k, m);
 }
-
 
 #[trusted] // OK
 #[logic]
@@ -211,9 +243,16 @@ pub fn lemma_resolvent_of_in_is_equisat(f: (Seq<Clause>, Int),  c: Clause, c2: C
 #[requires(c.in_formula_inner(f))]
 #[requires(c2.in_formula_inner(f))]
 #[requires(c3.resolvent_of_idx(c, c2, idx))]
-#[ensures(equisat_extension_inner(c, f))] 
-pub fn lemma_resolvent_of_in_is_equisat2(f: (Seq<Clause>, Int),  c: Clause, c2: Clause, c3: Clause, idx: Int, a: Assignments) {
-    lemma_extended_formula_is_equisat_compatible2(f,  c, c2, c3, idx, a);
+#[ensures(equisat_extension_inner(c, f))]
+pub fn lemma_resolvent_of_in_is_equisat2(
+    f: (Seq<Clause>, Int),
+    c: Clause,
+    c2: Clause,
+    c3: Clause,
+    idx: Int,
+    a: Assignments,
+) {
+    lemma_extended_formula_is_equisat_compatible2(f, c, c2, c3, idx, a);
 }
 
 //#[trusted]
@@ -234,7 +273,6 @@ pub fn lemma_res_km_idx(c: Clause, c2: Clause, c3: Clause, k: Int, m: Int, a: As
 #[requires(c3.resolvent_of_idx(c, c2, idx))]
 #[ensures(exists<k: Int, m: Int> c3.resolvent_of(c, c2, k, m))]
 pub fn lemma_res_idx_to_km(c: Clause, c2: Clause, c3: Clause, idx: Int, a: Assignments) {}
-
 
 // trail garbo
 #[logic]
@@ -270,15 +308,15 @@ pub fn lemma_res_idx_to_km(c: Clause, c2: Clause, c3: Clause, idx: Int, a: Assig
 )]
 */
 /*
-#[requires(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
-    (@f.clauses)[i].post_unit_inner(@a) !lit.lit_in((@f.clauses)[@k] ==> 
+#[requires(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==>
+    (@f.clauses)[i].post_unit_inner(@a) !lit.lit_in((@f.clauses)[@k] ==>
     (@f.clauses)[i].post_unit_inner((@a).set(@lit.idx, 3u8))
 )]
 */
 /*
-#[requires(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
-    (@f.clauses)[i].post_unit_inner(@a) ==> 
-    (@f.clauses)[i].post_unit_inner((@a).set(@lit.idx, 0u8)) 
+#[requires(forall<i: Int> 0 <= i && i < (@f.clauses).len() ==>
+    (@f.clauses)[i].post_unit_inner(@a) ==>
+    (@f.clauses)[i].post_unit_inner((@a).set(@lit.idx, 0u8))
 )]
 */
 #[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 3u8)))]
@@ -287,12 +325,12 @@ pub fn lemma_res_idx_to_km(c: Clause, c2: Clause, c3: Clause, idx: Int, a: Assig
 fn lemma_assign_unwrapped(v: Seq<Step>, f: Formula, a: Assignments, lit: Lit, cref: Int) {}
 
 /*
-        forall<j: Int> 0 <= j && j < trail.len() ==> match
-        trail[j].reason { 
-            Reason::Long(k) => { clause_post_with_regards_to_inner((@f.clauses)[@k], a, j) },
-                _ => true,
-            }
-            */
+forall<j: Int> 0 <= j && j < trail.len() ==> match
+trail[j].reason {
+    Reason::Long(k) => { clause_post_with_regards_to_inner((@f.clauses)[@k], a, j) },
+        _ => true,
+    }
+    */
 //#[trusted]
 #[logic]
 #[requires(t.invariant(f))]
@@ -304,8 +342,8 @@ fn lemma_assign_unwrapped(v: Seq<Step>, f: Formula, a: Assignments, lit: Lit, cr
     !l.lit_idx_in((@f.clauses)[@(@t.trail)[i].lit.idx])
 )]
 fn lemma_last_doesnt_exist_anywhere_else(t: NTrail, f: Formula, l: Lit) {
-        t.lit_not_in_less(f);
-        t.lit_is_unique();
+    t.lit_not_in_less(f);
+    t.lit_is_unique();
 }
 
 //#[trusted] // OK
@@ -336,7 +374,7 @@ fn lemma_assign_newest(v: Seq<Step>, f: Formula, a: Assignments, lit: Lit) {}
 #[logic]
 //#[requires(trail_invariant(v, f))]
 //#[requires(crefs_in_range(v, f))]
-//#[requires(a.invariant(f))] 
+//#[requires(a.invariant(f))]
 #[requires(t.invariant(f))]
 #[requires(f.invariant())]
 #[requires(lit.invariant(@f.num_vars))]
@@ -364,7 +402,6 @@ fn lemma_assign_maintains_post_att(t: NTrail, f: Formula, lit: Lit) {}
 //#[ensures(is_backtrackable_inner(
 //    pop(@t.trail),(@t.assignments).set(@(@t.trail)[(@t.trail).len() - 1].lit.idx, 3u8), f))]
 fn lemma_backtrack_ok_with_backtrackable(t: NTrail, f: Formula, l: Lit) {}
-
 
 #[logic]
 #[requires(t.invariant(f))]
@@ -428,24 +465,24 @@ match (@t.trail)[i].reason {
 )]
 fn lemma_trail_post_old(f: Formula, a: Assignments, lit: Lit, t: NTrail) {}
 
-    #[predicate]
-    pub fn is_backtrackable(self, f: Formula) -> bool {
-        pearlite! {
-            is_backtrackable_inner(@self.trail, @self.assignments, f)
-        }
+#[predicate]
+pub fn is_backtrackable(self, f: Formula) -> bool {
+    pearlite! {
+        is_backtrackable_inner(@self.trail, @self.assignments, f)
     }
+}
 
-    // This doesn't work because the slicing of the trail is nonesense
-    /*
-    #[predicate]
-    pub fn is_backtrackable_forall(self, f: Formula) -> bool {
-        pearlite! {
-            forall<i: Int> 0 <= i && i < (@self.trail).len() ==>
-                is_backtrackable_inner(@self.trail.subsequence(0, i), @self.assignments, f)
-            //is_backtrackable_inner(@self.trail, @self.assignments, f)
-        }
+// This doesn't work because the slicing of the trail is nonesense
+/*
+#[predicate]
+pub fn is_backtrackable_forall(self, f: Formula) -> bool {
+    pearlite! {
+        forall<i: Int> 0 <= i && i < (@self.trail).len() ==>
+            is_backtrackable_inner(@self.trail.subsequence(0, i), @self.assignments, f)
+        //is_backtrackable_inner(@self.trail, @self.assignments, f)
     }
-    */
+}
+*/
 
 //#[trusted] // OK
 #[logic]

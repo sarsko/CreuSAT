@@ -1,18 +1,17 @@
 extern crate creusot_contracts;
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
-use crate::lit::*;
 use crate::clause::*;
-use crate::logic::*;
-use crate::formula::*;
 use crate::decision::*;
+use crate::formula::*;
+use crate::lit::*;
+use crate::logic::*;
 use crate::trail::*;
 
 pub type AssignedState = u8;
 
 pub struct Assignments(pub Vec<AssignedState>, pub usize);
-
 
 #[cfg(contracts)]
 impl Model for Assignments {
@@ -60,9 +59,9 @@ pub fn assignments_invariant(a: Seq<AssignedState>, f: Formula) -> bool {
         @f.num_vars === a.len()
     }
 }
- 
+
 // Predicates
-impl Assignments { 
+impl Assignments {
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
@@ -183,7 +182,7 @@ impl Assignments {
     #[requires((@t.trail).len() > 0)]
     #[ensures((@(^t).trail).len() === (@t.trail).len())]
     #[ensures((*self).compatible(^self))]
-    #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))] 
+    #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))]
     #[ensures((result === ClauseState::Unit)    ==> (@f.clauses)[@i].unit(*self) && !(self).complete())]
     #[ensures((result === ClauseState::Sat)     ==> (@f.clauses)[@i].sat(^self) && @self === @^self)]
     #[ensures((result === ClauseState::Unsat)   ==> (@f.clauses)[@i].unsat(^self) && @self === @^self)]
@@ -194,7 +193,7 @@ impl Assignments {
         let old_a = Ghost::record(&self);
         proof_assert!(^self === ^@old_a);
         match clause.check_if_unit(self, f) {
-            ClauseState::Unit => { 
+            ClauseState::Unit => {
                 // I tried both to make ClauseState::Unit contain a usize and to return a tuple, but
                 // both were slower than getting it after. Kind of makes sense since unit clauses are
                 // rare and we on average have to traverse n/2 lits to find the unit lit. If I make formula
@@ -207,7 +206,7 @@ impl Assignments {
                 if lit.polarity {
                     self.0[lit.idx] = 1;
                 } else {
-                    self.0[lit.idx] = 0;    
+                    self.0[lit.idx] = 0;
                 }
                 t.enq_assignment(lit, Reason::Unit, f);
                 proof_assert!(@^self == (@*@old_a).set(@lit.idx, bool_to_assignedstate(lit.polarity)));
@@ -215,8 +214,8 @@ impl Assignments {
                 proof_assert!(lemma_extensions_unsat_base_unsat(@@old_a, @lit.idx, *f); true);
                 proof_assert!(^self === ^@old_a);
                 return ClauseState::Unit;
-            },
-            o => return o
+            }
+            o => return o,
         }
     }
 
@@ -267,16 +266,19 @@ impl Assignments {
         )]
         while i < f.clauses.len() {
             match self.unit_prop_once(i, f, t) {
-                ClauseState::Sat => {},
-                ClauseState::Unsat => { return ClauseState::Unsat; },
-                ClauseState::Unit => { out = ClauseState::Unit; },
-                ClauseState::Unknown => {
-                    match out {
-                        ClauseState::Sat =>
-                            { out = ClauseState::Unknown; },
-                        _ => {},
-                    }
+                ClauseState::Sat => {}
+                ClauseState::Unsat => {
+                    return ClauseState::Unsat;
                 }
+                ClauseState::Unit => {
+                    out = ClauseState::Unit;
+                }
+                ClauseState::Unknown => match out {
+                    ClauseState::Sat => {
+                        out = ClauseState::Unknown;
+                    }
+                    _ => {}
+                },
             }
             i += 1
         }
@@ -307,12 +309,18 @@ impl Assignments {
         #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) ==> f.eventually_sat_complete(*self))]
         loop {
             match self.unit_propagate(f, t) {
-                ClauseState::Sat     => { return Some(true); },
-                ClauseState::Unsat   => { return Some(false); },
-                ClauseState::Unknown => { return None; }
-                ClauseState::Unit    => { }, // Continue
+                ClauseState::Sat => {
+                    return Some(true);
+                }
+                ClauseState::Unsat => {
+                    return Some(false);
+                }
+                ClauseState::Unknown => {
+                    return None;
+                }
+                ClauseState::Unit => {} // Continue
             }
-        } 
+        }
     }
 
     #[trusted] // TMP
@@ -327,13 +335,13 @@ impl Assignments {
     #[ensures((@(^trail).trail).len() === @level)]
     #[ensures(forall<j: Int> 0 <= j && j < @level ==> 
         (@(^trail).trail)[j] === (@trail.trail)[j])] // new
-        /*
-    #[ensures((^trail).assignments_invariant(^self))]
-    #[ensures(forall<j: Int> @level <= j && j < (@trail.trail).len() ==> 
-        forall<i: Int> 0 <= i && i < (@(@trail.trail)[j]).len() ==> 
-            @(@(^self))[@(@(@trail.trail)[j])[i].idx] === 2)]
-        //(@(^trail).trail)[j].assigned(^self))]
-        */
+                                                     /*
+                                                     #[ensures((^trail).assignments_invariant(^self))]
+                                                     #[ensures(forall<j: Int> @level <= j && j < (@trail.trail).len() ==>
+                                                         forall<i: Int> 0 <= i && i < (@(@trail.trail)[j]).len() ==>
+                                                             @(@(^self))[@(@(@trail.trail)[j])[i].idx] === 2)]
+                                                         //(@(^trail).trail)[j].assigned(^self))]
+                                                         */
     pub fn cancel_until(&mut self, trail: &mut Trail, level: usize, _f: &Formula) {
         let mut i: usize = trail.trail.len();
         let old_self = Ghost::record(&self);
@@ -391,7 +399,7 @@ impl Assignments {
     //#[requires((@self)[@lit.idx] >= 2)] // This is a correctness req
     #[ensures((^self).invariant(@_f.num_vars))]
     #[ensures(@(@^self)[@lit.idx] === 1 || @(@^self)[@lit.idx] === 0)]
-    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
+    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() &&
     j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
     #[requires(0 <= @lit.idx && @lit.idx < (@self).len())]
     #[ensures(
@@ -401,7 +409,7 @@ impl Assignments {
         }
     )]
     //#[ensures(self.compatible(^self))]
-    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() && 
+    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() &&
         j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
     #[ensures((@^self).len() === (@self).len())]
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula) {

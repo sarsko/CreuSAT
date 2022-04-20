@@ -1,16 +1,16 @@
 extern crate creusot_contracts;
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
-use crate::lit::*;
 use crate::assignments::*;
 use crate::formula::*;
+use crate::lit::*;
 use crate::logic::*;
 
 pub struct Clause {
     //pub first: Lit,
     //pub second: Lit,
-    pub rest: Vec<Lit>
+    pub rest: Vec<Lit>,
 }
 
 #[cfg(contracts)]
@@ -19,7 +19,7 @@ impl Model for Clause {
 
     #[logic]
     fn model(self) -> Self::ModelTy {
-        self.rest.model()//.push(self.first)//.push(self.second)
+        self.rest.model() //.push(self.first)//.push(self.second)
     }
 }
 
@@ -36,9 +36,9 @@ impl Clause {
     pub fn unit_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             self.vars_in_range(a.len()) &&
-                !self.sat_inner(a) && 
+                !self.sat_inner(a) &&
                     exists<i: Int> 0 <= i && i < (@self).len() &&
-                        (@self)[i].unset_inner(a) && 
+                        (@self)[i].unset_inner(a) &&
                             (forall<j: Int> 0 <= j && j < (@self).len() && j != i ==>
                                 !(@self)[j].unset_inner(a))
         }
@@ -87,8 +87,8 @@ impl Clause {
 
     #[predicate]
     pub fn vars_in_range(self, n: Int) -> bool {
-        pearlite! {            
-            forall<i: Int> 0 <= i && i < (@self).len() ==> 
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@self).len() ==>
                 (@self)[i].invariant(n)
         }
     }
@@ -113,7 +113,7 @@ pub enum ClauseState {
     Sat,
     Unsat,
     Unit,
-    Unknown
+    Unknown,
 }
 
 impl Clause {
@@ -142,7 +142,7 @@ impl Clause {
         let mut k: usize = 0;
         let mut unassigned: usize = 0;
         #[invariant(loop_invariant, 0 <= @i && @i <= (@self.rest).len())]
-        #[invariant(unass, @unassigned <= 1)] 
+        #[invariant(unass, @unassigned <= 1)]
         #[invariant(k_is_unass, (@unassigned === 0 || (@self)[@k].unset(*a)))]
         #[invariant(kk, @unassigned > 0 ==> (@self)[@k].unset(*a))]
         #[invariant(not_sat, forall<j: Int> 0 <= j && j < @i ==>
@@ -155,7 +155,8 @@ impl Clause {
             let lit = self.rest[i];
             if lit.lit_sat(a) {
                 return ClauseState::Sat;
-            } else if lit.lit_unset(a) { // Could make two different check_if_unit functions, one for pre_sat_possible and one for after
+            } else if lit.lit_unset(a) {
+                // Could make two different check_if_unit functions, one for pre_sat_possible and one for after
                 if unassigned > 0 {
                     return ClauseState::Unknown;
                 }

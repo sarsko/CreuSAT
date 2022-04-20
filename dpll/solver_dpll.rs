@@ -2,15 +2,14 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::lit::*;
-use crate::clause::*;
 use crate::assignments::*;
-use crate::formula::*;
-use crate::logic::*;
+use crate::clause::*;
 use crate::decision::*;
+use crate::formula::*;
+use crate::lit::*;
+use crate::logic::*;
 use crate::trail::*;
 use crate::watches::*;
-
 
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
@@ -61,8 +60,10 @@ pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
 #[ensures(result === false ==> !f.eventually_sat_complete(*a))]
 fn inner(f: &Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut Watches) -> bool {
     match a.do_unit_propagation(f, t) {
-        Some(n) => { return n; },
-        _ => {},
+        Some(n) => {
+            return n;
+        }
+        _ => {}
     }
     let next = a.find_unassigned(d, f);
     let dlevel = t.trail.len();
@@ -71,7 +72,10 @@ fn inner(f: &Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut
     proof_assert!(@a_cloned === @@old_a);
     t.add_level(f);
     a.0[next] = 1;
-    let lit = Lit{ idx: next, polarity: true };
+    let lit = Lit {
+        idx: next,
+        polarity: true,
+    };
     t.enq_assignment(lit, Reason::Decision, f);
     let old_a1 = a.1;
     if inner(f, a, d, t, w) {
@@ -84,7 +88,10 @@ fn inner(f: &Formula, a: &mut Assignments, d: &Decisions, t: &mut Trail, w: &mut
     a_cloned.0[next] = 0;
     //a.1 = old_a1;
     a_cloned.1 = old_a1;
-    let lit = Lit{ idx: next, polarity: false };
+    let lit = Lit {
+        idx: next,
+        polarity: false,
+    };
     t.enq_assignment(lit, Reason::Decision, f);
     //return inner(f, a, d, t, w);
     return inner(f, &mut a_cloned, d, t, w);

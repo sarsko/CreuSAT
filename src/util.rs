@@ -4,9 +4,7 @@ use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 #[cfg(contracts)]
-use crate::logic::{
-    logic_util::*,
-};
+use crate::logic::logic_util::*;
 
 // Selection sort with larger elements first. Based on the one in Creusot repo by me and Xavier
 #[cfg_attr(all(any(trust_util, trust_all), not(untrust_all)), trusted)]

@@ -5,17 +5,17 @@
 #![recursion_limit = "256"]
 extern crate creusot_contracts;
 
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
-pub mod lit;
-pub mod clause;
 pub mod assignments;
-pub mod formula;
-pub mod logic;
-pub mod solver_dpll;
-pub mod parser;
-pub mod util;
+pub mod clause;
 pub mod decision;
+pub mod formula;
+pub mod lit;
+pub mod logic;
+pub mod parser;
+pub mod solver_dpll;
 pub mod trail;
+pub mod util;
 pub mod watches;

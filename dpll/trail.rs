@@ -1,10 +1,10 @@
 extern crate creusot_contracts;
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
 use crate::assignments::*;
-use crate::lit::*;
 use crate::formula::*;
+use crate::lit::*;
 use crate::logic::*;
 
 //#[derive(Debug, Clone, PartialEq, Eq)]
@@ -17,7 +17,9 @@ pub enum Reason {
 }
 
 impl Default for Reason {
-    fn default() -> Self { Reason::Undefined }
+    fn default() -> Self {
+        Reason::Undefined
+    }
 }
 
 //#[derive(Debug)]
@@ -30,9 +32,9 @@ impl Trail {
     #[predicate]
     // Just the length bound atm
     pub fn vardata_invariant(self, n: Int) -> bool {
-        pearlite! { (@self.vardata).len() === n 
+        pearlite! { (@self.vardata).len() === n
             // This used to be correct, but isnt after we stopped wiping
-            //&& 
+            //&&
             //forall<i: Int> 0 <= i && i < (@self.vardata).len() ==>
         //@(@self.vardata)[i].0 < (@self.trail).len()
         }
@@ -41,11 +43,11 @@ impl Trail {
     #[predicate]
     // All the indexes in trail are less than f.num_vars
     pub fn trail_invariant(self, f: Formula) -> bool {
-        pearlite! { 
-            forall<i: Int> 0 <= i && i < (@self.trail).len() ==> (
-            forall<j: Int> 0 <= j && j < (@(@self.trail)[i]).len() ==>
-                0 <= @(@(@self.trail)[i])[j].idx && @(@(@self.trail)[i])[j].idx < @f.num_vars )
-            }
+        pearlite! {
+        forall<i: Int> 0 <= i && i < (@self.trail).len() ==> (
+        forall<j: Int> 0 <= j && j < (@(@self.trail)[i]).len() ==>
+            0 <= @(@(@self.trail)[i])[j].idx && @(@(@self.trail)[i])[j].idx < @f.num_vars )
+        }
     }
 
     #[predicate]
@@ -97,11 +99,10 @@ impl Trail {
         }
     }
 
-
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
-            self.vardata_invariant(@f.num_vars) && self.trail_invariant(f) &&  
+            self.vardata_invariant(@f.num_vars) && self.trail_invariant(f) &&
             self.crefs_in_range(f)
         }
     }

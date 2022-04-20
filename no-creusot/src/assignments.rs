@@ -1,7 +1,7 @@
+use crate::decision::*;
 use crate::formula::*;
 use crate::lit::*;
 use crate::trail::*;
-use crate::decision::*;
 
 // 4 is unassigned, 0 is false, 1 is true, 2 is phase saved false and 3 is phase saved true
 #[derive(Debug, Eq, PartialEq)]
@@ -34,12 +34,21 @@ impl Assignments {
 
     pub fn find_unassigned_lit(&mut self, d: &mut Decisions) -> Option<Lit> {
         return match d.get_next(self) {
-            Some(l) => { Some( Lit { idx: l, polarity: self.0[l] == 3 })},
-            None => { None }
-        }
-    }   
+            Some(l) => Some(Lit {
+                idx: l,
+                polarity: self.0[l] == 3,
+            }),
+            None => None,
+        };
+    }
 
-    pub fn cancel_until(&mut self, trail: &mut Trail, decisionlevel: usize, level: usize, d: &mut Decisions) {
+    pub fn cancel_until(
+        &mut self,
+        trail: &mut Trail,
+        decisionlevel: usize,
+        level: usize,
+        d: &mut Decisions,
+    ) {
         let mut i: usize = decisionlevel;
         let mut timestamp = d.linked_list[d.head].ts;
         let mut new_head = d.head;
@@ -50,7 +59,7 @@ impl Assignments {
                 let lit = decisions[j];
                 //trail.vardata[lit.idx] = (0, Reason::Undefined); // Might as well not wipe it
                 let curr_timestamp = d.linked_list[lit.idx].ts;
-                if  curr_timestamp > timestamp {
+                if curr_timestamp > timestamp {
                     timestamp = curr_timestamp;
                     new_head = lit.idx;
                 }

@@ -1,11 +1,11 @@
-use crate::lit::*;
 use crate::assignments::*;
+use crate::lit::*;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Clause {
     pub first: Lit,
     pub second: Lit,
-    pub rest: Vec<Lit>
+    pub rest: Vec<Lit>,
 }
 
 impl Clause {
@@ -14,7 +14,7 @@ impl Clause {
         Clause {
             first: vec[0],
             second: vec[1],
-            rest: vec[2..].to_vec()
+            rest: vec[2..].to_vec(),
         }
     }
     /*

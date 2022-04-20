@@ -4,7 +4,7 @@ use crate::formula::*;
 use crate::lit::*;
 use crate::trail::*;
 //use crate::watches::*;
-use crate::trail::{Reason::*};
+use crate::trail::Reason::*;
 
 pub enum Conflict {
     Ground,
@@ -20,8 +20,14 @@ pub fn analyze_conflict(f: &Formula, _a: &Assignments, trail: &Trail, cref: usiz
     // `seen` should be persistent across calls to `analyze_conflict`.
     // Solved by somehow keeping it in `solver`, either as a buffer or by making
     // conflict analysis a struct which is instatiated once and then kept.
-    let mut seen = vec![false; f.num_vars]; 
-    let mut out_learnt = vec![Lit{idx: 999999, polarity: false}; 1]; // I really don't like this way of reserving space.
+    let mut seen = vec![false; f.num_vars];
+    let mut out_learnt = vec![
+        Lit {
+            idx: 999999,
+            polarity: false
+        };
+        1
+    ]; // I really don't like this way of reserving space.
 
     let mut path_c = 0;
     let mut confl = cref;
@@ -72,7 +78,7 @@ pub fn analyze_conflict(f: &Formula, _a: &Assignments, trail: &Trail, cref: usiz
             k += 1;
         }
         let next = {
-            loop { 
+            loop {
                 j -= 1;
                 if seen[trail.trail[i][j].idx] {
                     break;

@@ -1,22 +1,12 @@
 // Wactches is Mac OK 11.04 22.10 and 13.04 12:25
 extern crate creusot_contracts;
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
-use crate::{
-    formula::*,
-    lit::*,
-    assignments::*,
-    trail::*,
-    clause::*,
-};
+use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*};
 
 #[cfg(contracts)]
-use crate::logic::{
-    logic_watches::*,
-    logic_util::*,
-};
-
+use crate::logic::{logic_util::*, logic_watches::*};
 
 // Lets try this scheme and see how well it fares
 // Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
@@ -45,7 +35,15 @@ pub struct Watches {
 #[requires(0 <= @k && @k < (@(@f.clauses)[@cref]).len())] // Changed
 #[requires((@(@f.clauses)[@cref]).len() >= 2)] // This was > 2 before ?
 #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)]
-pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit) {
+pub fn update_watch(
+    f: &Formula,
+    trail: &Trail,
+    watches: &mut Watches,
+    cref: usize,
+    j: usize,
+    k: usize,
+    lit: Lit,
+) {
     let watchidx = lit.to_watchidx();
     let end = watches.watches[watchidx].len() - 1;
     watches.watches[watchidx].swap(j, end);
@@ -70,13 +68,12 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
             watches.watches[curr_lit.to_neg_watchidx()].push(w);
             proof_assert!(watcher_crefs_in_range(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f));
             proof_assert!(watches.invariant(*f));
-        },
+        }
         None => {
             panic!("Impossible");
         }
     }
 }
-
 
 impl Watches {
     // OK
@@ -129,7 +126,7 @@ impl Watches {
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(f.invariant())]
     pub fn init_watches(&mut self, f: &Formula) {
-        let old_w = Ghost::record(&self); 
+        let old_w = Ghost::record(&self);
         let mut i = 0;
         #[invariant(watch_inv, self.invariant(*f))]
         #[invariant(same_len, (@self.watches).len() === 2 * @f.num_vars)]

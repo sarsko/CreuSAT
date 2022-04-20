@@ -1,18 +1,15 @@
 extern crate creusot_contracts;
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
 use crate::{
     assignments::*,
     decision::*,
     formula::*,
-    trail::{ Trail, Step },
+    trail::{Step, Trail},
 };
 
-use crate::logic::{
-    logic::*,
-    logic_formula::*,
-};
+use crate::logic::{logic::*, logic_formula::*};
 
 #[cfg(contracts)]
 impl Model for Assignments {

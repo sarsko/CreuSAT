@@ -1,3 +1,2 @@
 #[derive(Debug)]
-pub struct E {
-}
+pub struct E {}

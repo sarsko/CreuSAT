@@ -1,6 +1,6 @@
+use crate::assignments::*;
 use crate::formula::*;
 use crate::lit::*;
-use crate::assignments::*;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Node {
@@ -16,14 +16,14 @@ pub struct Decisions {
     pub linked_list: Vec<Node>,
     timestamp: usize,
     pub start: usize,
-    pub head: usize
+    pub head: usize,
 }
 
 impl Decisions {
     pub fn new(f: &Formula) -> Decisions {
         let mut lit_order = vec![0; f.num_vars];
         let mut counts = vec![0; f.num_vars];
-        let mut i = 0;  
+        let mut i = 0;
         while i < f.num_vars {
             let curr_clause = &f.clauses[i];
             counts[curr_clause.first.idx] += 1;
@@ -47,7 +47,14 @@ impl Decisions {
             lit_order[i] = counts_with_index[i].1;
             i += 1;
         }
-        let mut linked_list = vec![Node{ next: None, prev: None, ts: 0 }; f.num_vars];
+        let mut linked_list = vec![
+            Node {
+                next: None,
+                prev: None,
+                ts: 0
+            };
+            f.num_vars
+        ];
         i = 0;
         let mut head = 0;
         while i < f.num_vars {
@@ -82,13 +89,16 @@ impl Decisions {
             Some(prev) => {
                 self.linked_list[prev].next = self.linked_list[tomove].next;
             }
-            None => {assert!(tomove == self.start); return;}, // We are already head
+            None => {
+                assert!(tomove == self.start);
+                return;
+            } // We are already head
         }
         match old_next {
             Some(next) => {
                 self.linked_list[next].prev = self.linked_list[tomove].prev;
             }
-            None => {},
+            None => {}
         }
         self.linked_list[tomove].prev = None;
         self.linked_list[self.start].prev = Some(tomove);

@@ -1,11 +1,11 @@
 extern crate creusot_contracts;
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
-use crate::lit::*;
-use crate::clause::*;
 use crate::assignments::*;
+use crate::clause::*;
 use crate::formula::*;
+use crate::lit::*;
 
 #[logic]
 #[ensures(b ==> @result === 1)]
@@ -75,7 +75,7 @@ pub fn lemma_complete_and_not_unsat_implies_sat(f: Formula, a: Seq<AssignedState
 }
 */
 
-#[logic] 
+#[logic]
 #[requires(f.invariant())]
 #[requires(assignments_invariant(a, f))]
 #[requires(f.unsat_inner(a))]
@@ -87,7 +87,6 @@ pub fn lemma_not_sat_formula_implies_unsat_formula(f: Formula, a: Seq<AssignedSt
 #[requires(c.in_formula(f))]
 #[ensures(f.unsat_inner(a))]
 pub fn lemma_not_sat_clause_implies_unsat_formula(f: Formula, c: Clause, a: Seq<AssignedState>) {}
-
 
 #[logic]
 #[requires(f.invariant())]
@@ -113,7 +112,13 @@ pub fn lemma_unit_forces(c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, 
 #[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === ix) ==> (@c)[j].unsat_inner(a))]
 #[ensures(!f.eventually_sat_complete_inner(a.set(ix, flip_v(v))))]
 #[ensures(f.unsat_inner(a.set(ix, flip_v(v))))]
-pub fn lemma_unit_wrong_polarity_unsat_formula(c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState) {
+pub fn lemma_unit_wrong_polarity_unsat_formula(
+    c: Clause,
+    f: Formula,
+    a: Seq<AssignedState>,
+    ix: Int,
+    v: AssignedState,
+) {
     lemma_not_sat_formula_implies_unsat_formula(f, a);
     lemma_correct_polarity_makes_clause_sat(c, a, ix, v);
     lemma_incorrect_polarity_makes_clause_unsat(c, a, ix, v);
@@ -124,7 +129,13 @@ pub fn lemma_unit_wrong_polarity_unsat_formula(c: Clause, f: Formula, a: Seq<Ass
 #[requires(0 <= ix && ix < a.len())]
 #[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === ix && bool_to_assignedstate((@c)[j].polarity) === v)]
 #[ensures(c.sat_inner(a.set(ix, v)))]
-pub fn lemma_correct_polarity_makes_clause_sat(c: Clause, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
+pub fn lemma_correct_polarity_makes_clause_sat(
+    c: Clause,
+    a: Seq<AssignedState>,
+    ix: Int,
+    v: AssignedState,
+) {
+}
 
 #[logic]
 #[requires(!unset(v))]
@@ -138,7 +149,13 @@ pub fn lemma_correct_polarity_makes_clause_sat(c: Clause, a: Seq<AssignedState>,
 #[ensures(!(unset(a.set(ix, flip_v(v))[ix])))]
 #[ensures(c.unsat_inner(a.set(ix, flip_v(v))))]
 #[ensures(!c.sat_inner(a.set(ix, flip_v(v))))]
-pub fn lemma_incorrect_polarity_makes_clause_unsat(c: Clause, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
+pub fn lemma_incorrect_polarity_makes_clause_unsat(
+    c: Clause,
+    a: Seq<AssignedState>,
+    ix: Int,
+    v: AssignedState,
+) {
+}
 
 #[logic]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]

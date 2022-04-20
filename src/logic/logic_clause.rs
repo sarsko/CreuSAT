@@ -1,18 +1,11 @@
 extern crate creusot_contracts;
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
-use crate::{
-    assignments::*,
-    clause::*,
-    formula::*,
-    lit::*,
-};
+use crate::{assignments::*, clause::*, formula::*, lit::*};
 
 #[cfg(contracts)]
-use crate::logic::{
-    logic_formula::*,
-};
+use crate::logic::logic_formula::*;
 
 #[cfg(contracts)]
 impl Model for Clause {
@@ -20,23 +13,22 @@ impl Model for Clause {
 
     #[logic]
     fn model(self) -> Self::ModelTy {
-        self.rest.model()//.push(self.first)//.push(self.second)
+        self.rest.model() //.push(self.first)//.push(self.second)
     }
 }
 
 #[predicate]
 pub fn vars_in_range_inner(s: Seq<Lit>, n: Int) -> bool {
     pearlite! {
-        forall<i: Int> 0 <= i && i < s.len() ==> 
+        forall<i: Int> 0 <= i && i < s.len() ==>
             s[i].invariant(n)
     }
 }
 
-
 #[predicate]
 pub fn invariant_unary_ok_internal(s: Seq<Lit>, n: Int) -> bool {
     pearlite! {
-           vars_in_range_inner(s, n) 
+           vars_in_range_inner(s, n)
         && no_duplicate_indexes_inner(s)
     }
 }
@@ -44,7 +36,7 @@ pub fn invariant_unary_ok_internal(s: Seq<Lit>, n: Int) -> bool {
 #[predicate]
 pub fn invariant_internal(s: Seq<Lit>, n: Int) -> bool {
     pearlite! {
-           vars_in_range_inner(s, n) 
+           vars_in_range_inner(s, n)
         && no_duplicate_indexes_inner(s)
         //&& at_least_binary(s) // REMOVED.
     }
@@ -56,7 +48,6 @@ pub fn equisat_extension_inner(c: Clause, f: (Seq<Clause>, Int)) -> bool {
         eventually_sat_complete_no_ass(f) ==> eventually_sat_complete_no_ass((f.0.push(c), f.1))
     }
 }
-
 
 #[predicate]
 pub fn no_duplicate_indexes_inner(s: Seq<Lit>) -> bool {
@@ -77,7 +68,7 @@ impl Clause {
     #[predicate]
     pub fn post_unit_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
-            exists<i: Int> 0 <= i && i < (@self).len() && 
+            exists<i: Int> 0 <= i && i < (@self).len() &&
                 (@self)[i].sat_inner(a) && forall<j: Int> 0 <= j && j < (@self).len() &&
                 j != i ==> (@self)[j].unsat_inner(a)
         }
@@ -97,11 +88,11 @@ impl Clause {
             self.post_unit_inner(@a)
         }
     }
-    
+
     #[predicate]
     pub fn eq_assn_inner(self, a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
         pearlite! {
-            forall<i: Int> 0 <= i && i < (@self).len() ==> 
+            forall<i: Int> 0 <= i && i < (@self).len() ==>
                 a[@(@self)[i].idx] === a2[@(@self)[i].idx]
         }
     }
@@ -120,15 +111,14 @@ impl Clause {
     pub fn equisat_extension_double(self, f: Formula, f2: Formula) -> bool {
         pearlite! {
             f.invariant() && f2.invariant() &&
-            @f.num_vars === @f2.num_vars && 
+            @f.num_vars === @f2.num_vars &&
             //(@f.clauses).push(self) === (@f2.clauses) && // Push doesnt pass
             ((@f.clauses).len() + 1 === (@f2.clauses).len() &&
-            (forall<i: Int> 0 <= i && i < (@f.clauses).len() ==> 
+            (forall<i: Int> 0 <= i && i < (@f.clauses).len() ==>
             ((@f.clauses)[i]).equals((@f2.clauses)[i])) &&
             (@(@f2.clauses)[(@f2.clauses).len()-1] === @self)) &&
             f.equisat_compatible(f2)
         }
-
     }
 
     #[predicate]
@@ -136,27 +126,26 @@ impl Clause {
         pearlite! {
             /*
             // Wrong
-            forall<i: Int> 0 <= i && i < (@self.rest).len() ==> 
+            forall<i: Int> 0 <= i && i < (@self.rest).len() ==>
                 @(@self.rest)[i].idx === @(@other.rest)[i].idx ==>
                 (@self.rest)[i].polarity === (@other.rest)[i].polarity
                 */
-            forall<i: Int, j: Int> 0 <= i && i < (@self).len() && 0 <= j && j < (@other).len() ==> 
+            forall<i: Int, j: Int> 0 <= i && i < (@self).len() && 0 <= j && j < (@other).len() ==>
                 ((@(@self)[i].idx != exception &&
                 @(@self)[i].idx === @(@other)[j].idx)) ==>
                 (@self)[i].polarity === (@other)[j].polarity
         }
     }
 
-
     #[predicate]
     pub fn resolvent_of(self, c: Clause, c2: Clause, k: Int, m: Int) -> bool {
         pearlite! {
             (forall<i: Int> 0 <= i && i < (@c ).len() && i != m ==> (@c   )[i].lit_in(self)) &&
             (forall<i: Int> 0 <= i && i < (@c2).len() && i != k ==> (@c2  )[i].lit_in(self)) &&
-            (forall<i: Int> 0 <= i && i < (@self).len()         ==> ((@self)[i].lit_in(c) 
+            (forall<i: Int> 0 <= i && i < (@self).len()         ==> ((@self)[i].lit_in(c)
                                                                 ||  (@self)[i].lit_in(c2))) &&
             !(@c)[m].lit_in(self) && !(@c2)[k].lit_in(self) && // Added
-            (@c2)[k].is_opp((@c)[m])                 
+            (@c2)[k].is_opp((@c)[m])
         }
     }
 
@@ -165,7 +154,7 @@ impl Clause {
         pearlite! {
             (forall<i: Int> 0 <= i && i < (@c ).len() && @(@c )[i].idx != idx ==> (@c   )[i].lit_in(self)) &&
             (forall<i: Int> 0 <= i && i < (@c2).len() && @(@c2)[i].idx != idx ==> (@c2  )[i].lit_in(self)) &&
-            (forall<i: Int> 0 <= i && i < (@self).len()                       ==> ((@self)[i].lit_in(c) 
+            (forall<i: Int> 0 <= i && i < (@self).len()                       ==> ((@self)[i].lit_in(c)
                                                                               ||  (@self)[i].lit_in(c2))) &&
             (exists<k: Int, m: Int> 0 <= k && k < (@c2).len() && 0 <= m && m < (@c).len() &&
                 @(@c)[m].idx === idx && @(@c2)[k].idx === idx && (@c2)[k].is_opp((@c)[m]))
@@ -177,7 +166,7 @@ impl Clause {
         pearlite! {
             (forall<i: Int> 0 <= i && i < (@c ).len() && @(@c )[i].idx != idx ==> (@c   )[i].lit_in(self)) &&
             (forall<i: Int> 0 <= i && i < (@c2).len() && @(@c2)[i].idx != idx ==> (@c2  )[i].lit_in(self)) &&
-            (forall<i: Int> 0 <= i && i < (@self).len()                       ==> ((@self)[i].lit_in(c) 
+            (forall<i: Int> 0 <= i && i < (@self).len()                       ==> ((@self)[i].lit_in(c)
                                                                               ||  (@self)[i].lit_in(c2))) &&
 
             (0 <= c_idx && c_idx < (@c).len() && @(@c)[c_idx].idx === idx &&
@@ -206,9 +195,9 @@ impl Clause {
     pub fn unit_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             self.vars_in_range(a.len()) &&
-                !self.sat_inner(a) && 
+                !self.sat_inner(a) &&
                     exists<i: Int> 0 <= i && i < (@self).len() &&
-                        (@self)[i].unset_inner(a) && 
+                        (@self)[i].unset_inner(a) &&
                             (forall<j: Int> 0 <= j && j < (@self).len() && j != i ==>
                                 !(@self)[j].unset_inner(a))
         }
@@ -257,7 +246,7 @@ impl Clause {
 
     #[predicate]
     pub fn vars_in_range(self, n: Int) -> bool {
-        pearlite! {            
+        pearlite! {
             vars_in_range_inner(@self, n)
         }
     }

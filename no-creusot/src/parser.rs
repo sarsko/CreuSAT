@@ -2,12 +2,12 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
-use crate::types::*;
-use crate::solver::*;
+use crate::clause::Clause as Clause2;
 use crate::clause::*;
 use crate::formula::*;
 use crate::lit::Lit as Lit2;
-use crate::clause::Clause as Clause2;
+use crate::solver::*;
+use crate::types::*;
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where
@@ -35,18 +35,23 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                 if split.len() > 0 {
                     match split[0] {
                         "c" => {}
-                        "p" => {
-                            match split[2].parse::<i32>() {
-                                Ok(n) => { 
-                                    if num_lits_set {
-                                        return Err("Error in input file - multiple p lines".to_string());
-                                    }
-                                    num_lits_set = true;
-                                    num_literals = n },
-                                Err(_) => { return Err("Error in input file".to_string()); }
+                        "p" => match split[2].parse::<i32>() {
+                            Ok(n) => {
+                                if num_lits_set {
+                                    return Err(
+                                        "Error in input file - multiple p lines".to_string()
+                                    );
+                                }
+                                num_lits_set = true;
+                                num_literals = n
                             }
-                        }
-                        "%" => { break; }, // The Satlib files follow this convention
+                            Err(_) => {
+                                return Err("Error in input file".to_string());
+                            }
+                        },
+                        "%" => {
+                            break;
+                        } // The Satlib files follow this convention
                         _ => {
                             for e in split {
                                 match e.parse::<i32>() {
@@ -58,7 +63,12 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                                             curr_clause.push(n);
                                         }
                                     }
-                                    Err(_) => { return Err(format!("Error in input file on line {}", line_cntr.to_string())); },
+                                    Err(_) => {
+                                        return Err(format!(
+                                            "Error in input file on line {}",
+                                            line_cntr.to_string()
+                                        ));
+                                    }
                                 }
                             }
                         }
@@ -66,8 +76,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                 }
             }
         }
-    }
-    else {
+    } else {
         return Err("File not found!".to_string());
     }
     if !num_lits_set {

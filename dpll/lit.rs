@@ -1,9 +1,9 @@
 extern crate creusot_contracts;
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
-use crate::clause::*;
 use crate::assignments::*;
+use crate::clause::*;
 
 #[derive(Clone, Copy)]
 //#[derive(Clone, Copy, Debug)]
@@ -88,7 +88,6 @@ impl Lit {
             self.unsat_inner(@a)
         }
     }
-
 }
 
 impl Lit {
@@ -97,8 +96,8 @@ impl Lit {
     #[ensures(result === self.sat(*a))]
     pub fn lit_sat(self, a: &Assignments) -> bool {
         match self.polarity {
-            true  =>  (a.0[self.idx] == 1),
-            false =>  (a.0[self.idx] == 0),
+            true => (a.0[self.idx] == 1),
+            false => (a.0[self.idx] == 0),
         }
     }
 
@@ -107,8 +106,8 @@ impl Lit {
     #[ensures(result === self.unsat(*a))]
     pub fn lit_unsat(self, a: &Assignments) -> bool {
         match self.polarity {
-            true  =>  (a.0[self.idx] == 0),
-            false =>  (a.0[self.idx] == 1),
+            true => (a.0[self.idx] == 0),
+            false => (a.0[self.idx] == 1),
         }
     }
 
@@ -118,7 +117,7 @@ impl Lit {
     pub fn lit_unset(self, a: &Assignments) -> bool {
         a.0[self.idx] >= 2
     }
-    
+
     // Gets the index of the literal in the representation used for the watchlist
     #[trusted] // OK
     #[requires(@self.idx < @usize::MAX/2)]

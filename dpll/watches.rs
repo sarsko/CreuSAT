@@ -1,14 +1,13 @@
 extern crate creusot_contracts;
-use creusot_contracts::*;
 use creusot_contracts::std::*;
+use creusot_contracts::*;
 
+use crate::assignments::*;
 use crate::formula::*;
 use crate::lit::*;
-use crate::assignments::*;
 use crate::trail::*;
 //use crate::solver::*; // TODO move
 use crate::clause::*;
-
 
 // Lets try this scheme and see how well it fares
 // Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
@@ -24,7 +23,7 @@ pub struct Watches {
 #[predicate]
 pub fn watches_invariant_internal(w: Seq<Vec<Watcher>>, n: Int) -> bool {
     pearlite! {
-        2 * n === w.len() 
+        2 * n === w.len()
     }
 }
 
@@ -34,7 +33,7 @@ fn watches_invariant_internal2(w: Seq<Vec<Watcher>>, n: Int, f: Formula) -> bool
         2 * n === w.len() &&
         forall<i: Int> 0 <= i && i < w.len() ==>
         forall<j: Int> 0 <= j && j < (@w[i]).len() ==>
-            @(@w[i])[j].cref < (@f.clauses).len() && 
+            @(@w[i])[j].cref < (@f.clauses).len() &&
             (@(@f.clauses)[@(@w[i])[j].cref]).len() > 1
     }
 }
@@ -48,7 +47,7 @@ impl Watches {
             2 * @f.num_vars === (@self.watches).len() &&
             forall<i: Int> 0 <= i && i < (@self.watches).len() ==>
             forall<j: Int> 0 <= j && j < (@(@self.watches)[i]).len() ==>
-                @(@(@self.watches)[i])[j].cref < (@f.clauses).len() 
+                @(@(@self.watches)[i])[j].cref < (@f.clauses).len()
                 /*&&
                 ((@f.clauses)[@(@(@self.watches)[i])[j].cref].first.to_neg_watchidx_logic() === i ||
                 (@f.clauses)[@(@(@self.watches)[i])[j].cref].second.to_neg_watchidx_logic() === i )
@@ -122,7 +121,7 @@ impl Watches {
         match self.watches[old_idx].pop() {
             Some(w) => {
                 self.watches[new_lit.to_neg_watchidx()].push(w);
-            },
+            }
             None => {
                 panic!("Impossible");
             }
@@ -153,7 +152,7 @@ impl Watches {
     #[requires(f.invariant())]
     #[ensures((^self).invariant(*f))]
     pub fn init_watches(&mut self, f: &Formula) {
-        let old_w = Ghost::record(&self); 
+        let old_w = Ghost::record(&self);
         let mut i = 0;
         //#[invariant(watchidx, f.idxs_in_range())]  // TODO
         #[invariant(watch_inv, self.invariant(*f))]

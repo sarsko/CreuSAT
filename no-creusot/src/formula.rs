@@ -1,8 +1,7 @@
 use crate::assignments::*;
 use crate::clause::*;
-use crate::watches::*;
 use crate::lit::*;
-
+use crate::watches::*;
 
 #[derive(Debug)]
 pub struct Formula {
