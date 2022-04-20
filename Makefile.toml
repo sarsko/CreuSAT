@@ -1,0 +1,42 @@
+[tasks.build]
+disabled = true
+
+[tasks.fmt]
+disabled = true
+
+[tasks.test]
+disabled = true
+
+[tasks.cargo-creusot]
+command = "cargo"
+args = ["creusot", "--features=contracts", "${@}"]
+
+[tasks.move-cfg]
+script = '''
+[ ! -f ./target/debug/sat-rlib.mlcfg ] ||  mv ./target/debug/sat-rlib.mlcfg ./mlcfgs
+'''
+
+[tasks.gen-cfg]
+dependencies = [
+    "cargo-creusot",
+    "move-cfg",
+]
+
+[tasks.run-ide]
+script = '''
+~/creusot/ide ./mlcfgs/sat-rlib.mlcfg
+'''
+
+[tasks.prove]
+dependencies = [
+    "gen-cfg",
+    "run-ide",
+]
+
+[tasks.p]
+dependencies = [
+    "prove",
+]
+args = [
+    "${@}"
+]

@@ -28,7 +28,7 @@ fn rand_in_range(l: usize, u: usize) -> u8 {
 impl Assignments {
     // Ok
     #[inline(always)]
-    #[cfg_attr(feature = "trust_assignment", trusted)]
+    #[cfg_attr(feature = "trust_assignments", trusted)]
     #[ensures(@result === (@self).len())]
     pub fn len(&self) -> usize {
         self.0.len()
@@ -36,7 +36,7 @@ impl Assignments {
 
     // OK
     #[inline(always)]
-    #[cfg_attr(feature = "trust_assignment", trusted)]
+    #[cfg_attr(feature = "trust_assignments", trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(lit.invariant(@_f.num_vars))]
     #[requires(_f.invariant())]
@@ -67,7 +67,7 @@ impl Assignments {
     }
 
     // OK
-    #[cfg_attr(feature = "trust_assignment", trusted)]
+    #[cfg_attr(feature = "trust_assignments", trusted)]
     #[requires(f.invariant())]
     #[ensures(result.invariant(*f))]
     pub fn new(f: &Formula) -> Self {
@@ -87,7 +87,7 @@ impl Assignments {
     }
 
     // OK
-    #[cfg_attr(feature = "trust_assignment", trusted)]
+    #[cfg_attr(feature = "trust_assignments", trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(d.invariant((@self).len()))]
     #[ensures(match result {

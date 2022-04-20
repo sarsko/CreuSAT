@@ -252,7 +252,7 @@ fn inner(
     }
 }
 
-#[cfg_attr(feature = "trust_solved", trusted)]
+#[cfg_attr(feature = "trust_solver", trusted)]
 #[requires(formula.invariant())]
 #[ensures(match result {
     SatResult::Sat(assn) => { formula_sat_inner(@(^formula), @assn) && formula.equisat(^formula) },
