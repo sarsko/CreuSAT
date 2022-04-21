@@ -19,11 +19,18 @@ pub struct Lit {
 impl Lit {
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
+    #[ensures(result === self.invariant(@n))]
+    pub fn check_lit_invariant(&self, n: usize) -> bool {
+        return self.idx < n;
+    }
+
+    #[inline(always)]
+    #[cfg_attr(feature = "trust_lit", trusted)]
     #[requires(self.invariant((@a).len()))]
     #[ensures(result === self.sat(*a))]
     pub fn lit_sat(self, a: &Assignments) -> bool {
         match self.polarity {
-            true => (a.0[self.idx] == 1),
+            true  => (a.0[self.idx] == 1),
             false => (a.0[self.idx] == 0),
         }
     }
@@ -34,7 +41,7 @@ impl Lit {
     #[ensures(result === self.unsat(*a))]
     pub fn lit_unsat(self, a: &Assignments) -> bool {
         match self.polarity {
-            true => (a.0[self.idx] == 0),
+            true  => (a.0[self.idx] == 0),
             false => (a.0[self.idx] == 1),
         }
     }
