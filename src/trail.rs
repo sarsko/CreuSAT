@@ -189,8 +189,8 @@ impl Trail {
         proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
         proof_assert!(self.trail_entries_are_assigned());
 
-        //self.curr_i = level;
-        self.curr_i = self.trail.len();
+        self.curr_i = level;
+        //self.curr_i = self.trail.len();
     }
 
     // Could help it a bit in seeing that unit are sat
