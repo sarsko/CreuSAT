@@ -313,7 +313,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
 }
 
 // OK
-#[cfg_attr(feature = "trust_conflict", trusted)]
+//#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
@@ -389,12 +389,12 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
                 if cnt > 1 {
                     break;
                 }
-                //s_idx = k;
+                s_idx = k;
             }
             k += 1;
         }
         if cnt == 1 {
-            //clause.rest.swap(0, s_idx);
+            clause.rest.swap(0, s_idx);
             break;
         }
     }
@@ -405,7 +405,6 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     if clause.rest.len() == 1 {
         Conflict::Unit(clause)
     } else {
-        /*
         let mut max_i = 1;
         let mut max_level = trail.lit_to_level[clause.rest[1].idx];
         i = 2;
@@ -418,9 +417,8 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             i += 1;
         }
         clause.rest.swap(1, max_i);
-        */
-        //Conflict::Learned(max_level, clause.rest[0], clause)
-        Conflict::Learned(0, clause)
+        Conflict::Learned(max_level, clause)
+        //Conflict::Learned(0, clause)
     }
 }
 

@@ -1,4 +1,3 @@
-// Decision is Mac OK 11.04 22.13
 extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
@@ -16,7 +15,7 @@ pub struct Node {
     pub ts: usize,
 }
 
-const INVALID: usize = usize::MAX;
+//const INVALID: usize = usize::MAX;
 
 impl Default for Node {
     #[ensures(@result.next === 0)]
@@ -24,8 +23,8 @@ impl Default for Node {
     #[ensures(@result.ts   === 0)]
     fn default() -> Self { 
         Node {
-            next: 0,
-            prev: 0,
+            next: usize::MAX,
+            prev: usize::MAX,
             ts: 0,
         }
      }
@@ -50,7 +49,7 @@ impl Decisions {
                 @(@lit_order)[i] < @f.num_vars)]
     #[ensures(result.invariant(@f.num_vars))]
     pub fn make_linked_list(f: &Formula, lit_order: Vec<usize>) -> Decisions {
-        //let INVALID: usize = usize::MAX;
+        let INVALID: usize = usize::MAX;
         let mut linked_list: Vec<Node> = vec::from_elem(Default::default(), f.num_vars);
         let mut i: usize = 0;
         let mut head: usize = 0;
@@ -144,7 +143,7 @@ impl Decisions {
     #[ensures(@(^self).timestamp === (@self.linked_list).len() + 1)]
     #[ensures((@(^self).linked_list).len() === (@self.linked_list).len())]
     fn rescore(&mut self, _f: &Formula) {
-        //let INVALID: usize = usize::MAX;
+        let INVALID: usize = usize::MAX;
         let old_self = Ghost::record(&self);
         let mut curr_score = self.linked_list.len();
         let mut i: usize = 0;
@@ -173,7 +172,7 @@ impl Decisions {
     #[requires(@tomove < (@self.linked_list).len())]
     #[maintains((mut self).invariant(@_f.num_vars))]
     fn move_to_front(&mut self, tomove: usize, _f: &Formula) {
-        //let INVALID: usize = usize::MAX;
+        let INVALID: usize = usize::MAX;
         if tomove == self.start {
             return;
         }
@@ -206,38 +205,6 @@ impl Decisions {
         */
     }
     
-    /*
-    fn move_to_front(&mut self, tomove: usize, _f: &Formula) {
-        //let INVALID: usize = usize::MAX;
-        unsafe {
-            if tomove == self.start {
-                return;
-            }
-            let mut moving = &mut self.linked_list.get_unchecked_mut(tomove);
-            let prev = moving.prev;
-            let old_next = moving.next;
-            moving.prev = INVALID;
-            moving.next = self.start;
-            moving.ts = self.timestamp;
-            self.timestamp += 1;
-            self.linked_list.get_unchecked_mut(self.start).prev = tomove;
-            self.start = tomove;
-            self.linked_list.get_unchecked_mut(prev).next = old_next;
-            if old_next != INVALID {
-                self.linked_list.get_unchecked_mut(old_next).prev = prev;
-            }
-            /*
-            // Why does Satch do this? It should be impossible...?
-            if a.0.get_unchecked(tomove) >= &2 {
-                panic!();
-                self.search = tomove;
-            }
-            */
-        }
-    }
-    */
-
-    /*
     #[cfg_attr(feature = "trust_decision", trusted)]
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
@@ -258,8 +225,10 @@ impl Decisions {
             counts_with_index[i] = (self.linked_list[clause.rest[i].idx].ts, clause.rest[i].idx);
             i += 1;
         }
-        //sort(&mut counts_with_index);
-        counts_with_index.sort_by_key(|k| k.0);
+        // TODO: Check actual speed. I believe selection sort is the slowest. Only need permut property.
+        //insertion_sort(&mut counts_with_index);
+        sort(&mut counts_with_index);
+        //counts_with_index.sort_by_key(|k| k.0);
         i = 0;
         #[invariant(proph, ^@old_self === ^self)]
         #[invariant(inv, self.invariant(@f.num_vars))]
@@ -269,24 +238,7 @@ impl Decisions {
             i += 1;
         }
     }
-    */
-    pub fn increment_and_move(&mut self, f: &Formula, cref: usize, a: &Assignments) {
-        let clause = &f.clauses[cref];
-        let mut counts_with_index = vec![(0, 0); clause.rest.len()];
-        let mut i = 0;
-        while i < clause.rest.len() {
-            counts_with_index[i] = (self.linked_list[clause.rest[i].idx].ts, clause.rest[i].idx);
-            i += 1;
-        }
-        counts_with_index.sort_by_key(|k| k.0);
-        i = 0;
-        while i < counts_with_index.len() {
-            self.move_to_front(counts_with_index[i].1, f);
-            i += 1;
-        }
-    }
 
-    /*
     #[cfg_attr(feature = "trust_decision", trusted)]
     #[maintains((mut self).invariant(@_f.num_vars))]
     #[requires(a.invariant(*_f))]
@@ -315,21 +267,6 @@ impl Decisions {
                 return Some(i);
             }
             i += 1;
-        }
-        return None;
-    }
-    */
-    pub fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize> {
-        //let INVALID: usize = usize::MAX;
-        let mut curr = self.search;
-        while curr != INVALID {
-            unsafe {
-                if a.0.get_unchecked(curr) >= &2 {
-                    self.search = self.linked_list.get_unchecked(curr).next;
-                    return Some(curr);
-                }
-                curr = self.linked_list.get_unchecked(curr).next;
-            }
         }
         return None;
     }

@@ -81,7 +81,6 @@ impl Trail {
                 return step.lit.idx;
             }
             None => {
-                panic!();
                 // Could add a req on trail len and prove that this doesn't happen, but
                 // not sure if it really is needed.
                 proof_assert!(@self.trail == @(@old_t).trail);
@@ -217,7 +216,7 @@ impl Trail {
     #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
     #[ensures(match step.reason {
         Reason::Long(k) => clause_post_with_regards_to_lit((@_f.clauses)[@k], (^self).assignments, step.lit),
-        _ => true
+        _               => true
     })]
     #[ensures((@(^self).trail).len() === 1 + (@self.trail).len())]
     #[ensures((^self).decisions === self.decisions)] // added

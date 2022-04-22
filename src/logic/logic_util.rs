@@ -31,16 +31,16 @@ pub fn sorted(s: Seq<usize>) -> bool {
 }
 
 #[predicate]
-pub fn sorted_range_tuple_first(s: Seq<(usize, usize)>, l: Int, u: Int) -> bool {
+pub fn sorted_range_tuple_zeroth(s: Seq<(usize, usize)>, l: Int, u: Int) -> bool {
     pearlite! {
         forall<i: Int, j: Int> l <= i && i < j && j < u ==> s[i].0 <= s[j].0
     }
 }
 
 #[predicate]
-pub fn sorted_tuple_first(s: Seq<(usize, usize)>) -> bool {
+pub fn sorted_tuple_zeroth(s: Seq<(usize, usize)>) -> bool {
     pearlite! {
-        sorted_range_tuple_first(s, 0, s.len())
+        sorted_range_tuple_zeroth(s, 0, s.len())
     }
 }
 

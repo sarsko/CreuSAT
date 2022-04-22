@@ -82,14 +82,9 @@ impl Solver {
                 //f.reduceDB(w, t, self);
             }
             Conflict::Learned(level, clause) => {
-                let cref = f.add_clause(clause, w, t);
-                d.increment_and_move(f, cref, &t.assignments);
-
-                t.backtrack_to(level, f, d);
-                /*
                 let lit = clause.rest[0];
                 let cref = f.add_clause(clause, w, t);
-                //t.backtrack_to(level, f);
+                d.increment_and_move(f, cref, &t.assignments);
                 t.backtrack_to(level, f, d);
                 let step = Step {
                     lit: lit,
@@ -97,6 +92,7 @@ impl Solver {
                     reason: Reason::Long(cref),
                 };
                 t.enq_assignment(step, f);
+                /*
                 self.nConflicts += 1;
                 self.nLemmas += 1;
                 if self.nLemmas > self.maxLemmas {
