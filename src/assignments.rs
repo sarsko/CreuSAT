@@ -15,7 +15,7 @@ use crate::logic::{
 
 pub type AssignedState = u8;
 // A.1 is temporary
-pub struct Assignments(pub Vec<AssignedState>, pub usize);
+pub struct Assignments(pub Vec<AssignedState>);
 
 #[cfg_attr(not(untrust_perm), trusted)]
 #[ensures(@l <= @result && @result  < @u)]
@@ -83,41 +83,6 @@ impl Assignments {
             assign.push(n);
             i += 1
         }
-        Assignments(assign, 0)
-    }
-
-    // OK
-    #[cfg_attr(feature = "trust_assignments", trusted)]
-    #[maintains((mut self).invariant(*_f))]
-    #[requires(d.invariant((@self).len()))]
-    #[ensures(match result {
-        Some(res) => @res < (@self).len() && unset((@self)[@res]),
-        None => self.complete(),
-    })]
-    #[ensures(@self === @^self)]
-    pub fn find_unassigned(&mut self, d: &Decisions, _f: &Formula) -> Option<usize> {
-        let mut i: usize = self.1;
-        #[invariant(i_bound, @i <= (@d.lit_order).len())]
-        while i < d.lit_order.len() {
-            let curr = self.0[d.lit_order[i]];
-            if curr >= 2 {
-                //let b = curr != 2;
-                self.1 = i + 1;
-                //return Some(Lit{ idx: d.lit_order[i], polarity: b });
-                return Some(d.lit_order[i]);
-            }
-            i += 1;
-        }
-        // Strictly speaking this is an unecessary runtime check, but it only gets run at most once and it
-        // greatly simplifies the proof.
-        i = 0;
-        #[invariant(prev, forall<j: Int> 0 <= j && j < @i ==> !unset((@self)[j]))]
-        while i < self.0.len() {
-            if self.0[i] >= 2 {
-                return Some(i);
-            }
-            i += 1;
-        }
-        None
+        Assignments(assign)
     }
 }

@@ -3,7 +3,7 @@ use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 use crate::{
-    assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, lit::*, logic::*,
+    assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, lit::*,
     trail::*, unit_prop::*, watches::*,
 };
 
@@ -32,6 +32,12 @@ pub struct Solver {
     pub initialLen: usize,
     pub incReduceDb: usize,
 }
+/*
+if (S->fast > (S->slow / 100) * 125) {                        // If fast average is substantially larger than slow average
+    //        printf("c restarting after %i conflicts (%i %i) %i\n", S->res, S->fast, S->slow, S->nLemmas > S->maxLemmas);
+            S->res = 0; S->fast = (S->slow / 100) * 125; restart (S);   // Restart and update the averages
+            if (S->nLemmas > S->maxLemmas) reduceDB (S, 6); } }
+            */
 
 impl Solver {
     pub fn new(f: &Formula) -> Solver {
@@ -48,6 +54,7 @@ impl Solver {
     #[maintains((mut f).invariant())]
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut w).invariant(mut f))]
+    #[maintains((mut d).invariant(@f.num_vars))]
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(@cref < (@f.clauses).len())]
     #[requires((@f.clauses)[@cref].unsat(t.assignments))] // added
@@ -58,7 +65,7 @@ impl Solver {
         Some(true)  => { true },
         None        => { true },
     })]
-    fn handle_conflict(&mut self, f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches) -> Option<bool> {
+    fn handle_conflict(&mut self, f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches, d: &mut Decisions) -> Option<bool> {
         let res = analyze_conflict(f, t, cref);
         match res {
             Conflict::Ground => {
@@ -67,7 +74,7 @@ impl Solver {
             Conflict::Unit(clause) => {
                 // Have to do a proof that it isnt already unit?
                 let cref = f.add_unit(clause, t);
-                match t.learn_unit(cref, f) {
+                match t.learn_unit(cref, f, d) {
                     Err(_) => return Some(true),
                     Ok(_)  => {},
                 }
@@ -75,17 +82,13 @@ impl Solver {
                 //f.reduceDB(w, t, self);
             }
             Conflict::Learned(level, clause) => {
-                // Okay so doing a full search restart every time is a lot less slow than expected
-                // and is very simple. If I make the proof of resolution from init to empty clause/
-                // ground conflict work, then everything else can be treated as optimizations
-
                 let cref = f.add_clause(clause, w, t);
+                d.increment_and_move(f, cref, &t.assignments);
 
-                t.backtrack_to(level, f);
+                t.backtrack_to(level, f, d);
                 /*
                 let lit = clause.rest[0];
                 let cref = f.add_clause(clause, w, t);
-                d.increment_and_move(f, cref, &t.assignments);
                 //t.backtrack_to(level, f);
                 t.backtrack_to(level, f, d);
                 let step = Step {
@@ -111,6 +114,7 @@ impl Solver {
     #[maintains((mut f).invariant())]
     #[maintains((mut w).invariant(mut f))]
     #[maintains((mut t).invariant(mut f))]
+    #[maintains((mut d).invariant(@f.num_vars))]
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(d.invariant(@f.num_vars))] // d is here because it will later become mutable and updated in handle_conflict
     #[ensures(@f.num_vars === @(^f).num_vars)]
@@ -122,13 +126,13 @@ impl Solver {
     fn unit_prop_step(
         &mut self,
         f: &mut Formula,
-        d: &Decisions,
+        d: &mut Decisions,
         t: &mut Trail,
         w: &mut Watches,
     ) -> ConflictResult {
         return match unit_propagate(f, t, w) {
             Ok(_)     => ConflictResult::Ok,
-            Err(cref) => match self.handle_conflict(f, t, cref, w) {
+            Err(cref) => match self.handle_conflict(f, t, cref, w, d) {
                 Some(false) => ConflictResult::Ground,
                 Some(true)  => ConflictResult::Err,
                 None        => ConflictResult::Continue,
@@ -141,7 +145,7 @@ impl Solver {
     #[maintains((mut f).invariant())]
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut w).invariant(mut f))]
-    #[requires(d.invariant(@f.num_vars))]
+    #[maintains((mut d).invariant(@f.num_vars))]
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[ensures(match result {
         Some(false) => { (^f).not_satisfiable() },
@@ -150,18 +154,21 @@ impl Solver {
     })]
     #[ensures(@f.num_vars === @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
-    fn unit_prop_loop(&mut self, f: &mut Formula, d: &Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
+    fn unit_prop_loop(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
         let old_f = Ghost::record(&f);
         let old_t = Ghost::record(&t);
         let old_w = Ghost::record(&w);
+        let old_d = Ghost::record(&d);
         #[invariant(maintains_f, f.invariant())]
         #[invariant(maintains_t, t.invariant(*f))]
         #[invariant(maintains_w, w.invariant(*f))]
+        #[invariant(maintains_d, d.invariant(@f.num_vars))]
         #[invariant(equi, (@old_f).equisat(*f))]
         #[invariant(num_vars, @f.num_vars === @(@old_f).num_vars)]
         #[invariant(prophf, ^f === ^@old_f)]
         #[invariant(propht, ^t === ^@old_t)]
         #[invariant(prophw, ^w === ^@old_w)]
+        #[invariant(prophd, ^d === ^@old_d)]
         loop {
             match self.unit_prop_step(f, d, t, w) {
                 ConflictResult::Ok       => { return Some(true); },
@@ -177,26 +184,27 @@ impl Solver {
     #[maintains((mut f).invariant())]
     #[maintains((mut trail).invariant(mut f))]
     #[maintains((mut w).invariant(mut f))]
+    #[maintains((mut d).invariant(@f.num_vars))]
     #[requires(d.invariant(@f.num_vars))]
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[ensures(@f.num_vars === @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
     #[ensures(match result {
         SatResult::Sat(_)   => { (^f).sat((^trail).assignments)
-                            && ((^trail).assignments).complete() }, // Do I really need this for anything?
+                            &&   ((^trail).assignments).complete() }, // Do I really need this for anything?
         SatResult::Unsat    => { (^f).not_satisfiable() },
         SatResult::Unknown  => { true }
         SatResult::Err      => { true }
     })]
-    fn outer_loop(&mut self, f: &mut Formula, d: &Decisions, trail: &mut Trail, w: &mut Watches) -> SatResult {
+    fn outer_loop(&mut self, f: &mut Formula, d: &mut Decisions, trail: &mut Trail, w: &mut Watches) -> SatResult {
         match self.unit_prop_loop(f, d, trail, w) {
             Some(false) => return SatResult::Unsat,
             None        => return SatResult::Err,
             _           => {}
         }
         //proof_assert!(!a.complete() || !f.unsat(*a)); // Need to get from unit_prop_loop
-        //match d.get_next(&trail.assignments) {
-        match trail.assignments.find_unassigned(d, f) {
+        match d.get_next(&trail.assignments, f) {
+        //match trail.assignments.find_unassigned(d, f) {
             Some(next) => {
                 //trail.enq_decision(lit, f);
                 trail.enq_decision(next, f);
@@ -227,6 +235,7 @@ impl Solver {
     #[requires(decisions.invariant(@formula.num_vars))]
     #[requires(trail.invariant(*formula))]
     #[requires(watches.invariant(*formula))]
+    #[requires(decisions.invariant(@formula.num_vars))]
     #[ensures(match result {
         SatResult::Sat(v) => { (^formula).sat_inner(@v) && formula.equisat(^formula) && formula.eventually_sat_complete_no_ass()},
         SatResult::Unsat => { (^formula).not_satisfiable() && formula.equisat(^formula) }
@@ -246,9 +255,10 @@ impl Solver {
         #[invariant(maintains_f, formula.invariant())]
         #[invariant(maintains_t, trail.invariant(*formula))]
         #[invariant(maintains_w, watches.invariant(*formula))]
+        #[invariant(maintains_d, decisions.invariant(@formula.num_vars))]
         #[invariant(prophf, ^formula === ^@old_f)]
         loop {
-            match self.outer_loop(formula, &decisions, &mut trail, &mut watches) {
+            match self.outer_loop(formula, &mut decisions, &mut trail, &mut watches) {
                 SatResult::Unknown => {}, // continue
                 SatResult::Sat(_)  => { return SatResult::Sat(trail.assignments.0); },
                 o                  => { return o; },
@@ -270,18 +280,10 @@ pub fn solver(formula: &mut Formula) -> SatResult {
         o                  => { return o },
     }
     let mut trail = Trail::new(formula, Assignments::new(formula));
-    if formula.num_vars >= usize::MAX / 2 {
-        return SatResult::Err;
-    }
-    // Should do a check for if num_vars is correct and everything here. Ah well, todo
-    if formula.clauses.len() == 0 {
-        let a: Vec<AssignedState> = Vec::new();
-        return SatResult::Sat(a);
-    }
-    let decisions = Decisions::new(formula);
+    let mut decisions = Decisions::new(formula);
     let mut watches = Watches::new(formula);
     watches.init_watches(formula);
-    match trail.learn_units(formula) {
+    match trail.learn_units(formula, &mut decisions) {
         Some(cref) => {
             if derive_empty_formula(formula, &trail, cref) {
                 return SatResult::Unsat;

@@ -39,7 +39,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                 if split.len() > 0 {
                     match split[0] {
                         "c" => {}
-                        "p" => match split[2].parse::<i32>() {
+                        "p" => match split[2].parse::<usize>() {
                             Ok(n) => {
                                 if num_lits_set {
                                     return Err(
@@ -90,7 +90,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
     if curr_clause.len() > 0 {
         return Err("Error in input file - last clause not terminated".to_string());
     }
-    Ok((out_clauses, num_literals as usize))
+    Ok((out_clauses, num_literals))
 }
 
 #[cfg(not(feature = "contracts"))]
