@@ -312,8 +312,11 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
     None
 }
 
-// OK
-//#[cfg_attr(feature = "trust_conflict", trusted)]
+// Had to add swapping to make vmtf work. Need to prove that swapping is fine.
+// Probably gonna restore old analyze_conflict and move it out.
+// (in other words gonna make a function make_asserting_clause() from
+// equisat clause to equisat clause)
+#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
@@ -352,7 +355,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     }
     let mut i = trail.trail.len();
     let mut clause = f.clauses[cref].clone();
-    let mut s_idx = 0;
+    let mut s_idx: usize = 0;
     #[invariant(clause_vars, clause.invariant_unary_ok(@f.num_vars))]
     #[invariant(clause_equi, equisat_extension_inner(clause, @f))]
     #[invariant(clause_unsat, clause.unsat(trail.assignments))]
@@ -379,9 +382,11 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             &trail.assignments,
         );
         //resolve_mut(f, &mut clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
+        s_idx = 0;
         let mut k: usize = 0;
         let mut cnt: usize = 0;
         #[invariant(k_bound, @k <= (@clause.rest).len())]
+        #[invariant(s_idx_ok, @s_idx <= @k)]
         #[invariant(cnt_bound, @cnt <= @k)]
         while k < clause.rest.len() {
             if trail.lit_to_level[clause.rest[k].idx] == decisionlevel {
@@ -405,9 +410,10 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     if clause.rest.len() == 1 {
         Conflict::Unit(clause)
     } else {
-        let mut max_i = 1;
+        let mut max_i: usize = 1;
         let mut max_level = trail.lit_to_level[clause.rest[1].idx];
         i = 2;
+        #[invariant(max_i_less, @max_i < (@clause.rest).len())]
         while i < clause.rest.len() {
             let level = trail.lit_to_level[clause.rest[i].idx];
             if level > max_level {

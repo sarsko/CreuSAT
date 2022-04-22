@@ -18,8 +18,8 @@ pub struct Node {
 //const INVALID: usize = usize::MAX;
 
 impl Default for Node {
-    #[ensures(@result.next === 0)]
-    #[ensures(@result.prev === 0)]
+    #[ensures(@result.next === @usize::MAX)]
+    #[ensures(@result.prev === @usize::MAX)]
     #[ensures(@result.ts   === 0)]
     fn default() -> Self { 
         Node {

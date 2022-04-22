@@ -52,13 +52,15 @@ impl Trail {
     }
 
     // For some reason the post takes forever(but it solved on Mac with auto level 3)
-    //#[cfg_attr(feature = "trust_trail", trusted)]
+    #[cfg_attr(feature = "trust_trail", trusted)]
     #[inline(always)]
     #[requires(f.invariant())]
+    #[requires(@f.num_vars > 0)]
     #[requires(self.invariant_no_decision(*f))]
     #[ensures((^self).invariant_no_decision(*f))] // added since last run
     #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
+    #[ensures(@result < @f.num_vars)]
     //#[ensures((@self.trail).len() === (@(^self).trail).len() + 1)] // added
     fn backstep(&mut self, f: &Formula) -> usize {
         let old_t = Ghost::record(&self);
@@ -109,19 +111,24 @@ impl Trail {
     // Backtracks to the start of level
     pub fn backtrack_to(&mut self, level: usize, f: &Formula, d: &mut Decisions) {
         let old_t = Ghost::record(&self);
+        let old_d = Ghost::record(&d);
         let how_many = self.trail.len() - self.decisions[level];
         let des = self.decisions[level];
         let mut i: usize = 0;
         let mut curr = d.search;
-        let mut timestamp = d.linked_list[curr].ts;
+        let mut timestamp = if curr != usize::MAX { d.linked_list[curr].ts } else {0}; // revisit this later
         #[invariant(i_less2, @i <= (@(@old_t).trail).len())]
         #[invariant(i_less, i <= how_many)]
         #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
         #[invariant(inv, self.invariant_no_decision(*f))]
+        #[invariant(d_inv, d.invariant(@f.num_vars))]
         //#[invariant(len_is, (@self.trail).len() === (@(@old_t).trail).len() - @i)] // we don't care anymore
         #[invariant(proph, ^@old_t === ^self)]
+        #[invariant(proph_d, ^@old_d === ^d)]
+        #[invariant(curr_less, @curr < (@d.linked_list).len() || @curr === @usize::MAX)] // Hmm maybe change invariant
         while i < how_many {
             let idx = self.backstep(f);
+            proof_assert!(@idx < @f.num_vars);
             let curr_timestamp = d.linked_list[idx].ts;
             if curr_timestamp > timestamp {
                 timestamp = curr_timestamp;
@@ -157,7 +164,6 @@ impl Trail {
         while self.decisions.len() > 0
             && self.decisions[self.decisions.len() - 1] > self.trail.len()
         {
-            panic!();
             let old_t3 = Ghost::record(&self);
             proof_assert!(sorted(@self.decisions));
             proof_assert!((@self.decisions).len() > 0);
