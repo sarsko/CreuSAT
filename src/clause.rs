@@ -11,6 +11,7 @@ use crate::logic::logic_clause::*;
 //#[derive(Debug)]
 //#[derive(Clone)]
 pub struct Clause {
+    pub deleted: bool,
     //pub first: Lit,
     //pub second: Lit,
     pub rest: Vec<Lit>,
@@ -25,6 +26,7 @@ impl Clone for Clause {
     #[ensures(result === *self)]
     fn clone(&self) -> Self {
         Clause {
+            deleted: self.deleted,
             rest: self.rest.clone(),
         }
     }
@@ -91,7 +93,7 @@ impl Clause {
     #[inline]
     #[trusted]
     pub fn clause_from_vec(vec: &std::vec::Vec<Lit>) -> Clause {
-        Clause { rest: vec.clone() }
+        Clause { deleted: false, rest: vec.clone() }
     }
 
     // OK with split + split + CVC4 for 4.49 seconds on Mac

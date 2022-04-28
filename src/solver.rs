@@ -40,6 +40,8 @@ if (S->fast > (S->slow / 100) * 125) {                        // If fast average
             */
 
 impl Solver {
+
+    #[cfg_attr(feature = "trust_solver", trusted)]
     pub fn new(f: &Formula) -> Solver {
         Solver {
             nLemmas: 0,
@@ -50,7 +52,7 @@ impl Solver {
         }
     }
 
-    #[cfg_attr(feature = "trust_solver", trusted)]
+    //#[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut w).invariant(mut f))]
@@ -78,8 +80,8 @@ impl Solver {
                     Err(_) => return Some(true),
                     Ok(_)  => {},
                 }
-                //f.simplify_formula(w, t, self);
-                //f.reduceDB(w, t, self);
+                f.simplify_formula(w, t);
+                f.reduceDB(w, t, self);
             }
             Conflict::Learned(level, clause) => {
                 let lit = clause.rest[0];
@@ -91,14 +93,20 @@ impl Solver {
                     decision_level: level,
                     reason: Reason::Long(cref),
                 };
+                // TODO:
+                // These two have to be ensured by analysis + backtrack
+                proof_assert!((@f.clauses)[@cref].unit(t.assignments));
+                proof_assert!(unset((@t.assignments)[@step.lit.idx]));
                 t.enq_assignment(step, f);
-                /*
-                self.nConflicts += 1;
-                self.nLemmas += 1;
+                if self.nConflicts < usize::MAX {
+                    self.nConflicts += 1;
+                }
+                if self.nLemmas < usize::MAX {
+                    self.nLemmas += 1;
+                }
                 if self.nLemmas > self.maxLemmas {
                     f.reduceDB(w, t, self);
                 }
-                */
             }
             Conflict::Panic => { return Some(true); }
         }

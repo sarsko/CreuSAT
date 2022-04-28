@@ -110,6 +110,7 @@ impl Formula {
     }
     */
 
+
     // Needs some help on inlining/splitting, but checks out
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
@@ -124,6 +125,7 @@ impl Formula {
     #[ensures(self.equisat_compatible(^self))]
     #[ensures(self.equisat(^self))] // Added/changed
     #[ensures(@result === (@self.clauses).len())]
+    #[ensures((@(^self).clauses)[@result] === clause)]
     #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
     pub fn add_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
         let old_self = Ghost::record(&self);
@@ -184,6 +186,105 @@ impl Formula {
             i += 1
         }
         return true;
+    }
+
+    // OK. Xavier should check on by and look at the stupid amount of time spent on the t.invariant(*self)
+    #[cfg_attr(feature = "trust_formula", trusted)]
+    #[maintains((mut watches).invariant(mut self))]
+    #[maintains((mut self).invariant())]
+    #[maintains((*t).invariant(mut self))]
+    #[requires(@self.num_vars < @usize::MAX/2)]
+    #[requires((@(@self.clauses)[@cref]).len() > 1)]
+    #[requires(@cref < (@self.clauses).len())]
+    #[ensures(self.equisat(^self))]
+    #[ensures(self.num_vars === (^self).num_vars)]
+    fn delete_clause(&mut self, cref: usize, watches: &mut Watches, t: &Trail) {
+        let old_f = Ghost::record(&self);
+        watches.unwatch(self, t, cref, self.clauses[cref].rest[0]);
+        watches.unwatch(self, t, cref, self.clauses[cref].rest[1]);
+        self.clauses[cref].deleted = true;
+        proof_assert!(^self === ^@old_f);
+    }
+
+    // OK
+    //#[cfg_attr(feature = "trust_formula", trusted)]
+    #[maintains((mut self).invariant())]
+    #[maintains((mut watches).invariant(mut self))]
+    #[maintains((*t).invariant(mut self))]
+    #[requires(t.invariant(*self))]
+    #[requires(@self.num_vars < @usize::MAX/2)]
+    #[ensures(self.num_vars === (^self).num_vars)]
+    #[ensures(self.equisat(^self))]
+    pub fn delete_clauses(&mut self, watches: &mut Watches, t: &Trail) {
+        let old_f = Ghost::record(&self);
+        let old_w = Ghost::record(&watches);
+        // unwatch trivially SAT
+        let mut i = 0;
+        #[invariant(w_inv, watches.invariant(*self))]
+        #[invariant(t_inv, t.invariant(*self))]
+        #[invariant(f_inv, self.invariant())]
+        #[invariant(proph_w, ^watches === ^@old_w)]
+        #[invariant(proph_f, ^self === ^@old_f)]
+        #[invariant(num_vars_unch, @self.num_vars === @(@old_f).num_vars)]
+        #[invariant(equi, self.equisat(*@old_f))]
+        while i < self.clauses.len() {
+            if !self.clauses[i].deleted {
+                proof_assert!(t.assignments.invariant(*self));
+                if self.clauses[i].len() > 1 && self.is_clause_sat(i, &t.assignments) {
+                   self.delete_clause(i, watches, t);
+                }
+            }
+            i += 1;
+        }
+
+        // Ideally remove UNSAT lits
+    }
+
+    #[cfg_attr(feature = "trust_formula", trusted)]
+    #[maintains((mut self).invariant())]
+    #[maintains((mut watches).invariant(mut self))]
+    #[maintains((*t).invariant(mut self))]
+    #[requires(@self.num_vars < @usize::MAX/2)]
+    #[ensures(self.num_vars === (^self).num_vars)]
+    #[ensures(self.equisat(^self))]
+    pub fn simplify_formula(&mut self, watches: &mut Watches, t: &Trail) {
+        // unwatch trivially SAT
+        self.delete_clauses(watches, t);
+        // Ideally remove UNSAT lits
+    }
+
+    #[cfg_attr(feature = "trust_formula", trusted)]
+    #[maintains((mut self).invariant())]
+    #[maintains((mut watches).invariant(mut self))]
+    #[maintains((*t).invariant(mut self))]
+    #[requires(self.invariant())]
+    #[requires(t.invariant(*self))]
+    #[requires(@self.num_vars < @usize::MAX/2)]
+    #[ensures(self.num_vars === (^self).num_vars)]
+    #[ensures(self.equisat(^self))]
+    pub fn reduceDB(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
+        if s.maxLemmas < usize::MAX - 300 {
+            s.maxLemmas += 300;
+        }
+        s.nLemmas = 0;
+        let mut i = s.initialLen;
+        let old_f = Ghost::record(&self);
+        let old_w = Ghost::record(&watches);
+        #[invariant(w_inv, watches.invariant(*self))]
+        #[invariant(t_inv, t.invariant(*self))]
+        #[invariant(f_inv, self.invariant())]
+        #[invariant(proph_w, ^watches === ^@old_w)]
+        #[invariant(proph_f, ^self === ^@old_f)]
+        #[invariant(num_vars_unch, @self.num_vars === @(@old_f).num_vars)]
+        #[invariant(equi, self.equisat(*@old_f))]
+        while i < self.clauses.len() {
+            if !self.clauses[i].deleted {
+               if self.clauses[i].len() > 12 {
+                   self.delete_clause(i, watches, t);
+               } 
+            }
+            i += 1;
+        }
     }
 }
 

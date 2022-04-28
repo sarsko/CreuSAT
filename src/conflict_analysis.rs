@@ -194,7 +194,7 @@ fn resolve(
             (@new)[j] === (@@old_new)[j]);
         i += 1;
     }
-    let out = Clause { rest: new };
+    let out = Clause { deleted: false, rest: new };
     proof_assert!(@out === @new);
     proof_assert!(
             (forall<i: Int> 0 <= i && i < (@o).len() && @(@o)[i].idx != @idx ==> (@o)[i].lit_in_internal(@new))
@@ -312,6 +312,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
     None
 }
 
+// TODO
 // Had to add swapping to make vmtf work. Need to prove that swapping is fine.
 // Probably gonna restore old analyze_conflict and move it out.
 // (in other words gonna make a function make_asserting_clause() from
