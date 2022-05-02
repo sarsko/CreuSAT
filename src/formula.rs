@@ -264,11 +264,14 @@ impl Formula {
     #[ensures(self.equisat(^self))]
     pub fn reduceDB(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
         // Okay now I understand why MicroSat does this "weirdly"
-        // I'll have a look if it is worth to change this later
-        if s.max_lemmas < usize::MAX - 300 {
-            s.max_lemmas += 300;
+        while s.num_lemmas > s.max_lemmas {
+            if usize::MAX - 300 > s.max_lemmas {
+                s.max_lemmas += 300;
+            } else {
+                break;
+            }
         }
-        s.num_lemmas = 0;
+        //s.num_lemmas = 0;
         let mut i = s.initial_len;
         let old_f = Ghost::record(&self);
         let old_w = Ghost::record(&watches);
@@ -281,8 +284,20 @@ impl Formula {
         #[invariant(equi, self.equisat(*@old_f))]
         while i < self.clauses.len() {
             if !self.clauses[i].deleted {
-               if self.clauses[i].len() > 12 {
-                   self.delete_clause(i, watches, t);
+               //if self.clauses[i].len() > 12 {
+               if self.clauses[i].len() > 6 {
+                   let mut cnt = 0;
+                   let mut j = 0;
+                   while j < self.clauses[i].len() && cnt < 6 {
+                       if self.clauses[i].rest[j].lit_sat(&t.assignments) {
+                           cnt += 1;
+                       }
+                       j += 1;
+                   }
+                   if cnt >= 6 {
+                       s.num_lemmas -= 1;
+                       self.delete_clause(i, watches, t);
+                   }
                } 
             }
             i += 1;

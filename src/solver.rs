@@ -81,13 +81,13 @@ impl Solver {
             }
             Conflict::Unit(clause) => {
                 // Have to do a proof that it isnt already unit?
+                f.reduceDB(w, t, self); // Unsure if moving this here is good/ok
                 let cref = f.add_unit(clause, t);
                 match t.learn_unit(cref, f, d) {
                     Err(_) => return Some(true),
                     Ok(_)  => {},
                 }
                 f.simplify_formula(w, t);
-                f.reduceDB(w, t, self);
             }
             Conflict::Learned(level, clause) => {
                 let mut i = 0;
@@ -231,18 +231,16 @@ impl Solver {
         let slow = (self.slow / 100) * 125;
         if trail.decision_level() > 0 && self.fast > slow {
             self.fast = slow;
-            trail.backtrack_to(0, f, d);
             if self.num_lemmas > self.max_lemmas {
                 f.reduceDB(w, trail, self);
             }
+            trail.backtrack_to(0, f, d);
         }
         //proof_assert!(!a.complete() || !f.unsat(*a)); // Need to get from unit_prop_loop
         match d.get_next(&trail.assignments, f) {
         //match trail.assignments.find_unassigned(d, f) {
             Some(next) => {
-                //trail.enq_decision(lit, f);
                 trail.enq_decision(next, f);
-                //t.assignments.0[next] -= 2;
             }
             None => {
                 // This is gonna get broken if one changes the definition of unsat
