@@ -26,11 +26,14 @@ pub enum ConflictResult {
 }
 
 pub struct Solver {
-    pub nLemmas: usize,
-    pub maxLemmas: usize,
-    pub nConflicts: usize,
-    pub initialLen: usize,
-    pub incReduceDb: usize,
+    pub num_lemmas: usize,
+    pub max_lemmas: usize,
+    pub num_conflicts: usize,
+    pub initial_len: usize,
+    pub inc_reduce_db: usize,
+    pub fast: usize,
+    pub slow: usize,
+    pub perm_diff: Vec<usize>,
 }
 /*
 if (S->fast > (S->slow / 100) * 125) {                        // If fast average is substantially larger than slow average
@@ -44,11 +47,14 @@ impl Solver {
     #[cfg_attr(feature = "trust_solver", trusted)]
     pub fn new(f: &Formula) -> Solver {
         Solver {
-            nLemmas: 0,
-            maxLemmas: 2000,
-            nConflicts: 0,
-            initialLen: f.clauses.len(),
-            incReduceDb: 300,
+            num_lemmas: 0,
+            max_lemmas: 2000,
+            num_conflicts: 0,
+            initial_len: f.clauses.len(),
+            inc_reduce_db: 300,
+            fast: 1 << 24,
+            slow: 1 << 24,
+            perm_diff: vec::from_elem(0, f.num_vars),
         }
     }
 
@@ -84,6 +90,23 @@ impl Solver {
                 f.reduceDB(w, t, self);
             }
             Conflict::Learned(level, clause) => {
+                let mut i = 0;
+                let mut lbd = 0;
+                while i < clause.rest.len() {
+                    let level = t.lit_to_level[clause.rest[i].idx];
+                    if level == usize::MAX {
+                        panic!();
+                    }
+                    if self.perm_diff[level] != self.num_conflicts {
+                        self.perm_diff[level] = self.num_conflicts;
+                        lbd += 1;
+                    }
+                    i += 1;
+                }
+                self.fast -= self.fast >> 5;
+                self.fast += lbd << 15;
+                self.slow -= self.slow >> 15;
+                self.slow += lbd << 5;
                 let lit = clause.rest[0];
                 let cref = f.add_clause(clause, w, t);
                 d.increment_and_move(f, cref, &t.assignments);
@@ -98,14 +121,11 @@ impl Solver {
                 proof_assert!((@f.clauses)[@cref].unit(t.assignments));
                 proof_assert!(unset((@t.assignments)[@step.lit.idx]));
                 t.enq_assignment(step, f);
-                if self.nConflicts < usize::MAX {
-                    self.nConflicts += 1;
+                if self.num_conflicts < usize::MAX {
+                    self.num_conflicts += 1;
                 }
-                if self.nLemmas < usize::MAX {
-                    self.nLemmas += 1;
-                }
-                if self.nLemmas > self.maxLemmas {
-                    f.reduceDB(w, t, self);
+                if self.num_lemmas < usize::MAX {
+                    self.num_lemmas += 1;
                 }
             }
             Conflict::Panic => { return Some(true); }
@@ -205,6 +225,14 @@ impl Solver {
             Some(false) => return SatResult::Unsat,
             None        => return SatResult::Err,
             _           => {}
+        }
+        let slow = (self.slow / 100) * 125;
+        if self.fast > slow {
+            self.fast = slow;
+            trail.backtrack_to(0, f, d);
+            if self.num_lemmas > self.max_lemmas {
+                f.reduceDB(w, trail, self);
+            }
         }
         //proof_assert!(!a.complete() || !f.unsat(*a)); // Need to get from unit_prop_loop
         match d.get_next(&trail.assignments, f) {
