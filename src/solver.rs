@@ -94,9 +94,11 @@ impl Solver {
                 let mut lbd = 0;
                 while i < clause.rest.len() {
                     let level = t.lit_to_level[clause.rest[i].idx];
+                    /* 
                     if level == usize::MAX {
                         panic!();
                     }
+                    */
                     if self.perm_diff[level] != self.num_conflicts {
                         self.perm_diff[level] = self.num_conflicts;
                         lbd += 1;
@@ -227,7 +229,7 @@ impl Solver {
             _           => {}
         }
         let slow = (self.slow / 100) * 125;
-        if self.fast > slow {
+        if trail.decision_level() > 0 && self.fast > slow {
             self.fast = slow;
             trail.backtrack_to(0, f, d);
             if self.num_lemmas > self.max_lemmas {

@@ -34,9 +34,9 @@ fn main() {
             let result = preproc_and_solve(&mut clauses, num_literals);
 
             if result {
-                println!("s SAT");
+                println!("s SATISFIABLE");
             } else {
-                println!("s UNSAT");
+                println!("s UNSATISFIABLE");
             }
         }
         Err(e) => {
