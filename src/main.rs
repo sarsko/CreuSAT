@@ -6,7 +6,7 @@ fn main() {}
 #[cfg(not(feature = "contracts"))]
 fn main() {
     use sat::parser::{parse_cnf, preproc_and_solve};
-    let matches = App::new("\nA minimal SAT solver with no name")
+    let matches = App::new("\nCreuSAT")
         .author(crate_authors!("\n"))
         .about("A verified SAT solver written in Rust.")
         .usage("cargo run -- [FLAGS] --file <file>")
@@ -34,9 +34,9 @@ fn main() {
             let result = preproc_and_solve(&mut clauses, num_literals);
 
             if result {
-                println!("c SAT");
+                println!("s SAT");
             } else {
-                println!("c UNSAT");
+                println!("s UNSAT");
             }
         }
         Err(e) => {

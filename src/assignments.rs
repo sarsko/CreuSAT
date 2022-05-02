@@ -5,6 +5,7 @@ use creusot_contracts::*;
 
 use crate::{clause::*, decision::*, formula::*, lit::*, trail::*};
 
+#[allow(unused_features)]
 #[cfg(feature = "contracts")]
 use crate::logic::{
     logic::*,
