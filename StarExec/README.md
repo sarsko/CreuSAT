@@ -21,15 +21,13 @@ cargo install cargo-zigbuild
 If you are using zigbuild, run:
 
 ```
-USTFLAGS='-C relocation-model=static' cargo zigbuild --release --target
-x86_64-unknown-linux-musl
+RUSTFLAGS='-C relocation-model=static' cargo zigbuild --release --target x86_64-unknown-linux-musl
 ```
 
 The following has worked on Linux:
 
 ```
-RUSTFLAGS='-C relocation-model=static -C strip=symbols' cargo build --release
---target x86_64-unknown-linux-musl
+RUSTFLAGS='-C relocation-model=static' cargo build --release --target x86_64-unknown-linux-musl
 ```
 
 And then:

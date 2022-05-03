@@ -48,15 +48,12 @@ impl Clause {
         let mut i: usize = 0;
         #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@self)[j].invariant(@n))]
         while i < self.len() {
-            if !self.rest[i].check_lit_invariant(n){
+            if !self.rest[i].check_lit_invariant(n) {
                 return false;
             }
             i += 1;
         }
-        if self.no_duplicates() {
-            return true;
-        }
-        return false;
+        return self.no_duplicates();
     }
 
     #[cfg_attr(feature = "trust_clause", trusted)]

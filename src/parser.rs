@@ -26,6 +26,8 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
     let mut problem_type = "";
     let mut num_clauses = 0;
     */
+
+    use std::collections::HashSet;
     let mut num_literals = 0;
     let mut num_lits_set = false;
     let mut out_clauses = vec![];
@@ -37,9 +39,9 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
             if let Ok(line) = line {
                 let split = line.split(" ").filter(|e| e != &"").collect::<Vec<_>>();
                 if split.len() > 0 {
-                    match split[0] {
-                        "c" => {}
-                        "p" => match split[2].parse::<usize>() {
+                    match split[0].chars().nth(0).unwrap() {
+                        'c' => {}
+                        'p' => match split[2].parse::<usize>() {
                             Ok(n) => {
                                 if num_lits_set {
                                     return Err(
@@ -53,10 +55,11 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                                 return Err("Error in input file".to_string());
                             }
                         },
-                        "%" => {
+                        '%' => {
                             break;
                         } // The Satlib files follow this convention
                         _ => {
+                            let mut seen = HashSet::new();
                             for e in split {
                                 match e.parse::<i32>() {
                                     Ok(n) => {
@@ -64,7 +67,10 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                                             out_clauses.push(curr_clause);
                                             curr_clause = vec![];
                                         } else {
-                                            curr_clause.push(n);
+                                            if !seen.contains(&n) {
+                                                curr_clause.push(n);
+                                                seen.insert(n);
+                                            } 
                                         }
                                     }
                                     Err(_) => {
