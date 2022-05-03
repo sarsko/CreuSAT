@@ -7,6 +7,7 @@ use crate::{assignments::*, clause::*, decision::*, formula::*, lit::*, logic::*
 #[cfg(feature = "contracts")]
 use crate::logic::{logic::*, logic_trail::*, logic_util::*};
 
+#[derive(Debug)]
 pub enum Reason {
     //Undefined,
     Decision,

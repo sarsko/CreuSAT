@@ -48,8 +48,14 @@ fn unit_prop_check_rest(
             swap(f, trail, watches, cref, k, 0);
             update_watch(f, trail, watches, cref, j, 0, lit);
         } else {
+            // Old way of doing it
+            /*
             swap(f, trail, watches, cref, k, 1);
             update_watch(f, trail, watches, cref, j, 1, lit);
+            */
+            swap(f, trail, watches, cref, k, 1);
+            swap(f, trail, watches, cref, 1, 0);
+            update_watch(f, trail, watches, cref, j, 0, lit);
         }
         return Ok(()); // dont increase j
     }
@@ -218,7 +224,7 @@ fn unit_prop_do_outer(
         proof_assert!(((@f.clauses)[@cref]).post_unit(trail.assignments));
         proof_assert!(clause_post_with_regards_to_lit(((@f.clauses)[@cref]), trail.assignments, second_lit));
         // slowdown in swapping
-        //f.clauses[cref].rest.swap(0,1);
+        f.clauses[cref].rest.swap(0,1); //ADDED TODO
         //proof_assert!((@f.clauses)[@cref].unit(*a) && true);
         /*
         proof_assert!(lemma_swap_clause_no_dups(((@(@old_f).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1); true);
