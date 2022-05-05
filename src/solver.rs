@@ -229,12 +229,15 @@ impl Solver {
             _           => {}
         }
         let slow = (self.slow / 100) * 125;
-        if trail.decision_level() > 0 && self.fast > slow {
+        if self.fast > slow {
             self.fast = slow;
             if self.num_lemmas > self.max_lemmas {
+                //println!("{}" , self.num_lemmas);
                 f.reduceDB(w, trail, self);
             }
-            trail.backtrack_to(0, f, d);
+            if trail.decision_level() > 0 {
+                trail.backtrack_to(0, f, d);
+            }
         }
         //proof_assert!(!a.complete() || !f.unsat(*a)); // Need to get from unit_prop_loop
         match d.get_next(&trail.assignments, f) {

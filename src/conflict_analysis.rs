@@ -346,7 +346,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
     Conflict::Panic  => true,
     _                => {(@trail.decisions).len() > 0 },
 })]
-pub fn analyze_conflict_old(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
+pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.decision_level();
     if decisionlevel == 0 {
         return match derive_empty_formula(f, trail, cref) {
@@ -423,12 +423,14 @@ pub fn analyze_conflict_old(f: &Formula, trail: &Trail, cref: usize) -> Conflict
             }
             i += 1;
         }
+        //println!("{}, {}", decisionlevel, max_level);
         clause.rest.swap(1, max_i);
         Conflict::Learned(max_level, clause)
         //Conflict::Learned(0, clause)
     }
 }
-pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
+/*
+pub fn analyze_conflict_new(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.decision_level();
     if decisionlevel == 0 {
         return Conflict::Ground;
@@ -509,6 +511,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
         Conflict::Learned(max_level, Clause{ deleted: false, rest: out_learnt})
     }
 }
+*/
 
 // Just analyze_conflict without a stopping condition(and with accepting units for resolution)
 // OK
