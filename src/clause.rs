@@ -42,7 +42,7 @@ pub enum ClauseState {
 impl Clause {
     #[inline]
     #[trusted]
-    pub fn clause_from_vec(vec: &std::vec::Vec<Lit>) -> Clause {
+    pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
         Clause { rest: vec.clone() }
     }
 

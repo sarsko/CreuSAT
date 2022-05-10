@@ -1,6 +1,5 @@
 // Assignments is Mac OK 11.04 22.17
 extern crate creusot_contracts;
-use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 use crate::{clause::*, decision::*, formula::*, lit::*, trail::*};
@@ -56,10 +55,8 @@ impl Assignments {
         //self.0[lit.idx] = lit.polarity as u8;
         if lit.polarity {
             self.0[lit.idx] = 1;
-            proof_assert!(@self == (@@old_self).set(@lit.idx, 1u8));
         } else {
             self.0[lit.idx] = 0;
-            proof_assert!(@self == (@@old_self).set(@lit.idx, 0u8));
         }
         proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *@old_self, lit));true);
         proof_assert!(^@old_self === ^self);

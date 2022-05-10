@@ -71,8 +71,6 @@ impl Trail {
                 } else {
                     self.assignments.0[step.lit.idx] = 3; // TODO lol
                 }
-                proof_assert!(@self.assignments == (@(@old_t).assignments).set(@step.lit.idx, 3u8) ||
-                @self.assignments == (@(@old_t).assignments).set(@step.lit.idx, 2u8));
                 proof_assert!(@self.trail === pop(@(@old_t).trail));
                 proof_assert!(^@old_t === ^self);
                 proof_assert!((lemma_backtrack_ok(*self, *f, step.lit)); true);
@@ -82,7 +80,6 @@ impl Trail {
             None => {
                 // Could add a req on trail len and prove that this doesn't happen, but
                 // not sure if it really is needed.
-                proof_assert!(@self.trail == @(@old_t).trail);
                 proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
             }
         }
@@ -253,8 +250,6 @@ impl Trail {
         let old_self = Ghost::record(&self);
         proof_assert!(unset((@(@old_self).assignments)[@idx]));
         self.assignments.0[idx] -= 2;
-        proof_assert!(@self.assignments == (@(@old_self).assignments).set(@idx, 0u8) ||
-                      @self.assignments == (@(@old_self).assignments).set(@idx, 1u8));
         proof_assert!(lemma_assign_maintains_long_are_post_unit2(@self.trail, *_f, self.assignments, idx); true);
         proof_assert!(^@old_self === ^self);
         proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
