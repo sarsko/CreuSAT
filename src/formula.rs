@@ -26,8 +26,19 @@ pub enum SatState {
     Unsat,
 }
 
+#[cfg(feature = "contracts")]
+impl Model for SatState {
+    type ModelTy = SatState;
+
+    #[logic]
+    fn model(self) -> Self {
+        self
+    }
+}
+
 impl PartialEq for SatState {
     #[cfg_attr(feature = "trust_formula", trusted)]
+    #[ensures(result === (self === other))]
     fn eq(&self, other: &Self) -> bool {
         return match (self, other) {
             (SatState::Unknown, SatState::Unknown) => true,

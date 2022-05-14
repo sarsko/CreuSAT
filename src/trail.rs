@@ -73,8 +73,6 @@ impl Trail {
                 } else {
                     self.assignments.0[step.lit.idx] = 3; // TODO lol
                 }
-                proof_assert!(@self.assignments == (@(@old_t).assignments).set(@step.lit.idx, 3u8) ||
-                @self.assignments == (@(@old_t).assignments).set(@step.lit.idx, 2u8));
                 proof_assert!(@self.trail === pop(@(@old_t).trail));
                 proof_assert!(^@old_t === ^self);
                 proof_assert!((lemma_backtrack_ok(*self, *f, step.lit)); true);
@@ -85,7 +83,6 @@ impl Trail {
             None => {
                 // Could add a req on trail len and prove that this doesn't happen, but
                 // not sure if it really is needed.
-                proof_assert!(@self.trail == @(@old_t).trail);
                 proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
             }
         }
@@ -229,17 +226,23 @@ impl Trail {
     pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
         self.lit_to_level[step.lit.idx] = self.decision_level();
         let trail = &self.trail;
-        let old_self = Ghost::record(&self);
-        proof_assert!(unset((@(@old_self).assignments)[@step.lit.idx]));
+
         self.assignments.set_assignment(step.lit, _f, trail);
+
         proof_assert!(lit_not_in_less_inner(@self.trail, *_f));
         proof_assert!(step.invariant(*_f));
         proof_assert!(lemma_push_maintains_lit_not_in_less(*self, *_f, step); true);
         self.trail.push(step);
-        proof_assert!((@(@old_self).trail).push(step) === @self.trail);
-        proof_assert!(^@old_self === ^self);
-        proof_assert!(lit_not_in_less_inner(@self.trail, *_f));
+        proof_assert! {
+            match step.reason {
+                Reason::Long(k) => { clause_post_with_regards_to_inner((@_f.clauses)[@k], @(*self).assignments, @step.lit.idx) },
+                    _ => true,
+                }
+        };
+
+        proof_assert!(self.lit_is_unique());
         proof_assert!(self.lit_not_in_less(*_f));
+
         proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
     }
 
@@ -258,22 +261,14 @@ impl Trail {
     #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
     #[ensures((@(^self).trail).len() === 1 + (@self.trail).len())]
     pub fn enq_decision(&mut self, idx: usize, _f: &Formula) {
-        let old_self = Ghost::record(&self);
         let trail_len = self.trail.len();
         self.decisions.push(trail_len);
         let dlevel = self.decisions.len(); // Not doing this results in a Why3 error. Todo: Yell at Xavier
         self.lit_to_level[idx] = dlevel;
-        proof_assert!(lemma_assign_maintains_long_are_post_unit2(@self.trail, *_f, self.assignments, idx); true);
-        let old_self = Ghost::record(&self);
-        proof_assert!(unset((@(@old_self).assignments)[@idx]));
         self.assignments.0[idx] -= 2;
-        proof_assert!(@self.assignments == (@(@old_self).assignments).set(@idx, 0u8) ||
-                      @self.assignments == (@(@old_self).assignments).set(@idx, 1u8));
-        proof_assert!(lemma_assign_maintains_long_are_post_unit2(@self.trail, *_f, self.assignments, idx); true);
-        proof_assert!(^@old_self === ^self);
-        proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
         let lit = Lit {
             idx: idx,
+            // This branch duplicates the proofs... finding some way to factor this would x2 the proof
             polarity: if self.assignments.0[idx] == 0 {
                 false
             } else {
@@ -285,23 +280,16 @@ impl Trail {
             decision_level: dlevel,
             reason: Reason::Decision,
         };
-        proof_assert!(lit_not_in_less_inner(@self.trail, *_f));
-        proof_assert!(step.invariant(*_f));
-        proof_assert!(lemma_push_maintains_lit_not_in_less(*self, *_f, step); true);
+
         self.trail.push(step);
-        proof_assert!((@(@old_self).trail).push(step) === @self.trail);
-        proof_assert!(^@old_self === ^self);
-        proof_assert!(lit_not_in_less_inner(@self.trail, *_f));
         proof_assert!(self.lit_not_in_less(*_f));
+        // TODO: Check that this lemma is actually being applied, it doesn't seem like it...
+        proof_assert!(lemma_assign_maintains_long_are_post_unit2(@self.trail, *_f, self.assignments, idx); true);
         proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
         // This is just the trail invariant unwrapped
-        proof_assert!(self.assignments.invariant(*_f));
         proof_assert!(trail_invariant(@self.trail, *_f));
-        proof_assert!(lit_to_level_invariant(@self.lit_to_level, *_f));
-        proof_assert!(decisions_invariant(@self.decisions, @self.trail));
+
         proof_assert!(self.lit_is_unique());
-        //proof_assert!(self.lit_not_in_less(*_f));
-        //proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
         proof_assert!(self.trail_entries_are_assigned());
     }
 

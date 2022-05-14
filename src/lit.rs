@@ -16,6 +16,16 @@ pub struct Lit {
     pub polarity: bool,
 }
 
+#[cfg(feature = "contracts")]
+impl Model for Lit {
+    type ModelTy = Lit;
+
+    #[logic]
+    fn model(self) -> Self {
+        self
+    }
+}
+
 impl Lit {
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
@@ -82,7 +92,7 @@ impl Lit {
 
 impl PartialEq for Lit {
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[ensures(result === (self.idx == other.idx && self.polarity == other.polarity))]
+    #[ensures(result === (self === other))]
     //#[ensures(result === (*self === *other))] // :(
     fn eq(&self, other: &Lit) -> bool {
         self.idx == other.idx && self.polarity == other.polarity
