@@ -9,7 +9,7 @@ use crate::{
 
 // Tmp
 #[cfg(feature = "contracts")]
-use crate::logic::{logic::*, logic_formula::*};
+use crate::logic::{logic::*, logic_formula::*, logic_clause::*};
 
 pub enum SatResult {
     Sat(Vec<AssignedState>),
