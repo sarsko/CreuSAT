@@ -12,7 +12,7 @@ pub enum Conflict {
     Ground,
     Unit(Clause),
     //Learned(usize, Lit, Vec<Lit>),
-    Learned(usize, Clause),
+    Learned(Clause),
     Panic,
 }
 
@@ -317,7 +317,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
 // Probably gonna restore old analyze_conflict and move it out.
 // (in other words gonna make a function make_asserting_clause() from
 // equisat clause to equisat clause)
-#[cfg_attr(feature = "trust_conflict", trusted)]
+//#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
@@ -331,9 +331,9 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
         && no_duplicate_indexes_inner(@clause)
         && equisat_extension_inner(clause, @f)
     },
-    Conflict::Learned(level, clause) => {
+    Conflict::Learned(clause) => {
         clause.invariant(@f.num_vars)
-        && @level < (@trail.decisions).len() //added
+        //&& @level < (@trail.decisions).len() //added
         && (@clause).len() > 1
         && vars_in_range_inner(@clause, @f.num_vars)
         && no_duplicate_indexes_inner(@clause)
@@ -407,24 +407,10 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     if clause.rest.len() == 0 {
         return Conflict::Panic; // Okay this is just pure lazyness
     }
-
     if clause.rest.len() == 1 {
         Conflict::Unit(clause)
     } else {
-        let mut max_i: usize = 1;
-        let mut max_level = trail.lit_to_level[clause.rest[1].idx];
-        i = 2;
-        #[invariant(max_i_less, @max_i < (@clause.rest).len())]
-        while i < clause.rest.len() {
-            let level = trail.lit_to_level[clause.rest[i].idx];
-            if level > max_level {
-                max_level = level;
-                max_i = i;
-            }
-            i += 1;
-        }
-        clause.rest.swap(1, max_i);
-        Conflict::Learned(max_level, clause)
+        Conflict::Learned(clause)
         //Conflict::Learned(0, clause)
     }
 }

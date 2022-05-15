@@ -4,7 +4,7 @@ use creusot_contracts::*;
 
 use crate::{
     assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, lit::*,
-    trail::*, unit_prop::*, watches::*,
+    trail::*, unit_prop::*, watches::*, util::*,
 };
 
 // Tmp
@@ -25,6 +25,42 @@ pub enum ConflictResult {
     Continue,
 }
 
+#[inline(always)]
+pub fn update_fast(fast: &mut usize, lbd: usize) {
+    *fast -= shift_right(*fast, 5);
+    *fast += shift_left(lbd, 15);
+}
+
+#[inline(always)]
+pub fn update_slow(slow: &mut usize, lbd: usize) {
+    *slow -= shift_right(*slow, 15);
+    *slow += shift_left(lbd, 5);
+}
+
+
+//&& @level < (@trail.decisions).len() //added
+
+#[requires(f.invariant())]
+#[requires(trail.invariant(*f))]
+#[requires(equisat_extension_inner(*clause, @f))]
+#[ensures(equisat_extension_inner(^clause, @f))]
+pub fn make_asserting_clause(clause: &mut Clause, trail: &Trail, f: &Formula) -> usize {
+    let mut max_i: usize = 1;
+    let mut max_level = trail.lit_to_level[clause.rest[1].idx];
+    let mut i: usize = 2;
+    #[invariant(max_i_less, @max_i < (@clause.rest).len())]
+    while i < clause.rest.len() {
+        let level = trail.lit_to_level[clause.rest[i].idx];
+        if level > max_level {
+            max_level = level;
+            max_i = i;
+        }
+        i += 1;
+    }
+    clause.rest.swap(1, max_i);
+    return max_level;
+}
+
 pub struct Solver {
     pub num_lemmas: usize,
     pub max_lemmas: usize,
@@ -43,7 +79,6 @@ if (S->fast > (S->slow / 100) * 125) {                        // If fast average
             */
 
 impl Solver {
-
     #[cfg_attr(feature = "trust_solver", trusted)]
     pub fn new(f: &Formula) -> Solver {
         Solver {
@@ -52,8 +87,8 @@ impl Solver {
             num_conflicts: 0,
             initial_len: f.clauses.len(),
             inc_reduce_db: 300,
-            fast: 1 << 24,
-            slow: 1 << 24,
+            fast: shift_left(1, 24),
+            slow: shift_left(1, 24),
             perm_diff: vec::from_elem(0, f.num_vars),
         }
     }
@@ -80,35 +115,35 @@ impl Solver {
                 return Some(false);
             }
             Conflict::Unit(clause) => {
-                // Have to do a proof that it isnt already unit?
-                f.reduceDB(w, t, self); // Unsure if moving this here is good/ok
+                // Okay, so the ordering here is weird. The reason for this is that the derived
+                // unit clause is an equisat extension of f, but not necessarily f after reduction.
+                // All of this should be looked into with regards to implementing garbage collection.
                 let cref = f.add_unit(clause, t);
                 match t.learn_unit(cref, f, d) {
                     Err(_) => return Some(true),
                     Ok(_)  => {},
                 }
+                f.reduceDB(w, t, self);
                 f.simplify_formula(w, t);
             }
-            Conflict::Learned(level, clause) => {
-                let mut i = 0;
-                let mut lbd = 0;
+            Conflict::Learned(clause) => {
+                let mut clause = clause;
+                let level = make_asserting_clause(&mut clause, t, f);
+
+                let mut i: usize = 0;
+                let mut lbd: usize = 0;
+                #[invariant(lbd_bound, @lbd <= @i)]
                 while i < clause.rest.len() {
                     let level = t.lit_to_level[clause.rest[i].idx];
-                    /* 
-                    if level == usize::MAX {
-                        panic!();
-                    }
-                    */
-                    if self.perm_diff[level] != self.num_conflicts {
+                    if level < self.perm_diff.len() && // Lazy
+                        self.perm_diff[level] != self.num_conflicts {
                         self.perm_diff[level] = self.num_conflicts;
                         lbd += 1;
                     }
                     i += 1;
                 }
-                self.fast -= self.fast >> 5;
-                self.fast += lbd << 15;
-                self.slow -= self.slow >> 15;
-                self.slow += lbd << 5;
+                update_fast(&mut self.fast, lbd);
+                update_slow(&mut self.slow, lbd);
                 let lit = clause.rest[0];
                 let cref = f.add_clause(clause, w, t);
                 d.increment_and_move(f, cref, &t.assignments);
@@ -142,7 +177,6 @@ impl Solver {
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut d).invariant(@f.num_vars))]
     #[requires(@f.num_vars < @usize::MAX/2)]
-    #[requires(d.invariant(@f.num_vars))] // d is here because it will later become mutable and updated in handle_conflict
     #[ensures(@f.num_vars === @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
     #[ensures(match result {
@@ -228,7 +262,11 @@ impl Solver {
             None        => return SatResult::Err,
             _           => {}
         }
-        let slow = (self.slow / 100) * 125;
+        let slow = if self.slow < usize::MAX / 2 {
+            (self.slow / 100) * 125
+        } else {
+            self.slow
+        };
         if trail.decision_level() > 0 && self.fast > slow {
             self.fast = slow;
             if self.num_lemmas > self.max_lemmas {

@@ -199,7 +199,6 @@ impl Formula {
         return true;
     }
 
-    // OK. Xavier should check on by and look at the stupid amount of time spent on the t.invariant(*self)
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut watches).invariant(mut self))]
     #[maintains((mut self).invariant())]
@@ -214,11 +213,14 @@ impl Formula {
         watches.unwatch(self, t, cref, self.clauses[cref].rest[0]);
         watches.unwatch(self, t, cref, self.clauses[cref].rest[1]);
         self.clauses[cref].deleted = true;
+        proof_assert!(forall<i: Int> 0 <= i && i < (@(@self.clauses)[@cref]).len() ==>
+            (@(@self.clauses)[@cref])[i] === (@(@(@old_f).clauses)[@cref])[i]);
+        proof_assert!((@old_f).equisat(*self)); // This assertion helps with the invariant, which otherwise takes a long time.
         proof_assert!(^self === ^@old_f);
     }
 
     // OK
-    //#[cfg_attr(feature = "trust_formula", trusted)]
+    #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains((mut watches).invariant(mut self))]
     #[maintains((*t).invariant(mut self))]
@@ -306,7 +308,10 @@ impl Formula {
                        j += 1;
                    }
                    if cnt >= 6 {
-                       s.num_lemmas -= 1;
+                       // Maybe add the invariant that nlemmas keeps track of the number of lemmas lol
+                       if s.num_lemmas > 0 {
+                            s.num_lemmas -= 1;
+                       }
                        self.delete_clause(i, watches, t);
                    }
                } 

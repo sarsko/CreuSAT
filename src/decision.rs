@@ -168,7 +168,7 @@ impl Decisions {
     }
 
     #[cfg_attr(feature = "trust_decision", trusted)]
-    #[requires((@self.linked_list).len() < @usize::MAX)]
+    #[requires(@_f.num_vars < @usize::MAX)]
     #[requires(@tomove < (@self.linked_list).len())]
     #[maintains((mut self).invariant(@_f.num_vars))]
     fn move_to_front(&mut self, tomove: usize, _f: &Formula) {
@@ -206,6 +206,7 @@ impl Decisions {
     }
     
     #[cfg_attr(feature = "trust_decision", trusted)]
+    #[requires(@f.num_vars < @usize::MAX)]
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
     #[requires(@cref < (@f.clauses).len())]
@@ -263,7 +264,6 @@ impl Decisions {
         #[invariant(prev, forall<j: Int> 0 <= j && j < @i ==> !unset((@a)[j]))]
         while i < a.0.len() {
             if a.0[i] >= 2 {
-                panic!();
                 return Some(i);
             }
             i += 1;

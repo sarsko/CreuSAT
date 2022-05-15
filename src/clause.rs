@@ -92,7 +92,7 @@ impl Clause {
     // TODO: Take a look at the parser
     #[inline]
     #[trusted]
-    pub fn clause_from_vec(vec: &std::vec::Vec<Lit>) -> Clause {
+    pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
         Clause { deleted: false, rest: vec.clone() }
     }
 

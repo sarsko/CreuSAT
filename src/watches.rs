@@ -141,19 +141,7 @@ impl Watches {
         }
     }
 
-    /*
-    let end = watches.watches[watchidx].len() - 1;
-    watches.watches[watchidx].swap(j, end);
-    let curr_lit = f.clauses[cref].rest[k];
-    proof_assert!(@watchidx < (@watches.watches).len());
-    let old_w = Ghost::record(&watches);
-    proof_assert!((@old_w).watches === watches.watches);
-    proof_assert!(watcher_crefs_in_range(@(@watches.watches)[@watchidx], *f));
-    match watches.watches[watchidx].pop() {
-        Some(w) => {
-            */
-
-    // This is just the first half of update_watch. Seems like only pop is sticky, which means that it is passing.
+    // This is just the first half of update_watch.
     #[cfg_attr(feature = "trust_watches", trusted)]
     #[maintains((mut self).invariant(*f))]
     #[requires(@f.num_vars < @usize::MAX/2)]
@@ -161,22 +149,16 @@ impl Watches {
     #[requires(f.invariant())]
     #[requires(trail.invariant(*f))]
     #[requires(@cref < (@f.clauses).len())]
-    #[requires((@(@f.clauses)[@cref]).len() >= 2)] // This was > 2 before ?
-    //#[requires((@(@self.watches)[lit.to_neg_watchidx_logic()]).len() > @j)]
+    #[requires((@(@f.clauses)[@cref]).len() >= 2)] 
     pub fn unwatch(&mut self, f: &Formula, trail: &Trail, cref: usize, lit: Lit) {
         let watchidx = lit.to_neg_watchidx();
         let mut i: usize = 0;
-        let old_w = Ghost::record(&self);
-        #[invariant(proph, ^@old_w === ^self)]
         #[invariant(self_inv, self.invariant(*f))]
         while i < self.watches[watchidx].len() {
             if self.watches[watchidx][i].cref == cref {
                 let end = self.watches[watchidx].len() - 1;
                 self.watches[watchidx].swap(i, end);
-                //proof_assert!(@watchidx < (@watches.watches).len());
-                //let old_w = Ghost::record(&watches);
-                //proof_assert!((@old_w).watches === watches.watches);
-                //proof_assert!(watcher_crefs_in_range(@(@watches.watches)[@watchidx], *f));
+                let old_w = Ghost::record(&self);
                 match self.watches[watchidx].pop() {
                     Some(w) => {
                         proof_assert!(^@old_w === ^self);
@@ -185,27 +167,9 @@ impl Watches {
                         proof_assert!(@(@self.watches)[@watchidx] === pop(@(@(@old_w).watches)[@watchidx]));
                         proof_assert!(watcher_crefs_in_range(@(@self.watches)[@watchidx], *f));
                         proof_assert!(self.invariant(*f));
-                        /*
-
-                        proof_assert!(^@old_w === ^watches);
-                        proof_assert!(lemma_pop_watch_maintains_watcher_invariant(@(@(@old_w).watches)[@watchidx], *f); true);
-                        proof_assert!(watcher_crefs_in_range(pop(@(@(@old_w).watches)[@watchidx]), *f));
-                        proof_assert!(@(@watches.watches)[@watchidx] === pop(@(@(@old_w).watches)[@watchidx]));
-                        proof_assert!(watcher_crefs_in_range(@(@watches.watches)[@watchidx], *f));
-                        proof_assert!(watches.invariant(*f));
-                        proof_assert!(curr_lit.to_neg_watchidx_logic() < (@watches.watches).len());
-
-                        proof_assert!(watcher_crefs_in_range(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f));
-                        proof_assert!(@w.cref < (@f.clauses).len());
-                        proof_assert!(lemma_push_maintains_watcher_invariant(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f, w); true);
-                        watches.watches[curr_lit.to_neg_watchidx()].push(w);
-                        proof_assert!(watcher_crefs_in_range(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f));
-                        proof_assert!(watches.invariant(*f));
-                        */
                     },
                     None => {
                         unreachable!();
-                        //panic!("Impossible");
                     }
                 }
                 return;

@@ -34,6 +34,18 @@ pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
     }
 }
 
+
+#[trusted]
+#[inline(always)]
+pub fn shift_right(a: usize, b: usize) -> usize {
+    a >> b
+}
+
+#[trusted]
+#[inline(always)]
+pub fn shift_left(a: usize, b: usize) -> usize {
+    a << b
+}
 /*
 #[cfg_attr(feature = "trust_util", trusted)]
 #[ensures(sorted_tuple_first(@^v))]
