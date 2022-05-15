@@ -35,16 +35,24 @@ pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
 }
 
 
-#[trusted]
+#[cfg_attr(feature = "trust_util", trusted)]
 #[inline(always)]
-pub fn shift_right(a: usize, b: usize) -> usize {
-    a >> b
+pub fn update_fast(fast: &mut usize, lbd: usize) {
+    *fast -= *fast / 32;
+    let lbd_shl_fifteen = if lbd < usize::MAX / 32768 { lbd * 32768 } else { lbd };
+    if usize::MAX - *fast > lbd_shl_fifteen {
+        *fast += lbd_shl_fifteen;
+    }
 }
 
-#[trusted]
+#[cfg_attr(feature = "trust_util", trusted)]
 #[inline(always)]
-pub fn shift_left(a: usize, b: usize) -> usize {
-    a << b
+pub fn update_slow(slow: &mut usize, lbd: usize) {
+    *slow -= *slow / 32768;
+    let lbd_shl_five = if lbd < usize::MAX / 32 { lbd * 32 } else { lbd };
+    if usize::MAX - *slow > lbd_shl_five {
+        *slow += lbd_shl_five;
+    }
 }
 /*
 #[cfg_attr(feature = "trust_util", trusted)]

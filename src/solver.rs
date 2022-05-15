@@ -24,18 +24,35 @@ pub enum ConflictResult {
     Ground,
     Continue,
 }
+// Satch:
+/*
+// fast_alpha = 0.03
+  {
+    struct averages *a = averages (solver);
+    update_fast_average (&a->fast_glue, glue);
+    update_slow_average (&a->slow_glue, glue);
+    update_slow_average (&a->conflict_level, conflict_level);
+    {
+      const uint64_t decisions = DECISIONS;
+      const uint64_t delta_decisions = decisions - a->saved_decisions;
+      a->saved_decisions = decisions;
+      update_slow_average (&a->decision_rate, delta_decisions);
+    }
+    {
+      double trail_filled = percent (SIZE_STACK (solver->trail),
+				     solver->statistics.remaining);
+      update_slow_average (&a->trail_filled, trail_filled);
+    }
+    update_betas (solver);
+  }
 
-#[inline(always)]
-pub fn update_fast(fast: &mut usize, lbd: usize) {
-    *fast -= shift_right(*fast, 5);
-    *fast += shift_left(lbd, 15);
+static void
+update_fast_average (double *average, unsigned value)
+{
+  *average += fast_alpha * (value - *average);
 }
+*/
 
-#[inline(always)]
-pub fn update_slow(slow: &mut usize, lbd: usize) {
-    *slow -= shift_right(*slow, 15);
-    *slow += shift_left(lbd, 5);
-}
 
 
 //&& @level < (@trail.decisions).len() //added
