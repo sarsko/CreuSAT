@@ -93,7 +93,11 @@ impl Clause {
     #[inline]
     #[trusted]
     pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
+<<<<<<< HEAD
         Clause { deleted: false, rest: vec.clone() }
+=======
+        Clause { rest: vec.clone() }
+>>>>>>> origin/master
     }
 
     // OK with split + split + CVC4 for 4.49 seconds on Mac
