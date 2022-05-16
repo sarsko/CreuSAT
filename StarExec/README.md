@@ -8,7 +8,7 @@ rustup target add x86_64-unknown-linux-musl
 ```
 beforehand.
 
-If you are not on a Linux, you'll probably have to use `cross` og `cargo
+If you are not on a Linux, you'll probably have to use `cross` or `cargo
 zigbuild`.
 
 You can get `cargo zigbuild` by:
