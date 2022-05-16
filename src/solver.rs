@@ -174,11 +174,13 @@ impl Solver {
         };
         // TODO:
         // These two have to be ensured by analysis + backtrack
-        proof_assert!((@f.clauses)[@cref].unit(t.assignments));
-        proof_assert!(unset((@t.assignments)[@step.lit.idx]));
-        t.enq_assignment(step, f);
-        self.increase_num_lemmas();
-        self.increase_num_conflicts();
+        //proof_assert!((@f.clauses)[@cref].unit(t.assignments));
+        //proof_assert!(unset((@t.assignments)[@step.lit.idx]));
+        if f.clauses[cref].unit_and_unset(&t.assignments, f) {
+            t.enq_assignment(step, f);
+            self.increase_num_lemmas();
+            self.increase_num_conflicts();
+        }
     }
 
     #[cfg_attr(feature = "trust_solver", trusted)]

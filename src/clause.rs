@@ -135,4 +135,23 @@ impl Clause {
         self.move_to_end(idx, _f);
         self.rest.pop();
     }
+
+    // This is an ugly runtime check
+    #[cfg_attr(feature = "trust_clause", trusted)]
+    #[requires(invariant_internal(@self, @_f.num_vars))]
+    #[requires(a.invariant(*_f))]
+    #[requires((@self).len() > 1)]
+    #[ensures(result ==> self.unit(*a))]
+    #[ensures(result ==> (@self)[0].unset(*a))]
+    pub fn unit_and_unset(&self, a: &Assignments, _f: &Formula) -> bool {
+        let mut i: usize = 1;
+        #[invariant(unsat, forall<j: Int> 1 <= j && j < @i ==> (@self)[j].unsat(*a))]
+        while i < self.rest.len() {
+            if !self.rest[i].lit_unsat(a) {
+                return false;
+            }
+            i += 1;
+        }
+        return self.rest[0].lit_unset(a);
+    }
 }
