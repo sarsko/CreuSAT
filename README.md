@@ -71,7 +71,7 @@ If the Why3 IDE appears, then it should work to press <kbd>3</kbd> and wait a bi
 
 !TODO
 
-You could also check out [/Friday](/Friday/) and [/Robinson](/Robinson/) for a couple of solvers
+You could also check out [Friday](/Friday/) and [Robinson](/Robinson/) for a couple of solvers
 which are both easier to grok algorithmically and proof-wise.
 
 
@@ -79,9 +79,10 @@ which are both easier to grok algorithmically and proof-wise.
 ## Overview of the repository
 
 Overview of the repository: \
-[/src](/CreuSAT/) - The source code for CreuSAT \
-[/dpll](/Robinson/) - A fully verified DPLL-based solver. \
-[/naive](/Friday/) - A fully verified and super naive SAT solver. \
+[/CreuSAT](/CreuSAT/) - The source code for CreuSAT \
+[/Robinson](/Robinson/) - A fully verified DPLL-based solver. \
+[/Friday](/Friday/) - A fully verified and super naive SAT solver. \
+[/StarExec](/StarExec/) - Build instructions + output directory for builing CreuSAT for the StarExec cluster. \
 [/cnfs](/cnfs/) - Some example cnf files which are not used in the tests. \
 [/tests](/tests/) - Directory for tests. \
 [/mlws](/mlws/) - Some WhyML files, among them two verified solvers.
