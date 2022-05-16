@@ -2,6 +2,8 @@
 #![feature(stmt_expr_attributes)]
 #![feature(proc_macro_hygiene)]
 #![allow(unused_imports)]
+#![allow(unused)]
+#![allow(dead_code)]
 #![recursion_limit = "256"]
 extern crate creusot_contracts;
 

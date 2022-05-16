@@ -1,4 +1,4 @@
-use sat::parser::{parse_cnf, preproc_and_solve};
+use Robinson::parser::{parse_cnf, preproc_and_solve};
 //use no_creusot::solver::preproc_and_solve;
 
 use clap::{crate_authors, App, AppSettings, Arg};
@@ -7,6 +7,7 @@ use clap::{crate_authors, App, AppSettings, Arg};
 //static GLOBAL: jemallocator::Jemalloc = jemallocator::Jemalloc;
 #[cfg(not(contracts))]
 fn main() {
+    /*
     let matches = App::new("\nA minimal SAT solver with no name")
         .author(crate_authors!("\n"))
         .about("A yet unverified SAT solver written in Rust.")
@@ -44,4 +45,5 @@ fn main() {
             println!("c Parser errored with message: {}", e);
         }
     }
+    */
 }

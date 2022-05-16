@@ -1,11 +1,19 @@
-/// This is a very naive, but verified SAT solver.
-/// It is a port of a verified WhyML solver, and is therefore
-/// an imperative implementation of a functional prgram.
-/// In other words: very naive, very slow.
+#![feature(type_ascription)]
+#![feature(stmt_expr_attributes)]
+#![feature(proc_macro_hygiene)]
+#![allow(unused_imports)]
+#![allow(dead_code)]
+#![recursion_limit = "256"]
 extern crate creusot_contracts;
 
 use creusot_contracts::std::*;
 use creusot_contracts::*;
+
+
+// This is a very naive, but verified SAT solver.
+// It is a port of a verified WhyML solver, and is therefore
+// an imperative implementation of a functional prgram.
+// In other words: very naive, very slow.
 
 struct Assignment(Vec<bool>);
 struct Lit {
