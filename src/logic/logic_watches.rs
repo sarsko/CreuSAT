@@ -41,7 +41,6 @@ pub fn watches_crefs_in_range(w: Seq<Vec<Watcher>>, f: Formula) -> bool {
 #[ensures(watcher_crefs_in_range(pop(w), f))]
 pub fn lemma_pop_watch_maintains_watcher_invariant(w: Seq<Watcher>, f: Formula) {}
 
-
 #[logic]
 #[cfg_attr(feature = "trust_watches_logic", trusted)]
 #[requires(watcher_crefs_in_range(w, f))]

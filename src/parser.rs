@@ -100,25 +100,16 @@ pub fn preproc_and_solve(
     clauses: &mut std::vec::Vec<std::vec::Vec<i32>>,
     num_literals: usize,
 ) -> bool {
-    let mut formula = Formula {
-        clauses: Vec::new(),
-        num_vars: num_literals,
-    };
+    let mut formula = Formula { clauses: Vec::new(), num_vars: num_literals };
     for clause in clauses {
         let mut currclause: Vec<Lit2> = vec![];
         for lit in clause {
             assert!(*lit != 0);
             if *lit < 0 {
-                let new_lit = Lit2 {
-                    idx: ((lit.abs() - 1) as usize),
-                    polarity: false,
-                };
+                let new_lit = Lit2 { idx: ((lit.abs() - 1) as usize), polarity: false };
                 currclause.push(new_lit);
             } else {
-                let new_lit = Lit2 {
-                    idx: ((*lit - 1) as usize),
-                    polarity: true,
-                };
+                let new_lit = Lit2 { idx: ((*lit - 1) as usize), polarity: true };
                 currclause.push(new_lit);
             }
         }

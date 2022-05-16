@@ -2,7 +2,10 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::{assignments::*, clause::*, decision::*, formula::*, lit::*, logic::*, solver::SatResult, util::*};
+use crate::{
+    assignments::*, clause::*, decision::*, formula::*, lit::*, logic::*, solver::SatResult,
+    util::*,
+};
 
 #[cfg(feature = "contracts")]
 use crate::logic::{logic::*, logic_trail::*, logic_util::*};
@@ -105,7 +108,7 @@ impl Trail {
     #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
     pub fn backtrack_safe(&mut self, level: usize, f: &Formula, d: &mut Decisions) {
-        if level < self.decision_level() { 
+        if level < self.decision_level() {
             self.backtrack_to(level, f, d);
         }
     }
@@ -126,7 +129,7 @@ impl Trail {
         let des = self.decisions[level];
         let mut i: usize = 0;
         let mut curr = d.search;
-        let mut timestamp = if curr != usize::MAX { d.linked_list[curr].ts } else {0}; // revisit this later
+        let mut timestamp = if curr != usize::MAX { d.linked_list[curr].ts } else { 0 }; // revisit this later
         #[invariant(i_less2, @i <= (@(@old_t).trail).len())]
         #[invariant(i_less, i <= how_many)]
         #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
@@ -135,7 +138,8 @@ impl Trail {
         //#[invariant(len_is, (@self.trail).len() === (@(@old_t).trail).len() - @i)] // we don't care anymore
         #[invariant(proph, ^@old_t === ^self)]
         #[invariant(proph_d, ^@old_d === ^d)]
-        #[invariant(curr_less, @curr < (@d.linked_list).len() || @curr === @usize::MAX)] // Hmm maybe change invariant
+        #[invariant(curr_less, @curr < (@d.linked_list).len() || @curr === @usize::MAX)]
+        // Hmm maybe change invariant
         while i < how_many {
             let idx = self.backstep(f);
             proof_assert!(@idx < @f.num_vars);
@@ -281,17 +285,9 @@ impl Trail {
         let lit = Lit {
             idx: idx,
             // This branch duplicates the proofs... finding some way to factor this would x2 the proof
-            polarity: if self.assignments.0[idx] == 0 {
-                false
-            } else {
-                true
-            },
+            polarity: if self.assignments.0[idx] == 0 { false } else { true },
         }; // TODO encapsulate
-        let step = Step {
-            lit: lit,
-            decision_level: dlevel,
-            reason: Reason::Decision,
-        };
+        let step = Step { lit: lit, decision_level: dlevel, reason: Reason::Decision };
 
         self.trail.push(step);
         proof_assert!(self.lit_not_in_less(*_f));
@@ -330,11 +326,7 @@ impl Trail {
             return Err(()); // UGLY Runtime check
         }
         self.enq_assignment(
-            Step {
-                lit: f.clauses[cref].rest[0],
-                decision_level: 0,
-                reason: Reason::Unit(cref),
-            },
+            Step { lit: f.clauses[cref].rest[0], decision_level: 0, reason: Reason::Unit(cref) },
             f,
         );
         Ok(())

@@ -368,14 +368,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             o => return Conflict::Panic, // nnTODOnn // This never happens, but is an entirely new proof
         };
         proof_assert!(clause.same_idx_same_polarity_except(*ante, @(@trail.trail)[@i].lit.idx));
-        clause = resolve(
-            f,
-            &clause,
-            &ante,
-            trail.trail[i].lit.idx,
-            c_idx,
-            &trail.assignments,
-        );
+        clause = resolve(f, &clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
         //resolve_mut(f, &mut clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
         s_idx = 0;
         let mut k: usize = 0;
@@ -436,14 +429,7 @@ pub fn derive_empty_formula(f: &Formula, trail: &Trail, cref: usize) -> bool {
             o => return false, // nnTODOnn // This never happens, but is an entirely new proof
         };
         proof_assert!(clause.same_idx_same_polarity_except(*ante, @(@trail.trail)[@i].lit.idx));
-        clause = resolve(
-            f,
-            &clause,
-            &ante,
-            trail.trail[i].lit.idx,
-            c_idx,
-            &trail.assignments,
-        );
+        clause = resolve(f, &clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
         //resolve_mut(f, &mut clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
         if clause.rest.len() == 0 {
             return true;

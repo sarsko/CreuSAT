@@ -8,11 +8,11 @@ use crate::{assignments::*, clause::*, lit::*, solver::*, trail::*, watches::*};
 
 #[cfg(feature = "contracts")]
 use crate::logic::{
+    logic::*,
     logic_assignments::*,
     logic_clause::*,
     logic_formula::*,
     logic_trail::*, //tmp?
-    logic::*,
 };
 
 pub struct Formula {
@@ -53,13 +53,13 @@ impl PartialEq for SatState {
 impl Formula {
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[ensures(match result {
-        SatResult::Sat(assn) => { formula_sat_inner(@self, @assn) }, 
+        SatResult::Sat(assn) => { formula_sat_inner(@self, @assn) },
         SatResult::Unsat     => { self.not_satisfiable() },
         SatResult::Unknown   => { self.invariant() && 0 < @self.num_vars && @self.num_vars < @usize::MAX/2 },
         SatResult::Err       => { true },
     })]
     pub fn check_formula_invariant(&self) -> SatResult {
-        if self.num_vars >= usize::MAX/2 {
+        if self.num_vars >= usize::MAX / 2 {
             return SatResult::Err;
         }
         if self.clauses.len() == 0 {
@@ -81,7 +81,6 @@ impl Formula {
             i += 1;
         }
         return SatResult::Unknown;
-
     }
 
     #[cfg_attr(feature = "trust_formula", trusted)]
@@ -135,7 +134,14 @@ impl Formula {
     #[ensures((@self.clauses).len() === (@(^self).clauses).len())]
     #[ensures((@(@self.clauses)[@cref]).len() === (@(@(^self).clauses)[@cref]).len())]
     #[ensures(self.equisat(^self))]
-    pub fn swap_lits_in_clause(&mut self, trail: &Trail, watches: &Watches, cref: usize, j: usize, k: usize) {
+    pub fn swap_lits_in_clause(
+        &mut self,
+        trail: &Trail,
+        watches: &Watches,
+        cref: usize,
+        j: usize,
+        k: usize,
+    ) {
         let old_f = Ghost::record(&self);
         proof_assert!(no_duplicate_indexes_inner(@(@self.clauses)[@cref]));
         proof_assert!(long_are_post_unit_inner(@trail.trail, *self, @trail.assignments) && true);
@@ -146,7 +152,6 @@ impl Formula {
         proof_assert!(long_are_post_unit_inner(@trail.trail, *self, @trail.assignments));
         proof_assert!(^@old_f === ^self);
     }
-
 
     // Needs some help on inlining/splitting, but checks out
     #[cfg_attr(feature = "trust_formula", trusted)]
@@ -198,7 +203,12 @@ impl Formula {
     #[ensures(@result === (@self.clauses).len())]
     #[ensures((@(^self).clauses)[@result] === clause)]
     #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
-    pub fn add_unwatched_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
+    pub fn add_unwatched_clause(
+        &mut self,
+        clause: Clause,
+        watches: &mut Watches,
+        _t: &Trail,
+    ) -> usize {
         let old_self = Ghost::record(&self);
         let cref = self.clauses.len();
         self.clauses.push(clause);
@@ -222,9 +232,15 @@ impl Formula {
     #[requires(@self.num_vars < @usize::MAX/2)]
     #[ensures((@(@(^self).clauses)[@cref]).len() === (@(@self.clauses)[@cref]).len())]
     #[ensures(@self.num_vars === @(^self).num_vars)]
-    #[ensures(self.equisat(^self))] 
+    #[ensures(self.equisat(^self))]
     #[ensures((@self.clauses).len() === (@(^self).clauses).len())]
-    pub fn make_asserting_clause_and_watch(&mut self, watches: &mut Watches, t: &Trail, idx: usize, cref: usize) {
+    pub fn make_asserting_clause_and_watch(
+        &mut self,
+        watches: &mut Watches,
+        t: &Trail,
+        idx: usize,
+        cref: usize,
+    ) {
         let old_self = Ghost::record(&self);
         self.swap_lits_in_clause(t, watches, cref, 1, idx);
         let first_lit = self.clauses[cref].rest[0];
@@ -247,10 +263,16 @@ impl Formula {
     #[requires(equisat_extension_inner(clause, @self))]
     #[ensures((@(@(^self).clauses)[@result]).len() === (@clause).len())]
     #[ensures(@self.num_vars === @(^self).num_vars)]
-    #[ensures(self.equisat(^self))] 
+    #[ensures(self.equisat(^self))]
     #[ensures(@result === (@self.clauses).len())]
     #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
-    pub fn add_and_swap_first(&mut self, clause: Clause, watches: &mut Watches, t: &Trail, s_idx: usize) -> usize {
+    pub fn add_and_swap_first(
+        &mut self,
+        clause: Clause,
+        watches: &mut Watches,
+        t: &Trail,
+        s_idx: usize,
+    ) -> usize {
         let old_self = Ghost::record(&self);
         let cref = self.add_unwatched_clause(clause, watches, t);
         self.swap_lits_in_clause(t, watches, cref, 0, s_idx);
@@ -344,7 +366,7 @@ impl Formula {
             if !self.clauses[i].deleted {
                 proof_assert!(t.assignments.invariant(*self));
                 if self.clauses[i].len() > 1 && self.is_clause_sat(i, &t.assignments) {
-                   self.delete_clause(i, watches, t);
+                    self.delete_clause(i, watches, t);
                 }
             }
             i += 1;
@@ -397,24 +419,24 @@ impl Formula {
         #[invariant(equi, self.equisat(*@old_f))]
         while i < self.clauses.len() {
             if !self.clauses[i].deleted {
-               //if self.clauses[i].len() > 12 {
-               if self.clauses[i].len() > 6 {
-                   let mut cnt = 0;
-                   let mut j = 0;
-                   while j < self.clauses[i].len() && cnt < 6 {
-                       if self.clauses[i].rest[j].lit_sat(&t.assignments) {
-                           cnt += 1;
-                       }
-                       j += 1;
-                   }
-                   if cnt >= 6 {
-                       // Maybe add the invariant that nlemmas keeps track of the number of lemmas lol
-                       if s.num_lemmas > 0 {
+                //if self.clauses[i].len() > 12 {
+                if self.clauses[i].len() > 6 {
+                    let mut cnt = 0;
+                    let mut j = 0;
+                    while j < self.clauses[i].len() && cnt < 6 {
+                        if self.clauses[i].rest[j].lit_sat(&t.assignments) {
+                            cnt += 1;
+                        }
+                        j += 1;
+                    }
+                    if cnt >= 6 {
+                        // Maybe add the invariant that nlemmas keeps track of the number of lemmas lol
+                        if s.num_lemmas > 0 {
                             s.num_lemmas -= 1;
-                       }
-                       self.delete_clause(i, watches, t);
-                   }
-               } 
+                        }
+                        self.delete_clause(i, watches, t);
+                    }
+                }
             }
             i += 1;
         }

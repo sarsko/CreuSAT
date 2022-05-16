@@ -40,7 +40,7 @@ impl Lit {
     #[ensures(result === self.sat(*a))]
     pub fn lit_sat(self, a: &Assignments) -> bool {
         match self.polarity {
-            true  => (a.0[self.idx] == 1),
+            true => (a.0[self.idx] == 1),
             false => (a.0[self.idx] == 0),
         }
     }
@@ -51,7 +51,7 @@ impl Lit {
     #[ensures(result === self.unsat(*a))]
     pub fn lit_unsat(self, a: &Assignments) -> bool {
         match self.polarity {
-            true  => (a.0[self.idx] == 0),
+            true => (a.0[self.idx] == 0),
             false => (a.0[self.idx] == 1),
         }
     }
@@ -107,9 +107,6 @@ impl ops::Not for Lit {
     #[ensures(@result.idx === @self.idx)]
     #[ensures(result.polarity === !self.polarity)]
     fn not(self) -> Lit {
-        Lit {
-            idx: self.idx,
-            polarity: !self.polarity,
-        }
+        Lit { idx: self.idx, polarity: !self.polarity }
     }
 }

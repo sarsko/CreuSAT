@@ -25,10 +25,7 @@ impl Clone for Clause {
     #[trusted] // TODO
     #[ensures(result === *self)]
     fn clone(&self) -> Self {
-        Clause {
-            deleted: self.deleted,
-            rest: self.rest.clone(),
-        }
+        Clause { deleted: self.deleted, rest: self.rest.clone() }
     }
 }
 
@@ -48,7 +45,7 @@ impl Clause {
         let mut i: usize = 0;
         #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@self)[j].invariant(@n))]
         while i < self.len() {
-            if !self.rest[i].check_lit_invariant(n){
+            if !self.rest[i].check_lit_invariant(n) {
                 return false;
             }
             i += 1;
@@ -63,7 +60,7 @@ impl Clause {
     #[ensures(result === self.no_duplicate_indexes())]
     pub fn no_duplicates(&self) -> bool {
         let mut i: usize = 0;
-        #[invariant(no_dups, 
+        #[invariant(no_dups,
             forall<j: Int, k: Int> 0 <= j && j < @i &&
              0 <= k && k < j ==> (@self)[j].idx != (@self)[k].idx)]
         while i < self.rest.len() {

@@ -5,7 +5,7 @@ use creusot_contracts::*;
 use crate::{assignments::*, formula::*, lit::*, util::*};
 
 #[cfg(feature = "contracts")]
-use crate::logic::{logic_decision::*, logic_util::*, logic::unset};
+use crate::logic::{logic::unset, logic_decision::*, logic_util::*};
 
 //#[derive(Debug, Clone, PartialEq, Eq)]
 #[derive(Clone, Copy)]
@@ -21,20 +21,16 @@ impl Default for Node {
     #[ensures(@result.next === @usize::MAX)]
     #[ensures(@result.prev === @usize::MAX)]
     #[ensures(@result.ts   === 0)]
-    fn default() -> Self { 
-        Node {
-            next: usize::MAX,
-            prev: usize::MAX,
-            ts: 0,
-        }
-     }
+    fn default() -> Self {
+        Node { next: usize::MAX, prev: usize::MAX, ts: 0 }
+    }
 }
 
 pub struct Decisions {
     pub linked_list: Vec<Node>,
     timestamp: usize,
     pub start: usize,
-    pub search: usize
+    pub search: usize,
 }
 
 //pub const INVALID: usize = usize::MAX;
@@ -78,12 +74,7 @@ impl Decisions {
             linked_list[j].ts = f.num_vars - i;
             i += 1;
         }
-        Decisions {
-            linked_list: linked_list,
-            timestamp: f.num_vars + 1,
-            start: head,
-            search: head,
-        }
+        Decisions { linked_list: linked_list, timestamp: f.num_vars + 1, start: head, search: head }
     }
 
     #[cfg_attr(feature = "trust_decision", trusted)]
@@ -190,7 +181,8 @@ impl Decisions {
         proof_assert!(@self.start < (@_f.num_vars));
         self.linked_list[self.start].prev = tomove;
         self.start = tomove;
-        if prev != INVALID { // lazy, should prove
+        if prev != INVALID {
+            // lazy, should prove
             self.linked_list[prev].next = old_next;
         }
         if old_next != INVALID {
@@ -204,7 +196,7 @@ impl Decisions {
         }
         */
     }
-    
+
     #[cfg_attr(feature = "trust_decision", trusted)]
     #[requires(@f.num_vars < @usize::MAX)]
     #[requires(f.invariant())]

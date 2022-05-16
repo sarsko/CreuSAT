@@ -149,7 +149,7 @@ impl Watches {
     #[requires(f.invariant())]
     #[requires(trail.invariant(*f))]
     #[requires(@cref < (@f.clauses).len())]
-    #[requires((@(@f.clauses)[@cref]).len() >= 2)] 
+    #[requires((@(@f.clauses)[@cref]).len() >= 2)]
     pub fn unwatch(&mut self, f: &Formula, trail: &Trail, cref: usize, lit: Lit) {
         let watchidx = lit.to_neg_watchidx();
         let mut i: usize = 0;
@@ -167,7 +167,7 @@ impl Watches {
                         proof_assert!(@(@self.watches)[@watchidx] === pop(@(@(@old_w).watches)[@watchidx]));
                         proof_assert!(watcher_crefs_in_range(@(@self.watches)[@watchidx], *f));
                         proof_assert!(self.invariant(*f));
-                    },
+                    }
                     None => {
                         unreachable!();
                     }

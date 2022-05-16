@@ -34,7 +34,6 @@ pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
     }
 }
 
-
 #[cfg_attr(feature = "trust_util", trusted)]
 #[inline(always)]
 pub fn update_fast(fast: &mut usize, lbd: usize) {
