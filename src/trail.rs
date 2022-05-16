@@ -98,6 +98,19 @@ impl Trail {
     }
 
     #[cfg_attr(feature = "trust_trail", trusted)]
+    #[inline(always)]
+    #[requires(f.invariant())]
+    #[maintains((mut self).invariant(*f))]
+    #[maintains((mut d).invariant(@f.num_vars))]
+    #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
+    #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
+    pub fn backtrack_safe(&mut self, level: usize, f: &Formula, d: &mut Decisions) {
+        if level < self.decision_level() { 
+            self.backtrack_to(level, f, d);
+        }
+    }
+
+    #[cfg_attr(feature = "trust_trail", trusted)]
     #[requires((@self.decisions).len() > @level)]
     #[requires(f.invariant())]
     #[maintains((mut self).invariant(*f))]
@@ -200,6 +213,7 @@ impl Trail {
     #[maintains((mut self).invariant(*_f))]
     #[requires(_f.invariant())]
     #[requires(step.lit.invariant(@_f.num_vars))]
+    #[requires(step.invariant(*_f))]
     #[requires(match step.reason {
         Reason::Long(cref) => {@cref < (@_f.clauses).len()
                             && (@_f.clauses)[@cref].unit(self.assignments)
@@ -208,14 +222,12 @@ impl Trail {
                             && step.lit === (@(@_f.clauses)[@cref])[0]},
         _                  => true,
     })]
-    #[requires(step.invariant(*_f))]
-    #[requires(step.lit.invariant(@_f.num_vars))]
     #[requires(!step.lit.idx_in_trail(self.trail))]
     #[requires(unset((@self.assignments)[@step.lit.idx]))]
+    #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
     #[ensures((forall<j : Int> 0 <= j && j < (@self.assignments).len() &&
         j != @step.lit.idx ==> (@self.assignments)[j] === (@(^self).assignments)[j]))]
     #[ensures(step.lit.sat((^self).assignments))]
-    #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
     #[ensures(match step.reason {
         Reason::Long(k) => clause_post_with_regards_to_lit((@_f.clauses)[@k], (^self).assignments, step.lit),

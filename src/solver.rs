@@ -57,11 +57,16 @@ update_fast_average (double *average, unsigned value)
 
 //&& @level < (@trail.decisions).len() //added
 
+#[cfg_attr(feature = "trust_solver", trusted)]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
 #[requires(equisat_extension_inner(*clause, @f))]
-#[ensures(equisat_extension_inner(^clause, @f))]
-pub fn make_asserting_clause(clause: &mut Clause, trail: &Trail, f: &Formula) -> usize {
+#[requires(clause.invariant(@f.num_vars))]
+#[requires((@clause).len() > 1)]
+#[requires(vars_in_range_inner(@clause, @f.num_vars))]
+#[requires(no_duplicate_indexes_inner(@clause))]
+#[ensures(@result.0 < (@clause).len())]
+pub fn get_asserting_level(clause: &Clause, trail: &Trail, f: &Formula) -> (usize, usize) {
     let mut max_i: usize = 1;
     let mut max_level = trail.lit_to_level[clause.rest[1].idx];
     let mut i: usize = 2;
@@ -74,8 +79,8 @@ pub fn make_asserting_clause(clause: &mut Clause, trail: &Trail, f: &Formula) ->
         }
         i += 1;
     }
-    clause.rest.swap(1, max_i);
-    return max_level;
+    //clause.rest.swap(1, max_i);
+    return (max_i, max_level);
 }
 
 pub struct Solver {
@@ -104,13 +109,78 @@ impl Solver {
             num_conflicts: 0,
             initial_len: f.clauses.len(),
             inc_reduce_db: 300,
-            fast: shift_left(1, 24),
-            slow: shift_left(1, 24),
+            fast: 16777216, // 1 << 24
+            slow: 16777216, // 1 << 24
             perm_diff: vec::from_elem(0, f.num_vars),
+        }
+    }
+    
+    #[cfg_attr(feature = "trust_solver", trusted)]
+    #[inline(always)]
+    fn increase_num_conflicts(&mut self) {
+        if self.num_conflicts < usize::MAX {
+            self.num_conflicts += 1;
+        }
+    }
+
+    #[cfg_attr(feature = "trust_solver", trusted)]
+    #[inline(always)]
+    fn increase_num_lemmas(&mut self) {
+        if self.num_lemmas < usize::MAX {
+            self.num_lemmas += 1;
         }
     }
 
     //#[cfg_attr(feature = "trust_solver", trusted)]
+    #[maintains((mut f).invariant())]
+    #[maintains((mut t).invariant(mut f))]
+    #[maintains((mut w).invariant(mut f))]
+    #[maintains((mut d).invariant(@f.num_vars))]
+    #[requires(@f.num_vars < @usize::MAX/2)]
+    #[requires(clause.invariant(@f.num_vars))]
+    #[requires((@clause).len() > 1)]
+    #[requires(@s_idx < (@clause).len())]
+    #[requires(vars_in_range_inner(@clause, @f.num_vars))]
+    #[requires(no_duplicate_indexes_inner(@clause))]
+    #[requires(equisat_extension_inner(clause, @f))]
+    #[ensures(@f.num_vars === @(^f).num_vars)]
+    #[ensures(f.equisat(^f))]
+    fn handle_long_clause(&mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, s_idx: usize) {
+        let (idx, level) = get_asserting_level(&mut clause, t, f);
+        let mut i: usize = 0;
+        let mut lbd: usize = 0;
+        #[invariant(lbd_bound, @lbd <= @i)]
+        while i < clause.rest.len() {
+            let level = t.lit_to_level[clause.rest[i].idx];
+            if level < self.perm_diff.len() && // Lazy
+                self.perm_diff[level] != self.num_conflicts {
+                self.perm_diff[level] = self.num_conflicts;
+                lbd += 1;
+            }
+            i += 1;
+        }
+        let cref = f.make_asserting_clause_and_add(clause, w, t, idx, s_idx);
+        update_fast(&mut self.fast, lbd);
+        update_slow(&mut self.slow, lbd);
+        d.increment_and_move(f, cref, &t.assignments);
+        // This should be removed by updating the post of get_asserting_level
+        t.backtrack_safe(level, f, d);
+        let lit = f.clauses[cref].rest[0];
+        let step = Step {
+            lit: lit,
+            decision_level: level,
+            reason: Reason::Long(cref),
+        };
+        // TODO:
+        // These two have to be ensured by analysis + backtrack
+        proof_assert!((@f.clauses)[@cref].unit(t.assignments));
+        proof_assert!(unset((@t.assignments)[@step.lit.idx]));
+        t.enq_assignment(step, f);
+        self.increase_num_lemmas();
+        self.increase_num_conflicts();
+    }
+
+    #[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut w).invariant(mut f))]
@@ -143,44 +213,8 @@ impl Solver {
                 f.reduceDB(w, t, self);
                 f.simplify_formula(w, t);
             }
-            Conflict::Learned(clause) => {
-                let mut clause = clause;
-                let level = make_asserting_clause(&mut clause, t, f);
-
-                let mut i: usize = 0;
-                let mut lbd: usize = 0;
-                #[invariant(lbd_bound, @lbd <= @i)]
-                while i < clause.rest.len() {
-                    let level = t.lit_to_level[clause.rest[i].idx];
-                    if level < self.perm_diff.len() && // Lazy
-                        self.perm_diff[level] != self.num_conflicts {
-                        self.perm_diff[level] = self.num_conflicts;
-                        lbd += 1;
-                    }
-                    i += 1;
-                }
-                update_fast(&mut self.fast, lbd);
-                update_slow(&mut self.slow, lbd);
-                let lit = clause.rest[0];
-                let cref = f.add_clause(clause, w, t);
-                d.increment_and_move(f, cref, &t.assignments);
-                t.backtrack_to(level, f, d);
-                let step = Step {
-                    lit: lit,
-                    decision_level: level,
-                    reason: Reason::Long(cref),
-                };
-                // TODO:
-                // These two have to be ensured by analysis + backtrack
-                proof_assert!((@f.clauses)[@cref].unit(t.assignments));
-                proof_assert!(unset((@t.assignments)[@step.lit.idx]));
-                t.enq_assignment(step, f);
-                if self.num_conflicts < usize::MAX {
-                    self.num_conflicts += 1;
-                }
-                if self.num_lemmas < usize::MAX {
-                    self.num_lemmas += 1;
-                }
+            Conflict::Learned(s_idx, mut clause) => {
+                self.handle_long_clause(f, t, w, d, clause, s_idx);
             }
             Conflict::Panic => { return Some(true); }
         }

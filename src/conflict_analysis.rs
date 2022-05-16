@@ -11,8 +11,7 @@ use crate::logic::{logic::*, logic_clause::*, logic_conflict_analysis::*, logic_
 pub enum Conflict {
     Ground,
     Unit(Clause),
-    //Learned(usize, Lit, Vec<Lit>),
-    Learned(Clause),
+    Learned(usize, Clause),
     Panic,
 }
 
@@ -312,12 +311,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
     None
 }
 
-// TODO
-// Had to add swapping to make vmtf work. Need to prove that swapping is fine.
-// Probably gonna restore old analyze_conflict and move it out.
-// (in other words gonna make a function make_asserting_clause() from
-// equisat clause to equisat clause)
-//#[cfg_attr(feature = "trust_conflict", trusted)]
+#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
@@ -331,13 +325,13 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
         && no_duplicate_indexes_inner(@clause)
         && equisat_extension_inner(clause, @f)
     },
-    Conflict::Learned(clause) => {
+    Conflict::Learned(s_idx, clause) => {
         clause.invariant(@f.num_vars)
-        //&& @level < (@trail.decisions).len() //added
         && (@clause).len() > 1
         && vars_in_range_inner(@clause, @f.num_vars)
         && no_duplicate_indexes_inner(@clause)
         && equisat_extension_inner(clause, @f)
+        && @s_idx < (@clause).len()
     },
     _ => { true }
 })]
@@ -386,9 +380,9 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
         s_idx = 0;
         let mut k: usize = 0;
         let mut cnt: usize = 0;
-        #[invariant(k_bound, @k <= (@clause.rest).len())]
-        #[invariant(s_idx_ok, @s_idx <= @k)]
-        #[invariant(cnt_bound, @cnt <= @k)]
+        #[invariant(k_bound, @k <= (@clause).len())]
+        #[invariant(s_idx_ok, @cnt === 0 || @s_idx < (@clause).len())]
+        #[invariant(cnt_bound, @cnt <= 2)]
         while k < clause.rest.len() {
             if trail.lit_to_level[clause.rest[k].idx] == decisionlevel {
                 cnt += 1;
@@ -400,19 +394,14 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             k += 1;
         }
         if cnt == 1 {
-            clause.rest.swap(0, s_idx);
-            break;
+            return if clause.rest.len() == 1 {
+                Conflict::Unit(clause)
+            } else {
+                Conflict::Learned(s_idx, clause)
+            };
         }
     }
-    if clause.rest.len() == 0 {
-        return Conflict::Panic; // Okay this is just pure lazyness
-    }
-    if clause.rest.len() == 1 {
-        Conflict::Unit(clause)
-    } else {
-        Conflict::Learned(clause)
-        //Conflict::Learned(0, clause)
-    }
+    return Conflict::Panic; // Okay this is just pure lazyness
 }
 
 // Just analyze_conflict without a stopping condition(and with accepting units for resolution)

@@ -12,6 +12,7 @@ use crate::logic::{
     logic_clause::*,
     logic_formula::*,
     logic_trail::*, //tmp?
+    logic::*,
 };
 
 pub struct Formula {
@@ -121,6 +122,31 @@ impl Formula {
     }
     */
 
+    #[cfg_attr(feature = "trust_unit", trusted)]
+    #[maintains((*trail).invariant(mut self))]
+    #[maintains((mut self).invariant())]
+    #[maintains((*watches).invariant(mut self))]
+    #[requires((@(@self.clauses)[@cref]).len() >= 2)]
+    #[requires((@(@self.clauses)[@cref]).len() > @j)]
+    #[requires((@(@self.clauses)[@cref]).len() > @k)]
+    #[requires(@self.num_vars < @usize::MAX/2)]
+    #[requires(@cref < (@self.clauses).len())]
+    #[ensures(@self.num_vars === @(^self).num_vars)]
+    #[ensures((@self.clauses).len() === (@(^self).clauses).len())]
+    #[ensures((@(@self.clauses)[@cref]).len() === (@(@(^self).clauses)[@cref]).len())]
+    #[ensures(self.equisat(^self))]
+    pub fn swap_lits_in_clause(&mut self, trail: &Trail, watches: &Watches, cref: usize, j: usize, k: usize) {
+        let old_f = Ghost::record(&self);
+        proof_assert!(no_duplicate_indexes_inner(@(@self.clauses)[@cref]));
+        proof_assert!(long_are_post_unit_inner(@trail.trail, *self, @trail.assignments) && true);
+        self.clauses[cref].rest.swap(j, k);
+        proof_assert!(lemma_swap_maintains_post_unit(((@(@old_f).clauses)[@cref]), ((@self.clauses)[@cref]), @j, @k, trail.assignments); true);
+        proof_assert!(vars_in_range_inner(@(@self.clauses)[@cref], @self.num_vars));
+        proof_assert!(no_duplicate_indexes_inner(@(@self.clauses)[@cref]));
+        proof_assert!(long_are_post_unit_inner(@trail.trail, *self, @trail.assignments));
+        proof_assert!(^@old_f === ^self);
+    }
+
 
     // Needs some help on inlining/splitting, but checks out
     #[cfg_attr(feature = "trust_formula", trusted)]
@@ -154,6 +180,65 @@ impl Formula {
         proof_assert!((@old_self).equisat_compatible(*self));
         // This is just the trail invariant unwrapped
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
+        cref
+    }
+
+    #[cfg_attr(feature = "trust_formula", trusted)]
+    #[maintains((mut self).invariant())]
+    #[maintains(_t.invariant(mut self))]
+    #[maintains((mut watches).invariant(mut self))] // new
+    #[requires((@clause).len() >= 2)]
+    #[requires(@self.num_vars < @usize::MAX/2)]
+    #[requires(vars_in_range_inner(@clause, @self.num_vars))]
+    #[requires(no_duplicate_indexes_inner(@clause))]
+    #[requires(equisat_extension_inner(clause, @self))]
+    #[ensures(@self.num_vars === @(^self).num_vars)]
+    #[ensures(self.equisat_compatible(^self))]
+    #[ensures(self.equisat(^self))] // Added/changed
+    #[ensures(@result === (@self.clauses).len())]
+    #[ensures((@(^self).clauses)[@result] === clause)]
+    #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
+    pub fn add_unwatched_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
+        let old_self = Ghost::record(&self);
+        let cref = self.clauses.len();
+        self.clauses.push(clause);
+        proof_assert!(^@old_self === ^self);
+        proof_assert!((@old_self).equisat_compatible(*self));
+        // This is just the trail invariant unwrapped
+        proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
+        cref
+    }
+
+    // The reason why we are doing this so "weirdly" is that swapping before adding makes the SMT
+    // solvers not believe that the clause is equisat. This could probably be solved, but pushing,
+    // then swapping, then adding watches works just fine.
+    #[cfg_attr(feature = "trust_formula", trusted)]
+    #[requires(@idx < (@clause).len())]
+    #[requires(@s_idx < (@clause).len())]
+    #[maintains((mut self).invariant())]
+    #[maintains(t.invariant(mut self))]
+    #[maintains((mut watches).invariant(mut self))] // new
+    #[requires((@clause).len() >= 2)]
+    #[requires(@self.num_vars < @usize::MAX/2)]
+    #[requires(vars_in_range_inner(@clause, @self.num_vars))]
+    #[requires(no_duplicate_indexes_inner(@clause))]
+    #[requires(equisat_extension_inner(clause, @self))]
+    #[ensures((@(@(^self).clauses)[@result]).len() === (@clause).len())]
+    #[ensures(@self.num_vars === @(^self).num_vars)]
+    #[ensures(self.equisat(^self))] 
+    #[ensures(@result === (@self.clauses).len())]
+    #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
+    pub fn make_asserting_clause_and_add(&mut self, clause: Clause, watches: &mut Watches, t: &Trail, idx: usize, s_idx: usize) -> usize {
+        let old_self = Ghost::record(&self);
+        let cref = self.add_unwatched_clause(clause, watches, t);
+        self.swap_lits_in_clause(t, watches, cref, 0, s_idx);
+        self.swap_lits_in_clause(t, watches, cref, 1, idx);
+        let first_lit = self.clauses[cref].rest[0];
+        let second_lit = self.clauses[cref].rest[1];
+        watches.add_watcher(first_lit, cref, self);
+        watches.add_watcher(second_lit, cref, self);
+        proof_assert!(^@old_self === ^self);
+        proof_assert!((@old_self).equisat(*self));
         cref
     }
 
