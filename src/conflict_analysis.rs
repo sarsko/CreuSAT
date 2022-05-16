@@ -11,7 +11,6 @@ use crate::logic::{logic::*, logic_clause::*, logic_conflict_analysis::*, logic_
 pub enum Conflict {
     Ground,
     Unit(Clause),
-    //Learned(usize, Lit, Vec<Lit>),
     Learned(usize, Clause),
     Panic,
 }
@@ -194,7 +193,7 @@ fn resolve(
             (@new)[j] === (@@old_new)[j]);
         i += 1;
     }
-    let out = Clause { rest: new };
+    let out = Clause { deleted: false, rest: new };
     proof_assert!(@out === @new);
     proof_assert!(
             (forall<i: Int> 0 <= i && i < (@o).len() && @(@o)[i].idx != @idx ==> (@o)[i].lit_in_internal(@new))
@@ -312,7 +311,6 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
     None
 }
 
-// OK
 #[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
@@ -327,13 +325,13 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
         && no_duplicate_indexes_inner(@clause)
         && equisat_extension_inner(clause, @f)
     },
-    Conflict::Learned(level, clause) => {
+    Conflict::Learned(s_idx, clause) => {
         clause.invariant(@f.num_vars)
-        && @level < (@trail.decisions).len() //added
         && (@clause).len() > 1
         && vars_in_range_inner(@clause, @f.num_vars)
         && no_duplicate_indexes_inner(@clause)
         && equisat_extension_inner(clause, @f)
+        && @s_idx < (@clause).len()
     },
     _ => { true }
 })]
@@ -352,7 +350,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     }
     let mut i = trail.trail.len();
     let mut clause = f.clauses[cref].clone();
-    let mut s_idx = 0;
+    let mut s_idx: usize = 0;
     #[invariant(clause_vars, clause.invariant_unary_ok(@f.num_vars))]
     #[invariant(clause_equi, equisat_extension_inner(clause, @f))]
     #[invariant(clause_unsat, clause.unsat(trail.assignments))]
@@ -379,49 +377,31 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             &trail.assignments,
         );
         //resolve_mut(f, &mut clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
+        s_idx = 0;
         let mut k: usize = 0;
         let mut cnt: usize = 0;
-        #[invariant(k_bound, @k <= (@clause.rest).len())]
-        #[invariant(cnt_bound, @cnt <= @k)]
+        #[invariant(k_bound, @k <= (@clause).len())]
+        #[invariant(s_idx_ok, @cnt === 0 || @s_idx < (@clause).len())]
+        #[invariant(cnt_bound, @cnt <= 2)]
         while k < clause.rest.len() {
             if trail.lit_to_level[clause.rest[k].idx] == decisionlevel {
                 cnt += 1;
                 if cnt > 1 {
                     break;
                 }
-                //s_idx = k;
+                s_idx = k;
             }
             k += 1;
         }
         if cnt == 1 {
-            //clause.rest.swap(0, s_idx);
-            break;
+            return if clause.rest.len() == 1 {
+                Conflict::Unit(clause)
+            } else {
+                Conflict::Learned(s_idx, clause)
+            };
         }
     }
-    if clause.rest.len() == 0 {
-        return Conflict::Panic; // Okay this is just pure lazyness
-    }
-
-    if clause.rest.len() == 1 {
-        Conflict::Unit(clause)
-    } else {
-        /*
-        let mut max_i = 1;
-        let mut max_level = trail.lit_to_level[clause.rest[1].idx];
-        i = 2;
-        while i < clause.rest.len() {
-            let level = trail.lit_to_level[clause.rest[i].idx];
-            if level > max_level {
-                max_level = level;
-                max_i = i;
-            }
-            i += 1;
-        }
-        clause.rest.swap(1, max_i);
-        */
-        //Conflict::Learned(max_level, clause.rest[0], clause)
-        Conflict::Learned(0, clause)
-    }
+    return Conflict::Panic; // Okay this is just pure lazyness
 }
 
 // Just analyze_conflict without a stopping condition(and with accepting units for resolution)

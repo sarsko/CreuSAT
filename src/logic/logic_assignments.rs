@@ -64,7 +64,8 @@ impl Assignments {
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
-            @f.num_vars === (@self).len() && @self.1 <= @f.num_vars
+            @f.num_vars === (@self).len() 
+            //&& @self.1 <= @f.num_vars // We dont have self.1(search index) anymore
             && forall<i : Int> 0 <= i && i < (@self).len() ==> @(@self)[i] <= 3 // NEW, may break stuff
         }
     }

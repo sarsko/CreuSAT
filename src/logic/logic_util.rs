@@ -31,9 +31,29 @@ pub fn sorted(s: Seq<usize>) -> bool {
 }
 
 #[predicate]
+pub fn sorted_range_tuple_zeroth(s: Seq<(usize, usize)>, l: Int, u: Int) -> bool {
+    pearlite! {
+        forall<i: Int, j: Int> l <= i && i < j && j < u ==> s[i].0 <= s[j].0
+    }
+}
+
+#[predicate]
+pub fn sorted_tuple_zeroth(s: Seq<(usize, usize)>) -> bool {
+    pearlite! {
+        sorted_range_tuple_zeroth(s, 0, s.len())
+    }
+}
+
+#[predicate]
+pub fn partition(v: Seq<(usize, usize)>, i: Int) -> bool {
+    pearlite! { forall<k1: Int, k2: Int> 0 <= k1 && k1 < i && i <= k2 && k2 < v.len() ==> v[k1].0 <= v[k2].0}
+}
+
+#[predicate]
 pub fn partition_rev(v: Seq<(usize, usize)>, i: Int) -> bool {
     pearlite! { forall<k1 : Int, k2: Int> 0 <= k1 && k1 < i && i <= k2 && k2 < v.len() ==> v[k1].0 >= v[k2].0}
 }
+
 
 #[logic]
 #[cfg_attr(feature = "trust_util_logic", trusted)]

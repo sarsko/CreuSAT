@@ -11,6 +11,7 @@ use crate::logic::logic_clause::*;
 //#[derive(Debug)]
 //#[derive(Clone)]
 pub struct Clause {
+    pub deleted: bool,
     //pub first: Lit,
     //pub second: Lit,
     pub rest: Vec<Lit>,
@@ -25,6 +26,7 @@ impl Clone for Clause {
     #[ensures(result === *self)]
     fn clone(&self) -> Self {
         Clause {
+            deleted: self.deleted,
             rest: self.rest.clone(),
         }
     }
@@ -40,10 +42,58 @@ pub enum ClauseState {
 }
 
 impl Clause {
+    #[cfg_attr(feature = "trust_clause", trusted)]
+    #[ensures(result === self.invariant(@n))]
+    pub fn check_clause_invariant(&self, n: usize) -> bool {
+        let mut i: usize = 0;
+        #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@self)[j].invariant(@n))]
+        while i < self.len() {
+            if !self.rest[i].check_lit_invariant(n){
+                return false;
+            }
+            i += 1;
+        }
+        if self.no_duplicates() {
+            return true;
+        }
+        return false;
+    }
+
+    #[cfg_attr(feature = "trust_clause", trusted)]
+    #[ensures(result === self.no_duplicate_indexes())]
+    pub fn no_duplicates(&self) -> bool {
+        let mut i: usize = 0;
+        #[invariant(no_dups, 
+            forall<j: Int, k: Int> 0 <= j && j < @i &&
+             0 <= k && k < j ==> (@self)[j].idx != (@self)[k].idx)]
+        while i < self.rest.len() {
+            let lit1 = self.rest[i];
+            let mut j: usize = 0;
+            #[invariant(inv, forall<k: Int> 0 <= k && k < @j ==> lit1.idx != (@self)[k].idx)]
+            while j < i {
+                let lit2 = self.rest[j];
+                if lit1.idx == lit2.idx {
+                    return false;
+                }
+                j += 1;
+            }
+            i += 1;
+        }
+        return true;
+    }
+
+    #[inline(always)]
+    #[cfg_attr(feature = "trust_clause", trusted)]
+    #[ensures(@result === (@self).len())]
+    pub fn len(&self) -> usize {
+        self.rest.len()
+    }
+
+    // TODO: Take a look at the parser
     #[inline]
     #[trusted]
     pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
-        Clause { rest: vec.clone() }
+        Clause { deleted: false, rest: vec.clone() }
     }
 
     // OK with split + split + CVC4 for 4.49 seconds on Mac
@@ -84,5 +134,24 @@ impl Clause {
     pub fn remove_from_clause(&mut self, idx: usize, _f: &Formula) {
         self.move_to_end(idx, _f);
         self.rest.pop();
+    }
+
+    // This is an ugly runtime check
+    #[cfg_attr(feature = "trust_clause", trusted)]
+    #[requires(invariant_internal(@self, @_f.num_vars))]
+    #[requires(a.invariant(*_f))]
+    #[requires((@self).len() > 1)]
+    #[ensures(result ==> self.unit(*a))]
+    #[ensures(result ==> (@self)[0].unset(*a))]
+    pub fn unit_and_unset(&self, a: &Assignments, _f: &Formula) -> bool {
+        let mut i: usize = 1;
+        #[invariant(unsat, forall<j: Int> 1 <= j && j < @i ==> (@self)[j].unsat(*a))]
+        while i < self.rest.len() {
+            if !self.rest[i].lit_unsat(a) {
+                return false;
+            }
+            i += 1;
+        }
+        return self.rest[0].lit_unset(a);
     }
 }

@@ -2,7 +2,7 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::{assignments::*, clause::*, formula::*, lit::*, logic::*, solver::SatResult, util::*};
+use crate::{assignments::*, clause::*, decision::*, formula::*, lit::*, logic::*, solver::SatResult, util::*};
 
 #[cfg(feature = "contracts")]
 use crate::logic::{logic::*, logic_trail::*, logic_util::*};
@@ -55,12 +55,14 @@ impl Trail {
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[inline(always)]
     #[requires(f.invariant())]
+    #[requires(@f.num_vars > 0)]
     #[requires(self.invariant_no_decision(*f))]
     #[ensures((^self).invariant_no_decision(*f))] // added since last run
     #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
+    #[ensures(@result < @f.num_vars)]
     //#[ensures((@self.trail).len() === (@(^self).trail).len() + 1)] // added
-    fn backstep(&mut self, f: &Formula) {
+    fn backstep(&mut self, f: &Formula) -> usize {
         let old_t = Ghost::record(&self);
         //proof_assert!(self === @old_t);
         let last = self.trail.pop();
@@ -76,6 +78,7 @@ impl Trail {
                 proof_assert!((lemma_backtrack_ok(*self, *f, step.lit)); true);
                 self.lit_to_level[step.lit.idx] = usize::MAX;
                 proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
+                return step.lit.idx;
             }
             None => {
                 // Could add a req on trail len and prove that this doesn't happen, but
@@ -91,34 +94,60 @@ impl Trail {
         proof_assert!(self.lit_is_unique());
         proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
         proof_assert!(self.trail_entries_are_assigned());
+        return 0;
+    }
+
+    #[cfg_attr(feature = "trust_trail", trusted)]
+    #[inline(always)]
+    #[requires(f.invariant())]
+    #[maintains((mut self).invariant(*f))]
+    #[maintains((mut d).invariant(@f.num_vars))]
+    #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
+    #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
+    pub fn backtrack_safe(&mut self, level: usize, f: &Formula, d: &mut Decisions) {
+        if level < self.decision_level() { 
+            self.backtrack_to(level, f, d);
+        }
     }
 
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[requires((@self.decisions).len() > @level)]
     #[requires(f.invariant())]
     #[maintains((mut self).invariant(*f))]
+    #[maintains((mut d).invariant(@f.num_vars))]
     //#[requires((@self.trail).len() > 0)] // removed
     #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
     // Backtracks to the start of level
-    pub fn backtrack_to(&mut self, level: usize, f: &Formula) {
+    pub fn backtrack_to(&mut self, level: usize, f: &Formula, d: &mut Decisions) {
         let old_t = Ghost::record(&self);
+        let old_d = Ghost::record(&d);
         let how_many = self.trail.len() - self.decisions[level];
         let des = self.decisions[level];
         let mut i: usize = 0;
+        let mut curr = d.search;
+        let mut timestamp = if curr != usize::MAX { d.linked_list[curr].ts } else {0}; // revisit this later
         #[invariant(i_less2, @i <= (@(@old_t).trail).len())]
         #[invariant(i_less, i <= how_many)]
         #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
         #[invariant(inv, self.invariant_no_decision(*f))]
+        #[invariant(d_inv, d.invariant(@f.num_vars))]
         //#[invariant(len_is, (@self.trail).len() === (@(@old_t).trail).len() - @i)] // we don't care anymore
         #[invariant(proph, ^@old_t === ^self)]
+        #[invariant(proph_d, ^@old_d === ^d)]
+        #[invariant(curr_less, @curr < (@d.linked_list).len() || @curr === @usize::MAX)] // Hmm maybe change invariant
         while i < how_many {
-            self.backstep(f);
+            let idx = self.backstep(f);
+            proof_assert!(@idx < @f.num_vars);
+            let curr_timestamp = d.linked_list[idx].ts;
+            if curr_timestamp > timestamp {
+                timestamp = curr_timestamp;
+                curr = idx;
+            }
             i += 1;
         }
+        d.search = curr;
 
-        self.assignments.1 = 0; // TODO
-                                // Prove this later
         #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
         #[invariant(inv, self.invariant_no_decision(*f))]
         #[invariant(proph, ^@old_t === ^self)]
@@ -175,10 +204,8 @@ impl Trail {
         proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
         proof_assert!(self.trail_entries_are_assigned());
 
-        //self.curr_i = des//self.trail.len();
-        // I don't get why setting it to something other than 0 is incorrect
-        // Seems to be because we are not handling the asserting level.
-        self.curr_i = 0;
+        self.curr_i = level;
+        //self.curr_i = self.trail.len();
     }
 
     // Could help it a bit in seeing that unit are sat
@@ -186,6 +213,7 @@ impl Trail {
     #[maintains((mut self).invariant(*_f))]
     #[requires(_f.invariant())]
     #[requires(step.lit.invariant(@_f.num_vars))]
+    #[requires(step.invariant(*_f))]
     #[requires(match step.reason {
         Reason::Long(cref) => {@cref < (@_f.clauses).len()
                             && (@_f.clauses)[@cref].unit(self.assignments)
@@ -194,18 +222,16 @@ impl Trail {
                             && step.lit === (@(@_f.clauses)[@cref])[0]},
         _                  => true,
     })]
-    #[requires(step.invariant(*_f))]
-    #[requires(step.lit.invariant(@_f.num_vars))]
     #[requires(!step.lit.idx_in_trail(self.trail))]
     #[requires(unset((@self.assignments)[@step.lit.idx]))]
+    #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
     #[ensures((forall<j : Int> 0 <= j && j < (@self.assignments).len() &&
         j != @step.lit.idx ==> (@self.assignments)[j] === (@(^self).assignments)[j]))]
     #[ensures(step.lit.sat((^self).assignments))]
-    #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
     #[ensures(match step.reason {
         Reason::Long(k) => clause_post_with_regards_to_lit((@_f.clauses)[@k], (^self).assignments, step.lit),
-        _ => true
+        _               => true
     })]
     #[ensures((@(^self).trail).len() === 1 + (@self.trail).len())]
     #[ensures((^self).decisions === self.decisions)] // added
@@ -282,6 +308,7 @@ impl Trail {
     // Okay so I should really just prove the backtracking mechanism, this is not nice
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[maintains((mut self).invariant(*f))]
+    #[maintains((mut d).invariant(@f.num_vars))]
     #[requires(f.invariant())]
     #[requires(@cref < (@f.clauses).len())]
     #[requires((@(@f.clauses)[@cref]).len() == 1)]
@@ -293,9 +320,9 @@ impl Trail {
         Ok(_) => (@(@f.clauses)[@cref])[0].sat((^self).assignments)})]
     #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
-    pub fn learn_unit(&mut self, cref: usize, f: &Formula) -> Result<(), ()> {
+    pub fn learn_unit(&mut self, cref: usize, f: &Formula, d: &mut Decisions) -> Result<(), ()> {
         if self.decision_level() > 0 {
-            self.backtrack_to(0, f);
+            self.backtrack_to(0, f, d);
         }
         // I have to do a proof here that it is unset after ->
         // will need another requires
@@ -315,6 +342,7 @@ impl Trail {
 
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[maintains((mut self).invariant(*f))]
+    #[maintains((mut d).invariant(@f.num_vars))]
     #[requires(f.invariant())]
     #[ensures(match result {
         Some(cref) => @cref < (@f.clauses).len()
@@ -323,11 +351,14 @@ impl Trail {
                    && (@(@f.clauses)[@cref])[0].unsat((^self).assignments),
         _ => true,
     })]
-    pub fn learn_units(&mut self, f: &Formula) -> Option<usize> {
+    pub fn learn_units(&mut self, f: &Formula, d: &mut Decisions) -> Option<usize> {
         let mut i = 0;
+        let old_d = Ghost::record(&d);
         let old_self = Ghost::record(&self);
         #[invariant(self_inv, self.invariant(*f))]
         #[invariant(proph, ^@old_self === ^self)]
+        #[invariant(proph_d, ^@old_d === ^d)]
+        #[invariant(d_inv, d.invariant(@f.num_vars))]
         while i < f.clauses.len() {
             let clause = &f.clauses[i];
             if clause.rest.len() == 1 {
@@ -338,7 +369,7 @@ impl Trail {
                         return Some(i);
                     }
                 } else {
-                    self.learn_unit(i, f);
+                    self.learn_unit(i, f, d);
                 }
             }
             i += 1;
