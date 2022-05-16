@@ -146,12 +146,13 @@ impl Solver {
     #[ensures(@f.num_vars === @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
     fn handle_long_clause(&mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, s_idx: usize) {
-        let (idx, level) = get_asserting_level(&mut clause, t, f);
+        let cref = f.add_and_swap_first(clause, w, t, s_idx);
+        let (idx, level) = get_asserting_level(&f.clauses[cref], t, f);
         let mut i: usize = 0;
         let mut lbd: usize = 0;
         #[invariant(lbd_bound, @lbd <= @i)]
-        while i < clause.rest.len() {
-            let level = t.lit_to_level[clause.rest[i].idx];
+        while i < f.clauses[cref].rest.len() {
+            let level = t.lit_to_level[f.clauses[cref].rest[i].idx];
             if level < self.perm_diff.len() && // Lazy
                 self.perm_diff[level] != self.num_conflicts {
                 self.perm_diff[level] = self.num_conflicts;
@@ -159,7 +160,7 @@ impl Solver {
             }
             i += 1;
         }
-        let cref = f.make_asserting_clause_and_add(clause, w, t, idx, s_idx);
+        f.make_asserting_clause_and_watch(w, t, idx, cref);
         update_fast(&mut self.fast, lbd);
         update_slow(&mut self.slow, lbd);
         d.increment_and_move(f, cref, &t.assignments);

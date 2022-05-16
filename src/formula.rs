@@ -213,7 +213,29 @@ impl Formula {
     // solvers not believe that the clause is equisat. This could probably be solved, but pushing,
     // then swapping, then adding watches works just fine.
     #[cfg_attr(feature = "trust_formula", trusted)]
-    #[requires(@idx < (@clause).len())]
+    #[requires(@cref < (@self.clauses).len())]
+    #[requires((@(@self.clauses)[@cref]).len() > 1)]
+    #[requires((@(@self.clauses)[@cref]).len() > @idx)]
+    #[maintains((mut self).invariant())]
+    #[maintains(t.invariant(mut self))]
+    #[maintains((mut watches).invariant(mut self))] // new
+    #[requires(@self.num_vars < @usize::MAX/2)]
+    #[ensures((@(@(^self).clauses)[@cref]).len() === (@(@self.clauses)[@cref]).len())]
+    #[ensures(@self.num_vars === @(^self).num_vars)]
+    #[ensures(self.equisat(^self))] 
+    #[ensures((@self.clauses).len() === (@(^self).clauses).len())]
+    pub fn make_asserting_clause_and_watch(&mut self, watches: &mut Watches, t: &Trail, idx: usize, cref: usize) {
+        let old_self = Ghost::record(&self);
+        self.swap_lits_in_clause(t, watches, cref, 1, idx);
+        let first_lit = self.clauses[cref].rest[0];
+        let second_lit = self.clauses[cref].rest[1];
+        watches.add_watcher(first_lit, cref, self);
+        watches.add_watcher(second_lit, cref, self);
+        proof_assert!(^@old_self === ^self);
+        proof_assert!((@old_self).equisat(*self));
+    }
+
+    #[cfg_attr(feature = "trust_formula", trusted)]
     #[requires(@s_idx < (@clause).len())]
     #[maintains((mut self).invariant())]
     #[maintains(t.invariant(mut self))]
@@ -228,17 +250,10 @@ impl Formula {
     #[ensures(self.equisat(^self))] 
     #[ensures(@result === (@self.clauses).len())]
     #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
-    pub fn make_asserting_clause_and_add(&mut self, clause: Clause, watches: &mut Watches, t: &Trail, idx: usize, s_idx: usize) -> usize {
+    pub fn add_and_swap_first(&mut self, clause: Clause, watches: &mut Watches, t: &Trail, s_idx: usize) -> usize {
         let old_self = Ghost::record(&self);
         let cref = self.add_unwatched_clause(clause, watches, t);
         self.swap_lits_in_clause(t, watches, cref, 0, s_idx);
-        self.swap_lits_in_clause(t, watches, cref, 1, idx);
-        let first_lit = self.clauses[cref].rest[0];
-        let second_lit = self.clauses[cref].rest[1];
-        watches.add_watcher(first_lit, cref, self);
-        watches.add_watcher(second_lit, cref, self);
-        proof_assert!(^@old_self === ^self);
-        proof_assert!((@old_self).equisat(*self));
         cref
     }
 
