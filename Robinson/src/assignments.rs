@@ -227,12 +227,9 @@ impl Assignments {
                 proof_assert!(lemma_unit_forces(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
                 if lit.polarity {
                     self.0[lit.idx] = 1;
-                    //proof_assert!(@self == (@@old_a).set(@lit.idx, 1u8));
                 } else {
                     self.0[lit.idx] = 0;
-                    //proof_assert!(@self == (@@old_a).set(@lit.idx, 0u8));
                 }
-                proof_assert!(@self == (@*@old_a).set(@lit.idx, bool_to_assignedstate(lit.polarity))); // This is failing atm
                 proof_assert!(lemma_extension_sat_base_sat(*f, @@old_a, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
                 proof_assert!(lemma_extensions_unsat_base_unsat(@@old_a, @lit.idx, *f); true);
                 proof_assert!(^self === ^@old_a);

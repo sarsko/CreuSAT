@@ -24,18 +24,6 @@ module Type
   type alloc_vec_vec 't 'a = 
     | Alloc_Vec_Vec (alloc_rawvec_rawvec 't 'a) usize
     
-  type alloc_alloc_global  = 
-    | Alloc_Alloc_Global
-    
-  type robinson_decision_decisions  = 
-    | Robinson_Decision_Decisions (alloc_vec_vec usize (alloc_alloc_global))
-    
-  let function robinson_decision_decisions_Decisions_lit_order (self : robinson_decision_decisions) : alloc_vec_vec usize (alloc_alloc_global)
-    
-   = 
-    match (self) with
-      | Robinson_Decision_Decisions a -> a
-      end
   type robinson_lit_lit  = 
     | Robinson_Lit_Lit usize bool
     
@@ -47,6 +35,9 @@ module Type
     match (self) with
       | Robinson_Lit_Lit _ a -> a
       end
+  type alloc_alloc_global  = 
+    | Alloc_Alloc_Global
+    
   type robinson_clause_clause  = 
     | Robinson_Clause_Clause (alloc_vec_vec (robinson_lit_lit) (alloc_alloc_global))
     
@@ -55,19 +46,6 @@ module Type
    = 
     match (self) with
       | Robinson_Clause_Clause a -> a
-      end
-  type robinson_formula_formula  = 
-    | Robinson_Formula_Formula (alloc_vec_vec (robinson_clause_clause) (alloc_alloc_global)) usize
-    
-  let function robinson_formula_formula_Formula_num_vars (self : robinson_formula_formula) : usize = 
-    match (self) with
-      | Robinson_Formula_Formula _ a -> a
-      end
-  let function robinson_formula_formula_Formula_clauses (self : robinson_formula_formula) : alloc_vec_vec (robinson_clause_clause) (alloc_alloc_global)
-    
-   = 
-    match (self) with
-      | Robinson_Formula_Formula a _ -> a
       end
   type robinson_assignments_assignments  = 
     | Robinson_Assignments_Assignments (alloc_vec_vec uint8 (alloc_alloc_global)) usize
@@ -82,6 +60,19 @@ module Type
     match (self) with
       | Robinson_Assignments_Assignments _ a -> a
       end
+  type robinson_formula_formula  = 
+    | Robinson_Formula_Formula (alloc_vec_vec (robinson_clause_clause) (alloc_alloc_global)) usize
+    
+  let function robinson_formula_formula_Formula_num_vars (self : robinson_formula_formula) : usize = 
+    match (self) with
+      | Robinson_Formula_Formula _ a -> a
+      end
+  let function robinson_formula_formula_Formula_clauses (self : robinson_formula_formula) : alloc_vec_vec (robinson_clause_clause) (alloc_alloc_global)
+    
+   = 
+    match (self) with
+      | Robinson_Formula_Formula a _ -> a
+      end
   type core_option_option 't = 
     | Core_Option_Option_None
     | Core_Option_Option_Some 't
@@ -90,6 +81,15 @@ module Type
     match (self) with
       | Core_Option_Option_None -> any 't
       | Core_Option_Option_Some a -> a
+      end
+  type robinson_decision_decisions  = 
+    | Robinson_Decision_Decisions (alloc_vec_vec usize (alloc_alloc_global))
+    
+  let function robinson_decision_decisions_Decisions_lit_order (self : robinson_decision_decisions) : alloc_vec_vec usize (alloc_alloc_global)
+    
+   = 
+    match (self) with
+      | Robinson_Decision_Decisions a -> a
       end
   type robinson_clause_clausestate  = 
     | Robinson_Clause_ClauseState_Sat
@@ -100,129 +100,6 @@ module Type
   type creusotcontracts_logic_ghost_ghost 't = 
     | CreusotContracts_Logic_Ghost_Ghost opaque_ptr
     
-end
-module CreusotContracts_Logic_Resolve_Impl1_Resolve_Interface
-  type t
-  use prelude.Prelude
-  predicate resolve (self : borrowed t)
-end
-module CreusotContracts_Logic_Resolve_Impl1_Resolve
-  type t
-  use prelude.Prelude
-  predicate resolve (self : borrowed t) = 
-     ^ self =  * self
-end
-module CreusotContracts_Logic_Resolve_Resolve_Resolve_Interface
-  type self
-  predicate resolve (self : self)
-end
-module CreusotContracts_Logic_Resolve_Resolve_Resolve
-  type self
-  predicate resolve (self : self)
-end
-module CreusotContracts_Logic_Resolve_Impl1
-  type t
-  use prelude.Prelude
-  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = t
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve1 with type self = borrowed t,
-  predicate resolve = Resolve0.resolve
-end
-module Robinson_Decision_Impl1_MoveToFront_Interface
-  use prelude.Prelude
-  use Type
-  use mach.int.Int
-  use mach.int.UInt64
-  val move_to_front [@cfg:stackify] (self : borrowed (Type.robinson_decision_decisions)) (tomove : usize) : ()
-end
-module Robinson_Decision_Impl1_MoveToFront
-  use prelude.Prelude
-  use Type
-  use mach.int.Int
-  use mach.int.UInt64
-  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = Type.robinson_decision_decisions
-  let rec cfg move_to_front [@cfg:stackify] (self : borrowed (Type.robinson_decision_decisions)) (tomove : usize) : ()
-   = 
-  var _0 : ();
-  var self_1 : borrowed (Type.robinson_decision_decisions);
-  var tomove_2 : usize;
-  {
-    self_1 <- self;
-    tomove_2 <- tomove;
-    goto BB0
-  }
-  BB0 {
-    _0 <- ();
-    assume { Resolve0.resolve self_1 };
-    return _0
-  }
-  
-end
-module Robinson_Decision_Impl1_IncrementAndMove_Interface
-  use prelude.Prelude
-  use Type
-  use mach.int.Int
-  use mach.int.UInt64
-  val increment_and_move [@cfg:stackify] (self : borrowed (Type.robinson_decision_decisions)) (f : Type.robinson_formula_formula) (cref : usize) : ()
-    
-end
-module Robinson_Decision_Impl1_IncrementAndMove
-  use prelude.Prelude
-  use Type
-  use mach.int.Int
-  use mach.int.UInt64
-  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = Type.robinson_decision_decisions
-  let rec cfg increment_and_move [@cfg:stackify] (self : borrowed (Type.robinson_decision_decisions)) (f : Type.robinson_formula_formula) (cref : usize) : ()
-    
-   = 
-  var _0 : ();
-  var self_1 : borrowed (Type.robinson_decision_decisions);
-  var f_2 : Type.robinson_formula_formula;
-  var cref_3 : usize;
-  {
-    self_1 <- self;
-    f_2 <- f;
-    cref_3 <- cref;
-    goto BB0
-  }
-  BB0 {
-    _0 <- ();
-    assume { Resolve0.resolve self_1 };
-    return _0
-  }
-  
-end
-module Robinson_Decision_Impl1_GetNext_Interface
-  use prelude.Prelude
-  use Type
-  use mach.int.Int
-  use mach.int.UInt64
-  val get_next [@cfg:stackify] (self : borrowed (Type.robinson_decision_decisions)) (a : Type.robinson_assignments_assignments) : Type.core_option_option usize
-    
-end
-module Robinson_Decision_Impl1_GetNext
-  use prelude.Prelude
-  use Type
-  use mach.int.Int
-  use mach.int.UInt64
-  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = Type.robinson_decision_decisions
-  let rec cfg get_next [@cfg:stackify] (self : borrowed (Type.robinson_decision_decisions)) (a : Type.robinson_assignments_assignments) : Type.core_option_option usize
-    
-   = 
-  var _0 : Type.core_option_option usize;
-  var self_1 : borrowed (Type.robinson_decision_decisions);
-  var a_2 : Type.robinson_assignments_assignments;
-  var _3 : ();
-  {
-    self_1 <- self;
-    a_2 <- a;
-    goto BB0
-  }
-  BB0 {
-    _0 <- Type.Core_Option_Option_None;
-    assume { Resolve0.resolve self_1 };
-    return _0
-  }
-  
 end
 module CreusotContracts_Std1_Vec_Impl0_Model_Interface
   type t
@@ -237,6 +114,123 @@ module CreusotContracts_Std1_Vec_Impl0_Model
   use Type
   use seq.Seq
   function model (self : Type.alloc_vec_vec t a) : Seq.seq t
+end
+module CreusotContracts_Logic_Resolve_Resolve_Resolve_Interface
+  type self
+  predicate resolve (self : self)
+end
+module CreusotContracts_Logic_Resolve_Resolve_Resolve
+  type self
+  predicate resolve (self : self)
+end
+module CreusotContracts_Std1_Vec_Impl2_Resolve_Interface
+  type t
+  use Type
+  predicate resolve (self : Type.alloc_vec_vec t (Type.alloc_alloc_global))
+end
+module CreusotContracts_Std1_Vec_Impl2_Resolve
+  type t
+  use Type
+  use mach.int.Int
+  use mach.int.Int32
+  use seq.Seq
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve_Interface as Resolve0 with type self = t
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t, type a = Type.alloc_alloc_global
+  predicate resolve (self : Type.alloc_vec_vec t (Type.alloc_alloc_global)) = 
+    forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> Resolve0.resolve (Seq.get (Model0.model self) i)
+end
+module CreusotContracts_Std1_Vec_Impl2
+  type t
+  use Type
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve2 with type self = t
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = t, type a = Type.alloc_alloc_global
+  clone CreusotContracts_Std1_Vec_Impl2_Resolve as Resolve0 with type t = t, function Model0.model = Model0.model,
+  predicate Resolve0.resolve = Resolve2.resolve
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve1 with type self = Type.alloc_vec_vec t (Type.alloc_alloc_global),
+  predicate resolve = Resolve0.resolve
+end
+module CreusotContracts_Logic_Model_Model_ModelTy
+  type self
+  type modelTy
+end
+module CreusotContracts_Logic_Model_Model_Model_Interface
+  type self
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = self
+  function model (self : self) : ModelTy0.modelTy
+end
+module CreusotContracts_Logic_Model_Model_Model
+  type self
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = self
+  function model (self : self) : ModelTy0.modelTy
+end
+module CreusotContracts_Std1_Vec_Impl0_ModelTy
+  type t
+  type a
+  use seq.Seq
+  type modelTy  = 
+    Seq.seq t
+end
+module CreusotContracts_Std1_Vec_Impl0
+  type t
+  type a
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = t, type a = a
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = t, type a = a
+  clone CreusotContracts_Logic_Model_Model_Model as Model1 with type self = Type.alloc_vec_vec t a,
+  function model = Model0.model, type ModelTy0.modelTy = ModelTy0.modelTy
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = Type.alloc_vec_vec t a,
+  type modelTy = ModelTy0.modelTy
+end
+module CreusotContracts_Logic_Resolve_Impl2_Resolve_Interface
+  type t
+  predicate resolve (self : t)
+end
+module CreusotContracts_Logic_Resolve_Impl2_Resolve
+  type t
+  predicate resolve (self : t) = 
+    true
+end
+module CreusotContracts_Logic_Resolve_Impl2
+  type t
+  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve0 with type t = t
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve1 with type self = t,
+  predicate resolve = Resolve0.resolve
+end
+module Robinson_Clause_Impl2_ClauseFromVec_Interface
+  use Type
+  val clause_from_vec [@cfg:stackify] (vec : Type.alloc_vec_vec (Type.robinson_lit_lit) (Type.alloc_alloc_global)) : Type.robinson_clause_clause
+    
+end
+module Robinson_Clause_Impl2_ClauseFromVec
+  use Type
+  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve1 with type t = Type.robinson_lit_lit
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.robinson_lit_lit,
+  type a = Type.alloc_alloc_global
+  clone CreusotContracts_Std1_Vec_Impl2_Resolve as Resolve0 with type t = Type.robinson_lit_lit,
+  function Model0.model = Model0.model, predicate Resolve0.resolve = Resolve1.resolve
+  let rec cfg clause_from_vec [@cfg:stackify] (vec : Type.alloc_vec_vec (Type.robinson_lit_lit) (Type.alloc_alloc_global)) : Type.robinson_clause_clause
+    
+   = 
+  var _0 : Type.robinson_clause_clause;
+  var vec_1 : Type.alloc_vec_vec (Type.robinson_lit_lit) (Type.alloc_alloc_global);
+  var _2 : Type.alloc_vec_vec (Type.robinson_lit_lit) (Type.alloc_alloc_global);
+  {
+    vec_1 <- vec;
+    goto BB0
+  }
+  BB0 {
+    assume { Resolve0.resolve _2 };
+    _2 <- vec_1;
+    _0 <- Type.Robinson_Clause_Clause _2;
+    goto BB1
+  }
+  BB1 {
+    goto BB2
+  }
+  BB2 {
+    return _0
+  }
+  
 end
 module Robinson_Assignments_Impl0_Model_Interface
   use Type
@@ -407,20 +401,6 @@ module Robinson_Assignments_Impl1_CompatibleComplete
    = 
     Compatible0.compatible self a2 && Complete0.complete a2
 end
-module CreusotContracts_Logic_Model_Model_ModelTy
-  type self
-  type modelTy
-end
-module CreusotContracts_Logic_Model_Model_Model_Interface
-  type self
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = self
-  function model (self : self) : ModelTy0.modelTy
-end
-module CreusotContracts_Logic_Model_Model_Model
-  type self
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = self
-  function model (self : self) : ModelTy0.modelTy
-end
 module CreusotContracts_Logic_Model_Impl0_Model_Interface
   type t
   use prelude.Prelude
@@ -473,24 +453,6 @@ module Robinson_Assignments_Impl0
   clone CreusotContracts_Logic_Model_Model_Model as Model1 with type self = Type.robinson_assignments_assignments,
   function model = Model0.model, type ModelTy0.modelTy = ModelTy0.modelTy
   clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = Type.robinson_assignments_assignments,
-  type modelTy = ModelTy0.modelTy
-end
-module CreusotContracts_Std1_Vec_Impl0_ModelTy
-  type t
-  type a
-  use seq.Seq
-  type modelTy  = 
-    Seq.seq t
-end
-module CreusotContracts_Std1_Vec_Impl0
-  type t
-  type a
-  use Type
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = t, type a = a
-  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = t, type a = a
-  clone CreusotContracts_Logic_Model_Model_Model as Model1 with type self = Type.alloc_vec_vec t a,
-  function model = Model0.model, type ModelTy0.modelTy = ModelTy0.modelTy
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = Type.alloc_vec_vec t a,
   type modelTy = ModelTy0.modelTy
 end
 module Alloc_Vec_Impl0_New_Interface
@@ -661,22 +623,6 @@ module Alloc_Vec_Impl1_Push
     ensures { Model0.model ( ^ self) = Seq.snoc (Model0.model ( * self)) value }
     
 end
-module CreusotContracts_Std1_Vec_Impl2_Resolve_Interface
-  type t
-  use Type
-  predicate resolve (self : Type.alloc_vec_vec t (Type.alloc_alloc_global))
-end
-module CreusotContracts_Std1_Vec_Impl2_Resolve
-  type t
-  use Type
-  use mach.int.Int
-  use mach.int.Int32
-  use seq.Seq
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve_Interface as Resolve0 with type self = t
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t, type a = Type.alloc_alloc_global
-  predicate resolve (self : Type.alloc_vec_vec t (Type.alloc_alloc_global)) = 
-    forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> Resolve0.resolve (Seq.get (Model0.model self) i)
-end
 module Alloc_Vec_Impl16_Output
   type t
   type i
@@ -709,16 +655,6 @@ module Alloc_Vec_Impl16
   val index = Index0.index, type Output0.output = Output0.output
   clone Core_Ops_Index_Index_Output as Output1 with type self = Type.alloc_vec_vec t a, type idx = i,
   type output = Output0.output
-end
-module CreusotContracts_Std1_Vec_Impl2
-  type t
-  use Type
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve2 with type self = t
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = t, type a = Type.alloc_alloc_global
-  clone CreusotContracts_Std1_Vec_Impl2_Resolve as Resolve0 with type t = t, function Model0.model = Model0.model,
-  predicate Resolve0.resolve = Resolve2.resolve
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve1 with type self = Type.alloc_vec_vec t (Type.alloc_alloc_global),
-  predicate resolve = Resolve0.resolve
 end
 module CreusotContracts_Std1_Vec_Impl1_InBounds_Interface
   type t
@@ -1087,21 +1023,6 @@ module CreusotContracts_Logic_Model_Impl2
   clone CreusotContracts_Logic_Model_Model_Model as Model1 with type self = seq t, function model = Model0.model,
   type ModelTy0.modelTy = ModelTy0.modelTy
   clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = seq t, type modelTy = ModelTy0.modelTy
-end
-module CreusotContracts_Logic_Resolve_Impl2_Resolve_Interface
-  type t
-  predicate resolve (self : t)
-end
-module CreusotContracts_Logic_Resolve_Impl2_Resolve
-  type t
-  predicate resolve (self : t) = 
-    true
-end
-module CreusotContracts_Logic_Resolve_Impl2
-  type t
-  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve0 with type t = t
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve1 with type self = t,
-  predicate resolve = Resolve0.resolve
 end
 module Robinson_Assignments_Impl2_Clone_Interface
   use mach.int.UInt64
@@ -1495,6 +1416,24 @@ module CreusotContracts_Logic_Model_Impl1
   type ModelTy0.modelTy = ModelTy0.modelTy
   clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = borrowed t,
   type modelTy = ModelTy0.modelTy
+end
+module CreusotContracts_Logic_Resolve_Impl1_Resolve_Interface
+  type t
+  use prelude.Prelude
+  predicate resolve (self : borrowed t)
+end
+module CreusotContracts_Logic_Resolve_Impl1_Resolve
+  type t
+  use prelude.Prelude
+  predicate resolve (self : borrowed t) = 
+     ^ self =  * self
+end
+module CreusotContracts_Logic_Resolve_Impl1
+  type t
+  use prelude.Prelude
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = t
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve1 with type self = borrowed t,
+  predicate resolve = Resolve0.resolve
 end
 module Robinson_Assignments_Impl2_FindUnassigned_Interface
   use seq.Seq
@@ -3224,15 +3163,17 @@ module Robinson_Clause_Impl2_GetUnit
   predicate Invariant0.invariant' = Invariant3.invariant'
   clone Robinson_Clause_Impl1_Invariant as Invariant2 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
   predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = uint8, type a = Type.alloc_alloc_global
+  clone Robinson_Assignments_Impl0_Model as Model2 with function Model0.model = Model5.model
+  clone Robinson_Assignments_Impl1_Invariant as Invariant0 with function Model0.model = Model2.model
   clone Robinson_Lit_Impl0_UnsetInner as UnsetInner0
   clone Robinson_Clause_Impl1_UnitInner as UnitInner0 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
   predicate SatInner0.sat_inner = SatInner0.sat_inner, function Model0.model = Model4.model,
   predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = uint8, type a = Type.alloc_alloc_global
-  clone Robinson_Assignments_Impl0_Model as Model2 with function Model0.model = Model5.model
   clone Robinson_Clause_Impl1_Unit as Unit0 with function Model0.model = Model2.model,
   predicate UnitInner0.unit_inner = UnitInner0.unit_inner
-  clone Robinson_Assignments_Impl1_Invariant as Invariant0 with function Model0.model = Model2.model
+  clone Robinson_Lit_Impl0_Unset as Unset1 with function Model0.model = Model2.model,
+  predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
   clone Robinson_Clause_Impl0_ModelTy as ModelTy1
   clone CreusotContracts_Logic_Model_Impl0_Model as Model1 with type t = Type.robinson_clause_clause,
   type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model4.model
@@ -3244,7 +3185,19 @@ module Robinson_Clause_Impl2_GetUnit
   type a = Type.alloc_alloc_global
   clone Robinson_Formula_Impl0_Invariant as Invariant1 with function Model0.model = Model3.model,
   predicate Invariant0.invariant' = Invariant2.invariant'
-  val get_unit [@cfg:stackify] (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments) (f : Type.robinson_formula_formula) : Type.robinson_lit_lit
+  clone CreusotContracts_Logic_Model_Impl2_ModelTy as ModelTy2 with type t = Type.robinson_lit_lit
+  clone Core_Slice_Index_Impl2_Output as Output0 with type t = Type.robinson_lit_lit
+  clone CreusotContracts_Std1_Vec_Impl1_HasValue as HasValue0 with type t = Type.robinson_lit_lit
+  clone CreusotContracts_Std1_Vec_Impl1_InBounds as InBounds0 with type t = Type.robinson_lit_lit
+  clone Alloc_Vec_Impl16_Index_Interface as Index0 with type t = Type.robinson_lit_lit, type i = usize,
+  type a = Type.alloc_alloc_global, function Model0.model = Model6.model,
+  predicate InBounds0.in_bounds = InBounds0.in_bounds, predicate HasValue0.has_value = HasValue0.has_value,
+  type Output0.output = Output0.output
+  clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.robinson_lit_lit, type a = Type.alloc_alloc_global,
+  function Model0.model = Model6.model
+  clone Robinson_Lit_Impl1_LitUnset_Interface as LitUnset0 with function Model0.model = Model0.model,
+  predicate Invariant0.invariant' = Invariant3.invariant', predicate Unset0.unset = Unset1.unset
+  let rec cfg get_unit [@cfg:stackify] (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments) (f : Type.robinson_formula_formula) : Type.robinson_lit_lit
     requires {Invariant0.invariant' a f}
     requires {Invariant1.invariant' f}
     requires {Unit0.unit self a}
@@ -3252,6 +3205,90 @@ module Robinson_Clause_Impl2_GetUnit
     ensures { UInt64.to_int (Type.robinson_lit_lit_Lit_idx result) < Seq.length (Model0.model a) }
     ensures { exists j : (int) . 0 <= j && j < Seq.length (Model1.model self) && Seq.get (Model1.model self) j = result }
     
+   = 
+  var _0 : Type.robinson_lit_lit;
+  var self_1 : Type.robinson_clause_clause;
+  var a_2 : Type.robinson_assignments_assignments;
+  var f_3 : Type.robinson_formula_formula;
+  var _4 : ();
+  var i_5 : usize;
+  var _6 : ();
+  var _7 : ();
+  var _8 : bool;
+  var _9 : usize;
+  var _10 : usize;
+  var _11 : Type.alloc_vec_vec (Type.robinson_lit_lit) (Type.alloc_alloc_global);
+  var lit_12 : Type.robinson_lit_lit;
+  var _13 : Type.robinson_lit_lit;
+  var _14 : Type.alloc_vec_vec (Type.robinson_lit_lit) (Type.alloc_alloc_global);
+  var _15 : usize;
+  var _16 : ();
+  var _17 : bool;
+  var _18 : Type.robinson_lit_lit;
+  var _19 : Type.robinson_assignments_assignments;
+  var _20 : ();
+  var _21 : ();
+  var _22 : ();
+  var _23 : ();
+  var _24 : ();
+  {
+    self_1 <- self;
+    a_2 <- a;
+    f_3 <- f;
+    goto BB0
+  }
+  BB0 {
+    i_5 <- (0 : usize);
+    goto BB1
+  }
+  BB1 {
+    invariant not_unset { forall j : (int) . 0 <= j && j < UInt64.to_int i_5 -> not (Unset1.unset (Seq.get (Model1.model self_1) j) a_2) };
+    _9 <- i_5;
+    _11 <- Type.robinson_clause_clause_Clause_rest self_1;
+    _10 <- Len0.len _11;
+    goto BB2
+  }
+  BB2 {
+    _8 <- _9 < _10;
+    switch (_8)
+      | False -> goto BB8
+      | _ -> goto BB3
+      end
+  }
+  BB3 {
+    _14 <- Type.robinson_clause_clause_Clause_rest self_1;
+    _15 <- i_5;
+    _13 <- Index0.index _14 _15;
+    goto BB4
+  }
+  BB4 {
+    lit_12 <- _13;
+    _18 <- lit_12;
+    _19 <- a_2;
+    _17 <- LitUnset0.lit_unset _18 _19;
+    goto BB5
+  }
+  BB5 {
+    switch (_17)
+      | False -> goto BB7
+      | _ -> goto BB6
+      end
+  }
+  BB6 {
+    _0 <- lit_12;
+    return _0
+  }
+  BB7 {
+    _16 <- ();
+    i_5 <- i_5 + (1 : usize);
+    _7 <- ();
+    goto BB1
+  }
+  BB8 {
+    _6 <- ();
+    absurd
+  }
+  
 end
 module Core_Ops_Index_IndexMut_IndexMut_Interface
   type self
@@ -3576,9 +3613,8 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   var _34 : ();
   var _35 : ();
   var _36 : ();
-  var _37 : ();
-  var o_38 : Type.robinson_clause_clausestate;
-  var _39 : ();
+  var o_37 : Type.robinson_clause_clausestate;
+  var _38 : ();
   {
     self_1 <- self;
     i_2 <- i;
@@ -3615,8 +3651,8 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   }
   BB4 {
     assume { Resolve0.resolve self_1 };
-    o_38 <- _12;
-    _0 <- o_38;
+    o_37 <- _12;
+    _0 <- o_37;
     goto BB12
   }
   BB5 {
@@ -3670,14 +3706,12 @@ module Robinson_Assignments_Impl2_UnitPropOnce
     goto BB11
   }
   BB11 {
-    assert { Model1.model self_1 = Seq.set (Model2.model ( * Model3.model old_a_8)) (UInt64.to_int (Type.robinson_lit_lit_Lit_idx lit_18)) (BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity lit_18)) };
-    _34 <- ();
     assert { let _ = LemmaExtensionSatBaseSat0.lemma_extension_sat_base_sat f_3 (Model1.model (Model3.model old_a_8)) (UInt64.to_int (Type.robinson_lit_lit_Lit_idx lit_18)) (BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity lit_18)) in true };
-    _35 <- ();
+    _34 <- ();
     assert { let _ = LemmaExtensionsUnsatBaseUnsat0.lemma_extensions_unsat_base_unsat (Model1.model (Model3.model old_a_8)) (UInt64.to_int (Type.robinson_lit_lit_Lit_idx lit_18)) f_3 in true };
-    _36 <- ();
+    _35 <- ();
     assert {  ^ self_1 =  ^ Model3.model old_a_8 };
-    _37 <- ();
+    _36 <- ();
     _0 <- Type.Robinson_Clause_ClauseState_Unit;
     goto BB12
   }
@@ -4138,17 +4172,411 @@ module Robinson_Assignments_Impl2_DoUnitPropagation
   }
   
 end
-module Robinson_Clause_Impl2_ClauseFromVec_Interface
+module CreusotContracts_Logic_Seq_Impl0_PermutationOf_Interface
+  type t
+  use seq.Seq
+  predicate permutation_of (self : Seq.seq t) (o : Seq.seq t)
+end
+module CreusotContracts_Logic_Seq_Impl0_PermutationOf
+  type t
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.Int32
+  use seq.Permut
+  predicate permutation_of (self : Seq.seq t) (o : Seq.seq t) = 
+    Permut.permut self o 0 (Seq.length self)
+end
+module Robinson_Util_SortedRangeRev_Interface
+  use seq.Seq
+  use mach.int.Int
   use prelude.Prelude
-  use Type
-  val clause_from_vec [@cfg:stackify] (vec : Type.alloc_vec_vec (Type.robinson_lit_lit) (Type.alloc_alloc_global)) : Type.robinson_clause_clause
+  use mach.int.UInt64
+  predicate sorted_range_rev (s : Seq.seq (usize, usize)) (l : int) (u : int)
+end
+module Robinson_Util_SortedRangeRev
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  predicate sorted_range_rev (s : Seq.seq (usize, usize)) (l : int) (u : int) = 
+    forall j : (int) . forall i : (int) . l <= i && i < j && j < u -> (let (a, _) = Seq.get s i in a) >= (let (a, _) = Seq.get s j in a)
+end
+module Robinson_Util_SortedRev_Interface
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  predicate sorted_rev (s : Seq.seq (usize, usize))
+end
+module Robinson_Util_SortedRev
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use mach.int.Int32
+  clone Robinson_Util_SortedRangeRev_Interface as SortedRangeRev0
+  predicate sorted_rev (s : Seq.seq (usize, usize)) = 
+    SortedRangeRev0.sorted_range_rev s 0 (Seq.length s)
+end
+module Robinson_Util_PartitionRev_Interface
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  predicate partition_rev (v : Seq.seq (usize, usize)) (i : int)
+end
+module Robinson_Util_PartitionRev
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use mach.int.Int32
+  predicate partition_rev (v : Seq.seq (usize, usize)) (i : int) = 
+    forall k2 : (int) . forall k1 : (int) . 0 <= k1 && k1 < i && i <= k2 && k2 < Seq.length v -> (let (a, _) = Seq.get v k1 in a) >= (let (a, _) = Seq.get v k2 in a)
+end
+module Core_Ops_Deref_Deref_Target
+  type self
+  type target
+end
+module Core_Ops_Deref_DerefMut_DerefMut_Interface
+  type self
+  use prelude.Prelude
+  clone Core_Ops_Deref_Deref_Target as Target0 with type self = self
+  val deref_mut [@cfg:stackify] (self : borrowed self) : borrowed Target0.target
+    requires {false}
     
 end
-module Robinson_Clause_Impl2_ClauseFromVec
+module Core_Ops_Deref_DerefMut_DerefMut
+  type self
+  use prelude.Prelude
+  clone Core_Ops_Deref_Deref_Target as Target0 with type self = self
+  val deref_mut [@cfg:stackify] (self : borrowed self) : borrowed Target0.target
+    requires {false}
+    
+end
+module Alloc_Vec_Impl11_DerefMut_Interface
+  type t
+  type a
   use prelude.Prelude
   use Type
-  val clause_from_vec [@cfg:stackify] (vec : Type.alloc_vec_vec (Type.robinson_lit_lit) (Type.alloc_alloc_global)) : Type.robinson_clause_clause
+  use seq.Seq
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = t, type a = a
+  clone CreusotContracts_Logic_Model_Impl2_Model_Interface as Model0 with type t = t
+  val deref_mut [@cfg:stackify] (self : borrowed (Type.alloc_vec_vec t a)) : borrowed (seq t)
+    ensures { Model0.model ( ^ result) = Model1.model ( ^ self) }
+    ensures { Model0.model ( * result) = Model1.model ( * self) }
     
+end
+module Alloc_Vec_Impl11_DerefMut
+  type t
+  type a
+  use prelude.Prelude
+  use Type
+  use seq.Seq
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = t, type a = a
+  clone CreusotContracts_Logic_Model_Impl2_Model_Interface as Model0 with type t = t
+  val deref_mut [@cfg:stackify] (self : borrowed (Type.alloc_vec_vec t a)) : borrowed (seq t)
+    ensures { Model0.model ( ^ result) = Model1.model ( ^ self) }
+    ensures { Model0.model ( * result) = Model1.model ( * self) }
+    
+end
+module Core_Slice_Impl0_Swap_Interface
+  type t
+  use mach.int.UInt64
+  use seq.Seq
+  use mach.int.Int
+  use seq.Permut
+  use prelude.Prelude
+  clone CreusotContracts_Logic_Model_Impl2_Model_Interface as Model1 with type t = t
+  clone CreusotContracts_Logic_Model_Impl2_ModelTy as ModelTy0 with type t = t
+  clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model0 with type t = seq t,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  val swap [@cfg:stackify] (self : borrowed (seq t)) (a : usize) (b : usize) : ()
+    requires {UInt64.to_int b < Seq.length (Model0.model self)}
+    requires {UInt64.to_int a < Seq.length (Model0.model self)}
+    ensures { Permut.exchange (Model1.model ( ^ self)) (Model1.model ( * self)) (UInt64.to_int a) (UInt64.to_int b) }
+    
+end
+module Core_Slice_Impl0_Swap
+  type t
+  use mach.int.UInt64
+  use seq.Seq
+  use mach.int.Int
+  use seq.Permut
+  use prelude.Prelude
+  clone CreusotContracts_Logic_Model_Impl2_Model_Interface as Model1 with type t = t
+  clone CreusotContracts_Logic_Model_Impl2_ModelTy as ModelTy0 with type t = t
+  clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model0 with type t = seq t,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  val swap [@cfg:stackify] (self : borrowed (seq t)) (a : usize) (b : usize) : ()
+    requires {UInt64.to_int b < Seq.length (Model0.model self)}
+    requires {UInt64.to_int a < Seq.length (Model0.model self)}
+    ensures { Permut.exchange (Model1.model ( ^ self)) (Model1.model ( * self)) (UInt64.to_int a) (UInt64.to_int b) }
+    
+end
+module Alloc_Vec_Impl10_Target
+  type t
+  type a
+  use prelude.Prelude
+  use seq.Seq
+  type target  = 
+    seq t
+end
+module Alloc_Vec_Impl11
+  type t
+  type a
+  use Type
+  clone Alloc_Vec_Impl10_Target as Target0 with type t = t, type a = a
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = t, type a = a
+  clone CreusotContracts_Logic_Model_Impl2_Model as Model0 with type t = t
+  clone Alloc_Vec_Impl11_DerefMut_Interface as DerefMut0 with type t = t, type a = a,
+  function Model0.model = Model0.model, function Model1.model = Model1.model
+  clone Core_Ops_Deref_DerefMut_DerefMut_Interface as DerefMut1 with type self = Type.alloc_vec_vec t a,
+  val deref_mut = DerefMut0.deref_mut, type Target0.target = Target0.target
+end
+module Robinson_Util_SortReverse_Interface
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  use mach.int.UInt64
+  clone Robinson_Util_SortedRev_Interface as SortedRev0
+  clone CreusotContracts_Logic_Seq_Impl0_PermutationOf_Interface as PermutationOf0 with type t = (usize, usize)
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = (usize, usize),
+  type a = Type.alloc_alloc_global
+  clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model1 with type t = Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global),
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = (usize, usize),
+  type a = Type.alloc_alloc_global
+  val sort_reverse [@cfg:stackify] (v : borrowed (Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global))) : ()
+    ensures { PermutationOf0.permutation_of (Model0.model ( ^ v)) (Model1.model v) }
+    ensures { SortedRev0.sorted_rev (Model0.model ( ^ v)) }
+    
+end
+module Robinson_Util_SortReverse
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  use mach.int.UInt64
+  use seq.Seq
+  use mach.int.Int32
+  clone Robinson_Util_PartitionRev as PartitionRev0
+  clone CreusotContracts_Logic_Ghost_Impl0_Model as Model2 with type t = borrowed (Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global))
+  clone Robinson_Util_SortedRangeRev as SortedRangeRev0
+  clone Robinson_Util_SortedRev as SortedRev0 with predicate SortedRangeRev0.sorted_range_rev = SortedRangeRev0.sorted_range_rev
+  clone CreusotContracts_Logic_Seq_Impl0_PermutationOf as PermutationOf0 with type t = (usize, usize)
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = (usize, usize),
+  type a = Type.alloc_alloc_global
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = (usize, usize), type a = Type.alloc_alloc_global
+  clone CreusotContracts_Logic_Model_Impl1_Model as Model1 with type t = Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global),
+  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model0.model
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve1 with type t = Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global)
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = seq (usize, usize)
+  clone CreusotContracts_Logic_Model_Impl2_Model as Model3 with type t = (usize, usize)
+  clone CreusotContracts_Logic_Model_Impl2_ModelTy as ModelTy1 with type t = (usize, usize)
+  clone CreusotContracts_Logic_Model_Impl1_Model as Model4 with type t = seq (usize, usize),
+  type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model3.model
+  clone Core_Slice_Impl0_Swap_Interface as Swap0 with type t = (usize, usize), function Model0.model = Model4.model,
+  function Model1.model = Model3.model
+  clone Core_Slice_Index_Impl2_Output as Output0 with type t = (usize, usize)
+  clone CreusotContracts_Std1_Vec_Impl1_HasValue as HasValue0 with type t = (usize, usize)
+  clone CreusotContracts_Std1_Vec_Impl1_InBounds as InBounds0 with type t = (usize, usize)
+  clone CreusotContracts_Logic_Ghost_Impl1_Record_Interface as Record0 with type t = borrowed (Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global)),
+  function Model0.model = Model2.model
+  clone Alloc_Vec_Impl11_DerefMut_Interface as DerefMut0 with type t = (usize, usize), type a = Type.alloc_alloc_global,
+  function Model0.model = Model3.model, function Model1.model = Model0.model
+  clone Alloc_Vec_Impl16_Index_Interface as Index0 with type t = (usize, usize), type i = usize,
+  type a = Type.alloc_alloc_global, function Model0.model = Model0.model,
+  predicate InBounds0.in_bounds = InBounds0.in_bounds, predicate HasValue0.has_value = HasValue0.has_value,
+  type Output0.output = Output0.output
+  clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = (usize, usize), type a = Type.alloc_alloc_global,
+  function Model0.model = Model0.model
+  let rec cfg sort_reverse [@cfg:stackify] (v : borrowed (Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global))) : ()
+    ensures { PermutationOf0.permutation_of (Model0.model ( ^ v)) (Model1.model v) }
+    ensures { SortedRev0.sorted_rev (Model0.model ( ^ v)) }
+    
+   = 
+  var _0 : ();
+  var v_1 : borrowed (Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global));
+  var i_2 : usize;
+  var old_v_3 : Type.creusotcontracts_logic_ghost_ghost (borrowed (Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global)));
+  var _4 : borrowed (Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global));
+  var _5 : borrowed (Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global));
+  var _6 : ();
+  var _7 : bool;
+  var _8 : usize;
+  var _9 : usize;
+  var _10 : Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global);
+  var max_11 : usize;
+  var j_12 : usize;
+  var _13 : usize;
+  var _14 : ();
+  var _15 : bool;
+  var _16 : usize;
+  var _17 : usize;
+  var _18 : Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global);
+  var _19 : ();
+  var _20 : bool;
+  var _21 : usize;
+  var _22 : (usize, usize);
+  var _23 : Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global);
+  var _24 : usize;
+  var _25 : usize;
+  var _26 : (usize, usize);
+  var _27 : Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global);
+  var _28 : usize;
+  var _29 : usize;
+  var _30 : ();
+  var _31 : ();
+  var _32 : ();
+  var _33 : ();
+  var _34 : borrowed (seq (usize, usize));
+  var _35 : borrowed (seq (usize, usize));
+  var _36 : borrowed (Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global));
+  var _37 : usize;
+  var _38 : usize;
+  var _39 : ();
+  var _40 : ();
+  var _41 : ();
+  {
+    v_1 <- v;
+    goto BB0
+  }
+  BB0 {
+    i_2 <- (0 : usize);
+    _5 <- v_1;
+    _4 <- _5;
+    old_v_3 <- Record0.record _4;
+    goto BB1
+  }
+  BB1 {
+    goto BB2
+  }
+  BB2 {
+    invariant proph_const {  ^ v_1 =  ^ Model2.model old_v_3 };
+    invariant permutation { PermutationOf0.permutation_of (Model1.model v_1) (Model0.model ( * Model2.model old_v_3)) };
+    invariant i_bound { UInt64.to_int i_2 <= Seq.length (Model1.model v_1) };
+    invariant sorted { SortedRangeRev0.sorted_range_rev (Model1.model v_1) 0 (UInt64.to_int i_2) };
+    invariant partition { PartitionRev0.partition_rev (Model1.model v_1) (UInt64.to_int i_2) };
+    _8 <- i_2;
+    _10 <-  * v_1;
+    _9 <- Len0.len _10;
+    goto BB3
+  }
+  BB3 {
+    _7 <- _8 < _9;
+    switch (_7)
+      | False -> goto BB16
+      | _ -> goto BB4
+      end
+  }
+  BB4 {
+    max_11 <- i_2;
+    _13 <- i_2;
+    j_12 <- _13 + (1 : usize);
+    goto BB5
+  }
+  BB5 {
+    invariant max_is_max { forall k : (int) . UInt64.to_int i_2 <= k && k < UInt64.to_int j_12 -> (let (a, _) = Seq.get (Model1.model v_1) (UInt64.to_int max_11) in a) >= (let (a, _) = Seq.get (Model1.model v_1) k in a) };
+    invariant j_bound { UInt64.to_int i_2 <= UInt64.to_int j_12 && UInt64.to_int j_12 <= Seq.length (Model1.model v_1) };
+    invariant max_bound { UInt64.to_int i_2 <= UInt64.to_int max_11 && UInt64.to_int max_11 < UInt64.to_int j_12 };
+    _16 <- j_12;
+    _18 <-  * v_1;
+    _17 <- Len0.len _18;
+    goto BB6
+  }
+  BB6 {
+    _15 <- _16 < _17;
+    switch (_15)
+      | False -> goto BB13
+      | _ -> goto BB7
+      end
+  }
+  BB7 {
+    _23 <-  * v_1;
+    _24 <- j_12;
+    _22 <- Index0.index _23 _24;
+    goto BB8
+  }
+  BB8 {
+    _21 <- (let (a, _) = _22 in a);
+    _27 <-  * v_1;
+    _28 <- max_11;
+    _26 <- Index0.index _27 _28;
+    goto BB9
+  }
+  BB9 {
+    _25 <- (let (a, _) = _26 in a);
+    _20 <- _21 > _25;
+    switch (_20)
+      | False -> goto BB11
+      | _ -> goto BB10
+      end
+  }
+  BB10 {
+    _29 <- j_12;
+    max_11 <- _29;
+    _19 <- ();
+    goto BB12
+  }
+  BB11 {
+    _19 <- ();
+    goto BB12
+  }
+  BB12 {
+    j_12 <- j_12 + (1 : usize);
+    _6 <- ();
+    goto BB5
+  }
+  BB13 {
+    _14 <- ();
+    _36 <- borrow_mut ( * v_1);
+    v_1 <- { v_1 with current = ( ^ _36) };
+    _35 <- DerefMut0.deref_mut _36;
+    goto BB14
+  }
+  BB14 {
+    _34 <- borrow_mut ( * _35);
+    _35 <- { _35 with current = ( ^ _34) };
+    _37 <- i_2;
+    _38 <- max_11;
+    _33 <- Swap0.swap _34 _37 _38;
+    goto BB15
+  }
+  BB15 {
+    assume { Resolve0.resolve _35 };
+    i_2 <- i_2 + (1 : usize);
+    _6 <- ();
+    goto BB2
+  }
+  BB16 {
+    assume { Resolve1.resolve v_1 };
+    _0 <- ();
+    return _0
+  }
+  
+end
+module CreusotContracts_Logic_Resolve_Impl0_Resolve_Interface
+  type t1
+  type t2
+  predicate resolve (self : (t1, t2))
+end
+module CreusotContracts_Logic_Resolve_Impl0_Resolve
+  type t1
+  type t2
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve_Interface as Resolve1 with type self = t2
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve_Interface as Resolve0 with type self = t1
+  predicate resolve (self : (t1, t2)) = 
+    Resolve0.resolve (let (a, _) = self in a) && Resolve1.resolve (let (_, a) = self in a)
+end
+module CreusotContracts_Logic_Resolve_Impl0
+  type t1
+  type t2
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve3 with type self = t2
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve2 with type self = t1
+  clone CreusotContracts_Logic_Resolve_Impl0_Resolve as Resolve0 with type t1 = t1, type t2 = t2,
+  predicate Resolve0.resolve = Resolve2.resolve, predicate Resolve1.resolve = Resolve3.resolve
+  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve1 with type self = (t1, t2),
+  predicate resolve = Resolve0.resolve
 end
 module Robinson_Decision_Impl1_New_Interface
   use mach.int.UInt64
@@ -4165,13 +4593,16 @@ module Robinson_Decision_Impl1_New
   use mach.int.UInt64
   use prelude.Prelude
   use Type
+  use seq.Seq
   use mach.int.Int
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = Type.robinson_lit_lit,
-  type a = Type.alloc_alloc_global
-  clone Robinson_Clause_Impl0_Model as Model2 with function Model0.model = Model3.model
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model2.model
+  use mach.int.Int32
   clone Robinson_Lit_Impl0_Invariant as Invariant3
-  clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model2.model,
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = (usize, usize), type a = Type.alloc_alloc_global
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.robinson_lit_lit,
+  type a = Type.alloc_alloc_global
+  clone Robinson_Clause_Impl0_Model as Model4 with function Model0.model = Model2.model
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model4.model
+  clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model4.model,
   predicate Invariant0.invariant' = Invariant3.invariant'
   clone Robinson_Clause_Impl1_Invariant as Invariant2 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
   predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
@@ -4181,10 +4612,407 @@ module Robinson_Decision_Impl1_New
   type a = Type.alloc_alloc_global
   clone Robinson_Formula_Impl0_Invariant as Invariant0 with function Model0.model = Model0.model,
   predicate Invariant0.invariant' = Invariant2.invariant'
-  val new [@cfg:stackify] (f : Type.robinson_formula_formula) : Type.robinson_decision_decisions
+  clone Robinson_Util_SortedRangeRev as SortedRangeRev0
+  clone Robinson_Util_SortedRev as SortedRev0 with predicate SortedRangeRev0.sorted_range_rev = SortedRangeRev0.sorted_range_rev
+  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve5 with type t = usize
+  clone CreusotContracts_Logic_Resolve_Impl0_Resolve as Resolve6 with type t1 = usize, type t2 = usize,
+  predicate Resolve0.resolve = Resolve5.resolve, predicate Resolve1.resolve = Resolve5.resolve
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve2 with type t = Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global)
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy4 with type t = (usize, usize),
+  type a = Type.alloc_alloc_global
+  clone CreusotContracts_Logic_Seq_Impl0_PermutationOf as PermutationOf0 with type t = (usize, usize)
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve1 with type t = (usize, usize)
+  clone CreusotContracts_Logic_Model_Impl2_ModelTy as ModelTy3 with type t = (usize, usize)
+  clone Core_Slice_Index_Impl2_Output as Output3 with type t = (usize, usize)
+  clone CreusotContracts_Std1_Vec_Impl1_HasValue as HasValue3 with type t = (usize, usize)
+  clone CreusotContracts_Std1_Vec_Impl1_ResolveElswhere as ResolveElswhere1 with type t = (usize, usize)
+  clone CreusotContracts_Std1_Vec_Impl1_InBounds as InBounds3 with type t = (usize, usize)
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = usize
+  clone CreusotContracts_Std1_Vec_Impl1_ResolveElswhere as ResolveElswhere0 with type t = usize
+  clone CreusotContracts_Logic_Model_Impl2_ModelTy as ModelTy2 with type t = usize
+  clone Core_Slice_Index_Impl2_Output as Output2 with type t = usize
+  clone CreusotContracts_Std1_Vec_Impl1_HasValue as HasValue2 with type t = usize
+  clone CreusotContracts_Std1_Vec_Impl1_InBounds as InBounds2 with type t = usize
+  clone CreusotContracts_Logic_Model_Impl2_ModelTy as ModelTy1 with type t = Type.robinson_lit_lit
+  clone Core_Slice_Index_Impl2_Output as Output1 with type t = Type.robinson_lit_lit
+  clone CreusotContracts_Std1_Vec_Impl1_HasValue as HasValue1 with type t = Type.robinson_lit_lit
+  clone CreusotContracts_Std1_Vec_Impl1_InBounds as InBounds1 with type t = Type.robinson_lit_lit
+  clone CreusotContracts_Logic_Model_Impl2_ModelTy as ModelTy0 with type t = Type.robinson_clause_clause
+  clone Core_Slice_Index_Impl2_Output as Output0 with type t = Type.robinson_clause_clause
+  clone CreusotContracts_Std1_Vec_Impl1_HasValue as HasValue0 with type t = Type.robinson_clause_clause
+  clone CreusotContracts_Std1_Vec_Impl1_InBounds as InBounds0 with type t = Type.robinson_clause_clause
+  clone CreusotContracts_Logic_Model_Impl1_Model as Model5 with type t = Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global),
+  type ModelTy0.modelTy = ModelTy4.modelTy, function Model0.model = Model3.model
+  clone Robinson_Util_SortReverse_Interface as SortReverse0 with function Model0.model = Model3.model,
+  function Model1.model = Model5.model, predicate PermutationOf0.permutation_of = PermutationOf0.permutation_of,
+  predicate SortedRev0.sorted_rev = SortedRev0.sorted_rev
+  clone CreusotContracts_Std1_Vec_Impl2_Resolve as Resolve4 with type t = (usize, usize),
+  function Model0.model = Model3.model, predicate Resolve0.resolve = Resolve6.resolve
+  clone Alloc_Vec_Impl16_Index_Interface as Index3 with type t = (usize, usize), type i = usize,
+  type a = Type.alloc_alloc_global, function Model0.model = Model3.model,
+  predicate InBounds0.in_bounds = InBounds3.in_bounds, predicate HasValue0.has_value = HasValue3.has_value,
+  type Output0.output = Output3.output
+  clone Alloc_Vec_Impl17_IndexMut_Interface as IndexMut1 with type t = (usize, usize), type i = usize,
+  type a = Type.alloc_alloc_global, function Model0.model = Model3.model,
+  predicate InBounds0.in_bounds = InBounds3.in_bounds,
+  predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere1.resolve_elswhere,
+  predicate HasValue0.has_value = HasValue3.has_value, type Output0.output = Output3.output
+  clone Alloc_Vec_FromElem_Interface as FromElem1 with type t = (usize, usize), function Model0.model = Model3.model
+  clone Alloc_Vec_Impl16_Index_Interface as Index1 with type t = Type.robinson_lit_lit, type i = usize,
+  type a = Type.alloc_alloc_global, function Model0.model = Model2.model,
+  predicate InBounds0.in_bounds = InBounds1.in_bounds, predicate HasValue0.has_value = HasValue1.has_value,
+  type Output0.output = Output1.output
+  clone Alloc_Vec_Impl1_Len_Interface as Len1 with type t = Type.robinson_lit_lit, type a = Type.alloc_alloc_global,
+  function Model0.model = Model2.model
+  clone CreusotContracts_Std1_Vec_Impl2_Resolve as Resolve3 with type t = usize, function Model0.model = Model1.model,
+  predicate Resolve0.resolve = Resolve5.resolve
+  clone Alloc_Vec_Impl17_IndexMut_Interface as IndexMut0 with type t = usize, type i = usize,
+  type a = Type.alloc_alloc_global, function Model0.model = Model1.model,
+  predicate InBounds0.in_bounds = InBounds2.in_bounds,
+  predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
+  predicate HasValue0.has_value = HasValue2.has_value, type Output0.output = Output2.output
+  clone Alloc_Vec_Impl16_Index_Interface as Index2 with type t = usize, type i = usize,
+  type a = Type.alloc_alloc_global, function Model0.model = Model1.model,
+  predicate InBounds0.in_bounds = InBounds2.in_bounds, predicate HasValue0.has_value = HasValue2.has_value,
+  type Output0.output = Output2.output
+  clone Alloc_Vec_FromElem_Interface as FromElem0 with type t = usize, function Model0.model = Model1.model
+  clone Alloc_Vec_Impl16_Index_Interface as Index0 with type t = Type.robinson_clause_clause, type i = usize,
+  type a = Type.alloc_alloc_global, function Model0.model = Model0.model,
+  predicate InBounds0.in_bounds = InBounds0.in_bounds, predicate HasValue0.has_value = HasValue0.has_value,
+  type Output0.output = Output0.output
+  clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.robinson_clause_clause,
+  type a = Type.alloc_alloc_global, function Model0.model = Model0.model
+  let rec cfg new [@cfg:stackify] (f : Type.robinson_formula_formula) : Type.robinson_decision_decisions
     requires {Invariant0.invariant' f}
     ensures { Invariant1.invariant' result (UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f)) }
     
+   = 
+  var _0 : Type.robinson_decision_decisions;
+  var f_1 : Type.robinson_formula_formula;
+  var lit_order_2 : Type.alloc_vec_vec usize (Type.alloc_alloc_global);
+  var _3 : usize;
+  var counts_4 : Type.alloc_vec_vec usize (Type.alloc_alloc_global);
+  var _5 : usize;
+  var counts_with_index_6 : Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global);
+  var _7 : (usize, usize);
+  var _8 : usize;
+  var i_9 : usize;
+  var _10 : ();
+  var _11 : ();
+  var _12 : bool;
+  var _13 : usize;
+  var _14 : usize;
+  var _15 : Type.alloc_vec_vec (Type.robinson_clause_clause) (Type.alloc_alloc_global);
+  var curr_clause_16 : Type.robinson_clause_clause;
+  var _17 : Type.robinson_clause_clause;
+  var _18 : Type.alloc_vec_vec (Type.robinson_clause_clause) (Type.alloc_alloc_global);
+  var _19 : usize;
+  var j_20 : usize;
+  var _21 : ();
+  var _22 : bool;
+  var _23 : usize;
+  var _24 : usize;
+  var _25 : Type.alloc_vec_vec (Type.robinson_lit_lit) (Type.alloc_alloc_global);
+  var _26 : ();
+  var _27 : bool;
+  var _28 : usize;
+  var _29 : usize;
+  var _30 : Type.alloc_vec_vec usize (Type.alloc_alloc_global);
+  var _31 : usize;
+  var _32 : Type.robinson_lit_lit;
+  var _33 : Type.alloc_vec_vec (Type.robinson_lit_lit) (Type.alloc_alloc_global);
+  var _34 : usize;
+  var _35 : borrowed usize;
+  var _36 : borrowed (Type.alloc_vec_vec usize (Type.alloc_alloc_global));
+  var _37 : usize;
+  var _38 : Type.robinson_lit_lit;
+  var _39 : Type.alloc_vec_vec (Type.robinson_lit_lit) (Type.alloc_alloc_global);
+  var _40 : usize;
+  var _41 : ();
+  var _42 : ();
+  var _43 : ();
+  var _44 : ();
+  var _45 : ();
+  var _46 : ();
+  var _47 : ();
+  var _48 : bool;
+  var _49 : usize;
+  var _50 : usize;
+  var _51 : usize;
+  var _52 : usize;
+  var _53 : Type.alloc_vec_vec usize (Type.alloc_alloc_global);
+  var _54 : usize;
+  var _55 : usize;
+  var _56 : borrowed (usize, usize);
+  var _57 : borrowed (Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global));
+  var _58 : usize;
+  var _59 : ();
+  var _60 : ();
+  var _61 : ();
+  var _62 : ();
+  var _63 : borrowed (Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global));
+  var _64 : borrowed (Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global));
+  var _65 : ();
+  var _66 : bool;
+  var _67 : usize;
+  var _68 : usize;
+  var _69 : usize;
+  var _70 : (usize, usize);
+  var _71 : Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global);
+  var _72 : usize;
+  var _73 : borrowed usize;
+  var _74 : borrowed (Type.alloc_vec_vec usize (Type.alloc_alloc_global));
+  var _75 : usize;
+  var _76 : ();
+  var _77 : ();
+  var _78 : ();
+  var _79 : Type.alloc_vec_vec usize (Type.alloc_alloc_global);
+  {
+    f_1 <- f;
+    goto BB0
+  }
+  BB0 {
+    _3 <- Type.robinson_formula_formula_Formula_num_vars f_1;
+    lit_order_2 <- FromElem0.from_elem (0 : usize) _3;
+    goto BB1
+  }
+  BB1 {
+    _5 <- Type.robinson_formula_formula_Formula_num_vars f_1;
+    counts_4 <- FromElem0.from_elem (0 : usize) _5;
+    goto BB2
+  }
+  BB2 {
+    _7 <- ((0 : usize), (0 : usize));
+    _8 <- Type.robinson_formula_formula_Formula_num_vars f_1;
+    counts_with_index_6 <- FromElem1.from_elem _7 _8;
+    goto BB3
+  }
+  BB3 {
+    i_9 <- (0 : usize);
+    goto BB4
+  }
+  BB4 {
+    goto BB5
+  }
+  BB5 {
+    invariant i_bound { UInt64.to_int i_9 <= Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses f_1)) };
+    invariant counts_len1 { Seq.length (Model1.model counts_4) = UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f_1) };
+    _13 <- i_9;
+    _15 <- Type.robinson_formula_formula_Formula_clauses f_1;
+    _14 <- Len0.len _15;
+    goto BB6
+  }
+  BB6 {
+    _12 <- _13 < _14;
+    switch (_12)
+      | False -> goto BB21
+      | _ -> goto BB7
+      end
+  }
+  BB7 {
+    _18 <- Type.robinson_formula_formula_Formula_clauses f_1;
+    _19 <- i_9;
+    _17 <- Index0.index _18 _19;
+    goto BB8
+  }
+  BB8 {
+    curr_clause_16 <- _17;
+    j_20 <- (0 : usize);
+    goto BB9
+  }
+  BB9 {
+    goto BB10
+  }
+  BB10 {
+    invariant i_bound2 { UInt64.to_int i_9 <= Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses f_1)) };
+    invariant j_bound { UInt64.to_int j_20 <= Seq.length (Model2.model (Type.robinson_clause_clause_Clause_rest curr_clause_16)) };
+    invariant counts_len { Seq.length (Model1.model counts_4) = UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f_1) };
+    _23 <- j_20;
+    _25 <- Type.robinson_clause_clause_Clause_rest curr_clause_16;
+    _24 <- Len1.len _25;
+    goto BB11
+  }
+  BB11 {
+    _22 <- _23 < _24;
+    switch (_22)
+      | False -> goto BB20
+      | _ -> goto BB12
+      end
+  }
+  BB12 {
+    _30 <- counts_4;
+    _33 <- Type.robinson_clause_clause_Clause_rest curr_clause_16;
+    _34 <- j_20;
+    _32 <- Index1.index _33 _34;
+    goto BB13
+  }
+  BB13 {
+    _31 <- Type.robinson_lit_lit_Lit_idx _32;
+    _29 <- Index2.index _30 _31;
+    goto BB14
+  }
+  BB14 {
+    _28 <- _29;
+    _27 <- _28 < (18446744073709551615 : usize);
+    switch (_27)
+      | False -> goto BB18
+      | _ -> goto BB15
+      end
+  }
+  BB15 {
+    _36 <- borrow_mut counts_4;
+    counts_4 <-  ^ _36;
+    _39 <- Type.robinson_clause_clause_Clause_rest curr_clause_16;
+    _40 <- j_20;
+    _38 <- Index1.index _39 _40;
+    goto BB16
+  }
+  BB16 {
+    _37 <- Type.robinson_lit_lit_Lit_idx _38;
+    _35 <- IndexMut0.index_mut _36 _37;
+    goto BB17
+  }
+  BB17 {
+    _35 <- { _35 with current = ( * _35 + (1 : usize)) };
+    assume { Resolve0.resolve _35 };
+    _26 <- ();
+    goto BB19
+  }
+  BB18 {
+    _26 <- ();
+    goto BB19
+  }
+  BB19 {
+    j_20 <- j_20 + (1 : usize);
+    _11 <- ();
+    goto BB10
+  }
+  BB20 {
+    _21 <- ();
+    i_9 <- i_9 + (1 : usize);
+    _11 <- ();
+    goto BB5
+  }
+  BB21 {
+    _10 <- ();
+    i_9 <- (0 : usize);
+    goto BB22
+  }
+  BB22 {
+    goto BB23
+  }
+  BB23 {
+    goto BB24
+  }
+  BB24 {
+    invariant i_bound { UInt64.to_int i_9 <= UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f_1) };
+    invariant counts_with_idx_len { Seq.length (Model3.model counts_with_index_6) = UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f_1) };
+    invariant second_ok { forall j : (int) . 0 <= j && j < UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f_1) -> UInt64.to_int (let (_, a) = Seq.get (Model3.model counts_with_index_6) j in a) < UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f_1) };
+    _49 <- i_9;
+    _50 <- Type.robinson_formula_formula_Formula_num_vars f_1;
+    _48 <- _49 < _50;
+    switch (_48)
+      | False -> goto BB28
+      | _ -> goto BB25
+      end
+  }
+  BB25 {
+    _53 <- counts_4;
+    _54 <- i_9;
+    _52 <- Index2.index _53 _54;
+    goto BB26
+  }
+  BB26 {
+    _51 <- _52;
+    _55 <- i_9;
+    _57 <- borrow_mut counts_with_index_6;
+    counts_with_index_6 <-  ^ _57;
+    _58 <- i_9;
+    _56 <- IndexMut1.index_mut _57 _58;
+    goto BB27
+  }
+  BB27 {
+    _56 <- { _56 with current = (_51, _55) };
+    assume { Resolve1.resolve _56 };
+    i_9 <- i_9 + (1 : usize);
+    _11 <- ();
+    goto BB24
+  }
+  BB28 {
+    _47 <- ();
+    _64 <- borrow_mut counts_with_index_6;
+    counts_with_index_6 <-  ^ _64;
+    _63 <- borrow_mut ( * _64);
+    _64 <- { _64 with current = ( ^ _63) };
+    _62 <- SortReverse0.sort_reverse _63;
+    goto BB29
+  }
+  BB29 {
+    assume { Resolve2.resolve _64 };
+    i_9 <- (0 : usize);
+    goto BB30
+  }
+  BB30 {
+    goto BB31
+  }
+  BB31 {
+    goto BB32
+  }
+  BB32 {
+    invariant i_bound { 0 <= UInt64.to_int i_9 && UInt64.to_int i_9 <= UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f_1) };
+    invariant lit_order_len { Seq.length (Model1.model lit_order_2) = UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f_1) };
+    invariant second_ok { forall j : (int) . 0 <= j && j < UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f_1) -> UInt64.to_int (Seq.get (Model1.model lit_order_2) j) < UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f_1) };
+    _67 <- i_9;
+    _68 <- Type.robinson_formula_formula_Formula_num_vars f_1;
+    _66 <- _67 < _68;
+    switch (_66)
+      | False -> goto BB36
+      | _ -> goto BB33
+      end
+  }
+  BB33 {
+    _71 <- counts_with_index_6;
+    _72 <- i_9;
+    _70 <- Index3.index _71 _72;
+    goto BB34
+  }
+  BB34 {
+    _69 <- (let (_, a) = _70 in a);
+    _74 <- borrow_mut lit_order_2;
+    lit_order_2 <-  ^ _74;
+    _75 <- i_9;
+    _73 <- IndexMut0.index_mut _74 _75;
+    goto BB35
+  }
+  BB35 {
+    _73 <- { _73 with current = _69 };
+    assume { Resolve0.resolve _73 };
+    i_9 <- i_9 + (1 : usize);
+    _11 <- ();
+    goto BB32
+  }
+  BB36 {
+    _65 <- ();
+    assume { Resolve3.resolve _79 };
+    _79 <- lit_order_2;
+    _0 <- Type.Robinson_Decision_Decisions _79;
+    goto BB37
+  }
+  BB37 {
+    goto BB38
+  }
+  BB38 {
+    assume { Resolve4.resolve counts_with_index_6 };
+    goto BB39
+  }
+  BB39 {
+    assume { Resolve3.resolve counts_4 };
+    goto BB40
+  }
+  BB40 {
+    return _0
+  }
+  
 end
 module Robinson_Formula_Impl0_EventuallySatInner_Interface
   use Type
@@ -4339,364 +5167,6 @@ module Robinson_Lit_Impl1_LitUnsat
     goto BB5
   }
   BB5 {
-    return _0
-  }
-  
-end
-module Robinson_Solver_IsClauseSat_Interface
-  use mach.int.UInt64
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use Type
-  clone Robinson_Clause_Impl1_Sat_Interface as Sat0
-  clone Robinson_Formula_Impl0_Invariant_Interface as Invariant1
-  clone Robinson_Assignments_Impl1_Invariant_Interface as Invariant0
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.robinson_clause_clause,
-  type a = Type.alloc_alloc_global
-  val is_clause_sat [@cfg:stackify] (f : Type.robinson_formula_formula) (idx : usize) (a : Type.robinson_assignments_assignments) : bool
-    requires {UInt64.to_int idx < Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses f))}
-    requires {Invariant0.invariant' a f}
-    requires {Invariant1.invariant' f}
-    ensures { result = Sat0.sat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) (UInt64.to_int idx)) a }
-    
-end
-module Robinson_Solver_IsClauseSat
-  use mach.int.UInt64
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use Type
-  use mach.int.Int32
-  use prelude.UInt8
-  clone Robinson_Lit_Impl0_Invariant as Invariant3
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = Type.robinson_lit_lit,
-  type a = Type.alloc_alloc_global
-  clone Robinson_Clause_Impl0_Model as Model3 with function Model0.model = Model5.model
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model3.model
-  clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model3.model,
-  predicate Invariant0.invariant' = Invariant3.invariant'
-  clone Robinson_Clause_Impl1_Invariant as Invariant2 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
-  predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = uint8, type a = Type.alloc_alloc_global
-  clone Robinson_Assignments_Impl0_Model as Model2 with function Model0.model = Model4.model
-  clone Robinson_Assignments_Impl1_Invariant as Invariant0 with function Model0.model = Model2.model
-  clone Robinson_Lit_Impl0_SatInner as SatInner1
-  clone Robinson_Clause_Impl1_SatInner as SatInner0 with function Model0.model = Model3.model,
-  predicate SatInner0.sat_inner = SatInner1.sat_inner
-  clone Robinson_Clause_Impl1_Sat as Sat0 with function Model0.model = Model2.model,
-  predicate SatInner0.sat_inner = SatInner0.sat_inner
-  clone Robinson_Lit_Impl0_Sat as Sat1 with function Model0.model = Model2.model,
-  predicate SatInner0.sat_inner = SatInner1.sat_inner
-  clone Robinson_Clause_Impl0_ModelTy as ModelTy0
-  clone CreusotContracts_Logic_Model_Impl0_Model as Model1 with type t = Type.robinson_clause_clause,
-  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model3.model
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.robinson_clause_clause,
-  type a = Type.alloc_alloc_global
-  clone Robinson_Formula_Impl0_Invariant as Invariant1 with function Model0.model = Model0.model,
-  predicate Invariant0.invariant' = Invariant2.invariant'
-  clone Robinson_Assignments_Impl0_ModelTy as ModelTy3
-  clone CreusotContracts_Logic_Model_Impl2_ModelTy as ModelTy2 with type t = Type.robinson_lit_lit
-  clone Core_Slice_Index_Impl2_Output as Output1 with type t = Type.robinson_lit_lit
-  clone CreusotContracts_Std1_Vec_Impl1_HasValue as HasValue1 with type t = Type.robinson_lit_lit
-  clone CreusotContracts_Std1_Vec_Impl1_InBounds as InBounds1 with type t = Type.robinson_lit_lit
-  clone CreusotContracts_Logic_Model_Impl2_ModelTy as ModelTy1 with type t = Type.robinson_clause_clause
-  clone Core_Slice_Index_Impl2_Output as Output0 with type t = Type.robinson_clause_clause
-  clone CreusotContracts_Std1_Vec_Impl1_HasValue as HasValue0 with type t = Type.robinson_clause_clause
-  clone CreusotContracts_Std1_Vec_Impl1_InBounds as InBounds0 with type t = Type.robinson_clause_clause
-  clone Alloc_Vec_Impl16_Index_Interface as Index1 with type t = Type.robinson_lit_lit, type i = usize,
-  type a = Type.alloc_alloc_global, function Model0.model = Model5.model,
-  predicate InBounds0.in_bounds = InBounds1.in_bounds, predicate HasValue0.has_value = HasValue1.has_value,
-  type Output0.output = Output1.output
-  clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.robinson_lit_lit, type a = Type.alloc_alloc_global,
-  function Model0.model = Model5.model
-  clone CreusotContracts_Logic_Model_Impl0_Model as Model6 with type t = Type.robinson_assignments_assignments,
-  type ModelTy0.modelTy = ModelTy3.modelTy, function Model0.model = Model2.model
-  clone Robinson_Lit_Impl1_LitSat_Interface as LitSat0 with function Model0.model = Model6.model,
-  predicate Invariant0.invariant' = Invariant3.invariant', predicate Sat0.sat = Sat1.sat
-  clone Alloc_Vec_Impl16_Index_Interface as Index0 with type t = Type.robinson_clause_clause, type i = usize,
-  type a = Type.alloc_alloc_global, function Model0.model = Model0.model,
-  predicate InBounds0.in_bounds = InBounds0.in_bounds, predicate HasValue0.has_value = HasValue0.has_value,
-  type Output0.output = Output0.output
-  let rec cfg is_clause_sat [@cfg:stackify] (f : Type.robinson_formula_formula) (idx : usize) (a : Type.robinson_assignments_assignments) : bool
-    requires {UInt64.to_int idx < Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses f))}
-    requires {Invariant0.invariant' a f}
-    requires {Invariant1.invariant' f}
-    ensures { result = Sat0.sat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) (UInt64.to_int idx)) a }
-    
-   = 
-  var _0 : bool;
-  var f_1 : Type.robinson_formula_formula;
-  var idx_2 : usize;
-  var a_3 : Type.robinson_assignments_assignments;
-  var _4 : ();
-  var clause_5 : Type.robinson_clause_clause;
-  var _6 : Type.robinson_clause_clause;
-  var _7 : Type.alloc_vec_vec (Type.robinson_clause_clause) (Type.alloc_alloc_global);
-  var _8 : usize;
-  var i_9 : usize;
-  var _10 : ();
-  var _11 : ();
-  var _12 : bool;
-  var _13 : usize;
-  var _14 : usize;
-  var _15 : Type.alloc_vec_vec (Type.robinson_lit_lit) (Type.alloc_alloc_global);
-  var _16 : ();
-  var _17 : bool;
-  var _18 : Type.robinson_lit_lit;
-  var _19 : Type.robinson_lit_lit;
-  var _20 : Type.alloc_vec_vec (Type.robinson_lit_lit) (Type.alloc_alloc_global);
-  var _21 : usize;
-  var _22 : Type.robinson_assignments_assignments;
-  var _23 : ();
-  var _24 : ();
-  var _25 : ();
-  var _26 : ();
-  {
-    f_1 <- f;
-    idx_2 <- idx;
-    a_3 <- a;
-    goto BB0
-  }
-  BB0 {
-    _7 <- Type.robinson_formula_formula_Formula_clauses f_1;
-    _8 <- idx_2;
-    _6 <- Index0.index _7 _8;
-    goto BB1
-  }
-  BB1 {
-    clause_5 <- _6;
-    i_9 <- (0 : usize);
-    goto BB2
-  }
-  BB2 {
-    invariant previous { forall j : (int) . 0 <= j && j < UInt64.to_int i_9 -> not (Sat1.sat (Seq.get (Model1.model clause_5) j) a_3) };
-    _13 <- i_9;
-    _15 <- Type.robinson_clause_clause_Clause_rest clause_5;
-    _14 <- Len0.len _15;
-    goto BB3
-  }
-  BB3 {
-    _12 <- _13 < _14;
-    switch (_12)
-      | False -> goto BB9
-      | _ -> goto BB4
-      end
-  }
-  BB4 {
-    _20 <- Type.robinson_clause_clause_Clause_rest clause_5;
-    _21 <- i_9;
-    _19 <- Index1.index _20 _21;
-    goto BB5
-  }
-  BB5 {
-    _18 <- _19;
-    _22 <- a_3;
-    _17 <- LitSat0.lit_sat _18 _22;
-    goto BB6
-  }
-  BB6 {
-    switch (_17)
-      | False -> goto BB8
-      | _ -> goto BB7
-      end
-  }
-  BB7 {
-    _0 <- true;
-    goto BB10
-  }
-  BB8 {
-    _16 <- ();
-    i_9 <- i_9 + (1 : usize);
-    _11 <- ();
-    goto BB2
-  }
-  BB9 {
-    _10 <- ();
-    _0 <- false;
-    goto BB10
-  }
-  BB10 {
-    return _0
-  }
-  
-end
-module Robinson_Solver_IsClauseUnsat_Interface
-  use mach.int.UInt64
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use Type
-  clone Robinson_Clause_Impl1_Unsat_Interface as Unsat0
-  clone Robinson_Formula_Impl0_Invariant_Interface as Invariant1
-  clone Robinson_Assignments_Impl1_Invariant_Interface as Invariant0
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.robinson_clause_clause,
-  type a = Type.alloc_alloc_global
-  val is_clause_unsat [@cfg:stackify] (f : Type.robinson_formula_formula) (idx : usize) (a : Type.robinson_assignments_assignments) : bool
-    requires {UInt64.to_int idx < Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses f))}
-    requires {Invariant0.invariant' a f}
-    requires {Invariant1.invariant' f}
-    ensures { result = Unsat0.unsat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) (UInt64.to_int idx)) a }
-    
-end
-module Robinson_Solver_IsClauseUnsat
-  use mach.int.UInt64
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use Type
-  use mach.int.Int32
-  use prelude.UInt8
-  clone Robinson_Lit_Impl0_Invariant as Invariant3
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = Type.robinson_lit_lit,
-  type a = Type.alloc_alloc_global
-  clone Robinson_Clause_Impl0_Model as Model3 with function Model0.model = Model5.model
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model3.model
-  clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model3.model,
-  predicate Invariant0.invariant' = Invariant3.invariant'
-  clone Robinson_Clause_Impl1_Invariant as Invariant2 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
-  predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = uint8, type a = Type.alloc_alloc_global
-  clone Robinson_Assignments_Impl0_Model as Model2 with function Model0.model = Model4.model
-  clone Robinson_Assignments_Impl1_Invariant as Invariant0 with function Model0.model = Model2.model
-  clone Robinson_Lit_Impl0_UnsatInner as UnsatInner1
-  clone Robinson_Clause_Impl1_UnsatInner as UnsatInner0 with function Model0.model = Model3.model,
-  predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
-  clone Robinson_Clause_Impl1_Unsat as Unsat0 with function Model0.model = Model2.model,
-  predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
-  clone Robinson_Lit_Impl0_Unsat as Unsat1 with function Model0.model = Model2.model,
-  predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
-  clone Robinson_Clause_Impl0_ModelTy as ModelTy0
-  clone CreusotContracts_Logic_Model_Impl0_Model as Model1 with type t = Type.robinson_clause_clause,
-  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model3.model
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.robinson_clause_clause,
-  type a = Type.alloc_alloc_global
-  clone Robinson_Formula_Impl0_Invariant as Invariant1 with function Model0.model = Model0.model,
-  predicate Invariant0.invariant' = Invariant2.invariant'
-  clone Robinson_Assignments_Impl0_ModelTy as ModelTy3
-  clone CreusotContracts_Logic_Model_Impl2_ModelTy as ModelTy2 with type t = Type.robinson_lit_lit
-  clone Core_Slice_Index_Impl2_Output as Output1 with type t = Type.robinson_lit_lit
-  clone CreusotContracts_Std1_Vec_Impl1_HasValue as HasValue1 with type t = Type.robinson_lit_lit
-  clone CreusotContracts_Std1_Vec_Impl1_InBounds as InBounds1 with type t = Type.robinson_lit_lit
-  clone CreusotContracts_Logic_Model_Impl2_ModelTy as ModelTy1 with type t = Type.robinson_clause_clause
-  clone Core_Slice_Index_Impl2_Output as Output0 with type t = Type.robinson_clause_clause
-  clone CreusotContracts_Std1_Vec_Impl1_HasValue as HasValue0 with type t = Type.robinson_clause_clause
-  clone CreusotContracts_Std1_Vec_Impl1_InBounds as InBounds0 with type t = Type.robinson_clause_clause
-  clone Alloc_Vec_Impl16_Index_Interface as Index1 with type t = Type.robinson_lit_lit, type i = usize,
-  type a = Type.alloc_alloc_global, function Model0.model = Model5.model,
-  predicate InBounds0.in_bounds = InBounds1.in_bounds, predicate HasValue0.has_value = HasValue1.has_value,
-  type Output0.output = Output1.output
-  clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.robinson_lit_lit, type a = Type.alloc_alloc_global,
-  function Model0.model = Model5.model
-  clone CreusotContracts_Logic_Model_Impl0_Model as Model6 with type t = Type.robinson_assignments_assignments,
-  type ModelTy0.modelTy = ModelTy3.modelTy, function Model0.model = Model2.model
-  clone Robinson_Lit_Impl1_LitUnsat_Interface as LitUnsat0 with function Model0.model = Model6.model,
-  predicate Invariant0.invariant' = Invariant3.invariant', predicate Unsat0.unsat = Unsat1.unsat
-  clone Alloc_Vec_Impl16_Index_Interface as Index0 with type t = Type.robinson_clause_clause, type i = usize,
-  type a = Type.alloc_alloc_global, function Model0.model = Model0.model,
-  predicate InBounds0.in_bounds = InBounds0.in_bounds, predicate HasValue0.has_value = HasValue0.has_value,
-  type Output0.output = Output0.output
-  let rec cfg is_clause_unsat [@cfg:stackify] (f : Type.robinson_formula_formula) (idx : usize) (a : Type.robinson_assignments_assignments) : bool
-    requires {UInt64.to_int idx < Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses f))}
-    requires {Invariant0.invariant' a f}
-    requires {Invariant1.invariant' f}
-    ensures { result = Unsat0.unsat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) (UInt64.to_int idx)) a }
-    
-   = 
-  var _0 : bool;
-  var f_1 : Type.robinson_formula_formula;
-  var idx_2 : usize;
-  var a_3 : Type.robinson_assignments_assignments;
-  var _4 : ();
-  var clause_5 : Type.robinson_clause_clause;
-  var _6 : Type.robinson_clause_clause;
-  var _7 : Type.alloc_vec_vec (Type.robinson_clause_clause) (Type.alloc_alloc_global);
-  var _8 : usize;
-  var i_9 : usize;
-  var _10 : ();
-  var _11 : ();
-  var _12 : bool;
-  var _13 : usize;
-  var _14 : usize;
-  var _15 : Type.alloc_vec_vec (Type.robinson_lit_lit) (Type.alloc_alloc_global);
-  var _16 : ();
-  var _17 : bool;
-  var _18 : bool;
-  var _19 : Type.robinson_lit_lit;
-  var _20 : Type.robinson_lit_lit;
-  var _21 : Type.alloc_vec_vec (Type.robinson_lit_lit) (Type.alloc_alloc_global);
-  var _22 : usize;
-  var _23 : Type.robinson_assignments_assignments;
-  var _24 : ();
-  var _25 : ();
-  var _26 : ();
-  var _27 : ();
-  {
-    f_1 <- f;
-    idx_2 <- idx;
-    a_3 <- a;
-    goto BB0
-  }
-  BB0 {
-    _7 <- Type.robinson_formula_formula_Formula_clauses f_1;
-    _8 <- idx_2;
-    _6 <- Index0.index _7 _8;
-    goto BB1
-  }
-  BB1 {
-    clause_5 <- _6;
-    i_9 <- (0 : usize);
-    goto BB2
-  }
-  BB2 {
-    invariant previous { forall j : (int) . 0 <= j && j < UInt64.to_int i_9 -> Unsat1.unsat (Seq.get (Model1.model clause_5) j) a_3 };
-    _13 <- i_9;
-    _15 <- Type.robinson_clause_clause_Clause_rest clause_5;
-    _14 <- Len0.len _15;
-    goto BB3
-  }
-  BB3 {
-    _12 <- _13 < _14;
-    switch (_12)
-      | False -> goto BB9
-      | _ -> goto BB4
-      end
-  }
-  BB4 {
-    _21 <- Type.robinson_clause_clause_Clause_rest clause_5;
-    _22 <- i_9;
-    _20 <- Index1.index _21 _22;
-    goto BB5
-  }
-  BB5 {
-    _19 <- _20;
-    _23 <- a_3;
-    _18 <- LitUnsat0.lit_unsat _19 _23;
-    goto BB6
-  }
-  BB6 {
-    _17 <- not _18;
-    switch (_17)
-      | False -> goto BB8
-      | _ -> goto BB7
-      end
-  }
-  BB7 {
-    _0 <- false;
-    goto BB10
-  }
-  BB8 {
-    _16 <- ();
-    i_9 <- i_9 + (1 : usize);
-    _11 <- ();
-    goto BB2
-  }
-  BB9 {
-    _10 <- ();
-    _0 <- true;
-    goto BB10
-  }
-  BB10 {
     return _0
   }
   
@@ -4984,104 +5454,6 @@ module Robinson_Solver_Solver
   use prelude.Prelude
   use Type
   val solver [@cfg:stackify] (f : borrowed (Type.robinson_formula_formula)) (units : Type.alloc_vec_vec (Type.robinson_lit_lit) (Type.alloc_alloc_global)) : bool
-    
-end
-module Robinson_Util_SortedRangeRev_Interface
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  predicate sorted_range_rev (s : Seq.seq (usize, usize)) (l : int) (u : int)
-end
-module Robinson_Util_SortedRangeRev
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  predicate sorted_range_rev (s : Seq.seq (usize, usize)) (l : int) (u : int) = 
-    forall j : (int) . forall i : (int) . l <= i && i < j && j < u -> (let (a, _) = Seq.get s i in a) >= (let (a, _) = Seq.get s j in a)
-end
-module Robinson_Util_SortedRev_Interface
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  predicate sorted_rev (s : Seq.seq (usize, usize))
-end
-module Robinson_Util_SortedRev
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  use mach.int.Int32
-  clone Robinson_Util_SortedRangeRev_Interface as SortedRangeRev0
-  predicate sorted_rev (s : Seq.seq (usize, usize)) = 
-    SortedRangeRev0.sorted_range_rev s 0 (Seq.length s)
-end
-module Robinson_Util_PartitionRev_Interface
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  predicate partition_rev (v : Seq.seq (usize, usize)) (i : int)
-end
-module Robinson_Util_PartitionRev
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  use mach.int.Int32
-  predicate partition_rev (v : Seq.seq (usize, usize)) (i : int) = 
-    forall k2 : (int) . forall k1 : (int) . 0 <= k1 && k1 < i && i <= k2 && k2 < Seq.length v -> (let (a, _) = Seq.get v k1 in a) >= (let (a, _) = Seq.get v k2 in a)
-end
-module CreusotContracts_Logic_Seq_Impl0_PermutationOf_Interface
-  type t
-  use seq.Seq
-  predicate permutation_of (self : Seq.seq t) (o : Seq.seq t)
-end
-module CreusotContracts_Logic_Seq_Impl0_PermutationOf
-  type t
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use seq.Permut
-  predicate permutation_of (self : Seq.seq t) (o : Seq.seq t) = 
-    Permut.permut self o 0 (Seq.length self)
-end
-module Robinson_Util_SortReverse_Interface
-  use prelude.Prelude
-  use Type
-  use mach.int.Int
-  use mach.int.UInt64
-  clone Robinson_Util_SortedRev_Interface as SortedRev0
-  clone CreusotContracts_Logic_Seq_Impl0_PermutationOf_Interface as PermutationOf0 with type t = (usize, usize)
-  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = (usize, usize),
-  type a = Type.alloc_alloc_global
-  clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model1 with type t = Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global),
-  type ModelTy0.modelTy = ModelTy0.modelTy
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = (usize, usize),
-  type a = Type.alloc_alloc_global
-  val sort_reverse [@cfg:stackify] (v : borrowed (Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global))) : ()
-    ensures { PermutationOf0.permutation_of (Model0.model ( ^ v)) (Model1.model v) }
-    ensures { SortedRev0.sorted_rev (Model0.model ( ^ v)) }
-    
-end
-module Robinson_Util_SortReverse
-  use prelude.Prelude
-  use Type
-  use mach.int.Int
-  use mach.int.UInt64
-  clone Robinson_Util_SortedRangeRev as SortedRangeRev0
-  clone Robinson_Util_SortedRev as SortedRev0 with predicate SortedRangeRev0.sorted_range_rev = SortedRangeRev0.sorted_range_rev
-  clone CreusotContracts_Logic_Seq_Impl0_PermutationOf as PermutationOf0 with type t = (usize, usize)
-  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = (usize, usize),
-  type a = Type.alloc_alloc_global
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = (usize, usize), type a = Type.alloc_alloc_global
-  clone CreusotContracts_Logic_Model_Impl1_Model as Model1 with type t = Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global),
-  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model0.model
-  val sort_reverse [@cfg:stackify] (v : borrowed (Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global))) : ()
-    ensures { PermutationOf0.permutation_of (Model0.model ( ^ v)) (Model1.model v) }
-    ensures { SortedRev0.sorted_rev (Model0.model ( ^ v)) }
     
 end
 module Core_Clone_Clone_Clone_Interface

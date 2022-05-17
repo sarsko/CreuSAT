@@ -11,40 +11,6 @@ use crate::logic::*;
 
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
-#[requires(@idx < (@f.clauses).len())]
-#[ensures(result === (@f.clauses)[@idx].sat(*a))]
-pub fn is_clause_sat(f: &Formula, idx: usize, a: &Assignments) -> bool {
-    let clause = &f.clauses[idx];
-    let mut i: usize = 0;
-    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==> !(@clause)[j].sat(*a))]
-    while i < clause.rest.len() {
-        if clause.rest[i].lit_sat(a) {
-            return true;
-        }
-        i += 1;
-    }
-    return false;
-}
-
-#[requires(f.invariant())]
-#[requires(a.invariant(*f))]
-#[requires(@idx < (@f.clauses).len())]
-#[ensures(result === (@f.clauses)[@idx].unsat(*a))]
-pub fn is_clause_unsat(f: &Formula, idx: usize, a: &Assignments) -> bool {
-    let clause = &f.clauses[idx];
-    let mut i: usize = 0;
-    #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==> (@clause)[j].unsat(*a))]
-    while i < clause.rest.len() {
-        if !clause.rest[i].lit_unsat(a) {
-            return false;
-        }
-        i += 1;
-    }
-    return true;
-}
-
-#[requires(f.invariant())]
-#[requires(a.invariant(*f))]
 #[requires(d.invariant(@f.num_vars))]
 #[ensures(result === true ==> f.eventually_sat(a))]
 #[ensures(result === false ==> !f.eventually_sat_complete(a))]

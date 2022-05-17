@@ -116,11 +116,10 @@ pub enum ClauseState {
 
 impl Clause {
     #[inline]
-    #[trusted] // TMP
-    pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
-        Clause { rest: vec.clone() }
+    pub fn clause_from_vec(vec: Vec<Lit>) -> Clause {
+        Clause { rest: vec }
     }
-    //#[trusted] // OK
+
     #[requires(self.invariant((@a).len()))]
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
@@ -163,7 +162,6 @@ impl Clause {
         }
     }
 
-    #[trusted] // OK
     #[requires(self.unit(*a))]
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
