@@ -16,7 +16,5 @@ pub mod formula;
 pub mod lit;
 pub mod logic;
 pub mod parser;
-pub mod solver_dpll;
-pub mod trail;
+pub mod solver;
 pub mod util;
-pub mod watches;

@@ -8,12 +8,10 @@ use crate::lit::*;
 use crate::logic::*;
 
 pub struct Clause {
-    //pub first: Lit,
-    //pub second: Lit,
     pub rest: Vec<Lit>,
 }
 
-#[cfg(contracts)]
+#[cfg(feature = "contracts")]
 impl Model for Clause {
     type ModelTy = Seq<Lit>;
 
@@ -119,15 +117,8 @@ pub enum ClauseState {
 impl Clause {
     #[inline]
     #[trusted] // TMP
-    pub fn clause_from_vec(vec: &std::vec::Vec<Lit>) -> Clause {
+    pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
         Clause { rest: vec.clone() }
-        /*
-        Clause {
-            first: vec[0],
-            second: vec[1],
-            rest: vec[2..].to_vec()
-        }
-        */
     }
     //#[trusted] // OK
     #[requires(self.invariant((@a).len()))]
