@@ -152,23 +152,11 @@ impl Assignments {
     #[cfg_attr(feature = "trust_assignments", trusted)]
     #[requires(f.invariant())]
     #[ensures(result.invariant(*f))]
+    #[ensures(forall<i: Int> 0 <= i && i < (@result).len() ==> unset((@result)[i]))]
     pub fn new(f: &Formula) -> Self {
         Assignments(vec::from_elem(2u8, f.num_vars), 0)
-        /*
-        let mut assign: Vec<AssignedState> = Vec::new();
-        let mut i: usize = 0;
-        #[invariant(loop_invariant, 0 <= @i && @i <= @f.num_vars)]
-        #[invariant(length_invariant, (@assign).len() === @i)]
-        while i < f.num_vars {
-            assign.push(2);
-            i += 1
-        }
-        Assignments(assign, 0)
-        */
     }
 
-    //#[requires(self.invariant(*_f))]
-    //#[ensures((^self).invariant(*_f))]
     #[cfg_attr(feature = "trust_assignments", trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(!self.complete())]

@@ -9,6 +9,13 @@ use crate::formula::*;
 use crate::lit::*;
 use crate::logic::*;
 
+pub enum SatResult {
+    Sat(Vec<AssignedState>),
+    Unsat,
+    Unknown,
+    Err,
+}
+
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(d.invariant(@f.num_vars))]
@@ -22,9 +29,7 @@ fn inner(f: &Formula, mut a: Assignments, d: &Decisions) -> bool {
         _ => {}
     }
     let next = a.find_unassigned(d, f);
-    let old_a = Ghost::record(&a);
     let mut a_cloned = a.clone();
-    //proof_assert!(@a_cloned === @@old_a);
     a.0[next] = 1;
     let lit = Lit {
         idx: next,
@@ -43,27 +48,23 @@ fn inner(f: &Formula, mut a: Assignments, d: &Decisions) -> bool {
     return inner(f, a_cloned, d);
 }
 
-#[trusted]
-pub fn solver(f: &mut Formula, units: &Vec<Lit>) -> bool {
-    // should do pure literal and identifying unit clauses in preproc
-    let mut i = 0;
-    let mut assignments = Assignments::new(f);
-    while i < units.len() {
-        let lit = units[i];
-        if lit.polarity {
-            assignments.0[lit.idx] = 1;
-        } else {
-            assignments.0[lit.idx] = 0;
-        }
+#[cfg_attr(feature = "trust_solver", trusted)]
+#[ensures(match result {
+    SatResult::Sat(assn) => { formula.eventually_sat_no_ass()
+        //formula.sat_inner(@assn) 
+    },
+    SatResult::Unsat     => { formula.contains_empty_clause() || !formula.eventually_sat_complete_no_ass() },
+    _                    => { true },
+})]
+pub fn solver(formula: &mut Formula) -> SatResult {
+    match formula.check_formula_invariant() {
+        SatResult::Unknown => {}
+        o => return o,
     }
-    /*
-    if units.len() > 0 {
-        panic!();
+    let mut assignments = Assignments::new(formula);
+    let decisions = Decisions::new(formula);
+    if inner(formula, assignments, &decisions) {
+        return SatResult::Sat(Vec::new());
     }
-    */
-    if f.num_vars == 0 {
-        return true;
-    }
-    let decisions = Decisions::new(f);
-    inner(f, assignments, &decisions)
+    return SatResult::Unsat;
 }

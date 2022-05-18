@@ -103,4 +103,11 @@ impl Lit {
     pub fn lit_unset(self, a: &Assignments) -> bool {
         a.0[self.idx] >= 2
     }
+
+    #[inline(always)]
+    #[cfg_attr(feature = "trust_lit", trusted)]
+    #[ensures(result === self.invariant(@n))]
+    pub fn check_lit_invariant(&self, n: usize) -> bool {
+        return self.idx < n;
+    }
 }

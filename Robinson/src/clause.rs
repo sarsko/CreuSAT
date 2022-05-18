@@ -95,13 +95,12 @@ impl Clause {
     pub fn no_duplicate_indexes(self) -> bool {
         pearlite! {
             forall<j: Int, k: Int> 0 <= j && j < (@self).len() &&
-                 k < j ==> !(@(@self)[k].idx === @(@self)[j].idx)
+                 0 <= k && k < j ==> !(@(@self)[k].idx === @(@self)[j].idx)
         }
     }
 
     #[predicate]
     pub fn invariant(self, n: Int) -> bool {
-        // Should remove the possibility of empty clauses
         pearlite! { self.vars_in_range(n) && self.no_duplicate_indexes() }
     }
 }
@@ -179,5 +178,52 @@ impl Clause {
             i += 1;
         }
         panic!();
+    }
+
+    #[cfg_attr(feature = "trust_clause", trusted)]
+    #[ensures(result === self.invariant(@n))]
+    pub fn check_clause_invariant(&self, n: usize) -> bool {
+        let mut i: usize = 0;
+        #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@self)[j].invariant(@n))]
+        while i < self.len() {
+            if !self.rest[i].check_lit_invariant(n) {
+                return false;
+            }
+            i += 1;
+        }
+        if self.no_duplicates() {
+            return true;
+        }
+        return false;
+    }
+
+    #[cfg_attr(feature = "trust_clause", trusted)]
+    #[ensures(result === self.no_duplicate_indexes())]
+    pub fn no_duplicates(&self) -> bool {
+        let mut i: usize = 0;
+        #[invariant(no_dups,
+            forall<j: Int, k: Int> 0 <= j && j < @i &&
+             0 <= k && k < j ==> (@self)[j].idx != (@self)[k].idx)]
+        while i < self.rest.len() {
+            let lit1 = self.rest[i];
+            let mut j: usize = 0;
+            #[invariant(inv, forall<k: Int> 0 <= k && k < @j ==> lit1.idx != (@self)[k].idx)]
+            while j < i {
+                let lit2 = self.rest[j];
+                if lit1.idx == lit2.idx {
+                    return false;
+                }
+                j += 1;
+            }
+            i += 1;
+        }
+        return true;
+    }
+
+    #[inline(always)]
+    #[cfg_attr(feature = "trust_clause", trusted)]
+    #[ensures(@result === (@self).len())]
+    pub fn len(&self) -> usize {
+        self.rest.len()
     }
 }
