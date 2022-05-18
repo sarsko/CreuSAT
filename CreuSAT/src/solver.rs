@@ -141,7 +141,7 @@ impl Solver {
     #[requires(vars_in_range_inner(@clause, @f.num_vars))]
     #[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(equisat_extension_inner(clause, @f))]
-    #[ensures(@f.num_vars === @(^f).num_vars)]
+    #[ensures(@f.num_vars == @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
     fn handle_long_clause(
         &mut self,
@@ -194,7 +194,7 @@ impl Solver {
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(@cref < (@f.clauses).len())]
     #[requires((@f.clauses)[@cref].unsat(t.assignments))] // added
-    #[ensures(@f.num_vars === @(^f).num_vars)]
+    #[ensures(@f.num_vars == @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
     #[ensures(match result {
         Some(false) => { (^f).not_satisfiable() },
@@ -243,7 +243,7 @@ impl Solver {
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut d).invariant(@f.num_vars))]
     #[requires(@f.num_vars < @usize::MAX/2)]
-    #[ensures(@f.num_vars === @(^f).num_vars)]
+    #[ensures(@f.num_vars == @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
     #[ensures(match result {
         ConflictResult::Ground => { (^f).not_satisfiable() },
@@ -278,7 +278,7 @@ impl Solver {
         Some(true)  => { true },
         None        => { true },
     })]
-    #[ensures(@f.num_vars === @(^f).num_vars)]
+    #[ensures(@f.num_vars == @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
     fn unit_prop_loop(
         &mut self,
@@ -296,11 +296,11 @@ impl Solver {
         #[invariant(maintains_w, w.invariant(*f))]
         #[invariant(maintains_d, d.invariant(@f.num_vars))]
         #[invariant(equi, (@old_f).equisat(*f))]
-        #[invariant(num_vars, @f.num_vars === @(@old_f).num_vars)]
-        #[invariant(prophf, ^f === ^@old_f)]
-        #[invariant(propht, ^t === ^@old_t)]
-        #[invariant(prophw, ^w === ^@old_w)]
-        #[invariant(prophd, ^d === ^@old_d)]
+        #[invariant(num_vars, @f.num_vars == @(@old_f).num_vars)]
+        #[invariant(prophf, ^f == ^@old_f)]
+        #[invariant(propht, ^t == ^@old_t)]
+        #[invariant(prophw, ^w == ^@old_w)]
+        #[invariant(prophd, ^d == ^@old_d)]
         loop {
             match self.unit_prop_step(f, d, t, w) {
                 ConflictResult::Ok => {
@@ -325,7 +325,7 @@ impl Solver {
     #[maintains((mut d).invariant(@f.num_vars))]
     #[requires(d.invariant(@f.num_vars))]
     #[requires(@f.num_vars < @usize::MAX/2)]
-    #[ensures(@f.num_vars === @(^f).num_vars)]
+    #[ensures(@f.num_vars == @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
     #[ensures(match result {
         SatResult::Sat(_)   => { (^f).sat((^trail).assignments)
@@ -401,12 +401,12 @@ impl Solver {
     ) -> SatResult {
         let old_f = Ghost::record(&formula);
         #[invariant(equi, (@old_f).equisat(*formula))]
-        #[invariant(num_vars, @formula.num_vars === @(@old_f).num_vars)]
+        #[invariant(num_vars, @formula.num_vars == @(@old_f).num_vars)]
         #[invariant(maintains_f, formula.invariant())]
         #[invariant(maintains_t, trail.invariant(*formula))]
         #[invariant(maintains_w, watches.invariant(*formula))]
         #[invariant(maintains_d, decisions.invariant(@formula.num_vars))]
-        #[invariant(prophf, ^formula === ^@old_f)]
+        #[invariant(prophf, ^formula == ^@old_f)]
         loop {
             match self.outer_loop(formula, &mut decisions, &mut trail, &mut watches) {
                 SatResult::Unknown => {} // continue

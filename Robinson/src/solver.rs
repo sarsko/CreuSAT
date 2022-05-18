@@ -19,8 +19,8 @@ pub enum SatResult {
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
 #[requires(d.invariant(@f.num_vars))]
-#[ensures(result === true ==> f.eventually_sat(a))]
-#[ensures(result === false ==> !f.eventually_sat_complete(a))]
+#[ensures(result == true ==> f.eventually_sat(a))]
+#[ensures(result == false ==> !f.eventually_sat_complete(a))]
 fn inner(f: &Formula, mut a: Assignments, d: &Decisions) -> bool {
     match a.do_unit_propagation(f) {
         Some(n) => {

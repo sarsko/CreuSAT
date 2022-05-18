@@ -26,7 +26,7 @@ impl Clause {
     pub fn in_formula(self, f: Formula) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < (@f.clauses).len() &&
-                (@f.clauses)[i] === self
+                (@f.clauses)[i] == self
         }
     }
 
@@ -95,7 +95,7 @@ impl Clause {
     pub fn no_duplicate_indexes(self) -> bool {
         pearlite! {
             forall<j: Int, k: Int> 0 <= j && j < (@self).len() &&
-                 0 <= k && k < j ==> !(@(@self)[k].idx === @(@self)[j].idx)
+                 0 <= k && k < j ==> !(@(@self)[k].idx == @(@self)[j].idx)
         }
     }
 
@@ -122,24 +122,24 @@ impl Clause {
     #[requires(self.invariant((@a).len()))]
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
-    #[ensures((result === ClauseState::Sat)     ==> self.sat(*a))]
-    #[ensures((result === ClauseState::Unsat)   ==> self.unsat(*a))]
-    #[ensures((result === ClauseState::Unit)    ==> self.unit(*a) && !a.complete())]
-    #[ensures((result === ClauseState::Unknown) ==> !a.complete())]
+    #[ensures((result == ClauseState::Sat)     ==> self.sat(*a))]
+    #[ensures((result == ClauseState::Unsat)   ==> self.unsat(*a))]
+    #[ensures((result == ClauseState::Unit)    ==> self.unit(*a) && !a.complete())]
+    #[ensures((result == ClauseState::Unknown) ==> !a.complete())]
     pub fn check_if_unit(&self, a: &Assignments, f: &Formula) -> ClauseState {
         let mut i: usize = 0;
         let mut k: usize = 0;
         let mut unassigned: usize = 0;
         #[invariant(loop_invariant, 0 <= @i && @i <= (@self.rest).len())]
         #[invariant(unass, @unassigned <= 1)]
-        #[invariant(k_is_unass, (@unassigned === 0 || (@self)[@k].unset(*a)))]
+        #[invariant(k_is_unass, (@unassigned == 0 || (@self)[@k].unset(*a)))]
         #[invariant(kk, @unassigned > 0 ==> (@self)[@k].unset(*a))]
         #[invariant(not_sat, forall<j: Int> 0 <= j && j < @i ==>
             ((@self)[j].unsat(*a) || ((@self)[j].unset(*a) && @unassigned >= 1)))]
-        #[invariant(k_in_bounds, @unassigned === 0 || 0 <= @k && @k < (@self).len())]
-        #[invariant(k_only, @unassigned === 1 ==>
+        #[invariant(k_in_bounds, @unassigned == 0 || 0 <= @k && @k < (@self).len())]
+        #[invariant(k_only, @unassigned == 1 ==>
             (forall<j: Int> 0 <= j && j < @i && j != @k ==> !(@self)[j].unset(*a)))]
-        #[invariant(k_unset, @unassigned === 0 ==> @k === 0)]
+        #[invariant(k_unset, @unassigned == 0 ==> @k == 0)]
         while i < self.rest.len() {
             let lit = self.rest[i];
             if lit.lit_sat(a) {
@@ -164,7 +164,7 @@ impl Clause {
     #[requires(self.unit(*a))]
     #[requires(f.invariant())]
     #[requires(a.invariant(*f))]
-    #[ensures(exists<j: Int> 0 <= j && j < (@self).len() && (@self)[j] === result)]
+    #[ensures(exists<j: Int> 0 <= j && j < (@self).len() && (@self)[j] == result)]
     #[ensures(@result.idx < (@a).len())]
     #[ensures(unset((@a)[@result.idx]))]
     pub fn get_unit(&self, a: &Assignments, f: &Formula) -> Lit {
@@ -181,7 +181,7 @@ impl Clause {
     }
 
     #[cfg_attr(feature = "trust_clause", trusted)]
-    #[ensures(result === self.invariant(@n))]
+    #[ensures(result == self.invariant(@n))]
     pub fn check_clause_invariant(&self, n: usize) -> bool {
         let mut i: usize = 0;
         #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@self)[j].invariant(@n))]
@@ -198,7 +198,7 @@ impl Clause {
     }
 
     #[cfg_attr(feature = "trust_clause", trusted)]
-    #[ensures(result === self.no_duplicate_indexes())]
+    #[ensures(result == self.no_duplicate_indexes())]
     pub fn no_duplicates(&self) -> bool {
         let mut i: usize = 0;
         #[invariant(no_dups,
@@ -222,7 +222,7 @@ impl Clause {
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_clause", trusted)]
-    #[ensures(@result === (@self).len())]
+    #[ensures(@result == (@self).len())]
     pub fn len(&self) -> usize {
         self.rest.len()
     }

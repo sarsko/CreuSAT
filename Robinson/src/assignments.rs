@@ -25,16 +25,16 @@ impl Model for Assignments {
 #[predicate]
 pub fn assignments_equality(a: Assignments, a2: Assignments) -> bool {
     pearlite! {
-        (@a).len() === (@a2).len() &&
-            forall<i: Int> 0 <= i && i < (@a).len() ==> (@a)[i] === (@a2)[i]
+        (@a).len() == (@a2).len() &&
+            forall<i: Int> 0 <= i && i < (@a).len() ==> (@a)[i] == (@a2)[i]
     }
 }
 
 #[predicate]
 pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     pearlite! {
-        a.len() === a2.len() && (forall<i: Int> 0 <= i && i < a.len() ==>
-            (unset(a[i]) || a[i] === a2[i]))
+        a.len() == a2.len() && (forall<i: Int> 0 <= i && i < a.len() ==>
+            (unset(a[i]) || a[i] == a2[i]))
     }
 }
 
@@ -55,7 +55,7 @@ pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) 
 #[predicate]
 pub fn assignments_invariant(a: Seq<AssignedState>, f: Formula) -> bool {
     pearlite! {
-        @f.num_vars === a.len()
+        @f.num_vars == a.len()
     }
 }
 
@@ -64,7 +64,7 @@ impl Assignments {
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
-            @f.num_vars === (@self).len() && @self.1 <= @f.num_vars
+            @f.num_vars == (@self).len() && @self.1 <= @f.num_vars
         }
     }
 
@@ -88,16 +88,16 @@ impl Assignments {
 
 impl Assignments {
     #[cfg_attr(feature = "trust_assignments", trusted)]
-    #[ensures(forall<i: Int> 0 <= i && i < (@self).len() ==> (@self)[i] === (@result)[i])]
-    #[ensures((@self).len() === (@result).len())]
-    #[ensures(@result.1 === @self.1)]
+    #[ensures(forall<i: Int> 0 <= i && i < (@self).len() ==> (@self)[i] == (@result)[i])]
+    #[ensures((@self).len() == (@result).len())]
+    #[ensures(@result.1 == @self.1)]
     //#[ensures(*self == result)] // This is broken
     pub fn clone(&self) -> Self {
         let mut out = Vec::new();
         let mut i: usize = 0;
         #[invariant(loop_invariant, 0 <= @i && @i <= (@self).len())]
-        #[invariant(equality, forall<j: Int> 0 <= j && j < @i ==> (@out)[j] === (@self)[j])]
-        #[invariant(len, (@out).len() === @i)]
+        #[invariant(equality, forall<j: Int> 0 <= j && j < @i ==> (@out)[j] == (@self)[j])]
+        #[invariant(len, (@out).len() == @i)]
         while i < self.0.len() {
             let curr = self.0[i];
             //out.push(curr.clone());
@@ -105,7 +105,7 @@ impl Assignments {
             i += 1;
         }
         proof_assert!((@out).len() == (@self).len());
-        proof_assert!(forall<j: Int> 0 <= j && j < (@self).len() ==> (@out)[j] === (@self)[j]);
+        proof_assert!(forall<j: Int> 0 <= j && j < (@self).len() ==> (@out)[j] == (@self)[j]);
         //proof_assert!(out == self.0);
         Assignments(out, self.1)
     }
@@ -118,14 +118,14 @@ impl Assignments {
     #[requires(unset((@self)[@lit.idx]))] // Added, will break stuff further up
     //#[ensures(self.compatible(^self))]
     #[ensures((^self).invariant(*_f))]
-    #[ensures(@(@^self)[@lit.idx] === 1 || @(@^self)[@lit.idx] === 0)]
-    #[ensures((@^self).len() === (@self).len())]
+    #[ensures(@(@^self)[@lit.idx] == 1 || @(@^self)[@lit.idx] == 0)]
+    #[ensures((@^self).len() == (@self).len())]
     #[ensures((forall<j : Int> 0 <= j && j < (@self).len() &&
-        j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
+        j != @lit.idx ==> (@*self)[j] == (@^self)[j]))]
     #[ensures(
         match lit.polarity {
-            true => @(@^self)[@lit.idx] === 1,
-            false => @(@^self)[@lit.idx] === 0,
+            true => @(@^self)[@lit.idx] == 1,
+            false => @(@^self)[@lit.idx] == 0,
         }
     )]
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula) {
@@ -138,12 +138,12 @@ impl Assignments {
 
         if lit.polarity {
             self.0[lit.idx] = 1;
-            //proof_assert!(@self === (@@old_self).set(@lit.idx, 1u8));
+            //proof_assert!(@self == (@@old_self).set(@lit.idx, 1u8));
         } else {
             self.0[lit.idx] = 0;
-            //proof_assert!(@self === (@@old_self).set(@lit.idx, 0u8));
+            //proof_assert!(@self == (@@old_self).set(@lit.idx, 0u8));
         }
-        proof_assert!(^@old_self === ^self);
+        proof_assert!(^@old_self == ^self);
         //self.0[l.idx] = l.polarity as u8;
     }
     */
@@ -161,7 +161,7 @@ impl Assignments {
     #[requires(!self.complete())]
     #[requires(d.invariant((@self).len()))]
     #[ensures(@result < (@self).len() && unset((@self)[@result]))]
-    #[ensures(@self === @^self)]
+    #[ensures(@self == @^self)]
     pub fn find_unassigned(&mut self, d: &Decisions, _f: &Formula) -> usize {
         let mut i: usize = self.1;
         #[invariant(i_bound, @i <= (@d.lit_order).len())]
@@ -191,16 +191,16 @@ impl Assignments {
     #[requires(f.invariant())]
     #[requires(0 <= @i && @i < (@f.clauses).len())]
     #[ensures((*self).compatible(^self))]
-    #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))]
-    #[ensures((result === ClauseState::Unit)    ==> (@f.clauses)[@i].unit(*self) && !(self).complete())]
-    #[ensures((result === ClauseState::Sat)     ==> (@f.clauses)[@i].sat(^self) && @self === @^self)]
-    #[ensures((result === ClauseState::Unsat)   ==> (@f.clauses)[@i].unsat(^self) && @self === @^self)]
-    #[ensures((result === ClauseState::Unknown) ==> @self === @^self && !(^self).complete())]
-    #[ensures((self).complete() ==> *self === ^self && ((result === ClauseState::Unsat) || (result === ClauseState::Sat)))]
+    #[ensures(f.eventually_sat_complete(*self) == f.eventually_sat_complete(^self))]
+    #[ensures((result == ClauseState::Unit)    ==> (@f.clauses)[@i].unit(*self) && !(self).complete())]
+    #[ensures((result == ClauseState::Sat)     ==> (@f.clauses)[@i].sat(^self) && @self == @^self)]
+    #[ensures((result == ClauseState::Unsat)   ==> (@f.clauses)[@i].unsat(^self) && @self == @^self)]
+    #[ensures((result == ClauseState::Unknown) ==> @self == @^self && !(^self).complete())]
+    #[ensures((self).complete() ==> *self == ^self && ((result == ClauseState::Unsat) || (result == ClauseState::Sat)))]
     pub fn unit_prop_once(&mut self, i: usize, f: &Formula) -> ClauseState {
         let clause = &f.clauses[i];
         let old_a = Ghost::record(&self);
-        proof_assert!(^self === ^@old_a);
+        proof_assert!(^self == ^@old_a);
         match clause.check_if_unit(self, f) {
             ClauseState::Unit => {
                 // I tried both to make ClauseState::Unit contain a usize and to return a tuple, but
@@ -210,7 +210,7 @@ impl Assignments {
                 let lit = clause.get_unit(self, f);
                 proof_assert!(clause.invariant((@self).len()));
                 proof_assert!(lemma_unit_wrong_polarity_unsat_formula(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
-                proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() && !(@(@clause)[j].idx === @lit.idx) ==> !((@clause)[j].unset(*self)));
+                proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() && !(@(@clause)[j].idx == @lit.idx) ==> !((@clause)[j].unset(*self)));
                 proof_assert!(lemma_unit_forces(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
                 if lit.polarity {
                     self.0[lit.idx] = 1;
@@ -219,7 +219,7 @@ impl Assignments {
                 }
                 proof_assert!(lemma_extension_sat_base_sat(*f, @@old_a, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
                 proof_assert!(lemma_extensions_unsat_base_unsat(@@old_a, @lit.idx, *f); true);
-                proof_assert!(^self === ^@old_a);
+                proof_assert!(^self == ^@old_a);
                 return ClauseState::Unit;
             }
             o => return o,
@@ -230,7 +230,7 @@ impl Assignments {
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
     #[ensures((^self).invariant(*f))]
-    #[ensures(f.eventually_sat_complete(^self) === f.eventually_sat_complete(*self))]
+    #[ensures(f.eventually_sat_complete(^self) == f.eventually_sat_complete(*self))]
     #[ensures((*self).compatible(^self))]
     #[ensures(match result {
         ClauseState::Sat => f.sat(^self),
@@ -238,26 +238,26 @@ impl Assignments {
         ClauseState::Unknown => !(^self).complete(),
         ClauseState::Unit => !self.complete(),
     })]
-    #[ensures((self).complete() ==> *self === (^self) && ((result === ClauseState::Unsat) || f.sat(*self)))]
+    #[ensures((self).complete() ==> *self == (^self) && ((result == ClauseState::Unsat) || f.sat(*self)))]
     pub fn unit_propagate(&mut self, f: &Formula) -> ClauseState {
         let old_a = Ghost::record(&self);
         let mut i: usize = 0;
         let mut out = ClauseState::Sat;
         #[invariant(ai, self.invariant(*f))]
-        #[invariant(proph, ^self === ^@old_a)]
+        #[invariant(proph, ^self == ^@old_a)]
         #[invariant(compat, (*@old_a).compatible(*self))]
-        #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) === f.eventually_sat_complete(*self))]
-        #[invariant(out_not_unsat, !(out === ClauseState::Unsat))]
+        #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) == f.eventually_sat_complete(*self))]
+        #[invariant(out_not_unsat, !(out == ClauseState::Unsat))]
         #[invariant(inv, (@old_a).complete() ==>
-            *@old_a === *self && forall<j: Int> 0 <= j && j < @i ==>
+            *@old_a == *self && forall<j: Int> 0 <= j && j < @i ==>
             !(@f.clauses)[j].unknown(*self) && !(@f.clauses)[j].unit(*self) && (@f.clauses)[j].sat(*self)
         )]
         #[invariant(inv2,
-            out === ClauseState::Sat ==> forall<j: Int> 0 <= j && j < @i ==>
+            out == ClauseState::Sat ==> forall<j: Int> 0 <= j && j < @i ==>
             !(@f.clauses)[j].unsat(*self) && !(@f.clauses)[j].unknown(*self) && !(@f.clauses)[j].unit(*self) && (@f.clauses)[j].sat(*self)
         )]
-        #[invariant(inv3, out === ClauseState::Unit ==> !(*@old_a).complete())]
-        #[invariant(inv4, out === ClauseState::Unknown ==> !self.complete())]
+        #[invariant(inv3, out == ClauseState::Unit ==> !(*@old_a).complete())]
+        #[invariant(inv4, out == ClauseState::Unknown ==> !self.complete())]
         while i < f.clauses.len() {
             match self.unit_prop_once(i, f) {
                 ClauseState::Sat => {}
@@ -283,15 +283,15 @@ impl Assignments {
     #[requires(f.invariant())]
     #[requires(self.invariant(*f))]
     #[ensures((^self).invariant(*f))]
-    #[ensures(f.eventually_sat_complete(*self) === f.eventually_sat_complete(^self))]
+    #[ensures(f.eventually_sat_complete(*self) == f.eventually_sat_complete(^self))]
     #[ensures((*self).compatible(^self))]
-    #[ensures(result === Some(false) ==> f.unsat(^self))]
-    #[ensures(result === Some(true) ==> f.sat(^self))]
-    #[ensures(result === None ==> !(^self).complete())]
+    #[ensures(result == Some(false) ==> f.unsat(^self))]
+    #[ensures(result == Some(true) ==> f.sat(^self))]
+    #[ensures(result == None ==> !(^self).complete())]
     pub fn do_unit_propagation(&mut self, f: &Formula) -> Option<bool> {
         let old_a = Ghost::record(&self);
         #[invariant(ai, self.invariant(*f))]
-        #[invariant(proph, ^self === ^@old_a)]
+        #[invariant(proph, ^self == ^@old_a)]
         #[invariant(compat, (*@old_a).compatible(*self))]
         #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) ==> f.eventually_sat_complete(*self))]
         loop {

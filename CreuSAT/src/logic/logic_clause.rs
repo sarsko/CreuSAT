@@ -53,12 +53,12 @@ pub fn equisat_extension_inner(c: Clause, f: (Seq<Clause>, Int)) -> bool {
 pub fn no_duplicate_indexes_inner(s: Seq<Lit>) -> bool {
     pearlite! {
         forall<j: Int, k: Int> 0 <= j && j < s.len() &&
-                0 <= k && k < j ==> !(@s[k].idx === @s[j].idx)
+                0 <= k && k < j ==> !(@s[k].idx == @s[j].idx)
     }
     /*
     pearlite! {
         forall<j: Int, k: Int> 0 <= j && j < s.len() &&
-                k != j ==> !(@s[k].idx === @s[j].idx)
+                k != j ==> !(@s[k].idx == @s[j].idx)
     }
     */
 }
@@ -93,7 +93,7 @@ impl Clause {
     pub fn eq_assn_inner(self, a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < (@self).len() ==>
-                a[@(@self)[i].idx] === a2[@(@self)[i].idx]
+                a[@(@self)[i].idx] == a2[@(@self)[i].idx]
         }
     }
 }
@@ -111,12 +111,12 @@ impl Clause {
     pub fn equisat_extension_double(self, f: Formula, f2: Formula) -> bool {
         pearlite! {
             f.invariant() && f2.invariant() &&
-            @f.num_vars === @f2.num_vars &&
-            //(@f.clauses).push(self) === (@f2.clauses) && // Push doesnt pass
-            ((@f.clauses).len() + 1 === (@f2.clauses).len() &&
+            @f.num_vars == @f2.num_vars &&
+            //(@f.clauses).push(self) == (@f2.clauses) && // Push doesnt pass
+            ((@f.clauses).len() + 1 == (@f2.clauses).len() &&
             (forall<i: Int> 0 <= i && i < (@f.clauses).len() ==>
             ((@f.clauses)[i]).equals((@f2.clauses)[i])) &&
-            (@(@f2.clauses)[(@f2.clauses).len()-1] === @self)) &&
+            (@(@f2.clauses)[(@f2.clauses).len()-1] == @self)) &&
             f.equisat_compatible(f2)
         }
     }
@@ -127,13 +127,13 @@ impl Clause {
             /*
             // Wrong
             forall<i: Int> 0 <= i && i < (@self.rest).len() ==>
-                @(@self.rest)[i].idx === @(@other.rest)[i].idx ==>
-                (@self.rest)[i].polarity === (@other.rest)[i].polarity
+                @(@self.rest)[i].idx == @(@other.rest)[i].idx ==>
+                (@self.rest)[i].polarity == (@other.rest)[i].polarity
                 */
             forall<i: Int, j: Int> 0 <= i && i < (@self).len() && 0 <= j && j < (@other).len() ==>
                 ((@(@self)[i].idx != exception &&
-                @(@self)[i].idx === @(@other)[j].idx)) ==>
-                (@self)[i].polarity === (@other)[j].polarity
+                @(@self)[i].idx == @(@other)[j].idx)) ==>
+                (@self)[i].polarity == (@other)[j].polarity
         }
     }
 
@@ -157,7 +157,7 @@ impl Clause {
             (forall<i: Int> 0 <= i && i < (@self).len()                       ==> ((@self)[i].lit_in(c)
                                                                               ||  (@self)[i].lit_in(c2))) &&
             (exists<k: Int, m: Int> 0 <= k && k < (@c2).len() && 0 <= m && m < (@c).len() &&
-                @(@c)[m].idx === idx && @(@c2)[k].idx === idx && (@c2)[k].is_opp((@c)[m]))
+                @(@c)[m].idx == idx && @(@c2)[k].idx == idx && (@c2)[k].is_opp((@c)[m]))
         }
     }
 
@@ -169,7 +169,7 @@ impl Clause {
             (forall<i: Int> 0 <= i && i < (@self).len()                       ==> ((@self)[i].lit_in(c)
                                                                               ||  (@self)[i].lit_in(c2))) &&
 
-            (0 <= c_idx && c_idx < (@c).len() && @(@c)[c_idx].idx === idx &&
+            (0 <= c_idx && c_idx < (@c).len() && @(@c)[c_idx].idx == idx &&
                 (exists<k: Int> 0 <= k && k < (@c2).len() &&
                     (@c2)[k].is_opp((@c)[c_idx])))
         }
@@ -179,7 +179,7 @@ impl Clause {
     pub fn in_formula(self, f: Formula) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < (@f.clauses).len() &&
-                (@f.clauses)[i] === self
+                (@f.clauses)[i] == self
         }
     }
 
@@ -187,7 +187,7 @@ impl Clause {
     pub fn in_formula_inner(self, f: (Seq<Clause>, Int)) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < (f.0).len() &&
-                (f.0)[i] === self
+                (f.0)[i] == self
         }
     }
 
@@ -274,9 +274,9 @@ impl Clause {
     #[predicate]
     pub fn equals(self, o: Clause) -> bool {
         pearlite! {
-            (@self).len() === (@o).len() &&
+            (@self).len() == (@o).len() &&
             forall<j: Int> 0 <= j && j < (@self).len() ==>
-                (@self)[j] === (@o)[j]
+                (@self)[j] == (@o)[j]
         }
     }
 }

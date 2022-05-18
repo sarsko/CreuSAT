@@ -8,8 +8,8 @@ use crate::formula::*;
 use crate::lit::*;
 
 #[logic]
-#[ensures(b ==> @result === 1)]
-#[ensures(!b ==> @result === 0)]
+#[ensures(b ==> @result == 1)]
+#[ensures(!b ==> @result == 0)]
 pub fn bool_to_assignedstate(b: bool) -> AssignedState {
     if b {
         1u8
@@ -21,9 +21,9 @@ pub fn bool_to_assignedstate(b: bool) -> AssignedState {
 #[logic]
 fn flip_v(v: AssignedState) -> AssignedState {
     pearlite! {
-        if @v === 0 {
+        if @v == 0 {
             1u8
-        } else if @v === 1 {
+        } else if @v == 1 {
             0u8
         } else {
             v
@@ -90,7 +90,7 @@ pub fn lemma_not_sat_clause_implies_unsat_formula(f: Formula, c: Clause, a: Seq<
 
 #[logic]
 #[requires(f.invariant())]
-#[requires(@f.num_vars === a.len())]
+#[requires(@f.num_vars == a.len())]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
 #[requires(!unset(v))]
 #[requires(f.eventually_sat_complete_inner(a))]
@@ -102,14 +102,14 @@ pub fn lemma_unit_forces(c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, 
 
 #[logic]
 #[requires(f.invariant())]
-#[requires(@f.num_vars === a.len())]
+#[requires(@f.num_vars == a.len())]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
 #[requires(!unset(v))]
 #[requires(c.unit_inner(a))]
 #[requires(c.in_formula(f))]
 #[requires(c.invariant(a.len()))]
-#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === ix && bool_to_assignedstate(((@c)[j].polarity)) === v)]
-#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === ix) ==> (@c)[j].unsat_inner(a))]
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx == ix && bool_to_assignedstate(((@c)[j].polarity)) == v)]
+#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx == ix) ==> (@c)[j].unsat_inner(a))]
 #[ensures(!f.eventually_sat_complete_inner(a.set(ix, flip_v(v))))]
 #[ensures(f.unsat_inner(a.set(ix, flip_v(v))))]
 pub fn lemma_unit_wrong_polarity_unsat_formula(
@@ -127,7 +127,7 @@ pub fn lemma_unit_wrong_polarity_unsat_formula(
 
 #[logic]
 #[requires(0 <= ix && ix < a.len())]
-#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === ix && bool_to_assignedstate((@c)[j].polarity) === v)]
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx == ix && bool_to_assignedstate((@c)[j].polarity) == v)]
 #[ensures(c.sat_inner(a.set(ix, v)))]
 pub fn lemma_correct_polarity_makes_clause_sat(
     c: Clause,
@@ -142,9 +142,9 @@ pub fn lemma_correct_polarity_makes_clause_sat(
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
 #[requires(c.unit_inner(a))]
 #[requires(!c.sat_inner(a))]
-#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === ix && (@c)[j].sat_inner(a) )]
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx == ix && (@c)[j].sat_inner(a) )]
 #[requires(c.invariant(a.len()))]
-#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === ix) ==> (@c)[j].unsat_inner(a))]
+#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx == ix) ==> (@c)[j].unsat_inner(a))]
 #[ensures(forall<j: Int> 0 <= j && j < (@c).len()  ==> !unset((a.set(ix, v))[@(@c)[j].idx]))]
 #[ensures(!(unset(a.set(ix, flip_v(v))[ix])))]
 #[ensures(c.unsat_inner(a.set(ix, flip_v(v))))]

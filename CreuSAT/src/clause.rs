@@ -23,7 +23,7 @@ pub struct Clause {
 impl Clone for Clause {
     // Will do last
     #[trusted] // TODO
-    #[ensures(result === *self)]
+    #[ensures(result == *self)]
     fn clone(&self) -> Self {
         Clause { deleted: self.deleted, rest: self.rest.clone() }
     }
@@ -40,7 +40,7 @@ pub enum ClauseState {
 
 impl Clause {
     #[cfg_attr(feature = "trust_clause", trusted)]
-    #[ensures(result === self.invariant(@n))]
+    #[ensures(result == self.invariant(@n))]
     pub fn check_clause_invariant(&self, n: usize) -> bool {
         let mut i: usize = 0;
         #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@self)[j].invariant(@n))]
@@ -57,7 +57,7 @@ impl Clause {
     }
 
     #[cfg_attr(feature = "trust_clause", trusted)]
-    #[ensures(result === self.no_duplicate_indexes())]
+    #[ensures(result == self.no_duplicate_indexes())]
     pub fn no_duplicates(&self) -> bool {
         let mut i: usize = 0;
         #[invariant(no_dups,
@@ -81,7 +81,7 @@ impl Clause {
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_clause", trusted)]
-    #[ensures(@result === (@self).len())]
+    #[ensures(@result == (@self).len())]
     pub fn len(&self) -> usize {
         self.rest.len()
     }
@@ -100,22 +100,22 @@ impl Clause {
     #[requires((@self).len() > 0)]
     #[requires(@idx < (@self.rest).len())]
     #[ensures(forall<i: Int> 0 <= i && i < (@(^self).rest).len() ==>
-        exists<j: Int> 0 <= j && j < (@self.rest).len() && (@(^self))[i] === (@self)[j])]
+        exists<j: Int> 0 <= j && j < (@self.rest).len() && (@(^self))[i] == (@self)[j])]
     #[ensures(forall<i: Int> 0 <= i && i < (@(self).rest).len() ==>
-        exists<j: Int> 0 <= j && j < (@(^self).rest).len() && (@(^self))[i] === (@self)[j])]
-    #[ensures((@(^self).rest).len() === (@self.rest).len())]
+        exists<j: Int> 0 <= j && j < (@(^self).rest).len() && (@(^self))[i] == (@self)[j])]
+    #[ensures((@(^self).rest).len() == (@self.rest).len())]
     fn move_to_end(&mut self, idx: usize, _f: &Formula) {
         let old_self = Ghost::record(&self);
         let end = self.rest.len() - 1;
         self.rest.swap(idx, end);
-        proof_assert!(^@old_self === ^self);
+        proof_assert!(^@old_self == ^self);
         /*
         proof_assert!((@self).permutation_of(@@old_self));
         proof_assert!(forall<i: Int> 0 <= i && i < (@(self).rest).len() ==>
-            exists<j: Int> 0 <= j && j < (@(@old_self).rest).len() && (@(self))[i] === (@(@old_self))[j]);
+            exists<j: Int> 0 <= j && j < (@(@old_self).rest).len() && (@(self))[i] == (@(@old_self))[j]);
         proof_assert!(forall<i: Int> 0 <= i && i < (@(@old_self).rest).len() ==>
-            exists<j: Int> 0 <= j && j < (@self.rest).len() && (@(self))[i] === (@(@old_self))[j]);
-        proof_assert!((@(@old_self).rest).len() === (@self.rest).len());
+            exists<j: Int> 0 <= j && j < (@self.rest).len() && (@(self))[i] == (@(@old_self))[j]);
+        proof_assert!((@(@old_self).rest).len() == (@self.rest).len());
         */
     }
 
@@ -126,8 +126,8 @@ impl Clause {
     #[requires((@self).len() > 0)]
     #[requires(@idx < (@self.rest).len())]
     #[ensures(forall<i: Int> 0 <= i && i < (@(^self).rest).len() ==>
-    exists<j: Int> 0 <= j && j < (@self.rest).len() && (@(^self))[i] === (@self)[j])]
-    #[ensures((@(^self).rest).len() + 1 === (@self.rest).len())]
+    exists<j: Int> 0 <= j && j < (@self.rest).len() && (@(^self))[i] == (@self)[j])]
+    #[ensures((@(^self).rest).len() + 1 == (@self.rest).len())]
     pub fn remove_from_clause(&mut self, idx: usize, _f: &Formula) {
         self.move_to_end(idx, _f);
         self.rest.pop();

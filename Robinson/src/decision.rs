@@ -15,7 +15,7 @@ impl Decisions {
     #[predicate]
     pub fn invariant(self, n: Int) -> bool {
         pearlite! {
-            (@self.lit_order).len() === n &&
+            (@self.lit_order).len() == n &&
             forall<i: Int> 0 <= i && i < (@self.lit_order).len() ==>
                 @(@self.lit_order)[i] < n
         }

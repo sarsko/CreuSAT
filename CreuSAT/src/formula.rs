@@ -39,7 +39,7 @@ impl Model for SatState {
 
 impl PartialEq for SatState {
     #[cfg_attr(feature = "trust_formula", trusted)]
-    #[ensures(result === (self === other))]
+    #[ensures(result == (self == other))]
     fn eq(&self, other: &Self) -> bool {
         return match (self, other) {
             (SatState::Unknown, SatState::Unknown) => true,
@@ -87,7 +87,7 @@ impl Formula {
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
     #[requires(@idx < (@self.clauses).len())]
-    #[ensures(result === (@self.clauses)[@idx].sat(*a))]
+    #[ensures(result == (@self.clauses)[@idx].sat(*a))]
     pub fn is_clause_sat(&self, idx: usize, a: &Assignments) -> bool {
         let clause = &self.clauses[idx];
         let mut i: usize = 0;
@@ -106,7 +106,7 @@ impl Formula {
     #[requires(selff.invariant())]
     #[requires(a.invariant(*f))]
     #[requires(@idx < (@self.clauses).len())]
-    #[ensures(result === (@self.clauses)[@idx].unsat(*a))]
+    #[ensures(result == (@self.clauses)[@idx].unsat(*a))]
     pub fn is_clause_unsat(&self, idx: usize, a: &Assignments) -> bool {
         let clause = &self.clauses[idx];
         let mut i: usize = 0;
@@ -130,9 +130,9 @@ impl Formula {
     #[requires((@(@self.clauses)[@cref]).len() > @k)]
     #[requires(@self.num_vars < @usize::MAX/2)]
     #[requires(@cref < (@self.clauses).len())]
-    #[ensures(@self.num_vars === @(^self).num_vars)]
-    #[ensures((@self.clauses).len() === (@(^self).clauses).len())]
-    #[ensures((@(@self.clauses)[@cref]).len() === (@(@(^self).clauses)[@cref]).len())]
+    #[ensures(@self.num_vars == @(^self).num_vars)]
+    #[ensures((@self.clauses).len() == (@(^self).clauses).len())]
+    #[ensures((@(@self.clauses)[@cref]).len() == (@(@(^self).clauses)[@cref]).len())]
     #[ensures(self.equisat(^self))]
     pub fn swap_lits_in_clause(
         &mut self,
@@ -150,7 +150,7 @@ impl Formula {
         proof_assert!(vars_in_range_inner(@(@self.clauses)[@cref], @self.num_vars));
         proof_assert!(no_duplicate_indexes_inner(@(@self.clauses)[@cref]));
         proof_assert!(long_are_post_unit_inner(@trail.trail, *self, @trail.assignments));
-        proof_assert!(^@old_f === ^self);
+        proof_assert!(^@old_f == ^self);
     }
 
     // Needs some help on inlining/splitting, but checks out
@@ -163,12 +163,12 @@ impl Formula {
     #[requires(vars_in_range_inner(@clause, @self.num_vars))]
     #[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(equisat_extension_inner(clause, @self))]
-    #[ensures(@self.num_vars === @(^self).num_vars)]
+    #[ensures(@self.num_vars == @(^self).num_vars)]
     #[ensures(self.equisat_compatible(^self))]
     #[ensures(self.equisat(^self))] // Added/changed
-    #[ensures(@result === (@self.clauses).len())]
-    #[ensures((@(^self).clauses)[@result] === clause)]
-    #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
+    #[ensures(@result == (@self.clauses).len())]
+    #[ensures((@(^self).clauses)[@result] == clause)]
+    #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
     pub fn add_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
         let old_self = Ghost::record(&self);
         let cref = self.clauses.len();
@@ -181,7 +181,7 @@ impl Formula {
         self.clauses.push(clause);
         watches.add_watcher(first_lit, cref, self);
         watches.add_watcher(second_lit, cref, self);
-        proof_assert!(^@old_self === ^self);
+        proof_assert!(^@old_self == ^self);
         proof_assert!((@old_self).equisat_compatible(*self));
         // This is just the trail invariant unwrapped
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
@@ -197,12 +197,12 @@ impl Formula {
     #[requires(vars_in_range_inner(@clause, @self.num_vars))]
     #[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(equisat_extension_inner(clause, @self))]
-    #[ensures(@self.num_vars === @(^self).num_vars)]
+    #[ensures(@self.num_vars == @(^self).num_vars)]
     #[ensures(self.equisat_compatible(^self))]
     #[ensures(self.equisat(^self))] // Added/changed
-    #[ensures(@result === (@self.clauses).len())]
-    #[ensures((@(^self).clauses)[@result] === clause)]
-    #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
+    #[ensures(@result == (@self.clauses).len())]
+    #[ensures((@(^self).clauses)[@result] == clause)]
+    #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
     pub fn add_unwatched_clause(
         &mut self,
         clause: Clause,
@@ -212,7 +212,7 @@ impl Formula {
         let old_self = Ghost::record(&self);
         let cref = self.clauses.len();
         self.clauses.push(clause);
-        proof_assert!(^@old_self === ^self);
+        proof_assert!(^@old_self == ^self);
         proof_assert!((@old_self).equisat_compatible(*self));
         // This is just the trail invariant unwrapped
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
@@ -230,10 +230,10 @@ impl Formula {
     #[maintains(t.invariant(mut self))]
     #[maintains((mut watches).invariant(mut self))] // new
     #[requires(@self.num_vars < @usize::MAX/2)]
-    #[ensures((@(@(^self).clauses)[@cref]).len() === (@(@self.clauses)[@cref]).len())]
-    #[ensures(@self.num_vars === @(^self).num_vars)]
+    #[ensures((@(@(^self).clauses)[@cref]).len() == (@(@self.clauses)[@cref]).len())]
+    #[ensures(@self.num_vars == @(^self).num_vars)]
     #[ensures(self.equisat(^self))]
-    #[ensures((@self.clauses).len() === (@(^self).clauses).len())]
+    #[ensures((@self.clauses).len() == (@(^self).clauses).len())]
     pub fn make_asserting_clause_and_watch(
         &mut self,
         watches: &mut Watches,
@@ -247,7 +247,7 @@ impl Formula {
         let second_lit = self.clauses[cref].rest[1];
         watches.add_watcher(first_lit, cref, self);
         watches.add_watcher(second_lit, cref, self);
-        proof_assert!(^@old_self === ^self);
+        proof_assert!(^@old_self == ^self);
         proof_assert!((@old_self).equisat(*self));
     }
 
@@ -261,11 +261,11 @@ impl Formula {
     #[requires(vars_in_range_inner(@clause, @self.num_vars))]
     #[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(equisat_extension_inner(clause, @self))]
-    #[ensures((@(@(^self).clauses)[@result]).len() === (@clause).len())]
-    #[ensures(@self.num_vars === @(^self).num_vars)]
+    #[ensures((@(@(^self).clauses)[@result]).len() == (@clause).len())]
+    #[ensures(@self.num_vars == @(^self).num_vars)]
     #[ensures(self.equisat(^self))]
-    #[ensures(@result === (@self.clauses).len())]
-    #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
+    #[ensures(@result == (@self.clauses).len())]
+    #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
     pub fn add_and_swap_first(
         &mut self,
         clause: Clause,
@@ -289,17 +289,17 @@ impl Formula {
     #[requires(vars_in_range_inner(@clause, @self.num_vars))]
     #[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(equisat_extension_inner(clause, @self))]
-    #[ensures(@self.num_vars === @(^self).num_vars)]
+    #[ensures(@self.num_vars == @(^self).num_vars)]
     #[ensures(self.equisat_compatible(^self))]
     #[ensures(self.equisat(^self))] // Added/changed
-    #[ensures(@result === (@self.clauses).len())]
+    #[ensures(@result == (@self.clauses).len())]
     #[ensures((@(@(^self).clauses)[@result]).len() == 1)]
-    #[ensures((@self.clauses).len() + 1 === (@(^self).clauses).len())]
+    #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
     pub fn add_unit(&mut self, clause: Clause, _t: &Trail) -> usize {
         let old_self = Ghost::record(&self);
         let cref = self.clauses.len();
         self.clauses.push(clause);
-        proof_assert!(^@old_self === ^self);
+        proof_assert!(^@old_self == ^self);
         proof_assert!((@old_self).equisat_compatible(*self));
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
@@ -308,7 +308,7 @@ impl Formula {
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
-    #[ensures(result === self.sat(*a))]
+    #[ensures(result == self.sat(*a))]
     pub fn is_sat(&self, a: &Assignments) -> bool {
         let mut i: usize = 0;
         #[invariant(prev, forall<k: Int> 0 <= k && k < @i ==> (@self.clauses)[k].sat(*a))]
@@ -329,16 +329,16 @@ impl Formula {
     #[requires((@(@self.clauses)[@cref]).len() > 1)]
     #[requires(@cref < (@self.clauses).len())]
     #[ensures(self.equisat(^self))]
-    #[ensures(self.num_vars === (^self).num_vars)]
+    #[ensures(self.num_vars == (^self).num_vars)]
     fn delete_clause(&mut self, cref: usize, watches: &mut Watches, t: &Trail) {
         let old_f = Ghost::record(&self);
         watches.unwatch(self, t, cref, self.clauses[cref].rest[0]);
         watches.unwatch(self, t, cref, self.clauses[cref].rest[1]);
         self.clauses[cref].deleted = true;
         proof_assert!(forall<i: Int> 0 <= i && i < (@(@self.clauses)[@cref]).len() ==>
-            (@(@self.clauses)[@cref])[i] === (@(@(@old_f).clauses)[@cref])[i]);
+            (@(@self.clauses)[@cref])[i] == (@(@(@old_f).clauses)[@cref])[i]);
         proof_assert!((@old_f).equisat(*self)); // This assertion helps with the invariant, which otherwise takes a long time.
-        proof_assert!(^self === ^@old_f);
+        proof_assert!(^self == ^@old_f);
     }
 
     // OK
@@ -348,7 +348,7 @@ impl Formula {
     #[maintains((*t).invariant(mut self))]
     #[requires(t.invariant(*self))]
     #[requires(@self.num_vars < @usize::MAX/2)]
-    #[ensures(self.num_vars === (^self).num_vars)]
+    #[ensures(self.num_vars == (^self).num_vars)]
     #[ensures(self.equisat(^self))]
     pub fn delete_clauses(&mut self, watches: &mut Watches, t: &Trail) {
         let old_f = Ghost::record(&self);
@@ -358,9 +358,9 @@ impl Formula {
         #[invariant(w_inv, watches.invariant(*self))]
         #[invariant(t_inv, t.invariant(*self))]
         #[invariant(f_inv, self.invariant())]
-        #[invariant(proph_w, ^watches === ^@old_w)]
-        #[invariant(proph_f, ^self === ^@old_f)]
-        #[invariant(num_vars_unch, @self.num_vars === @(@old_f).num_vars)]
+        #[invariant(proph_w, ^watches == ^@old_w)]
+        #[invariant(proph_f, ^self == ^@old_f)]
+        #[invariant(num_vars_unch, @self.num_vars == @(@old_f).num_vars)]
         #[invariant(equi, self.equisat(*@old_f))]
         while i < self.clauses.len() {
             if !self.clauses[i].deleted {
@@ -380,7 +380,7 @@ impl Formula {
     #[maintains((mut watches).invariant(mut self))]
     #[maintains((*t).invariant(mut self))]
     #[requires(@self.num_vars < @usize::MAX/2)]
-    #[ensures(self.num_vars === (^self).num_vars)]
+    #[ensures(self.num_vars == (^self).num_vars)]
     #[ensures(self.equisat(^self))]
     pub fn simplify_formula(&mut self, watches: &mut Watches, t: &Trail) {
         // unwatch trivially SAT
@@ -395,7 +395,7 @@ impl Formula {
     #[requires(self.invariant())]
     #[requires(t.invariant(*self))]
     #[requires(@self.num_vars < @usize::MAX/2)]
-    #[ensures(self.num_vars === (^self).num_vars)]
+    #[ensures(self.num_vars == (^self).num_vars)]
     #[ensures(self.equisat(^self))]
     pub fn reduceDB(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
         // Okay now I understand why MicroSat does this "weirdly"
@@ -413,9 +413,9 @@ impl Formula {
         #[invariant(w_inv, watches.invariant(*self))]
         #[invariant(t_inv, t.invariant(*self))]
         #[invariant(f_inv, self.invariant())]
-        #[invariant(proph_w, ^watches === ^@old_w)]
-        #[invariant(proph_f, ^self === ^@old_f)]
-        #[invariant(num_vars_unch, @self.num_vars === @(@old_f).num_vars)]
+        #[invariant(proph_w, ^watches == ^@old_w)]
+        #[invariant(proph_f, ^self == ^@old_f)]
+        #[invariant(num_vars_unch, @self.num_vars == @(@old_f).num_vars)]
         #[invariant(equi, self.equisat(*@old_f))]
         while i < self.clauses.len() {
             if !self.clauses[i].deleted {
@@ -449,7 +449,7 @@ impl Formula {
     // NONE OF THESE ARE IN USE
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
-    #[ensures(result === self.unsat(*a))]
+    #[ensures(result == self.unsat(*a))]
     pub fn is_unsat(&self, a: &Assignments) -> bool {
         let mut i: usize = 0;
         #[invariant(prev,
@@ -467,9 +467,9 @@ impl Formula {
 
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
-    #[ensures((result === SatState::Sat) === self.sat(*a))]
-    #[ensures((result === SatState::Unsat) === self.unsat(*a))]
-    #[ensures((result === SatState::Unknown) ==> !a.complete())]
+    #[ensures((result == SatState::Sat) == self.sat(*a))]
+    #[ensures((result == SatState::Unsat) == self.unsat(*a))]
+    #[ensures((result == SatState::Unknown) ==> !a.complete())]
     pub fn eval(&self, a: &Assignments) -> SatState {
         if self.is_sat(a) {
             return SatState::Sat;
