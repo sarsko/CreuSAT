@@ -111,3 +111,29 @@ dependencies = [
 args = [
     "${@}"
 ]
+
+[tasks.build-musl]
+workspace = false
+script = '''
+RUSTFLAGS='-C relocation-model=static' cargo build --release --target x86_64-unknown-linux-musl
+'''
+
+[tasks.move-musl]
+workspace = false
+script = '''
+cp ./target/x86_64-unknown-linux-musl/release/CreuSAT StarExec/bin/creusat
+'''
+
+[tasks.make-zip]
+workspace = false
+script = '''
+cd StarExec && zip creusat.zip bin
+'''
+
+[tasks.StarExec]
+workspace = false
+dependencies = [
+    "build-musl",
+    "move-musl",
+    "make-zip",
+]
