@@ -10,7 +10,6 @@ use crate::{assignments::*, clause::*, trail::*};
 use crate::logic::logic_lit::*;
 
 #[derive(Clone, Copy)]
-//#[derive(Clone, Copy, Debug)]
 pub struct Lit {
     pub idx: usize,
     pub polarity: bool,

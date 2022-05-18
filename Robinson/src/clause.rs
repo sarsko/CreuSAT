@@ -1,11 +1,13 @@
 extern crate creusot_contracts;
+#[allow(unused)]
 use creusot_contracts::std::*;
+#[allow(unused)]
 use creusot_contracts::*;
 
-use crate::assignments::*;
-use crate::formula::*;
-use crate::lit::*;
-use crate::logic::*;
+use crate::{assignments::*, formula::*, lit::*};
+
+#[cfg(feature = "contracts")]
+use crate::{logic::*};
 
 pub struct Clause {
     pub rest: Vec<Lit>,
@@ -105,7 +107,6 @@ impl Clause {
     }
 }
 
-//#[derive(Copy, Clone, Eq)]
 pub enum ClauseState {
     Sat,
     Unsat,
@@ -119,27 +120,28 @@ impl Clause {
         Clause { rest: vec }
     }
 
+    #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires(self.invariant((@a).len()))]
-    #[requires(f.invariant())]
-    #[requires(a.invariant(*f))]
+    #[requires(_f.invariant())]
+    #[requires(a.invariant(*_f))]
     #[ensures((result == ClauseState::Sat)     ==> self.sat(*a))]
     #[ensures((result == ClauseState::Unsat)   ==> self.unsat(*a))]
     #[ensures((result == ClauseState::Unit)    ==> self.unit(*a) && !a.complete())]
     #[ensures((result == ClauseState::Unknown) ==> !a.complete())]
-    pub fn check_if_unit(&self, a: &Assignments, f: &Formula) -> ClauseState {
+    pub fn check_if_unit(&self, a: &Assignments, _f: &Formula) -> ClauseState {
         let mut i: usize = 0;
-        let mut k: usize = 0;
+        let mut _k: usize = 0; // _k is the "ghost" index of the unset literal
         let mut unassigned: usize = 0;
         #[invariant(loop_invariant, 0 <= @i && @i <= (@self.rest).len())]
         #[invariant(unass, @unassigned <= 1)]
-        #[invariant(k_is_unass, (@unassigned == 0 || (@self)[@k].unset(*a)))]
-        #[invariant(kk, @unassigned > 0 ==> (@self)[@k].unset(*a))]
+        #[invariant(k_is_unass, (@unassigned == 0 || (@self)[@_k].unset(*a)))]
+        #[invariant(kk, @unassigned > 0 ==> (@self)[@_k].unset(*a))]
         #[invariant(not_sat, forall<j: Int> 0 <= j && j < @i ==>
             ((@self)[j].unsat(*a) || ((@self)[j].unset(*a) && @unassigned >= 1)))]
-        #[invariant(k_in_bounds, @unassigned == 0 || 0 <= @k && @k < (@self).len())]
+        #[invariant(k_in_bounds, @unassigned == 0 || 0 <= @_k && @_k < (@self).len())]
         #[invariant(k_only, @unassigned == 1 ==>
-            (forall<j: Int> 0 <= j && j < @i && j != @k ==> !(@self)[j].unset(*a)))]
-        #[invariant(k_unset, @unassigned == 0 ==> @k == 0)]
+            (forall<j: Int> 0 <= j && j < @i && j != @_k ==> !(@self)[j].unset(*a)))]
+        #[invariant(k_unset, @unassigned == 0 ==> @_k == 0)]
         while i < self.rest.len() {
             let lit = self.rest[i];
             if lit.lit_sat(a) {
@@ -149,7 +151,7 @@ impl Clause {
                 if unassigned > 0 {
                     return ClauseState::Unknown;
                 }
-                k = i;
+                _k = i;
                 unassigned += 1;
             }
             i += 1;
@@ -161,13 +163,14 @@ impl Clause {
         }
     }
 
+    #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires(self.unit(*a))]
-    #[requires(f.invariant())]
-    #[requires(a.invariant(*f))]
+    #[requires(_f.invariant())]
+    #[requires(a.invariant(*_f))]
     #[ensures(exists<j: Int> 0 <= j && j < (@self).len() && (@self)[j] == result)]
     #[ensures(@result.idx < (@a).len())]
     #[ensures(unset((@a)[@result.idx]))]
-    pub fn get_unit(&self, a: &Assignments, f: &Formula) -> Lit {
+    pub fn get_unit(&self, a: &Assignments, _f: &Formula) -> Lit {
         let mut i: usize = 0;
         #[invariant(not_unset, forall<j: Int> 0 <= j && j < @i ==> !(@self)[j].unset(*a))]
         while i < self.rest.len() {

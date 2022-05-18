@@ -1,11 +1,10 @@
 extern crate creusot_contracts;
+#[allow(unused)]
 use creusot_contracts::std::*;
+#[allow(unused)]
 use creusot_contracts::*;
 
-use crate::assignments::*;
-use crate::clause::*;
-use crate::formula::*;
-use crate::lit::*;
+use crate::{assignments::*, clause::*, formula::*};
 
 #[logic]
 #[ensures(b ==> @result == 1)]
@@ -96,7 +95,7 @@ pub fn lemma_not_sat_clause_implies_unsat_formula(f: Formula, c: Clause, a: Seq<
 #[requires(f.eventually_sat_complete_inner(a))]
 #[requires(!f.eventually_sat_complete_inner(a.set(ix, flip_v(v))))]
 #[ensures(f.eventually_sat_complete_inner(a.set(ix, v)))]
-pub fn lemma_unit_forces(c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState) {
+pub fn lemma_unit_forces(f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState) {
     lemma_not_sat_formula_implies_unsat_formula(f, a);
 }
 

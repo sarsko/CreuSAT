@@ -1,13 +1,13 @@
 extern crate creusot_contracts;
-
+#[allow(unused)]
 use creusot_contracts::std::*;
+#[allow(unused)]
 use creusot_contracts::*;
 
-use crate::assignments::*;
-use crate::clause::*;
-use crate::lit::*;
-use crate::logic::*;
-use crate::solver::*;
+use crate::{clause::*, solver::*};
+
+#[cfg(feature = "contracts")]
+use crate::{assignments::*, logic::*};
 
 pub struct Formula {
     pub clauses: Vec<Clause>,

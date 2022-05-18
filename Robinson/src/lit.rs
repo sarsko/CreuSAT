@@ -1,8 +1,12 @@
 extern crate creusot_contracts;
+#[allow(unused)]
 use creusot_contracts::std::*;
+#[allow(unused)]
 use creusot_contracts::*;
 
 use crate::assignments::*;
+
+#[cfg(feature = "contracts")]
 use crate::clause::*;
 
 #[derive(Clone, Copy)]

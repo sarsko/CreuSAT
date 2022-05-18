@@ -1,13 +1,17 @@
 extern crate creusot_contracts;
+#[allow(unused)]
 use creusot_contracts::std::*;
+#[allow(unused)]
 use creusot_contracts::*;
 
 use crate::assignments::*;
-use crate::clause::*;
 use crate::decision::*;
 use crate::formula::*;
-use crate::lit::*;
-use crate::logic::*;
+
+#[cfg(feature = "contracts")]
+use crate::{logic::*};
+//use crate::clause::*;
+//use crate::lit::*;
 
 pub enum SatResult {
     Sat(Vec<AssignedState>),
@@ -31,14 +35,12 @@ fn inner(f: &Formula, mut a: Assignments, d: &Decisions) -> bool {
     let next = a.find_unassigned(d, f);
     let mut a_cloned = a.clone();
     a.0[next] = 1;
-    let lit = Lit { idx: next, polarity: true };
     let old_a1 = a.1;
     if inner(f, a, d) {
         return true;
     }
     a_cloned.0[next] = 0;
     a_cloned.1 = old_a1;
-    let lit = Lit { idx: next, polarity: false };
     return inner(f, a_cloned, d);
 }
 
@@ -55,7 +57,7 @@ pub fn solver(formula: &mut Formula) -> SatResult {
         SatResult::Unknown => {}
         o => return o,
     }
-    let mut assignments = Assignments::new(formula);
+    let assignments = Assignments::new(formula);
     let decisions = Decisions::new(formula);
     if inner(formula, assignments, &decisions) {
         return SatResult::Sat(Vec::new());
