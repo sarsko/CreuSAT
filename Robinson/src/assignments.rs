@@ -1,4 +1,3 @@
-
 extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
@@ -233,7 +232,7 @@ impl Assignments {
     #[ensures((^self).invariant(*f))]
     #[ensures(f.eventually_sat_complete(^self) === f.eventually_sat_complete(*self))]
     #[ensures((*self).compatible(^self))]
-    #[ensures(match result { 
+    #[ensures(match result {
         ClauseState::Sat => f.sat(^self),
         ClauseState::Unsat => f.unsat(^self),
         ClauseState::Unknown => !(^self).complete(),
@@ -249,22 +248,16 @@ impl Assignments {
         #[invariant(compat, (*@old_a).compatible(*self))]
         #[invariant(maintains_sat, f.eventually_sat_complete(*@old_a) === f.eventually_sat_complete(*self))]
         #[invariant(out_not_unsat, !(out === ClauseState::Unsat))]
-        #[invariant(inv, (@old_a).complete() ==> 
+        #[invariant(inv, (@old_a).complete() ==>
             *@old_a === *self && forall<j: Int> 0 <= j && j < @i ==>
-             !(@f.clauses)[j].unknown(*self) && !(@f.clauses)[j].unit(*self) && (@f.clauses)[j].sat(*self)
+            !(@f.clauses)[j].unknown(*self) && !(@f.clauses)[j].unit(*self) && (@f.clauses)[j].sat(*self)
         )]
         #[invariant(inv2,
             out === ClauseState::Sat ==> forall<j: Int> 0 <= j && j < @i ==>
-             !(@f.clauses)[j].unsat(*self) && !(@f.clauses)[j].unknown(*self) && !(@f.clauses)[j].unit(*self) && (@f.clauses)[j].sat(*self)
+            !(@f.clauses)[j].unsat(*self) && !(@f.clauses)[j].unknown(*self) && !(@f.clauses)[j].unit(*self) && (@f.clauses)[j].sat(*self)
         )]
-        #[invariant(inv3,
-            out === ClauseState::Unit ==> !(*@old_a).complete() 
-            //&& exists<j: Int> 0 <= j && j < @i && (@f.clauses)[j].unit(*@old_a)
-        )]
-        #[invariant(inv4,
-            out === ClauseState::Unknown ==> !self.complete()//exists<j: Int> 0 <= j && j < @i ==>
-             //(@f.clauses)[j].unknown(*self)
-        )]
+        #[invariant(inv3, out === ClauseState::Unit ==> !(*@old_a).complete())]
+        #[invariant(inv4, out === ClauseState::Unknown ==> !self.complete())]
         while i < f.clauses.len() {
             match self.unit_prop_once(i, f) {
                 ClauseState::Sat => {}

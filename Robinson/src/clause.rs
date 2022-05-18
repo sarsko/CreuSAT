@@ -137,7 +137,7 @@ impl Clause {
         #[invariant(not_sat, forall<j: Int> 0 <= j && j < @i ==>
             ((@self)[j].unsat(*a) || ((@self)[j].unset(*a) && @unassigned >= 1)))]
         #[invariant(k_in_bounds, @unassigned === 0 || 0 <= @k && @k < (@self).len())]
-        #[invariant(k_only, @unassigned === 1 ==> 
+        #[invariant(k_only, @unassigned === 1 ==>
             (forall<j: Int> 0 <= j && j < @i && j != @k ==> !(@self)[j].unset(*a)))]
         #[invariant(k_unset, @unassigned === 0 ==> @k === 0)]
         while i < self.rest.len() {

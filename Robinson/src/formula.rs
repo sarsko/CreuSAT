@@ -152,4 +152,3 @@ impl Formula {
         return SatResult::Unknown;
     }
 }
-

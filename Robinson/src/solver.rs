@@ -31,20 +31,14 @@ fn inner(f: &Formula, mut a: Assignments, d: &Decisions) -> bool {
     let next = a.find_unassigned(d, f);
     let mut a_cloned = a.clone();
     a.0[next] = 1;
-    let lit = Lit {
-        idx: next,
-        polarity: true,
-    };
+    let lit = Lit { idx: next, polarity: true };
     let old_a1 = a.1;
     if inner(f, a, d) {
         return true;
     }
     a_cloned.0[next] = 0;
     a_cloned.1 = old_a1;
-    let lit = Lit {
-        idx: next,
-        polarity: false,
-    };
+    let lit = Lit { idx: next, polarity: false };
     return inner(f, a_cloned, d);
 }
 

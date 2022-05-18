@@ -7,7 +7,6 @@ use crate::formula::*;
 use crate::lit::*;
 use crate::util::*;
 
-
 pub struct Decisions {
     pub lit_order: Vec<usize>,
 }
@@ -54,7 +53,7 @@ impl Decisions {
         i = 0;
         #[invariant(i_bound, @i <= @f.num_vars)]
         #[invariant(counts_with_idx_len, (@counts_with_index).len() == @f.num_vars)]
-        #[invariant(second_ok, forall<j: Int> 0 <= j && j < @f.num_vars ==> 
+        #[invariant(second_ok, forall<j: Int> 0 <= j && j < @f.num_vars ==>
             @(@counts_with_index)[j].1 < @f.num_vars)]
         while i < f.num_vars {
             counts_with_index[i] = (counts[i], i);
@@ -64,14 +63,11 @@ impl Decisions {
         i = 0;
         #[invariant(i_bound, 0 <= @i && @i <= @f.num_vars)]
         #[invariant(lit_order_len, (@lit_order).len() == @f.num_vars)]
-        #[invariant(second_ok, forall<j: Int> 0 <= j && j < @f.num_vars ==> 
-            @(@lit_order)[j] < @f.num_vars)]
+        #[invariant(second_ok, forall<j: Int> 0 <= j && j < @f.num_vars ==> @(@lit_order)[j] < @f.num_vars)]
         while i < f.num_vars {
             lit_order[i] = counts_with_index[i].1;
             i += 1;
         }
-        Decisions {
-            lit_order: lit_order,
-        }
+        Decisions { lit_order: lit_order }
     }
 }

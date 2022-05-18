@@ -8,7 +8,6 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-
 // This is a very naive, but verified SAT solver.
 // It is a port of a verified WhyML solver, and is therefore
 // an imperative implementation of a functional prgram.
@@ -106,10 +105,7 @@ impl Clone for Pasn {
     #[trusted]
     #[ensures(*self === result)]
     fn clone(&self) -> Self {
-        Pasn {
-            assign: self.assign.clone(),
-            ix: self.ix,
-        }
+        Pasn { assign: self.assign.clone(), ix: self.ix }
     }
 }
 
@@ -186,9 +182,6 @@ pub fn solver(f: &Formula) -> bool {
         assign.push(false);
         i += 1
     }
-    let base = Pasn {
-        assign: assign,
-        ix: 0,
-    };
+    let base = Pasn { assign: assign, ix: 0 };
     inner(f, base)
 }
