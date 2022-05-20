@@ -105,7 +105,7 @@ pub fn lemma_permut_clause_in_formula_maintains_unsat(f: Formula, f2: Formula, c
 #[requires(c.invariant(a.len()))]
 #[requires(c2.invariant(a.len()))]
 #[requires(exists<i: Int>
-    0 <= i && i < (@c).len() && @(@c)[i].idx === idx && (@c)[i].sat_inner(a))]
+    0 <= i && i < (@c).len() && (@c)[i].index_logic() == idx && (@c)[i].sat_inner(a))]
 #[requires(c2.unsat_inner(a))]
 #[ensures(c2.same_idx_same_polarity_except(c, idx))]
 pub fn lemma_same_pol(c: Clause, c2: Clause, a: Seq<AssignedState>, idx: Int) {}
@@ -322,8 +322,8 @@ pub fn lemma_unit_forces(c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, 
 #[requires(c.unit_inner(a))]
 #[requires(c.in_formula(f))]
 #[requires(c.invariant(a.len()))]
-#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === ix && bool_to_assignedstate(((@c)[j].polarity)) === v)]
-#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === ix) ==> (@c)[j].unsat_inner(a))]
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && (@c)[j].index_logic() == ix && bool_to_assignedstate(((@c)[j].polarity)) === v)]
+#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !((@c)[j].index_logic() === ix) ==> (@c)[j].unsat_inner(a))]
 #[ensures(!f.eventually_sat_complete_inner(a.set(ix, flip_v(v))))]
 #[ensures(f.unsat_inner(a.set(ix, flip_v(v))))]
 pub fn lemma_unit_wrong_polarity_unsat_formula(
@@ -338,7 +338,7 @@ pub fn lemma_unit_wrong_polarity_unsat_formula(
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
 #[requires(0 <= ix && ix < a.len())]
-#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === ix && bool_to_assignedstate((@c)[j].polarity) === v)]
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && (@c)[j].index_logic() == ix && bool_to_assignedstate((@c)[j].polarity) === v)]
 #[ensures(c.sat_inner(a.set(ix, v)))]
 pub fn lemma_correct_polarity_makes_clause_sat(c: Clause, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 
@@ -348,10 +348,10 @@ pub fn lemma_correct_polarity_makes_clause_sat(c: Clause, a: Seq<AssignedState>,
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
 #[requires(c.unit_inner(a))]
 #[requires(!c.sat_inner(a))]
-#[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === ix && (@c)[j].sat_inner(a) )]
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && (@c)[j].index_logic() == ix && (@c)[j].sat_inner(a) )]
 #[requires(c.invariant(a.len()))]
-#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !(@(@c)[j].idx === ix) ==> (@c)[j].unsat_inner(a))]
-#[ensures(forall<j: Int> 0 <= j && j < (@c).len()  ==> !unset((a.set(ix, v))[@(@c)[j].idx]))]
+#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !((@c)[j].index_logic() == ix) ==> (@c)[j].unsat_inner(a))]
+#[ensures(forall<j: Int> 0 <= j && j < (@c).len()  ==> !unset((a.set(ix, v))[(@c)[j].index_logic()]))]
 #[ensures(!(unset(a.set(ix, flip_v(v))[ix])))]
 #[ensures(c.unsat_inner(a.set(ix, flip_v(v))))]
 #[ensures(!c.sat_inner(a.set(ix, flip_v(v))))]

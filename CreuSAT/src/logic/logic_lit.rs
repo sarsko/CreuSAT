@@ -7,13 +7,21 @@ use crate::{assignments::*, clause::*, lit::*, trail::*};
 // Logic
 impl Lit {
     #[logic]
-    pub fn to_watchidx_logic(&self) -> Int {
-        pearlite! { @self.idx * 2 + if self.polarity { 0 } else { 1 } }
+    #[why3::attr = "inline:trivial"]
+    pub fn index_logic(self) -> Int {
+        pearlite! { @self.idx }
     }
 
     #[logic]
-    pub fn to_neg_watchidx_logic(&self) -> Int {
-        pearlite! { @self.idx * 2 + if self.polarity { 1 } else { 0 } }
+    #[why3::attr = "inline:trivial"]
+    pub fn to_watchidx_logic(self) -> Int {
+        pearlite! { self.index_logic() * 2 + if self.polarity { 0 } else { 1 } }
+    }
+
+    #[logic]
+    #[why3::attr = "inline:trivial"]
+    pub fn to_neg_watchidx_logic(self) -> Int {
+        pearlite! { self.index_logic() * 2 + if self.polarity { 1 } else { 0 } }
     }
 }
 
@@ -22,7 +30,7 @@ impl Lit {
     #[predicate]
     pub fn is_opp(self, o: Lit) -> bool {
         pearlite! {
-            @self.idx === @o.idx && self.polarity != o.polarity
+            self.index_logic() === o.index_logic() && self.polarity != o.polarity
         }
     }
 
@@ -53,7 +61,7 @@ impl Lit {
     pub fn lit_idx_in(self, c: Clause) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < (@c).len() &&
-                (@c)[i].idx === self.idx
+                (@c)[i].index_logic() == self.index_logic()
             /*
             exists<i: Int> 0 <= i && i < (@c).len() &&
                 (@c)[i].idx === self.idx &&
@@ -65,7 +73,7 @@ impl Lit {
     #[predicate]
     pub fn invariant(self, n: Int) -> bool {
         pearlite! {
-            @self.idx < n
+            self.index_logic() < n
         }
     }
 
@@ -73,8 +81,8 @@ impl Lit {
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             match self.polarity {
-                true  =>  (@a[@self.idx] == 1),
-                false =>  (@a[@self.idx] == 0),
+                true  =>  (@a[self.index_logic()] == 1),
+                false =>  (@a[self.index_logic()] == 0),
             }
         }
     }
@@ -83,8 +91,8 @@ impl Lit {
     pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             match self.polarity {
-                true  =>  (@a[@self.idx] == 0),
-                false =>  (@a[@self.idx] == 1),
+                true  =>  (@a[self.index_logic()] == 0),
+                false =>  (@a[self.index_logic()] == 1),
             }
         }
     }
@@ -92,7 +100,7 @@ impl Lit {
     #[predicate]
     pub fn unset_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
-            @(a)[@self.idx] >= 2
+            @(a)[self.index_logic()] >= 2
         }
     }
 
@@ -121,7 +129,7 @@ impl Lit {
     pub fn idx_in_trail(self, t: Vec<Step>) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < (@t).len() &&
-                (@t)[i].lit.idx === self.idx
+                (@t)[i].lit.index_logic() == self.index_logic()
         }
     }
 }

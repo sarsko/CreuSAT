@@ -41,23 +41,23 @@ impl Assignments {
     #[requires(lit.invariant(@_f.num_vars))]
     #[requires(_f.invariant())]
     #[requires(trail_invariant(@_t, *_f))]
-    #[requires(unset((@self)[@lit.idx]))] // Added, will break stuff further up
+    #[requires(unset((@self)[lit.index_logic()]))] // Added, will break stuff further up
     #[requires(long_are_post_unit_inner(@_t, *_f, @self))]
-    #[ensures(@(@^self)[@lit.idx] === 1 || @(@^self)[@lit.idx] === 0)]
+    #[ensures(@(@^self)[lit.index_logic()] === 1 || @(@^self)[lit.index_logic()] === 0)]
     #[ensures((@^self).len() === (@self).len())]
     #[ensures(long_are_post_unit_inner(@_t, *_f, @^self))]
     #[ensures((forall<j : Int> 0 <= j && j < (@self).len() &&
-        j != @lit.idx ==> (@*self)[j] === (@^self)[j]))]
+        j != lit.index_logic() ==> (@*self)[j] === (@^self)[j]))]
     #[ensures(lit.sat(^self))]
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {
         let old_self = Ghost::record(&self);
         proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *self, lit));true);
         // zzTODOzz
-        //self.0[lit.idx] = lit.polarity as u8;
+        //self.0[lit.index()] = lit.polarity as u8;
         if lit.polarity {
-            self.0[lit.idx] = 1;
+            self.0[lit.index()] = 1;
         } else {
-            self.0[lit.idx] = 0;
+            self.0[lit.index()] = 0;
         }
         proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *@old_self, lit));true);
         proof_assert!(^@old_self === ^self);
