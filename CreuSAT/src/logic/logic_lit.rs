@@ -14,6 +14,12 @@ impl Lit {
 
     #[logic]
     #[why3::attr = "inline:trivial"]
+    pub fn is_positive_logic(self) -> bool {
+        pearlite! { self.polarity }
+    }
+
+    #[logic]
+    #[why3::attr = "inline:trivial"]
     pub fn to_watchidx_logic(self) -> Int {
         pearlite! { self.index_logic() * 2 + if self.polarity { 0 } else { 1 } }
     }

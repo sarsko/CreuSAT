@@ -278,17 +278,14 @@ impl Trail {
         let dlevel = self.decisions.len(); // Not doing this results in a Why3 error. Todo: Yell at Xavier
         self.lit_to_level[idx] = dlevel;
         self.assignments.0[idx] -= 2;
-        let lit = Lit {
-            idx: idx,
-            // This branch duplicates the proofs... finding some way to factor this would x2 the proof
-            polarity: if self.assignments.0[idx] == 0 { false } else { true },
-        }; // TODO encapsulate
+        let lit = Lit::phase_saved(idx, &self.assignments);
+
         let step = Step { lit: lit, decision_level: dlevel, reason: Reason::Decision };
 
         self.trail.push(step);
         proof_assert!(self.lit_not_in_less(*_f));
         // TODO: Check that this lemma is actually being applied, it doesn't seem like it...
-        proof_assert!(lemma_assign_maintains_long_are_post_unit2(@self.trail, *_f, self.assignments, idx); true);
+        //proof_assert!(lemma_assign_maintains_long_are_post_unit2(@self.trail, *_f, self.assignments, idx); true);
         proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
         // This is just the trail invariant unwrapped
         proof_assert!(trail_invariant(@self.trail, *_f));

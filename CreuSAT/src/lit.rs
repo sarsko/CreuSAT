@@ -11,7 +11,10 @@ use crate::logic::logic_lit::*;
 
 #[derive(Clone, Copy)]
 pub struct Lit {
+    #[cfg(feature = "contracts")]
     pub idx: usize,
+    #[cfg(not(feature = "contracts"))]
+    idx: usize,
     pub polarity: bool,
 }
 
@@ -31,6 +34,13 @@ impl Lit {
     #[ensures(@result == self.index_logic())]
     pub fn index(self) -> usize {
         self.idx
+    }
+
+    #[inline(always)]
+    #[cfg_attr(feature = "trust_lit", trusted)]
+    #[ensures(result == self.is_positive_logic())]
+    pub fn is_positive(self) -> bool {
+        self.polarity
     }
 
     #[inline(always)]
@@ -94,6 +104,24 @@ impl Lit {
     pub fn to_neg_watchidx(&self) -> usize {
         self.index() * 2 + if self.polarity { 1 } else { 0 }
     }
+
+    #[requires(@idx < (@assignments).len())]
+    #[ensures(result.index_logic() == @idx)]
+    #[ensures(result.is_positive_logic() == (@(@assignments)[@idx] == 1))]
+    pub fn phase_saved(idx: usize, assignments: &Assignments) -> Lit {
+        Lit {
+            idx: idx,
+            polarity: if assignments.0[idx] == 1 { true } else { false },
+        }
+    }
+
+    // This is only called in the parser
+    pub fn new(idx: usize, polarity: bool) -> Lit {
+        Lit {
+            idx: idx,
+            polarity: polarity,
+        }
+    }
 }
 
 impl PartialEq for Lit {
@@ -113,6 +141,6 @@ impl ops::Not for Lit {
     #[ensures(result.index_logic() == self.index_logic())]
     #[ensures(result.polarity == !self.polarity)]
     fn not(self) -> Lit {
-        Lit { idx: self.idx, polarity: !self.polarity }
+        Lit { idx: self.index(), polarity: !self.polarity }
     }
 }

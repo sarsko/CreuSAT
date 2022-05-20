@@ -13,17 +13,6 @@ module Type
   use floating_point.Single
   use floating_point.Double
   use prelude.Prelude
-  type core_marker_phantomdata 't = 
-    ()
-  type core_ptr_unique_unique 't = 
-    | Core_Ptr_Unique_Unique opaque_ptr (core_marker_phantomdata 't)
-    
-  type alloc_rawvec_rawvec 't 'a = 
-    | Alloc_RawVec_RawVec (core_ptr_unique_unique 't) usize 'a
-    
-  type alloc_vec_vec 't 'a = 
-    | Alloc_Vec_Vec (alloc_rawvec_rawvec 't 'a) usize
-    
   type creusat_lit_lit  = 
     | CreuSat_Lit_Lit usize bool
     
@@ -35,6 +24,17 @@ module Type
     match (self) with
       | CreuSat_Lit_Lit _ a -> a
       end
+  type core_marker_phantomdata 't = 
+    ()
+  type core_ptr_unique_unique 't = 
+    | Core_Ptr_Unique_Unique opaque_ptr (core_marker_phantomdata 't)
+    
+  type alloc_rawvec_rawvec 't 'a = 
+    | Alloc_RawVec_RawVec (core_ptr_unique_unique 't) usize 'a
+    
+  type alloc_vec_vec 't 'a = 
+    | Alloc_Vec_Vec (alloc_rawvec_rawvec 't 'a) usize
+    
   type alloc_alloc_global  = 
     | Alloc_Alloc_Global
     
@@ -289,6 +289,37 @@ module Type
     | CreuSat_Solver_ConflictResult_Ground
     | CreuSat_Solver_ConflictResult_Continue
     
+end
+module CreuSat_Lit_Impl1_New_Interface
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use Type
+  val new [@cfg:stackify] (idx : usize) (polarity : bool) : Type.creusat_lit_lit
+end
+module CreuSat_Lit_Impl1_New
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use Type
+  let rec cfg new [@cfg:stackify] (idx : usize) (polarity : bool) : Type.creusat_lit_lit = 
+  var _0 : Type.creusat_lit_lit;
+  var idx_1 : usize;
+  var polarity_2 : bool;
+  var _3 : usize;
+  var _4 : bool;
+  {
+    idx_1 <- idx;
+    polarity_2 <- polarity;
+    goto BB0
+  }
+  BB0 {
+    _3 <- idx_1;
+    _4 <- polarity_2;
+    _0 <- Type.CreuSat_Lit_Lit _3 _4;
+    return _0
+  }
+  
 end
 module CreusotContracts_Std1_Vec_Impl0_Model_Interface
   type t
@@ -15149,6 +15180,41 @@ module CreuSat_Lit_Impl0_Model
   function model (self : Type.creusat_lit_lit) : Type.creusat_lit_lit = 
     self
 end
+module CreuSat_Logic_LogicLit_Impl0_IsPositiveLogic_Interface
+  use Type
+  function is_positive_logic [@inline:trivial] (self : Type.creusat_lit_lit) : bool
+end
+module CreuSat_Logic_LogicLit_Impl0_IsPositiveLogic
+  use Type
+  function is_positive_logic [@inline:trivial] (self : Type.creusat_lit_lit) : bool = 
+    Type.creusat_lit_lit_Lit_polarity self
+end
+module CreuSat_Lit_Impl1_IsPositive_Interface
+  use Type
+  clone CreuSat_Logic_LogicLit_Impl0_IsPositiveLogic_Interface as IsPositiveLogic0
+  val is_positive [@cfg:stackify] (self : Type.creusat_lit_lit) : bool
+    ensures { result = IsPositiveLogic0.is_positive_logic self }
+    
+end
+module CreuSat_Lit_Impl1_IsPositive
+  use Type
+  clone CreuSat_Logic_LogicLit_Impl0_IsPositiveLogic as IsPositiveLogic0
+  let rec cfg is_positive [@cfg:stackify] (self : Type.creusat_lit_lit) : bool
+    ensures { result = IsPositiveLogic0.is_positive_logic self }
+    
+   = 
+  var _0 : bool;
+  var self_1 : Type.creusat_lit_lit;
+  {
+    self_1 <- self;
+    goto BB0
+  }
+  BB0 {
+    _0 <- Type.creusat_lit_lit_Lit_polarity self_1;
+    return _0
+  }
+  
+end
 module CreuSat_Lit_Impl1_LitSet_Interface
   use seq.Seq
   use Type
@@ -15312,6 +15378,98 @@ module CreuSat_Lit_Impl1_ToWatchidx
   }
   
 end
+module CreuSat_Lit_Impl1_PhaseSaved_Interface
+  use mach.int.UInt64
+  use seq.Seq
+  use mach.int.Int
+  use prelude.UInt8
+  use mach.int.Int32
+  use prelude.Prelude
+  use Type
+  clone CreuSat_Logic_LogicLit_Impl0_IndexLogic_Interface as IndexLogic0
+  clone CreuSat_Logic_LogicLit_Impl0_IsPositiveLogic_Interface as IsPositiveLogic0
+  clone CreuSat_Logic_LogicAssignments_Impl0_ModelTy as ModelTy0
+  clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model0 with type t = Type.creusat_assignments_assignments,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  val phase_saved [@cfg:stackify] (idx : usize) (assignments : Type.creusat_assignments_assignments) : Type.creusat_lit_lit
+    requires {UInt64.to_int idx < Seq.length (Model0.model assignments)}
+    ensures { IsPositiveLogic0.is_positive_logic result = (UInt8.to_int (Seq.get (Model0.model assignments) (UInt64.to_int idx)) = 1) }
+    ensures { IndexLogic0.index_logic result = UInt64.to_int idx }
+    
+end
+module CreuSat_Lit_Impl1_PhaseSaved
+  use mach.int.UInt64
+  use seq.Seq
+  use mach.int.Int
+  use prelude.UInt8
+  use mach.int.Int32
+  use prelude.Prelude
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = uint8, type a = Type.alloc_alloc_global
+  clone CreuSat_Logic_LogicAssignments_Impl0_Model as Model1 with function Model0.model = Model2.model
+  clone CreuSat_Logic_LogicLit_Impl0_IndexLogic as IndexLogic0
+  clone CreuSat_Logic_LogicLit_Impl0_IsPositiveLogic as IsPositiveLogic0
+  clone CreuSat_Logic_LogicAssignments_Impl0_ModelTy as ModelTy0
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.creusat_assignments_assignments,
+  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model1.model
+  clone CreusotContracts_Logic_Model_Impl2_ModelTy as ModelTy1 with type t = uint8
+  clone Core_Slice_Index_Impl2_Output as Output0 with type t = uint8
+  clone CreusotContracts_Std1_Vec_Impl1_HasValue as HasValue0 with type t = uint8
+  clone CreusotContracts_Std1_Vec_Impl1_InBounds as InBounds0 with type t = uint8
+  clone Alloc_Vec_Impl16_Index_Interface as Index0 with type t = uint8, type i = usize,
+  type a = Type.alloc_alloc_global, function Model0.model = Model2.model,
+  predicate InBounds0.in_bounds = InBounds0.in_bounds, predicate HasValue0.has_value = HasValue0.has_value,
+  type Output0.output = Output0.output
+  let rec cfg phase_saved [@cfg:stackify] (idx : usize) (assignments : Type.creusat_assignments_assignments) : Type.creusat_lit_lit
+    requires {UInt64.to_int idx < Seq.length (Model0.model assignments)}
+    ensures { IsPositiveLogic0.is_positive_logic result = (UInt8.to_int (Seq.get (Model0.model assignments) (UInt64.to_int idx)) = 1) }
+    ensures { IndexLogic0.index_logic result = UInt64.to_int idx }
+    
+   = 
+  var _0 : Type.creusat_lit_lit;
+  var idx_1 : usize;
+  var assignments_2 : Type.creusat_assignments_assignments;
+  var _3 : usize;
+  var _4 : bool;
+  var _5 : bool;
+  var _6 : uint8;
+  var _7 : uint8;
+  var _8 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
+  var _9 : usize;
+  {
+    idx_1 <- idx;
+    assignments_2 <- assignments;
+    goto BB0
+  }
+  BB0 {
+    _3 <- idx_1;
+    _8 <- Type.creusat_assignments_assignments_Assignments_0 assignments_2;
+    _9 <- idx_1;
+    _7 <- Index0.index _8 _9;
+    goto BB1
+  }
+  BB1 {
+    _6 <- _7;
+    _5 <- _6 = (1 : uint8);
+    switch (_5)
+      | False -> goto BB3
+      | _ -> goto BB2
+      end
+  }
+  BB2 {
+    _4 <- true;
+    goto BB4
+  }
+  BB3 {
+    _4 <- false;
+    goto BB4
+  }
+  BB4 {
+    _0 <- Type.CreuSat_Lit_Lit _3 _4;
+    return _0
+  }
+  
+end
 module CreuSat_Lit_Impl2_Eq_Interface
   use prelude.Prelude
   use Type
@@ -15393,6 +15551,7 @@ module CreuSat_Lit_Impl3_Not
   use mach.int.Int
   use prelude.Prelude
   use mach.int.UInt64
+  clone CreuSat_Lit_Impl1_Index_Interface as Index0 with function IndexLogic0.index_logic = IndexLogic0.index_logic
   let rec cfg not' [@cfg:stackify] (self : Type.creusat_lit_lit) : Type.creusat_lit_lit
     ensures { Type.creusat_lit_lit_Lit_polarity result = not (Type.creusat_lit_lit_Lit_polarity self) }
     ensures { IndexLogic0.index_logic result = IndexLogic0.index_logic self }
@@ -15401,17 +15560,22 @@ module CreuSat_Lit_Impl3_Not
   var _0 : Type.creusat_lit_lit;
   var self_1 : Type.creusat_lit_lit;
   var _2 : usize;
-  var _3 : bool;
+  var _3 : Type.creusat_lit_lit;
   var _4 : bool;
+  var _5 : bool;
   {
     self_1 <- self;
     goto BB0
   }
   BB0 {
-    _2 <- Type.creusat_lit_lit_Lit_idx self_1;
-    _4 <- Type.creusat_lit_lit_Lit_polarity self_1;
-    _3 <- not _4;
-    _0 <- Type.CreuSat_Lit_Lit _2 _3;
+    _3 <- self_1;
+    _2 <- Index0.index _3;
+    goto BB1
+  }
+  BB1 {
+    _5 <- Type.creusat_lit_lit_Lit_polarity self_1;
+    _4 <- not _5;
+    _0 <- Type.CreuSat_Lit_Lit _2 _4;
     return _0
   }
   
@@ -26374,12 +26538,6 @@ module CreuSat_Trail_Impl0_EnqDecision
   clone CreuSat_Logic_LogicTrail_UnitAreSat as UnitAreSat0 with function Model0.model = Model3.model,
   function Model1.model = Model6.model, predicate Sat0.sat = Sat0.sat
   clone CreuSat_Logic_LogicAssignments_Impl1_Invariant as Invariant2 with function Model0.model = Model1.model
-  clone CreuSat_Logic_LogicTrail_LemmaAssignMaintainsLongArePostUnit2 as LemmaAssignMaintainsLongArePostUnit20 with function Model0.model = Model1.model,
-  predicate LongArePostUnitInner0.long_are_post_unit_inner = LongArePostUnitInner0.long_are_post_unit_inner,
-  predicate Unset0.unset = Unset0.unset, predicate CrefsInRange0.crefs_in_range = CrefsInRange0.crefs_in_range,
-  predicate TrailInvariant0.trail_invariant = TrailInvariant0.trail_invariant,
-  predicate Invariant0.invariant' = Invariant1.invariant', predicate Invariant1.invariant' = Invariant2.invariant',
-  predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old, axiom .
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.creusat_trail_step,
   type a = Type.alloc_alloc_global
   clone CreuSat_Logic_LogicTrail_Impl2_TrailEntriesAreAssigned as TrailEntriesAreAssigned0 with function Model0.model = Model0.model,
@@ -26403,6 +26561,8 @@ module CreuSat_Trail_Impl0_EnqDecision
   function Model0.model = Model4.model, function Model1.model = Model0.model,
   predicate DecisionsInvariant0.decisions_invariant = DecisionsInvariant0.decisions_invariant
   clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve2 with type t = Type.creusat_trail_trail
+  clone CreuSat_Logic_LogicAssignments_Impl0_ModelTy as ModelTy2
+  clone CreuSat_Logic_LogicLit_Impl0_IsPositiveLogic as IsPositiveLogic0
   clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve1 with type t = uint8
   clone CreusotContracts_Logic_Model_Impl2_ModelTy as ModelTy1 with type t = uint8
   clone Core_Slice_Index_Impl2_Output as Output1 with type t = uint8
@@ -26424,15 +26584,16 @@ module CreuSat_Trail_Impl0_EnqDecision
   function Model0.model = Model4.model
   clone Alloc_Vec_Impl1_Push_Interface as Push0 with type t = usize, type a = Type.alloc_alloc_global,
   function Model0.model = Model4.model
-  clone Alloc_Vec_Impl16_Index_Interface as Index0 with type t = uint8, type i = usize,
-  type a = Type.alloc_alloc_global, function Model0.model = Model2.model,
-  predicate InBounds0.in_bounds = InBounds1.in_bounds, predicate HasValue0.has_value = HasValue1.has_value,
-  type Output0.output = Output1.output
   clone Alloc_Vec_Impl17_IndexMut_Interface as IndexMut1 with type t = uint8, type i = usize,
   type a = Type.alloc_alloc_global, function Model0.model = Model2.model,
   predicate InBounds0.in_bounds = InBounds1.in_bounds,
   predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere1.resolve_elswhere,
   predicate HasValue0.has_value = HasValue1.has_value, type Output0.output = Output1.output
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model8 with type t = Type.creusat_assignments_assignments,
+  type ModelTy0.modelTy = ModelTy2.modelTy, function Model0.model = Model1.model
+  clone CreuSat_Lit_Impl1_PhaseSaved_Interface as PhaseSaved0 with function Model0.model = Model8.model,
+  function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
   clone Alloc_Vec_Impl1_Push_Interface as Push1 with type t = Type.creusat_trail_step, type a = Type.alloc_alloc_global,
   function Model0.model = Model0.model
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.creusat_trail_step, type a = Type.alloc_alloc_global,
@@ -26470,25 +26631,20 @@ module CreuSat_Trail_Impl0_EnqDecision
   var _17 : usize;
   var lit_18 : Type.creusat_lit_lit;
   var _19 : usize;
-  var _20 : bool;
-  var _21 : bool;
-  var _22 : uint8;
-  var _23 : uint8;
-  var _24 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
-  var _25 : usize;
-  var step_26 : Type.creusat_trail_step;
-  var _27 : Type.creusat_lit_lit;
-  var _28 : usize;
-  var _29 : Type.creusat_trail_reason;
+  var _20 : Type.creusat_assignments_assignments;
+  var _21 : Type.creusat_assignments_assignments;
+  var step_22 : Type.creusat_trail_step;
+  var _23 : Type.creusat_lit_lit;
+  var _24 : usize;
+  var _25 : Type.creusat_trail_reason;
+  var _26 : ();
+  var _27 : borrowed (Type.alloc_vec_vec (Type.creusat_trail_step) (Type.alloc_alloc_global));
+  var _28 : Type.creusat_trail_step;
+  var _29 : ();
   var _30 : ();
-  var _31 : borrowed (Type.alloc_vec_vec (Type.creusat_trail_step) (Type.alloc_alloc_global));
-  var _32 : Type.creusat_trail_step;
+  var _31 : ();
+  var _32 : ();
   var _33 : ();
-  var _34 : ();
-  var _35 : ();
-  var _36 : ();
-  var _37 : ();
-  var _38 : ();
   {
     self_1 <- self;
     idx_2 <- idx;
@@ -26533,53 +26689,34 @@ module CreuSat_Trail_Impl0_EnqDecision
     _15 <- { _15 with current = ( * _15 - (2 : uint8)) };
     assume { Resolve1.resolve _15 };
     _19 <- idx_2;
-    _24 <- Type.creusat_assignments_assignments_Assignments_0 (Type.creusat_trail_trail_Trail_assignments ( * self_1));
-    _25 <- idx_2;
-    _23 <- Index0.index _24 _25;
+    _21 <- Type.creusat_trail_trail_Trail_assignments ( * self_1);
+    _20 <- _21;
+    lit_18 <- PhaseSaved0.phase_saved _19 _20;
     goto BB6
   }
   BB6 {
-    _22 <- _23;
-    _21 <- _22 = (0 : uint8);
-    switch (_21)
-      | False -> goto BB8
-      | _ -> goto BB7
-      end
+    _23 <- lit_18;
+    _24 <- dlevel_9;
+    _25 <- Type.CreuSat_Trail_Reason_Decision;
+    step_22 <- Type.CreuSat_Trail_Step _23 _24 _25;
+    _27 <- borrow_mut (Type.creusat_trail_trail_Trail_trail ( * self_1));
+    self_1 <- { self_1 with current = (let Type.CreuSat_Trail_Trail a b c d e =  * self_1 in Type.CreuSat_Trail_Trail a b ( ^ _27) d e) };
+    _28 <- step_22;
+    _26 <- Push1.push _27 _28;
+    goto BB7
   }
   BB7 {
-    _20 <- false;
-    goto BB9
-  }
-  BB8 {
-    _20 <- true;
-    goto BB9
-  }
-  BB9 {
-    lit_18 <- Type.CreuSat_Lit_Lit _19 _20;
-    _27 <- lit_18;
-    _28 <- dlevel_9;
-    _29 <- Type.CreuSat_Trail_Reason_Decision;
-    step_26 <- Type.CreuSat_Trail_Step _27 _28 _29;
-    _31 <- borrow_mut (Type.creusat_trail_trail_Trail_trail ( * self_1));
-    self_1 <- { self_1 with current = (let Type.CreuSat_Trail_Trail a b c d e =  * self_1 in Type.CreuSat_Trail_Trail a b ( ^ _31) d e) };
-    _32 <- step_26;
-    _30 <- Push1.push _31 _32;
-    goto BB10
-  }
-  BB10 {
     assume { Resolve2.resolve self_1 };
     assert { LitNotInLess0.lit_not_in_less ( * self_1) _f_3 };
-    _33 <- ();
-    assert { let _ = LemmaAssignMaintainsLongArePostUnit20.lemma_assign_maintains_long_are_post_unit2 (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) _f_3 (Type.creusat_trail_trail_Trail_assignments ( * self_1)) idx_2 in true };
-    _34 <- ();
+    _29 <- ();
     assert { LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) _f_3 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
-    _35 <- ();
+    _30 <- ();
     assert { TrailInvariant0.trail_invariant (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) _f_3 };
-    _36 <- ();
+    _31 <- ();
     assert { LitIsUnique0.lit_is_unique ( * self_1) };
-    _37 <- ();
+    _32 <- ();
     assert { TrailEntriesAreAssigned0.trail_entries_are_assigned ( * self_1) };
-    _38 <- ();
+    _33 <- ();
     _0 <- ();
     return _0
   }
