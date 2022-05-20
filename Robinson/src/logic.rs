@@ -31,14 +31,10 @@ fn flip_v(v: AssignedState) -> AssignedState {
 }
 
 #[logic]
-fn pos() -> AssignedState {
-    1u8
-}
+fn pos() -> AssignedState { 1u8 }
 
 #[logic]
-fn neg() -> AssignedState {
-    0u8
-}
+fn neg() -> AssignedState { 0u8 }
 
 #[predicate]
 pub fn unset(v: AssignedState) -> bool {
@@ -112,11 +108,7 @@ pub fn lemma_unit_forces(f: Formula, a: Seq<AssignedState>, ix: Int, v: Assigned
 #[ensures(!f.eventually_sat_complete_inner(a.set(ix, flip_v(v))))]
 #[ensures(f.unsat_inner(a.set(ix, flip_v(v))))]
 pub fn lemma_unit_wrong_polarity_unsat_formula(
-    c: Clause,
-    f: Formula,
-    a: Seq<AssignedState>,
-    ix: Int,
-    v: AssignedState,
+    c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState,
 ) {
     lemma_not_sat_formula_implies_unsat_formula(f, a);
     lemma_correct_polarity_makes_clause_sat(c, a, ix, v);
@@ -128,13 +120,7 @@ pub fn lemma_unit_wrong_polarity_unsat_formula(
 #[requires(0 <= ix && ix < a.len())]
 #[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx == ix && bool_to_assignedstate((@c)[j].polarity) == v)]
 #[ensures(c.sat_inner(a.set(ix, v)))]
-pub fn lemma_correct_polarity_makes_clause_sat(
-    c: Clause,
-    a: Seq<AssignedState>,
-    ix: Int,
-    v: AssignedState,
-) {
-}
+pub fn lemma_correct_polarity_makes_clause_sat(c: Clause, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 
 #[logic]
 #[requires(!unset(v))]
@@ -148,13 +134,7 @@ pub fn lemma_correct_polarity_makes_clause_sat(
 #[ensures(!(unset(a.set(ix, flip_v(v))[ix])))]
 #[ensures(c.unsat_inner(a.set(ix, flip_v(v))))]
 #[ensures(!c.sat_inner(a.set(ix, flip_v(v))))]
-pub fn lemma_incorrect_polarity_makes_clause_unsat(
-    c: Clause,
-    a: Seq<AssignedState>,
-    ix: Int,
-    v: AssignedState,
-) {
-}
+pub fn lemma_incorrect_polarity_makes_clause_unsat(c: Clause, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 
 #[logic]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]

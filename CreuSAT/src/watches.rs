@@ -35,15 +35,7 @@ pub struct Watches {
 #[requires(0 <= @k && @k < (@(@f.clauses)[@cref]).len())] // Changed
 #[requires((@(@f.clauses)[@cref]).len() >= 2)] // This was > 2 before ?
 #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)]
-pub fn update_watch(
-    f: &Formula,
-    trail: &Trail,
-    watches: &mut Watches,
-    cref: usize,
-    j: usize,
-    k: usize,
-    lit: Lit,
-) {
+pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit) {
     let watchidx = lit.to_watchidx();
     let end = watches.watches[watchidx].len() - 1;
     watches.watches[watchidx].swap(j, end);

@@ -7,7 +7,7 @@ use creusot_contracts::*;
 use crate::{clause::*, solver::*};
 
 #[cfg(feature = "contracts")]
-use crate::{assignments::*};
+use crate::assignments::*;
 
 pub struct Formula {
     pub clauses: Vec<Clause>,
@@ -19,9 +19,7 @@ impl Model for Formula {
     type ModelTy = (Seq<Clause>, Int);
 
     #[logic]
-    fn model(self) -> Self::ModelTy {
-        (self.clauses.model(), self.num_vars.model())
-    }
+    fn model(self) -> Self::ModelTy { (self.clauses.model(), self.num_vars.model()) }
 }
 
 #[predicate]

@@ -3,7 +3,11 @@ pub type Clause = Vec<Literal>;
 pub type Clauses = Vec<Clause>;
 
 #[cfg(not(feature = "contracts"))]
-use std::{fs::File, io::{self, BufRead}, path::Path};
+use std::{
+    fs::File,
+    io::{self, BufRead},
+    path::Path,
+};
 
 #[cfg(not(feature = "contracts"))]
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
@@ -36,9 +40,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                         "p" => match split[2].parse::<usize>() {
                             Ok(n) => {
                                 if num_lits_set {
-                                    return Err(
-                                        "Error in input file - multiple p lines".to_string()
-                                    );
+                                    return Err("Error in input file - multiple p lines".to_string());
                                 }
                                 num_lits_set = true;
                                 num_literals = n
@@ -62,10 +64,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                                         }
                                     }
                                     Err(_) => {
-                                        return Err(format!(
-                                            "Error in input file on line {}",
-                                            line_cntr.to_string()
-                                        ));
+                                        return Err(format!("Error in input file on line {}", line_cntr.to_string()));
                                     }
                                 }
                             }
@@ -90,10 +89,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
 #[cfg(not(feature = "contracts"))]
 // TODO, fix it so that 0 and 1 len clauses are supported
 /// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
-pub fn preproc_and_solve(
-    clauses: &mut std::vec::Vec<std::vec::Vec<i32>>,
-    num_literals: usize,
-) -> bool {
+pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_literals: usize) -> bool {
     use crate::clause::Clause as Clause2;
     use crate::formula::*;
     use crate::lit::Lit as Lit2;

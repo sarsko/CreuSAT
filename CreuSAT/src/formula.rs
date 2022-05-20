@@ -32,9 +32,7 @@ impl Model for SatState {
     type ModelTy = SatState;
 
     #[logic]
-    fn model(self) -> Self {
-        self
-    }
+    fn model(self) -> Self { self }
 }
 
 impl PartialEq for SatState {
@@ -134,14 +132,7 @@ impl Formula {
     #[ensures((@self.clauses).len() == (@(^self).clauses).len())]
     #[ensures((@(@self.clauses)[@cref]).len() == (@(@(^self).clauses)[@cref]).len())]
     #[ensures(self.equisat(^self))]
-    pub fn swap_lits_in_clause(
-        &mut self,
-        trail: &Trail,
-        watches: &Watches,
-        cref: usize,
-        j: usize,
-        k: usize,
-    ) {
+    pub fn swap_lits_in_clause(&mut self, trail: &Trail, watches: &Watches, cref: usize, j: usize, k: usize) {
         let old_f = Ghost::record(&self);
         proof_assert!(no_duplicate_indexes_inner(@(@self.clauses)[@cref]));
         proof_assert!(long_are_post_unit_inner(@trail.trail, *self, @trail.assignments) && true);
@@ -203,12 +194,7 @@ impl Formula {
     #[ensures(@result == (@self.clauses).len())]
     #[ensures((@(^self).clauses)[@result] == clause)]
     #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
-    pub fn add_unwatched_clause(
-        &mut self,
-        clause: Clause,
-        watches: &mut Watches,
-        _t: &Trail,
-    ) -> usize {
+    pub fn add_unwatched_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
         let old_self = Ghost::record(&self);
         let cref = self.clauses.len();
         self.clauses.push(clause);
@@ -234,13 +220,7 @@ impl Formula {
     #[ensures(@self.num_vars == @(^self).num_vars)]
     #[ensures(self.equisat(^self))]
     #[ensures((@self.clauses).len() == (@(^self).clauses).len())]
-    pub fn make_asserting_clause_and_watch(
-        &mut self,
-        watches: &mut Watches,
-        t: &Trail,
-        idx: usize,
-        cref: usize,
-    ) {
+    pub fn make_asserting_clause_and_watch(&mut self, watches: &mut Watches, t: &Trail, idx: usize, cref: usize) {
         let old_self = Ghost::record(&self);
         self.swap_lits_in_clause(t, watches, cref, 1, idx);
         let first_lit = self.clauses[cref].rest[0];
@@ -266,13 +246,7 @@ impl Formula {
     #[ensures(self.equisat(^self))]
     #[ensures(@result == (@self.clauses).len())]
     #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
-    pub fn add_and_swap_first(
-        &mut self,
-        clause: Clause,
-        watches: &mut Watches,
-        t: &Trail,
-        s_idx: usize,
-    ) -> usize {
+    pub fn add_and_swap_first(&mut self, clause: Clause, watches: &mut Watches, t: &Trail, s_idx: usize) -> usize {
         let old_self = Ghost::record(&self);
         let cref = self.add_unwatched_clause(clause, watches, t);
         self.swap_lits_in_clause(t, watches, cref, 0, s_idx);

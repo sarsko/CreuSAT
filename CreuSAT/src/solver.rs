@@ -3,8 +3,8 @@ use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 use crate::{
-    assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, lit::*, trail::*,
-    unit_prop::*, util::*, watches::*,
+    assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, lit::*, trail::*, unit_prop::*, util::*,
+    watches::*,
 };
 
 // Tmp
@@ -144,13 +144,7 @@ impl Solver {
     #[ensures(@f.num_vars == @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
     fn handle_long_clause(
-        &mut self,
-        f: &mut Formula,
-        t: &mut Trail,
-        w: &mut Watches,
-        d: &mut Decisions,
-        mut clause: Clause,
-        s_idx: usize,
+        &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, s_idx: usize,
     ) {
         let cref = f.add_and_swap_first(clause, w, t, s_idx);
         let (idx, level) = get_asserting_level(&f.clauses[cref], t, f);
@@ -202,12 +196,7 @@ impl Solver {
         None        => { true },
     })]
     fn handle_conflict(
-        &mut self,
-        f: &mut Formula,
-        t: &mut Trail,
-        cref: usize,
-        w: &mut Watches,
-        d: &mut Decisions,
+        &mut self, f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches, d: &mut Decisions,
     ) -> Option<bool> {
         let res = analyze_conflict(f, t, cref);
         match res {
@@ -249,13 +238,7 @@ impl Solver {
         ConflictResult::Ground => { (^f).not_satisfiable() },
         _                      => { true }
     })]
-    fn unit_prop_step(
-        &mut self,
-        f: &mut Formula,
-        d: &mut Decisions,
-        t: &mut Trail,
-        w: &mut Watches,
-    ) -> ConflictResult {
+    fn unit_prop_step(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> ConflictResult {
         return match unit_propagate(f, t, w) {
             Ok(_) => ConflictResult::Ok,
             Err(cref) => match self.handle_conflict(f, t, cref, w, d) {
@@ -280,13 +263,7 @@ impl Solver {
     })]
     #[ensures(@f.num_vars == @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
-    fn unit_prop_loop(
-        &mut self,
-        f: &mut Formula,
-        d: &mut Decisions,
-        t: &mut Trail,
-        w: &mut Watches,
-    ) -> Option<bool> {
+    fn unit_prop_loop(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
         let old_f = Ghost::record(&f);
         let old_t = Ghost::record(&t);
         let old_w = Ghost::record(&w);
@@ -334,13 +311,7 @@ impl Solver {
         SatResult::Unknown  => { true }
         SatResult::Err      => { true }
     })]
-    fn outer_loop(
-        &mut self,
-        f: &mut Formula,
-        d: &mut Decisions,
-        trail: &mut Trail,
-        w: &mut Watches,
-    ) -> SatResult {
+    fn outer_loop(&mut self, f: &mut Formula, d: &mut Decisions, trail: &mut Trail, w: &mut Watches) -> SatResult {
         match self.unit_prop_loop(f, d, trail, w) {
             Some(false) => return SatResult::Unsat,
             None => return SatResult::Err,
@@ -393,11 +364,7 @@ impl Solver {
     })]
     #[ensures(formula.equisat(^formula))]
     fn inner(
-        &mut self,
-        formula: &mut Formula,
-        mut decisions: Decisions,
-        mut trail: Trail,
-        mut watches: Watches,
+        &mut self, formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut watches: Watches,
     ) -> SatResult {
         let old_f = Ghost::record(&formula);
         #[invariant(equi, (@old_f).equisat(*formula))]

@@ -6,38 +6,6 @@ use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*};
 
 use crate::logic::{logic_assignments::*, logic_clause::*, logic_formula::*, logic_trail::*};
 
-// Trail stuff start
-/*
-#[logic]
-#[requires(s.len() > 0)]
-fn last_idx<T>(s: Seq<T>) -> Int {
-    pearlite! { s.len()-1 }
-}
-
-#[logic]
-#[requires(s.len() > 0)]
-fn last_elem<T>(s: Seq<T>) -> T {
-    pearlite! { s[s.len()-1] }
-}
-
-#[logic]
-#[requires(trail_invariant_full_no_sep(t, f))]
-#[requires(trail_entries_are_assigned_inner(t.0, a))]
-#[requires(long_are_post_unit_inner(t.1, f, a))]
-#[requires(t.0.len() > 0)]
-//#[requires((@(t.0)[0]).len() > 0)]
-#[requires((@last_elem(t.0)).len() > 0)]
-#[ensures((@last_elem(t.0)))]
-//#[ensures((@(t.0)[0])[(@(t.0)[0]).len()-1])]
-pub fn lemma_trail_1(t: (Seq<Vec<Lit>>, Seq<(usize, Reason)>), f: Formula, a: Seq<AssignedState>) {}
-*/
-
-/*
-
-
-*/
-
-// Trail stuff end
 // CDCL 2 STUFF START (WIP)
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
@@ -81,37 +49,9 @@ pub fn lemma_swap_maintains_post_unit(c: Clause, c2: Clause, a: Int, b: Int, ass
 #[requires(clause_post_with_regards_to(c, ass, j))]
 #[ensures(clause_post_with_regards_to(c2, ass, j))]
 #[ensures(clause_post_with_regards_to_inner(c2, @ass, j))]
-pub fn lemma_swap_maintains_post_with_regards_to(
-    c: Clause,
-    c2: Clause,
-    a: Int,
-    b: Int,
-    ass: Assignments,
-    j: Int,
-) {
+pub fn lemma_swap_maintains_post_with_regards_to(c: Clause, c2: Clause, a: Int, b: Int, ass: Assignments, j: Int) {
     lemma_swap_maintains_post_unit(c, c2, a, b, ass);
 }
-
-/*
-#[logic]
-#[requires((@c).len() >= 2)]
-#[requires((@c2).len() === (@c).len())]
-#[requires((@c2).exchange(@c, a, b))]
-#[requires(
-    c.post_unit(ass))]
-#[ensures(c2.post_unit(ass))]
-pub fn lemma_swap_maintains_post_unit(c: Clause, c2: Clause, a: Int, b: Int, ass: Assignments) {
-    lemma_swap_clause_no_dups(c, c2, a, b);
-}
-*/
-
-/*
-#[logic]
-#[requires(c.invariant(n))]
-#[requires((@c2).permut(@c, 0, (@c).len()))]
-#[ensures(c2.invariant(n))]
-pub fn lemma_permut_clause_invariant(c: Clause, c2: Clause, n: Int) {}
-*/
 
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
@@ -137,17 +77,6 @@ pub fn lemma_permut_formula_ok2(f: Formula, f2: Formula, a: Assignments) {}
 #[ensures(f2.eventually_sat_complete_no_ass())]
 pub fn lemma_permut_formula_ok_no_ass(f: Formula, f2: Formula) {}
 
-/*
-#[logic]
-#[requires(f.eventually_sat_complete_no_ass())]
-#[requires((@f2.clauses).len() === (@f.clauses).len())]
-#[requires(forall<i: Int> 0 <= i && i < (@f2.clauses).len() ==>
-    (@(@f2.clauses)[i]).permut((@(@f.clauses)[i]), 0, (@(@f.clauses)[i]).len()))]
-#[requires(@f2.num_vars === @f.num_vars)]
-#[ensures(f2.eventually_sat_complete_no_ass())]
-pub fn lemma_permut_formula_ok_no_ass2(f: Formula, f2: Formula) {}
-*/
-
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
 #[requires(f.eventually_sat_complete_no_ass())]
@@ -169,18 +98,6 @@ pub fn lemma_permut_clause_in_formula_maintains_sat(f: Formula, f2: Formula, cre
 #[requires(@f2.num_vars === @f.num_vars)]
 #[ensures(!f2.eventually_sat_complete_no_ass())]
 pub fn lemma_permut_clause_in_formula_maintains_unsat(f: Formula, f2: Formula, cref: Int) {}
-
-/*
-#[logic]
-#[requires(f.invariant())]
-#[requires((@f2.clauses).len() === (@f.clauses).len())]
-#[requires(forall<i: Int> 0 <= i && i < (@f2.clauses).len() && i != cref ==>
-    (@(@f2.clauses)[i]) === (@(@f.clauses)[i]))]
-#[requires((@(@f2.clauses)[cref]).permut((@(@f.clauses)[cref]), 0, (@(@f.clauses)[cref]).len()))]
-#[requires(@f2.num_vars === @f.num_vars)]
-#[ensures(f2.invariant())]
-pub fn lemma_permut_formula_ok_invariant(f: Formula, f2: Formula, cref: Int) {}
-*/
 
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
@@ -205,16 +122,10 @@ pub fn lemma_same_pol(c: Clause, c2: Clause, a: Seq<AssignedState>, idx: Int) {}
 #[requires(c3.resolvent_of(c, c2, c2_idx, c_idx))]
 #[ensures(c3.unsat_inner(a))]
 pub fn lemma_resolved_post_and_unsat_is_unsat(
-    c: Clause,
-    c2: Clause,
-    c3: Clause,
-    a: Seq<AssignedState>,
-    c_idx: Int,
-    c2_idx: Int,
+    c: Clause, c2: Clause, c3: Clause, a: Seq<AssignedState>, c_idx: Int, c2_idx: Int,
 ) {
 }
 
-// CDCL STUFF START
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
 //#[ensures(formula_invariant(f2))]
@@ -234,14 +145,7 @@ pub fn lemma_eq_formulas(f: (Seq<Clause>, Int), f2: (Seq<Clause>, Int), c: Claus
 #[requires(c3.resolvent_of(c, c2, k, m))]
 #[requires(eventually_sat_complete_no_ass(f))]
 #[ensures(eventually_sat_complete_no_ass(((f.0).push(c3), f.1)))]
-pub fn lemma_sat_gives_sat(
-    f: (Seq<Clause>, Int),
-    c: Clause,
-    c2: Clause,
-    c3: Clause,
-    k: Int,
-    m: Int,
-) {
+pub fn lemma_sat_gives_sat(f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, k: Int, m: Int) {
     lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
 }
 
@@ -263,12 +167,7 @@ pub fn lemma_not_sat_gives_not_sat(f: (Seq<Clause>, Int), c: Clause, c2: Clause,
 //#[ensures(equisat_compatible_inner(f, (f.0.push(c3), f.1)))]
 #[ensures(equisat_extension_inner(c3, f))]
 pub fn lemma_extended_formula_is_equisat_compatible(
-    f: (Seq<Clause>, Int),
-    c: Clause,
-    c2: Clause,
-    c3: Clause,
-    k: Int,
-    m: Int,
+    f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, k: Int, m: Int,
 ) {
     lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
     //lemma_not_sat_gives_not_sat(f, c, c2, c3, k, m);
@@ -283,12 +182,7 @@ pub fn lemma_extended_formula_is_equisat_compatible(
 #[requires(c3.resolvent_of(c, c2, k, m))]
 #[ensures(equisat_extension_inner(c3, f))]
 pub fn lemma_resolvent_of_equisat_extension_is_equisat(
-    f: (Seq<Clause>, Int),
-    c: Clause,
-    c2: Clause,
-    c3: Clause,
-    k: Int,
-    m: Int,
+    f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, k: Int, m: Int,
 ) {
     lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
     lemma_not_sat_gives_not_sat(f, c, c2, c3);
@@ -341,14 +235,10 @@ fn flip_v(v: AssignedState) -> AssignedState {
 }
 
 #[logic]
-fn pos() -> AssignedState {
-    1u8
-}
+fn pos() -> AssignedState { 1u8 }
 
 #[logic]
-fn neg() -> AssignedState {
-    0u8
-}
+fn neg() -> AssignedState { 0u8 }
 
 #[predicate]
 pub fn unset(v: AssignedState) -> bool {
@@ -433,11 +323,7 @@ pub fn lemma_unit_forces(c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, 
 #[ensures(!f.eventually_sat_complete_inner(a.set(ix, flip_v(v))))]
 #[ensures(f.unsat_inner(a.set(ix, flip_v(v))))]
 pub fn lemma_unit_wrong_polarity_unsat_formula(
-    c: Clause,
-    f: Formula,
-    a: Seq<AssignedState>,
-    ix: Int,
-    v: AssignedState,
+    c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState,
 ) {
     lemma_not_sat_formula_implies_unsat_formula(f, a);
     lemma_correct_polarity_makes_clause_sat(c, a, ix, v);
@@ -450,13 +336,7 @@ pub fn lemma_unit_wrong_polarity_unsat_formula(
 #[requires(0 <= ix && ix < a.len())]
 #[requires(exists<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx === ix && bool_to_assignedstate((@c)[j].polarity) === v)]
 #[ensures(c.sat_inner(a.set(ix, v)))]
-pub fn lemma_correct_polarity_makes_clause_sat(
-    c: Clause,
-    a: Seq<AssignedState>,
-    ix: Int,
-    v: AssignedState,
-) {
-}
+pub fn lemma_correct_polarity_makes_clause_sat(c: Clause, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
@@ -471,13 +351,7 @@ pub fn lemma_correct_polarity_makes_clause_sat(
 #[ensures(!(unset(a.set(ix, flip_v(v))[ix])))]
 #[ensures(c.unsat_inner(a.set(ix, flip_v(v))))]
 #[ensures(!c.sat_inner(a.set(ix, flip_v(v))))]
-pub fn lemma_incorrect_polarity_makes_clause_unsat(
-    c: Clause,
-    a: Seq<AssignedState>,
-    ix: Int,
-    v: AssignedState,
-) {
-}
+pub fn lemma_incorrect_polarity_makes_clause_unsat(c: Clause, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]

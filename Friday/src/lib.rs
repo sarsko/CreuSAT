@@ -104,9 +104,7 @@ impl Clause {
 impl Clone for Pasn {
     #[trusted]
     #[ensures(*self === result)]
-    fn clone(&self) -> Self {
-        Pasn { assign: self.assign.clone(), ix: self.ix }
-    }
+    fn clone(&self) -> Self { Pasn { assign: self.assign.clone(), ix: self.ix } }
 }
 
 #[requires(c.vars_in_range((@a.0).len()))]

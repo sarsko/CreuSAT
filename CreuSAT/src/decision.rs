@@ -21,9 +21,7 @@ impl Default for Node {
     #[ensures(@result.next === @usize::MAX)]
     #[ensures(@result.prev === @usize::MAX)]
     #[ensures(@result.ts   === 0)]
-    fn default() -> Self {
-        Node { next: usize::MAX, prev: usize::MAX, ts: 0 }
-    }
+    fn default() -> Self { Node { next: usize::MAX, prev: usize::MAX, ts: 0 } }
 }
 
 pub struct Decisions {

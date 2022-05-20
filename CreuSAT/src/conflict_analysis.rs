@@ -58,14 +58,7 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
 // Requires long(o)
 //#[ensures((@result).len() >= (@o).len() - 1)] // TODO: Need to prove this
 //#[ensures((@result).len() >= (@c).len() - 1)] // TODO: Need to prove this
-fn resolve(
-    _f: &Formula,
-    c: &Clause,
-    o: &Clause,
-    idx: usize,
-    c_idx: usize,
-    _a: &Assignments,
-) -> Clause {
+fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &Assignments) -> Clause {
     let mut new: Vec<Lit> = Vec::new();
     let mut i: usize = 0;
     #[invariant(i_less, @i <= (@c.rest).len())]
@@ -387,11 +380,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             k += 1;
         }
         if cnt == 1 {
-            return if clause.rest.len() == 1 {
-                Conflict::Unit(clause)
-            } else {
-                Conflict::Learned(s_idx, clause)
-            };
+            return if clause.rest.len() == 1 { Conflict::Unit(clause) } else { Conflict::Learned(s_idx, clause) };
         }
     }
     return Conflict::Panic; // Okay this is just pure lazyness

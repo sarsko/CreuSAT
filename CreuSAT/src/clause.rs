@@ -24,9 +24,7 @@ impl Clone for Clause {
     // Will do last
     #[trusted] // TODO
     #[ensures(result == *self)]
-    fn clone(&self) -> Self {
-        Clause { deleted: self.deleted, rest: self.rest.clone() }
-    }
+    fn clone(&self) -> Self { Clause { deleted: self.deleted, rest: self.rest.clone() } }
 }
 
 //#[derive(Copy, Clone, Eq)]
@@ -82,16 +80,12 @@ impl Clause {
     #[inline(always)]
     #[cfg_attr(feature = "trust_clause", trusted)]
     #[ensures(@result == (@self).len())]
-    pub fn len(&self) -> usize {
-        self.rest.len()
-    }
+    pub fn len(&self) -> usize { self.rest.len() }
 
     // TODO: Take a look at the parser
     #[inline]
     #[trusted]
-    pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
-        Clause { deleted: false, rest: vec.clone() }
-    }
+    pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause { Clause { deleted: false, rest: vec.clone() } }
 
     // OK with split + split + CVC4 for 4.49 seconds on Mac
     #[inline(always)]

@@ -32,13 +32,7 @@ use crate::logic::{
 })]
 #[ensures((@(@(^f).clauses)[@cref]).len() === (@(@f.clauses)[@cref]).len())] // ADDDED, will need proving
 fn unit_prop_check_rest(
-    f: &mut Formula,
-    trail: &Trail,
-    watches: &mut Watches,
-    cref: usize,
-    j: usize,
-    k: usize,
-    lit: Lit,
+    f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
 ) -> Result<(), ()> {
     let curr_lit = f.clauses[cref].rest[k];
     if curr_lit.lit_unset(&trail.assignments) || curr_lit.lit_sat(&trail.assignments) {
@@ -127,12 +121,7 @@ fn swap_zero_one(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize)
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures(f.equisat(^f))]
 fn unit_prop_do_outer(
-    f: &mut Formula,
-    trail: &mut Trail,
-    watches: &mut Watches,
-    cref: usize,
-    lit: Lit,
-    j: usize,
+    f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize,
 ) -> Result<bool, usize> {
     let first_lit = f.clauses[cref].rest[0];
     if first_lit.lit_sat(&trail.assignments) {
@@ -208,11 +197,7 @@ fn unit_prop_do_outer(
         //} else if f.clauses[cref].rest[1].lit_unset(&trail.assignments) {
         proof_assert!(!(@f.clauses)[@cref].unsat(trail.assignments) && true && true);
         proof_assert!((@f.clauses)[@cref].unit(trail.assignments));
-        let step = Step {
-            lit: second_lit,
-            decision_level: trail.decision_level(),
-            reason: Reason::Long(cref),
-        };
+        let step = Step { lit: second_lit, decision_level: trail.decision_level(), reason: Reason::Long(cref) };
 
         trail.enq_assignment(step, f);
         proof_assert!(((@f.clauses)[@cref]).post_unit(trail.assignments));
@@ -248,12 +233,7 @@ fn unit_prop_do_outer(
 })]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures(f.equisat(^f))]
-fn unit_prop_current_level(
-    f: &mut Formula,
-    trail: &mut Trail,
-    watches: &mut Watches,
-    lit: Lit,
-) -> Result<(), usize> {
+fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, lit: Lit) -> Result<(), usize> {
     let mut j = 0;
     let watchidx = lit.to_watchidx();
     proof_assert!((@watches.watches).len() === 2 * @f.num_vars);
@@ -298,11 +278,7 @@ fn unit_prop_current_level(
 })]
 #[ensures(@f.num_vars === @(^f).num_vars)]
 #[ensures(f.equisat(^f))]
-pub fn unit_propagate(
-    f: &mut Formula,
-    trail: &mut Trail,
-    watches: &mut Watches,
-) -> Result<(), usize> {
+pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
     let mut i = trail.curr_i;
     let old_trail = Ghost::record(&trail);
     let old_f = Ghost::record(&f);

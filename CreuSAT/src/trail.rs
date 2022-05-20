@@ -2,10 +2,7 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::{
-    assignments::*, clause::*, decision::*, formula::*, lit::*, logic::*, solver::SatResult,
-    util::*,
-};
+use crate::{assignments::*, clause::*, decision::*, formula::*, lit::*, logic::*, solver::SatResult, util::*};
 
 #[cfg(feature = "contracts")]
 use crate::logic::{logic::*, logic_trail::*, logic_util::*};
@@ -36,9 +33,7 @@ impl Trail {
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[inline(always)]
     #[ensures(@result === (@self.decisions).len())]
-    pub fn decision_level(&self) -> usize {
-        self.decisions.len()
-    }
+    pub fn decision_level(&self) -> usize { self.decisions.len() }
     // OK
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[requires(f.invariant())]
@@ -175,9 +170,7 @@ impl Trail {
         #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
         #[invariant(inv, self.invariant_no_decision(*f))]
         #[invariant(proph, ^@old_t === ^self)]
-        while self.decisions.len() > 0
-            && self.decisions[self.decisions.len() - 1] > self.trail.len()
-        {
+        while self.decisions.len() > 0 && self.decisions[self.decisions.len() - 1] > self.trail.len() {
             let old_t3 = Ghost::record(&self);
             proof_assert!(sorted(@self.decisions));
             proof_assert!((@self.decisions).len() > 0);
@@ -325,10 +318,7 @@ impl Trail {
         if f.clauses[cref].rest[0].lit_set(&self.assignments) {
             return Err(()); // UGLY Runtime check
         }
-        self.enq_assignment(
-            Step { lit: f.clauses[cref].rest[0], decision_level: 0, reason: Reason::Unit(cref) },
-            f,
-        );
+        self.enq_assignment(Step { lit: f.clauses[cref].rest[0], decision_level: 0, reason: Reason::Unit(cref) }, f);
         Ok(())
     }
 

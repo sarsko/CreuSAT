@@ -472,12 +472,7 @@ fn lemma_assign_maintains_for_each_to_post(v: Seq<Step>, f: Formula, a: Assignme
 #[requires(long_are_post_unit_inner(v, f, @a))]
 #[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 1u8)))]
 #[ensures(long_are_post_unit_inner(v, f, (@a).set(@lit.idx, 0u8)))]
-pub fn lemma_assign_maintains_long_are_post_unit(
-    v: Seq<Step>,
-    f: Formula,
-    a: Assignments,
-    lit: Lit,
-) {
+pub fn lemma_assign_maintains_long_are_post_unit(v: Seq<Step>, f: Formula, a: Assignments, lit: Lit) {
     lemma_assign_maintains_post_for_each(f, a, lit);
     lemma_assign_maintains_for_each_to_post(v, f, a, lit);
 }
@@ -494,12 +489,7 @@ pub fn lemma_assign_maintains_long_are_post_unit(
 #[requires(long_are_post_unit_inner(v, f, @a))]
 #[ensures(long_are_post_unit_inner(v, f, (@a).set(@idx, 1u8)))]
 #[ensures(long_are_post_unit_inner(v, f, (@a).set(@idx, 0u8)))]
-pub fn lemma_assign_maintains_long_are_post_unit2(
-    v: Seq<Step>,
-    f: Formula,
-    a: Assignments,
-    idx: usize,
-) {
+pub fn lemma_assign_maintains_long_are_post_unit2(v: Seq<Step>, f: Formula, a: Assignments, idx: usize) {
     //lemma_assign_maintains_post_for_each(f, a, idx)
     //lemma_assign_maintains_for_each_to_post(v, f, a, idx);
 }
