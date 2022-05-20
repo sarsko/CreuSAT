@@ -16,7 +16,7 @@ pub enum Conflict {
 }
 
 #[cfg_attr(feature = "trust_conflict", trusted)]
-#[ensures(result === (exists<i: Int> 0 <= i && i < (@v).len() && @(@v)[i].idx === @idx))]
+#[ensures(result == (exists<i: Int> 0 <= i && i < (@v).len() && @(@v)[i].idx == @idx))]
 fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
     let mut i: usize = 0;
     #[invariant(i_less, 0 <= @i && @i <= (@v).len())]
@@ -35,7 +35,7 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
 #[requires(_f.invariant())]
 #[requires(equisat_extension_inner(*c, @_f))]
 #[requires(o.in_formula(*_f))]
-#[requires(@c_idx < (@c).len() && @(@c)[@c_idx].idx === @idx &&
+#[requires(@c_idx < (@c).len() && @(@c)[@c_idx].idx == @idx &&
     (exists<k: Int> 0 <= k && k < (@o).len() &&
         (@o)[k].is_opp((@c)[@c_idx]))
 )]
@@ -73,19 +73,19 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
     while i < c.rest.len() {
         let old_new = Ghost::record(&new);
         if c.rest[i].idx == idx {
-            proof_assert!(@new === @@old_new);
+            proof_assert!(@new == @@old_new);
             proof_assert!(@(@c)[@i].idx == @idx);
             proof_assert!(forall<j: Int> 0 <= j && j < @i && @(@c)[j].idx != @idx ==>
             (@c)[j].lit_in_internal(@new));
         } else if idx_in(&new, c.rest[i].idx) {
-            proof_assert!(@new === @@old_new);
+            proof_assert!(@new == @@old_new);
             proof_assert!((@c)[@i].lit_in_internal(@new));
             proof_assert!(@(@c)[@i].idx != @idx);
             proof_assert!(forall<j: Int> 0 <= j && j < @i && @(@c)[j].idx != @idx ==>
             (@c)[j].lit_in_internal(@new));
         } else {
             new.push(c.rest[i]);
-            proof_assert!((@new)[(@new).len() - 1] === (@c.rest)[@i]);
+            proof_assert!((@new)[(@new).len() - 1] == (@c.rest)[@i]);
             proof_assert!((@new)[(@new).len() - 1].lit_in(*c));
             proof_assert!((@c)[@i].lit_in_internal(@new));
             proof_assert!(@(@c)[@i].idx != @idx);
@@ -96,9 +96,9 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
     }
     let mut _o_idx: Option<usize> = None;
     let old_new = Ghost::record(&new);
-    proof_assert!(@new === @@old_new);
+    proof_assert!(@new == @@old_new);
     proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==>
-        (@new)[j] === (@@old_new)[j]);
+        (@new)[j] == (@@old_new)[j]);
     i = 0;
     #[invariant(i_less, @i <= (@o.rest).len())]
     #[invariant(new_elems, forall<j: Int> 0 <= j && j < (@new).len() ==>
@@ -111,7 +111,7 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
     #[invariant(from_o, forall<j: Int> 0 <= j && j < (@new).len() - (@@old_new).len() ==> (@new)[(@@old_new).len() + j].lit_in(*o))]
     #[invariant(from_c, forall<j: Int> 0 <= j && j < (@@old_new).len() ==> (@new)[j].lit_in(*c))]
     #[invariant(old_unchanged, forall<j: Int> 0 <= j && j < (@@old_new).len() ==>
-        (@new)[j] === (@@old_new)[j])]
+        (@new)[j] == (@@old_new)[j])]
     #[invariant(maintains,
             (forall<j: Int> 0 <= j && j < (@c ).len() && @(@c )[j].idx != @idx ==> (@c )[j].lit_in_internal(@new))
     )]
@@ -119,7 +119,7 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
                 (@new)[j].lit_in_internal(@c) || (@new)[j].lit_in_internal(@o))]
     #[invariant(confl_idx, match _o_idx {
         None => forall<j: Int> 0 <= j && j < @i ==> @(@o)[j].idx != @idx,
-        Some(j) => @(@o)[@j].idx === @idx
+        Some(j) => @(@o)[@j].idx == @idx
     })]
     #[invariant(res2, match _o_idx {
         None => (forall<j: Int> 0 <= j && j < @i ==>
@@ -137,13 +137,13 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
         */
         let old_new2 = Ghost::record(&new);
         proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==>
-            (@@old_new2)[j] === (@@old_new)[j]);
+            (@@old_new2)[j] == (@@old_new)[j]);
         proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==>
-            (@new)[j] === (@@old_new)[j]);
-        proof_assert!(@new === @@old_new2);
+            (@new)[j] == (@@old_new)[j]);
+        proof_assert!(@new == @@old_new2);
         if idx_in(&new, o.rest[i].idx) {
-            proof_assert!(@new === @@old_new2);
-            proof_assert!(@c_idx < (@c).len() && @(@c)[@c_idx].idx === @idx &&
+            proof_assert!(@new == @@old_new2);
+            proof_assert!(@c_idx < (@c).len() && @(@c)[@c_idx].idx == @idx &&
                 (exists<k: Int> 0 <= k && k < (@o).len() && k != @i &&
                     (@o)[k].is_opp((@c)[@c_idx]))
             );
@@ -152,48 +152,48 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
             proof_assert!(o.invariant_unary_ok(@_f.num_vars));
             proof_assert!(c.invariant_unary_ok(@_f.num_vars));
             //proof_assert!(forall<j: Int> 0 <= j && j < (@c ).len() && @(@c )[j].idx != @idx ==> (@c )[j].lit_in_internal(@new));
-            //proof_assert!(exists<k: Int> 0 <= k && k < (@c).len() && @(@o)[@i].idx === @(@c)[k].idx);
+            //proof_assert!(exists<k: Int> 0 <= k && k < (@c).len() && @(@o)[@i].idx == @(@c)[k].idx);
             proof_assert!(0 <= @i && @i < (@o).len() && @(@o)[@i].idx != @idx);
             //proof_assert!(invariant_internal(@o, @_f.num_vars));
             //proof_assert!(invariant_internal(@c, @_f.num_vars));
             proof_assert!(forall<j: Int> 0 <= j && j < (@c).len() && @(@c)[j].idx != @idx ==> (@c)[j].lit_in_internal(@new));
             proof_assert!(lemma_idx(@c, @o, @new, @i, @idx, @c_idx, *_f); true);
             proof_assert!(forall<j: Int> 0 <= j && j < (@new).len() ==> (@new)[j].lit_in_internal(@c) || (@new)[j].lit_in_internal(@o));
-            proof_assert!(exists<k: Int> 0 <= k && k < (@new).len() && @(@o)[@i].idx === @(@new)[k].idx);
+            proof_assert!(exists<k: Int> 0 <= k && k < (@new).len() && @(@o)[@i].idx == @(@new)[k].idx);
 
             proof_assert!(lemma_idx2(@c, @o, @new, @i, @idx, @c_idx, *_f);
                     (@o)[@i].lit_in_internal(@new)
             );
         } else if o.rest[i].idx == idx {
-            proof_assert!(@new === @@old_new2);
-            proof_assert!(@(@o)[@i].idx === @idx);
+            proof_assert!(@new == @@old_new2);
+            proof_assert!(@(@o)[@i].idx == @idx);
             _o_idx = Some(i);
         } else {
             new.push(o.rest[i]);
-            proof_assert!((@new)[(@new).len() - 1] === (@o.rest)[@i]);
+            proof_assert!((@new)[(@new).len() - 1] == (@o.rest)[@i]);
             proof_assert!((@new)[(@new).len() - 1].lit_in(*o));
             proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new2).len() ==>
-                (@new)[j] === (@@old_new2)[j]);
+                (@new)[j] == (@@old_new2)[j]);
             proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==>
-                (@new)[j] === (@@old_new)[j]);
+                (@new)[j] == (@@old_new)[j]);
             proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==>
-                (@@old_new2)[j] === (@@old_new)[j]);
+                (@@old_new2)[j] == (@@old_new)[j]);
             proof_assert!((@o)[@i].lit_in_internal(@new));
         }
         proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==>
-            (@@old_new2)[j] === (@@old_new)[j]);
+            (@@old_new2)[j] == (@@old_new)[j]);
         proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==>
-            (@new)[j] === (@@old_new)[j]);
+            (@new)[j] == (@@old_new)[j]);
         i += 1;
     }
     let out = Clause { deleted: false, rest: new };
-    proof_assert!(@out === @new);
+    proof_assert!(@out == @new);
     proof_assert!(
             (forall<i: Int> 0 <= i && i < (@o).len() && @(@o)[i].idx != @idx ==> (@o)[i].lit_in_internal(@new))
     );
     proof_assert!(
     (exists<k: Int, m: Int> 0 <= k && k < (@o).len() && 0 <= m && m < (@c).len() &&
-        @(@c)[m].idx === @idx && @(@o)[k].idx === @idx && (@o)[k].is_opp((@c)[m]))
+        @(@c)[m].idx == @idx && @(@o)[k].idx == @idx && (@o)[k].is_opp((@c)[m]))
     );
 
     proof_assert!(out.resolvent_of_idx(*c, *o, @idx));
@@ -230,7 +230,7 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
 #[maintains((mut c).invariant_unary_ok(@_f.num_vars))]
 #[maintains((mut c).vars_in_range(@_f.num_vars))]
 #[requires(o.in_formula(*_f))]
-#[requires(@c_idx < (@c).len() && @(@c)[@c_idx].idx === @idx &&
+#[requires(@c_idx < (@c).len() && @(@c)[@c_idx].idx == @idx &&
     (exists<k: Int> 0 <= k && k < (@o).len() &&
         (@o)[k].is_opp((@c)[@c_idx]))
 )]
@@ -255,7 +255,7 @@ fn resolve_mut(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usiz
     proof_assert!(forall<j: Int> 0 <= j && j < (@c).len() ==> (@c)[j].lit_in(*c));
     proof_assert!(forall<j: Int> 0 <= j && j < @i && j != @c_idx ==>
         (@@old_c)[j].lit_in_internal(@c));
-    proof_assert!(^@old_c === ^c);
+    proof_assert!(^@old_c == ^c);
     /*
     while i < o.rest.len() {
         if idx_in(&c.rest, o.rest[i].idx) {
@@ -278,7 +278,7 @@ fn resolve_mut(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usiz
 #[ensures(match result {
     Some(r) =>  @r < (@c).len()
                 && (@c)[@r].is_opp((@trail.trail)[@^i].lit)
-                && (@c)[@r].idx === (@trail.trail)[@^i].lit.idx
+                && (@c)[@r].idx == (@trail.trail)[@^i].lit.idx
                 //&& c.same_idx_same_polarity_except(*o, @r)
                 ,
     None => true
@@ -287,13 +287,13 @@ fn resolve_mut(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usiz
 fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Option<usize> {
     let old_i = Ghost::record(&i);
     #[invariant(i_bound, 0 <= @i && @i <= (@trail.trail).len())]
-    #[invariant(proph_i, ^i === ^@old_i)]
+    #[invariant(proph_i, ^i == ^@old_i)]
     while *i > 0 {
         *i -= 1;
         let mut k: usize = 0;
         #[invariant(i_bound2, 0 <= @i && @i < (@trail.trail).len())]
         #[invariant(k_bound, 0 <= @k && @k <= (@c).len())]
-        #[invariant(proph_i2, ^i === ^@old_i)]
+        #[invariant(proph_i2, ^i == ^@old_i)]
         while k < c.rest.len() {
             if trail.trail[*i].lit.idx == c.rest[k].idx {
                 return Some(k);
@@ -329,7 +329,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Opt
     _ => { true }
 })]
 #[ensures(match result {
-    Conflict::Ground => (@trail.decisions).len() === 0,
+    Conflict::Ground => (@trail.decisions).len() == 0,
     Conflict::Panic  => true,
     _                => {(@trail.decisions).len() > 0 },
 })]
@@ -367,7 +367,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
         let mut k: usize = 0;
         let mut cnt: usize = 0;
         #[invariant(k_bound, @k <= (@clause).len())]
-        #[invariant(s_idx_ok, @cnt === 0 || @s_idx < (@clause).len())]
+        #[invariant(s_idx_ok, @cnt == 0 || @s_idx < (@clause).len())]
         #[invariant(cnt_bound, @cnt <= 2)]
         while k < clause.rest.len() {
             if trail.lit_to_level[clause.rest[k].idx] == decisionlevel {

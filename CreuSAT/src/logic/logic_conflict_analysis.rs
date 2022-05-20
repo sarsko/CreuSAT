@@ -9,8 +9,8 @@ use crate::logic::{logic::*, logic_clause::*};
 
 #[cfg_attr(feature = "trust_conflict_logic", trusted)]
 #[logic]
-//#[requires(@v[i].idx === idx)]
-#[requires(0 <= c_idx && c_idx < c.len() && @(c)[c_idx].idx === idx &&
+//#[requires(@v[i].idx == idx)]
+#[requires(0 <= c_idx && c_idx < c.len() && @(c)[c_idx].idx == idx &&
     (exists<k: Int> 0 <= k && k < o.len() && k != i &&
         o[k].is_opp(c[c_idx]))
 )]
@@ -21,17 +21,17 @@ use crate::logic::{logic::*, logic_clause::*};
 #[requires(invariant_internal(c, @_f.num_vars))]
 #[requires(forall<j: Int> 0 <= j && j < c.len() && @c[j].idx != idx ==> c[j].lit_in_internal(new))]
 #[requires(forall<j: Int> 0 <= j && j < new.len() ==> (new)[j].lit_in_internal(c) || (new)[j].lit_in_internal(o))]
-#[requires(exists<k: Int> 0 <= k && k < new.len() && @o[i].idx === @(new)[k].idx)]
-#[ensures(exists<k: Int> 0 <= k && k < c.len() && @o[i].idx === @c[k].idx || (o)[i].lit_in_internal(new))]
-#[ensures(exists<k: Int> 0 <= k && k < c.len() && @o[i].idx === @c[k].idx && o[i].polarity === c[k].polarity || (o)[i].lit_in_internal(new))]
+#[requires(exists<k: Int> 0 <= k && k < new.len() && @o[i].idx == @(new)[k].idx)]
+#[ensures(exists<k: Int> 0 <= k && k < c.len() && @o[i].idx == @c[k].idx || (o)[i].lit_in_internal(new))]
+#[ensures(exists<k: Int> 0 <= k && k < c.len() && @o[i].idx == @c[k].idx && o[i].polarity == c[k].polarity || (o)[i].lit_in_internal(new))]
 //#[ensures(((o)[i].lit_in_internal(new)))]
 pub fn lemma_idx(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_idx: Int, _f: Formula) {}
 
 // OK [04.04] [[Doesnt check out on Mac [04.04]. Super easy on Linux]]
 #[cfg_attr(feature = "trust_conflict_logic", trusted)]
 #[logic]
-//#[requires(@v[i].idx === idx)]
-#[requires(0 <= c_idx && c_idx < c.len() && @(c)[c_idx].idx === idx &&
+//#[requires(@v[i].idx == idx)]
+#[requires(0 <= c_idx && c_idx < c.len() && @(c)[c_idx].idx == idx &&
     (exists<k: Int> 0 <= k && k < o.len() && k != i &&
         o[k].is_opp(c[c_idx]))
 )]
@@ -42,7 +42,7 @@ pub fn lemma_idx(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_id
 #[requires(invariant_internal(c, @_f.num_vars))]
 #[requires(forall<j: Int> 0 <= j && j < c.len() && @c[j].idx != idx ==> c[j].lit_in_internal(new))]
 #[requires(forall<j: Int> 0 <= j && j < new.len() ==> (new)[j].lit_in_internal(c) || (new)[j].lit_in_internal(o))]
-#[requires(exists<k: Int> 0 <= k && k < new.len() && @o[i].idx === @(new)[k].idx)]
+#[requires(exists<k: Int> 0 <= k && k < new.len() && @o[i].idx == @(new)[k].idx)]
 #[ensures(((o)[i].lit_in_internal(new)))]
 pub fn lemma_idx2(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_idx: Int, _f: Formula) {
     lemma_idx(c, o, new, i, idx, c_idx, _f);

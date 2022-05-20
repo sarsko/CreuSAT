@@ -10,7 +10,7 @@ use crate::logic::logic_util::*;
 #[predicate]
 pub fn watches_invariant_internal(w: Seq<Vec<Watcher>>, n: Int, f: Formula) -> bool {
     pearlite! {
-        2 * n === w.len() &&
+        2 * n == w.len() &&
         forall<i: Int> 0 <= i && i < w.len() ==>
         forall<j: Int> 0 <= j && j < (@w[i]).len() ==>
             (@(@w[i])[j].cref < (@f.clauses).len() &&
@@ -50,20 +50,20 @@ pub fn lemma_push_maintains_watcher_invariant(w: Seq<Watcher>, f: Formula, o: Wa
 
 impl Watches {
     #[predicate]
-    //#[ensures(result === watches_invariant_internal(@self.watches, n))]
+    //#[ensures(result == watches_invariant_internal(@self.watches, n))]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
             watches_invariant_internal(@self.watches, @f.num_vars, f)
             /*
             // WARNING: This below does not require length > 1
-            2 * @f.num_vars === (@self.watches).len() &&
+            2 * @f.num_vars == (@self.watches).len() &&
             forall<i: Int> 0 <= i && i < (@self.watches).len() ==>
                 watcher_crefs_in_range(@(@self.watches)[i], f)
                 */
             //watches_crefs_in_range(@self.watches, f)
                 /*&&
-                ((@f.clauses)[@(@(@self.watches)[i])[j].cref].first.to_neg_watchidx_logic() === i ||
-                (@f.clauses)[@(@(@self.watches)[i])[j].cref].second.to_neg_watchidx_logic() === i )
+                ((@f.clauses)[@(@(@self.watches)[i])[j].cref].first.to_neg_watchidx_logic() == i ||
+                (@f.clauses)[@(@(@self.watches)[i])[j].cref].second.to_neg_watchidx_logic() == i )
                 */
                 // Harder invariant, but might be needed
 

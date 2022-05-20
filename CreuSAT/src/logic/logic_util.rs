@@ -57,9 +57,9 @@ pub fn partition_rev(v: Seq<(usize, usize)>, i: Int) -> bool {
 #[logic]
 #[cfg_attr(feature = "trust_util_logic", trusted)]
 #[requires(s.len() > 0)]
-#[ensures(result === s.subsequence(0, s.len() - 1))]
-#[ensures(result.len() === s.len() - 1)]
-#[ensures(forall<i: Int> 0 <= i && i < result.len() ==> result[i] === s[i])]
+#[ensures(result == s.subsequence(0, s.len() - 1))]
+#[ensures(result.len() == s.len() - 1)]
+#[ensures(forall<i: Int> 0 <= i && i < result.len() ==> result[i] == s[i])]
 pub fn pop<T>(s: Seq<T>) -> Seq<T> {
     pearlite! {
         s.subsequence(0, s.len() - 1)

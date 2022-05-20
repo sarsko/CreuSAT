@@ -18,9 +18,9 @@ pub struct Node {
 //const INVALID: usize = usize::MAX;
 
 impl Default for Node {
-    #[ensures(@result.next === @usize::MAX)]
-    #[ensures(@result.prev === @usize::MAX)]
-    #[ensures(@result.ts   === 0)]
+    #[ensures(@result.next == @usize::MAX)]
+    #[ensures(@result.prev == @usize::MAX)]
+    #[ensures(@result.ts   == 0)]
     fn default() -> Self {
         Node { next: usize::MAX, prev: usize::MAX, ts: 0 }
     }
@@ -40,7 +40,7 @@ impl Decisions {
     #[cfg_attr(feature = "trust_decision", trusted)]
     #[requires(f.invariant())]
     #[requires(0 < @f.num_vars && @f.num_vars < @usize::MAX/2)]
-    #[requires((@lit_order).len() === @f.num_vars &&
+    #[requires((@lit_order).len() == @f.num_vars &&
             forall<i: Int> 0 <= i && i < (@lit_order).len() ==>
                 @(@lit_order)[i] < @f.num_vars)]
     #[ensures(result.invariant(@f.num_vars))]
@@ -131,8 +131,8 @@ impl Decisions {
     #[cfg_attr(feature = "trust_decision", trusted)]
     #[maintains((mut self).invariant(@_f.num_vars))]
     #[requires((@self.linked_list).len() < @usize::MAX)]
-    #[ensures(@(^self).timestamp === (@self.linked_list).len() + 1)]
-    #[ensures((@(^self).linked_list).len() === (@self.linked_list).len())]
+    #[ensures(@(^self).timestamp == (@self.linked_list).len() + 1)]
+    #[ensures((@(^self).linked_list).len() == (@self.linked_list).len())]
     fn rescore(&mut self, _f: &Formula) {
         let INVALID: usize = usize::MAX;
         let old_self = Ghost::record(&self);
@@ -140,10 +140,10 @@ impl Decisions {
         let mut i: usize = 0;
         let mut curr = self.start;
         #[invariant(curr_ok, curr == usize::MAX || @curr < (@self.linked_list).len())]
-        #[invariant(proph, ^@old_self === ^self)]
+        #[invariant(proph, ^@old_self == ^self)]
         #[invariant(unch, forall<j: Int> 0 <= j && j < (@self.linked_list).len() ==>
-            ((@self.linked_list)[j].next === (@(@old_self).linked_list)[j].next
-            && (@self.linked_list)[j].prev === (@(@old_self).linked_list)[j].prev)
+            ((@self.linked_list)[j].next == (@(@old_self).linked_list)[j].next
+            && (@self.linked_list)[j].prev == (@(@old_self).linked_list)[j].prev)
         )]
         #[invariant(inv, self.invariant(@_f.num_vars))]
         while curr != INVALID {
@@ -208,9 +208,9 @@ impl Decisions {
         let mut counts_with_index: Vec<(usize, usize)> = vec::from_elem((0, 0), clause.rest.len());
         let old_self = Ghost::record(&self);
         let mut i: usize = 0;
-        #[invariant(unch, @old_self === self)]
-        #[invariant(proph, ^@old_self === ^self)]
-        #[invariant(len_same, (@clause).len() === (@counts_with_index).len())]
+        #[invariant(unch, @old_self == self)]
+        #[invariant(proph, ^@old_self == ^self)]
+        #[invariant(len_same, (@clause).len() == (@counts_with_index).len())]
         #[invariant(all_less, forall<j: Int> 0 <= j && j < @i ==>
             @(@counts_with_index)[j].1 < (@self.linked_list).len()
         )]
@@ -223,9 +223,9 @@ impl Decisions {
         sort(&mut counts_with_index);
         //counts_with_index.sort_by_key(|k| k.0);
         i = 0;
-        #[invariant(proph, ^@old_self === ^self)]
+        #[invariant(proph, ^@old_self == ^self)]
         #[invariant(inv, self.invariant(@f.num_vars))]
-        #[invariant(len_same, (@clause).len() === (@counts_with_index).len())]
+        #[invariant(len_same, (@clause).len() == (@counts_with_index).len())]
         while i < counts_with_index.len() {
             self.move_to_front(counts_with_index[i].1, f);
             i += 1;

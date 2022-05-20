@@ -42,7 +42,7 @@ impl Step {
 pub fn trail_entries_are_assigned_inner(trail: Seq<Step>, a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<j: Int> 0 <= j && j < trail.len() ==>
-                a[@(@trail[j]).lit.idx] === bool_to_assignedstate((@trail[j]).lit.polarity)
+                a[@(@trail[j]).lit.idx] == bool_to_assignedstate((@trail[j]).lit.polarity)
     }
 }
 */
@@ -160,13 +160,13 @@ pub fn decisions_invariant(decisions: Seq<usize>, trail: Seq<Step>) -> bool {
 #[predicate]
 pub fn lit_to_level_invariant(lit_to_level: Seq<usize>, f: Formula) -> bool {
     pearlite! {
-        lit_to_level.len() === @f.num_vars
+        lit_to_level.len() == @f.num_vars
         // Might want to add some semantics? Or nah?
     }
 }
 
 #[predicate]
-//#[ensures(result === (forall<i: Int> 0 <= i && i < trail.len() ==> trail[i].invariant(f)))]
+//#[ensures(result == (forall<i: Int> 0 <= i && i < trail.len() ==> trail[i].invariant(f)))]
 pub fn crefs_in_range(trail: Seq<Step>, f: Formula) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < trail.len() ==>
@@ -178,7 +178,7 @@ pub fn crefs_in_range(trail: Seq<Step>, f: Formula) -> bool {
 pub fn trail_entries_are_assigned_inner(t: Seq<Step>, a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<j: Int> 0 <= j && j < t.len() ==>
-            //a[@t[j].lit.idx] === bool_to_assignedstate(t[j].lit.polarity)
+            //a[@t[j].lit.idx] == bool_to_assignedstate(t[j].lit.polarity)
             t[j].lit.sat_inner(a) // Should be equivalent
     }
 }
@@ -189,7 +189,7 @@ pub fn assignments_are_in_trail(t: Seq<Step>, a: Seq<AssignedState>) -> bool {
         forall<j: Int> 0 <= j && j < a.len() ==>
             exists<i: Int> 0 <= i && i < t.len() &&
                 @t[i].lit.idx == j &&
-                bool_to_assignedstate(t[i].lit.polarity) === a[j]
+                bool_to_assignedstate(t[i].lit.polarity) == a[j]
     }
 }
 
@@ -198,7 +198,7 @@ pub fn clause_post_with_regards_to(c: Clause, a: Assignments, j: Int) -> bool {
     pearlite! {
         c.post_unit(a) &&
         exists<i: Int> 0 <= i && i < (@c).len() &&
-            @(@c)[i].idx === j &&
+            @(@c)[i].idx == j &&
             (@c)[i].sat(a)
     }
 }
@@ -208,7 +208,7 @@ pub fn clause_post_with_regards_to_inner(c: Clause, a: Seq<AssignedState>, j: In
     pearlite! {
         c.post_unit_inner(a) &&
         exists<i: Int> 0 <= i && i < (@c).len() &&
-            @(@c)[i].idx === j &&
+            @(@c)[i].idx == j &&
             (@c)[i].sat_inner(a)
     }
 }
@@ -218,8 +218,8 @@ pub fn clause_post_with_regards_to_lit(c: Clause, a: Assignments, lit: Lit) -> b
     pearlite! {
         c.post_unit(a) &&
         exists<i: Int> 0 <= i && i < (@c).len() &&
-            (@c)[i].polarity === lit.polarity &&
-            @(@c)[i].idx === @lit.idx &&
+            (@c)[i].polarity == lit.polarity &&
+            @(@c)[i].idx == @lit.idx &&
             (@c)[i].sat(a)
     }
 }
@@ -261,7 +261,7 @@ pub fn unit_are_sat(trail: Seq<Step>, f: Formula, a: Assignments) -> bool {
         forall<j: Int> 0 <= j && j < trail.len() ==>
             match trail[j].reason {
                 Reason::Unit(k) => {
-                    trail[j].lit === (@(@f.clauses)[@k])[0]
+                    trail[j].lit == (@(@f.clauses)[@k])[0]
                     && (@(@f.clauses)[@k])[0].sat(a) },
                     _ => true,
                 }
@@ -297,7 +297,7 @@ fn lemma_trail_post(f: Formula, lit: Lit, t: Trail) {}
 #[requires(t.lit_is_unique())]
 #[requires(lit.invariant(@f.num_vars))]
 #[requires((@t.trail).len() > 0)]
-#[requires(lit === (@t.trail)[(@t.trail).len() - 1].lit)]
+#[requires(lit == (@t.trail)[(@t.trail).len() - 1].lit)]
 #[ensures(forall<i: Int> 0 <= i && i < (@t.trail).len() - 1 ==>
     match (@t.trail)[i].reason {
         Reason::Long(k) => !lit.lit_idx_in((@f.clauses)[@k]),
@@ -317,7 +317,7 @@ fn lemma_trail_only_last(f: Formula, lit: Lit, t: Trail) {}
 #[requires(lit.invariant(@f.num_vars))]
 #[requires((@t.trail).len() > 0)]
 #[requires(t.invariant(f))]
-#[requires(lit === (@t.trail)[(@t.trail).len() - 1].lit)]
+#[requires(lit == (@t.trail)[(@t.trail).len() - 1].lit)]
 #[ensures(forall<i: Int> 0 <= i && i < (@t.trail).len() - 1 ==>
     match (@t.trail)[i].reason {
         Reason::Long(k) => (@f.clauses)[@k].post_unit_inner(@t.assignments) ==>
@@ -346,7 +346,7 @@ fn lemma_trail_fin(t: Trail, f: Formula, lit: Lit) {
 #[requires(t.lit_is_unique())]
 #[requires(lit.invariant(@f.num_vars))]
 #[requires((@t.trail).len() > 0)]
-#[requires(lit === (@t.trail)[(@t.trail).len() - 1].lit)]
+#[requires(lit == (@t.trail)[(@t.trail).len() - 1].lit)]
 #[requires(forall<i: Int> 0 <= i && i < (@t.trail).len() - 1 ==>
     match (@t.trail)[i].reason {
         Reason::Long(k) => (@f.clauses)[@k].post_unit_inner(@t.assignments) ==>
@@ -377,7 +377,7 @@ fn lemma_trail_fin2(t: Trail, f: Formula, lit: Lit) {
 #[requires(t.lit_is_unique())]
 #[requires(lit.invariant(@f.num_vars))]
 #[requires((@t.trail).len() > 0)]
-#[requires(lit === (@t.trail)[(@t.trail).len() - 1].lit)]
+#[requires(lit == (@t.trail)[(@t.trail).len() - 1].lit)]
 #[requires(long_are_post_unit_inner(@t.trail, f, @t.assignments))]
 #[ensures(long_are_post_unit_inner(pop(@t.trail), f, (@t.assignments).set(@lit.idx, 3u8)))]
 #[ensures(long_are_post_unit_inner(pop(@t.trail), f, (@t.assignments).set(@lit.idx, 2u8)))]
@@ -396,7 +396,7 @@ fn lemma_trail_fin3(t: Trail, f: Formula, lit: Lit) {
 #[requires(t.lit_not_in_less(f))]
 #[requires(t.lit_is_unique())]
 #[requires((@t.trail).len() > 0)]
-#[requires(l === (@t.trail)[(@t.trail).len() - 1].lit)]
+#[requires(l == (@t.trail)[(@t.trail).len() - 1].lit)]
 #[requires(long_are_post_unit_inner(@t.trail, f, @t.assignments))]
 #[ensures(long_are_post_unit_inner(pop(@t.trail), f, @t.assignments))]
 fn lemma_pop_no_unass_is_ok(t: Trail, f: Formula, l: Lit) {}
@@ -410,7 +410,7 @@ fn lemma_pop_no_unass_is_ok(t: Trail, f: Formula, l: Lit) {}
 #[requires(t.lit_is_unique())]
 #[requires((@t.trail).len() > 0)]
 #[requires(l.invariant(@f.num_vars))]
-#[requires(l === (@t.trail)[(@t.trail).len() - 1].lit)]
+#[requires(l == (@t.trail)[(@t.trail).len() - 1].lit)]
 #[requires(long_are_post_unit_inner(@t.trail, f, @t.assignments))]
 #[ensures(long_are_post_unit_inner(pop(@t.trail), f, (@t.assignments).set(@l.idx, 3u8)))]
 #[ensures(long_are_post_unit_inner(pop(@t.trail), f, (@t.assignments).set(@l.idx, 2u8)))]
