@@ -24,7 +24,7 @@ pub fn lemma_permut_clause_ok2(c: Clause, c2: Clause, a: Assignments) {}
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
 #[requires((@c).len() >= 2)]
-#[requires((@c2).len() === (@c).len())]
+#[requires((@c2).len() == (@c).len())]
 #[requires((@c2).exchange(@c, a, b))]
 #[requires(no_duplicate_indexes_inner(@c))]
 #[ensures(no_duplicate_indexes_inner(@c2))]
@@ -33,7 +33,7 @@ pub fn lemma_swap_clause_no_dups(c: Clause, c2: Clause, a: Int, b: Int) {}
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
 #[requires((@c).len() >= 2)]
-#[requires((@c2).len() === (@c).len())]
+#[requires((@c2).len() == (@c).len())]
 #[requires((@c2).exchange(@c, a, b))]
 #[requires(c.post_unit(ass))]
 #[ensures(c2.post_unit(ass))]
@@ -44,7 +44,7 @@ pub fn lemma_swap_maintains_post_unit(c: Clause, c2: Clause, a: Int, b: Int, ass
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
 #[requires((@c).len() >= 2)]
-#[requires((@c2).len() === (@c).len())]
+#[requires((@c2).len() == (@c).len())]
 #[requires((@c2).exchange(@c, a, b))]
 #[requires(clause_post_with_regards_to(c, ass, j))]
 #[ensures(clause_post_with_regards_to(c2, ass, j))]
@@ -57,7 +57,7 @@ pub fn lemma_swap_maintains_post_with_regards_to(c: Clause, c2: Clause, a: Int, 
 #[logic]
 #[requires(f.sat(a))]
 #[requires((@f2.clauses).permut(@f.clauses, 0, (@f.clauses).len()))]
-#[requires(@f2.num_vars === @f.num_vars)]
+#[requires(@f2.num_vars == @f.num_vars)]
 #[ensures(f2.sat(a))]
 pub fn lemma_permut_formula_ok(f: Formula, f2: Formula, a: Assignments) {}
 
@@ -65,7 +65,7 @@ pub fn lemma_permut_formula_ok(f: Formula, f2: Formula, a: Assignments) {}
 #[logic]
 #[requires(f.unsat(a))]
 #[requires((@f2.clauses).permut(@f.clauses, 0, (@f.clauses).len()))]
-#[requires(@f2.num_vars === @f.num_vars)]
+#[requires(@f2.num_vars == @f.num_vars)]
 #[ensures(f2.unsat(a))]
 pub fn lemma_permut_formula_ok2(f: Formula, f2: Formula, a: Assignments) {}
 
@@ -73,29 +73,29 @@ pub fn lemma_permut_formula_ok2(f: Formula, f2: Formula, a: Assignments) {}
 #[logic]
 #[requires(f.eventually_sat_complete_no_ass())]
 #[requires((@f2.clauses).permut(@f.clauses, 0, (@f.clauses).len()))]
-#[requires(@f2.num_vars === @f.num_vars)]
+#[requires(@f2.num_vars == @f.num_vars)]
 #[ensures(f2.eventually_sat_complete_no_ass())]
 pub fn lemma_permut_formula_ok_no_ass(f: Formula, f2: Formula) {}
 
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
 #[requires(f.eventually_sat_complete_no_ass())]
-#[requires((@f2.clauses).len() === (@f.clauses).len())]
+#[requires((@f2.clauses).len() == (@f.clauses).len())]
 #[requires(forall<i: Int> 0 <= i && i < (@f2.clauses).len() && i != cref ==>
-    (@(@f2.clauses)[i]) === (@(@f.clauses)[i]))]
+    (@(@f2.clauses)[i]) == (@(@f.clauses)[i]))]
 #[requires((@(@f2.clauses)[cref]).permut((@(@f.clauses)[cref]), 0, (@(@f.clauses)[cref]).len()))]
-#[requires(@f2.num_vars === @f.num_vars)]
+#[requires(@f2.num_vars == @f.num_vars)]
 #[ensures(f2.eventually_sat_complete_no_ass())]
 pub fn lemma_permut_clause_in_formula_maintains_sat(f: Formula, f2: Formula, cref: Int) {}
 
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
 #[requires(!f.eventually_sat_complete_no_ass())]
-#[requires((@f2.clauses).len() === (@f.clauses).len())]
+#[requires((@f2.clauses).len() == (@f.clauses).len())]
 #[requires(forall<i: Int> 0 <= i && i < (@f2.clauses).len() && i != cref ==>
-    (@(@f2.clauses)[i]) === (@(@f.clauses)[i]))]
+    (@(@f2.clauses)[i]) == (@(@f.clauses)[i]))]
 #[requires((@(@f2.clauses)[cref]).permut((@(@f.clauses)[cref]), 0, (@(@f.clauses)[cref]).len()))]
-#[requires(@f2.num_vars === @f.num_vars)]
+#[requires(@f2.num_vars == @f.num_vars)]
 #[ensures(!f2.eventually_sat_complete_no_ass())]
 pub fn lemma_permut_clause_in_formula_maintains_unsat(f: Formula, f2: Formula, cref: Int) {}
 
@@ -129,12 +129,12 @@ pub fn lemma_resolved_post_and_unsat_is_unsat(
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
 //#[ensures(formula_invariant(f2))]
-//#[ensures(f.1 === f2.1)]
-#[requires(f2.0 === f.0.push(c))]
+//#[ensures(f.1 == f2.1)]
+#[requires(f2.0 == f.0.push(c))]
 #[requires(formula_invariant(f))]
-#[ensures((f.0).len() + 1 === (f2.0).len())]
+#[ensures((f.0).len() + 1 == (f2.0).len())]
 #[ensures(forall<i: Int> 0 <= i && i < (f.0).len() ==> ((f.0)[i]).equals((f2.0)[i]))]
-#[ensures(@(f2.0)[(f2.0).len()-1] === @c)]
+#[ensures(@(f2.0)[(f2.0).len()-1] == @c)]
 pub fn lemma_eq_formulas(f: (Seq<Clause>, Int), f2: (Seq<Clause>, Int), c: Clause) {}
 
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
@@ -211,8 +211,8 @@ pub fn lemma_equisat_is_trans(f: Formula, f2: Formula, f3: Formula) {}
 
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
-#[ensures(b ==> @result === 1)]
-#[ensures(!b ==> @result === 0)]
+#[ensures(b ==> @result == 1)]
+#[ensures(!b ==> @result == 0)]
 pub fn bool_to_assignedstate(b: bool) -> AssignedState {
     if b {
         1u8
@@ -224,9 +224,9 @@ pub fn bool_to_assignedstate(b: bool) -> AssignedState {
 #[logic]
 fn flip_v(v: AssignedState) -> AssignedState {
     pearlite! {
-        if @v === 0 {
+        if @v == 0 {
             1u8
-        } else if @v === 1 {
+        } else if @v == 1 {
             0u8
         } else {
             v
@@ -303,7 +303,7 @@ pub fn lemma_not_sat_clause_implies_unsat_formula(f: Formula, c: Clause, a: Seq<
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
 #[requires(f.invariant())]
-#[requires(@f.num_vars === a.len())]
+#[requires(@f.num_vars == a.len())]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
 #[requires(!unset(v))]
 #[requires(f.eventually_sat_complete_inner(a))]
@@ -316,14 +316,14 @@ pub fn lemma_unit_forces(c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, 
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
 #[requires(f.invariant())]
-#[requires(@f.num_vars === a.len())]
+#[requires(@f.num_vars == a.len())]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
 #[requires(!unset(v))]
 #[requires(c.unit_inner(a))]
 #[requires(c.in_formula(f))]
 #[requires(c.invariant(a.len()))]
-#[requires(exists<j: Int> 0 <= j && j < (@c).len() && (@c)[j].index_logic() == ix && bool_to_assignedstate(((@c)[j].polarity)) === v)]
-#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !((@c)[j].index_logic() === ix) ==> (@c)[j].unsat_inner(a))]
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && (@c)[j].index_logic() == ix && bool_to_assignedstate(((@c)[j].polarity)) == v)]
+#[requires(forall<j: Int> 0 <= j && j < (@c).len() && !((@c)[j].index_logic() == ix) ==> (@c)[j].unsat_inner(a))]
 #[ensures(!f.eventually_sat_complete_inner(a.set(ix, flip_v(v))))]
 #[ensures(f.unsat_inner(a.set(ix, flip_v(v))))]
 pub fn lemma_unit_wrong_polarity_unsat_formula(
@@ -338,7 +338,7 @@ pub fn lemma_unit_wrong_polarity_unsat_formula(
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
 #[requires(0 <= ix && ix < a.len())]
-#[requires(exists<j: Int> 0 <= j && j < (@c).len() && (@c)[j].index_logic() == ix && bool_to_assignedstate((@c)[j].polarity) === v)]
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && (@c)[j].index_logic() == ix && bool_to_assignedstate((@c)[j].polarity) == v)]
 #[ensures(c.sat_inner(a.set(ix, v)))]
 pub fn lemma_correct_polarity_makes_clause_sat(c: Clause, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 

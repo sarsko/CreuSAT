@@ -30,7 +30,7 @@ impl Lit {
     #[predicate]
     pub fn is_opp(self, o: Lit) -> bool {
         pearlite! {
-            self.index_logic() === o.index_logic() && self.polarity != o.polarity
+            self.index_logic() == o.index_logic() && self.polarity != o.polarity
         }
     }
 
@@ -38,34 +38,34 @@ impl Lit {
     pub fn lit_in_internal(self, c: Seq<Lit>) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < c.len() &&
-                c[i] === self
+                c[i] == self
         }
     }
 
     #[predicate]
-    //#[ensures(result === self.lit_in_internal(@c))]
+    //#[ensures(result == self.lit_in_internal(@c))]
     pub fn lit_in(self, c: Clause) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < (@c).len() &&
-                (@c)[i] === self
+                (@c)[i] == self
             /*
             exists<i: Int> 0 <= i && i < (@c).len() &&
-                (@c)[i].idx === self.idx &&
-                (@c)[i].polarity === self.polarity
+                (@c)[i].idx == self.idx &&
+                (@c)[i].polarity == self.polarity
                 */
         }
     }
 
     #[predicate]
-    //#[ensures(result === self.lit_in_internal(@c))]
+    //#[ensures(result == self.lit_in_internal(@c))]
     pub fn lit_idx_in(self, c: Clause) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < (@c).len() &&
                 (@c)[i].index_logic() == self.index_logic()
             /*
             exists<i: Int> 0 <= i && i < (@c).len() &&
-                (@c)[i].idx === self.idx &&
-                (@c)[i].polarity === self.polarity
+                (@c)[i].idx == self.idx &&
+                (@c)[i].polarity == self.polarity
                 */
         }
     }

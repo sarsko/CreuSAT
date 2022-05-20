@@ -29,7 +29,7 @@ impl Assignments {
     // Ok
     #[inline(always)]
     #[cfg_attr(feature = "trust_assignments", trusted)]
-    #[ensures(@result === (@self).len())]
+    #[ensures(@result == (@self).len())]
     pub fn len(&self) -> usize {
         self.0.len()
     }
@@ -43,11 +43,11 @@ impl Assignments {
     #[requires(trail_invariant(@_t, *_f))]
     #[requires(unset((@self)[lit.index_logic()]))] // Added, will break stuff further up
     #[requires(long_are_post_unit_inner(@_t, *_f, @self))]
-    #[ensures(@(@^self)[lit.index_logic()] === 1 || @(@^self)[lit.index_logic()] === 0)]
-    #[ensures((@^self).len() === (@self).len())]
+    #[ensures(@(@^self)[lit.index_logic()] == 1 || @(@^self)[lit.index_logic()] == 0)]
+    #[ensures((@^self).len() == (@self).len())]
     #[ensures(long_are_post_unit_inner(@_t, *_f, @^self))]
     #[ensures((forall<j : Int> 0 <= j && j < (@self).len() &&
-        j != lit.index_logic() ==> (@*self)[j] === (@^self)[j]))]
+        j != lit.index_logic() ==> (@*self)[j] == (@^self)[j]))]
     #[ensures(lit.sat(^self))]
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {
         let old_self = Ghost::record(&self);
@@ -60,7 +60,7 @@ impl Assignments {
             self.0[lit.index()] = 0;
         }
         proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *@old_self, lit));true);
-        proof_assert!(^@old_self === ^self);
+        proof_assert!(^@old_self == ^self);
         proof_assert!(long_are_post_unit_inner(@_t, *_f, @self));
     }
 
@@ -72,7 +72,7 @@ impl Assignments {
         let mut assign: Vec<AssignedState> = Vec::new();
         let mut i: usize = 0;
         #[invariant(loop_invariant, 0 <= @i && @i <= @f.num_vars)]
-        #[invariant(length_invariant, (@assign).len() === @i)]
+        #[invariant(length_invariant, (@assign).len() == @i)]
         #[invariant(all_less, forall<j: Int> 0 <= j && j < @i ==> @(@assign)[j] <= 3)]
         while i < f.num_vars {
             // Having it random didnt really help
