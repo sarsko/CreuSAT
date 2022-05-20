@@ -6,9 +6,6 @@ use creusot_contracts::*;
 
 use crate::{formula::*, util::*};
 
-#[cfg(feature = "contracts")]
-use crate::{assignments::*};
-
 pub struct Decisions {
     pub lit_order: Vec<usize>,
 }

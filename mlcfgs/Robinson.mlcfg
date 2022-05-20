@@ -6205,7 +6205,7 @@ module Robinson_Solver_Solver_Interface
   clone Robinson_Formula_Impl1_EventuallySatNoAss_Interface as EventuallySatNoAss0
   val solver [@cfg:stackify] (formula : borrowed (Type.robinson_formula_formula)) : Type.robinson_solver_satresult
     ensures { match (result) with
-      | Type.Robinson_Solver_SatResult_Sat assn -> EventuallySatNoAss0.eventually_sat_no_ass ( * formula)
+      | Type.Robinson_Solver_SatResult_Sat _assn -> EventuallySatNoAss0.eventually_sat_no_ass ( * formula)
       | Type.Robinson_Solver_SatResult_Unsat -> ContainsEmptyClause0.contains_empty_clause ( * formula) || not (EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass ( * formula))
       | _ -> true
       end }
@@ -6282,7 +6282,7 @@ module Robinson_Solver_Solver
   predicate Invariant0.invariant' = Invariant0.invariant'
   let rec cfg solver [@cfg:stackify] (formula : borrowed (Type.robinson_formula_formula)) : Type.robinson_solver_satresult
     ensures { match (result) with
-      | Type.Robinson_Solver_SatResult_Sat assn -> EventuallySatNoAss0.eventually_sat_no_ass ( * formula)
+      | Type.Robinson_Solver_SatResult_Sat _assn -> EventuallySatNoAss0.eventually_sat_no_ass ( * formula)
       | Type.Robinson_Solver_SatResult_Unsat -> ContainsEmptyClause0.contains_empty_clause ( * formula) || not (EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass ( * formula))
       | _ -> true
       end }

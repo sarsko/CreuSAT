@@ -1,6 +1,3 @@
-//use no_creusot::solver::preproc_and_solve;
-
-
 //#[global_allocator]
 //static GLOBAL: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
@@ -11,9 +8,9 @@ fn main() {}
 fn main() {
     use clap::{crate_authors, App, AppSettings, Arg};
     use Robinson::parser::{parse_cnf, preproc_and_solve};
-    let matches = App::new("\nA minimal SAT solver with no name")
+    let matches = App::new("\nRobinson")
         .author(crate_authors!("\n"))
-        .about("A yet unverified SAT solver written in Rust.")
+        .about("A verified DPLL-based SAT solver written in Rust.")
         .usage("cargo run -- [FLAGS] --file <file>")
         .setting(AppSettings::ColoredHelp)
         .setting(AppSettings::DisableVersion)
@@ -39,9 +36,9 @@ fn main() {
             let result = preproc_and_solve(&mut clauses, num_literals);
 
             if result {
-                println!("c SAT");
+                println!("s SATISFIABLE");
             } else {
-                println!("c UNSAT");
+                println!("s UNSATISFIABLE");
             }
         }
         Err(e) => {

@@ -91,6 +91,7 @@ impl Lit {
         }
     }
 
+    #[allow(unused)] // Not used, but OK to have.
     #[inline]
     #[requires(self.invariant((@a).len()))]
     #[ensures(result == self.unsat(*a))]

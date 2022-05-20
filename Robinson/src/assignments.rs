@@ -7,7 +7,7 @@ use creusot_contracts::*;
 use crate::{clause::*, decision::*, formula::*};
 
 #[cfg(feature = "contracts")]
-use crate::{lit::*, logic::*};
+use crate::{logic::*};
 
 pub type AssignedState = u8;
 

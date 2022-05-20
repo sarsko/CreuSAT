@@ -8,11 +8,6 @@ use crate::assignments::*;
 use crate::decision::*;
 use crate::formula::*;
 
-#[cfg(feature = "contracts")]
-use crate::{logic::*};
-//use crate::clause::*;
-//use crate::lit::*;
-
 pub enum SatResult {
     Sat(Vec<AssignedState>),
     Unsat,
@@ -46,8 +41,8 @@ fn inner(f: &Formula, mut a: Assignments, d: &Decisions) -> bool {
 
 #[cfg_attr(feature = "trust_solver", trusted)]
 #[ensures(match result {
-    SatResult::Sat(assn) => { formula.eventually_sat_no_ass()
-        //formula.sat_inner(@assn) 
+    SatResult::Sat(_assn) => { formula.eventually_sat_no_ass()
+                               //formula.sat_inner(@assn) // TODO on returning satisfying assignment
     },
     SatResult::Unsat     => { formula.contains_empty_clause() || !formula.eventually_sat_complete_no_ass() },
     _                    => { true },

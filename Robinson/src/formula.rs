@@ -7,7 +7,7 @@ use creusot_contracts::*;
 use crate::{clause::*, solver::*};
 
 #[cfg(feature = "contracts")]
-use crate::{assignments::*, logic::*};
+use crate::{assignments::*};
 
 pub struct Formula {
     pub clauses: Vec<Clause>,
