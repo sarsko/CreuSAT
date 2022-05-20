@@ -32,7 +32,9 @@ impl Model for SatState {
     type ModelTy = SatState;
 
     #[logic]
-    fn model(self) -> Self { self }
+    fn model(self) -> Self {
+        self
+    }
 }
 
 impl PartialEq for SatState {

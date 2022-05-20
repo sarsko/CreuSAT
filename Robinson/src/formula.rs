@@ -19,7 +19,9 @@ impl Model for Formula {
     type ModelTy = (Seq<Clause>, Int);
 
     #[logic]
-    fn model(self) -> Self::ModelTy { (self.clauses.model(), self.num_vars.model()) }
+    fn model(self) -> Self::ModelTy {
+        (self.clauses.model(), self.num_vars.model())
+    }
 }
 
 #[predicate]

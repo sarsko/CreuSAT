@@ -33,7 +33,9 @@ impl Trail {
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[inline(always)]
     #[ensures(@result === (@self.decisions).len())]
-    pub fn decision_level(&self) -> usize { self.decisions.len() }
+    pub fn decision_level(&self) -> usize {
+        self.decisions.len()
+    }
     // OK
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[requires(f.invariant())]

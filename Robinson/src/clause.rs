@@ -81,7 +81,9 @@ impl Clause {
     }
 
     #[predicate]
-    pub fn unknown(self, a: Assignments) -> bool { !self.sat(a) && !self.unsat(a) }
+    pub fn unknown(self, a: Assignments) -> bool {
+        !self.sat(a) && !self.unsat(a)
+    }
 
     #[predicate]
     pub fn vars_in_range(self, n: Int) -> bool {
@@ -114,7 +116,9 @@ pub enum ClauseState {
 
 impl Clause {
     #[inline]
-    pub fn clause_from_vec(vec: Vec<Lit>) -> Clause { Clause { rest: vec } }
+    pub fn clause_from_vec(vec: Vec<Lit>) -> Clause {
+        Clause { rest: vec }
+    }
 
     #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires(self.invariant((@a).len()))]
@@ -222,5 +226,7 @@ impl Clause {
     #[inline(always)]
     #[cfg_attr(feature = "trust_clause", trusted)]
     #[ensures(@result == (@self).len())]
-    pub fn len(&self) -> usize { self.rest.len() }
+    pub fn len(&self) -> usize {
+        self.rest.len()
+    }
 }

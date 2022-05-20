@@ -240,7 +240,9 @@ impl Clause {
     }
 
     #[predicate]
-    pub fn unknown(self, a: Assignments) -> bool { !self.sat(a) && !self.unsat(a) }
+    pub fn unknown(self, a: Assignments) -> bool {
+        !self.sat(a) && !self.unsat(a)
+    }
 
     #[predicate]
     pub fn vars_in_range(self, n: Int) -> bool {

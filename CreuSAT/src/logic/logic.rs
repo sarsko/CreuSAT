@@ -235,10 +235,14 @@ fn flip_v(v: AssignedState) -> AssignedState {
 }
 
 #[logic]
-fn pos() -> AssignedState { 1u8 }
+fn pos() -> AssignedState {
+    1u8
+}
 
 #[logic]
-fn neg() -> AssignedState { 0u8 }
+fn neg() -> AssignedState {
+    0u8
+}
 
 #[predicate]
 pub fn unset(v: AssignedState) -> bool {

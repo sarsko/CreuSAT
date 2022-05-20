@@ -30,7 +30,9 @@ impl Assignments {
     #[inline(always)]
     #[cfg_attr(feature = "trust_assignments", trusted)]
     #[ensures(@result === (@self).len())]
-    pub fn len(&self) -> usize { self.0.len() }
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
 
     // OK
     #[inline(always)]

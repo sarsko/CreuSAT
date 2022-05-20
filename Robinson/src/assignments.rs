@@ -18,7 +18,9 @@ impl Model for Assignments {
     type ModelTy = Seq<AssignedState>;
 
     #[logic]
-    fn model(self) -> Self::ModelTy { self.0.model() }
+    fn model(self) -> Self::ModelTy {
+        self.0.model()
+    }
 }
 
 #[predicate]
@@ -80,7 +82,9 @@ impl Assignments {
     }
 
     #[predicate]
-    pub fn compatible_complete(self, a2: Assignments) -> bool { self.compatible(a2) && a2.complete() }
+    pub fn compatible_complete(self, a2: Assignments) -> bool {
+        self.compatible(a2) && a2.complete()
+    }
 }
 
 impl Assignments {
@@ -111,7 +115,9 @@ impl Assignments {
     #[requires(f.invariant())]
     #[ensures(result.invariant(*f))]
     #[ensures(forall<i: Int> 0 <= i && i < (@result).len() ==> unset((@result)[i]))]
-    pub fn new(f: &Formula) -> Self { Assignments(vec::from_elem(2u8, f.num_vars), 0) }
+    pub fn new(f: &Formula) -> Self {
+        Assignments(vec::from_elem(2u8, f.num_vars), 0)
+    }
 
     #[cfg_attr(feature = "trust_assignments", trusted)]
     #[maintains((mut self).invariant(*_f))]
