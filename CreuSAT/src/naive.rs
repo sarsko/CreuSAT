@@ -36,9 +36,9 @@ impl Assignment {
     #[predicate]
     fn compatible(self, pa: Pasn) -> bool {
         pearlite! {
-            (@pa.assign).len() === (@self.0).len() &&
+            (@pa.assign).len() == (@self.0).len() &&
                 forall<i: Int> 0 <= i && i < @pa.ix ==>
-                    (@pa.assign)[i] === (@self.0)[i]
+                    (@pa.assign)[i] == (@self.0)[i]
         }
     }
 }
@@ -80,7 +80,7 @@ impl Pasn {
     fn invariant(self, n: Int) -> bool {
         pearlite! {
             @self.ix <= (@self.assign).len() &&
-                (@self.assign).len() === n
+                (@self.assign).len() == n
         }
     }
 }
@@ -97,7 +97,7 @@ impl Clause {
 
 impl Clone for Pasn {
     #[trusted]
-    #[ensures(*self === result)]
+    #[ensures(*self == result)]
     fn clone(&self) -> Self {
         Pasn {
             assign: self.assign.clone(),
@@ -107,7 +107,7 @@ impl Clone for Pasn {
 }
 
 #[requires(c.vars_in_range((@a.0).len()))]
-#[ensures(result === c.sat(*a))]
+#[ensures(result == c.sat(*a))]
 fn interp_clause(a: &Assignment, c: &Clause) -> bool {
     let mut i: usize = 0;
     let clause_len = c.0.len();
@@ -124,8 +124,8 @@ fn interp_clause(a: &Assignment, c: &Clause) -> bool {
 }
 
 #[requires(f.invariant())]
-#[requires((@a.0).len() === @f.num_vars)]
-#[ensures(result === f.sat(*a))]
+#[requires((@a.0).len() == @f.num_vars)]
+#[ensures(result == f.sat(*a))]
 fn interp_formula(a: &Assignment, f: &Formula) -> bool {
     let mut i: usize = 0;
     #[invariant(prev_sat, forall<j: Int> 0 <= j && j < @i ==> (@f.clauses)[j].sat(*a))]
@@ -141,8 +141,8 @@ fn interp_formula(a: &Assignment, f: &Formula) -> bool {
 #[requires(@pa.ix < (@pa.assign).len())]
 #[requires((@pa.assign).len() <= @usize::MAX)]
 #[ensures(Assignment(result.assign).compatible(*pa))]
-#[ensures((@result.assign)[@pa.ix] === b)]
-#[ensures(@result.ix === @pa.ix + 1)]
+#[ensures((@result.assign)[@pa.ix] == b)]
+#[ensures(@result.ix == @pa.ix + 1)]
 fn set(pa: &Pasn, b: bool) -> Pasn {
     let mut new_pa = pa.clone();
     new_pa.assign[pa.ix] = b;
@@ -153,8 +153,8 @@ fn set(pa: &Pasn, b: bool) -> Pasn {
 #[variant(@f.num_vars - @pa.ix)]
 #[requires(pa.invariant(@f.num_vars))]
 #[requires(f.invariant())]
-//#[ensures(!result === forall<a: Assignment> a.compatible(pa) ==> !f.sat(a))]
-#[ensures(result === (exists<a: Assignment> a.compatible(pa) && f.sat(a)))]
+//#[ensures(!result == forall<a: Assignment> a.compatible(pa) ==> !f.sat(a))]
+#[ensures(result == (exists<a: Assignment> a.compatible(pa) && f.sat(a)))]
 fn inner(f: &Formula, pa: Pasn) -> bool {
     if pa.ix == pa.assign.len() {
         return interp_formula(&Assignment(pa.assign), f);
@@ -163,9 +163,9 @@ fn inner(f: &Formula, pa: Pasn) -> bool {
     }
 }
 
-//#[ensures(!result === (forall<a: Assignment> (@a.0).len() === @f.num_vars ==> !f.sat(a)))]
+//#[ensures(!result == (forall<a: Assignment> (@a.0).len() == @f.num_vars ==> !f.sat(a)))]
 //#[ensures( result ==> exists<a: Assignment> f.sat(a))]
-#[ensures(result === (exists<a: Assignment> (@a.0).len() === @f.num_vars && f.sat(a)))]
+#[ensures(result == (exists<a: Assignment> (@a.0).len() == @f.num_vars && f.sat(a)))]
 #[requires(f.invariant())]
 pub fn solver(f: &Formula) -> bool {
     if f.clauses.len() == 0 {
@@ -174,7 +174,7 @@ pub fn solver(f: &Formula) -> bool {
     let mut assign: Vec<bool> = Vec::new();
     let mut i: usize = 0;
     #[invariant(loop_invariant, @i <= @f.num_vars)]
-    #[invariant(len_invariant, (@assign).len() === @i)]
+    #[invariant(len_invariant, (@assign).len() == @i)]
     while i < f.num_vars {
         assign.push(false);
         i += 1
