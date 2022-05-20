@@ -42,7 +42,7 @@ impl Step {
 pub fn trail_entries_are_assigned_inner(trail: Seq<Step>, a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<j: Int> 0 <= j && j < trail.len() ==>
-                a[@(@trail[j]).lit.idx] == bool_to_assignedstate((@trail[j]).lit.polarity)
+                a[@(@trail[j]).lit.idx] == bool_to_assignedstate((@trail[j]).lit.is_positive())
     }
 }
 */
@@ -178,7 +178,7 @@ pub fn crefs_in_range(trail: Seq<Step>, f: Formula) -> bool {
 pub fn trail_entries_are_assigned_inner(t: Seq<Step>, a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<j: Int> 0 <= j && j < t.len() ==>
-            //a[@t[j].lit.idx] == bool_to_assignedstate(t[j].lit.polarity)
+            //a[@t[j].lit.idx] == bool_to_assignedstate(t[j].lit.is_positive())
             t[j].lit.sat_inner(a) // Should be equivalent
     }
 }
@@ -189,7 +189,7 @@ pub fn assignments_are_in_trail(t: Seq<Step>, a: Seq<AssignedState>) -> bool {
         forall<j: Int> 0 <= j && j < a.len() ==>
             exists<i: Int> 0 <= i && i < t.len() &&
                 t[i].lit.index_logic() == j &&
-                bool_to_assignedstate(t[i].lit.polarity) == a[j]
+                bool_to_assignedstate(t[i].lit.is_positive_logic()) == a[j]
     }
 }
 
@@ -218,7 +218,7 @@ pub fn clause_post_with_regards_to_lit(c: Clause, a: Assignments, lit: Lit) -> b
     pearlite! {
         c.post_unit(a) &&
         exists<i: Int> 0 <= i && i < (@c).len() &&
-            (@c)[i].polarity == lit.polarity &&
+            (@c)[i].is_positive_logic() == lit.is_positive_logic() &&
             (@c)[i].index_logic() == lit.index_logic() &&
             (@c)[i].sat(a)
     }

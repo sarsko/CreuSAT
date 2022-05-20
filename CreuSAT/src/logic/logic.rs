@@ -322,7 +322,7 @@ pub fn lemma_unit_forces(c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, 
 #[requires(c.unit_inner(a))]
 #[requires(c.in_formula(f))]
 #[requires(c.invariant(a.len()))]
-#[requires(exists<j: Int> 0 <= j && j < (@c).len() && (@c)[j].index_logic() == ix && bool_to_assignedstate(((@c)[j].polarity)) == v)]
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && (@c)[j].index_logic() == ix && bool_to_assignedstate(((@c)[j].is_positive_logic())) == v)]
 #[requires(forall<j: Int> 0 <= j && j < (@c).len() && !((@c)[j].index_logic() == ix) ==> (@c)[j].unsat_inner(a))]
 #[ensures(!f.eventually_sat_complete_inner(a.set(ix, flip_v(v))))]
 #[ensures(f.unsat_inner(a.set(ix, flip_v(v))))]
@@ -338,7 +338,7 @@ pub fn lemma_unit_wrong_polarity_unsat_formula(
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
 #[requires(0 <= ix && ix < a.len())]
-#[requires(exists<j: Int> 0 <= j && j < (@c).len() && (@c)[j].index_logic() == ix && bool_to_assignedstate((@c)[j].polarity) == v)]
+#[requires(exists<j: Int> 0 <= j && j < (@c).len() && (@c)[j].index_logic() == ix && bool_to_assignedstate((@c)[j].is_positive_logic()) == v)]
 #[ensures(c.sat_inner(a.set(ix, v)))]
 pub fn lemma_correct_polarity_makes_clause_sat(c: Clause, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 

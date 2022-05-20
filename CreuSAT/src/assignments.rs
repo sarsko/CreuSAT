@@ -53,8 +53,8 @@ impl Assignments {
         let old_self = Ghost::record(&self);
         proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *self, lit));true);
         // zzTODOzz
-        //self.0[lit.index()] = lit.polarity as u8;
-        if lit.polarity {
+        //self.0[lit.index()] = lit.is_positive() as u8;
+        if lit.is_positive() {
             self.0[lit.index()] = 1;
         } else {
             self.0[lit.index()] = 0;

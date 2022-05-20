@@ -128,12 +128,12 @@ impl Clause {
             // Wrong
             forall<i: Int> 0 <= i && i < (@self.rest).len() ==>
                 @(@self.rest)[i].idx == @(@other.rest)[i].idx ==>
-                (@self.rest)[i].polarity == (@other.rest)[i].polarity
+                (@self.rest)[i].is_positive_logic() == (@other.rest)[i].is_positive_logic()
                 */
             forall<i: Int, j: Int> 0 <= i && i < (@self).len() && 0 <= j && j < (@other).len() ==>
                 (((@self)[i].index_logic() != exception &&
                 (@self)[i].index_logic() == (@other)[j].index_logic())) ==>
-                (@self)[i].polarity == (@other)[j].polarity
+                (@self)[i].is_positive_logic() == (@other)[j].is_positive_logic()
         }
     }
 

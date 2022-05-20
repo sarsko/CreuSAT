@@ -1,4 +1,3 @@
-// Watches is Mac OK 11.04 22.13
 extern crate creusot_contracts;
 use ::std::ops;
 use creusot_contracts::std::*;
@@ -15,7 +14,10 @@ pub struct Lit {
     pub idx: usize,
     #[cfg(not(feature = "contracts"))]
     idx: usize,
+    #[cfg(feature = "contracts")]
     pub polarity: bool,
+    #[cfg(not(feature = "contracts"))]
+    polarity: bool,
 }
 
 #[cfg(feature = "contracts")]
@@ -55,7 +57,7 @@ impl Lit {
     #[requires(self.invariant((@a).len()))]
     #[ensures(result == self.sat(*a))]
     pub fn lit_sat(self, a: &Assignments) -> bool {
-        match self.polarity {
+        match self.is_positive() {
             true => (a.0[self.index()] == 1),
             false => (a.0[self.index()] == 0),
         }
@@ -66,7 +68,7 @@ impl Lit {
     #[requires(self.invariant((@a).len()))]
     #[ensures(result == self.unsat(*a))]
     pub fn lit_unsat(self, a: &Assignments) -> bool {
-        match self.polarity {
+        match self.is_positive() {
             true => (a.0[self.index()] == 0),
             false => (a.0[self.index()] == 1),
         }
@@ -92,17 +94,17 @@ impl Lit {
     #[cfg_attr(feature = "trust_lit", trusted)]
     #[requires(self.index_logic() < @usize::MAX/2)]
     #[ensures(@result == self.to_watchidx_logic())]
-    #[ensures(@result == self.index_logic() * 2 + if self.polarity { 0 } else { 1 })]
+    #[ensures(@result == self.index_logic() * 2 + if self.is_positive_logic() { 0 } else { 1 })]
     pub fn to_watchidx(&self) -> usize {
-        self.index() * 2 + if self.polarity { 0 } else { 1 }
+        self.index() * 2 + if self.is_positive() { 0 } else { 1 }
     }
     // Gets the index of the literal of the opposite polarity(-self) in the representation used for the watchlist
     #[cfg_attr(feature = "trust_lit", trusted)]
     #[requires(self.index_logic() < @usize::MAX/2)]
     #[ensures(@result == self.to_neg_watchidx_logic())]
-    #[ensures(@result == self.index_logic() * 2 + if self.polarity { 1 } else { 0 })]
+    #[ensures(@result == self.index_logic() * 2 + if self.is_positive_logic() { 1 } else { 0 })]
     pub fn to_neg_watchidx(&self) -> usize {
-        self.index() * 2 + if self.polarity { 1 } else { 0 }
+        self.index() * 2 + if self.is_positive() { 1 } else { 0 }
     }
 
     #[requires(@idx < (@assignments).len())]
@@ -129,7 +131,7 @@ impl PartialEq for Lit {
     #[ensures(result == (self == other))]
     //#[ensures(result == (*self == *other))] // :(
     fn eq(&self, other: &Lit) -> bool {
-        self.index() == other.index() && self.polarity == other.polarity
+        self.index() == other.index() && self.is_positive() == other.is_positive()
     }
 }
 
@@ -139,8 +141,8 @@ impl ops::Not for Lit {
     #[inline]
     #[cfg_attr(feature = "trust_lit", trusted)]
     #[ensures(result.index_logic() == self.index_logic())]
-    #[ensures(result.polarity == !self.polarity)]
+    #[ensures(result.is_positive_logic() == !self.is_positive_logic())]
     fn not(self) -> Lit {
-        Lit { idx: self.index(), polarity: !self.polarity }
+        Lit { idx: self.index(), polarity: !self.is_positive() }
     }
 }

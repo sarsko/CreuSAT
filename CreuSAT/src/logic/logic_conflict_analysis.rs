@@ -23,7 +23,7 @@ use crate::logic::{logic::*, logic_clause::*};
 #[requires(forall<j: Int> 0 <= j && j < new.len() ==> (new)[j].lit_in_internal(c) || (new)[j].lit_in_internal(o))]
 #[requires(exists<k: Int> 0 <= k && k < new.len() && o[i].index_logic() == (new)[k].index_logic())]
 #[ensures(exists<k: Int> 0 <= k && k < c.len() && o[i].index_logic() == c[k].index_logic() || (o)[i].lit_in_internal(new))]
-#[ensures(exists<k: Int> 0 <= k && k < c.len() && o[i].index_logic() == c[k].index_logic() && o[i].polarity == c[k].polarity || (o)[i].lit_in_internal(new))]
+#[ensures(exists<k: Int> 0 <= k && k < c.len() && o[i].index_logic() == c[k].index_logic() && o[i].is_positive_logic() == c[k].is_positive_logic() || (o)[i].lit_in_internal(new))]
 //#[ensures(((o)[i].lit_in_internal(new)))]
 pub fn lemma_idx(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_idx: Int, _f: Formula) {}
 

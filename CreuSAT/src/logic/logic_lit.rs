@@ -21,13 +21,13 @@ impl Lit {
     #[logic]
     #[why3::attr = "inline:trivial"]
     pub fn to_watchidx_logic(self) -> Int {
-        pearlite! { self.index_logic() * 2 + if self.polarity { 0 } else { 1 } }
+        pearlite! { self.index_logic() * 2 + if self.is_positive_logic() { 0 } else { 1 } }
     }
 
     #[logic]
     #[why3::attr = "inline:trivial"]
     pub fn to_neg_watchidx_logic(self) -> Int {
-        pearlite! { self.index_logic() * 2 + if self.polarity { 1 } else { 0 } }
+        pearlite! { self.index_logic() * 2 + if self.is_positive_logic() { 1 } else { 0 } }
     }
 }
 
@@ -36,7 +36,7 @@ impl Lit {
     #[predicate]
     pub fn is_opp(self, o: Lit) -> bool {
         pearlite! {
-            self.index_logic() == o.index_logic() && self.polarity != o.polarity
+            self.index_logic() == o.index_logic() && self.is_positive_logic() != o.is_positive_logic()
         }
     }
 
@@ -57,7 +57,7 @@ impl Lit {
             /*
             exists<i: Int> 0 <= i && i < (@c).len() &&
                 (@c)[i].idx == self.idx &&
-                (@c)[i].polarity == self.polarity
+                (@c)[i].is_positive() == self.is_positive()
                 */
         }
     }
@@ -71,7 +71,7 @@ impl Lit {
             /*
             exists<i: Int> 0 <= i && i < (@c).len() &&
                 (@c)[i].idx == self.idx &&
-                (@c)[i].polarity == self.polarity
+                (@c)[i].is_positive() == self.is_positive()
                 */
         }
     }
@@ -86,7 +86,7 @@ impl Lit {
     #[predicate]
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
-            match self.polarity {
+            match self.is_positive_logic() {
                 true  =>  (@a[self.index_logic()] == 1),
                 false =>  (@a[self.index_logic()] == 0),
             }
@@ -96,7 +96,7 @@ impl Lit {
     #[predicate]
     pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
-            match self.polarity {
+            match self.is_positive_logic() {
                 true  =>  (@a[self.index_logic()] == 0),
                 false =>  (@a[self.index_logic()] == 1),
             }
