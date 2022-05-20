@@ -8,6 +8,7 @@ use crate::{assignments::*, clause::*, trail::*};
 #[cfg(feature = "contracts")]
 use crate::logic::logic_lit::*;
 
+/*
 #[derive(Clone, Copy)]
 pub struct Lit {
     #[cfg(feature = "contracts")]
@@ -18,6 +19,12 @@ pub struct Lit {
     pub polarity: bool,
     #[cfg(not(feature = "contracts"))]
     polarity: bool,
+}
+*/
+
+#[derive(Clone, Copy)]
+pub struct Lit {
+    code: usize
 }
 
 #[cfg(feature = "contracts")]
@@ -31,6 +38,7 @@ impl Model for Lit {
 }
 
 impl Lit {
+    /*
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
     #[ensures(@result == self.index_logic())]
@@ -43,6 +51,55 @@ impl Lit {
     #[ensures(result == self.is_positive_logic())]
     pub fn is_positive(self) -> bool {
         self.polarity
+    }
+
+    #[requires(@idx < (@assignments).len())]
+    #[ensures(result.index_logic() == @idx)]
+    #[ensures(result.is_positive_logic() == (@(@assignments)[@idx] == 1))]
+    pub fn phase_saved(idx: usize, assignments: &Assignments) -> Lit {
+        Lit {
+            idx: idx,
+            polarity: if assignments.0[idx] == 1 { true } else { false },
+        }
+    }
+
+    // This is only called in the parser
+    pub fn new(idx: usize, polarity: bool) -> Lit {
+        Lit {
+            idx: idx,
+            polarity: polarity,
+        }
+    }
+    */
+
+    #[inline(always)]
+    #[cfg_attr(feature = "trust_lit", trusted)]
+    #[ensures(@result == self.index_logic())]
+    pub fn index(self) -> usize {
+        self.code >> 1
+    }
+
+    #[inline(always)]
+    #[cfg_attr(feature = "trust_lit", trusted)]
+    #[ensures(result == self.is_positive_logic())]
+    pub fn is_positive(self) -> bool {
+        self.code & 1 != 0
+    }
+
+    #[requires(@idx < (@assignments).len())]
+    #[ensures(result.index_logic() == @idx)]
+    #[ensures(result.is_positive_logic() == (@(@assignments)[@idx] == 1))]
+    pub fn phase_saved(idx: usize, assignments: &Assignments) -> Lit {
+        Lit {
+            code: idx << 1 | ((assignments.0[idx] == 1) as usize)
+        }
+    }
+
+    // This is only called in the parser
+    pub fn new(idx: usize, polarity: bool) -> Lit {
+        Lit {
+            code: idx << 1 | (polarity as usize)
+        }
     }
 
     #[inline(always)]
@@ -107,23 +164,6 @@ impl Lit {
         self.index() * 2 + if self.is_positive() { 1 } else { 0 }
     }
 
-    #[requires(@idx < (@assignments).len())]
-    #[ensures(result.index_logic() == @idx)]
-    #[ensures(result.is_positive_logic() == (@(@assignments)[@idx] == 1))]
-    pub fn phase_saved(idx: usize, assignments: &Assignments) -> Lit {
-        Lit {
-            idx: idx,
-            polarity: if assignments.0[idx] == 1 { true } else { false },
-        }
-    }
-
-    // This is only called in the parser
-    pub fn new(idx: usize, polarity: bool) -> Lit {
-        Lit {
-            idx: idx,
-            polarity: polarity,
-        }
-    }
 }
 
 impl PartialEq for Lit {
@@ -138,11 +178,21 @@ impl PartialEq for Lit {
 impl ops::Not for Lit {
     type Output = Lit;
 
+    /*
     #[inline]
     #[cfg_attr(feature = "trust_lit", trusted)]
     #[ensures(result.index_logic() == self.index_logic())]
     #[ensures(result.is_positive_logic() == !self.is_positive_logic())]
     fn not(self) -> Lit {
         Lit { idx: self.index(), polarity: !self.is_positive() }
+    }
+    */
+
+    #[inline]
+    #[cfg_attr(feature = "trust_lit", trusted)]
+    #[ensures(result.index_logic() == self.index_logic())]
+    #[ensures(result.is_positive_logic() == !self.is_positive_logic())]
+    fn not(self) -> Lit {
+        Lit { code: self.code ^ 1 }
     }
 }
