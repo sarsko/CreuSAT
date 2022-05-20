@@ -1198,12 +1198,12 @@ module Robinson_Clause_Impl0_Model
   function model (self : Type.robinson_clause_clause) : Seq.seq (Type.robinson_lit_lit) = 
     Model0.model (Type.robinson_clause_clause_Clause_rest self)
 end
-module Robinson_Lit_Impl0_Invariant_Interface
+module Robinson_Lit_Impl1_Invariant_Interface
   use Type
   use mach.int.Int
   predicate invariant' (self : Type.robinson_lit_lit) (n : int)
 end
-module Robinson_Lit_Impl0_Invariant
+module Robinson_Lit_Impl1_Invariant
   use Type
   use mach.int.Int
   use mach.int.UInt64
@@ -1220,10 +1220,22 @@ module Robinson_Clause_Impl1_VarsInRange
   use mach.int.Int
   use mach.int.Int32
   use seq.Seq
-  clone Robinson_Lit_Impl0_Invariant_Interface as Invariant0
+  clone Robinson_Lit_Impl1_Invariant_Interface as Invariant0
   clone Robinson_Clause_Impl0_Model_Interface as Model0
   predicate vars_in_range (self : Type.robinson_clause_clause) (n : int) = 
     forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> Invariant0.invariant' (Seq.get (Model0.model self) i) n
+end
+module Robinson_Lit_Impl0_IndexLogic_Interface
+  use Type
+  use mach.int.Int
+  function index_logic [@inline:trivial] (self : Type.robinson_lit_lit) : int
+end
+module Robinson_Lit_Impl0_IndexLogic
+  use Type
+  use mach.int.Int
+  use mach.int.UInt64
+  function index_logic [@inline:trivial] (self : Type.robinson_lit_lit) : int = 
+    UInt64.to_int (Type.robinson_lit_lit_Lit_idx self)
 end
 module Robinson_Clause_Impl1_NoDuplicateIndexes_Interface
   use Type
@@ -1234,10 +1246,10 @@ module Robinson_Clause_Impl1_NoDuplicateIndexes
   use mach.int.Int
   use mach.int.Int32
   use seq.Seq
-  use mach.int.UInt64
+  clone Robinson_Lit_Impl0_IndexLogic_Interface as IndexLogic0
   clone Robinson_Clause_Impl0_Model_Interface as Model0
   predicate no_duplicate_indexes (self : Type.robinson_clause_clause) = 
-    forall k : (int) . forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) && 0 <= k && k < j -> not (UInt64.to_int (Type.robinson_lit_lit_Lit_idx (Seq.get (Model0.model self) k)) = UInt64.to_int (Type.robinson_lit_lit_Lit_idx (Seq.get (Model0.model self) j)))
+    forall k : (int) . forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) && 0 <= k && k < j -> not (IndexLogic0.index_logic (Seq.get (Model0.model self) k) = IndexLogic0.index_logic (Seq.get (Model0.model self) j))
 end
 module Robinson_Clause_Impl1_Invariant_Interface
   use Type
@@ -1339,8 +1351,10 @@ module Robinson_Assignments_Impl2_New
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model3 with function Model0.model = Model4.model
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model3.model
-  clone Robinson_Lit_Impl0_Invariant as Invariant3
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model3.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
+  clone Robinson_Lit_Impl1_Invariant as Invariant3
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model3.model,
   predicate Invariant0.invariant' = Invariant3.invariant'
   clone Robinson_Clause_Impl1_Invariant as Invariant2 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
@@ -1687,7 +1701,7 @@ module Robinson_Assignments_Impl2_FindUnassigned
   }
   
 end
-module Robinson_Lit_Impl0_UnsatInner_Interface
+module Robinson_Lit_Impl1_UnsatInner_Interface
   use Type
   use seq.Seq
   use mach.int.Int
@@ -1695,7 +1709,7 @@ module Robinson_Lit_Impl0_UnsatInner_Interface
   use prelude.UInt8
   predicate unsat_inner (self : Type.robinson_lit_lit) (a : Seq.seq uint8)
 end
-module Robinson_Lit_Impl0_UnsatInner
+module Robinson_Lit_Impl1_UnsatInner
   use Type
   use seq.Seq
   use mach.int.Int
@@ -1725,7 +1739,7 @@ module Robinson_Clause_Impl1_UnsatInner
   use prelude.Prelude
   use prelude.UInt8
   use mach.int.Int32
-  clone Robinson_Lit_Impl0_UnsatInner_Interface as UnsatInner0
+  clone Robinson_Lit_Impl1_UnsatInner_Interface as UnsatInner0
   clone Robinson_Clause_Impl0_Model_Interface as Model0
   predicate unsat_inner (self : Type.robinson_clause_clause) (a : Seq.seq uint8) = 
     forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> UnsatInner0.unsat_inner (Seq.get (Model0.model self) i) a
@@ -1741,7 +1755,7 @@ module Robinson_Clause_Impl1_Unsat
   predicate unsat (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments) = 
     UnsatInner0.unsat_inner self (Model0.model a)
 end
-module Robinson_Lit_Impl0_SatInner_Interface
+module Robinson_Lit_Impl1_SatInner_Interface
   use Type
   use seq.Seq
   use mach.int.Int
@@ -1749,7 +1763,7 @@ module Robinson_Lit_Impl0_SatInner_Interface
   use prelude.UInt8
   predicate sat_inner (self : Type.robinson_lit_lit) (a : Seq.seq uint8)
 end
-module Robinson_Lit_Impl0_SatInner
+module Robinson_Lit_Impl1_SatInner
   use Type
   use seq.Seq
   use mach.int.Int
@@ -1779,7 +1793,7 @@ module Robinson_Clause_Impl1_SatInner
   use prelude.Prelude
   use prelude.UInt8
   use mach.int.Int32
-  clone Robinson_Lit_Impl0_SatInner_Interface as SatInner0
+  clone Robinson_Lit_Impl1_SatInner_Interface as SatInner0
   clone Robinson_Clause_Impl0_Model_Interface as Model0
   predicate sat_inner (self : Type.robinson_clause_clause) (a : Seq.seq uint8) = 
     exists i : (int) . 0 <= i && i < Seq.length (Model0.model self) && SatInner0.sat_inner (Seq.get (Model0.model self) i) a
@@ -1795,7 +1809,7 @@ module Robinson_Clause_Impl1_Sat
   predicate sat (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments) = 
     SatInner0.sat_inner self (Model0.model a)
 end
-module Robinson_Lit_Impl0_UnsetInner_Interface
+module Robinson_Lit_Impl1_UnsetInner_Interface
   use Type
   use seq.Seq
   use mach.int.Int
@@ -1803,7 +1817,7 @@ module Robinson_Lit_Impl0_UnsetInner_Interface
   use prelude.UInt8
   predicate unset_inner (self : Type.robinson_lit_lit) (a : Seq.seq uint8)
 end
-module Robinson_Lit_Impl0_UnsetInner
+module Robinson_Lit_Impl1_UnsetInner
   use Type
   use seq.Seq
   use mach.int.Int
@@ -1829,7 +1843,7 @@ module Robinson_Clause_Impl1_UnitInner
   use prelude.Prelude
   use prelude.UInt8
   use mach.int.Int32
-  clone Robinson_Lit_Impl0_UnsetInner_Interface as UnsetInner0
+  clone Robinson_Lit_Impl1_UnsetInner_Interface as UnsetInner0
   clone Robinson_Clause_Impl0_Model_Interface as Model0
   clone Robinson_Clause_Impl1_SatInner_Interface as SatInner0
   clone Robinson_Clause_Impl1_VarsInRange_Interface as VarsInRange0
@@ -2019,24 +2033,26 @@ module Robinson_Logic_LemmaNotSatFormulaImpliesUnsatFormula_Impl
   use mach.int.Int
   use prelude.Prelude
   use prelude.UInt8
-  clone Robinson_Lit_Impl0_SatInner as SatInner2
+  clone Robinson_Lit_Impl1_SatInner as SatInner2
   clone Robinson_Logic_Unset as Unset0
   clone Robinson_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
   clone Robinson_Assignments_CompatibleInner as CompatibleInner0 with predicate Unset0.unset = Unset0.unset
   clone Robinson_Assignments_CompatibleCompleteInner as CompatibleCompleteInner0 with predicate CompatibleInner0.compatible_inner = CompatibleInner0.compatible_inner,
   predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner
-  clone Robinson_Lit_Impl0_Invariant as Invariant2
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
+  clone Robinson_Lit_Impl1_Invariant as Invariant2
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model1 with function Model0.model = Model2.model
   clone Robinson_Clause_Impl1_SatInner as SatInner1 with function Model0.model = Model1.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model1.model
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model1.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model1.model,
   predicate Invariant0.invariant' = Invariant2.invariant'
   clone Robinson_Clause_Impl1_Invariant as Invariant1 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
   predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
-  clone Robinson_Lit_Impl0_UnsatInner as UnsatInner2
+  clone Robinson_Lit_Impl1_UnsatInner as UnsatInner2
   clone Robinson_Clause_Impl1_UnsatInner as UnsatInner1 with function Model0.model = Model1.model,
   predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
   clone Robinson_Assignments_AssignmentsInvariant as AssignmentsInvariant0
@@ -2063,12 +2079,12 @@ module Robinson_Logic_LemmaCorrectPolarityMakesClauseSat_Interface
   use mach.int.Int
   use mach.int.Int32
   use seq.Seq
-  use mach.int.UInt64
   use Type
   use prelude.Prelude
   use prelude.UInt8
   clone Robinson_Clause_Impl1_SatInner_Interface as SatInner0
   clone Robinson_Logic_BoolToAssignedstate_Interface as BoolToAssignedstate0 with axiom .
+  clone Robinson_Lit_Impl0_IndexLogic_Interface as IndexLogic0
   clone Robinson_Clause_Impl0_Model_Interface as Model0
   function lemma_correct_polarity_makes_clause_sat (c : Type.robinson_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
@@ -2077,36 +2093,36 @@ module Robinson_Logic_LemmaCorrectPolarityMakesClauseSat
   use mach.int.Int
   use mach.int.Int32
   use seq.Seq
-  use mach.int.UInt64
   use Type
   use prelude.Prelude
   use prelude.UInt8
   clone Robinson_Clause_Impl1_SatInner_Interface as SatInner0
   clone Robinson_Logic_BoolToAssignedstate_Interface as BoolToAssignedstate0 with axiom .
+  clone Robinson_Lit_Impl0_IndexLogic_Interface as IndexLogic0
   clone Robinson_Clause_Impl0_Model_Interface as Model0
   function lemma_correct_polarity_makes_clause_sat (c : Type.robinson_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
    = 
     ()
-  axiom lemma_correct_polarity_makes_clause_sat_spec : forall c : Type.robinson_clause_clause, a : Seq.seq uint8, ix : int, v : uint8 . (exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && UInt64.to_int (Type.robinson_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix && BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity (Seq.get (Model0.model c) j)) = v) -> 0 <= ix && ix < Seq.length a -> SatInner0.sat_inner c (Seq.set a ix v)
+  axiom lemma_correct_polarity_makes_clause_sat_spec : forall c : Type.robinson_clause_clause, a : Seq.seq uint8, ix : int, v : uint8 . (exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && IndexLogic0.index_logic (Seq.get (Model0.model c) j) = ix && BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity (Seq.get (Model0.model c) j)) = v) -> 0 <= ix && ix < Seq.length a -> SatInner0.sat_inner c (Seq.set a ix v)
 end
 module Robinson_Logic_LemmaCorrectPolarityMakesClauseSat_Impl
   use mach.int.Int
   use mach.int.Int32
   use seq.Seq
-  use mach.int.UInt64
   use Type
   use prelude.Prelude
   use prelude.UInt8
-  clone Robinson_Lit_Impl0_SatInner as SatInner1
+  clone Robinson_Lit_Impl1_SatInner as SatInner1
   clone Robinson_Logic_BoolToAssignedstate as BoolToAssignedstate0 with axiom .
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model0 with function Model0.model = Model1.model
   clone Robinson_Clause_Impl1_SatInner as SatInner0 with function Model0.model = Model0.model,
   predicate SatInner0.sat_inner = SatInner1.sat_inner
   let rec ghost function lemma_correct_polarity_makes_clause_sat (c : Type.robinson_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
-    requires {exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && UInt64.to_int (Type.robinson_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix && BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity (Seq.get (Model0.model c) j)) = v}
+    requires {exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && IndexLogic0.index_logic (Seq.get (Model0.model c) j) = ix && BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity (Seq.get (Model0.model c) j)) = v}
     requires {0 <= ix && ix < Seq.length a}
     ensures { SatInner0.sat_inner c (Seq.set a ix v) }
     
@@ -2117,7 +2133,6 @@ module Robinson_Logic_LemmaIncorrectPolarityMakesClauseUnsat_Interface
   use mach.int.Int
   use mach.int.Int32
   use seq.Seq
-  use mach.int.UInt64
   use Type
   use prelude.Prelude
   use prelude.UInt8
@@ -2126,9 +2141,10 @@ module Robinson_Logic_LemmaIncorrectPolarityMakesClauseUnsat_Interface
   clone Robinson_Logic_Unset_Interface as Unset0
   clone Robinson_Clause_Impl1_UnitInner_Interface as UnitInner0
   clone Robinson_Clause_Impl1_SatInner_Interface as SatInner1
-  clone Robinson_Lit_Impl0_SatInner_Interface as SatInner0
+  clone Robinson_Lit_Impl1_SatInner_Interface as SatInner0
   clone Robinson_Clause_Impl1_Invariant_Interface as Invariant0
-  clone Robinson_Lit_Impl0_UnsatInner_Interface as UnsatInner0
+  clone Robinson_Lit_Impl1_UnsatInner_Interface as UnsatInner0
+  clone Robinson_Lit_Impl0_IndexLogic_Interface as IndexLogic0
   clone Robinson_Clause_Impl0_Model_Interface as Model0
   function lemma_incorrect_polarity_makes_clause_unsat (c : Type.robinson_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
@@ -2137,7 +2153,6 @@ module Robinson_Logic_LemmaIncorrectPolarityMakesClauseUnsat
   use mach.int.Int
   use mach.int.Int32
   use seq.Seq
-  use mach.int.UInt64
   use Type
   use prelude.Prelude
   use prelude.UInt8
@@ -2146,34 +2161,36 @@ module Robinson_Logic_LemmaIncorrectPolarityMakesClauseUnsat
   clone Robinson_Logic_Unset_Interface as Unset0
   clone Robinson_Clause_Impl1_UnitInner_Interface as UnitInner0
   clone Robinson_Clause_Impl1_SatInner_Interface as SatInner1
-  clone Robinson_Lit_Impl0_SatInner_Interface as SatInner0
+  clone Robinson_Lit_Impl1_SatInner_Interface as SatInner0
   clone Robinson_Clause_Impl1_Invariant_Interface as Invariant0
-  clone Robinson_Lit_Impl0_UnsatInner_Interface as UnsatInner0
+  clone Robinson_Lit_Impl1_UnsatInner_Interface as UnsatInner0
+  clone Robinson_Lit_Impl0_IndexLogic_Interface as IndexLogic0
   clone Robinson_Clause_Impl0_Model_Interface as Model0
   function lemma_incorrect_polarity_makes_clause_unsat (c : Type.robinson_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
    = 
     ()
-  axiom lemma_incorrect_polarity_makes_clause_unsat_spec : forall c : Type.robinson_clause_clause, a : Seq.seq uint8, ix : int, v : uint8 . (forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) && not (UInt64.to_int (Type.robinson_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix) -> UnsatInner0.unsat_inner (Seq.get (Model0.model c) j) a) -> Invariant0.invariant' c (Seq.length a) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && UInt64.to_int (Type.robinson_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix && SatInner0.sat_inner (Seq.get (Model0.model c) j) a) -> not (SatInner1.sat_inner c a) -> UnitInner0.unit_inner c a -> 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix) -> not (Unset0.unset v) -> (forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) -> not (Unset0.unset (Seq.get (Seq.set a ix v) (UInt64.to_int (Type.robinson_lit_lit_Lit_idx (Seq.get (Model0.model c) j)))))) && not (Unset0.unset (Seq.get (Seq.set a ix (FlipV0.flip_v v)) ix)) && UnsatInner1.unsat_inner c (Seq.set a ix (FlipV0.flip_v v)) && not (SatInner1.sat_inner c (Seq.set a ix (FlipV0.flip_v v)))
+  axiom lemma_incorrect_polarity_makes_clause_unsat_spec : forall c : Type.robinson_clause_clause, a : Seq.seq uint8, ix : int, v : uint8 . (forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) && not (IndexLogic0.index_logic (Seq.get (Model0.model c) j) = ix) -> UnsatInner0.unsat_inner (Seq.get (Model0.model c) j) a) -> Invariant0.invariant' c (Seq.length a) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && IndexLogic0.index_logic (Seq.get (Model0.model c) j) = ix && SatInner0.sat_inner (Seq.get (Model0.model c) j) a) -> not (SatInner1.sat_inner c a) -> UnitInner0.unit_inner c a -> 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix) -> not (Unset0.unset v) -> (forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) -> not (Unset0.unset (Seq.get (Seq.set a ix v) (IndexLogic0.index_logic (Seq.get (Model0.model c) j))))) && not (Unset0.unset (Seq.get (Seq.set a ix (FlipV0.flip_v v)) ix)) && UnsatInner1.unsat_inner c (Seq.set a ix (FlipV0.flip_v v)) && not (SatInner1.sat_inner c (Seq.set a ix (FlipV0.flip_v v)))
 end
 module Robinson_Logic_LemmaIncorrectPolarityMakesClauseUnsat_Impl
   use mach.int.Int
   use mach.int.Int32
   use seq.Seq
-  use mach.int.UInt64
   use Type
   use prelude.Prelude
   use prelude.UInt8
-  clone Robinson_Lit_Impl0_Invariant as Invariant1
+  clone Robinson_Lit_Impl1_Invariant as Invariant1
   clone Robinson_Logic_FlipV as FlipV0
   clone Robinson_Logic_Unset as Unset0
-  clone Robinson_Lit_Impl0_UnsetInner as UnsetInner0
-  clone Robinson_Lit_Impl0_SatInner as SatInner0
-  clone Robinson_Lit_Impl0_UnsatInner as UnsatInner0
+  clone Robinson_Lit_Impl1_UnsetInner as UnsetInner0
+  clone Robinson_Lit_Impl1_SatInner as SatInner0
+  clone Robinson_Lit_Impl1_UnsatInner as UnsatInner0
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model0 with function Model0.model = Model1.model
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model0.model
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model0.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model0.model,
   predicate Invariant0.invariant' = Invariant1.invariant'
   clone Robinson_Clause_Impl1_Invariant as Invariant0 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
@@ -2186,9 +2203,9 @@ module Robinson_Logic_LemmaIncorrectPolarityMakesClauseUnsat_Impl
   predicate SatInner0.sat_inner = SatInner1.sat_inner, function Model0.model = Model0.model,
   predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
   let rec ghost function lemma_incorrect_polarity_makes_clause_unsat (c : Type.robinson_clause_clause) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
-    requires {forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) && not (UInt64.to_int (Type.robinson_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix) -> UnsatInner0.unsat_inner (Seq.get (Model0.model c) j) a}
+    requires {forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) && not (IndexLogic0.index_logic (Seq.get (Model0.model c) j) = ix) -> UnsatInner0.unsat_inner (Seq.get (Model0.model c) j) a}
     requires {Invariant0.invariant' c (Seq.length a)}
-    requires {exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && UInt64.to_int (Type.robinson_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix && SatInner0.sat_inner (Seq.get (Model0.model c) j) a}
+    requires {exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && IndexLogic0.index_logic (Seq.get (Model0.model c) j) = ix && SatInner0.sat_inner (Seq.get (Model0.model c) j) a}
     requires {not (SatInner1.sat_inner c a)}
     requires {UnitInner0.unit_inner c a}
     requires {0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix)}
@@ -2196,7 +2213,7 @@ module Robinson_Logic_LemmaIncorrectPolarityMakesClauseUnsat_Impl
     ensures { not (SatInner1.sat_inner c (Seq.set a ix (FlipV0.flip_v v))) }
     ensures { UnsatInner1.unsat_inner c (Seq.set a ix (FlipV0.flip_v v)) }
     ensures { not (Unset0.unset (Seq.get (Seq.set a ix (FlipV0.flip_v v)) ix)) }
-    ensures { forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) -> not (Unset0.unset (Seq.get (Seq.set a ix v) (UInt64.to_int (Type.robinson_lit_lit_Lit_idx (Seq.get (Model0.model c) j))))) }
+    ensures { forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) -> not (Unset0.unset (Seq.get (Seq.set a ix v) (IndexLogic0.index_logic (Seq.get (Model0.model c) j)))) }
     
    = 
     ()
@@ -2237,7 +2254,7 @@ module Robinson_Logic_LemmaNotSatClauseImpliesUnsatFormula_Impl
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model1 with function Model0.model = Model2.model
-  clone Robinson_Lit_Impl0_UnsatInner as UnsatInner2
+  clone Robinson_Lit_Impl1_UnsatInner as UnsatInner2
   clone Robinson_Clause_Impl1_UnsatInner as UnsatInner0 with function Model0.model = Model1.model,
   predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.robinson_clause_clause,
@@ -2270,7 +2287,8 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Interface
   clone Robinson_Clause_Impl1_InFormula_Interface as InFormula0
   clone Robinson_Clause_Impl1_Invariant_Interface as Invariant0
   clone Robinson_Logic_BoolToAssignedstate_Interface as BoolToAssignedstate0 with axiom .
-  clone Robinson_Lit_Impl0_UnsatInner_Interface as UnsatInner0
+  clone Robinson_Lit_Impl1_UnsatInner_Interface as UnsatInner0
+  clone Robinson_Lit_Impl0_IndexLogic_Interface as IndexLogic0
   clone Robinson_Clause_Impl0_Model_Interface as Model0
   function lemma_unit_wrong_polarity_unsat_formula (c : Type.robinson_clause_clause) (f : Type.robinson_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
@@ -2292,10 +2310,11 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula
   clone Robinson_Clause_Impl1_InFormula_Interface as InFormula0
   clone Robinson_Clause_Impl1_Invariant_Interface as Invariant0
   clone Robinson_Logic_BoolToAssignedstate_Interface as BoolToAssignedstate0 with axiom .
-  clone Robinson_Lit_Impl0_UnsatInner_Interface as UnsatInner0
+  clone Robinson_Lit_Impl1_UnsatInner_Interface as UnsatInner0
+  clone Robinson_Lit_Impl0_IndexLogic_Interface as IndexLogic0
   clone Robinson_Clause_Impl0_Model_Interface as Model0
   clone Robinson_Clause_Impl1_UnsatInner_Interface as UnsatInner2
-  clone Robinson_Lit_Impl0_SatInner_Interface as SatInner1
+  clone Robinson_Lit_Impl1_SatInner_Interface as SatInner1
   clone Robinson_Clause_Impl1_SatInner_Interface as SatInner0
   clone Robinson_Assignments_AssignmentsInvariant_Interface as AssignmentsInvariant0
   clone Robinson_Logic_LemmaNotSatFormulaImpliesUnsatFormula_Interface as LemmaNotSatFormulaImpliesUnsatFormula0 with predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner,
@@ -2307,18 +2326,20 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula
   predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner,
   predicate UnsatInner1.unsat_inner = UnsatInner1.unsat_inner, axiom .
   clone Robinson_Logic_LemmaIncorrectPolarityMakesClauseUnsat_Interface as LemmaIncorrectPolarityMakesClauseUnsat0 with function Model0.model = Model0.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic,
   predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner, predicate Invariant0.invariant' = Invariant0.invariant',
   predicate SatInner0.sat_inner = SatInner1.sat_inner, predicate SatInner1.sat_inner = SatInner0.sat_inner,
   predicate UnitInner0.unit_inner = UnitInner0.unit_inner, predicate Unset0.unset = Unset0.unset,
   function FlipV0.flip_v = FlipV0.flip_v, predicate UnsatInner1.unsat_inner = UnsatInner2.unsat_inner, axiom .
   clone Robinson_Logic_LemmaCorrectPolarityMakesClauseSat_Interface as LemmaCorrectPolarityMakesClauseSat0 with function Model0.model = Model0.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic,
   function BoolToAssignedstate0.bool_to_assignedstate = BoolToAssignedstate0.bool_to_assignedstate,
   predicate SatInner0.sat_inner = SatInner0.sat_inner, axiom .
   function lemma_unit_wrong_polarity_unsat_formula (c : Type.robinson_clause_clause) (f : Type.robinson_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
    = 
     let _ = LemmaNotSatFormulaImpliesUnsatFormula0.lemma_not_sat_formula_implies_unsat_formula f a in let _ = LemmaCorrectPolarityMakesClauseSat0.lemma_correct_polarity_makes_clause_sat c a ix v in let _ = LemmaIncorrectPolarityMakesClauseUnsat0.lemma_incorrect_polarity_makes_clause_unsat c a ix v in let _ = LemmaNotSatClauseImpliesUnsatFormula0.lemma_not_sat_clause_implies_unsat_formula f c (Seq.set a ix (FlipV0.flip_v v)) in ()
-  axiom lemma_unit_wrong_polarity_unsat_formula_spec : forall c : Type.robinson_clause_clause, f : Type.robinson_formula_formula, a : Seq.seq uint8, ix : int, v : uint8 . (forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) && not (UInt64.to_int (Type.robinson_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix) -> UnsatInner0.unsat_inner (Seq.get (Model0.model c) j) a) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && UInt64.to_int (Type.robinson_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix && BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity (Seq.get (Model0.model c) j)) = v) -> Invariant0.invariant' c (Seq.length a) -> InFormula0.in_formula c f -> UnitInner0.unit_inner c a -> not (Unset0.unset v) -> 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix) -> UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f) = Seq.length a -> Invariant1.invariant' f -> not (EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v))) && UnsatInner1.unsat_inner f (Seq.set a ix (FlipV0.flip_v v))
+  axiom lemma_unit_wrong_polarity_unsat_formula_spec : forall c : Type.robinson_clause_clause, f : Type.robinson_formula_formula, a : Seq.seq uint8, ix : int, v : uint8 . (forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) && not (IndexLogic0.index_logic (Seq.get (Model0.model c) j) = ix) -> UnsatInner0.unsat_inner (Seq.get (Model0.model c) j) a) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && IndexLogic0.index_logic (Seq.get (Model0.model c) j) = ix && BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity (Seq.get (Model0.model c) j)) = v) -> Invariant0.invariant' c (Seq.length a) -> InFormula0.in_formula c f -> UnitInner0.unit_inner c a -> not (Unset0.unset v) -> 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix) -> UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f) = Seq.length a -> Invariant1.invariant' f -> not (EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v))) && UnsatInner1.unsat_inner f (Seq.set a ix (FlipV0.flip_v v))
 end
 module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Impl
   use mach.int.Int
@@ -2328,8 +2349,8 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Impl
   use Type
   use prelude.Prelude
   use prelude.UInt8
-  clone Robinson_Lit_Impl0_Invariant as Invariant2
-  clone Robinson_Lit_Impl0_SatInner as SatInner2
+  clone Robinson_Lit_Impl1_Invariant as Invariant2
+  clone Robinson_Lit_Impl1_SatInner as SatInner2
   clone Robinson_Assignments_AssignmentsInvariant as AssignmentsInvariant0
   clone Robinson_Logic_FlipV as FlipV0
   clone Robinson_Logic_Unset as Unset0
@@ -2337,12 +2358,13 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Impl
   clone Robinson_Assignments_CompatibleInner as CompatibleInner0 with predicate Unset0.unset = Unset0.unset
   clone Robinson_Assignments_CompatibleCompleteInner as CompatibleCompleteInner0 with predicate CompatibleInner0.compatible_inner = CompatibleInner0.compatible_inner,
   predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner
-  clone Robinson_Lit_Impl0_UnsetInner as UnsetInner0
+  clone Robinson_Lit_Impl1_UnsetInner as UnsetInner0
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.robinson_clause_clause,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl1_InFormula as InFormula0 with function Model0.model = Model2.model
   clone Robinson_Logic_BoolToAssignedstate as BoolToAssignedstate0 with axiom .
-  clone Robinson_Lit_Impl0_UnsatInner as UnsatInner0
+  clone Robinson_Lit_Impl1_UnsatInner as UnsatInner0
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model0 with function Model0.model = Model1.model
@@ -2360,9 +2382,11 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Impl
   clone Robinson_Formula_Impl1_EventuallySatCompleteInner as EventuallySatCompleteInner0 with predicate CompatibleCompleteInner0.compatible_complete_inner = CompatibleCompleteInner0.compatible_complete_inner,
   predicate SatInner0.sat_inner = SatInner1.sat_inner
   clone Robinson_Logic_LemmaCorrectPolarityMakesClauseSat as LemmaCorrectPolarityMakesClauseSat0 with function Model0.model = Model0.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic,
   function BoolToAssignedstate0.bool_to_assignedstate = BoolToAssignedstate0.bool_to_assignedstate,
   predicate SatInner0.sat_inner = SatInner0.sat_inner, axiom .
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model0.model
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model0.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model0.model,
   predicate Invariant0.invariant' = Invariant2.invariant'
   clone Robinson_Clause_Impl1_UnitInner as UnitInner0 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
@@ -2371,6 +2395,7 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Impl
   clone Robinson_Clause_Impl1_Invariant as Invariant0 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
   predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
   clone Robinson_Logic_LemmaIncorrectPolarityMakesClauseUnsat as LemmaIncorrectPolarityMakesClauseUnsat0 with function Model0.model = Model0.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic,
   predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner, predicate Invariant0.invariant' = Invariant0.invariant',
   predicate SatInner0.sat_inner = SatInner2.sat_inner, predicate SatInner1.sat_inner = SatInner0.sat_inner,
   predicate UnitInner0.unit_inner = UnitInner0.unit_inner, predicate Unset0.unset = Unset0.unset,
@@ -2383,8 +2408,8 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Impl
   predicate EventuallySatCompleteInner0.eventually_sat_complete_inner = EventuallySatCompleteInner0.eventually_sat_complete_inner,
   axiom .
   let rec ghost function lemma_unit_wrong_polarity_unsat_formula (c : Type.robinson_clause_clause) (f : Type.robinson_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
-    requires {forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) && not (UInt64.to_int (Type.robinson_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix) -> UnsatInner0.unsat_inner (Seq.get (Model0.model c) j) a}
-    requires {exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && UInt64.to_int (Type.robinson_lit_lit_Lit_idx (Seq.get (Model0.model c) j)) = ix && BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity (Seq.get (Model0.model c) j)) = v}
+    requires {forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) && not (IndexLogic0.index_logic (Seq.get (Model0.model c) j) = ix) -> UnsatInner0.unsat_inner (Seq.get (Model0.model c) j) a}
+    requires {exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && IndexLogic0.index_logic (Seq.get (Model0.model c) j) = ix && BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity (Seq.get (Model0.model c) j)) = v}
     requires {Invariant0.invariant' c (Seq.length a)}
     requires {InFormula0.in_formula c f}
     requires {UnitInner0.unit_inner c a}
@@ -2398,13 +2423,13 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Impl
    = 
     let _ = LemmaNotSatFormulaImpliesUnsatFormula0.lemma_not_sat_formula_implies_unsat_formula f a in let _ = LemmaCorrectPolarityMakesClauseSat0.lemma_correct_polarity_makes_clause_sat c a ix v in let _ = LemmaIncorrectPolarityMakesClauseUnsat0.lemma_incorrect_polarity_makes_clause_unsat c a ix v in let _ = let c' = let c' = FlipV0.flip_v v in Seq.set a ix c' in LemmaNotSatClauseImpliesUnsatFormula0.lemma_not_sat_clause_implies_unsat_formula f c c' in ()
 end
-module Robinson_Lit_Impl0_Unset_Interface
+module Robinson_Lit_Impl1_Unset_Interface
   use Type
   predicate unset (self : Type.robinson_lit_lit) (a : Type.robinson_assignments_assignments)
 end
-module Robinson_Lit_Impl0_Unset
+module Robinson_Lit_Impl1_Unset
   use Type
-  clone Robinson_Lit_Impl0_UnsetInner_Interface as UnsetInner0
+  clone Robinson_Lit_Impl1_UnsetInner_Interface as UnsetInner0
   clone Robinson_Assignments_Impl0_Model_Interface as Model0
   predicate unset (self : Type.robinson_lit_lit) (a : Type.robinson_assignments_assignments) = 
     UnsetInner0.unset_inner self (Model0.model a)
@@ -2457,16 +2482,18 @@ module Robinson_Logic_LemmaUnitForces_Impl
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model1 with function Model0.model = Model2.model
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model1.model
-  clone Robinson_Lit_Impl0_UnsatInner as UnsatInner2
+  clone Robinson_Lit_Impl1_UnsatInner as UnsatInner2
   clone Robinson_Clause_Impl1_UnsatInner as UnsatInner1 with function Model0.model = Model1.model,
   predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone Robinson_Lit_Impl0_Invariant as Invariant2
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model1.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
+  clone Robinson_Lit_Impl1_Invariant as Invariant2
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model1.model,
   predicate Invariant0.invariant' = Invariant2.invariant'
   clone Robinson_Clause_Impl1_Invariant as Invariant1 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
   predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
-  clone Robinson_Lit_Impl0_SatInner as SatInner2
+  clone Robinson_Lit_Impl1_SatInner as SatInner2
   clone Robinson_Clause_Impl1_SatInner as SatInner1 with function Model0.model = Model1.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
   clone Robinson_Assignments_AssignmentsInvariant as AssignmentsInvariant0
@@ -2540,7 +2567,7 @@ module Robinson_Logic_LemmaExtensionSatBaseSat_Impl
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model1 with function Model0.model = Model2.model
-  clone Robinson_Lit_Impl0_SatInner as SatInner2
+  clone Robinson_Lit_Impl1_SatInner as SatInner2
   clone Robinson_Clause_Impl1_SatInner as SatInner1 with function Model0.model = Model1.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.robinson_clause_clause,
@@ -2627,7 +2654,7 @@ module Robinson_Logic_LemmaExtensionsUnsatBaseUnsat_Impl
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model1 with function Model0.model = Model2.model
-  clone Robinson_Lit_Impl0_SatInner as SatInner2
+  clone Robinson_Lit_Impl1_SatInner as SatInner2
   clone Robinson_Clause_Impl1_SatInner as SatInner1 with function Model0.model = Model1.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.robinson_clause_clause,
@@ -2685,34 +2712,34 @@ module CreusotContracts_Logic_Ghost_Impl1_Record
     ensures { Model0.model result = a }
     
 end
-module Robinson_Lit_Impl0_Unsat_Interface
+module Robinson_Lit_Impl1_Unsat_Interface
   use Type
   predicate unsat (self : Type.robinson_lit_lit) (a : Type.robinson_assignments_assignments)
 end
-module Robinson_Lit_Impl0_Unsat
+module Robinson_Lit_Impl1_Unsat
   use Type
-  clone Robinson_Lit_Impl0_UnsatInner_Interface as UnsatInner0
+  clone Robinson_Lit_Impl1_UnsatInner_Interface as UnsatInner0
   clone Robinson_Assignments_Impl0_Model_Interface as Model0
   predicate unsat (self : Type.robinson_lit_lit) (a : Type.robinson_assignments_assignments) = 
     UnsatInner0.unsat_inner self (Model0.model a)
 end
-module Robinson_Lit_Impl0_Sat_Interface
+module Robinson_Lit_Impl1_Sat_Interface
   use Type
   predicate sat (self : Type.robinson_lit_lit) (a : Type.robinson_assignments_assignments)
 end
-module Robinson_Lit_Impl0_Sat
+module Robinson_Lit_Impl1_Sat
   use Type
-  clone Robinson_Lit_Impl0_SatInner_Interface as SatInner0
+  clone Robinson_Lit_Impl1_SatInner_Interface as SatInner0
   clone Robinson_Assignments_Impl0_Model_Interface as Model0
   predicate sat (self : Type.robinson_lit_lit) (a : Type.robinson_assignments_assignments) = 
     SatInner0.sat_inner self (Model0.model a)
 end
-module Robinson_Lit_Impl1_LitSat_Interface
+module Robinson_Lit_Impl2_LitSat_Interface
   use seq.Seq
   use Type
   use prelude.Prelude
-  clone Robinson_Lit_Impl0_Sat_Interface as Sat0
-  clone Robinson_Lit_Impl0_Invariant_Interface as Invariant0
+  clone Robinson_Lit_Impl1_Sat_Interface as Sat0
+  clone Robinson_Lit_Impl1_Invariant_Interface as Invariant0
   clone Robinson_Assignments_Impl0_ModelTy as ModelTy0
   clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model0 with type t = Type.robinson_assignments_assignments,
   type ModelTy0.modelTy = ModelTy0.modelTy
@@ -2721,7 +2748,7 @@ module Robinson_Lit_Impl1_LitSat_Interface
     ensures { result = Sat0.sat self a }
     
 end
-module Robinson_Lit_Impl1_LitSat
+module Robinson_Lit_Impl2_LitSat
   use seq.Seq
   use Type
   use prelude.Prelude
@@ -2729,10 +2756,10 @@ module Robinson_Lit_Impl1_LitSat
   use prelude.UInt8
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = uint8, type a = Type.alloc_alloc_global
   clone Robinson_Assignments_Impl0_Model as Model1 with function Model0.model = Model2.model
-  clone Robinson_Lit_Impl0_SatInner as SatInner0
-  clone Robinson_Lit_Impl0_Sat as Sat0 with function Model0.model = Model1.model,
+  clone Robinson_Lit_Impl1_SatInner as SatInner0
+  clone Robinson_Lit_Impl1_Sat as Sat0 with function Model0.model = Model1.model,
   predicate SatInner0.sat_inner = SatInner0.sat_inner
-  clone Robinson_Lit_Impl0_Invariant as Invariant0
+  clone Robinson_Lit_Impl1_Invariant as Invariant0
   clone Robinson_Assignments_Impl0_ModelTy as ModelTy0
   clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.robinson_assignments_assignments,
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model1.model
@@ -2799,12 +2826,12 @@ module Robinson_Lit_Impl1_LitSat
   }
   
 end
-module Robinson_Lit_Impl1_LitUnset_Interface
+module Robinson_Lit_Impl2_LitUnset_Interface
   use seq.Seq
   use Type
   use prelude.Prelude
-  clone Robinson_Lit_Impl0_Unset_Interface as Unset0
-  clone Robinson_Lit_Impl0_Invariant_Interface as Invariant0
+  clone Robinson_Lit_Impl1_Unset_Interface as Unset0
+  clone Robinson_Lit_Impl1_Invariant_Interface as Invariant0
   clone Robinson_Assignments_Impl0_ModelTy as ModelTy0
   clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model0 with type t = Type.robinson_assignments_assignments,
   type ModelTy0.modelTy = ModelTy0.modelTy
@@ -2813,7 +2840,7 @@ module Robinson_Lit_Impl1_LitUnset_Interface
     ensures { result = Unset0.unset self a }
     
 end
-module Robinson_Lit_Impl1_LitUnset
+module Robinson_Lit_Impl2_LitUnset
   use seq.Seq
   use Type
   use prelude.Prelude
@@ -2821,10 +2848,10 @@ module Robinson_Lit_Impl1_LitUnset
   use prelude.UInt8
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = uint8, type a = Type.alloc_alloc_global
   clone Robinson_Assignments_Impl0_Model as Model1 with function Model0.model = Model2.model
-  clone Robinson_Lit_Impl0_UnsetInner as UnsetInner0
-  clone Robinson_Lit_Impl0_Unset as Unset0 with function Model0.model = Model1.model,
+  clone Robinson_Lit_Impl1_UnsetInner as UnsetInner0
+  clone Robinson_Lit_Impl1_Unset as Unset0 with function Model0.model = Model1.model,
   predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
-  clone Robinson_Lit_Impl0_Invariant as Invariant0
+  clone Robinson_Lit_Impl1_Invariant as Invariant0
   clone Robinson_Assignments_Impl0_ModelTy as ModelTy0
   clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.robinson_assignments_assignments,
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model1.model
@@ -2899,16 +2926,17 @@ module Robinson_Clause_Impl2_CheckIfUnit
   use mach.int.Int32
   use mach.int.UInt64
   use prelude.UInt8
-  clone Robinson_Lit_Impl0_SatInner as SatInner1
-  clone Robinson_Lit_Impl0_Invariant as Invariant3
+  clone Robinson_Lit_Impl1_SatInner as SatInner1
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
+  clone Robinson_Lit_Impl1_Invariant as Invariant3
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model6 with type t = uint8, type a = Type.alloc_alloc_global
   clone Robinson_Assignments_Impl0_Model as Model3 with function Model0.model = Model6.model
   clone Robinson_Assignments_Impl1_Invariant as Invariant0 with function Model0.model = Model3.model
-  clone Robinson_Lit_Impl0_UnsatInner as UnsatInner1
-  clone Robinson_Lit_Impl0_Unsat as Unsat1 with function Model0.model = Model3.model,
+  clone Robinson_Lit_Impl1_UnsatInner as UnsatInner1
+  clone Robinson_Lit_Impl1_Unsat as Unsat1 with function Model0.model = Model3.model,
   predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
-  clone Robinson_Lit_Impl0_UnsetInner as UnsetInner0
-  clone Robinson_Lit_Impl0_Unset as Unset0 with function Model0.model = Model3.model,
+  clone Robinson_Lit_Impl1_UnsetInner as UnsetInner0
+  clone Robinson_Lit_Impl1_Unset as Unset0 with function Model0.model = Model3.model,
   predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
   clone Robinson_Clause_Impl0_ModelTy as ModelTy1
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.robinson_lit_lit,
@@ -2922,7 +2950,8 @@ module Robinson_Clause_Impl2_CheckIfUnit
   predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
   clone Robinson_Clause_Impl1_Unsat as Unsat0 with function Model0.model = Model3.model,
   predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model5.model
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model5.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model5.model,
   predicate Invariant0.invariant' = Invariant3.invariant'
   clone Robinson_Clause_Impl1_UnitInner as UnitInner0 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
@@ -2948,7 +2977,7 @@ module Robinson_Clause_Impl2_CheckIfUnit
   clone Core_Slice_Index_Impl2_Output as Output0 with type t = Type.robinson_lit_lit
   clone CreusotContracts_Std1_Vec_Impl1_HasValue as HasValue0 with type t = Type.robinson_lit_lit
   clone CreusotContracts_Std1_Vec_Impl1_InBounds as InBounds0 with type t = Type.robinson_lit_lit
-  clone Robinson_Lit_Impl0_Sat as Sat1 with function Model0.model = Model3.model,
+  clone Robinson_Lit_Impl1_Sat as Sat1 with function Model0.model = Model3.model,
   predicate SatInner0.sat_inner = SatInner1.sat_inner
   clone Alloc_Vec_Impl16_Index_Interface as Index0 with type t = Type.robinson_lit_lit, type i = usize,
   type a = Type.alloc_alloc_global, function Model0.model = Model1.model,
@@ -2956,9 +2985,9 @@ module Robinson_Clause_Impl2_CheckIfUnit
   type Output0.output = Output0.output
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.robinson_lit_lit, type a = Type.alloc_alloc_global,
   function Model0.model = Model1.model
-  clone Robinson_Lit_Impl1_LitUnset_Interface as LitUnset0 with function Model0.model = Model0.model,
+  clone Robinson_Lit_Impl2_LitUnset_Interface as LitUnset0 with function Model0.model = Model0.model,
   predicate Invariant0.invariant' = Invariant3.invariant', predicate Unset0.unset = Unset0.unset
-  clone Robinson_Lit_Impl1_LitSat_Interface as LitSat0 with function Model0.model = Model0.model,
+  clone Robinson_Lit_Impl2_LitSat_Interface as LitSat0 with function Model0.model = Model0.model,
   predicate Invariant0.invariant' = Invariant3.invariant', predicate Sat0.sat = Sat1.sat
   let rec cfg check_if_unit [@cfg:stackify] (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments) (_f : Type.robinson_formula_formula) : Type.robinson_clause_clausestate
     requires {Invariant0.invariant' a _f}
@@ -3131,7 +3160,6 @@ module Robinson_Clause_Impl2_CheckIfUnit
   
 end
 module Robinson_Clause_Impl2_GetUnit_Interface
-  use mach.int.UInt64
   use seq.Seq
   use mach.int.Int
   use mach.int.Int32
@@ -3141,6 +3169,7 @@ module Robinson_Clause_Impl2_GetUnit_Interface
   clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model1 with type t = Type.robinson_clause_clause,
   type ModelTy0.modelTy = ModelTy1.modelTy
   clone Robinson_Logic_Unset_Interface as Unset0
+  clone Robinson_Lit_Impl0_IndexLogic_Interface as IndexLogic0
   clone Robinson_Assignments_Impl0_ModelTy as ModelTy0
   clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model0 with type t = Type.robinson_assignments_assignments,
   type ModelTy0.modelTy = ModelTy0.modelTy
@@ -3151,46 +3180,48 @@ module Robinson_Clause_Impl2_GetUnit_Interface
     requires {Invariant0.invariant' a _f}
     requires {Invariant1.invariant' _f}
     requires {Unit0.unit self a}
-    ensures { Unset0.unset (Seq.get (Model0.model a) (UInt64.to_int (Type.robinson_lit_lit_Lit_idx result))) }
-    ensures { UInt64.to_int (Type.robinson_lit_lit_Lit_idx result) < Seq.length (Model0.model a) }
+    ensures { Unset0.unset (Seq.get (Model0.model a) (IndexLogic0.index_logic result)) }
+    ensures { IndexLogic0.index_logic result < Seq.length (Model0.model a) }
     ensures { exists j : (int) . 0 <= j && j < Seq.length (Model1.model self) && Seq.get (Model1.model self) j = result }
     
 end
 module Robinson_Clause_Impl2_GetUnit
-  use mach.int.UInt64
   use seq.Seq
   use mach.int.Int
   use mach.int.Int32
   use prelude.Prelude
   use Type
+  use mach.int.UInt64
   use prelude.UInt8
-  clone Robinson_Lit_Impl0_SatInner as SatInner1
-  clone Robinson_Lit_Impl0_Invariant as Invariant3
+  clone Robinson_Lit_Impl1_SatInner as SatInner1
+  clone Robinson_Lit_Impl1_Invariant as Invariant3
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model6 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model4 with function Model0.model = Model6.model
   clone Robinson_Clause_Impl1_SatInner as SatInner0 with function Model0.model = Model4.model,
   predicate SatInner0.sat_inner = SatInner1.sat_inner
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model4.model
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model4.model,
   predicate Invariant0.invariant' = Invariant3.invariant'
-  clone Robinson_Clause_Impl1_Invariant as Invariant2 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
-  predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = uint8, type a = Type.alloc_alloc_global
   clone Robinson_Assignments_Impl0_Model as Model2 with function Model0.model = Model5.model
   clone Robinson_Assignments_Impl1_Invariant as Invariant0 with function Model0.model = Model2.model
-  clone Robinson_Lit_Impl0_UnsetInner as UnsetInner0
+  clone Robinson_Lit_Impl1_UnsetInner as UnsetInner0
   clone Robinson_Clause_Impl1_UnitInner as UnitInner0 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
   predicate SatInner0.sat_inner = SatInner0.sat_inner, function Model0.model = Model4.model,
   predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
   clone Robinson_Clause_Impl1_Unit as Unit0 with function Model0.model = Model2.model,
   predicate UnitInner0.unit_inner = UnitInner0.unit_inner
-  clone Robinson_Lit_Impl0_Unset as Unset1 with function Model0.model = Model2.model,
+  clone Robinson_Lit_Impl1_Unset as Unset1 with function Model0.model = Model2.model,
   predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
   clone Robinson_Clause_Impl0_ModelTy as ModelTy1
   clone CreusotContracts_Logic_Model_Impl0_Model as Model1 with type t = Type.robinson_clause_clause,
   type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model4.model
   clone Robinson_Logic_Unset as Unset0
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model4.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
+  clone Robinson_Clause_Impl1_Invariant as Invariant2 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
+  predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
   clone Robinson_Assignments_Impl0_ModelTy as ModelTy0
   clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.robinson_assignments_assignments,
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model2.model
@@ -3208,14 +3239,14 @@ module Robinson_Clause_Impl2_GetUnit
   type Output0.output = Output0.output
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.robinson_lit_lit, type a = Type.alloc_alloc_global,
   function Model0.model = Model6.model
-  clone Robinson_Lit_Impl1_LitUnset_Interface as LitUnset0 with function Model0.model = Model0.model,
+  clone Robinson_Lit_Impl2_LitUnset_Interface as LitUnset0 with function Model0.model = Model0.model,
   predicate Invariant0.invariant' = Invariant3.invariant', predicate Unset0.unset = Unset1.unset
   let rec cfg get_unit [@cfg:stackify] (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments) (_f : Type.robinson_formula_formula) : Type.robinson_lit_lit
     requires {Invariant0.invariant' a _f}
     requires {Invariant1.invariant' _f}
     requires {Unit0.unit self a}
-    ensures { Unset0.unset (Seq.get (Model0.model a) (UInt64.to_int (Type.robinson_lit_lit_Lit_idx result))) }
-    ensures { UInt64.to_int (Type.robinson_lit_lit_Lit_idx result) < Seq.length (Model0.model a) }
+    ensures { Unset0.unset (Seq.get (Model0.model a) (IndexLogic0.index_logic result)) }
+    ensures { IndexLogic0.index_logic result < Seq.length (Model0.model a) }
     ensures { exists j : (int) . 0 <= j && j < Seq.length (Model1.model self) && Seq.get (Model1.model self) j = result }
     
    = 
@@ -3300,6 +3331,38 @@ module Robinson_Clause_Impl2_GetUnit
   BB8 {
     _6 <- ();
     absurd
+  }
+  
+end
+module Robinson_Lit_Impl2_Index_Interface
+  use mach.int.UInt64
+  use Type
+  use mach.int.Int
+  use prelude.Prelude
+  clone Robinson_Lit_Impl0_IndexLogic_Interface as IndexLogic0
+  val index [@cfg:stackify] (self : Type.robinson_lit_lit) : usize
+    ensures { UInt64.to_int result = IndexLogic0.index_logic self }
+    
+end
+module Robinson_Lit_Impl2_Index
+  use mach.int.UInt64
+  use Type
+  use mach.int.Int
+  use prelude.Prelude
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
+  let rec cfg index [@cfg:stackify] (self : Type.robinson_lit_lit) : usize
+    ensures { UInt64.to_int result = IndexLogic0.index_logic self }
+    
+   = 
+  var _0 : usize;
+  var self_1 : Type.robinson_lit_lit;
+  {
+    self_1 <- self;
+    goto BB0
+  }
+  BB0 {
+    _0 <- Type.robinson_lit_lit_Lit_idx self_1;
+    return _0
   }
   
 end
@@ -3439,19 +3502,16 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model7 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model6 with function Model0.model = Model7.model
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model6.model
-  clone Robinson_Lit_Impl0_Invariant as Invariant3
+  clone Robinson_Lit_Impl1_Invariant as Invariant3
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model6.model,
   predicate Invariant0.invariant' = Invariant3.invariant'
-  clone Robinson_Clause_Impl1_Invariant as Invariant2 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
-  predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
   clone Robinson_Logic_Neg as Neg0
   clone Robinson_Logic_Pos as Pos0
-  clone Robinson_Lit_Impl0_UnsetInner as UnsetInner0
+  clone Robinson_Lit_Impl1_UnsetInner as UnsetInner0
   clone Robinson_Clause_Impl0_ModelTy as ModelTy1
   clone CreusotContracts_Logic_Model_Impl0_Model as Model4 with type t = Type.robinson_clause_clause,
   type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model6.model
-  clone Robinson_Lit_Impl0_SatInner as SatInner1
+  clone Robinson_Lit_Impl1_SatInner as SatInner1
   clone Robinson_Clause_Impl1_SatInner as SatInner0 with function Model0.model = Model6.model,
   predicate SatInner0.sat_inner = SatInner1.sat_inner
   clone Robinson_Clause_Impl1_UnitInner as UnitInner0 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
@@ -3459,17 +3519,23 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
   clone Robinson_Assignments_AssignmentsInvariant as AssignmentsInvariant0
   clone Robinson_Logic_FlipV as FlipV0
-  clone Robinson_Lit_Impl0_UnsatInner as UnsatInner1
+  clone Robinson_Lit_Impl1_UnsatInner as UnsatInner1
   clone Robinson_Clause_Impl1_UnsatInner as UnsatInner0 with function Model0.model = Model6.model,
   predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
   clone Robinson_Logic_BoolToAssignedstate as BoolToAssignedstate0 with axiom .
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
   clone Robinson_Logic_LemmaCorrectPolarityMakesClauseSat as LemmaCorrectPolarityMakesClauseSat0 with function Model0.model = Model6.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic,
   function BoolToAssignedstate0.bool_to_assignedstate = BoolToAssignedstate0.bool_to_assignedstate,
   predicate SatInner0.sat_inner = SatInner0.sat_inner, axiom .
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model6.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
+  clone Robinson_Clause_Impl1_Invariant as Invariant2 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
+  predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
   clone CreusotContracts_Logic_Ghost_Impl0_Model as Model3 with type t = borrowed (Type.robinson_assignments_assignments)
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = uint8, type a = Type.alloc_alloc_global
   clone Robinson_Assignments_Impl0_Model as Model2 with function Model0.model = Model5.model
-  clone Robinson_Lit_Impl0_Unset as Unset0 with function Model0.model = Model2.model,
+  clone Robinson_Lit_Impl1_Unset as Unset0 with function Model0.model = Model2.model,
   predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
   clone Robinson_Clause_Impl1_Unit as Unit0 with function Model0.model = Model2.model,
   predicate UnitInner0.unit_inner = UnitInner0.unit_inner
@@ -3484,6 +3550,7 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   clone Robinson_Logic_Unset as Unset1
   clone Robinson_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset1.unset
   clone Robinson_Logic_LemmaIncorrectPolarityMakesClauseUnsat as LemmaIncorrectPolarityMakesClauseUnsat0 with function Model0.model = Model6.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic,
   predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner, predicate Invariant0.invariant' = Invariant2.invariant',
   predicate SatInner0.sat_inner = SatInner1.sat_inner, predicate SatInner1.sat_inner = SatInner0.sat_inner,
   predicate UnitInner0.unit_inner = UnitInner0.unit_inner, predicate Unset0.unset = Unset1.unset,
@@ -3529,6 +3596,7 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner,
   predicate AssignmentsInvariant0.assignments_invariant = AssignmentsInvariant0.assignments_invariant, axiom .
   clone Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula as LemmaUnitWrongPolarityUnsatFormula0 with function Model0.model = Model6.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic,
   predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner,
   function BoolToAssignedstate0.bool_to_assignedstate = BoolToAssignedstate0.bool_to_assignedstate,
   predicate Invariant0.invariant' = Invariant2.invariant', predicate InFormula0.in_formula = InFormula0.in_formula,
@@ -3555,6 +3623,7 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   clone Core_Slice_Index_Impl2_Output as Output0 with type t = Type.robinson_clause_clause
   clone CreusotContracts_Std1_Vec_Impl1_HasValue as HasValue0 with type t = Type.robinson_clause_clause
   clone CreusotContracts_Std1_Vec_Impl1_InBounds as InBounds0 with type t = Type.robinson_clause_clause
+  clone Robinson_Lit_Impl2_Index_Interface as Index1 with function IndexLogic0.index_logic = IndexLogic0.index_logic
   clone CreusotContracts_Logic_Ghost_Impl1_Record_Interface as Record0 with type t = borrowed (Type.robinson_assignments_assignments),
   function Model0.model = Model3.model
   clone Alloc_Vec_Impl17_IndexMut_Interface as IndexMut0 with type t = uint8, type i = usize,
@@ -3570,7 +3639,8 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   type Output0.output = Output0.output
   clone Robinson_Clause_Impl2_GetUnit_Interface as GetUnit0 with predicate Invariant0.invariant' = Invariant1.invariant',
   predicate Invariant1.invariant' = Invariant0.invariant', predicate Unit0.unit = Unit0.unit,
-  function Model0.model = Model8.model, predicate Unset0.unset = Unset1.unset, function Model1.model = Model4.model
+  function Model0.model = Model8.model, function IndexLogic0.index_logic = IndexLogic0.index_logic,
+  predicate Unset0.unset = Unset1.unset, function Model1.model = Model4.model
   clone Robinson_Clause_Impl2_CheckIfUnit_Interface as CheckIfUnit0 with predicate Invariant0.invariant' = Invariant1.invariant',
   predicate Invariant1.invariant' = Invariant0.invariant', function Model0.model = Model8.model,
   predicate Invariant2.invariant' = Invariant2.invariant', predicate Complete0.complete = Complete0.complete,
@@ -3620,14 +3690,16 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   var _28 : borrowed uint8;
   var _29 : borrowed (Type.alloc_vec_vec uint8 (Type.alloc_alloc_global));
   var _30 : usize;
-  var _31 : borrowed uint8;
-  var _32 : borrowed (Type.alloc_vec_vec uint8 (Type.alloc_alloc_global));
-  var _33 : usize;
-  var _34 : ();
-  var _35 : ();
+  var _31 : Type.robinson_lit_lit;
+  var _32 : borrowed uint8;
+  var _33 : borrowed (Type.alloc_vec_vec uint8 (Type.alloc_alloc_global));
+  var _34 : usize;
+  var _35 : Type.robinson_lit_lit;
   var _36 : ();
-  var o_37 : Type.robinson_clause_clausestate;
+  var _37 : ();
   var _38 : ();
+  var o_39 : Type.robinson_clause_clausestate;
+  var _40 : ();
   {
     self_1 <- self;
     i_2 <- i;
@@ -3664,9 +3736,9 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   }
   BB4 {
     assume { Resolve0.resolve self_1 };
-    o_37 <- _12;
-    _0 <- o_37;
-    goto BB12
+    o_39 <- _12;
+    _0 <- o_39;
+    goto BB14
   }
   BB5 {
     _19 <- clause_4;
@@ -3678,15 +3750,15 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   BB6 {
     assert { Invariant2.invariant' clause_4 (Seq.length (Model1.model self_1)) };
     _22 <- ();
-    assert { let _ = LemmaUnitWrongPolarityUnsatFormula0.lemma_unit_wrong_polarity_unsat_formula clause_4 f_3 (Model1.model self_1) (UInt64.to_int (Type.robinson_lit_lit_Lit_idx lit_18)) (BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity lit_18)) in true };
+    assert { let _ = LemmaUnitWrongPolarityUnsatFormula0.lemma_unit_wrong_polarity_unsat_formula clause_4 f_3 (Model1.model self_1) (IndexLogic0.index_logic lit_18) (BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity lit_18)) in true };
     _23 <- ();
-    assert { forall j : (int) . 0 <= j && j < Seq.length (Model4.model clause_4) && not (UInt64.to_int (Type.robinson_lit_lit_Lit_idx (Seq.get (Model4.model clause_4) j)) = UInt64.to_int (Type.robinson_lit_lit_Lit_idx lit_18)) -> not (Unset0.unset (Seq.get (Model4.model clause_4) j) ( * self_1)) };
+    assert { forall j : (int) . 0 <= j && j < Seq.length (Model4.model clause_4) && not (IndexLogic0.index_logic (Seq.get (Model4.model clause_4) j) = IndexLogic0.index_logic lit_18) -> not (Unset0.unset (Seq.get (Model4.model clause_4) j) ( * self_1)) };
     _24 <- ();
-    assert { let _ = LemmaUnitForces0.lemma_unit_forces f_3 (Model1.model self_1) (UInt64.to_int (Type.robinson_lit_lit_Lit_idx lit_18)) (BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity lit_18)) in true };
+    assert { let _ = LemmaUnitForces0.lemma_unit_forces f_3 (Model1.model self_1) (IndexLogic0.index_logic lit_18) (BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity lit_18)) in true };
     _25 <- ();
     _27 <- Type.robinson_lit_lit_Lit_polarity lit_18;
     switch (_27)
-      | False -> goto BB9
+      | False -> goto BB10
       | _ -> goto BB7
       end
   }
@@ -3694,41 +3766,49 @@ module Robinson_Assignments_Impl2_UnitPropOnce
     _29 <- borrow_mut (Type.robinson_assignments_assignments_Assignments_0 ( * self_1));
     self_1 <- { self_1 with current = (let Type.Robinson_Assignments_Assignments a b =  * self_1 in Type.Robinson_Assignments_Assignments ( ^ _29) b) };
     assume { Resolve0.resolve self_1 };
-    _30 <- Type.robinson_lit_lit_Lit_idx lit_18;
-    _28 <- IndexMut0.index_mut _29 _30;
+    _31 <- lit_18;
+    _30 <- Index1.index _31;
     goto BB8
   }
   BB8 {
+    _28 <- IndexMut0.index_mut _29 _30;
+    goto BB9
+  }
+  BB9 {
     _28 <- { _28 with current = (1 : uint8) };
     assume { Resolve1.resolve _28 };
     _26 <- ();
-    goto BB11
-  }
-  BB9 {
-    _32 <- borrow_mut (Type.robinson_assignments_assignments_Assignments_0 ( * self_1));
-    self_1 <- { self_1 with current = (let Type.Robinson_Assignments_Assignments a b =  * self_1 in Type.Robinson_Assignments_Assignments ( ^ _32) b) };
-    assume { Resolve0.resolve self_1 };
-    _33 <- Type.robinson_lit_lit_Lit_idx lit_18;
-    _31 <- IndexMut0.index_mut _32 _33;
-    goto BB10
+    goto BB13
   }
   BB10 {
-    _31 <- { _31 with current = (0 : uint8) };
-    assume { Resolve1.resolve _31 };
-    _26 <- ();
+    _33 <- borrow_mut (Type.robinson_assignments_assignments_Assignments_0 ( * self_1));
+    self_1 <- { self_1 with current = (let Type.Robinson_Assignments_Assignments a b =  * self_1 in Type.Robinson_Assignments_Assignments ( ^ _33) b) };
+    assume { Resolve0.resolve self_1 };
+    _35 <- lit_18;
+    _34 <- Index1.index _35;
     goto BB11
   }
   BB11 {
-    assert { let _ = LemmaExtensionSatBaseSat0.lemma_extension_sat_base_sat f_3 (Model1.model (Model3.model _old_a_8)) (UInt64.to_int (Type.robinson_lit_lit_Lit_idx lit_18)) (BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity lit_18)) in true };
-    _34 <- ();
-    assert { let _ = LemmaExtensionsUnsatBaseUnsat0.lemma_extensions_unsat_base_unsat (Model1.model (Model3.model _old_a_8)) (UInt64.to_int (Type.robinson_lit_lit_Lit_idx lit_18)) f_3 in true };
-    _35 <- ();
-    assert {  ^ self_1 =  ^ Model3.model _old_a_8 };
-    _36 <- ();
-    _0 <- Type.Robinson_Clause_ClauseState_Unit;
+    _32 <- IndexMut0.index_mut _33 _34;
     goto BB12
   }
   BB12 {
+    _32 <- { _32 with current = (0 : uint8) };
+    assume { Resolve1.resolve _32 };
+    _26 <- ();
+    goto BB13
+  }
+  BB13 {
+    assert { let _ = LemmaExtensionSatBaseSat0.lemma_extension_sat_base_sat f_3 (Model1.model (Model3.model _old_a_8)) (IndexLogic0.index_logic lit_18) (BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity lit_18)) in true };
+    _36 <- ();
+    assert { let _ = LemmaExtensionsUnsatBaseUnsat0.lemma_extensions_unsat_base_unsat (Model1.model (Model3.model _old_a_8)) (IndexLogic0.index_logic lit_18) f_3 in true };
+    _37 <- ();
+    assert {  ^ self_1 =  ^ Model3.model _old_a_8 };
+    _38 <- ();
+    _0 <- Type.Robinson_Clause_ClauseState_Unit;
+    goto BB14
+  }
+  BB14 {
     return _0
   }
   
@@ -3802,19 +3882,21 @@ module Robinson_Assignments_Impl2_UnitPropagate
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model4 with function Model0.model = Model5.model
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model4.model
-  clone Robinson_Lit_Impl0_Invariant as Invariant3
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model4.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
+  clone Robinson_Lit_Impl1_Invariant as Invariant3
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model4.model,
   predicate Invariant0.invariant' = Invariant3.invariant'
   clone Robinson_Clause_Impl1_Invariant as Invariant2 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
   predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
-  clone Robinson_Lit_Impl0_UnsatInner as UnsatInner2
+  clone Robinson_Lit_Impl1_UnsatInner as UnsatInner2
   clone Robinson_Clause_Impl1_UnsatInner as UnsatInner1 with function Model0.model = Model4.model,
   predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone Robinson_Lit_Impl0_SatInner as SatInner2
+  clone Robinson_Lit_Impl1_SatInner as SatInner2
   clone Robinson_Clause_Impl1_SatInner as SatInner1 with function Model0.model = Model4.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
-  clone Robinson_Lit_Impl0_UnsetInner as UnsetInner0
+  clone Robinson_Lit_Impl1_UnsetInner as UnsetInner0
   clone Robinson_Clause_Impl1_UnitInner as UnitInner0 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
   predicate SatInner0.sat_inner = SatInner1.sat_inner, function Model0.model = Model4.model,
   predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
@@ -4048,14 +4130,16 @@ module Robinson_Assignments_Impl2_DoUnitPropagation
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model4 with function Model0.model = Model5.model
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model4.model
-  clone Robinson_Lit_Impl0_UnsatInner as UnsatInner2
+  clone Robinson_Lit_Impl1_UnsatInner as UnsatInner2
   clone Robinson_Clause_Impl1_UnsatInner as UnsatInner1 with function Model0.model = Model4.model,
   predicate UnsatInner0.unsat_inner = UnsatInner2.unsat_inner
-  clone Robinson_Lit_Impl0_SatInner as SatInner2
+  clone Robinson_Lit_Impl1_SatInner as SatInner2
   clone Robinson_Clause_Impl1_SatInner as SatInner1 with function Model0.model = Model4.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
-  clone Robinson_Lit_Impl0_Invariant as Invariant3
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model4.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
+  clone Robinson_Lit_Impl1_Invariant as Invariant3
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model4.model,
   predicate Invariant0.invariant' = Invariant3.invariant'
   clone Robinson_Clause_Impl1_Invariant as Invariant2 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
@@ -4233,22 +4317,22 @@ module Robinson_Clause_Impl2_Len
   }
   
 end
-module Robinson_Lit_Impl1_CheckLitInvariant_Interface
+module Robinson_Lit_Impl2_CheckLitInvariant_Interface
   use mach.int.UInt64
   use prelude.Prelude
   use Type
   use mach.int.Int
-  clone Robinson_Lit_Impl0_Invariant_Interface as Invariant0
+  clone Robinson_Lit_Impl1_Invariant_Interface as Invariant0
   val check_lit_invariant [@cfg:stackify] (self : Type.robinson_lit_lit) (n : usize) : bool
     ensures { result = Invariant0.invariant' self (UInt64.to_int n) }
     
 end
-module Robinson_Lit_Impl1_CheckLitInvariant
+module Robinson_Lit_Impl2_CheckLitInvariant
   use mach.int.UInt64
   use prelude.Prelude
   use Type
   use mach.int.Int
-  clone Robinson_Lit_Impl0_Invariant as Invariant0
+  clone Robinson_Lit_Impl1_Invariant as Invariant0
   let rec cfg check_lit_invariant [@cfg:stackify] (self : Type.robinson_lit_lit) (n : usize) : bool
     ensures { result = Invariant0.invariant' self (UInt64.to_int n) }
     
@@ -4290,10 +4374,12 @@ module Robinson_Clause_Impl2_NoDuplicates
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model1 with function Model0.model = Model2.model
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model1.model
   clone Robinson_Clause_Impl0_ModelTy as ModelTy0
   clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.robinson_clause_clause,
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model1.model
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model1.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
   clone CreusotContracts_Logic_Model_Impl2_ModelTy as ModelTy1 with type t = Type.robinson_lit_lit
   clone Core_Slice_Index_Impl2_Output as Output0 with type t = Type.robinson_lit_lit
   clone CreusotContracts_Std1_Vec_Impl1_HasValue as HasValue0 with type t = Type.robinson_lit_lit
@@ -4447,8 +4533,10 @@ module Robinson_Clause_Impl2_CheckClauseInvariant
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model1 with function Model0.model = Model2.model
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model1.model
-  clone Robinson_Lit_Impl0_Invariant as Invariant1
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model1.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
+  clone Robinson_Lit_Impl1_Invariant as Invariant1
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model1.model,
   predicate Invariant0.invariant' = Invariant1.invariant'
   clone Robinson_Clause_Impl1_Invariant as Invariant0 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
@@ -4465,7 +4553,7 @@ module Robinson_Clause_Impl2_CheckClauseInvariant
   predicate InBounds0.in_bounds = InBounds0.in_bounds, predicate HasValue0.has_value = HasValue0.has_value,
   type Output0.output = Output0.output
   clone Robinson_Clause_Impl2_NoDuplicates_Interface as NoDuplicates0 with predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
-  clone Robinson_Lit_Impl1_CheckLitInvariant_Interface as CheckLitInvariant0 with predicate Invariant0.invariant' = Invariant1.invariant'
+  clone Robinson_Lit_Impl2_CheckLitInvariant_Interface as CheckLitInvariant0 with predicate Invariant0.invariant' = Invariant1.invariant'
   clone Robinson_Clause_Impl2_Len_Interface as Len0 with function Model0.model = Model0.model
   let rec cfg check_clause_invariant [@cfg:stackify] (self : Type.robinson_clause_clause) (n : usize) : bool
     ensures { result = Invariant0.invariant' self (UInt64.to_int n) }
@@ -5002,8 +5090,10 @@ module Robinson_Decision_Impl1_New
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model3 with function Model0.model = Model4.model
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model3.model
-  clone Robinson_Lit_Impl0_Invariant as Invariant3
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model3.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
+  clone Robinson_Lit_Impl1_Invariant as Invariant3
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model3.model,
   predicate Invariant0.invariant' = Invariant3.invariant'
   clone Robinson_Clause_Impl1_Invariant as Invariant2 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
@@ -5573,12 +5663,14 @@ module Robinson_Formula_Impl2_CheckFormulaInvariant
   use prelude.Prelude
   use seq.Seq
   use prelude.UInt8
-  clone Robinson_Lit_Impl0_Invariant as Invariant2
-  clone Robinson_Lit_Impl0_SatInner as SatInner2
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
+  clone Robinson_Lit_Impl1_Invariant as Invariant2
+  clone Robinson_Lit_Impl1_SatInner as SatInner2
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model3 with function Model0.model = Model5.model
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model3.model
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model3.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model3.model,
   predicate Invariant0.invariant' = Invariant2.invariant'
   clone Robinson_Clause_Impl1_Invariant as Invariant1 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
@@ -5818,12 +5910,12 @@ module Robinson_Formula_Impl2_CheckFormulaInvariant
   }
   
 end
-module Robinson_Lit_Impl2_Clone_Interface
+module Robinson_Lit_Impl3_Clone_Interface
   use prelude.Prelude
   use Type
   val clone' [@cfg:stackify] (self : Type.robinson_lit_lit) : Type.robinson_lit_lit
 end
-module Robinson_Lit_Impl2_Clone
+module Robinson_Lit_Impl3_Clone
   use prelude.Prelude
   use Type
   let rec cfg clone' [@cfg:stackify] (self : Type.robinson_lit_lit) : Type.robinson_lit_lit = 
@@ -5839,11 +5931,11 @@ module Robinson_Lit_Impl2_Clone
   }
   
 end
-module Robinson_Lit_Impl0_LitIn_Interface
+module Robinson_Lit_Impl1_LitIn_Interface
   use Type
   predicate lit_in (self : Type.robinson_lit_lit) (c : Type.robinson_clause_clause)
 end
-module Robinson_Lit_Impl0_LitIn
+module Robinson_Lit_Impl1_LitIn
   use Type
   use mach.int.Int
   use mach.int.Int32
@@ -5852,12 +5944,12 @@ module Robinson_Lit_Impl0_LitIn
   predicate lit_in (self : Type.robinson_lit_lit) (c : Type.robinson_clause_clause) = 
     exists i : (int) . 0 <= i && i < Seq.length (Model0.model c) && Seq.get (Model0.model c) i = self
 end
-module Robinson_Lit_Impl1_LitUnsat_Interface
+module Robinson_Lit_Impl2_LitUnsat_Interface
   use seq.Seq
   use Type
   use prelude.Prelude
-  clone Robinson_Lit_Impl0_Unsat_Interface as Unsat0
-  clone Robinson_Lit_Impl0_Invariant_Interface as Invariant0
+  clone Robinson_Lit_Impl1_Unsat_Interface as Unsat0
+  clone Robinson_Lit_Impl1_Invariant_Interface as Invariant0
   clone Robinson_Assignments_Impl0_ModelTy as ModelTy0
   clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model0 with type t = Type.robinson_assignments_assignments,
   type ModelTy0.modelTy = ModelTy0.modelTy
@@ -5866,7 +5958,7 @@ module Robinson_Lit_Impl1_LitUnsat_Interface
     ensures { result = Unsat0.unsat self a }
     
 end
-module Robinson_Lit_Impl1_LitUnsat
+module Robinson_Lit_Impl2_LitUnsat
   use seq.Seq
   use Type
   use prelude.Prelude
@@ -5874,10 +5966,10 @@ module Robinson_Lit_Impl1_LitUnsat
   use prelude.UInt8
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = uint8, type a = Type.alloc_alloc_global
   clone Robinson_Assignments_Impl0_Model as Model1 with function Model0.model = Model2.model
-  clone Robinson_Lit_Impl0_UnsatInner as UnsatInner0
-  clone Robinson_Lit_Impl0_Unsat as Unsat0 with function Model0.model = Model1.model,
+  clone Robinson_Lit_Impl1_UnsatInner as UnsatInner0
+  clone Robinson_Lit_Impl1_Unsat as Unsat0 with function Model0.model = Model1.model,
   predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
-  clone Robinson_Lit_Impl0_Invariant as Invariant0
+  clone Robinson_Lit_Impl1_Invariant as Invariant0
   clone Robinson_Assignments_Impl0_ModelTy as ModelTy0
   clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.robinson_assignments_assignments,
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model1.model
@@ -5967,19 +6059,21 @@ module Robinson_Solver_Inner
   use Type
   use mach.int.Int
   use prelude.UInt8
-  clone Robinson_Lit_Impl0_SatInner as SatInner2
+  clone Robinson_Lit_Impl1_SatInner as SatInner2
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model5 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global
   clone Robinson_Clause_Impl0_Model as Model4 with function Model0.model = Model5.model
   clone Robinson_Clause_Impl1_SatInner as SatInner1 with function Model0.model = Model4.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model4.model
   clone Robinson_Logic_Unset as Unset0
   clone Robinson_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
   clone Robinson_Assignments_CompatibleInner as CompatibleInner0 with predicate Unset0.unset = Unset0.unset
   clone Robinson_Assignments_CompatibleCompleteInner as CompatibleCompleteInner0 with predicate CompatibleInner0.compatible_inner = CompatibleInner0.compatible_inner,
   predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner
-  clone Robinson_Lit_Impl0_Invariant as Invariant4
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model4.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
+  clone Robinson_Lit_Impl1_Invariant as Invariant4
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model4.model,
   predicate Invariant0.invariant' = Invariant4.invariant'
   clone Robinson_Clause_Impl1_Invariant as Invariant3 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
@@ -6004,7 +6098,7 @@ module Robinson_Solver_Inner
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = usize, type a = Type.alloc_alloc_global
   clone Robinson_Decision_Impl0_Invariant as Invariant0 with function Model0.model = Model0.model
   use mach.int.Int64
-  clone Robinson_Lit_Impl0_UnsatInner as UnsatInner2
+  clone Robinson_Lit_Impl1_UnsatInner as UnsatInner2
   clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = uint8
   clone CreusotContracts_Logic_Model_Impl2_ModelTy as ModelTy1 with type t = uint8
   clone Core_Slice_Index_Impl2_Output as Output0 with type t = uint8
@@ -6214,7 +6308,7 @@ end
 module Robinson_Solver_Solver
   use Type
   use prelude.Prelude
-  clone Robinson_Lit_Impl0_SatInner as SatInner2
+  clone Robinson_Lit_Impl1_SatInner as SatInner2
   clone Robinson_Logic_Unset as Unset0
   clone Robinson_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.robinson_lit_lit,
@@ -6235,7 +6329,8 @@ module Robinson_Solver_Solver
   use mach.int.Int64
   use prelude.UInt8
   use mach.int.UInt64
-  clone Robinson_Lit_Impl0_Invariant as Invariant4
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
+  clone Robinson_Lit_Impl1_Invariant as Invariant4
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model7 with type t = usize, type a = Type.alloc_alloc_global
   clone Robinson_Decision_Impl0_Invariant as Invariant2 with function Model0.model = Model7.model
   clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = Type.robinson_formula_formula
@@ -6247,7 +6342,8 @@ module Robinson_Solver_Solver
   clone Robinson_Assignments_CompatibleInner as CompatibleInner0 with predicate Unset0.unset = Unset0.unset
   clone Robinson_Assignments_CompatibleCompleteInner as CompatibleCompleteInner0 with predicate CompatibleInner0.compatible_inner = CompatibleInner0.compatible_inner,
   predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner
-  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model1.model
+  clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model1.model,
+  function IndexLogic0.index_logic = IndexLogic0.index_logic
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model1.model,
   predicate Invariant0.invariant' = Invariant4.invariant'
   clone Robinson_Clause_Impl1_Invariant as Invariant3 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
@@ -6423,11 +6519,11 @@ module Core_Clone_Clone_CloneFrom
     requires {false}
     
 end
-module Robinson_Lit_Impl2
+module Robinson_Lit_Impl3
   use Type
-  clone Robinson_Lit_Impl2_Clone_Interface as Clone0
+  clone Robinson_Lit_Impl3_Clone_Interface as Clone0
   clone Core_Clone_Clone_Clone_Interface as Clone1 with type self = Type.robinson_lit_lit, val clone' = Clone0.clone'
 end
-module Robinson_Lit_Impl3
+module Robinson_Lit_Impl4
   
 end

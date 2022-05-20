@@ -62,14 +62,14 @@ impl Clause {
         let mut i: usize = 0;
         #[invariant(no_dups,
             forall<j: Int, k: Int> 0 <= j && j < @i &&
-             0 <= k && k < j ==> (@self)[j].idx != (@self)[k].idx)]
+             0 <= k && k < j ==> (@self)[j].index_logic() != (@self)[k].index_logic())]
         while i < self.rest.len() {
             let lit1 = self.rest[i];
             let mut j: usize = 0;
-            #[invariant(inv, forall<k: Int> 0 <= k && k < @j ==> lit1.idx != (@self)[k].idx)]
+            #[invariant(inv, forall<k: Int> 0 <= k && k < @j ==> lit1.index_logic() != (@self)[k].index_logic())]
             while j < i {
                 let lit2 = self.rest[j];
-                if lit1.idx == lit2.idx {
+                if lit1.index() == lit2.index() {
                     return false;
                 }
                 j += 1;

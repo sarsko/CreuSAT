@@ -17,7 +17,7 @@ use crate::logic::{
 #[maintains(trail.invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
 #[requires(@f.num_vars < @usize::MAX/2)]
-#[requires(@lit.idx < @f.num_vars)]
+#[requires(lit.index_logic() < @f.num_vars)]
 //#[requires((@trail.trail).len() > 0)]
 #[requires(@cref < (@f.clauses).len())]
 #[requires(2 <= @k && @k < (@(@f.clauses)[@cref]).len())]
@@ -37,7 +37,7 @@ fn unit_prop_check_rest(
     let curr_lit = f.clauses[cref].rest[k];
     if curr_lit.lit_unset(&trail.assignments) || curr_lit.lit_sat(&trail.assignments) {
         // Can swap to !unsat
-        if f.clauses[cref].rest[0].idx == lit.idx {
+        if f.clauses[cref].rest[0].index() == lit.index() {
             // First
             swap(f, trail, watches, cref, k, 0);
             update_watch(f, trail, watches, cref, j, 0, lit);
@@ -108,7 +108,7 @@ fn swap_zero_one(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize)
 #[maintains((mut watches).invariant(mut f))]
 #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)]
 #[requires(@f.num_vars < @usize::MAX/2)]
-#[requires(@lit.idx < @f.num_vars)]
+#[requires(lit.index_logic() < @f.num_vars)]
 #[requires(watches.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
 #[requires((@(@f.clauses)[@cref]).len() >= 2)]
@@ -209,7 +209,7 @@ fn unit_prop_do_outer(
         proof_assert!(lemma_swap_clause_no_dups(((@(@old_f).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1); true);
         proof_assert!(lemma_swap_maintains_post_unit(((@(@old_f).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1, *a); true);
         // Not sure if this really helps, as we are sort of "short circuiting" the j
-        proof_assert!(lemma_swap_maintains_post_with_regards_to(((@(@old_f).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1, *a, @second_lit.idx); true);
+        proof_assert!(lemma_swap_maintains_post_with_regards_to(((@(@old_f).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1, *a, second_lit.index_logic()); true);
         // Can add a lemma here to make the formula invariant faster
         proof_assert!(lemma_permut_clause_in_formula_maintains_sat(*@old_f, *f, @cref); true);
         proof_assert!(lemma_permut_clause_in_formula_maintains_unsat(*@old_f, *f, @cref); true);
@@ -226,7 +226,7 @@ fn unit_prop_do_outer(
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
 #[requires(@f.num_vars < @usize::MAX/2)]
-#[requires(@lit.idx < @f.num_vars)]
+#[requires(lit.index_logic() < @f.num_vars)]
 #[ensures(match result {
     Ok(()) => true,// !(^f).unsat(^a),
     Err(n) => @n < (@(^f).clauses).len() && (^f).unsat((^trail).assignments) && (@(^f).clauses)[@n].unsat((^trail).assignments),

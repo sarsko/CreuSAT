@@ -97,8 +97,8 @@ impl Decisions {
             while j < curr_clause.rest.len() {
                 // Okay this is obviously provable, a vector cannot be longer than usize, and we don't allow duplicates, so we will
                 // never overflow, even if every clause contains a literal,
-                if counts[curr_clause.rest[j].idx] < usize::MAX - 1 {
-                    counts[curr_clause.rest[j].idx] += 1;
+                if counts[curr_clause.rest[j].index()] < usize::MAX - 1 {
+                    counts[curr_clause.rest[j].index()] += 1;
                 }
                 j += 1;
             }
@@ -215,7 +215,7 @@ impl Decisions {
             @(@counts_with_index)[j].1 < (@self.linked_list).len()
         )]
         while i < clause.rest.len() {
-            counts_with_index[i] = (self.linked_list[clause.rest[i].idx].ts, clause.rest[i].idx);
+            counts_with_index[i] = (self.linked_list[clause.rest[i].index()].ts, clause.rest[i].index());
             i += 1;
         }
         // TODO: Check actual speed. I believe selection sort is the slowest. Only need permut property.

@@ -68,17 +68,18 @@ impl Trail {
         let last = self.trail.pop();
         match last {
             Some(step) => {
-                if self.assignments.0[step.lit.idx] < 2 {
-                    self.assignments.0[step.lit.idx] += 2; // TODO: Prove safety
+                // TODO: Wrap in abstraction
+                if self.assignments.0[step.lit.index()] < 2 {
+                    self.assignments.0[step.lit.index()] += 2; // TODO: Prove safety
                 } else {
-                    self.assignments.0[step.lit.idx] = 3; // TODO lol
+                    self.assignments.0[step.lit.index()] = 3; // TODO lol
                 }
                 proof_assert!(@self.trail == pop(@(@old_t).trail));
                 proof_assert!(^@old_t == ^self);
                 proof_assert!((lemma_backtrack_ok(*self, *f, step.lit)); true);
-                self.lit_to_level[step.lit.idx] = usize::MAX;
+                self.lit_to_level[step.lit.index()] = usize::MAX;
                 proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
-                return step.lit.idx;
+                return step.lit.index();
             }
             None => {
                 // Could add a req on trail len and prove that this doesn't happen, but
@@ -222,10 +223,10 @@ impl Trail {
         _                  => true,
     })]
     #[requires(!step.lit.idx_in_trail(self.trail))]
-    #[requires(unset((@self.assignments)[@step.lit.idx]))]
+    #[requires(unset((@self.assignments)[step.lit.index_logic()]))]
     #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
     #[ensures((forall<j : Int> 0 <= j && j < (@self.assignments).len() &&
-        j != @step.lit.idx ==> (@self.assignments)[j] == (@(^self).assignments)[j]))]
+        j != step.lit.index_logic() ==> (@self.assignments)[j] == (@(^self).assignments)[j]))]
     #[ensures(step.lit.sat((^self).assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *_f, (@(^self).assignments)))]
     #[ensures(match step.reason {
@@ -235,7 +236,7 @@ impl Trail {
     #[ensures((@(^self).trail).len() == 1 + (@self.trail).len())]
     #[ensures((^self).decisions == self.decisions)] // added
     pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
-        self.lit_to_level[step.lit.idx] = self.decision_level();
+        self.lit_to_level[step.lit.index()] = self.decision_level();
         let trail = &self.trail;
 
         self.assignments.set_assignment(step.lit, _f, trail);
@@ -246,7 +247,7 @@ impl Trail {
         self.trail.push(step);
         proof_assert! {
             match step.reason {
-                Reason::Long(k) => { clause_post_with_regards_to_inner((@_f.clauses)[@k], @(*self).assignments, @step.lit.idx) },
+                Reason::Long(k) => { clause_post_with_regards_to_inner((@_f.clauses)[@k], @(*self).assignments, step.lit.index_logic()) },
                     _ => true,
                 }
         };

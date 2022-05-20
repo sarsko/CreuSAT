@@ -97,7 +97,7 @@ impl Clause {
     pub fn no_duplicate_indexes(self) -> bool {
         pearlite! {
             forall<j: Int, k: Int> 0 <= j && j < (@self).len() &&
-                 0 <= k && k < j ==> !(@(@self)[k].idx == @(@self)[j].idx)
+                 0 <= k && k < j ==> !((@self)[k].index_logic() == (@self)[j].index_logic())
         }
     }
 
@@ -168,8 +168,8 @@ impl Clause {
     #[requires(_f.invariant())]
     #[requires(a.invariant(*_f))]
     #[ensures(exists<j: Int> 0 <= j && j < (@self).len() && (@self)[j] == result)]
-    #[ensures(@result.idx < (@a).len())]
-    #[ensures(unset((@a)[@result.idx]))]
+    #[ensures(result.index_logic() < (@a).len())]
+    #[ensures(unset((@a)[result.index_logic()]))]
     pub fn get_unit(&self, a: &Assignments, _f: &Formula) -> Lit {
         let mut i: usize = 0;
         #[invariant(not_unset, forall<j: Int> 0 <= j && j < @i ==> !(@self)[j].unset(*a))]

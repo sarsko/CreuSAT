@@ -172,16 +172,16 @@ impl Assignments {
                 // mutable, then I can swap to index 0 and skip the call to clause.get_unit()
                 let lit = clause.get_unit(self, f);
                 proof_assert!(clause.invariant((@self).len()));
-                proof_assert!(lemma_unit_wrong_polarity_unsat_formula(*clause, *f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
-                proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() && !(@(@clause)[j].idx == @lit.idx) ==> !((@clause)[j].unset(*self)));
-                proof_assert!(lemma_unit_forces(*f, @self, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
+                proof_assert!(lemma_unit_wrong_polarity_unsat_formula(*clause, *f, @self, lit.index_logic(), bool_to_assignedstate(lit.polarity)); true);
+                proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() && !((@clause)[j].index_logic() == lit.index_logic()) ==> !((@clause)[j].unset(*self)));
+                proof_assert!(lemma_unit_forces(*f, @self, lit.index_logic(), bool_to_assignedstate(lit.polarity)); true);
                 if lit.polarity {
-                    self.0[lit.idx] = 1;
+                    self.0[lit.index()] = 1;
                 } else {
-                    self.0[lit.idx] = 0;
+                    self.0[lit.index()] = 0;
                 }
-                proof_assert!(lemma_extension_sat_base_sat(*f, @@_old_a, @lit.idx, bool_to_assignedstate(lit.polarity)); true);
-                proof_assert!(lemma_extensions_unsat_base_unsat(@@_old_a, @lit.idx, *f); true);
+                proof_assert!(lemma_extension_sat_base_sat(*f, @@_old_a, lit.index_logic(), bool_to_assignedstate(lit.polarity)); true);
+                proof_assert!(lemma_extensions_unsat_base_unsat(@@_old_a, lit.index_logic(), *f); true);
                 proof_assert!(^self == ^@_old_a);
                 return ClauseState::Unit;
             }

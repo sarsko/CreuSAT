@@ -53,12 +53,12 @@ pub fn equisat_extension_inner(c: Clause, f: (Seq<Clause>, Int)) -> bool {
 pub fn no_duplicate_indexes_inner(s: Seq<Lit>) -> bool {
     pearlite! {
         forall<j: Int, k: Int> 0 <= j && j < s.len() &&
-                0 <= k && k < j ==> !(@s[k].idx == @s[j].idx)
+                0 <= k && k < j ==> !(s[k].index_logic() == s[j].index_logic())
     }
     /*
     pearlite! {
         forall<j: Int, k: Int> 0 <= j && j < s.len() &&
-                k != j ==> !(@s[k].idx == @s[j].idx)
+                k != j ==> !(s[k].index_logic() == s[j].index_logic())
     }
     */
 }
@@ -93,7 +93,7 @@ impl Clause {
     pub fn eq_assn_inner(self, a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < (@self).len() ==>
-                a[@(@self)[i].idx] == a2[@(@self)[i].idx]
+                a[(@self)[i].index_logic()] == a2[(@self)[i].index_logic()]
         }
     }
 }
@@ -131,8 +131,8 @@ impl Clause {
                 (@self.rest)[i].polarity == (@other.rest)[i].polarity
                 */
             forall<i: Int, j: Int> 0 <= i && i < (@self).len() && 0 <= j && j < (@other).len() ==>
-                ((@(@self)[i].idx != exception &&
-                @(@self)[i].idx == @(@other)[j].idx)) ==>
+                (((@self)[i].index_logic() != exception &&
+                (@self)[i].index_logic() == (@other)[j].index_logic())) ==>
                 (@self)[i].polarity == (@other)[j].polarity
         }
     }
@@ -152,24 +152,24 @@ impl Clause {
     #[predicate]
     pub fn resolvent_of_idx(self, c: Clause, c2: Clause, idx: Int) -> bool {
         pearlite! {
-            (forall<i: Int> 0 <= i && i < (@c ).len() && @(@c )[i].idx != idx ==> (@c   )[i].lit_in(self)) &&
-            (forall<i: Int> 0 <= i && i < (@c2).len() && @(@c2)[i].idx != idx ==> (@c2  )[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < (@c ).len() && (@c )[i].index_logic() != idx ==> (@c   )[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < (@c2).len() && (@c2)[i].index_logic() != idx ==> (@c2  )[i].lit_in(self)) &&
             (forall<i: Int> 0 <= i && i < (@self).len()                       ==> ((@self)[i].lit_in(c)
                                                                               ||  (@self)[i].lit_in(c2))) &&
             (exists<k: Int, m: Int> 0 <= k && k < (@c2).len() && 0 <= m && m < (@c).len() &&
-                @(@c)[m].idx == idx && @(@c2)[k].idx == idx && (@c2)[k].is_opp((@c)[m]))
+                (@c)[m].index_logic() == idx && (@c2)[k].index_logic() == idx && (@c2)[k].is_opp((@c)[m]))
         }
     }
 
     #[predicate]
     pub fn resolvent_of_idx2(self, c: Clause, c2: Clause, idx: Int, c_idx: Int) -> bool {
         pearlite! {
-            (forall<i: Int> 0 <= i && i < (@c ).len() && @(@c )[i].idx != idx ==> (@c   )[i].lit_in(self)) &&
-            (forall<i: Int> 0 <= i && i < (@c2).len() && @(@c2)[i].idx != idx ==> (@c2  )[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < (@c ).len() && (@c )[i].index_logic() != idx ==> (@c   )[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < (@c2).len() && (@c2)[i].index_logic() != idx ==> (@c2  )[i].lit_in(self)) &&
             (forall<i: Int> 0 <= i && i < (@self).len()                       ==> ((@self)[i].lit_in(c)
                                                                               ||  (@self)[i].lit_in(c2))) &&
 
-            (0 <= c_idx && c_idx < (@c).len() && @(@c)[c_idx].idx == idx &&
+            (0 <= c_idx && c_idx < (@c).len() && (@c)[c_idx].index_logic() == idx &&
                 (exists<k: Int> 0 <= k && k < (@c2).len() &&
                     (@c2)[k].is_opp((@c)[c_idx])))
         }

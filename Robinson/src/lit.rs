@@ -15,6 +15,15 @@ pub struct Lit {
     pub polarity: bool,
 }
 
+// Logic
+impl Lit {
+    #[logic]
+    #[why3::attr = "inline:trivial"]
+    pub fn index_logic(self) -> Int {
+        pearlite! { @self.idx }
+    }
+}
+
 // Predicates
 impl Lit {
     #[predicate]
@@ -81,6 +90,13 @@ impl Lit {
 }
 
 impl Lit {
+    #[inline(always)]
+    #[cfg_attr(feature = "trust_lit", trusted)]
+    #[ensures(@result == self.index_logic())]
+    pub fn index(self) -> usize {
+        self.idx
+    }
+
     #[inline]
     #[requires(self.invariant((@a).len()))]
     #[ensures(result == self.sat(*a))]

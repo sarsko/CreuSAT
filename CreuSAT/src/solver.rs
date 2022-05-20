@@ -66,11 +66,11 @@ update_fast_average (double *average, unsigned value)
 #[ensures(@result.0 < (@clause).len())]
 pub fn get_asserting_level(clause: &Clause, trail: &Trail, f: &Formula) -> (usize, usize) {
     let mut max_i: usize = 1;
-    let mut max_level = trail.lit_to_level[clause.rest[1].idx];
+    let mut max_level = trail.lit_to_level[clause.rest[1].index()];
     let mut i: usize = 2;
     #[invariant(max_i_less, @max_i < (@clause.rest).len())]
     while i < clause.rest.len() {
-        let level = trail.lit_to_level[clause.rest[i].idx];
+        let level = trail.lit_to_level[clause.rest[i].index()];
         if level > max_level {
             max_level = level;
             max_i = i;
@@ -152,7 +152,7 @@ impl Solver {
         let mut lbd: usize = 0;
         #[invariant(lbd_bound, @lbd <= @i)]
         while i < f.clauses[cref].rest.len() {
-            let level = t.lit_to_level[f.clauses[cref].rest[i].idx];
+            let level = t.lit_to_level[f.clauses[cref].rest[i].index()];
             if level < self.perm_diff.len() && // Lazy
                 self.perm_diff[level] != self.num_conflicts
             {
