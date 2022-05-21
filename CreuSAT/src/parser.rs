@@ -19,30 +19,33 @@ where
     let file = File::open(filename)?;
     Ok(io::BufReader::new(file).lines())
 }
-
 #[cfg(not(feature = "contracts"))]
 pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
     /*
     let mut problem_type = "";
     let mut num_clauses = 0;
     */
+    use std::collections::HashSet;
     let mut num_literals = 0;
     let mut num_lits_set = false;
     let mut out_clauses = vec![];
     let mut curr_clause = vec![];
     let mut line_cntr = 0;
+    let mut max_literal: usize = 0;
     if let Ok(lines) = read_lines(infile) {
         for line in lines {
             line_cntr += 1;
             if let Ok(line) = line {
                 let split = line.split(" ").filter(|e| e != &"").collect::<Vec<_>>();
                 if split.len() > 0 {
-                    match split[0] {
-                        "c" => {}
-                        "p" => match split[2].parse::<usize>() {
+                    match split[0].chars().nth(0).unwrap() {
+                        'c' => {}
+                        'p' => match split[2].parse::<usize>() {
                             Ok(n) => {
                                 if num_lits_set {
-                                    return Err("Error in input file - multiple p lines".to_string());
+                                    return Err(
+                                        "Error in input file - multiple p lines".to_string()
+                                    );
                                 }
                                 num_lits_set = true;
                                 num_literals = n
@@ -51,10 +54,11 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                                 return Err("Error in input file".to_string());
                             }
                         },
-                        "%" => {
+                        '%' => {
                             break;
                         } // The Satlib files follow this convention
                         _ => {
+                            let mut seen = HashSet::new();
                             for e in split {
                                 match e.parse::<i32>() {
                                     Ok(n) => {
@@ -62,11 +66,21 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                                             out_clauses.push(curr_clause);
                                             curr_clause = vec![];
                                         } else {
-                                            curr_clause.push(n);
+                                            let n_abs = n.abs() as usize;
+                                            if n_abs > max_literal {
+                                                max_literal = n_abs;
+                                            }
+                                            if !seen.contains(&n) {
+                                                curr_clause.push(n);
+                                                seen.insert(n);
+                                            } 
                                         }
                                     }
                                     Err(_) => {
-                                        return Err(format!("Error in input file on line {}", line_cntr.to_string()));
+                                        return Err(format!(
+                                            "Error in input file on line {}",
+                                            line_cntr.to_string()
+                                        ));
                                     }
                                 }
                             }
@@ -79,8 +93,11 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
         return Err("File not found!".to_string());
     }
     if !num_lits_set {
-        // tmp
         //return Err("Error in input file - no p line".to_string());
+    }
+    if num_literals != max_literal {
+        //return Err("p line does not match the actual number of literals".to_string());
+        num_literals = max_literal;
     }
     if curr_clause.len() > 0 {
         return Err("Error in input file - last clause not terminated".to_string());
