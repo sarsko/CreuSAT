@@ -70,7 +70,7 @@ impl Formula {
         }
         let mut i: usize = 0;
         #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@self.clauses)[j].invariant(@self.num_vars))]
-        #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@(@self.clauses)[j]).len() > 0)]
+        #[invariant(clause_len, forall<j: Int> 0 <= j && j < @i ==> (@(@self.clauses)[j]).len() > 0)]
         while i < self.clauses.len() {
             if !self.clauses[i].check_clause_invariant(self.num_vars) {
                 return SatResult::Err;
@@ -91,7 +91,7 @@ impl Formula {
     pub fn is_clause_sat(&self, idx: usize, a: &Assignments) -> bool {
         let clause = &self.clauses[idx];
         let mut i: usize = 0;
-        #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==> !(@clause)[j].sat(*a))]
+        #[invariant(previous_not_sat, forall<j: Int> 0 <= j && j < @i ==> !(@clause)[j].sat(*a))]
         while i < clause.rest.len() {
             if clause.rest[i].lit_sat(a) {
                 return true;
@@ -125,7 +125,7 @@ impl Formula {
     #[maintains((*trail).invariant(mut self))]
     #[maintains((mut self).invariant())]
     #[maintains((*watches).invariant(mut self))]
-    #[requires((@(@self.clauses)[@cref]).len() >= 2)]
+    //#[requires((@(@self.clauses)[@cref]).len() >= 2)]
     #[requires((@(@self.clauses)[@cref]).len() > @j)]
     #[requires((@(@self.clauses)[@cref]).len() > @k)]
     #[requires(@self.num_vars < @usize::MAX/2)]
@@ -146,7 +146,6 @@ impl Formula {
         proof_assert!(^@old_f == ^self);
     }
 
-    // Needs some help on inlining/splitting, but checks out
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains(_t.invariant(mut self))]
@@ -157,7 +156,7 @@ impl Formula {
     #[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(equisat_extension_inner(clause, @self))]
     #[ensures(@self.num_vars == @(^self).num_vars)]
-    #[ensures(self.equisat_compatible(^self))]
+    //#[ensures(self.equisat_compatible(^self))] // Not needed
     #[ensures(self.equisat(^self))] // Added/changed
     #[ensures(@result == (@self.clauses).len())]
     #[ensures((@(^self).clauses)[@result] == clause)]
@@ -176,7 +175,6 @@ impl Formula {
         watches.add_watcher(second_lit, cref, self);
         proof_assert!(^@old_self == ^self);
         proof_assert!((@old_self).equisat_compatible(*self));
-        // This is just the trail invariant unwrapped
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
@@ -191,7 +189,7 @@ impl Formula {
     #[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(equisat_extension_inner(clause, @self))]
     #[ensures(@self.num_vars == @(^self).num_vars)]
-    #[ensures(self.equisat_compatible(^self))]
+    //#[ensures(self.equisat_compatible(^self))]
     #[ensures(self.equisat(^self))] // Added/changed
     #[ensures(@result == (@self.clauses).len())]
     #[ensures((@(^self).clauses)[@result] == clause)]
@@ -202,7 +200,6 @@ impl Formula {
         self.clauses.push(clause);
         proof_assert!(^@old_self == ^self);
         proof_assert!((@old_self).equisat_compatible(*self));
-        // This is just the trail invariant unwrapped
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }

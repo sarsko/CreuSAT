@@ -68,7 +68,7 @@ pub fn get_asserting_level(clause: &Clause, trail: &Trail, f: &Formula) -> (usiz
     let mut max_i: usize = 1;
     let mut max_level = trail.lit_to_level[clause.rest[1].index()];
     let mut i: usize = 2;
-    #[invariant(max_i_less, @max_i < (@clause.rest).len())]
+    #[invariant(max_i_less, @max_i < (@clause).len())]
     while i < clause.rest.len() {
         let level = trail.lit_to_level[clause.rest[i].index()];
         if level > max_level {
@@ -92,11 +92,11 @@ pub struct Solver {
     pub perm_diff: Vec<usize>,
 }
 /*
+// MicroSat
 if (S->fast > (S->slow / 100) * 125) {                        // If fast average is substantially larger than slow average
-    //        printf("c restarting after %i conflicts (%i %i) %i\n", S->res, S->fast, S->slow, S->nLemmas > S->maxLemmas);
-            S->res = 0; S->fast = (S->slow / 100) * 125; restart (S);   // Restart and update the averages
-            if (S->nLemmas > S->maxLemmas) reduceDB (S, 6); } }
-            */
+    S->res = 0; S->fast = (S->slow / 100) * 125; restart (S);   // Restart and update the averages
+        if (S->nLemmas > S->maxLemmas) reduceDB (S, 6); } }
+*/
 
 impl Solver {
     #[cfg_attr(feature = "trust_solver", trusted)]
@@ -175,9 +175,9 @@ impl Solver {
         //proof_assert!(unset((@t.assignments)[@step.lit.idx]));
         if f.clauses[cref].unit_and_unset(&t.assignments, f) {
             t.enq_assignment(step, f);
-            self.increase_num_lemmas();
-            self.increase_num_conflicts();
         }
+        self.increase_num_lemmas();
+        self.increase_num_conflicts();
     }
 
     #[cfg_attr(feature = "trust_solver", trusted)]
@@ -187,7 +187,7 @@ impl Solver {
     #[maintains((mut d).invariant(@f.num_vars))]
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(@cref < (@f.clauses).len())]
-    #[requires((@f.clauses)[@cref].unsat(t.assignments))] // added
+    #[requires((@f.clauses)[@cref].unsat(t.assignments))]
     #[ensures(@f.num_vars == @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
     #[ensures(match result {
@@ -205,7 +205,7 @@ impl Solver {
             }
             Conflict::Unit(clause) => {
                 // Okay, so the ordering here is weird. The reason for this is that the derived
-                // unit clause is an equisat extension of f, but not necessarily f after reduction.
+                // unit clause is an equisat extension of f, but not necessarily f after reduction (even though reduction maintains equisat).
                 // All of this should be looked into with regards to implementing garbage collection.
                 let cref = f.add_unit(clause, t);
                 match t.learn_unit(cref, f, d) {

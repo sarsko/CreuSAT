@@ -61,7 +61,7 @@ fn idx_in(v: &Vec<Lit>, idx: usize) -> bool {
 fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &Assignments) -> Clause {
     let mut new: Vec<Lit> = Vec::new();
     let mut i: usize = 0;
-    #[invariant(i_less, @i <= (@c.rest).len())]
+    #[invariant(i_less, @i <= (@c).len())]
     #[invariant(new_elems, forall<j: Int> 0 <= j && j < (@new).len() ==>
         (@new)[j].invariant(@_f.num_vars))]
     #[invariant(no_dups, forall<j: Int, k: Int> 0 <= j && j < (@new).len() && 0 <= k && k < j ==>
@@ -85,7 +85,7 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
             (@c)[j].lit_in_internal(@new));
         } else {
             new.push(c.rest[i]);
-            proof_assert!((@new)[(@new).len() - 1] == (@c.rest)[@i]);
+            proof_assert!((@new)[(@new).len() - 1] == (@c)[@i]);
             proof_assert!((@new)[(@new).len() - 1].lit_in(*c));
             proof_assert!((@c)[@i].lit_in_internal(@new));
             proof_assert!((@c)[@i].index_logic() != @idx);

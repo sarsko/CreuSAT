@@ -7,7 +7,6 @@ use crate::{assignments::*, formula::*, lit::*, util::*};
 #[cfg(feature = "contracts")]
 use crate::logic::{logic::unset, logic_decision::*, logic_util::*};
 
-//#[derive(Debug, Clone, PartialEq, Eq)]
 #[derive(Clone, Copy)]
 pub struct Node {
     pub next: usize,
@@ -33,7 +32,6 @@ pub struct Decisions {
     pub search: usize,
 }
 
-//pub const INVALID: usize = usize::MAX;
 
 impl Decisions {
     // It is possible to sacrifice some readability for a tad faster proofs here(by adding assertions).
@@ -92,7 +90,7 @@ impl Decisions {
             let curr_clause = &f.clauses[i];
             let mut j: usize = 0;
             #[invariant(i_bound2, @i <= (@f.clauses).len())]
-            #[invariant(j_bound, @j <= (@curr_clause.rest).len())]
+            #[invariant(j_bound, @j <= (@curr_clause).len())]
             #[invariant(counts_len, (@counts).len() == @f.num_vars)]
             while j < curr_clause.rest.len() {
                 // Okay this is obviously provable, a vector cannot be longer than usize, and we don't allow duplicates, so we will

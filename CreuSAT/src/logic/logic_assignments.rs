@@ -22,14 +22,6 @@ impl Model for Assignments {
 }
 
 #[predicate]
-pub fn assignments_equality(a: Assignments, a2: Assignments) -> bool {
-    pearlite! {
-        (@a).len() == (@a2).len() &&
-            forall<i: Int> 0 <= i && i < (@a).len() ==> (@a)[i] == (@a2)[i]
-    }
-}
-
-#[predicate]
 pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     pearlite! {
         a.len() == a2.len() && (forall<i: Int> 0 <= i && i < a.len() ==>
