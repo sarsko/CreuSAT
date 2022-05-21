@@ -2,38 +2,30 @@ use ::std::ops;
 
 use crate::{assignments::*};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Eq, PartialEq)]
 pub struct Lit {
-    pub idx: usize,
-    pub polarity: bool,
+    code: u32
 }
-
 
 impl Lit {
     pub fn index(self) -> usize {
-        self.idx
+        (self.code >> 1) as usize
     }
 
     pub fn is_positive(self) -> bool {
-        self.polarity
+        self.code & 1 != 0
     }
 
-    pub fn check_lit_invariant(&self, n: usize) -> bool {
+    pub fn check_lit_invariant(self, n: usize) -> bool {
         return self.index() < n;
     }
 
     pub fn lit_sat(self, a: &Assignments) -> bool {
-        match self.is_positive() {
-            true => (a.0[self.index()] == 1),
-            false => (a.0[self.index()] == 0),
-        }
+        a.0[self.index()] == self.is_positive() as u8
     }
 
     pub fn lit_unsat(self, a: &Assignments) -> bool {
-        match self.is_positive() {
-            true => (a.0[self.index()] == 0),
-            false => (a.0[self.index()] == 1),
-        }
+        a.0[self.index()] != self.is_positive() as u8
     }
 
     pub fn lit_unset(self, a: &Assignments) -> bool {
@@ -44,32 +36,24 @@ impl Lit {
         a.0[self.index()] < 2
     }
 
-    pub fn to_watchidx(&self) -> usize {
-        self.index() * 2 + if self.is_positive() { 0 } else { 1 }
+    pub fn to_watchidx(self) -> usize {
+        self.code as usize
     }
-    pub fn to_neg_watchidx(&self) -> usize {
-        self.index() * 2 + if self.is_positive() { 1 } else { 0 }
+    pub fn to_neg_watchidx(self) -> usize {
+        (!self).code as usize
     }
 
     pub fn phase_saved(idx: usize, assignments: &Assignments) -> Lit {
         Lit {
-            idx: idx,
-            polarity: if assignments.0[idx] == 1 { true } else { false },
+            code: (idx << 1) as u32 | ((assignments.0[idx] == 1) as u32)
         }
     }
 
     // This is only called in the parser
     pub fn new(idx: usize, polarity: bool) -> Lit {
         Lit {
-            idx: idx,
-            polarity: polarity,
+            code: (idx << 1) as u32 | (polarity as u32)
         }
-    }
-}
-
-impl PartialEq for Lit {
-    fn eq(&self, other: &Lit) -> bool {
-        self.index() == other.index() && self.is_positive() == other.is_positive()
     }
 }
 
@@ -78,6 +62,6 @@ impl ops::Not for Lit {
 
     #[inline]
     fn not(self) -> Lit {
-        Lit { idx: self.index(), polarity: !self.is_positive() }
+        Lit { code: self.code ^ 1 }
     }
 }

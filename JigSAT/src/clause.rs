@@ -74,15 +74,4 @@ impl Clause {
         self.rest.pop();
     }
 
-    // This is an ugly runtime check
-    pub fn unit_and_unset(&self, a: &Assignments, _f: &Formula) -> bool {
-        let mut i: usize = 1;
-        while i < self.rest.len() {
-            if !self.rest[i].lit_unsat(a) {
-                return false;
-            }
-            i += 1;
-        }
-        return self.rest[0].lit_unset(a);
-    }
 }

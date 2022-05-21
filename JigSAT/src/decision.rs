@@ -61,11 +61,7 @@ impl Decisions {
             let curr_clause = &f.clauses[i];
             let mut j: usize = 0;
             while j < curr_clause.rest.len() {
-                // Okay this is obviously provable, a vector cannot be longer than usize, and we don't allow duplicates, so we will
-                // never overflow, even if every clause contains a literal,
-                if counts[curr_clause.rest[j].index()] < usize::MAX - 1 {
-                    counts[curr_clause.rest[j].index()] += 1;
-                }
+                counts[curr_clause.rest[j].index()] += 1;
                 j += 1;
             }
             i += 1;

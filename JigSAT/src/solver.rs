@@ -117,9 +117,7 @@ impl Solver {
         let mut lbd: usize = 0;
         while i < f.clauses[cref].rest.len() {
             let level = t.lit_to_level[f.clauses[cref].rest[i].index()];
-            if level < self.perm_diff.len() && // Lazy
-                self.perm_diff[level] != self.num_conflicts
-            {
+            if self.perm_diff[level] != self.num_conflicts {
                 self.perm_diff[level] = self.num_conflicts;
                 lbd += 1;
             }
