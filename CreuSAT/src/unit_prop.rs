@@ -3,7 +3,7 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*, watches::*};
+use crate::{formula::*, lit::*, trail::*, watches::*};
 
 use crate::logic::{
     logic::*,

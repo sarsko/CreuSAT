@@ -4,7 +4,7 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::{assignments::*, clause::*, lit::*, solver::*, trail::*, watches::*};
+use crate::{assignments::*, clause::*, solver::*, trail::*, watches::*};
 
 #[cfg(feature = "contracts")]
 use crate::logic::{
@@ -18,36 +18,6 @@ use crate::logic::{
 pub struct Formula {
     pub clauses: Vec<Clause>,
     pub num_vars: usize,
-}
-
-//#[derive(Copy, Clone, Eq)]
-pub enum SatState {
-    Unknown,
-    Sat,
-    Unsat,
-}
-
-#[cfg(feature = "contracts")]
-impl Model for SatState {
-    type ModelTy = SatState;
-
-    #[logic]
-    fn model(self) -> Self {
-        self
-    }
-}
-
-impl PartialEq for SatState {
-    #[cfg_attr(feature = "trust_formula", trusted)]
-    #[ensures(result == (self == other))]
-    fn eq(&self, other: &Self) -> bool {
-        return match (self, other) {
-            (SatState::Unknown, SatState::Unknown) => true,
-            (SatState::Sat, SatState::Sat) => true,
-            (SatState::Unsat, SatState::Unsat) => true,
-            _ => false,
-        };
-    }
 }
 
 impl Formula {

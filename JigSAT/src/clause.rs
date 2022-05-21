@@ -1,4 +1,4 @@
-use crate::{assignments::*, formula::*, lit::*};
+use crate::{formula::*, lit::*};
 
 pub struct Clause {
     pub deleted: bool,
@@ -10,15 +10,6 @@ impl Clone for Clause {
     fn clone(&self) -> Self {
         Clause { deleted: self.deleted, rest: self.rest.clone() }
     }
-}
-
-//#[derive(Copy, Clone, Eq)]
-pub enum ClauseState {
-    Sat,
-    Unsat,
-    Unit,
-    Unknown,
-    Err(usize),
 }
 
 impl Clause {

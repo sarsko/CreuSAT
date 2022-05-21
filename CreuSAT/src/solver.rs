@@ -3,7 +3,7 @@ use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 use crate::{
-    assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, lit::*, trail::*, unit_prop::*, util::*,
+    assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, trail::*, unit_prop::*, util::*,
     watches::*,
 };
 

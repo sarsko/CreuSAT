@@ -5,25 +5,6 @@ pub struct Formula {
     pub num_vars: usize,
 }
 
-//#[derive(Copy, Clone, Eq)]
-pub enum SatState {
-    Unknown,
-    Sat,
-    Unsat,
-}
-
-
-impl PartialEq for SatState {
-    fn eq(&self, other: &Self) -> bool {
-        return match (self, other) {
-            (SatState::Unknown, SatState::Unknown) => true,
-            (SatState::Sat, SatState::Sat) => true,
-            (SatState::Unsat, SatState::Unsat) => true,
-            _ => false,
-        };
-    }
-}
-
 impl Formula {
     pub fn check_formula_invariant(&self) -> SatResult {
         if self.num_vars >= usize::MAX / 2 {

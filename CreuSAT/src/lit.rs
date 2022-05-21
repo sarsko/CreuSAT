@@ -3,7 +3,7 @@ use ::std::ops;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::{assignments::*, clause::*, trail::*};
+use crate::{assignments::*};
 
 #[cfg(feature = "contracts")]
 use crate::logic::logic_lit::*;

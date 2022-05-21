@@ -242,11 +242,6 @@ module Type
     match (self) with
       | CreuSat_Decision_Decisions _ a _ _ -> a
       end
-  type creusat_formula_satstate  = 
-    | CreuSat_Formula_SatState_Unknown
-    | CreuSat_Formula_SatState_Sat
-    | CreuSat_Formula_SatState_Unsat
-    
   type creusat_solver_satresult  = 
     | CreuSat_Solver_SatResult_Sat (alloc_vec_vec uint8 (alloc_alloc_global))
     | CreuSat_Solver_SatResult_Unsat
@@ -10305,108 +10300,7 @@ module CreuSat_Decision_Impl1_GetNext
   }
   
 end
-module CreuSat_Formula_Impl0_Model_Interface
-  use Type
-  function model (self : Type.creusat_formula_satstate) : Type.creusat_formula_satstate
-end
-module CreuSat_Formula_Impl0_Model
-  use Type
-  function model (self : Type.creusat_formula_satstate) : Type.creusat_formula_satstate = 
-    self
-end
-module CreuSat_Formula_Impl1_Eq_Interface
-  use prelude.Prelude
-  use Type
-  val eq [@cfg:stackify] (self : Type.creusat_formula_satstate) (other : Type.creusat_formula_satstate) : bool
-    ensures { result = (self = other) }
-    
-end
-module CreuSat_Formula_Impl1_Eq
-  use prelude.Prelude
-  use Type
-  use mach.int.Int
-  use mach.int.Int64
-  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve1 with type t = Type.creusat_formula_satstate
-  clone CreusotContracts_Logic_Resolve_Impl0_Resolve as Resolve0 with type t1 = Type.creusat_formula_satstate,
-  type t2 = Type.creusat_formula_satstate, predicate Resolve0.resolve = Resolve1.resolve,
-  predicate Resolve1.resolve = Resolve1.resolve
-  let rec cfg eq [@cfg:stackify] (self : Type.creusat_formula_satstate) (other : Type.creusat_formula_satstate) : bool
-    ensures { result = (self = other) }
-    
-   = 
-  var _0 : bool;
-  var self_1 : Type.creusat_formula_satstate;
-  var other_2 : Type.creusat_formula_satstate;
-  var _3 : ();
-  var _4 : (Type.creusat_formula_satstate, Type.creusat_formula_satstate);
-  var _5 : Type.creusat_formula_satstate;
-  var _6 : Type.creusat_formula_satstate;
-  var _7 : isize;
-  var _8 : isize;
-  var _9 : isize;
-  var _10 : isize;
-  {
-    self_1 <- self;
-    other_2 <- other;
-    goto BB0
-  }
-  BB0 {
-    _5 <- self_1;
-    _6 <- other_2;
-    _4 <- (_5, _6);
-    switch (let (a, _) = _4 in a)
-      | Type.CreuSat_Formula_SatState_Unknown -> goto BB1
-      | Type.CreuSat_Formula_SatState_Sat -> goto BB3
-      | Type.CreuSat_Formula_SatState_Unsat -> goto BB4
-      end
-  }
-  BB1 {
-    assume { Resolve0.resolve _4 };
-    switch (let (_, a) = _4 in a)
-      | Type.CreuSat_Formula_SatState_Unknown -> goto BB5
-      | _ -> goto BB2
-      end
-  }
-  BB2 {
-    _0 <- false;
-    goto BB8
-  }
-  BB3 {
-    assume { Resolve0.resolve _4 };
-    switch (let (_, a) = _4 in a)
-      | Type.CreuSat_Formula_SatState_Sat -> goto BB6
-      | _ -> goto BB2
-      end
-  }
-  BB4 {
-    assume { Resolve0.resolve _4 };
-    switch (let (_, a) = _4 in a)
-      | Type.CreuSat_Formula_SatState_Unsat -> goto BB7
-      | _ -> goto BB2
-      end
-  }
-  BB5 {
-    _0 <- true;
-    goto BB8
-  }
-  BB6 {
-    _0 <- true;
-    goto BB8
-  }
-  BB7 {
-    _0 <- true;
-    goto BB8
-  }
-  BB8 {
-    return _0
-  }
-  BB9 {
-    assume { Resolve0.resolve _4 };
-    goto BB2
-  }
-  
-end
-module CreuSat_Formula_Impl2_CheckFormulaInvariant_Interface
+module CreuSat_Formula_Impl0_CheckFormulaInvariant_Interface
   use Type
   use mach.int.Int
   use mach.int.Int32
@@ -10431,7 +10325,7 @@ module CreuSat_Formula_Impl2_CheckFormulaInvariant_Interface
       end }
     
 end
-module CreuSat_Formula_Impl2_CheckFormulaInvariant
+module CreuSat_Formula_Impl0_CheckFormulaInvariant
   use Type
   use mach.int.Int
   use mach.int.Int32
@@ -10822,7 +10716,7 @@ module CreuSat_Lit_Impl1_LitSat
   }
   
 end
-module CreuSat_Formula_Impl2_IsClauseSat_Interface
+module CreuSat_Formula_Impl0_IsClauseSat_Interface
   use mach.int.UInt64
   use seq.Seq
   use mach.int.Int
@@ -10842,7 +10736,7 @@ module CreuSat_Formula_Impl2_IsClauseSat_Interface
     ensures { result = Sat0.sat (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses self)) (UInt64.to_int idx)) a }
     
 end
-module CreuSat_Formula_Impl2_IsClauseSat
+module CreuSat_Formula_Impl0_IsClauseSat
   use mach.int.UInt64
   use seq.Seq
   use mach.int.Int
@@ -11218,7 +11112,7 @@ module CreuSat_Logic_Logic_LemmaSwapMaintainsPostUnit_Impl
    = 
     let _ = LemmaSwapClauseNoDups0.lemma_swap_clause_no_dups c c2 a b in ()
 end
-module CreuSat_Formula_Impl2_SwapLitsInClause_Interface
+module CreuSat_Formula_Impl0_SwapLitsInClause_Interface
   use mach.int.UInt64
   use seq.Seq
   use mach.int.Int
@@ -11251,7 +11145,7 @@ module CreuSat_Formula_Impl2_SwapLitsInClause_Interface
     ensures { Invariant2.invariant' trail ( ^ self) }
     
 end
-module CreuSat_Formula_Impl2_SwapLitsInClause
+module CreuSat_Formula_Impl0_SwapLitsInClause
   use mach.int.UInt64
   use seq.Seq
   use mach.int.Int
@@ -11777,7 +11671,7 @@ module CreuSat_Watches_Impl0_AddWatcher
   }
   
 end
-module CreuSat_Formula_Impl2_AddClause_Interface
+module CreuSat_Formula_Impl0_AddClause_Interface
   use mach.int.UInt64
   use mach.int.Int
   use prelude.Prelude
@@ -11818,7 +11712,7 @@ module CreuSat_Formula_Impl2_AddClause_Interface
     ensures { Invariant2.invariant' ( ^ self) }
     
 end
-module CreuSat_Formula_Impl2_AddClause
+module CreuSat_Formula_Impl0_AddClause
   use mach.int.UInt64
   use mach.int.Int
   use prelude.Prelude
@@ -12101,7 +11995,7 @@ module CreuSat_Formula_Impl2_AddClause
   }
   
 end
-module CreuSat_Formula_Impl2_AddUnwatchedClause_Interface
+module CreuSat_Formula_Impl0_AddUnwatchedClause_Interface
   use mach.int.UInt64
   use mach.int.Int
   use prelude.Prelude
@@ -12142,7 +12036,7 @@ module CreuSat_Formula_Impl2_AddUnwatchedClause_Interface
     ensures { Invariant2.invariant' ( ^ self) }
     
 end
-module CreuSat_Formula_Impl2_AddUnwatchedClause
+module CreuSat_Formula_Impl0_AddUnwatchedClause
   use mach.int.UInt64
   use mach.int.Int
   use prelude.Prelude
@@ -12364,7 +12258,7 @@ module CreuSat_Formula_Impl2_AddUnwatchedClause
   }
   
 end
-module CreuSat_Formula_Impl2_MakeAssertingClauseAndWatch_Interface
+module CreuSat_Formula_Impl0_MakeAssertingClauseAndWatch_Interface
   use mach.int.UInt64
   use mach.int.Int
   use prelude.Prelude
@@ -12397,7 +12291,7 @@ module CreuSat_Formula_Impl2_MakeAssertingClauseAndWatch_Interface
     ensures { Invariant2.invariant' ( ^ self) }
     
 end
-module CreuSat_Formula_Impl2_MakeAssertingClauseAndWatch
+module CreuSat_Formula_Impl0_MakeAssertingClauseAndWatch
   use mach.int.UInt64
   use mach.int.Int
   use prelude.Prelude
@@ -12532,7 +12426,7 @@ module CreuSat_Formula_Impl2_MakeAssertingClauseAndWatch
   function ToNegWatchidxLogic0.to_neg_watchidx_logic = ToNegWatchidxLogic0.to_neg_watchidx_logic,
   function Model2.model = Model3.model, function IndexLogic0.index_logic = IndexLogic0.index_logic,
   predicate Invariant0.invariant' = Invariant0.invariant'
-  clone CreuSat_Formula_Impl2_SwapLitsInClause_Interface as SwapLitsInClause0 with function Model0.model = Model0.model,
+  clone CreuSat_Formula_Impl0_SwapLitsInClause_Interface as SwapLitsInClause0 with function Model0.model = Model0.model,
   function Model1.model = Model1.model, predicate Invariant0.invariant' = Invariant0.invariant',
   predicate Invariant1.invariant' = Invariant2.invariant', predicate Invariant2.invariant' = Invariant1.invariant',
   predicate Equisat0.equisat = Equisat0.equisat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
@@ -12670,7 +12564,7 @@ module CreuSat_Formula_Impl2_MakeAssertingClauseAndWatch
   }
   
 end
-module CreuSat_Formula_Impl2_AddAndSwapFirst_Interface
+module CreuSat_Formula_Impl0_AddAndSwapFirst_Interface
   use mach.int.UInt64
   use mach.int.Int
   use prelude.Prelude
@@ -12712,7 +12606,7 @@ module CreuSat_Formula_Impl2_AddAndSwapFirst_Interface
     ensures { Invariant2.invariant' ( ^ self) }
     
 end
-module CreuSat_Formula_Impl2_AddAndSwapFirst
+module CreuSat_Formula_Impl0_AddAndSwapFirst
   use mach.int.UInt64
   use mach.int.Int
   use prelude.Prelude
@@ -12831,11 +12725,11 @@ module CreuSat_Formula_Impl2_AddAndSwapFirst
   clone CreusotContracts_Logic_Ghost_Impl0_Model as Model11 with type t = borrowed (Type.creusat_formula_formula)
   clone CreusotContracts_Logic_Ghost_Impl1_Record_Interface as Record0 with type t = borrowed (Type.creusat_formula_formula),
   function Model0.model = Model11.model
-  clone CreuSat_Formula_Impl2_SwapLitsInClause_Interface as SwapLitsInClause0 with function Model0.model = Model2.model,
+  clone CreuSat_Formula_Impl0_SwapLitsInClause_Interface as SwapLitsInClause0 with function Model0.model = Model2.model,
   function Model1.model = Model1.model, predicate Invariant0.invariant' = Invariant0.invariant',
   predicate Invariant1.invariant' = Invariant2.invariant', predicate Invariant2.invariant' = Invariant1.invariant',
   predicate Equisat0.equisat = Equisat0.equisat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  clone CreuSat_Formula_Impl2_AddUnwatchedClause_Interface as AddUnwatchedClause0 with function Model0.model = Model0.model,
+  clone CreuSat_Formula_Impl0_AddUnwatchedClause_Interface as AddUnwatchedClause0 with function Model0.model = Model0.model,
   predicate EquisatExtensionInner0.equisat_extension_inner = EquisatExtensionInner0.equisat_extension_inner,
   function Model1.model = Model1.model,
   predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
@@ -12946,7 +12840,7 @@ module CreuSat_Formula_Impl2_AddAndSwapFirst
   }
   
 end
-module CreuSat_Formula_Impl2_AddUnit_Interface
+module CreuSat_Formula_Impl0_AddUnit_Interface
   use mach.int.UInt64
   use mach.int.Int
   use prelude.Prelude
@@ -12988,7 +12882,7 @@ module CreuSat_Formula_Impl2_AddUnit_Interface
     ensures { Invariant2.invariant' ( ^ self) }
     
 end
-module CreuSat_Formula_Impl2_AddUnit
+module CreuSat_Formula_Impl0_AddUnit
   use mach.int.UInt64
   use mach.int.Int
   use prelude.Prelude
@@ -13242,7 +13136,7 @@ module CreuSat_Logic_LogicFormula_Impl1_Sat_Impl
    = 
     let a' = Model1.model self in let b' = Model0.model a in FormulaSatInner0.formula_sat_inner a' b'
 end
-module CreuSat_Formula_Impl2_IsSat_Interface
+module CreuSat_Formula_Impl0_IsSat_Interface
   use prelude.Prelude
   use Type
   clone CreuSat_Logic_LogicFormula_Impl1_SatInner_Interface as SatInner0
@@ -13259,7 +13153,7 @@ module CreuSat_Formula_Impl2_IsSat_Interface
     ensures { result = Sat0.sat self a }
     
 end
-module CreuSat_Formula_Impl2_IsSat
+module CreuSat_Formula_Impl0_IsSat
   use prelude.Prelude
   use Type
   use mach.int.Int
@@ -13306,7 +13200,7 @@ module CreuSat_Formula_Impl2_IsSat
   predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.creusat_clause_clause,
   type a = Type.alloc_alloc_global, function Model0.model = Model0.model
-  clone CreuSat_Formula_Impl2_IsClauseSat_Interface as IsClauseSat0 with function Model0.model = Model0.model,
+  clone CreuSat_Formula_Impl0_IsClauseSat_Interface as IsClauseSat0 with function Model0.model = Model0.model,
   predicate Invariant0.invariant' = Invariant0.invariant', predicate Invariant1.invariant' = Invariant1.invariant',
   predicate Sat0.sat = Sat1.sat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
   let rec cfg is_sat [@cfg:stackify] (self : Type.creusat_formula_formula) (a : Type.creusat_assignments_assignments) : bool
@@ -13896,7 +13790,7 @@ module CreuSat_Watches_Impl0_Unwatch
   }
   
 end
-module CreuSat_Formula_Impl2_DeleteClause_Interface
+module CreuSat_Formula_Impl0_DeleteClause_Interface
   use mach.int.UInt64
   use seq.Seq
   use mach.int.Int
@@ -13926,7 +13820,7 @@ module CreuSat_Formula_Impl2_DeleteClause_Interface
     ensures { Invariant2.invariant' ( ^ watches) ( ^ self) }
     
 end
-module CreuSat_Formula_Impl2_DeleteClause
+module CreuSat_Formula_Impl0_DeleteClause
   use mach.int.UInt64
   use seq.Seq
   use mach.int.Int
@@ -14194,7 +14088,7 @@ module CreuSat_Formula_Impl2_DeleteClause
   }
   
 end
-module CreuSat_Formula_Impl2_DeleteClauses_Interface
+module CreuSat_Formula_Impl0_DeleteClauses_Interface
   use mach.int.UInt64
   use mach.int.Int
   use prelude.Prelude
@@ -14219,7 +14113,7 @@ module CreuSat_Formula_Impl2_DeleteClauses_Interface
     ensures { Invariant2.invariant' ( ^ self) }
     
 end
-module CreuSat_Formula_Impl2_DeleteClauses
+module CreuSat_Formula_Impl0_DeleteClauses
   use mach.int.UInt64
   use mach.int.Int
   use prelude.Prelude
@@ -14345,14 +14239,14 @@ module CreuSat_Formula_Impl2_DeleteClauses
   type Output0.output = Output0.output
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.creusat_clause_clause,
   type a = Type.alloc_alloc_global, function Model0.model = Model8.model
-  clone CreuSat_Formula_Impl2_IsClauseSat_Interface as IsClauseSat0 with function Model0.model = Model8.model,
+  clone CreuSat_Formula_Impl0_IsClauseSat_Interface as IsClauseSat0 with function Model0.model = Model8.model,
   predicate Invariant0.invariant' = Invariant3.invariant', predicate Invariant1.invariant' = Invariant2.invariant',
   predicate Sat0.sat = Sat1.sat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
   clone CreusotContracts_Logic_Ghost_Impl1_Record_Interface as Record0 with type t = borrowed (Type.creusat_formula_formula),
   function Model0.model = Model1.model
   clone CreusotContracts_Logic_Ghost_Impl1_Record_Interface as Record1 with type t = borrowed (Type.creusat_watches_watches),
   function Model0.model = Model0.model
-  clone CreuSat_Formula_Impl2_DeleteClause_Interface as DeleteClause0 with function Model0.model = Model8.model,
+  clone CreuSat_Formula_Impl0_DeleteClause_Interface as DeleteClause0 with function Model0.model = Model8.model,
   function Model1.model = Model9.model, predicate Invariant0.invariant' = Invariant0.invariant',
   predicate Invariant1.invariant' = Invariant2.invariant', predicate Invariant2.invariant' = Invariant1.invariant',
   predicate Equisat0.equisat = Equisat0.equisat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
@@ -14548,7 +14442,7 @@ module CreuSat_Formula_Impl2_DeleteClauses
   }
   
 end
-module CreuSat_Formula_Impl2_SimplifyFormula_Interface
+module CreuSat_Formula_Impl0_SimplifyFormula_Interface
   use mach.int.UInt64
   use mach.int.Int
   use prelude.Prelude
@@ -14572,7 +14466,7 @@ module CreuSat_Formula_Impl2_SimplifyFormula_Interface
     ensures { Invariant2.invariant' ( ^ self) }
     
 end
-module CreuSat_Formula_Impl2_SimplifyFormula
+module CreuSat_Formula_Impl0_SimplifyFormula
   use mach.int.UInt64
   use mach.int.Int
   use prelude.Prelude
@@ -14680,7 +14574,7 @@ module CreuSat_Formula_Impl2_SimplifyFormula
   predicate DecisionsInvariant0.decisions_invariant = DecisionsInvariant0.decisions_invariant
   clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve1 with type t = Type.creusat_watches_watches
   clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = Type.creusat_formula_formula
-  clone CreuSat_Formula_Impl2_DeleteClauses_Interface as DeleteClauses0 with predicate Invariant0.invariant' = Invariant0.invariant',
+  clone CreuSat_Formula_Impl0_DeleteClauses_Interface as DeleteClauses0 with predicate Invariant0.invariant' = Invariant0.invariant',
   predicate Invariant1.invariant' = Invariant1.invariant', predicate Invariant2.invariant' = Invariant2.invariant',
   predicate Equisat0.equisat = Equisat0.equisat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
   let rec cfg simplify_formula [@cfg:stackify] (self : borrowed (Type.creusat_formula_formula)) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) : ()
@@ -14726,7 +14620,7 @@ module CreuSat_Formula_Impl2_SimplifyFormula
   }
   
 end
-module CreuSat_Formula_Impl2_ReduceDb_Interface
+module CreuSat_Formula_Impl0_ReduceDb_Interface
   use mach.int.UInt64
   use mach.int.Int
   use prelude.Prelude
@@ -14752,7 +14646,7 @@ module CreuSat_Formula_Impl2_ReduceDb_Interface
     ensures { Invariant1.invariant' ( ^ self) }
     
 end
-module CreuSat_Formula_Impl2_ReduceDb
+module CreuSat_Formula_Impl0_ReduceDb
   use mach.int.UInt64
   use mach.int.Int
   use prelude.Prelude
@@ -14894,7 +14788,7 @@ module CreuSat_Formula_Impl2_ReduceDb
   function Model0.model = Model1.model
   clone CreusotContracts_Logic_Ghost_Impl1_Record_Interface as Record1 with type t = borrowed (Type.creusat_watches_watches),
   function Model0.model = Model0.model
-  clone CreuSat_Formula_Impl2_DeleteClause_Interface as DeleteClause0 with function Model0.model = Model7.model,
+  clone CreuSat_Formula_Impl0_DeleteClause_Interface as DeleteClause0 with function Model0.model = Model7.model,
   function Model1.model = Model8.model, predicate Invariant0.invariant' = Invariant0.invariant',
   predicate Invariant1.invariant' = Invariant1.invariant', predicate Invariant2.invariant' = Invariant2.invariant',
   predicate Equisat0.equisat = Equisat0.equisat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
@@ -15676,6 +15570,32 @@ module CreuSat_Lit_Impl3_Not
     return _0
   }
   
+end
+module CreuSat_Logic_Logic_Pos_Interface
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  function pos (_ : ()) : uint8
+end
+module CreuSat_Logic_Logic_Pos
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  function pos (_ : ()) : uint8 = 
+    (1 : uint8)
+end
+module CreuSat_Logic_Logic_Neg_Interface
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  function neg (_ : ()) : uint8
+end
+module CreuSat_Logic_Logic_Neg
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  function neg (_ : ()) : uint8 = 
+    (0 : uint8)
 end
 module CreuSat_Logic_Logic_LemmaPermutClauseOk_Interface
   use mach.int.Int
@@ -16584,32 +16504,6 @@ module CreuSat_Logic_Logic_FlipV
   use mach.int.Int32
   function flip_v (v : uint8) : uint8 = 
     if UInt8.to_int v = 0 then (1 : uint8) else if UInt8.to_int v = 1 then (0 : uint8) else v
-end
-module CreuSat_Logic_Logic_Pos_Interface
-  use mach.int.Int
-  use prelude.Prelude
-  use prelude.UInt8
-  function pos (_ : ()) : uint8
-end
-module CreuSat_Logic_Logic_Pos
-  use mach.int.Int
-  use prelude.Prelude
-  use prelude.UInt8
-  function pos (_ : ()) : uint8 = 
-    (1 : uint8)
-end
-module CreuSat_Logic_Logic_Neg_Interface
-  use mach.int.Int
-  use prelude.Prelude
-  use prelude.UInt8
-  function neg (_ : ()) : uint8
-end
-module CreuSat_Logic_Logic_Neg
-  use mach.int.Int
-  use prelude.Prelude
-  use prelude.UInt8
-  function neg (_ : ()) : uint8 = 
-    (0 : uint8)
 end
 module CreuSat_Logic_LogicAssignments_AssignmentsInvariant_Interface
   use seq.Seq
@@ -21392,7 +21286,7 @@ module CreuSat_Solver_Impl0_HandleLongClause
   function Model0.model = Model8.model, predicate Invariant1.invariant' = Invariant6.invariant',
   predicate Invariant2.invariant' = Invariant4.invariant',
   predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  clone CreuSat_Formula_Impl2_MakeAssertingClauseAndWatch_Interface as MakeAssertingClauseAndWatch0 with predicate Invariant0.invariant' = Invariant2.invariant',
+  clone CreuSat_Formula_Impl0_MakeAssertingClauseAndWatch_Interface as MakeAssertingClauseAndWatch0 with predicate Invariant0.invariant' = Invariant2.invariant',
   predicate Invariant1.invariant' = Invariant3.invariant', predicate Invariant2.invariant' = Invariant4.invariant',
   function Model0.model = Model8.model, function Model1.model = Model1.model,
   predicate Equisat0.equisat = Equisat0.equisat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
@@ -21405,7 +21299,7 @@ module CreuSat_Solver_Impl0_HandleLongClause
   predicate EquisatExtensionInner0.equisat_extension_inner = EquisatExtensionInner0.equisat_extension_inner,
   predicate Invariant1.invariant' = Invariant3.invariant', predicate Invariant2.invariant' = Invariant4.invariant',
   predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  clone CreuSat_Formula_Impl2_AddAndSwapFirst_Interface as AddAndSwapFirst0 with function Model0.model = Model0.model,
+  clone CreuSat_Formula_Impl0_AddAndSwapFirst_Interface as AddAndSwapFirst0 with function Model0.model = Model0.model,
   predicate EquisatExtensionInner0.equisat_extension_inner = EquisatExtensionInner0.equisat_extension_inner,
   function Model1.model = Model1.model,
   predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
@@ -22384,7 +22278,7 @@ module CreuSat_Solver_Impl0_HandleConflict
   function Model3.model = Model7.model, predicate Invariant1.invariant' = Invariant3.invariant',
   predicate Invariant2.invariant' = Invariant0.invariant', predicate Invariant3.invariant' = Invariant2.invariant',
   predicate Sat0.sat = Sat0.sat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  clone CreuSat_Formula_Impl2_AddUnit_Interface as AddUnit0 with function Model0.model = Model12.model,
+  clone CreuSat_Formula_Impl0_AddUnit_Interface as AddUnit0 with function Model0.model = Model12.model,
   predicate EquisatExtensionInner0.equisat_extension_inner = EquisatExtensionInner0.equisat_extension_inner,
   function Model1.model = Model7.model,
   predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner,
@@ -22404,10 +22298,10 @@ module CreuSat_Solver_Impl0_HandleConflict
   function Model3.model = Model11.model,
   predicate EquisatExtensionInner0.equisat_extension_inner = EquisatExtensionInner0.equisat_extension_inner,
   predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  clone CreuSat_Formula_Impl2_SimplifyFormula_Interface as SimplifyFormula0 with predicate Invariant0.invariant' = Invariant2.invariant',
+  clone CreuSat_Formula_Impl0_SimplifyFormula_Interface as SimplifyFormula0 with predicate Invariant0.invariant' = Invariant2.invariant',
   predicate Invariant1.invariant' = Invariant1.invariant', predicate Invariant2.invariant' = Invariant3.invariant',
   predicate Equisat0.equisat = Equisat0.equisat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  clone CreuSat_Formula_Impl2_ReduceDb_Interface as ReduceDb0 with predicate Invariant0.invariant' = Invariant2.invariant',
+  clone CreuSat_Formula_Impl0_ReduceDb_Interface as ReduceDb0 with predicate Invariant0.invariant' = Invariant2.invariant',
   predicate Invariant1.invariant' = Invariant3.invariant', predicate Invariant2.invariant' = Invariant1.invariant',
   predicate Equisat0.equisat = Equisat0.equisat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
   clone CreuSat_Solver_Impl0_HandleLongClause_Interface as HandleLongClause0 with function Model0.model = Model12.model,
@@ -26384,7 +26278,7 @@ module CreuSat_Solver_Impl0_OuterLoop
   clone Alloc_Vec_Impl0_New_Interface as New0 with type t = uint8, function Model0.model = Model9.model
   clone CreusotContracts_Logic_Model_Impl0_Model as Model11 with type t = Type.creusat_assignments_assignments,
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model5.model
-  clone CreuSat_Formula_Impl2_IsSat_Interface as IsSat0 with predicate Invariant0.invariant' = Invariant4.invariant',
+  clone CreuSat_Formula_Impl0_IsSat_Interface as IsSat0 with predicate Invariant0.invariant' = Invariant4.invariant',
   predicate Invariant1.invariant' = Invariant3.invariant', predicate Sat0.sat = Sat0.sat,
   predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old, function Model0.model = Model5.model,
   predicate SatInner0.sat_inner = SatInner0.sat_inner
@@ -26395,7 +26289,7 @@ module CreuSat_Solver_Impl0_OuterLoop
   predicate Unset0.unset = Unset0.unset, predicate Invariant0.invariant' = Invariant2.invariant',
   predicate Invariant1.invariant' = Invariant3.invariant',
   predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  clone CreuSat_Formula_Impl2_ReduceDb_Interface as ReduceDb0 with predicate Invariant0.invariant' = Invariant2.invariant',
+  clone CreuSat_Formula_Impl0_ReduceDb_Interface as ReduceDb0 with predicate Invariant0.invariant' = Invariant2.invariant',
   predicate Invariant1.invariant' = Invariant3.invariant', predicate Invariant2.invariant' = Invariant1.invariant',
   predicate Equisat0.equisat = Equisat0.equisat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
   clone CreuSat_Decision_Impl1_GetNext_Interface as GetNext0 with predicate Invariant0.invariant' = Invariant4.invariant',
@@ -28137,7 +28031,7 @@ module CreuSat_Solver_Solver
   predicate Invariant1.invariant' = Invariant0.invariant',
   predicate NotSatisfiable0.not_satisfiable = NotSatisfiable0.not_satisfiable,
   predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  clone CreuSat_Formula_Impl2_CheckFormulaInvariant_Interface as CheckFormulaInvariant0 with function Model0.model = Model5.model,
+  clone CreuSat_Formula_Impl0_CheckFormulaInvariant_Interface as CheckFormulaInvariant0 with function Model0.model = Model5.model,
   function Model1.model = Model1.model,
   predicate FormulaSatInner0.formula_sat_inner = FormulaSatInner0.formula_sat_inner,
   predicate NotSatisfiable0.not_satisfiable = NotSatisfiable0.not_satisfiable,
@@ -28547,20 +28441,6 @@ end
 module CreuSat_Lit_Impl5
   
 end
-module CreuSat_Formula_Impl0_ModelTy
-  use Type
-  type modelTy  = 
-    Type.creusat_formula_satstate
-end
-module CreuSat_Formula_Impl0
-  use Type
-  clone CreuSat_Formula_Impl0_Model as Model0
-  clone CreuSat_Formula_Impl0_ModelTy as ModelTy0
-  clone CreusotContracts_Logic_Model_Model_Model as Model1 with type self = Type.creusat_formula_satstate,
-  function model = Model0.model, type ModelTy0.modelTy = ModelTy0.modelTy
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = Type.creusat_formula_satstate,
-  type modelTy = ModelTy0.modelTy
-end
 module CreuSat_Lit_Impl0_ModelTy
   use Type
   type modelTy  = 
@@ -28616,17 +28496,6 @@ module Core_Cmp_PartialEq_Ne
   val ne [@cfg:stackify] (self : self) (other : rhs) : bool
     requires {false}
     
-end
-module CreuSat_Formula_Impl1
-  use Type
-  clone CreuSat_Formula_Impl0_Model as Model1
-  clone CreuSat_Formula_Impl0_ModelTy as ModelTy0
-  clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.creusat_formula_satstate,
-  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model1.model
-  clone CreuSat_Formula_Impl1_Eq_Interface as Eq0
-  clone Core_Cmp_PartialEq_Eq_Interface as Eq1 with type self = Type.creusat_formula_satstate,
-  type rhs = Type.creusat_formula_satstate, val eq = Eq0.eq, function Model0.model = Model0.model,
-  function Model1.model = Model0.model, type ModelTy0.modelTy = ModelTy0.modelTy
 end
 module CreuSat_Lit_Impl2
   use Type

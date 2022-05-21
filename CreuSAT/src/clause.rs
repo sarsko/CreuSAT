@@ -24,15 +24,6 @@ impl Clone for Clause {
     }
 }
 
-//#[derive(Copy, Clone, Eq)]
-pub enum ClauseState {
-    Sat,
-    Unsat,
-    Unit,
-    Unknown,
-    Err(usize),
-}
-
 impl Clause {
     #[cfg_attr(feature = "trust_clause", trusted)]
     #[ensures(result == self.invariant(@n))]
