@@ -1,12 +1,19 @@
 ## Building for StarExec
 
-All commands are assumed to be run in the `sat` root directory.
+The easiest way is to run
+```
+cargo make StarExec
+```
+in the root directory. 
+
+That does however currently only work on Linux out of the box.
 
 You need to have done:
 ```
 rustup target add x86_64-unknown-linux-musl
 ```
 beforehand.
+
 
 If you are not on a Linux, you'll probably have to use `cross` or `cargo
 zigbuild`.
@@ -21,15 +28,8 @@ cargo install cargo-zigbuild
 If you are using zigbuild, run:
 
 ```
-USTFLAGS='-C relocation-model=static' cargo zigbuild --release --target
+RUSTFLAGS='-C relocation-model=static' cargo zigbuild --release --target
 x86_64-unknown-linux-musl
-```
-
-The following has worked on Linux:
-
-```
-RUSTFLAGS='-C relocation-model=static -C strip=symbols' cargo build --release
---target x86_64-unknown-linux-musl
 ```
 
 And then:
@@ -38,6 +38,5 @@ And then:
 cp ./target/x86_64-unknown-linux-musl/release/sat StarExec/bin/creusat
 ```
 
-Yes, this should be scripted.
 
 
