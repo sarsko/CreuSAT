@@ -10,14 +10,8 @@ use crate::logic::logic_lit::*;
 
 #[derive(Clone, Copy)]
 pub struct Lit {
-    #[cfg(feature = "contracts")]
     pub idx: usize,
-    #[cfg(not(feature = "contracts"))]
-    idx: usize,
-    #[cfg(feature = "contracts")]
     pub polarity: bool,
-    #[cfg(not(feature = "contracts"))]
-    polarity: bool,
 }
 
 #[cfg(feature = "contracts")]

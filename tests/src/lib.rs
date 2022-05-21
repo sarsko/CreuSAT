@@ -3,8 +3,8 @@ use std::io::Write;
 use std::time::Instant;
 use termcolor::*;
 
-extern crate CreuSAT;
-use CreuSAT::parser::{parse_cnf, preproc_and_solve};
+extern crate JigSAT;
+use JigSAT::parser::{parse_cnf, preproc_and_solve};
 
 #[test]
 fn test_all_sat() {
