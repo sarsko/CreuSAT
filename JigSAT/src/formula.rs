@@ -32,8 +32,8 @@ impl Formula {
     pub fn is_clause_sat(&self, idx: usize, a: &Assignments) -> bool {
         let clause = &self.clauses[idx];
         let mut i: usize = 0;
-        while i < clause.rest.len() {
-            if clause.rest[i].lit_sat(a) {
+        while i < clause.len() {
+            if clause[i].lit_sat(a) {
                 return true;
             }
             i += 1;
@@ -51,48 +51,17 @@ impl Formula {
         // add_watcher that the cref should be less than f.clauses.len(). We can't update the watches
         // after the clause is added, as the value gets moved by the push. Could of course index on last
         // element of f.clauses after the push, but I prefer this.
-        let first_lit = clause.rest[0];
-        let second_lit = clause.rest[1];
+        let first_lit = clause[0];
+        let second_lit = clause[1];
         self.clauses.push(clause);
         watches.add_watcher(first_lit, cref, self);
         watches.add_watcher(second_lit, cref, self);
         cref
-    }
-
-    pub fn add_unwatched_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
-        let cref = self.clauses.len();
-        self.clauses.push(clause);
-        cref
-    }
-
-    pub fn make_asserting_clause_and_watch(&mut self, watches: &mut Watches, t: &Trail, idx: usize, cref: usize) {
-        self.swap_lits_in_clause(t, watches, cref, 1, idx);
-        let first_lit = self.clauses[cref].rest[0];
-        let second_lit = self.clauses[cref].rest[1];
-        watches.add_watcher(first_lit, cref, self);
-        watches.add_watcher(second_lit, cref, self);
-    }
-
-    pub fn add_and_swap_first(&mut self, clause: Clause, watches: &mut Watches, t: &Trail, s_idx: usize) -> usize {
-        let cref = self.add_unwatched_clause(clause, watches, t);
-        self.swap_lits_in_clause(t, watches, cref, 0, s_idx);
-        cref
-    }
-
-    pub fn is_sat(&self, a: &Assignments) -> bool {
-        let mut i: usize = 0;
-        while i < self.clauses.len() {
-            if !self.is_clause_sat(i, a) {
-                return false;
-            }
-            i += 1
-        }
-        return true;
     }
 
     fn delete_clause(&mut self, cref: usize, watches: &mut Watches, t: &Trail) {
-        watches.unwatch(self, t, cref, self.clauses[cref].rest[0]);
-        watches.unwatch(self, t, cref, self.clauses[cref].rest[1]);
+        watches.unwatch(self, t, cref, self.clauses[cref][0]);
+        watches.unwatch(self, t, cref, self.clauses[cref][1]);
         self.clauses[cref].deleted = true;
     }
 
@@ -120,11 +89,7 @@ impl Formula {
     pub fn reduceDB(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
         // Okay now I understand why MicroSat does this "weirdly"
         while s.num_lemmas > s.max_lemmas {
-            if usize::MAX - 300 > s.max_lemmas {
-                s.max_lemmas += 300;
-            } else {
-                break;
-            }
+            s.max_lemmas += 300;
         }
         //s.num_lemmas = 0;
         let mut i = s.initial_len;
@@ -135,16 +100,14 @@ impl Formula {
                     let mut cnt = 0;
                     let mut j = 0;
                     while j < self.clauses[i].len() && cnt < 6 {
-                        if self.clauses[i].rest[j].lit_sat(&t.assignments) {
+                        if self.clauses[i][j].lit_sat(&t.assignments) {
                             cnt += 1;
                         }
                         j += 1;
                     }
                     if cnt >= 6 {
                         // Maybe add the invariant that nlemmas keeps track of the number of lemmas lol
-                        if s.num_lemmas > 0 {
-                            s.num_lemmas -= 1;
-                        }
+                        s.num_lemmas -= 1;
                         self.delete_clause(i, watches, t);
                     }
                 }

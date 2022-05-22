@@ -21,19 +21,19 @@ impl Lit {
     }
 
     pub fn lit_sat(self, a: &Assignments) -> bool {
-        a.0[self.index()] == self.is_positive() as u8
+        a[self.index()] == self.is_positive() as u8
     }
 
     pub fn lit_unsat(self, a: &Assignments) -> bool {
-        a.0[self.index()] == !self.is_positive() as u8
+        a[self.index()] == !self.is_positive() as u8
     }
 
     pub fn lit_unset(self, a: &Assignments) -> bool {
-        a.0[self.index()] >= 2
+        a[self.index()] >= 2
     }
 
     pub fn lit_set(self, a: &Assignments) -> bool {
-        a.0[self.index()] < 2
+        a[self.index()] < 2
     }
 
     pub fn to_watchidx(self) -> usize {
@@ -45,7 +45,7 @@ impl Lit {
 
     pub fn phase_saved(idx: usize, assignments: &Assignments) -> Lit {
         Lit {
-            code: (idx << 1) as u32 | ((assignments.0[idx] == 1) as u32)
+            code: (idx << 1) as u32 | ((assignments[idx] == 1) as u32)
         }
     }
 

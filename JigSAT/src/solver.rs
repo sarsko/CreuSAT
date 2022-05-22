@@ -50,10 +50,10 @@ update_fast_average (double *average, unsigned value)
 
 pub fn get_asserting_level(clause: &Clause, trail: &Trail, f: &Formula) -> (usize, u32) {
     let mut max_i: usize = 1;
-    let mut max_level = trail.lit_to_level[clause.rest[1].index()];
+    let mut max_level = trail.lit_to_level[clause[1].index()];
     let mut i: usize = 2;
-    while i < clause.rest.len() {
-        let level = trail.lit_to_level[clause.rest[i].index()];
+    while i < clause.len() {
+        let level = trail.lit_to_level[clause[i].index()];
         if level > max_level {
             max_level = level;
             max_i = i;
@@ -111,23 +111,25 @@ impl Solver {
     fn handle_long_clause(
         &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, clause: Clause, level: u32,
     ) {
-        let cref = f.add_clause(clause, w, t);
+        let mut clause = clause;
         let mut i: usize = 0;
-        let mut lbd: usize = 0;
-        while i < f.clauses[cref].rest.len() {
-            let level = t.lit_to_level[f.clauses[cref].rest[i].index()];
+        let mut lbd: u32 = 0;
+        while i < clause.len() {
+            let level = t.lit_to_level[clause[i].index()];
             if self.perm_diff[level as usize] != self.num_conflicts {
                 self.perm_diff[level as usize] = self.num_conflicts;
                 lbd += 1;
             }
             i += 1;
         }
-        update_fast(&mut self.fast, lbd);
-        update_slow(&mut self.slow, lbd);
+        clause.lbd = lbd;
+        let cref = f.add_clause(clause, w, t);
+        update_fast(&mut self.fast, lbd as usize);
+        update_slow(&mut self.slow, lbd as usize);
         d.increment_and_move(f, cref, &t.assignments);
         // This should be removed by updating the post of get_asserting_level
         t.backtrack_safe(level, f, d);
-        let lit = f.clauses[cref].rest[0];
+        let lit = f.clauses[cref][0];
         let step = Step { lit: lit, decision_level: level, reason: Reason::Long(cref) };
         t.enq_assignment(step, f);
         self.increase_num_lemmas();

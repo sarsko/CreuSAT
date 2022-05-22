@@ -4,9 +4,9 @@ use crate::{formula::*, lit::*, trail::*, watches::*};
 fn unit_prop_check_rest(
     f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
 ) -> Result<(), ()> {
-    let curr_lit = f.clauses[cref].rest[k];
+    let curr_lit = f.clauses[cref][k];
     if !curr_lit.lit_unsat(&trail.assignments){
-        if f.clauses[cref].rest[0].index() == lit.index() {
+        if f.clauses[cref][0].index() == lit.index() {
             // First
             swap(f, trail, watches, cref, k, 0);
             update_watch(f, trail, watches, cref, j, 0, lit);
@@ -30,11 +30,11 @@ fn swap(f: &mut Formula, _trail: &Trail, _watches: &Watches, cref: usize, j: usi
 fn unit_prop_do_outer(
     f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize,
 ) -> Result<bool, usize> {
-    let first_lit = f.clauses[cref].rest[0];
+    let first_lit = f.clauses[cref][0];
     if first_lit.lit_sat(&trail.assignments) {
         return Ok(true);
     }
-    let second_lit = f.clauses[cref].rest[1];
+    let second_lit = f.clauses[cref][1];
     if second_lit.lit_sat(&trail.assignments) {
         // We swap to make it faster the next time
         //swap_zero_one(f, trail, watches, cref, lit, j);
@@ -43,7 +43,7 @@ fn unit_prop_do_outer(
     }
     // At this point we know that none of the watched literals are sat
     let mut k: usize = 2;
-    let clause_len: usize = f.clauses[cref].rest.len();
+    let clause_len: usize = f.clauses[cref].len();
     while k < clause_len {
         match unit_prop_check_rest(f, trail, watches, cref, j, k, lit) {
             Err(_) => {

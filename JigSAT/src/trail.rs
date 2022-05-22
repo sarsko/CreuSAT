@@ -41,7 +41,7 @@ impl Trail {
         let last = self.trail.pop();
         match last {
             Some(step) => {
-                self.assignments.0[step.lit.index()] += 2; 
+                self.assignments[step.lit.index()] += 2; 
                 self.lit_to_level[step.lit.index()] = u32::MAX;
                 return step.lit.index();
             }
@@ -93,7 +93,7 @@ impl Trail {
         self.decisions.push(trail_len);
         let dlevel = self.decision_level();
         self.lit_to_level[idx] = dlevel;
-        self.assignments.0[idx] -= 2;
+        self.assignments[idx] -= 2;
         let lit = Lit::phase_saved(idx, &self.assignments);
 
         let step = Step { lit: lit, decision_level: dlevel, reason: Reason::Decision };
@@ -113,8 +113,8 @@ impl Trail {
         let mut i = 0;
         while i < f.clauses.len() {
             let clause = &f.clauses[i];
-            if clause.rest.len() == 1 {
-                let lit = clause.rest[0];
+            if clause.len() == 1 {
+                let lit = clause[0];
                 // This check should be removed by an invariant that the formula only contains unique clauses
                 if lit.lit_set(&self.assignments) {
                     if lit.lit_unsat(&self.assignments) {

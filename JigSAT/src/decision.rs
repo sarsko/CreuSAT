@@ -60,8 +60,8 @@ impl Decisions {
         while i < f.clauses.len() {
             let curr_clause = &f.clauses[i];
             let mut j: usize = 0;
-            while j < curr_clause.rest.len() {
-                counts[curr_clause.rest[j].index()] += 1;
+            while j < curr_clause.len() {
+                counts[curr_clause[j].index()] += 1;
                 j += 1;
             }
             i += 1;
@@ -133,10 +133,10 @@ impl Decisions {
 
     pub fn increment_and_move(&mut self, f: &Formula, cref: usize, a: &Assignments) {
         let clause = &f.clauses[cref];
-        let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); clause.rest.len()];
+        let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); clause.len()];
         let mut i: usize = 0;
-        while i < clause.rest.len() {
-            counts_with_index[i] = (self.linked_list[clause.rest[i].index()].ts, clause.rest[i].index());
+        while i < clause.len() {
+            counts_with_index[i] = (self.linked_list[clause[i].index()].ts, clause[i].index());
             i += 1;
         }
         // TODO: Check actual speed. I believe selection sort is the slowest. Only need permut property.
@@ -154,7 +154,7 @@ impl Decisions {
         let INVALID: usize = usize::MAX;
         let mut curr = self.search;
         while curr != INVALID {
-            if a.0[curr] >= 2 {
+            if a[curr] >= 2 {
                 self.search = self.linked_list[curr].next;
                 return Some(curr);
             }
@@ -163,8 +163,8 @@ impl Decisions {
         // Strictly speaking this is an unecessary runtime check, but it only gets run at most once and it
         // greatly simplifies the proof.
         let mut i: usize = 0;
-        while i < a.0.len() {
-            if a.0[i] >= 2 {
+        while i < a.len() {
+            if a[i] >= 2 {
                 return Some(i);
             }
             i += 1;

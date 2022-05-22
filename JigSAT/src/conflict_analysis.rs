@@ -24,8 +24,8 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     loop {
         let clause = &f.clauses[confl];
         let mut k = if confl == cref {0} else {1};
-        while k < clause.rest.len() {
-            let lit = clause.rest[k];
+        while k < clause.len() {
+            let lit = clause[k];
             if !seen[lit.index()] {
                 let level = trail.lit_to_level[lit.index()];
                 if level == u32::MAX {
@@ -78,6 +78,6 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             i += 1;
         }
         out_learnt.swap(1, max_i);
-        Conflict::Learned(max_level, Clause{ deleted: false, rest: out_learnt})
+        Conflict::Learned(max_level, Clause{ deleted: false, lbd: 0, rest: out_learnt})
     }
 }
