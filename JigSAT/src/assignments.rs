@@ -37,7 +37,7 @@ impl Assignments {
     }
 
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {
-        self.0[lit.index()] = lit.is_positive() as u8;
+        self[lit.index()] = lit.is_positive() as u8;
     }
 
     pub fn new(f: &Formula) -> Self {

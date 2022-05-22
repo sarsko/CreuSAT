@@ -2,7 +2,7 @@ use ::std::ops;
 
 use crate::{assignments::*};
 
-#[derive(Clone, Copy, Eq, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq, Debug)]
 pub struct Lit {
     code: u32
 }

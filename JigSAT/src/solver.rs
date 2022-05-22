@@ -48,21 +48,6 @@ update_fast_average (double *average, unsigned value)
 
 //&& @level < (@trail.decisions).len() //added
 
-pub fn get_asserting_level(clause: &Clause, trail: &Trail, f: &Formula) -> (usize, u32) {
-    let mut max_i: usize = 1;
-    let mut max_level = trail.lit_to_level[clause[1].index()];
-    let mut i: usize = 2;
-    while i < clause.len() {
-        let level = trail.lit_to_level[clause[i].index()];
-        if level > max_level {
-            max_level = level;
-            max_i = i;
-        }
-        i += 1;
-    }
-    //clause.rest.swap(1, max_i);
-    return (max_i, max_level);
-}
 
 pub struct Solver {
     pub num_lemmas: usize,
@@ -109,9 +94,8 @@ impl Solver {
     }
 
     fn handle_long_clause(
-        &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, clause: Clause, level: u32,
+        &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, level: u32,
     ) {
-        let mut clause = clause;
         let mut i: usize = 0;
         let mut lbd: u32 = 0;
         while i < clause.len() {
@@ -127,7 +111,6 @@ impl Solver {
         update_fast(&mut self.fast, lbd as usize);
         update_slow(&mut self.slow, lbd as usize);
         d.increment_and_move(f, cref, &t.assignments);
-        // This should be removed by updating the post of get_asserting_level
         t.backtrack_safe(level, f, d);
         let lit = f.clauses[cref][0];
         let step = Step { lit: lit, decision_level: level, reason: Reason::Long(cref) };
@@ -155,11 +138,8 @@ impl Solver {
                 f.reduceDB(w, t, self);
                 f.simplify_formula(w, t);
             }
-            Conflict::Learned(level, mut clause) => {
+            Conflict::Learned(level, clause) => {
                 self.handle_long_clause(f, t, w, d, clause, level);
-            }
-            Conflict::Panic => {
-                return Some(true);
             }
         }
         None
@@ -200,12 +180,12 @@ impl Solver {
             _ => {}
         }
         let slow = (self.slow / 100) * 125;
-        if trail.decision_level() > 0 && self.fast > slow {
+        if self.fast > slow {
             self.fast = slow;
+            trail.backtrack_safe(0, f, d);
             if self.num_lemmas > self.max_lemmas {
                 f.reduceDB(w, trail, self);
             }
-            trail.backtrack_to(0, f, d);
         }
         match d.get_next(&trail.assignments, f) {
             Some(next) => {

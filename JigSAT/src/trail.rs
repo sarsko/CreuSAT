@@ -8,6 +8,7 @@ pub enum Reason {
     Long(usize),
 }
 
+#[derive(Debug)]
 pub struct Step {
     pub lit: Lit,
     pub decision_level: u32,

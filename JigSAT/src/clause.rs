@@ -1,5 +1,5 @@
 use crate::{formula::*, lit::*};
-use std::{ops::{Index}};
+use std::{ops::{Index}, cmp::Ordering};
 
 pub struct Clause {
     pub deleted: bool,
@@ -13,6 +13,7 @@ impl Clone for Clause {
         Clause { deleted: self.deleted, lbd: self.lbd, rest: self.rest.clone() }
     }
 }
+
 
 impl Index<usize> for Clause {
     type Output = Lit;
@@ -28,6 +29,28 @@ impl Index<usize> for Clause {
 }
 
 impl Clause {
+    pub fn less_than(&self, other: &Clause) -> Ordering {
+        if self.len() == 2 {
+            if other.len() == 2 {
+                return Ordering::Equal;
+            } else {
+                return Ordering::Less;
+            }
+        } else if other.len() == 2 {
+            return Ordering::Greater;
+        } else if self.lbd < other.lbd {
+            Ordering::Less
+        } else if self.lbd > other.lbd {
+            Ordering::Greater
+        } else if self.len() < other.len() {
+            Ordering::Less
+        } else if self.len() > other.len() {
+            Ordering::Greater
+        } else {
+            Ordering::Equal
+        }
+    }
+
     pub fn check_clause_invariant(&self, n: usize) -> bool {
         let mut i: usize = 0;
         while i < self.len() {

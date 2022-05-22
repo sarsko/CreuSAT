@@ -1,8 +1,36 @@
 use crate::{assignments::*, clause::*, solver::*, trail::*, watches::*};
-
+use core::slice::*;
+use std::{
+    ops::{Index, IndexMut},
+};
 pub struct Formula {
     pub clauses: Vec<Clause>,
     pub num_vars: usize,
+}
+
+impl Index<usize> for Formula {
+    type Output = Clause;
+    #[inline]
+    fn index(&self, i: usize) -> &Clause {
+        //#[cfg(feature = "unsafe_access")]
+        unsafe {
+            self.clauses.get_unchecked(i)
+        }
+        //#[cfg(not(feature = "unsafe_access"))]
+        //&self.lits[i]
+    }
+}
+
+impl IndexMut<usize> for Formula {
+    #[inline]
+    fn index_mut(&mut self, i: usize) -> &mut Clause {
+        //#[cfg(feature = "unsafe_access")]
+        unsafe {
+            self.clauses.get_unchecked_mut(i)
+        }
+        //#[cfg(not(feature = "unsafe_access"))]
+        //&mut self.lits[i]
+    }
 }
 
 impl Formula {
@@ -87,31 +115,27 @@ impl Formula {
     }
 
     pub fn reduceDB(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
-        // Okay now I understand why MicroSat does this "weirdly"
-        while s.num_lemmas > s.max_lemmas {
-            s.max_lemmas += 300;
-        }
-        //s.num_lemmas = 0;
-        let mut i = s.initial_len;
-        while i < self.clauses.len() {
-            if !self.clauses[i].deleted {
-                //if self.clauses[i].len() > 12 {
-                if self.clauses[i].len() > 6 {
-                    let mut cnt = 0;
-                    let mut j = 0;
-                    while j < self.clauses[i].len() && cnt < 6 {
-                        if self.clauses[i][j].lit_sat(&t.assignments) {
-                            cnt += 1;
-                        }
-                        j += 1;
-                    }
-                    if cnt >= 6 {
-                        // Maybe add the invariant that nlemmas keeps track of the number of lemmas lol
-                        s.num_lemmas -= 1;
-                        self.delete_clause(i, watches, t);
-                    }
-                }
+        s.max_lemmas += s.num_lemmas + 300;
+        let mut i = self.clauses.len() - 1;
+        self.clauses[s.initial_len+1..].sort_unstable_by(|a, b| a.less_than(b));
+        watches.unwatch_all_lemmas(self, s);
+        let mut limit = (self.clauses.len() - s.initial_len) / 2;
+        while i > s.initial_len && limit > 0 {
+            self.clauses.pop();
+            limit -= 1;
+            i += 1;
+            /* 
+            let clause = &self[i];
+            if clause.lbd > 2 && clause.len() > 2 {
+            } else {
+                break;
             }
+            */
+        }
+        i = s.initial_len + 1;
+        while i < self.clauses.len() {
+            watches.add_watcher(self.clauses[i][0], i, self);
+            watches.add_watcher(self.clauses[i][1], i, self);
             i += 1;
         }
     }

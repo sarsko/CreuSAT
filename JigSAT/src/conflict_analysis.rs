@@ -5,7 +5,6 @@ pub enum Conflict {
     Ground,
     Unit(Lit),
     Learned(u32, Clause),
-    Panic,
 }
 
 pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
@@ -29,6 +28,10 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             if !seen[lit.index()] {
                 let level = trail.lit_to_level[lit.index()];
                 if level == u32::MAX {
+                    
+                    println!("{:?} ", trail.trail);
+                    println!("{:?} ", lit);
+                    println!("{:?}", trail.assignments[lit.index()]);
                     panic!();
                 }
                 if level > 0 {

@@ -1,4 +1,4 @@
-use crate::{formula::*, lit::*, trail::*};
+use crate::{formula::*, lit::*, trail::*, solver::*};
 
 // Lets try this scheme and see how well it fares
 // Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
@@ -25,6 +25,7 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
         }
     }
 }
+
 
 impl Watches {
     pub fn new(f: &Formula) -> Watches {
@@ -74,6 +75,23 @@ impl Watches {
                     }
                 }
                 return;
+            }
+            i += 1;
+        }
+    }
+
+    pub fn unwatch_all_lemmas(&mut self, f: &Formula, s: &Solver) {
+        let mut i: usize = 0;
+        while i < self.watches.len() {
+            let mut j = 0;
+            while j < self.watches[i].len() {
+                if self.watches[i][j].cref > s.initial_len {
+                    let end = self.watches[i].len() - 1;
+                    self.watches[i].swap(j, end);
+                    self.watches[i].pop();
+                } else {
+                    j += 1;
+                }
             }
             i += 1;
         }
