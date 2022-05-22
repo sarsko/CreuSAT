@@ -5,22 +5,24 @@ fn unit_prop_check_rest(
     f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
 ) -> Result<(), ()> {
     let curr_lit = f.clauses[cref].rest[k];
-    if curr_lit.lit_unset(&trail.assignments) || curr_lit.lit_sat(&trail.assignments) {
-        // Can swap to !unsat
+    if !curr_lit.lit_unsat(&trail.assignments){
         if f.clauses[cref].rest[0].index() == lit.index() {
             // First
             swap(f, trail, watches, cref, k, 0);
             update_watch(f, trail, watches, cref, j, 0, lit);
         } else {
             swap(f, trail, watches, cref, k, 1);
-            update_watch(f, trail, watches, cref, j, 1, lit);
+            swap(f, trail, watches, cref, 1, 0);
+            update_watch(f, trail, watches, cref, j, 0, lit);
+            //update_watch(f, trail, watches, cref, j, 1, lit);
         }
         return Ok(()); // dont increase j
     }
     return Err(());
 }
 
-fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize, k: usize) {
+#[inline(always)]
+fn swap(f: &mut Formula, _trail: &Trail, _watches: &Watches, cref: usize, j: usize, k: usize) {
     f.clauses[cref].rest.swap(j, k);
 }
 
@@ -67,7 +69,7 @@ fn unit_prop_do_outer(
 
         trail.enq_assignment(step, f);
         // slowdown in swapping
-        //f.clauses[cref].rest.swap(0,1);
+        f.clauses[cref].rest.swap(0,1);
         return Ok(true);
     } else {
         return Err(cref);

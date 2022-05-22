@@ -1,5 +1,6 @@
 use crate::{assignments::*, decision::*, formula::*, lit::*};
 
+#[derive(Debug)]
 pub enum Reason {
     //Undefined,
     Decision,
@@ -9,27 +10,27 @@ pub enum Reason {
 
 pub struct Step {
     pub lit: Lit,
-    pub decision_level: usize,
+    pub decision_level: u32,
     pub reason: Reason,
 }
 
 pub struct Trail {
     pub assignments: Assignments,
-    pub lit_to_level: Vec<usize>, // usize::MAX if unassigned
+    pub lit_to_level: Vec<u32>, // usize::MAX if unassigned
     pub trail: Vec<Step>,
     pub curr_i: usize,
     pub decisions: Vec<usize>,
 }
 
 impl Trail {
-    pub fn decision_level(&self) -> usize {
-        self.decisions.len()
+    pub fn decision_level(&self) -> u32 {
+        self.decisions.len() as u32
     }
 
     pub fn new(f: &Formula, a: Assignments) -> Trail {
         Trail {
             assignments: a,
-            lit_to_level: vec![usize::MAX; f.num_vars],
+            lit_to_level: vec![u32::MAX; f.num_vars],
             trail: Vec::new(),
             curr_i: 0,
             decisions: Vec::new(),
@@ -41,7 +42,7 @@ impl Trail {
         match last {
             Some(step) => {
                 self.assignments.0[step.lit.index()] += 2; 
-                self.lit_to_level[step.lit.index()] = usize::MAX;
+                self.lit_to_level[step.lit.index()] = u32::MAX;
                 return step.lit.index();
             }
             None => {
@@ -50,14 +51,14 @@ impl Trail {
         }
     }
 
-    pub fn backtrack_safe(&mut self, level: usize, f: &Formula, d: &mut Decisions) {
+    pub fn backtrack_safe(&mut self, level: u32, f: &Formula, d: &mut Decisions) {
         if level < self.decision_level() {
             self.backtrack_to(level, f, d);
         }
     }
 
-    pub fn backtrack_to(&mut self, level: usize, f: &Formula, d: &mut Decisions) {
-        let how_many = self.trail.len() - self.decisions[level];
+    pub fn backtrack_to(&mut self, level: u32, f: &Formula, d: &mut Decisions) {
+        let how_many = self.trail.len() - self.decisions[level as usize];
         let mut i: usize = 0;
         let mut curr = d.search;
         let mut timestamp = d.linked_list[curr].ts;
@@ -72,10 +73,10 @@ impl Trail {
         }
         d.search = curr;
 
-        while self.decisions.len() > level {
+        while self.decision_level() > level {
             self.decisions.pop();
         }
-        self.curr_i = level;
+        self.curr_i = level as usize;
     }
 
     pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
@@ -90,7 +91,7 @@ impl Trail {
     pub fn enq_decision(&mut self, idx: usize, _f: &Formula) {
         let trail_len = self.trail.len();
         self.decisions.push(trail_len);
-        let dlevel = self.decisions.len(); // Not doing this results in a Why3 error. Todo: Yell at Xavier
+        let dlevel = self.decision_level();
         self.lit_to_level[idx] = dlevel;
         self.assignments.0[idx] -= 2;
         let lit = Lit::phase_saved(idx, &self.assignments);

@@ -48,7 +48,7 @@ update_fast_average (double *average, unsigned value)
 
 //&& @level < (@trail.decisions).len() //added
 
-pub fn get_asserting_level(clause: &Clause, trail: &Trail, f: &Formula) -> (usize, usize) {
+pub fn get_asserting_level(clause: &Clause, trail: &Trail, f: &Formula) -> (usize, u32) {
     let mut max_i: usize = 1;
     let mut max_level = trail.lit_to_level[clause.rest[1].index()];
     let mut i: usize = 2;
@@ -109,21 +109,19 @@ impl Solver {
     }
 
     fn handle_long_clause(
-        &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, s_idx: usize,
+        &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, clause: Clause, level: u32,
     ) {
-        let cref = f.add_and_swap_first(clause, w, t, s_idx);
-        let (idx, level) = get_asserting_level(&f.clauses[cref], t, f);
+        let cref = f.add_clause(clause, w, t);
         let mut i: usize = 0;
         let mut lbd: usize = 0;
         while i < f.clauses[cref].rest.len() {
             let level = t.lit_to_level[f.clauses[cref].rest[i].index()];
-            if self.perm_diff[level] != self.num_conflicts {
-                self.perm_diff[level] = self.num_conflicts;
+            if self.perm_diff[level as usize] != self.num_conflicts {
+                self.perm_diff[level as usize] = self.num_conflicts;
                 lbd += 1;
             }
             i += 1;
         }
-        f.make_asserting_clause_and_watch(w, t, idx, cref);
         update_fast(&mut self.fast, lbd);
         update_slow(&mut self.slow, lbd);
         d.increment_and_move(f, cref, &t.assignments);
@@ -156,8 +154,8 @@ impl Solver {
                 f.reduceDB(w, t, self);
                 f.simplify_formula(w, t);
             }
-            Conflict::Learned(s_idx, mut clause) => {
-                self.handle_long_clause(f, t, w, d, clause, s_idx);
+            Conflict::Learned(level, mut clause) => {
+                self.handle_long_clause(f, t, w, d, clause, level);
             }
             Conflict::Panic => {
                 return Some(true);

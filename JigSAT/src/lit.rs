@@ -25,7 +25,7 @@ impl Lit {
     }
 
     pub fn lit_unsat(self, a: &Assignments) -> bool {
-        a.0[self.index()] != self.is_positive() as u8
+        a.0[self.index()] == !self.is_positive() as u8
     }
 
     pub fn lit_unset(self, a: &Assignments) -> bool {
