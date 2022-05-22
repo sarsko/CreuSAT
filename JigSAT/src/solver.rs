@@ -50,8 +50,7 @@ update_fast_average (double *average, unsigned value)
 
 
 pub struct Solver {
-    pub num_lemmas: usize,
-    pub max_lemmas: usize,
+    pub max_len: usize,
     pub num_conflicts: usize,
     pub initial_len: usize,
     pub inc_reduce_db: usize,
@@ -69,8 +68,7 @@ if (S->fast > (S->slow / 100) * 125) {                        // If fast average
 impl Solver {
     pub fn new(f: &Formula) -> Solver {
         Solver {
-            num_lemmas: 0,
-            max_lemmas: 2000,
+            max_len: f.len() + 2000,
             num_conflicts: 0,
             initial_len: f.len(),
             inc_reduce_db: 300,
@@ -86,12 +84,6 @@ impl Solver {
         }
     }
 
-    #[inline(always)]
-    fn increase_num_lemmas(&mut self) {
-        if self.num_lemmas < usize::MAX {
-            self.num_lemmas += 1;
-        }
-    }
 
     fn handle_long_clause(
         &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, level: u32,
@@ -107,7 +99,6 @@ impl Solver {
         let lit = f[cref][0];
         let step = Step { lit: lit, decision_level: level, reason: Reason::Long(cref) };
         t.enq_assignment(step, f);
-        self.increase_num_lemmas();
         self.increase_num_conflicts();
     }
 
@@ -172,9 +163,9 @@ impl Solver {
         if self.fast > slow {
             self.fast = slow;
             trail.backtrack_safe(0, f, d);
-            //if self.num_lemmas > self.max_lemmas {
+            if f.len() > self.max_len {
                 f.reduceDB(w, trail, self);
-            //}
+            }
         }
         match d.get_next(&trail.assignments, f) {
             Some(next) => {

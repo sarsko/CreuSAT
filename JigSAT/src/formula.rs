@@ -1,5 +1,4 @@
 use crate::{assignments::*, clause::*, solver::*, trail::*, watches::*};
-use core::slice::*;
 use std::{
     ops::{Index, IndexMut},
 };
@@ -121,7 +120,7 @@ impl Formula {
     }
 
     pub fn reduceDB(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
-        s.max_lemmas += s.num_lemmas + 300;
+        s.max_len += self.len() + 300;
         let mut i = self.len() - 1;
         self.clauses[s.initial_len+1..].sort_unstable_by(|a, b| a.less_than(b));
         watches.unwatch_all_lemmas(self, s);
@@ -129,7 +128,7 @@ impl Formula {
         while i > s.initial_len && limit > 0 {
             self.clauses.pop();
             limit -= 1;
-            i += 1;
+            i -= 1;
             /* 
             let clause = &self[i];
             if clause.lbd > 2 && clause.len() > 2 {

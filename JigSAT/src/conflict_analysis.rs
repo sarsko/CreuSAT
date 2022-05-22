@@ -27,9 +27,12 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             let lit = clause[k];
             if !seen[lit.index()] {
                 let level = trail.lit_to_level[lit.index()];
+                /* 
+                // This is nonsensical as we are not wiping lit_to_level anymore.
                 if level == u32::MAX {
                     panic!();
                 }
+                */
                 if level > 0 {
                     seen[lit.index()] = true;
                     if level >= decisionlevel {

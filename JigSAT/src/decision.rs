@@ -155,8 +155,6 @@ impl Decisions {
             }
             curr = self.linked_list[curr].next;
         }
-        // Strictly speaking this is an unecessary runtime check, but it only gets run at most once and it
-        // greatly simplifies the proof.
         let mut i: usize = 0;
         while i < a.len() {
             if a[i] >= 2 {
