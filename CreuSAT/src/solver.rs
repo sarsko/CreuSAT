@@ -1,5 +1,6 @@
 extern crate creusot_contracts;
 use creusot_contracts::std::*;
+use creusot_contracts::logic::Ghost;
 use creusot_contracts::*;
 
 use crate::{
@@ -78,7 +79,7 @@ pub fn get_asserting_level(clause: &Clause, trail: &Trail, f: &Formula) -> (usiz
         i += 1;
     }
     //clause.rest.swap(1, max_i);
-    return (max_i, max_level);
+    (max_i, max_level)
 }
 
 pub struct Solver {
@@ -239,14 +240,14 @@ impl Solver {
         _                      => { true }
     })]
     fn unit_prop_step(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> ConflictResult {
-        return match unit_propagate(f, t, w) {
+        match unit_propagate(f, t, w) {
             Ok(_) => ConflictResult::Ok,
             Err(cref) => match self.handle_conflict(f, t, cref, w, d) {
                 Some(false) => ConflictResult::Ground,
                 Some(true) => ConflictResult::Err,
                 None => ConflictResult::Continue,
             },
-        };
+        }
     }
 
     // OK

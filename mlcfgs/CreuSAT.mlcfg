@@ -2043,7 +2043,7 @@ module CreusotContracts_Std1_Vec_Impl1_ResolveElswhere
   use seq.Seq
   use mach.int.Int32
   predicate resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t) = 
-    forall i : (int) . 0 <= i && not (i = UInt64.to_int self) && i <= Seq.length old' -> Seq.get old' i = Seq.get fin i
+    forall i : (int) . 0 <= i && i <> UInt64.to_int self && i < Seq.length old' -> Seq.get old' i = Seq.get fin i
 end
 module Core_Slice_Index_Impl2_Output
   type t
@@ -2821,23 +2821,22 @@ module CreuSat_Lit_Impl1_CheckLitInvariant
   var _0 : bool;
   var self_1 : Type.creusat_lit_lit;
   var n_2 : usize;
-  var _3 : ();
-  var _4 : usize;
-  var _5 : Type.creusat_lit_lit;
-  var _6 : usize;
+  var _3 : usize;
+  var _4 : Type.creusat_lit_lit;
+  var _5 : usize;
   {
     self_1 <- self;
     n_2 <- n;
     goto BB0
   }
   BB0 {
-    _5 <- self_1;
-    _4 <- Index0.index _5;
+    _4 <- self_1;
+    _3 <- Index0.index _4;
     goto BB1
   }
   BB1 {
-    _6 <- n_2;
-    _0 <- _4 < _6;
+    _5 <- n_2;
+    _0 <- _3 < _5;
     return _0
   }
   
@@ -2918,103 +2917,102 @@ module CreuSat_Clause_Impl1_NoDuplicates
    = 
   var _0 : bool;
   var self_1 : Type.creusat_clause_clause;
-  var _2 : ();
-  var i_3 : usize;
+  var i_2 : usize;
+  var _3 : ();
   var _4 : ();
-  var _5 : ();
-  var _6 : bool;
+  var _5 : bool;
+  var _6 : usize;
   var _7 : usize;
-  var _8 : usize;
-  var _9 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
-  var lit1_10 : Type.creusat_lit_lit;
-  var _11 : Type.creusat_lit_lit;
-  var _12 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
-  var _13 : usize;
-  var j_14 : usize;
-  var _15 : ();
-  var _16 : bool;
+  var _8 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var lit1_9 : Type.creusat_lit_lit;
+  var _10 : Type.creusat_lit_lit;
+  var _11 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var _12 : usize;
+  var j_13 : usize;
+  var _14 : ();
+  var _15 : bool;
+  var _16 : usize;
   var _17 : usize;
-  var _18 : usize;
-  var lit2_19 : Type.creusat_lit_lit;
-  var _20 : Type.creusat_lit_lit;
-  var _21 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
-  var _22 : usize;
-  var _23 : ();
-  var _24 : bool;
-  var _25 : usize;
-  var _26 : Type.creusat_lit_lit;
-  var _27 : usize;
-  var _28 : Type.creusat_lit_lit;
+  var lit2_18 : Type.creusat_lit_lit;
+  var _19 : Type.creusat_lit_lit;
+  var _20 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var _21 : usize;
+  var _22 : ();
+  var _23 : bool;
+  var _24 : usize;
+  var _25 : Type.creusat_lit_lit;
+  var _26 : usize;
+  var _27 : Type.creusat_lit_lit;
+  var _28 : ();
   var _29 : ();
   var _30 : ();
   var _31 : ();
   var _32 : ();
   var _33 : ();
   var _34 : ();
-  var _35 : ();
   {
     self_1 <- self;
     goto BB0
   }
   BB0 {
-    i_3 <- (0 : usize);
+    i_2 <- (0 : usize);
     goto BB1
   }
   BB1 {
-    invariant no_dups { forall k : (int) . forall j : (int) . 0 <= j && j < UInt64.to_int i_3 && 0 <= k && k < j -> IndexLogic0.index_logic (Seq.get (Model0.model self_1) j) <> IndexLogic0.index_logic (Seq.get (Model0.model self_1) k) };
-    _7 <- i_3;
-    _9 <- Type.creusat_clause_clause_Clause_rest self_1;
-    _8 <- Len0.len _9;
+    invariant no_dups { forall k : (int) . forall j : (int) . 0 <= j && j < UInt64.to_int i_2 && 0 <= k && k < j -> IndexLogic0.index_logic (Seq.get (Model0.model self_1) j) <> IndexLogic0.index_logic (Seq.get (Model0.model self_1) k) };
+    _6 <- i_2;
+    _8 <- Type.creusat_clause_clause_Clause_rest self_1;
+    _7 <- Len0.len _8;
     goto BB2
   }
   BB2 {
-    _6 <- _7 < _8;
-    switch (_6)
+    _5 <- _6 < _7;
+    switch (_5)
       | False -> goto BB13
       | _ -> goto BB3
       end
   }
   BB3 {
-    _12 <- Type.creusat_clause_clause_Clause_rest self_1;
-    _13 <- i_3;
-    _11 <- Index0.index _12 _13;
+    _11 <- Type.creusat_clause_clause_Clause_rest self_1;
+    _12 <- i_2;
+    _10 <- Index0.index _11 _12;
     goto BB4
   }
   BB4 {
-    lit1_10 <- _11;
-    j_14 <- (0 : usize);
+    lit1_9 <- _10;
+    j_13 <- (0 : usize);
     goto BB5
   }
   BB5 {
-    invariant inv { forall k : (int) . 0 <= k && k < UInt64.to_int j_14 -> IndexLogic0.index_logic lit1_10 <> IndexLogic0.index_logic (Seq.get (Model0.model self_1) k) };
-    _17 <- j_14;
-    _18 <- i_3;
-    _16 <- _17 < _18;
-    switch (_16)
+    invariant inv { forall k : (int) . 0 <= k && k < UInt64.to_int j_13 -> IndexLogic0.index_logic lit1_9 <> IndexLogic0.index_logic (Seq.get (Model0.model self_1) k) };
+    _16 <- j_13;
+    _17 <- i_2;
+    _15 <- _16 < _17;
+    switch (_15)
       | False -> goto BB12
       | _ -> goto BB6
       end
   }
   BB6 {
-    _21 <- Type.creusat_clause_clause_Clause_rest self_1;
-    _22 <- j_14;
-    _20 <- Index0.index _21 _22;
+    _20 <- Type.creusat_clause_clause_Clause_rest self_1;
+    _21 <- j_13;
+    _19 <- Index0.index _20 _21;
     goto BB7
   }
   BB7 {
-    lit2_19 <- _20;
-    _26 <- lit1_10;
-    _25 <- Index1.index _26;
+    lit2_18 <- _19;
+    _25 <- lit1_9;
+    _24 <- Index1.index _25;
     goto BB8
   }
   BB8 {
-    _28 <- lit2_19;
-    _27 <- Index1.index _28;
+    _27 <- lit2_18;
+    _26 <- Index1.index _27;
     goto BB9
   }
   BB9 {
-    _24 <- _25 = _27;
-    switch (_24)
+    _23 <- _24 = _26;
+    switch (_23)
       | False -> goto BB11
       | _ -> goto BB10
       end
@@ -3024,19 +3022,19 @@ module CreuSat_Clause_Impl1_NoDuplicates
     goto BB14
   }
   BB11 {
-    _23 <- ();
-    j_14 <- j_14 + (1 : usize);
-    _5 <- ();
+    _22 <- ();
+    j_13 <- j_13 + (1 : usize);
+    _4 <- ();
     goto BB5
   }
   BB12 {
-    _15 <- ();
-    i_3 <- i_3 + (1 : usize);
-    _5 <- ();
+    _14 <- ();
+    i_2 <- i_2 + (1 : usize);
+    _4 <- ();
     goto BB1
   }
   BB13 {
-    _4 <- ();
+    _3 <- ();
     _0 <- true;
     goto BB14
   }
@@ -3096,68 +3094,67 @@ module CreuSat_Clause_Impl1_CheckClauseInvariant
   var _0 : bool;
   var self_1 : Type.creusat_clause_clause;
   var n_2 : usize;
-  var _3 : ();
-  var i_4 : usize;
+  var i_3 : usize;
+  var _4 : ();
   var _5 : ();
-  var _6 : ();
-  var _7 : bool;
+  var _6 : bool;
+  var _7 : usize;
   var _8 : usize;
-  var _9 : usize;
-  var _10 : Type.creusat_clause_clause;
-  var _11 : ();
+  var _9 : Type.creusat_clause_clause;
+  var _10 : ();
+  var _11 : bool;
   var _12 : bool;
-  var _13 : bool;
+  var _13 : Type.creusat_lit_lit;
   var _14 : Type.creusat_lit_lit;
-  var _15 : Type.creusat_lit_lit;
-  var _16 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var _15 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var _16 : usize;
   var _17 : usize;
-  var _18 : usize;
+  var _18 : ();
   var _19 : ();
   var _20 : ();
   var _21 : ();
   var _22 : ();
-  var _23 : ();
-  var _24 : bool;
-  var _25 : Type.creusat_clause_clause;
-  var _26 : ();
+  var _23 : bool;
+  var _24 : Type.creusat_clause_clause;
+  var _25 : ();
   {
     self_1 <- self;
     n_2 <- n;
     goto BB0
   }
   BB0 {
-    i_4 <- (0 : usize);
+    i_3 <- (0 : usize);
     goto BB1
   }
   BB1 {
-    invariant inv { forall j : (int) . 0 <= j && j < UInt64.to_int i_4 -> Invariant1.invariant' (Seq.get (Model0.model self_1) j) (UInt64.to_int n_2) };
-    _8 <- i_4;
-    _10 <- self_1;
-    _9 <- Len0.len _10;
+    invariant inv { forall j : (int) . 0 <= j && j < UInt64.to_int i_3 -> Invariant1.invariant' (Seq.get (Model0.model self_1) j) (UInt64.to_int n_2) };
+    _7 <- i_3;
+    _9 <- self_1;
+    _8 <- Len0.len _9;
     goto BB2
   }
   BB2 {
-    _7 <- _8 < _9;
-    switch (_7)
+    _6 <- _7 < _8;
+    switch (_6)
       | False -> goto BB8
       | _ -> goto BB3
       end
   }
   BB3 {
-    _16 <- Type.creusat_clause_clause_Clause_rest self_1;
-    _17 <- i_4;
-    _15 <- Index0.index _16 _17;
+    _15 <- Type.creusat_clause_clause_Clause_rest self_1;
+    _16 <- i_3;
+    _14 <- Index0.index _15 _16;
     goto BB4
   }
   BB4 {
-    _14 <- _15;
-    _18 <- n_2;
-    _13 <- CheckLitInvariant0.check_lit_invariant _14 _18;
+    _13 <- _14;
+    _17 <- n_2;
+    _12 <- CheckLitInvariant0.check_lit_invariant _13 _17;
     goto BB5
   }
   BB5 {
-    _12 <- not _13;
-    switch (_12)
+    _11 <- not _12;
+    switch (_11)
       | False -> goto BB7
       | _ -> goto BB6
       end
@@ -3167,19 +3164,19 @@ module CreuSat_Clause_Impl1_CheckClauseInvariant
     goto BB12
   }
   BB7 {
-    _11 <- ();
-    i_4 <- i_4 + (1 : usize);
-    _6 <- ();
+    _10 <- ();
+    i_3 <- i_3 + (1 : usize);
+    _5 <- ();
     goto BB1
   }
   BB8 {
-    _5 <- ();
-    _25 <- self_1;
-    _24 <- NoDuplicates0.no_duplicates _25;
+    _4 <- ();
+    _24 <- self_1;
+    _23 <- NoDuplicates0.no_duplicates _24;
     goto BB9
   }
   BB9 {
-    switch (_24)
+    switch (_23)
       | False -> goto BB11
       | _ -> goto BB10
       end
@@ -3189,26 +3186,29 @@ module CreuSat_Clause_Impl1_CheckClauseInvariant
     goto BB12
   }
   BB11 {
-    _23 <- ();
+    _22 <- ();
     _0 <- false;
-    goto BB12
+    goto BB13
   }
   BB12 {
+    goto BB13
+  }
+  BB13 {
     return _0
   }
   
 end
 module CreuSat_Clause_Impl1_ClauseFromVec_Interface
   use prelude.Prelude
+  use seq.Seq
   use Type
-  val clause_from_vec [@cfg:stackify] (vec : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global)) : Type.creusat_clause_clause
-    
+  val clause_from_vec [@cfg:stackify] (vec : seq (Type.creusat_lit_lit)) : Type.creusat_clause_clause
 end
 module CreuSat_Clause_Impl1_ClauseFromVec
   use prelude.Prelude
+  use seq.Seq
   use Type
-  val clause_from_vec [@cfg:stackify] (vec : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global)) : Type.creusat_clause_clause
-    
+  val clause_from_vec [@cfg:stackify] (vec : seq (Type.creusat_lit_lit)) : Type.creusat_clause_clause
 end
 module CreuSat_Logic_LogicClause_Impl2_VarsInRange_Interface
   use Type
@@ -3981,30 +3981,29 @@ module CreuSat_Clause_Impl1_UnitAndUnset
   var self_1 : Type.creusat_clause_clause;
   var a_2 : Type.creusat_assignments_assignments;
   var _f_3 : Type.creusat_formula_formula;
-  var _4 : ();
-  var i_5 : usize;
+  var i_4 : usize;
+  var _5 : ();
   var _6 : ();
-  var _7 : ();
-  var _8 : bool;
+  var _7 : bool;
+  var _8 : usize;
   var _9 : usize;
-  var _10 : usize;
-  var _11 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
-  var _12 : ();
+  var _10 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var _11 : ();
+  var _12 : bool;
   var _13 : bool;
-  var _14 : bool;
+  var _14 : Type.creusat_lit_lit;
   var _15 : Type.creusat_lit_lit;
-  var _16 : Type.creusat_lit_lit;
-  var _17 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
-  var _18 : usize;
-  var _19 : Type.creusat_assignments_assignments;
+  var _16 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var _17 : usize;
+  var _18 : Type.creusat_assignments_assignments;
+  var _19 : ();
   var _20 : ();
   var _21 : ();
   var _22 : ();
-  var _23 : ();
+  var _23 : Type.creusat_lit_lit;
   var _24 : Type.creusat_lit_lit;
-  var _25 : Type.creusat_lit_lit;
-  var _26 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
-  var _27 : Type.creusat_assignments_assignments;
+  var _25 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var _26 : Type.creusat_assignments_assignments;
   {
     self_1 <- self;
     a_2 <- a;
@@ -4012,38 +4011,38 @@ module CreuSat_Clause_Impl1_UnitAndUnset
     goto BB0
   }
   BB0 {
-    i_5 <- (1 : usize);
+    i_4 <- (1 : usize);
     goto BB1
   }
   BB1 {
-    invariant unsat { forall j : (int) . 1 <= j && j < UInt64.to_int i_5 -> Unsat0.unsat (Seq.get (Model0.model self_1) j) a_2 };
-    _9 <- i_5;
-    _11 <- Type.creusat_clause_clause_Clause_rest self_1;
-    _10 <- Len0.len _11;
+    invariant unsat { forall j : (int) . 1 <= j && j < UInt64.to_int i_4 -> Unsat0.unsat (Seq.get (Model0.model self_1) j) a_2 };
+    _8 <- i_4;
+    _10 <- Type.creusat_clause_clause_Clause_rest self_1;
+    _9 <- Len0.len _10;
     goto BB2
   }
   BB2 {
-    _8 <- _9 < _10;
-    switch (_8)
+    _7 <- _8 < _9;
+    switch (_7)
       | False -> goto BB8
       | _ -> goto BB3
       end
   }
   BB3 {
-    _17 <- Type.creusat_clause_clause_Clause_rest self_1;
-    _18 <- i_5;
-    _16 <- Index0.index _17 _18;
+    _16 <- Type.creusat_clause_clause_Clause_rest self_1;
+    _17 <- i_4;
+    _15 <- Index0.index _16 _17;
     goto BB4
   }
   BB4 {
-    _15 <- _16;
-    _19 <- a_2;
-    _14 <- LitUnsat0.lit_unsat _15 _19;
+    _14 <- _15;
+    _18 <- a_2;
+    _13 <- LitUnsat0.lit_unsat _14 _18;
     goto BB5
   }
   BB5 {
-    _13 <- not _14;
-    switch (_13)
+    _12 <- not _13;
+    switch (_12)
       | False -> goto BB7
       | _ -> goto BB6
       end
@@ -4053,21 +4052,21 @@ module CreuSat_Clause_Impl1_UnitAndUnset
     goto BB11
   }
   BB7 {
-    _12 <- ();
-    i_5 <- i_5 + (1 : usize);
-    _7 <- ();
+    _11 <- ();
+    i_4 <- i_4 + (1 : usize);
+    _6 <- ();
     goto BB1
   }
   BB8 {
-    _6 <- ();
-    _26 <- Type.creusat_clause_clause_Clause_rest self_1;
-    _25 <- Index0.index _26 (0 : usize);
+    _5 <- ();
+    _25 <- Type.creusat_clause_clause_Clause_rest self_1;
+    _24 <- Index0.index _25 (0 : usize);
     goto BB9
   }
   BB9 {
-    _24 <- _25;
-    _27 <- a_2;
-    _0 <- LitUnset0.lit_unset _24 _27;
+    _23 <- _24;
+    _26 <- a_2;
+    _0 <- LitUnset0.lit_unset _23 _26;
     goto BB10
   }
   BB10 {
@@ -6778,70 +6777,68 @@ module CreuSat_ConflictAnalysis_DeriveEmptyFormula
   var f_1 : Type.creusat_formula_formula;
   var trail_2 : Type.creusat_trail_trail;
   var cref_3 : usize;
-  var _4 : ();
-  var i_5 : usize;
-  var _6 : Type.alloc_vec_vec (Type.creusat_trail_step) (Type.alloc_alloc_global);
-  var clause_7 : Type.creusat_clause_clause;
+  var i_4 : usize;
+  var _5 : Type.alloc_vec_vec (Type.creusat_trail_step) (Type.alloc_alloc_global);
+  var clause_6 : Type.creusat_clause_clause;
+  var _7 : Type.creusat_clause_clause;
   var _8 : Type.creusat_clause_clause;
-  var _9 : Type.creusat_clause_clause;
-  var _10 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
-  var _11 : usize;
+  var _9 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
+  var _10 : usize;
+  var _11 : ();
   var _12 : ();
-  var _13 : ();
-  var _14 : bool;
-  var _15 : usize;
-  var _16 : ();
-  var c_idx_17 : usize;
-  var _18 : Type.core_option_option usize;
+  var _13 : bool;
+  var _14 : usize;
+  var _15 : ();
+  var c_idx_16 : usize;
+  var _17 : Type.core_option_option usize;
+  var _18 : Type.creusat_clause_clause;
   var _19 : Type.creusat_clause_clause;
-  var _20 : Type.creusat_clause_clause;
-  var _21 : Type.creusat_trail_trail;
+  var _20 : Type.creusat_trail_trail;
+  var _21 : borrowed usize;
   var _22 : borrowed usize;
-  var _23 : borrowed usize;
-  var _24 : Type.creusat_formula_formula;
-  var _25 : isize;
-  var _26 : ();
-  var b_27 : usize;
-  var _28 : ();
-  var ante_29 : Type.creusat_clause_clause;
-  var _30 : Type.creusat_trail_reason;
-  var _31 : Type.creusat_trail_step;
-  var _32 : Type.alloc_vec_vec (Type.creusat_trail_step) (Type.alloc_alloc_global);
-  var _33 : usize;
-  var _34 : isize;
-  var c_35 : usize;
-  var _36 : Type.creusat_clause_clause;
-  var _37 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
-  var _38 : usize;
-  var c_39 : usize;
+  var _23 : Type.creusat_formula_formula;
+  var _24 : isize;
+  var _25 : ();
+  var b_26 : usize;
+  var _27 : ();
+  var ante_28 : Type.creusat_clause_clause;
+  var _29 : Type.creusat_trail_reason;
+  var _30 : Type.creusat_trail_step;
+  var _31 : Type.alloc_vec_vec (Type.creusat_trail_step) (Type.alloc_alloc_global);
+  var _32 : usize;
+  var _33 : isize;
+  var c_34 : usize;
+  var _35 : Type.creusat_clause_clause;
+  var _36 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
+  var _37 : usize;
+  var c_38 : usize;
+  var _39 : Type.creusat_clause_clause;
   var _40 : Type.creusat_clause_clause;
-  var _41 : Type.creusat_clause_clause;
-  var _42 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
-  var _43 : usize;
-  var o_44 : Type.creusat_trail_reason;
+  var _41 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
+  var _42 : usize;
+  var o_43 : Type.creusat_trail_reason;
+  var _44 : ();
   var _45 : ();
-  var _46 : ();
-  var _47 : Type.creusat_clause_clause;
-  var _48 : Type.creusat_formula_formula;
+  var _46 : Type.creusat_clause_clause;
+  var _47 : Type.creusat_formula_formula;
+  var _48 : Type.creusat_clause_clause;
   var _49 : Type.creusat_clause_clause;
   var _50 : Type.creusat_clause_clause;
-  var _51 : Type.creusat_clause_clause;
-  var _52 : Type.creusat_clause_clause;
-  var _53 : usize;
-  var _54 : Type.creusat_lit_lit;
-  var _55 : Type.creusat_trail_step;
-  var _56 : Type.alloc_vec_vec (Type.creusat_trail_step) (Type.alloc_alloc_global);
-  var _57 : usize;
-  var _58 : usize;
-  var _59 : Type.creusat_assignments_assignments;
-  var _60 : Type.creusat_assignments_assignments;
-  var _61 : bool;
-  var _62 : usize;
-  var _63 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var _51 : usize;
+  var _52 : Type.creusat_lit_lit;
+  var _53 : Type.creusat_trail_step;
+  var _54 : Type.alloc_vec_vec (Type.creusat_trail_step) (Type.alloc_alloc_global);
+  var _55 : usize;
+  var _56 : usize;
+  var _57 : Type.creusat_assignments_assignments;
+  var _58 : Type.creusat_assignments_assignments;
+  var _59 : bool;
+  var _60 : usize;
+  var _61 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var _62 : ();
+  var _63 : ();
   var _64 : ();
   var _65 : ();
-  var _66 : ();
-  var _67 : ();
   {
     f_1 <- f;
     trail_2 <- trail;
@@ -6849,19 +6846,19 @@ module CreuSat_ConflictAnalysis_DeriveEmptyFormula
     goto BB0
   }
   BB0 {
-    _6 <- Type.creusat_trail_trail_Trail_trail trail_2;
-    i_5 <- Len0.len _6;
+    _5 <- Type.creusat_trail_trail_Trail_trail trail_2;
+    i_4 <- Len0.len _5;
     goto BB1
   }
   BB1 {
-    _10 <- Type.creusat_formula_formula_Formula_clauses f_1;
-    _11 <- cref_3;
-    _9 <- Index0.index _10 _11;
+    _9 <- Type.creusat_formula_formula_Formula_clauses f_1;
+    _10 <- cref_3;
+    _8 <- Index0.index _9 _10;
     goto BB2
   }
   BB2 {
-    _8 <- _9;
-    clause_7 <- Clone0.clone' _8;
+    _7 <- _8;
+    clause_6 <- Clone0.clone' _7;
     goto BB3
   }
   BB3 {
@@ -6880,47 +6877,47 @@ module CreuSat_ConflictAnalysis_DeriveEmptyFormula
     goto BB8
   }
   BB8 {
-    invariant clause_vars { InvariantUnaryOk0.invariant_unary_ok clause_7 (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f_1)) };
-    invariant clause_equi { EquisatExtensionInner0.equisat_extension_inner clause_7 (Model1.model f_1) };
-    invariant clause_unsat { Unsat0.unsat clause_7 (Type.creusat_trail_trail_Trail_assignments trail_2) };
-    invariant clause_len { Seq.length (Model2.model clause_7) > 0 };
-    invariant i_bound { 0 <= UInt64.to_int i_5 && UInt64.to_int i_5 <= Seq.length (Model3.model (Type.creusat_trail_trail_Trail_trail trail_2)) };
-    _15 <- i_5;
-    _14 <- _15 > (0 : usize);
-    switch (_14)
+    invariant clause_vars { InvariantUnaryOk0.invariant_unary_ok clause_6 (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f_1)) };
+    invariant clause_equi { EquisatExtensionInner0.equisat_extension_inner clause_6 (Model1.model f_1) };
+    invariant clause_unsat { Unsat0.unsat clause_6 (Type.creusat_trail_trail_Trail_assignments trail_2) };
+    invariant clause_len { Seq.length (Model2.model clause_6) > 0 };
+    invariant i_bound { 0 <= UInt64.to_int i_4 && UInt64.to_int i_4 <= Seq.length (Model3.model (Type.creusat_trail_trail_Trail_trail trail_2)) };
+    _14 <- i_4;
+    _13 <- _14 > (0 : usize);
+    switch (_13)
       | False -> goto BB30
       | _ -> goto BB9
       end
   }
   BB9 {
     assert { Seq.length (Model3.model (Type.creusat_trail_trail_Trail_trail trail_2)) > 0 };
-    _16 <- ();
-    _20 <- clause_7;
-    _19 <- _20;
-    _21 <- trail_2;
-    _23 <- borrow_mut i_5;
-    i_5 <-  ^ _23;
-    _22 <- borrow_mut ( * _23);
-    _23 <- { _23 with current = ( ^ _22) };
-    _24 <- f_1;
-    _18 <- ChooseLiteral0.choose_literal _19 _21 _22 _24;
+    _15 <- ();
+    _19 <- clause_6;
+    _18 <- _19;
+    _20 <- trail_2;
+    _22 <- borrow_mut i_4;
+    i_4 <-  ^ _22;
+    _21 <- borrow_mut ( * _22);
+    _22 <- { _22 with current = ( ^ _21) };
+    _23 <- f_1;
+    _17 <- ChooseLiteral0.choose_literal _18 _20 _21 _23;
     goto BB10
   }
   BB10 {
-    assume { Resolve0.resolve _23 };
-    switch (_18)
+    assume { Resolve0.resolve _22 };
+    switch (_17)
       | Type.Core_Option_Option_None -> goto BB13
       | Type.Core_Option_Option_Some _ -> goto BB11
       end
   }
   BB11 {
-    b_27 <- Type.core_option_option_Some_0 _18;
-    c_idx_17 <- b_27;
-    assert { UInt64.to_int i_5 < Seq.length (Model3.model (Type.creusat_trail_trail_Trail_trail trail_2)) };
-    _28 <- ();
-    _32 <- Type.creusat_trail_trail_Trail_trail trail_2;
-    _33 <- i_5;
-    _31 <- Index1.index _32 _33;
+    b_26 <- Type.core_option_option_Some_0 _17;
+    c_idx_16 <- b_26;
+    assert { UInt64.to_int i_4 < Seq.length (Model3.model (Type.creusat_trail_trail_Trail_trail trail_2)) };
+    _27 <- ();
+    _31 <- Type.creusat_trail_trail_Trail_trail trail_2;
+    _32 <- i_4;
+    _30 <- Index1.index _31 _32;
     goto BB14
   }
   BB12 {
@@ -6928,106 +6925,105 @@ module CreuSat_ConflictAnalysis_DeriveEmptyFormula
   }
   BB13 {
     _0 <- false;
-    goto BB32
+    goto BB33
   }
   BB14 {
-    _30 <- Type.creusat_trail_step_Step_reason _31;
-    switch (_30)
+    _29 <- Type.creusat_trail_step_Step_reason _30;
+    switch (_29)
       | Type.CreuSat_Trail_Reason_Unit _ -> goto BB18
       | Type.CreuSat_Trail_Reason_Long _ -> goto BB16
       | _ -> goto BB15
       end
   }
   BB15 {
-    o_44 <- _30;
+    o_43 <- _29;
     _0 <- false;
-    goto BB31
+    goto BB32
   }
   BB16 {
-    c_35 <- Type.creusat_trail_reason_Long_0 _30;
-    _37 <- Type.creusat_formula_formula_Formula_clauses f_1;
-    _38 <- c_35;
-    _36 <- Index0.index _37 _38;
+    c_34 <- Type.creusat_trail_reason_Long_0 _29;
+    _36 <- Type.creusat_formula_formula_Formula_clauses f_1;
+    _37 <- c_34;
+    _35 <- Index0.index _36 _37;
     goto BB17
   }
   BB17 {
-    ante_29 <- _36;
+    ante_28 <- _35;
     goto BB20
   }
   BB18 {
-    c_39 <- Type.creusat_trail_reason_Unit_0 _30;
-    _42 <- Type.creusat_formula_formula_Formula_clauses f_1;
-    _43 <- c_39;
-    _41 <- Index0.index _42 _43;
+    c_38 <- Type.creusat_trail_reason_Unit_0 _29;
+    _41 <- Type.creusat_formula_formula_Formula_clauses f_1;
+    _42 <- c_38;
+    _40 <- Index0.index _41 _42;
     goto BB19
   }
   BB19 {
-    _40 <- _41;
-    ante_29 <- _40;
+    _39 <- _40;
+    ante_28 <- _39;
     goto BB20
   }
   BB20 {
-    assert { SameIdxSamePolarityExcept0.same_idx_same_polarity_except clause_7 ante_29 (IndexLogic0.index_logic (Type.creusat_trail_step_Step_lit (Seq.get (Model3.model (Type.creusat_trail_trail_Trail_trail trail_2)) (UInt64.to_int i_5)))) };
+    assert { SameIdxSamePolarityExcept0.same_idx_same_polarity_except clause_6 ante_28 (IndexLogic0.index_logic (Type.creusat_trail_step_Step_lit (Seq.get (Model3.model (Type.creusat_trail_trail_Trail_trail trail_2)) (UInt64.to_int i_4)))) };
     goto BB21
   }
   BB21 {
-    _46 <- ();
-    _48 <- f_1;
-    _50 <- clause_7;
-    _49 <- _50;
-    _52 <- ante_29;
-    _51 <- _52;
-    _56 <- Type.creusat_trail_trail_Trail_trail trail_2;
-    _57 <- i_5;
-    _55 <- Index1.index _56 _57;
+    _45 <- ();
+    _47 <- f_1;
+    _49 <- clause_6;
+    _48 <- _49;
+    _50 <- ante_28;
+    _54 <- Type.creusat_trail_trail_Trail_trail trail_2;
+    _55 <- i_4;
+    _53 <- Index1.index _54 _55;
     goto BB22
   }
   BB22 {
-    _54 <- Type.creusat_trail_step_Step_lit _55;
-    _53 <- Index2.index _54;
+    _52 <- Type.creusat_trail_step_Step_lit _53;
+    _51 <- Index2.index _52;
     goto BB23
   }
   BB23 {
-    _58 <- c_idx_17;
-    _60 <- Type.creusat_trail_trail_Trail_assignments trail_2;
-    _59 <- _60;
-    _47 <- Resolve1.resolve _48 _49 _51 _53 _58 _59;
+    _56 <- c_idx_16;
+    _58 <- Type.creusat_trail_trail_Trail_assignments trail_2;
+    _57 <- _58;
+    _46 <- Resolve1.resolve _47 _48 _50 _51 _56 _57;
     goto BB24
   }
   BB24 {
-    clause_7 <- _47;
+    clause_6 <- _46;
     goto BB25
   }
   BB25 {
     goto BB26
   }
   BB26 {
-    _63 <- Type.creusat_clause_clause_Clause_rest clause_7;
-    _62 <- Len1.len _63;
+    _61 <- Type.creusat_clause_clause_Clause_rest clause_6;
+    _60 <- Len1.len _61;
     goto BB27
   }
   BB27 {
-    _61 <- _62 = (0 : usize);
-    switch (_61)
+    _59 <- _60 = (0 : usize);
+    switch (_59)
       | False -> goto BB29
       | _ -> goto BB28
       end
   }
   BB28 {
     _0 <- true;
-    goto BB31
+    goto BB32
   }
   BB29 {
-    _13 <- ();
+    _12 <- ();
     goto BB8
   }
   BB30 {
-    _12 <- ();
+    _11 <- ();
     _0 <- false;
-    goto BB33
+    goto BB31
   }
   BB31 {
-    goto BB32
+    goto BB35
   }
   BB32 {
     goto BB33
@@ -7036,6 +7032,9 @@ module CreuSat_ConflictAnalysis_DeriveEmptyFormula
     goto BB34
   }
   BB34 {
+    goto BB35
+  }
+  BB35 {
     return _0
   }
   
@@ -7296,107 +7295,105 @@ module CreuSat_ConflictAnalysis_AnalyzeConflict
   var f_1 : Type.creusat_formula_formula;
   var trail_2 : Type.creusat_trail_trail;
   var cref_3 : usize;
-  var _4 : ();
-  var decisionlevel_5 : usize;
-  var _6 : Type.creusat_trail_trail;
-  var _7 : ();
-  var _8 : bool;
-  var _9 : usize;
-  var _10 : ();
-  var _11 : bool;
-  var _12 : Type.creusat_formula_formula;
-  var _13 : Type.creusat_trail_trail;
-  var _14 : usize;
-  var i_15 : usize;
-  var _16 : Type.alloc_vec_vec (Type.creusat_trail_step) (Type.alloc_alloc_global);
-  var clause_17 : Type.creusat_clause_clause;
+  var decisionlevel_4 : usize;
+  var _5 : Type.creusat_trail_trail;
+  var _6 : ();
+  var _7 : bool;
+  var _8 : usize;
+  var _9 : ();
+  var _10 : bool;
+  var _11 : Type.creusat_formula_formula;
+  var _12 : Type.creusat_trail_trail;
+  var _13 : usize;
+  var i_14 : usize;
+  var _15 : Type.alloc_vec_vec (Type.creusat_trail_step) (Type.alloc_alloc_global);
+  var clause_16 : Type.creusat_clause_clause;
+  var _17 : Type.creusat_clause_clause;
   var _18 : Type.creusat_clause_clause;
-  var _19 : Type.creusat_clause_clause;
-  var _20 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
-  var _21 : usize;
-  var s_idx_22 : usize;
+  var _19 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
+  var _20 : usize;
+  var s_idx_21 : usize;
+  var _22 : ();
   var _23 : ();
-  var _24 : ();
-  var _25 : bool;
-  var _26 : usize;
-  var _27 : ();
-  var c_idx_28 : usize;
-  var _29 : Type.core_option_option usize;
+  var _24 : bool;
+  var _25 : usize;
+  var _26 : ();
+  var c_idx_27 : usize;
+  var _28 : Type.core_option_option usize;
+  var _29 : Type.creusat_clause_clause;
   var _30 : Type.creusat_clause_clause;
-  var _31 : Type.creusat_clause_clause;
-  var _32 : Type.creusat_trail_trail;
+  var _31 : Type.creusat_trail_trail;
+  var _32 : borrowed usize;
   var _33 : borrowed usize;
-  var _34 : borrowed usize;
-  var _35 : Type.creusat_formula_formula;
-  var _36 : isize;
-  var _37 : ();
-  var b_38 : usize;
-  var _39 : ();
-  var ante_40 : Type.creusat_clause_clause;
-  var _41 : Type.creusat_trail_reason;
-  var _42 : Type.creusat_trail_step;
-  var _43 : Type.alloc_vec_vec (Type.creusat_trail_step) (Type.alloc_alloc_global);
-  var _44 : usize;
-  var _45 : isize;
-  var c_46 : usize;
-  var _47 : Type.creusat_clause_clause;
-  var _48 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
-  var _49 : usize;
-  var o_50 : Type.creusat_trail_reason;
+  var _34 : Type.creusat_formula_formula;
+  var _35 : isize;
+  var _36 : ();
+  var b_37 : usize;
+  var _38 : ();
+  var ante_39 : Type.creusat_clause_clause;
+  var _40 : Type.creusat_trail_reason;
+  var _41 : Type.creusat_trail_step;
+  var _42 : Type.alloc_vec_vec (Type.creusat_trail_step) (Type.alloc_alloc_global);
+  var _43 : usize;
+  var _44 : isize;
+  var c_45 : usize;
+  var _46 : Type.creusat_clause_clause;
+  var _47 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
+  var _48 : usize;
+  var o_49 : Type.creusat_trail_reason;
+  var _50 : ();
   var _51 : ();
-  var _52 : ();
-  var _53 : Type.creusat_clause_clause;
-  var _54 : Type.creusat_formula_formula;
+  var _52 : Type.creusat_clause_clause;
+  var _53 : Type.creusat_formula_formula;
+  var _54 : Type.creusat_clause_clause;
   var _55 : Type.creusat_clause_clause;
   var _56 : Type.creusat_clause_clause;
-  var _57 : Type.creusat_clause_clause;
-  var _58 : Type.creusat_clause_clause;
-  var _59 : usize;
-  var _60 : Type.creusat_lit_lit;
-  var _61 : Type.creusat_trail_step;
-  var _62 : Type.alloc_vec_vec (Type.creusat_trail_step) (Type.alloc_alloc_global);
-  var _63 : usize;
-  var _64 : usize;
-  var _65 : Type.creusat_assignments_assignments;
-  var _66 : Type.creusat_assignments_assignments;
-  var k_67 : usize;
-  var cnt_68 : usize;
-  var _69 : ();
-  var _70 : bool;
-  var _71 : usize;
-  var _72 : usize;
-  var _73 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
-  var _74 : ();
-  var _75 : bool;
-  var _76 : usize;
+  var _57 : usize;
+  var _58 : Type.creusat_lit_lit;
+  var _59 : Type.creusat_trail_step;
+  var _60 : Type.alloc_vec_vec (Type.creusat_trail_step) (Type.alloc_alloc_global);
+  var _61 : usize;
+  var _62 : usize;
+  var _63 : Type.creusat_assignments_assignments;
+  var _64 : Type.creusat_assignments_assignments;
+  var k_65 : usize;
+  var cnt_66 : usize;
+  var _67 : ();
+  var _68 : bool;
+  var _69 : usize;
+  var _70 : usize;
+  var _71 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var _72 : ();
+  var _73 : bool;
+  var _74 : usize;
+  var _75 : usize;
+  var _76 : Type.alloc_vec_vec usize (Type.alloc_alloc_global);
   var _77 : usize;
-  var _78 : Type.alloc_vec_vec usize (Type.alloc_alloc_global);
-  var _79 : usize;
-  var _80 : Type.creusat_lit_lit;
-  var _81 : Type.creusat_lit_lit;
-  var _82 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
-  var _83 : usize;
-  var _84 : usize;
-  var _85 : ();
-  var _86 : bool;
+  var _78 : Type.creusat_lit_lit;
+  var _79 : Type.creusat_lit_lit;
+  var _80 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var _81 : usize;
+  var _82 : usize;
+  var _83 : ();
+  var _84 : bool;
+  var _85 : usize;
+  var _86 : ();
   var _87 : usize;
   var _88 : ();
-  var _89 : usize;
+  var _89 : ();
   var _90 : ();
-  var _91 : ();
-  var _92 : ();
-  var _93 : bool;
-  var _94 : usize;
-  var _95 : ();
-  var _96 : bool;
-  var _97 : usize;
-  var _98 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var _91 : bool;
+  var _92 : usize;
+  var _93 : ();
+  var _94 : bool;
+  var _95 : usize;
+  var _96 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var _97 : Type.creusat_clause_clause;
+  var _98 : usize;
   var _99 : Type.creusat_clause_clause;
-  var _100 : usize;
-  var _101 : Type.creusat_clause_clause;
+  var _100 : ();
+  var _101 : ();
   var _102 : ();
-  var _103 : ();
-  var _104 : ();
   {
     f_1 <- f;
     trail_2 <- trail;
@@ -7404,27 +7401,27 @@ module CreuSat_ConflictAnalysis_AnalyzeConflict
     goto BB0
   }
   BB0 {
-    _6 <- trail_2;
-    decisionlevel_5 <- DecisionLevel0.decision_level _6;
+    _5 <- trail_2;
+    decisionlevel_4 <- DecisionLevel0.decision_level _5;
     goto BB1
   }
   BB1 {
-    _9 <- decisionlevel_5;
-    _8 <- _9 = (0 : usize);
-    switch (_8)
+    _8 <- decisionlevel_4;
+    _7 <- _8 = (0 : usize);
+    switch (_7)
       | False -> goto BB6
       | _ -> goto BB2
       end
   }
   BB2 {
-    _12 <- f_1;
-    _13 <- trail_2;
-    _14 <- cref_3;
-    _11 <- DeriveEmptyFormula0.derive_empty_formula _12 _13 _14;
+    _11 <- f_1;
+    _12 <- trail_2;
+    _13 <- cref_3;
+    _10 <- DeriveEmptyFormula0.derive_empty_formula _11 _12 _13;
     goto BB3
   }
   BB3 {
-    switch (_11)
+    switch (_10)
       | False -> goto BB4
       | _ -> goto BB5
       end
@@ -7438,24 +7435,24 @@ module CreuSat_ConflictAnalysis_AnalyzeConflict
     goto BB57
   }
   BB6 {
-    _7 <- ();
-    _16 <- Type.creusat_trail_trail_Trail_trail trail_2;
-    i_15 <- Len0.len _16;
+    _6 <- ();
+    _15 <- Type.creusat_trail_trail_Trail_trail trail_2;
+    i_14 <- Len0.len _15;
     goto BB7
   }
   BB7 {
-    _20 <- Type.creusat_formula_formula_Formula_clauses f_1;
-    _21 <- cref_3;
-    _19 <- Index0.index _20 _21;
+    _19 <- Type.creusat_formula_formula_Formula_clauses f_1;
+    _20 <- cref_3;
+    _18 <- Index0.index _19 _20;
     goto BB8
   }
   BB8 {
-    _18 <- _19;
-    clause_17 <- Clone0.clone' _18;
+    _17 <- _18;
+    clause_16 <- Clone0.clone' _17;
     goto BB9
   }
   BB9 {
-    s_idx_22 <- (0 : usize);
+    s_idx_21 <- (0 : usize);
     goto BB10
   }
   BB10 {
@@ -7468,46 +7465,46 @@ module CreuSat_ConflictAnalysis_AnalyzeConflict
     goto BB13
   }
   BB13 {
-    invariant clause_vars { InvariantUnaryOk0.invariant_unary_ok clause_17 (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f_1)) };
-    invariant clause_equi { EquisatExtensionInner0.equisat_extension_inner clause_17 (Model3.model f_1) };
-    invariant clause_unsat { Unsat0.unsat clause_17 (Type.creusat_trail_trail_Trail_assignments trail_2) };
-    invariant i_bound { 0 <= UInt64.to_int i_15 && UInt64.to_int i_15 <= Seq.length (Model4.model (Type.creusat_trail_trail_Trail_trail trail_2)) };
-    _26 <- i_15;
-    _25 <- _26 > (0 : usize);
-    switch (_25)
+    invariant clause_vars { InvariantUnaryOk0.invariant_unary_ok clause_16 (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f_1)) };
+    invariant clause_equi { EquisatExtensionInner0.equisat_extension_inner clause_16 (Model3.model f_1) };
+    invariant clause_unsat { Unsat0.unsat clause_16 (Type.creusat_trail_trail_Trail_assignments trail_2) };
+    invariant i_bound { 0 <= UInt64.to_int i_14 && UInt64.to_int i_14 <= Seq.length (Model4.model (Type.creusat_trail_trail_Trail_trail trail_2)) };
+    _25 <- i_14;
+    _24 <- _25 > (0 : usize);
+    switch (_24)
       | False -> goto BB52
       | _ -> goto BB14
       end
   }
   BB14 {
     assert { Seq.length (Model4.model (Type.creusat_trail_trail_Trail_trail trail_2)) > 0 };
-    _27 <- ();
-    _31 <- clause_17;
-    _30 <- _31;
-    _32 <- trail_2;
-    _34 <- borrow_mut i_15;
-    i_15 <-  ^ _34;
-    _33 <- borrow_mut ( * _34);
-    _34 <- { _34 with current = ( ^ _33) };
-    _35 <- f_1;
-    _29 <- ChooseLiteral0.choose_literal _30 _32 _33 _35;
+    _26 <- ();
+    _30 <- clause_16;
+    _29 <- _30;
+    _31 <- trail_2;
+    _33 <- borrow_mut i_14;
+    i_14 <-  ^ _33;
+    _32 <- borrow_mut ( * _33);
+    _33 <- { _33 with current = ( ^ _32) };
+    _34 <- f_1;
+    _28 <- ChooseLiteral0.choose_literal _29 _31 _32 _34;
     goto BB15
   }
   BB15 {
-    assume { Resolve0.resolve _34 };
-    switch (_29)
+    assume { Resolve0.resolve _33 };
+    switch (_28)
       | Type.Core_Option_Option_None -> goto BB18
       | Type.Core_Option_Option_Some _ -> goto BB16
       end
   }
   BB16 {
-    b_38 <- Type.core_option_option_Some_0 _29;
-    c_idx_28 <- b_38;
-    assert { UInt64.to_int i_15 < Seq.length (Model4.model (Type.creusat_trail_trail_Trail_trail trail_2)) };
-    _39 <- ();
-    _43 <- Type.creusat_trail_trail_Trail_trail trail_2;
-    _44 <- i_15;
-    _42 <- Index1.index _43 _44;
+    b_37 <- Type.core_option_option_Some_0 _28;
+    c_idx_27 <- b_37;
+    assert { UInt64.to_int i_14 < Seq.length (Model4.model (Type.creusat_trail_trail_Trail_trail trail_2)) };
+    _38 <- ();
+    _42 <- Type.creusat_trail_trail_Trail_trail trail_2;
+    _43 <- i_14;
+    _41 <- Index1.index _42 _43;
     goto BB19
   }
   BB17 {
@@ -7515,67 +7512,66 @@ module CreuSat_ConflictAnalysis_AnalyzeConflict
   }
   BB18 {
     _0 <- Type.CreuSat_ConflictAnalysis_Conflict_Panic;
-    goto BB54
+    goto BB55
   }
   BB19 {
-    _41 <- Type.creusat_trail_step_Step_reason _42;
-    switch (_41)
+    _40 <- Type.creusat_trail_step_Step_reason _41;
+    switch (_40)
       | Type.CreuSat_Trail_Reason_Long _ -> goto BB21
       | _ -> goto BB20
       end
   }
   BB20 {
-    o_50 <- _41;
+    o_49 <- _40;
     _0 <- Type.CreuSat_ConflictAnalysis_Conflict_Panic;
-    goto BB53
+    goto BB54
   }
   BB21 {
-    c_46 <- Type.creusat_trail_reason_Long_0 _41;
-    _48 <- Type.creusat_formula_formula_Formula_clauses f_1;
-    _49 <- c_46;
-    _47 <- Index0.index _48 _49;
+    c_45 <- Type.creusat_trail_reason_Long_0 _40;
+    _47 <- Type.creusat_formula_formula_Formula_clauses f_1;
+    _48 <- c_45;
+    _46 <- Index0.index _47 _48;
     goto BB22
   }
   BB22 {
-    ante_40 <- _47;
-    assert { SameIdxSamePolarityExcept0.same_idx_same_polarity_except clause_17 ante_40 (IndexLogic0.index_logic (Type.creusat_trail_step_Step_lit (Seq.get (Model4.model (Type.creusat_trail_trail_Trail_trail trail_2)) (UInt64.to_int i_15)))) };
+    ante_39 <- _46;
+    assert { SameIdxSamePolarityExcept0.same_idx_same_polarity_except clause_16 ante_39 (IndexLogic0.index_logic (Type.creusat_trail_step_Step_lit (Seq.get (Model4.model (Type.creusat_trail_trail_Trail_trail trail_2)) (UInt64.to_int i_14)))) };
     goto BB23
   }
   BB23 {
-    _52 <- ();
-    _54 <- f_1;
-    _56 <- clause_17;
-    _55 <- _56;
-    _58 <- ante_40;
-    _57 <- _58;
-    _62 <- Type.creusat_trail_trail_Trail_trail trail_2;
-    _63 <- i_15;
-    _61 <- Index1.index _62 _63;
+    _51 <- ();
+    _53 <- f_1;
+    _55 <- clause_16;
+    _54 <- _55;
+    _56 <- ante_39;
+    _60 <- Type.creusat_trail_trail_Trail_trail trail_2;
+    _61 <- i_14;
+    _59 <- Index1.index _60 _61;
     goto BB24
   }
   BB24 {
-    _60 <- Type.creusat_trail_step_Step_lit _61;
-    _59 <- Index2.index _60;
+    _58 <- Type.creusat_trail_step_Step_lit _59;
+    _57 <- Index2.index _58;
     goto BB25
   }
   BB25 {
-    _64 <- c_idx_28;
-    _66 <- Type.creusat_trail_trail_Trail_assignments trail_2;
-    _65 <- _66;
-    _53 <- Resolve1.resolve _54 _55 _57 _59 _64 _65;
+    _62 <- c_idx_27;
+    _64 <- Type.creusat_trail_trail_Trail_assignments trail_2;
+    _63 <- _64;
+    _52 <- Resolve1.resolve _53 _54 _56 _57 _62 _63;
     goto BB26
   }
   BB26 {
-    clause_17 <- _53;
+    clause_16 <- _52;
     goto BB27
   }
   BB27 {
     goto BB28
   }
   BB28 {
-    s_idx_22 <- (0 : usize);
-    k_67 <- (0 : usize);
-    cnt_68 <- (0 : usize);
+    s_idx_21 <- (0 : usize);
+    k_65 <- (0 : usize);
+    cnt_66 <- (0 : usize);
     goto BB29
   }
   BB29 {
@@ -7585,130 +7581,130 @@ module CreuSat_ConflictAnalysis_AnalyzeConflict
     goto BB31
   }
   BB31 {
-    invariant k_bound { UInt64.to_int k_67 <= Seq.length (Model2.model clause_17) };
-    invariant s_idx_ok { UInt64.to_int cnt_68 = 0 || UInt64.to_int s_idx_22 < Seq.length (Model2.model clause_17) };
-    invariant cnt_bound { UInt64.to_int cnt_68 <= 2 };
-    _71 <- k_67;
-    _73 <- Type.creusat_clause_clause_Clause_rest clause_17;
-    _72 <- Len1.len _73;
+    invariant k_bound { UInt64.to_int k_65 <= Seq.length (Model2.model clause_16) };
+    invariant s_idx_ok { UInt64.to_int cnt_66 = 0 || UInt64.to_int s_idx_21 < Seq.length (Model2.model clause_16) };
+    invariant cnt_bound { UInt64.to_int cnt_66 <= 2 };
+    _69 <- k_65;
+    _71 <- Type.creusat_clause_clause_Clause_rest clause_16;
+    _70 <- Len1.len _71;
     goto BB32
   }
   BB32 {
-    _70 <- _71 < _72;
-    switch (_70)
+    _68 <- _69 < _70;
+    switch (_68)
       | False -> goto BB42
       | _ -> goto BB33
       end
   }
   BB33 {
-    _78 <- Type.creusat_trail_trail_Trail_lit_to_level trail_2;
-    _82 <- Type.creusat_clause_clause_Clause_rest clause_17;
-    _83 <- k_67;
-    _81 <- Index3.index _82 _83;
+    _76 <- Type.creusat_trail_trail_Trail_lit_to_level trail_2;
+    _80 <- Type.creusat_clause_clause_Clause_rest clause_16;
+    _81 <- k_65;
+    _79 <- Index3.index _80 _81;
     goto BB34
   }
   BB34 {
-    _80 <- _81;
-    _79 <- Index2.index _80;
+    _78 <- _79;
+    _77 <- Index2.index _78;
     goto BB35
   }
   BB35 {
-    _77 <- Index4.index _78 _79;
+    _75 <- Index4.index _76 _77;
     goto BB36
   }
   BB36 {
-    _76 <- _77;
-    _84 <- decisionlevel_5;
-    _75 <- _76 = _84;
-    switch (_75)
+    _74 <- _75;
+    _82 <- decisionlevel_4;
+    _73 <- _74 = _82;
+    switch (_73)
       | False -> goto BB40
       | _ -> goto BB37
       end
   }
   BB37 {
-    cnt_68 <- cnt_68 + (1 : usize);
-    _87 <- cnt_68;
-    _86 <- _87 > (1 : usize);
-    switch (_86)
+    cnt_66 <- cnt_66 + (1 : usize);
+    _85 <- cnt_66;
+    _84 <- _85 > (1 : usize);
+    switch (_84)
       | False -> goto BB39
       | _ -> goto BB38
       end
   }
   BB38 {
-    _69 <- ();
+    _67 <- ();
     goto BB43
   }
   BB39 {
-    _85 <- ();
-    _89 <- k_67;
-    s_idx_22 <- _89;
-    _74 <- ();
+    _83 <- ();
+    _87 <- k_65;
+    s_idx_21 <- _87;
+    _72 <- ();
     goto BB41
   }
   BB40 {
-    _74 <- ();
+    _72 <- ();
     goto BB41
   }
   BB41 {
-    k_67 <- k_67 + (1 : usize);
-    _24 <- ();
+    k_65 <- k_65 + (1 : usize);
+    _23 <- ();
     goto BB31
   }
   BB42 {
-    _69 <- ();
+    _67 <- ();
     goto BB43
   }
   BB43 {
-    _94 <- cnt_68;
-    _93 <- _94 = (1 : usize);
-    switch (_93)
+    _92 <- cnt_66;
+    _91 <- _92 = (1 : usize);
+    switch (_91)
       | False -> goto BB51
       | _ -> goto BB44
       end
   }
   BB44 {
-    _98 <- Type.creusat_clause_clause_Clause_rest clause_17;
-    _97 <- Len1.len _98;
+    _96 <- Type.creusat_clause_clause_Clause_rest clause_16;
+    _95 <- Len1.len _96;
     goto BB45
   }
   BB45 {
-    _96 <- _97 = (1 : usize);
-    switch (_96)
+    _94 <- _95 = (1 : usize);
+    switch (_94)
       | False -> goto BB48
       | _ -> goto BB46
       end
   }
   BB46 {
-    _99 <- clause_17;
-    _0 <- Type.CreuSat_ConflictAnalysis_Conflict_Unit _99;
+    _97 <- clause_16;
+    _0 <- Type.CreuSat_ConflictAnalysis_Conflict_Unit _97;
     goto BB47
   }
   BB47 {
     goto BB50
   }
   BB48 {
-    _100 <- s_idx_22;
-    _101 <- clause_17;
-    _0 <- Type.CreuSat_ConflictAnalysis_Conflict_Learned _100 _101;
+    _98 <- s_idx_21;
+    _99 <- clause_16;
+    _0 <- Type.CreuSat_ConflictAnalysis_Conflict_Learned _98 _99;
     goto BB49
   }
   BB49 {
     goto BB50
   }
   BB50 {
-    goto BB53
+    goto BB54
   }
   BB51 {
-    _24 <- ();
+    _23 <- ();
     goto BB13
   }
   BB52 {
-    _23 <- ();
+    _22 <- ();
     _0 <- Type.CreuSat_ConflictAnalysis_Conflict_Panic;
-    goto BB55
+    goto BB53
   }
   BB53 {
-    goto BB54
+    goto BB59
   }
   BB54 {
     goto BB55
@@ -7723,6 +7719,9 @@ module CreuSat_ConflictAnalysis_AnalyzeConflict
     goto BB58
   }
   BB58 {
+    goto BB59
+  }
+  BB59 {
     return _0
   }
   
@@ -10136,50 +10135,49 @@ module CreuSat_Decision_Impl1_GetNext
   var self_1 : borrowed (Type.creusat_decision_decisions);
   var a_2 : Type.creusat_assignments_assignments;
   var _f_3 : Type.creusat_formula_formula;
-  var _4 : ();
-  var iNVALID'_5 : usize;
-  var curr_6 : usize;
+  var iNVALID'_4 : usize;
+  var curr_5 : usize;
+  var _6 : ();
   var _7 : ();
-  var _8 : ();
-  var _9 : bool;
+  var _8 : bool;
+  var _9 : usize;
   var _10 : usize;
-  var _11 : usize;
-  var _12 : ();
-  var _13 : bool;
+  var _11 : ();
+  var _12 : bool;
+  var _13 : uint8;
   var _14 : uint8;
-  var _15 : uint8;
-  var _16 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
-  var _17 : usize;
-  var _18 : ();
-  var _19 : usize;
-  var _20 : Type.creusat_decision_node;
-  var _21 : Type.alloc_vec_vec (Type.creusat_decision_node) (Type.alloc_alloc_global);
+  var _15 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
+  var _16 : usize;
+  var _17 : ();
+  var _18 : usize;
+  var _19 : Type.creusat_decision_node;
+  var _20 : Type.alloc_vec_vec (Type.creusat_decision_node) (Type.alloc_alloc_global);
+  var _21 : usize;
   var _22 : usize;
   var _23 : usize;
-  var _24 : usize;
-  var _25 : Type.creusat_decision_node;
-  var _26 : Type.alloc_vec_vec (Type.creusat_decision_node) (Type.alloc_alloc_global);
-  var _27 : usize;
+  var _24 : Type.creusat_decision_node;
+  var _25 : Type.alloc_vec_vec (Type.creusat_decision_node) (Type.alloc_alloc_global);
+  var _26 : usize;
+  var _27 : ();
   var _28 : ();
   var _29 : ();
-  var _30 : ();
-  var i_31 : usize;
-  var _32 : ();
-  var _33 : bool;
+  var i_30 : usize;
+  var _31 : ();
+  var _32 : bool;
+  var _33 : usize;
   var _34 : usize;
-  var _35 : usize;
-  var _36 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
-  var _37 : ();
-  var _38 : bool;
+  var _35 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
+  var _36 : ();
+  var _37 : bool;
+  var _38 : uint8;
   var _39 : uint8;
-  var _40 : uint8;
-  var _41 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
-  var _42 : usize;
-  var _43 : ();
-  var _44 : usize;
+  var _40 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
+  var _41 : usize;
+  var _42 : ();
+  var _43 : usize;
+  var _44 : ();
   var _45 : ();
   var _46 : ();
-  var _47 : ();
   {
     self_1 <- self;
     a_2 <- a;
@@ -10187,110 +10185,110 @@ module CreuSat_Decision_Impl1_GetNext
     goto BB0
   }
   BB0 {
-    iNVALID'_5 <- (18446744073709551615 : usize);
-    curr_6 <- Type.creusat_decision_decisions_Decisions_search ( * self_1);
+    iNVALID'_4 <- (18446744073709551615 : usize);
+    curr_5 <- Type.creusat_decision_decisions_Decisions_search ( * self_1);
     goto BB1
   }
   BB1 {
-    invariant inv { curr_6 = (18446744073709551615 : usize) || UInt64.to_int curr_6 < Seq.length (Model0.model a_2) };
-    _10 <- curr_6;
-    _11 <- iNVALID'_5;
-    _9 <- _10 <> _11;
-    switch (_9)
+    invariant inv { curr_5 = (18446744073709551615 : usize) || UInt64.to_int curr_5 < Seq.length (Model0.model a_2) };
+    _9 <- curr_5;
+    _10 <- iNVALID'_4;
+    _8 <- _9 <> _10;
+    switch (_8)
       | False -> goto BB8
       | _ -> goto BB2
       end
   }
   BB2 {
-    _16 <- Type.creusat_assignments_assignments_Assignments_0 a_2;
-    _17 <- curr_6;
-    _15 <- Index0.index _16 _17;
+    _15 <- Type.creusat_assignments_assignments_Assignments_0 a_2;
+    _16 <- curr_5;
+    _14 <- Index0.index _15 _16;
     goto BB3
   }
   BB3 {
-    _14 <- _15;
-    _13 <- _14 >= (2 : uint8);
-    switch (_13)
+    _13 <- _14;
+    _12 <- _13 >= (2 : uint8);
+    switch (_12)
       | False -> goto BB6
       | _ -> goto BB4
       end
   }
   BB4 {
-    _21 <- Type.creusat_decision_decisions_Decisions_linked_list ( * self_1);
-    _22 <- curr_6;
-    _20 <- Index1.index _21 _22;
+    _20 <- Type.creusat_decision_decisions_Decisions_linked_list ( * self_1);
+    _21 <- curr_5;
+    _19 <- Index1.index _20 _21;
     goto BB5
   }
   BB5 {
-    _19 <- Type.creusat_decision_node_Node_next _20;
-    self_1 <- { self_1 with current = (let Type.CreuSat_Decision_Decisions a b c d =  * self_1 in Type.CreuSat_Decision_Decisions a b c _19) };
+    _18 <- Type.creusat_decision_node_Node_next _19;
+    self_1 <- { self_1 with current = (let Type.CreuSat_Decision_Decisions a b c d =  * self_1 in Type.CreuSat_Decision_Decisions a b c _18) };
     assume { Resolve0.resolve self_1 };
-    _23 <- curr_6;
-    _0 <- Type.Core_Option_Option_Some _23;
-    goto BB17
+    _22 <- curr_5;
+    _0 <- Type.Core_Option_Option_Some _22;
+    goto BB16
   }
   BB6 {
-    _12 <- ();
-    _26 <- Type.creusat_decision_decisions_Decisions_linked_list ( * self_1);
-    _27 <- curr_6;
-    _25 <- Index1.index _26 _27;
+    _11 <- ();
+    _25 <- Type.creusat_decision_decisions_Decisions_linked_list ( * self_1);
+    _26 <- curr_5;
+    _24 <- Index1.index _25 _26;
     goto BB7
   }
   BB7 {
-    _24 <- Type.creusat_decision_node_Node_next _25;
-    curr_6 <- _24;
-    _8 <- ();
+    _23 <- Type.creusat_decision_node_Node_next _24;
+    curr_5 <- _23;
+    _7 <- ();
     goto BB1
   }
   BB8 {
     assume { Resolve0.resolve self_1 };
-    _7 <- ();
-    i_31 <- (0 : usize);
+    _6 <- ();
+    i_30 <- (0 : usize);
     goto BB9
   }
   BB9 {
-    invariant prev { forall j : (int) . 0 <= j && j < UInt64.to_int i_31 -> not (Unset0.unset (Seq.get (Model0.model a_2) j)) };
-    _34 <- i_31;
-    _36 <- Type.creusat_assignments_assignments_Assignments_0 a_2;
-    _35 <- Len0.len _36;
+    invariant prev { forall j : (int) . 0 <= j && j < UInt64.to_int i_30 -> not (Unset0.unset (Seq.get (Model0.model a_2) j)) };
+    _33 <- i_30;
+    _35 <- Type.creusat_assignments_assignments_Assignments_0 a_2;
+    _34 <- Len0.len _35;
     goto BB10
   }
   BB10 {
-    _33 <- _34 < _35;
-    switch (_33)
+    _32 <- _33 < _34;
+    switch (_32)
       | False -> goto BB15
       | _ -> goto BB11
       end
   }
   BB11 {
-    _41 <- Type.creusat_assignments_assignments_Assignments_0 a_2;
-    _42 <- i_31;
-    _40 <- Index0.index _41 _42;
+    _40 <- Type.creusat_assignments_assignments_Assignments_0 a_2;
+    _41 <- i_30;
+    _39 <- Index0.index _40 _41;
     goto BB12
   }
   BB12 {
-    _39 <- _40;
-    _38 <- _39 >= (2 : uint8);
-    switch (_38)
+    _38 <- _39;
+    _37 <- _38 >= (2 : uint8);
+    switch (_37)
       | False -> goto BB14
       | _ -> goto BB13
       end
   }
   BB13 {
-    _44 <- i_31;
-    _0 <- Type.Core_Option_Option_Some _44;
+    _43 <- i_30;
+    _0 <- Type.Core_Option_Option_Some _43;
     goto BB16
   }
   BB14 {
-    _37 <- ();
-    i_31 <- i_31 + (1 : usize);
-    _8 <- ();
+    _36 <- ();
+    i_30 <- i_30 + (1 : usize);
+    _7 <- ();
     goto BB9
   }
   BB15 {
-    _32 <- ();
+    _31 <- ();
     _0 <- Type.Core_Option_Option_None;
-    goto BB16
+    goto BB17
   }
   BB16 {
     goto BB17
@@ -10401,143 +10399,142 @@ module CreuSat_Formula_Impl0_CheckFormulaInvariant
   var _0 : Type.creusat_solver_satresult;
   var self_1 : Type.creusat_formula_formula;
   var _2 : ();
-  var _3 : ();
-  var _4 : bool;
+  var _3 : bool;
+  var _4 : usize;
   var _5 : usize;
-  var _6 : usize;
-  var _7 : bool;
+  var _6 : bool;
+  var _7 : ();
   var _8 : ();
-  var _9 : ();
-  var _10 : bool;
-  var _11 : usize;
-  var _12 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
-  var _13 : ();
-  var _14 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
-  var _15 : ();
-  var _16 : bool;
-  var _17 : usize;
-  var _18 : ();
-  var i_19 : usize;
+  var _9 : bool;
+  var _10 : usize;
+  var _11 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
+  var _12 : ();
+  var _13 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
+  var _14 : ();
+  var _15 : bool;
+  var _16 : usize;
+  var _17 : ();
+  var i_18 : usize;
+  var _19 : ();
   var _20 : ();
-  var _21 : ();
-  var _22 : bool;
+  var _21 : bool;
+  var _22 : usize;
   var _23 : usize;
-  var _24 : usize;
-  var _25 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
-  var _26 : ();
+  var _24 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
+  var _25 : ();
+  var _26 : bool;
   var _27 : bool;
-  var _28 : bool;
+  var _28 : Type.creusat_clause_clause;
   var _29 : Type.creusat_clause_clause;
-  var _30 : Type.creusat_clause_clause;
-  var _31 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
+  var _30 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
+  var _31 : usize;
   var _32 : usize;
-  var _33 : usize;
+  var _33 : ();
   var _34 : ();
-  var _35 : ();
-  var _36 : bool;
-  var _37 : usize;
+  var _35 : bool;
+  var _36 : usize;
+  var _37 : Type.creusat_clause_clause;
   var _38 : Type.creusat_clause_clause;
-  var _39 : Type.creusat_clause_clause;
-  var _40 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
-  var _41 : usize;
+  var _39 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
+  var _40 : usize;
+  var _41 : ();
   var _42 : ();
   var _43 : ();
   var _44 : ();
-  var _45 : ();
   {
     self_1 <- self;
     goto BB0
   }
   BB0 {
-    _5 <- Type.creusat_formula_formula_Formula_num_vars self_1;
-    _7 <- (2 : usize) = (0 : usize);
-    assert { not _7 };
+    _4 <- Type.creusat_formula_formula_Formula_num_vars self_1;
+    _6 <- (2 : usize) = (0 : usize);
+    assert { not _6 };
     goto BB1
   }
   BB1 {
-    _6 <- (18446744073709551615 : usize) / (2 : usize);
-    _4 <- _5 >= _6;
-    switch (_4)
+    _5 <- (18446744073709551615 : usize) / (2 : usize);
+    _3 <- _4 >= _5;
+    switch (_3)
       | False -> goto BB3
       | _ -> goto BB2
       end
   }
   BB2 {
     _0 <- Type.CreuSat_Solver_SatResult_Err;
-    goto BB25
+    goto BB24
   }
   BB3 {
-    _3 <- ();
-    _12 <- Type.creusat_formula_formula_Formula_clauses self_1;
-    _11 <- Len0.len _12;
+    _2 <- ();
+    _11 <- Type.creusat_formula_formula_Formula_clauses self_1;
+    _10 <- Len0.len _11;
     goto BB4
   }
   BB4 {
-    _10 <- _11 = (0 : usize);
-    switch (_10)
+    _9 <- _10 = (0 : usize);
+    switch (_9)
       | False -> goto BB8
       | _ -> goto BB5
       end
   }
   BB5 {
-    _14 <- New0.new ();
+    _13 <- New0.new ();
     goto BB6
   }
   BB6 {
-    _0 <- Type.CreuSat_Solver_SatResult_Sat _14;
+    _0 <- Type.CreuSat_Solver_SatResult_Sat _13;
     goto BB7
   }
   BB7 {
-    goto BB25
+    goto BB24
   }
   BB8 {
-    _9 <- ();
-    _17 <- Type.creusat_formula_formula_Formula_num_vars self_1;
-    _16 <- _17 = (0 : usize);
-    switch (_16)
+    _8 <- ();
+    _16 <- Type.creusat_formula_formula_Formula_num_vars self_1;
+    _15 <- _16 = (0 : usize);
+    switch (_15)
       | False -> goto BB10
       | _ -> goto BB9
       end
   }
   BB9 {
     _0 <- Type.CreuSat_Solver_SatResult_Err;
-    goto BB25
+    goto BB24
   }
   BB10 {
-    _15 <- ();
-    i_19 <- (0 : usize);
+    _14 <- ();
+    i_18 <- (0 : usize);
     goto BB11
   }
   BB11 {
-    invariant inv { forall j : (int) . 0 <= j && j < UInt64.to_int i_19 -> Invariant1.invariant' (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses self_1)) j) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars self_1)) };
-    invariant clause_len { forall j : (int) . 0 <= j && j < UInt64.to_int i_19 -> Seq.length (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses self_1)) j)) > 0 };
-    _23 <- i_19;
-    _25 <- Type.creusat_formula_formula_Formula_clauses self_1;
-    _24 <- Len0.len _25;
+    invariant inv { forall j : (int) . 0 <= j && j < UInt64.to_int i_18 -> Invariant1.invariant' (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses self_1)) j) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars self_1)) };
+    invariant clause_len { forall j : (int) . 0 <= j && j < UInt64.to_int i_18 -> Seq.length (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses self_1)) j)) > 0 };
+    _22 <- i_18;
+    _24 <- Type.creusat_formula_formula_Formula_clauses self_1;
+    _23 <- Len0.len _24;
     goto BB12
   }
   BB12 {
-    _22 <- _23 < _24;
-    switch (_22)
+    _21 <- _22 < _23;
+    switch (_21)
       | False -> goto BB22
       | _ -> goto BB13
       end
   }
   BB13 {
-    _31 <- Type.creusat_formula_formula_Formula_clauses self_1;
-    _32 <- i_19;
-    _30 <- Index0.index _31 _32;
+    _30 <- Type.creusat_formula_formula_Formula_clauses self_1;
+    _31 <- i_18;
+    _29 <- Index0.index _30 _31;
     goto BB14
   }
   BB14 {
-    _29 <- _30;
-    _33 <- Type.creusat_formula_formula_Formula_num_vars self_1;
-    _28 <- CheckClauseInvariant0.check_clause_invariant _29 _33;
+    _28 <- _29;
+    _32 <- Type.creusat_formula_formula_Formula_num_vars self_1;
+    _27 <- CheckClauseInvariant0.check_clause_invariant _28 _32;
     goto BB15
   }
   BB15 {
-    _27 <- not _28;
-    switch (_27)
+    _26 <- not _27;
+    switch (_26)
       | False -> goto BB17
       | _ -> goto BB16
       end
@@ -10547,20 +10544,20 @@ module CreuSat_Formula_Impl0_CheckFormulaInvariant
     goto BB23
   }
   BB17 {
-    _26 <- ();
-    _40 <- Type.creusat_formula_formula_Formula_clauses self_1;
-    _41 <- i_19;
-    _39 <- Index0.index _40 _41;
+    _25 <- ();
+    _39 <- Type.creusat_formula_formula_Formula_clauses self_1;
+    _40 <- i_18;
+    _38 <- Index0.index _39 _40;
     goto BB18
   }
   BB18 {
-    _38 <- _39;
-    _37 <- Len1.len _38;
+    _37 <- _38;
+    _36 <- Len1.len _37;
     goto BB19
   }
   BB19 {
-    _36 <- _37 = (0 : usize);
-    switch (_36)
+    _35 <- _36 = (0 : usize);
+    switch (_35)
       | False -> goto BB21
       | _ -> goto BB20
       end
@@ -10570,13 +10567,13 @@ module CreuSat_Formula_Impl0_CheckFormulaInvariant
     goto BB23
   }
   BB21 {
-    _35 <- ();
-    i_19 <- i_19 + (1 : usize);
-    _21 <- ();
+    _34 <- ();
+    i_18 <- i_18 + (1 : usize);
+    _20 <- ();
     goto BB11
   }
   BB22 {
-    _20 <- ();
+    _19 <- ();
     _0 <- Type.CreuSat_Solver_SatResult_Unknown;
     goto BB24
   }
@@ -10584,9 +10581,6 @@ module CreuSat_Formula_Impl0_CheckFormulaInvariant
     goto BB24
   }
   BB24 {
-    goto BB25
-  }
-  BB25 {
     return _0
   }
   
@@ -10814,29 +10808,28 @@ module CreuSat_Formula_Impl0_IsClauseSat
   var self_1 : Type.creusat_formula_formula;
   var idx_2 : usize;
   var a_3 : Type.creusat_assignments_assignments;
-  var _4 : ();
-  var clause_5 : Type.creusat_clause_clause;
-  var _6 : Type.creusat_clause_clause;
-  var _7 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
-  var _8 : usize;
-  var i_9 : usize;
+  var clause_4 : Type.creusat_clause_clause;
+  var _5 : Type.creusat_clause_clause;
+  var _6 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
+  var _7 : usize;
+  var i_8 : usize;
+  var _9 : ();
   var _10 : ();
-  var _11 : ();
-  var _12 : bool;
+  var _11 : bool;
+  var _12 : usize;
   var _13 : usize;
-  var _14 : usize;
-  var _15 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
-  var _16 : ();
-  var _17 : bool;
+  var _14 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var _15 : ();
+  var _16 : bool;
+  var _17 : Type.creusat_lit_lit;
   var _18 : Type.creusat_lit_lit;
-  var _19 : Type.creusat_lit_lit;
-  var _20 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
-  var _21 : usize;
-  var _22 : Type.creusat_assignments_assignments;
+  var _19 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var _20 : usize;
+  var _21 : Type.creusat_assignments_assignments;
+  var _22 : ();
   var _23 : ();
   var _24 : ();
   var _25 : ();
-  var _26 : ();
   {
     self_1 <- self;
     idx_2 <- idx;
@@ -10844,44 +10837,44 @@ module CreuSat_Formula_Impl0_IsClauseSat
     goto BB0
   }
   BB0 {
-    _7 <- Type.creusat_formula_formula_Formula_clauses self_1;
-    _8 <- idx_2;
-    _6 <- Index0.index _7 _8;
+    _6 <- Type.creusat_formula_formula_Formula_clauses self_1;
+    _7 <- idx_2;
+    _5 <- Index0.index _6 _7;
     goto BB1
   }
   BB1 {
-    clause_5 <- _6;
-    i_9 <- (0 : usize);
+    clause_4 <- _5;
+    i_8 <- (0 : usize);
     goto BB2
   }
   BB2 {
-    invariant previous_not_sat { forall j : (int) . 0 <= j && j < UInt64.to_int i_9 -> not (Sat1.sat (Seq.get (Model1.model clause_5) j) a_3) };
-    _13 <- i_9;
-    _15 <- Type.creusat_clause_clause_Clause_rest clause_5;
-    _14 <- Len0.len _15;
+    invariant previous_not_sat { forall j : (int) . 0 <= j && j < UInt64.to_int i_8 -> not (Sat1.sat (Seq.get (Model1.model clause_4) j) a_3) };
+    _12 <- i_8;
+    _14 <- Type.creusat_clause_clause_Clause_rest clause_4;
+    _13 <- Len0.len _14;
     goto BB3
   }
   BB3 {
-    _12 <- _13 < _14;
-    switch (_12)
+    _11 <- _12 < _13;
+    switch (_11)
       | False -> goto BB9
       | _ -> goto BB4
       end
   }
   BB4 {
-    _20 <- Type.creusat_clause_clause_Clause_rest clause_5;
-    _21 <- i_9;
-    _19 <- Index1.index _20 _21;
+    _19 <- Type.creusat_clause_clause_Clause_rest clause_4;
+    _20 <- i_8;
+    _18 <- Index1.index _19 _20;
     goto BB5
   }
   BB5 {
-    _18 <- _19;
-    _22 <- a_3;
-    _17 <- LitSat0.lit_sat _18 _22;
+    _17 <- _18;
+    _21 <- a_3;
+    _16 <- LitSat0.lit_sat _17 _21;
     goto BB6
   }
   BB6 {
-    switch (_17)
+    switch (_16)
       | False -> goto BB8
       | _ -> goto BB7
       end
@@ -10891,13 +10884,13 @@ module CreuSat_Formula_Impl0_IsClauseSat
     goto BB10
   }
   BB8 {
-    _16 <- ();
-    i_9 <- i_9 + (1 : usize);
-    _11 <- ();
+    _15 <- ();
+    i_8 <- i_8 + (1 : usize);
+    _10 <- ();
     goto BB2
   }
   BB9 {
-    _10 <- ();
+    _9 <- ();
     _0 <- false;
     goto BB10
   }
@@ -13212,57 +13205,56 @@ module CreuSat_Formula_Impl0_IsSat
   var _0 : bool;
   var self_1 : Type.creusat_formula_formula;
   var a_2 : Type.creusat_assignments_assignments;
-  var _3 : ();
-  var i_4 : usize;
+  var i_3 : usize;
+  var _4 : ();
   var _5 : ();
-  var _6 : ();
-  var _7 : bool;
+  var _6 : bool;
+  var _7 : usize;
   var _8 : usize;
-  var _9 : usize;
-  var _10 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
-  var _11 : ();
+  var _9 : Type.alloc_vec_vec (Type.creusat_clause_clause) (Type.alloc_alloc_global);
+  var _10 : ();
+  var _11 : bool;
   var _12 : bool;
-  var _13 : bool;
-  var _14 : Type.creusat_formula_formula;
-  var _15 : usize;
-  var _16 : Type.creusat_assignments_assignments;
+  var _13 : Type.creusat_formula_formula;
+  var _14 : usize;
+  var _15 : Type.creusat_assignments_assignments;
+  var _16 : ();
   var _17 : ();
   var _18 : ();
   var _19 : ();
-  var _20 : ();
   {
     self_1 <- self;
     a_2 <- a;
     goto BB0
   }
   BB0 {
-    i_4 <- (0 : usize);
+    i_3 <- (0 : usize);
     goto BB1
   }
   BB1 {
-    invariant prev { forall k : (int) . 0 <= k && k < UInt64.to_int i_4 -> Sat1.sat (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses self_1)) k) a_2 };
-    _8 <- i_4;
-    _10 <- Type.creusat_formula_formula_Formula_clauses self_1;
-    _9 <- Len0.len _10;
+    invariant prev { forall k : (int) . 0 <= k && k < UInt64.to_int i_3 -> Sat1.sat (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses self_1)) k) a_2 };
+    _7 <- i_3;
+    _9 <- Type.creusat_formula_formula_Formula_clauses self_1;
+    _8 <- Len0.len _9;
     goto BB2
   }
   BB2 {
-    _7 <- _8 < _9;
-    switch (_7)
+    _6 <- _7 < _8;
+    switch (_6)
       | False -> goto BB7
       | _ -> goto BB3
       end
   }
   BB3 {
-    _14 <- self_1;
-    _15 <- i_4;
-    _16 <- a_2;
-    _13 <- IsClauseSat0.is_clause_sat _14 _15 _16;
+    _13 <- self_1;
+    _14 <- i_3;
+    _15 <- a_2;
+    _12 <- IsClauseSat0.is_clause_sat _13 _14 _15;
     goto BB4
   }
   BB4 {
-    _12 <- not _13;
-    switch (_12)
+    _11 <- not _12;
+    switch (_11)
       | False -> goto BB6
       | _ -> goto BB5
       end
@@ -13272,13 +13264,13 @@ module CreuSat_Formula_Impl0_IsSat
     goto BB8
   }
   BB6 {
-    _11 <- ();
-    i_4 <- i_4 + (1 : usize);
-    _6 <- ();
+    _10 <- ();
+    i_3 <- i_3 + (1 : usize);
+    _5 <- ();
     goto BB1
   }
   BB7 {
-    _5 <- ();
+    _4 <- ();
     _0 <- true;
     goto BB8
   }
@@ -19428,41 +19420,40 @@ module CreuSat_Solver_GetAssertingLevel
   var clause_1 : Type.creusat_clause_clause;
   var trail_2 : Type.creusat_trail_trail;
   var f_3 : Type.creusat_formula_formula;
-  var _4 : ();
-  var max_i_5 : usize;
-  var max_level_6 : usize;
-  var _7 : usize;
-  var _8 : Type.alloc_vec_vec usize (Type.alloc_alloc_global);
-  var _9 : usize;
+  var max_i_4 : usize;
+  var max_level_5 : usize;
+  var _6 : usize;
+  var _7 : Type.alloc_vec_vec usize (Type.alloc_alloc_global);
+  var _8 : usize;
+  var _9 : Type.creusat_lit_lit;
   var _10 : Type.creusat_lit_lit;
-  var _11 : Type.creusat_lit_lit;
-  var _12 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
-  var i_13 : usize;
+  var _11 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var i_12 : usize;
+  var _13 : ();
   var _14 : ();
-  var _15 : ();
-  var _16 : bool;
+  var _15 : bool;
+  var _16 : usize;
   var _17 : usize;
-  var _18 : usize;
-  var _19 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
-  var level_20 : usize;
-  var _21 : usize;
-  var _22 : Type.alloc_vec_vec usize (Type.alloc_alloc_global);
-  var _23 : usize;
+  var _18 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var level_19 : usize;
+  var _20 : usize;
+  var _21 : Type.alloc_vec_vec usize (Type.alloc_alloc_global);
+  var _22 : usize;
+  var _23 : Type.creusat_lit_lit;
   var _24 : Type.creusat_lit_lit;
-  var _25 : Type.creusat_lit_lit;
-  var _26 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
-  var _27 : usize;
-  var _28 : ();
-  var _29 : bool;
+  var _25 : Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global);
+  var _26 : usize;
+  var _27 : ();
+  var _28 : bool;
+  var _29 : usize;
   var _30 : usize;
   var _31 : usize;
   var _32 : usize;
-  var _33 : usize;
+  var _33 : ();
   var _34 : ();
   var _35 : ();
-  var _36 : ();
+  var _36 : usize;
   var _37 : usize;
-  var _38 : usize;
   {
     clause_1 <- clause;
     trail_2 <- trail;
@@ -19470,88 +19461,88 @@ module CreuSat_Solver_GetAssertingLevel
     goto BB0
   }
   BB0 {
-    max_i_5 <- (1 : usize);
-    _8 <- Type.creusat_trail_trail_Trail_lit_to_level trail_2;
-    _12 <- Type.creusat_clause_clause_Clause_rest clause_1;
-    _11 <- Index0.index _12 (1 : usize);
+    max_i_4 <- (1 : usize);
+    _7 <- Type.creusat_trail_trail_Trail_lit_to_level trail_2;
+    _11 <- Type.creusat_clause_clause_Clause_rest clause_1;
+    _10 <- Index0.index _11 (1 : usize);
     goto BB1
   }
   BB1 {
-    _10 <- _11;
-    _9 <- Index1.index _10;
+    _9 <- _10;
+    _8 <- Index1.index _9;
     goto BB2
   }
   BB2 {
-    _7 <- Index2.index _8 _9;
+    _6 <- Index2.index _7 _8;
     goto BB3
   }
   BB3 {
-    max_level_6 <- _7;
-    i_13 <- (2 : usize);
+    max_level_5 <- _6;
+    i_12 <- (2 : usize);
     goto BB4
   }
   BB4 {
-    invariant max_i_less { UInt64.to_int max_i_5 < Seq.length (Model0.model clause_1) };
-    _17 <- i_13;
-    _19 <- Type.creusat_clause_clause_Clause_rest clause_1;
-    _18 <- Len0.len _19;
+    invariant max_i_less { UInt64.to_int max_i_4 < Seq.length (Model0.model clause_1) };
+    _16 <- i_12;
+    _18 <- Type.creusat_clause_clause_Clause_rest clause_1;
+    _17 <- Len0.len _18;
     goto BB5
   }
   BB5 {
-    _16 <- _17 < _18;
-    switch (_16)
+    _15 <- _16 < _17;
+    switch (_15)
       | False -> goto BB13
       | _ -> goto BB6
       end
   }
   BB6 {
-    _22 <- Type.creusat_trail_trail_Trail_lit_to_level trail_2;
-    _26 <- Type.creusat_clause_clause_Clause_rest clause_1;
-    _27 <- i_13;
-    _25 <- Index0.index _26 _27;
+    _21 <- Type.creusat_trail_trail_Trail_lit_to_level trail_2;
+    _25 <- Type.creusat_clause_clause_Clause_rest clause_1;
+    _26 <- i_12;
+    _24 <- Index0.index _25 _26;
     goto BB7
   }
   BB7 {
-    _24 <- _25;
-    _23 <- Index1.index _24;
+    _23 <- _24;
+    _22 <- Index1.index _23;
     goto BB8
   }
   BB8 {
-    _21 <- Index2.index _22 _23;
+    _20 <- Index2.index _21 _22;
     goto BB9
   }
   BB9 {
-    level_20 <- _21;
-    _30 <- level_20;
-    _31 <- max_level_6;
-    _29 <- _30 > _31;
-    switch (_29)
+    level_19 <- _20;
+    _29 <- level_19;
+    _30 <- max_level_5;
+    _28 <- _29 > _30;
+    switch (_28)
       | False -> goto BB11
       | _ -> goto BB10
       end
   }
   BB10 {
-    _32 <- level_20;
-    max_level_6 <- _32;
-    _33 <- i_13;
-    max_i_5 <- _33;
-    _28 <- ();
+    _31 <- level_19;
+    max_level_5 <- _31;
+    _32 <- i_12;
+    max_i_4 <- _32;
+    _27 <- ();
     goto BB12
   }
   BB11 {
-    _28 <- ();
+    _27 <- ();
     goto BB12
   }
   BB12 {
-    i_13 <- i_13 + (1 : usize);
-    _15 <- ();
+    i_12 <- i_12 + (1 : usize);
+    _14 <- ();
     goto BB4
   }
   BB13 {
-    _14 <- ();
-    _37 <- max_i_5;
-    _38 <- max_level_6;
-    _0 <- (_37, _38);
+    _13 <- ();
+    _36 <- max_i_4;
+    _37 <- max_level_5;
+    _0 <- (_36, _37);
     return _0
   }
   
@@ -25379,21 +25370,20 @@ module CreuSat_Solver_Impl0_UnitPropStep
   var d_3 : borrowed (Type.creusat_decision_decisions);
   var t_4 : borrowed (Type.creusat_trail_trail);
   var w_5 : borrowed (Type.creusat_watches_watches);
-  var _6 : ();
-  var _7 : Type.core_result_result () usize;
-  var _8 : borrowed (Type.creusat_formula_formula);
-  var _9 : borrowed (Type.creusat_trail_trail);
-  var _10 : borrowed (Type.creusat_watches_watches);
-  var _11 : isize;
-  var cref_12 : usize;
-  var _13 : Type.core_option_option bool;
-  var _14 : borrowed (Type.creusat_solver_solver);
-  var _15 : borrowed (Type.creusat_formula_formula);
-  var _16 : borrowed (Type.creusat_trail_trail);
-  var _17 : usize;
-  var _18 : borrowed (Type.creusat_watches_watches);
-  var _19 : borrowed (Type.creusat_decision_decisions);
-  var _20 : isize;
+  var _6 : Type.core_result_result () usize;
+  var _7 : borrowed (Type.creusat_formula_formula);
+  var _8 : borrowed (Type.creusat_trail_trail);
+  var _9 : borrowed (Type.creusat_watches_watches);
+  var _10 : isize;
+  var cref_11 : usize;
+  var _12 : Type.core_option_option bool;
+  var _13 : borrowed (Type.creusat_solver_solver);
+  var _14 : borrowed (Type.creusat_formula_formula);
+  var _15 : borrowed (Type.creusat_trail_trail);
+  var _16 : usize;
+  var _17 : borrowed (Type.creusat_watches_watches);
+  var _18 : borrowed (Type.creusat_decision_decisions);
+  var _19 : isize;
   {
     self_1 <- self;
     f_2 <- f;
@@ -25403,35 +25393,35 @@ module CreuSat_Solver_Impl0_UnitPropStep
     goto BB0
   }
   BB0 {
-    _8 <- borrow_mut ( * f_2);
-    f_2 <- { f_2 with current = ( ^ _8) };
-    _9 <- borrow_mut ( * t_4);
-    t_4 <- { t_4 with current = ( ^ _9) };
-    _10 <- borrow_mut ( * w_5);
-    w_5 <- { w_5 with current = ( ^ _10) };
-    _7 <- UnitPropagate0.unit_propagate _8 _9 _10;
+    _7 <- borrow_mut ( * f_2);
+    f_2 <- { f_2 with current = ( ^ _7) };
+    _8 <- borrow_mut ( * t_4);
+    t_4 <- { t_4 with current = ( ^ _8) };
+    _9 <- borrow_mut ( * w_5);
+    w_5 <- { w_5 with current = ( ^ _9) };
+    _6 <- UnitPropagate0.unit_propagate _7 _8 _9;
     goto BB1
   }
   BB1 {
-    switch (_7)
+    switch (_6)
       | Type.Core_Result_Result_Ok _ -> goto BB4
       | Type.Core_Result_Result_Err _ -> goto BB2
       end
   }
   BB2 {
-    cref_12 <- Type.core_result_result_Err_0 _7;
-    _14 <- borrow_mut ( * self_1);
-    self_1 <- { self_1 with current = ( ^ _14) };
-    _15 <- borrow_mut ( * f_2);
-    f_2 <- { f_2 with current = ( ^ _15) };
-    _16 <- borrow_mut ( * t_4);
-    t_4 <- { t_4 with current = ( ^ _16) };
-    _17 <- cref_12;
-    _18 <- borrow_mut ( * w_5);
-    w_5 <- { w_5 with current = ( ^ _18) };
-    _19 <- borrow_mut ( * d_3);
-    d_3 <- { d_3 with current = ( ^ _19) };
-    _13 <- HandleConflict0.handle_conflict _14 _15 _16 _17 _18 _19;
+    cref_11 <- Type.core_result_result_Err_0 _6;
+    _13 <- borrow_mut ( * self_1);
+    self_1 <- { self_1 with current = ( ^ _13) };
+    _14 <- borrow_mut ( * f_2);
+    f_2 <- { f_2 with current = ( ^ _14) };
+    _15 <- borrow_mut ( * t_4);
+    t_4 <- { t_4 with current = ( ^ _15) };
+    _16 <- cref_11;
+    _17 <- borrow_mut ( * w_5);
+    w_5 <- { w_5 with current = ( ^ _17) };
+    _18 <- borrow_mut ( * d_3);
+    d_3 <- { d_3 with current = ( ^ _18) };
+    _12 <- HandleConflict0.handle_conflict _13 _14 _15 _16 _17 _18;
     goto BB5
   }
   BB3 {
@@ -25457,7 +25447,7 @@ module CreuSat_Solver_Impl0_UnitPropStep
     assume { Resolve2.resolve d_3 };
     assume { Resolve3.resolve t_4 };
     assume { Resolve4.resolve w_5 };
-    switch (_13)
+    switch (_12)
       | Type.Core_Option_Option_None -> goto BB6
       | Type.Core_Option_Option_Some _ -> goto BB7
       end
@@ -25467,7 +25457,7 @@ module CreuSat_Solver_Impl0_UnitPropStep
     goto BB11
   }
   BB7 {
-    switch (Type.core_option_option_Some_0 _13)
+    switch (Type.core_option_option_Some_0 _12)
       | False -> goto BB9
       | _ -> goto BB10
       end

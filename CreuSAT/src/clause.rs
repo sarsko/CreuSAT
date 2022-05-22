@@ -1,5 +1,6 @@
 extern crate creusot_contracts;
 use creusot_contracts::std::*;
+use creusot_contracts::logic::Ghost;
 use creusot_contracts::*;
 
 use crate::{assignments::*, formula::*, lit::*};
@@ -39,7 +40,7 @@ impl Clause {
         if self.no_duplicates() {
             return true;
         }
-        return false;
+        false
     }
 
     #[cfg_attr(feature = "trust_clause", trusted)]
@@ -62,7 +63,7 @@ impl Clause {
             }
             i += 1;
         }
-        return true;
+        true
     }
 
     #[inline(always)]
@@ -75,8 +76,8 @@ impl Clause {
     // TODO: Take a look at the parser
     #[inline]
     #[trusted]
-    pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
-        Clause { deleted: false, rest: vec.clone() }
+    pub fn clause_from_vec(vec: &[Lit]) -> Clause {
+        Clause { deleted: false, rest: vec.to_owned() }
     }
 
     #[inline(always)]
@@ -125,6 +126,6 @@ impl Clause {
             }
             i += 1;
         }
-        return self.rest[0].lit_unset(a);
+        self.rest[0].lit_unset(a)
     }
 }

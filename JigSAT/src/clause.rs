@@ -97,6 +97,10 @@ impl Clause {
     }
 
     fn calc_lbd(&self, trail: &Trail, solver: &mut Solver) -> u32 {
+        // We don't bother calculating for long clauses.
+        if self.len() >= 2024 {
+            return 2024;
+        }
         let mut lbd: u32 = 0;
         let mut i = 0;
         while i < self.len() {

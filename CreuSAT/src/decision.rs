@@ -1,5 +1,6 @@
 extern crate creusot_contracts;
 use creusot_contracts::std::*;
+use creusot_contracts::logic::Ghost;
 use creusot_contracts::*;
 
 use crate::{assignments::*, formula::*, util::*};
@@ -258,6 +259,6 @@ impl Decisions {
             }
             i += 1;
         }
-        return None;
+        None
     }
 }

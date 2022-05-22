@@ -2,6 +2,7 @@
 extern crate creusot_contracts;
 
 use creusot_contracts::std::*;
+use creusot_contracts::logic::Ghost;
 use creusot_contracts::*;
 
 use crate::{assignments::*, clause::*, solver::*, trail::*, watches::*};
@@ -50,7 +51,7 @@ impl Formula {
             }
             i += 1;
         }
-        return SatResult::Unknown;
+        SatResult::Unknown
     }
 
     #[cfg_attr(feature = "trust_formula", trusted)]
@@ -68,7 +69,7 @@ impl Formula {
             }
             i += 1;
         }
-        return false;
+        false
     }
 
     /*
@@ -261,7 +262,7 @@ impl Formula {
             }
             i += 1
         }
-        return true;
+        true
     }
 
     #[cfg_attr(feature = "trust_formula", trusted)]

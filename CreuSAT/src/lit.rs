@@ -43,7 +43,7 @@ impl Lit {
     #[cfg_attr(feature = "trust_lit", trusted)]
     #[ensures(result == self.invariant(@n))]
     pub fn check_lit_invariant(&self, n: usize) -> bool {
-        return self.index() < n;
+        self.index() < n
     }
 
     #[inline(always)]
@@ -89,7 +89,7 @@ impl Lit {
     #[requires(self.index_logic() < @usize::MAX/2)]
     #[ensures(@result == self.to_watchidx_logic())]
     #[ensures(@result == self.index_logic() * 2 + if self.is_positive_logic() { 0 } else { 1 })]
-    pub fn to_watchidx(&self) -> usize {
+    pub fn to_watchidx(self) -> usize {
         self.index() * 2 + if self.is_positive() { 0 } else { 1 }
     }
     // Gets the index of the literal of the opposite polarity(-self) in the representation used for the watchlist
@@ -97,7 +97,7 @@ impl Lit {
     #[requires(self.index_logic() < @usize::MAX/2)]
     #[ensures(@result == self.to_neg_watchidx_logic())]
     #[ensures(@result == self.index_logic() * 2 + if self.is_positive_logic() { 1 } else { 0 })]
-    pub fn to_neg_watchidx(&self) -> usize {
+    pub fn to_neg_watchidx(self) -> usize {
         self.index() * 2 + if self.is_positive() { 1 } else { 0 }
     }
 

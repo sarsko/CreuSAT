@@ -1,5 +1,6 @@
 extern crate creusot_contracts;
 use creusot_contracts::std::*;
+use creusot_contracts::logic::Ghost;
 use creusot_contracts::*;
 
 use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*};
@@ -361,7 +362,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             o => return Conflict::Panic, // nnTODOnn // This never happens, but is an entirely new proof
         };
         proof_assert!(clause.same_idx_same_polarity_except(*ante, (@trail.trail)[@i].lit.index_logic()));
-        clause = resolve(f, &clause, &ante, trail.trail[i].lit.index(), c_idx, &trail.assignments);
+        clause = resolve(f, &clause, ante, trail.trail[i].lit.index(), c_idx, &trail.assignments);
         //resolve_mut(f, &mut clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
         s_idx = 0;
         let mut k: usize = 0;
@@ -383,7 +384,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             return if clause.rest.len() == 1 { Conflict::Unit(clause) } else { Conflict::Learned(s_idx, clause) };
         }
     }
-    return Conflict::Panic; // Okay this is just pure lazyness
+    Conflict::Panic // Okay this is just pure lazyness
 }
 
 // Just analyze_conflict without a stopping condition(and with accepting units for resolution)
@@ -418,11 +419,11 @@ pub fn derive_empty_formula(f: &Formula, trail: &Trail, cref: usize) -> bool {
             o => return false, // nnTODOnn // This never happens, but is an entirely new proof
         };
         proof_assert!(clause.same_idx_same_polarity_except(*ante, (@trail.trail)[@i].lit.index_logic()));
-        clause = resolve(f, &clause, &ante, trail.trail[i].lit.index(), c_idx, &trail.assignments);
+        clause = resolve(f, &clause, ante, trail.trail[i].lit.index(), c_idx, &trail.assignments);
         //resolve_mut(f, &mut clause, &ante, trail.trail[i].lit.idx, c_idx, &trail.assignments);
         if clause.rest.len() == 0 {
             return true;
         }
     }
-    return false;
+    false
 }
