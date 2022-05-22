@@ -7,7 +7,7 @@ pub struct Node {
     pub ts: usize,
 }
 
-//const INVALID: usize = usize::MAX;
+const INVALID: usize = usize::MAX;
 
 impl Default for Node {
     fn default() -> Self {
@@ -25,7 +25,6 @@ pub struct Decisions {
 
 impl Decisions {
     pub fn make_linked_list(f: &Formula, lit_order: Vec<usize>) -> Decisions {
-        let INVALID: usize = usize::MAX;
         let mut linked_list: Vec<Node> = vec![Default::default(); f.num_vars];
         let mut i: usize = 0;
         let mut head: usize = 0;
@@ -81,7 +80,6 @@ impl Decisions {
     }
 
     fn rescore(&mut self, _f: &Formula) {
-        let INVALID: usize = usize::MAX;
         let mut curr_score = self.linked_list.len();
         let mut i: usize = 0;
         let mut curr = self.start;
@@ -98,7 +96,6 @@ impl Decisions {
     }
 
     fn move_to_front(&mut self, tomove: usize, _f: &Formula) {
-        let INVALID: usize = usize::MAX;
         if tomove == self.start {
             return;
         }
@@ -115,10 +112,7 @@ impl Decisions {
         }
         self.linked_list[self.start].prev = tomove;
         self.start = tomove;
-        if prev != INVALID {
-            // lazy, should prove
-            self.linked_list[prev].next = old_next;
-        }
+        self.linked_list[prev].next = old_next;
         if old_next != INVALID {
             self.linked_list[old_next].prev = prev;
         }
@@ -153,7 +147,6 @@ impl Decisions {
     }
 
     pub fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize> {
-        let INVALID: usize = usize::MAX;
         let mut curr = self.search;
         while curr != INVALID {
             if a[curr] >= 2 {
@@ -167,6 +160,7 @@ impl Decisions {
         let mut i: usize = 0;
         while i < a.len() {
             if a[i] >= 2 {
+                panic!();
                 return Some(i);
             }
             i += 1;

@@ -32,14 +32,17 @@ impl IndexMut<usize> for Assignments {
 }
 
 impl Assignments {
+    #[inline]
     pub fn len(&self) -> usize {
         self.0.len()
     }
 
+    #[inline]
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {
         self[lit.index()] = lit.is_positive() as u8;
     }
 
+    #[inline]
     pub fn new(f: &Formula) -> Self {
         Assignments(vec![2; f.num_vars])
     }

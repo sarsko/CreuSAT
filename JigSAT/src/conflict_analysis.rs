@@ -1,4 +1,4 @@
-use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*};
+use crate::{clause::*, formula::*, lit::*, trail::*};
 
 //#[derive(Debug)]
 pub enum Conflict {
@@ -28,10 +28,6 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             if !seen[lit.index()] {
                 let level = trail.lit_to_level[lit.index()];
                 if level == u32::MAX {
-                    
-                    println!("{:?} ", trail.trail);
-                    println!("{:?} ", lit);
-                    println!("{:?}", trail.assignments[lit.index()]);
                     panic!();
                 }
                 if level > 0 {
@@ -55,9 +51,8 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             &trail.trail[i]
         };
         seen[next.lit.index()] = false;
-        // now dlevel = i
         path_c -= 1;
-        if path_c <= 0 {
+        if path_c == 0 {
             out_learnt[0] = !next.lit;
             break;
         }

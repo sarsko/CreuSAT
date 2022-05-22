@@ -109,6 +109,7 @@ impl Formula {
             }
             i += 1;
         }
+        // TODO: Actually delete + remove UNSAT lits
 
         // Ideally remove UNSAT lits
     }

@@ -97,21 +97,13 @@ impl Solver {
         &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, level: u32,
     ) {
         let mut i: usize = 0;
-        let mut lbd: u32 = 0;
-        while i < clause.len() {
-            let level = t.lit_to_level[clause[i].index()];
-            if self.perm_diff[level as usize] != self.num_conflicts {
-                self.perm_diff[level as usize] = self.num_conflicts;
-                lbd += 1;
-            }
-            i += 1;
-        }
-        clause.lbd = lbd;
+        clause.calc_and_set_lbd(t, self);
+        let lbd = clause.lbd;
         let cref = f.add_clause(clause, w, t);
         update_fast(&mut self.fast, lbd as usize);
         update_slow(&mut self.slow, lbd as usize);
         d.increment_and_move(f, cref, &t.assignments);
-        t.backtrack_safe(level, f, d);
+        t.backtrack_to(level, f, d);
         let lit = f[cref][0];
         let step = Step { lit: lit, decision_level: level, reason: Reason::Long(cref) };
         t.enq_assignment(step, f);
@@ -128,9 +120,6 @@ impl Solver {
                 return Some(false);
             }
             Conflict::Unit(lit) => {
-                // Okay, so the ordering here is weird. The reason for this is that the derived
-                // unit clause is an equisat extension of f, but not necessarily f after reduction (even though reduction maintains equisat).
-                // All of this should be looked into with regards to implementing garbage collection.
                 match t.learn_unit(lit, f, d) {
                     Err(_) => return Some(true),
                     Ok(_) => {}
@@ -183,9 +172,9 @@ impl Solver {
         if self.fast > slow {
             self.fast = slow;
             trail.backtrack_safe(0, f, d);
-            if self.num_lemmas > self.max_lemmas {
+            //if self.num_lemmas > self.max_lemmas {
                 f.reduceDB(w, trail, self);
-            }
+            //}
         }
         match d.get_next(&trail.assignments, f) {
             Some(next) => {

@@ -17,7 +17,7 @@ pub struct Step {
 
 pub struct Trail {
     pub assignments: Assignments,
-    pub lit_to_level: Vec<u32>, // usize::MAX if unassigned
+    pub lit_to_level: Vec<u32>, // u32::MAX if unassigned
     pub trail: Vec<Step>,
     pub curr_i: usize,
     pub decisions: Vec<usize>,
@@ -43,7 +43,8 @@ impl Trail {
         match last {
             Some(step) => {
                 self.assignments[step.lit.index()] += 2; 
-                self.lit_to_level[step.lit.index()] = u32::MAX;
+                // Removing this would be hard to prove lol.
+                //self.lit_to_level[step.lit.index()] = u32::MAX;
                 return step.lit.index();
             }
             None => {
@@ -83,9 +84,7 @@ impl Trail {
     pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
         self.lit_to_level[step.lit.index()] = self.decision_level();
         let trail = &self.trail;
-
         self.assignments.set_assignment(step.lit, _f, trail);
-
         self.trail.push(step);
     }
 
@@ -96,16 +95,12 @@ impl Trail {
         self.lit_to_level[idx] = dlevel;
         self.assignments[idx] -= 2;
         let lit = Lit::phase_saved(idx, &self.assignments);
-
         let step = Step { lit: lit, decision_level: dlevel, reason: Reason::Decision };
-
         self.trail.push(step);
     }
 
     pub fn learn_unit(&mut self, lit: Lit, f: &Formula, d: &mut Decisions) -> Result<(), ()> {
-        if self.decision_level() > 0 {
-            self.backtrack_to(0, f, d);
-        }
+        self.backtrack_safe(0, f, d);
         self.enq_assignment(Step { lit: lit, decision_level: 0, reason: Reason::Unit }, f);
         Ok(())
     }

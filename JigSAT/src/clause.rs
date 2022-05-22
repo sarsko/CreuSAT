@@ -1,17 +1,10 @@
-use crate::{formula::*, lit::*};
+use crate::{formula::*, lit::*, solver::Solver, trail::*};
 use std::{ops::{Index}, cmp::Ordering};
 
 pub struct Clause {
     pub deleted: bool,
     pub lbd: u32,
     pub rest: Vec<Lit>,
-}
-
-
-impl Clone for Clause {
-    fn clone(&self) -> Self {
-        Clause { deleted: self.deleted, lbd: self.lbd, rest: self.rest.clone() }
-    }
 }
 
 
@@ -101,6 +94,24 @@ impl Clause {
     pub fn remove_from_clause(&mut self, idx: usize, _f: &Formula) {
         self.move_to_end(idx, _f);
         self.rest.pop();
+    }
+
+    fn calc_lbd(&self, trail: &Trail, solver: &mut Solver) -> u32 {
+        let mut lbd: u32 = 0;
+        let mut i = 0;
+        while i < self.len() {
+            let level = trail.lit_to_level[self[i].index()];
+            if solver.perm_diff[level as usize] != solver.num_conflicts {
+                solver.perm_diff[level as usize] = solver.num_conflicts;
+                lbd += 1;
+            }
+            i += 1;
+        }
+        return lbd;
+    }
+
+    pub fn calc_and_set_lbd(&mut self, trail: &Trail, solver: &mut Solver) {
+        self.lbd = self.calc_lbd(trail, solver);
     }
 
 }
