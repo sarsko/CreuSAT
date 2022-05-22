@@ -4,7 +4,7 @@ use crate::{assignments::*, decision::*, formula::*, lit::*};
 pub enum Reason {
     //Undefined,
     Decision,
-    Unit(usize),
+    Unit,
     Long(usize),
 }
 
@@ -101,11 +101,11 @@ impl Trail {
         self.trail.push(step);
     }
 
-    pub fn learn_unit(&mut self, cref: usize, f: &Formula, d: &mut Decisions) -> Result<(), ()> {
+    pub fn learn_unit(&mut self, lit: Lit, f: &Formula, d: &mut Decisions) -> Result<(), ()> {
         if self.decision_level() > 0 {
             self.backtrack_to(0, f, d);
         }
-        self.enq_assignment(Step { lit: f.clauses[cref].rest[0], decision_level: 0, reason: Reason::Unit(cref) }, f);
+        self.enq_assignment(Step { lit: lit, decision_level: 0, reason: Reason::Unit }, f);
         Ok(())
     }
 
@@ -121,7 +121,7 @@ impl Trail {
                         return Some(i);
                     }
                 } else {
-                    self.learn_unit(i, f, d);
+                    self.learn_unit(lit, f, d);
                 }
             }
             i += 1;

@@ -3,7 +3,7 @@ use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*};
 //#[derive(Debug)]
 pub enum Conflict {
     Ground,
-    Unit(Clause),
+    Unit(Lit),
     Learned(u32, Clause),
     Panic,
 }
@@ -64,7 +64,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
         }
     }
     if out_learnt.len() == 1 {
-        return Conflict::Unit(Clause{ deleted: false, rest: out_learnt});
+        return Conflict::Unit(out_learnt[0]);
     } else {
         let mut max_i: usize = 1;
         let mut max_level = trail.lit_to_level[out_learnt[1].index()];

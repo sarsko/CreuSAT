@@ -142,12 +142,11 @@ impl Solver {
             Conflict::Ground => {
                 return Some(false);
             }
-            Conflict::Unit(clause) => {
+            Conflict::Unit(lit) => {
                 // Okay, so the ordering here is weird. The reason for this is that the derived
                 // unit clause is an equisat extension of f, but not necessarily f after reduction (even though reduction maintains equisat).
                 // All of this should be looked into with regards to implementing garbage collection.
-                let cref = f.add_unit(clause, t);
-                match t.learn_unit(cref, f, d) {
+                match t.learn_unit(lit, f, d) {
                     Err(_) => return Some(true),
                     Ok(_) => {}
                 }

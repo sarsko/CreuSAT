@@ -121,13 +121,31 @@ RUSTFLAGS='-C relocation-model=static' cargo build --release --target x86_64-unk
 [tasks.move-musl]
 workspace = false
 script = '''
-cp ./target/x86_64-unknown-linux-musl/release/CreuSAT StarExec/bin/creusat
+cp ./target/x86_64-unknown-linux-musl/release/CreuSAT CreuSAT/StarExec/bin/creusat
 '''
 
 [tasks.make-zip]
 workspace = false
 script = '''
-cd StarExec && zip -r creusat.zip bin
+cd CreuSAT/StarExec && zip -r creusat.zip bin
+'''
+
+[tasks.build-musl-JigSAT]
+workspace = false
+script = '''
+RUSTFLAGS='-C relocation-model=static' cargo build --release --target x86_64-unknown-linux-musl
+'''
+
+[tasks.move-musl-JigSAT]
+workspace = false
+script = '''
+cp ./target/x86_64-unknown-linux-musl/release/JigSAT JigSAT/StarExec/bin/jigsat
+'''
+
+[tasks.make-zip-JigSAT]
+workspace = false
+script = '''
+cd JigSAT/StarExec && zip -r jigsat.zip bin
 '''
 
 [tasks.StarExec]
@@ -136,6 +154,14 @@ dependencies = [
     "build-musl",
     "move-musl",
     "make-zip",
+]
+
+[tasks.StarExec-JigSAT]
+workspace = false
+dependencies = [
+    "build-musl-JigSAT",
+    "move-musl-JigSAT",
+    "make-zip-JigSAT",
 ]
 
 [tasks.clean-Friday]

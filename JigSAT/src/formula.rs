@@ -79,12 +79,6 @@ impl Formula {
         cref
     }
 
-    pub fn add_unit(&mut self, clause: Clause, _t: &Trail) -> usize {
-        let cref = self.clauses.len();
-        self.clauses.push(clause);
-        cref
-    }
-
     pub fn is_sat(&self, a: &Assignments) -> bool {
         let mut i: usize = 0;
         while i < self.clauses.len() {
