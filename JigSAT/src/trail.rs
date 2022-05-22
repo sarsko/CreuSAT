@@ -112,8 +112,8 @@ impl Trail {
 
     pub fn learn_units(&mut self, f: &Formula, d: &mut Decisions) -> Option<usize> {
         let mut i = 0;
-        while i < f.clauses.len() {
-            let clause = &f.clauses[i];
+        while i < f.len() {
+            let clause = &f[i];
             if clause.len() == 1 {
                 let lit = clause[0];
                 // This check should be removed by an invariant that the formula only contains unique clauses

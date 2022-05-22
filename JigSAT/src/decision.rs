@@ -57,8 +57,8 @@ impl Decisions {
         let mut counts: Vec<usize> = vec![0; f.num_vars];
         let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); f.num_vars];
         let mut i: usize = 0;
-        while i < f.clauses.len() {
-            let curr_clause = &f.clauses[i];
+        while i < f.len() {
+            let curr_clause = &f[i];
             let mut j: usize = 0;
             while j < curr_clause.len() {
                 counts[curr_clause[j].index()] += 1;
@@ -132,7 +132,7 @@ impl Decisions {
     }
 
     pub fn increment_and_move(&mut self, f: &Formula, cref: usize, a: &Assignments) {
-        let clause = &f.clauses[cref];
+        let clause = &f[cref];
         let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); clause.len()];
         let mut i: usize = 0;
         while i < clause.len() {
@@ -141,8 +141,10 @@ impl Decisions {
         }
         // TODO: Check actual speed. I believe selection sort is the slowest. Only need permut property.
         //insertion_sort(&mut counts_with_index);
-        sort(&mut counts_with_index);
-        //counts_with_index.sort_by_key(|k| k.0);
+        //sort(&mut counts_with_index);
+        // Better sort seems yield a few percentages lol
+        //counts_with_index.sort_unstable();
+        counts_with_index.sort_by_key(|k| k.0);
         i = 0;
         while i < counts_with_index.len() {
             self.move_to_front(counts_with_index[i].1, f);

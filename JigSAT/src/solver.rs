@@ -72,7 +72,7 @@ impl Solver {
             num_lemmas: 0,
             max_lemmas: 2000,
             num_conflicts: 0,
-            initial_len: f.clauses.len(),
+            initial_len: f.len(),
             inc_reduce_db: 300,
             fast: 16777216, // 1 << 24
             slow: 16777216, // 1 << 24
@@ -112,7 +112,7 @@ impl Solver {
         update_slow(&mut self.slow, lbd as usize);
         d.increment_and_move(f, cref, &t.assignments);
         t.backtrack_safe(level, f, d);
-        let lit = f.clauses[cref][0];
+        let lit = f[cref][0];
         let step = Step { lit: lit, decision_level: level, reason: Reason::Long(cref) };
         t.enq_assignment(step, f);
         self.increase_num_lemmas();

@@ -15,7 +15,7 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
     let watchidx = lit.to_watchidx();
     let end = watches.watches[watchidx].len() - 1;
     watches.watches[watchidx].swap(j, end);
-    let curr_lit = f.clauses[cref][k];
+    let curr_lit = f[cref][k];
     match watches.watches[watchidx].pop() {
         Some(w) => {
             watches.watches[curr_lit.to_neg_watchidx()].push(w);
@@ -50,8 +50,8 @@ impl Watches {
 
     pub fn init_watches(&mut self, f: &Formula) {
         let mut i = 0;
-        while i < f.clauses.len() {
-            let clause = &f.clauses[i];
+        while i < f.len() {
+            let clause = &f[i];
             if clause.len() > 1 {
                 self.add_watcher(clause[0], i, f);
                 self.add_watcher(clause[1], i, f);

@@ -21,7 +21,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     let mut confl = cref;
     let mut i = trail.trail.len();
     loop {
-        let clause = &f.clauses[confl];
+        let clause = &f[confl];
         let mut k = if confl == cref {0} else {1};
         while k < clause.len() {
             let lit = clause[k];

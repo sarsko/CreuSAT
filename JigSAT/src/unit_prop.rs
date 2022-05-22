@@ -4,9 +4,9 @@ use crate::{formula::*, lit::*, trail::*, watches::*};
 fn unit_prop_check_rest(
     f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
 ) -> Result<(), ()> {
-    let curr_lit = f.clauses[cref][k];
+    let curr_lit = f[cref][k];
     if !curr_lit.lit_unsat(&trail.assignments){
-        if f.clauses[cref][0].index() == lit.index() {
+        if f[cref][0].index() == lit.index() {
             // First
             swap(f, trail, watches, cref, k, 0);
             update_watch(f, trail, watches, cref, j, 0, lit);
@@ -23,18 +23,18 @@ fn unit_prop_check_rest(
 
 #[inline(always)]
 fn swap(f: &mut Formula, _trail: &Trail, _watches: &Watches, cref: usize, j: usize, k: usize) {
-    f.clauses[cref].rest.swap(j, k);
+    f[cref].rest.swap(j, k);
 }
 
 
 fn unit_prop_do_outer(
     f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize,
 ) -> Result<bool, usize> {
-    let first_lit = f.clauses[cref][0];
+    let first_lit = f[cref][0];
     if first_lit.lit_sat(&trail.assignments) {
         return Ok(true);
     }
-    let second_lit = f.clauses[cref][1];
+    let second_lit = f[cref][1];
     if second_lit.lit_sat(&trail.assignments) {
         // We swap to make it faster the next time
         //swap_zero_one(f, trail, watches, cref, lit, j);
@@ -43,7 +43,7 @@ fn unit_prop_do_outer(
     }
     // At this point we know that none of the watched literals are sat
     let mut k: usize = 2;
-    let clause_len: usize = f.clauses[cref].len();
+    let clause_len: usize = f[cref].len();
     while k < clause_len {
         match unit_prop_check_rest(f, trail, watches, cref, j, k, lit) {
             Err(_) => {
@@ -57,7 +57,7 @@ fn unit_prop_do_outer(
     if first_lit.lit_unset(&trail.assignments) {
         let step = Step {
             lit: first_lit,
-            //lit: f.clauses[cref].rest[0],
+            //lit: f[cref].rest[0],
             decision_level: trail.decision_level(),
             reason: Reason::Long(cref),
         };
@@ -69,7 +69,7 @@ fn unit_prop_do_outer(
 
         trail.enq_assignment(step, f);
         // slowdown in swapping
-        f.clauses[cref].rest.swap(0,1);
+        f[cref].rest.swap(0,1);
         return Ok(true);
     } else {
         return Err(cref);
