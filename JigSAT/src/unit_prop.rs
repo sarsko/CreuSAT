@@ -26,17 +26,20 @@ fn unit_prop_do_outer(
     // At this point we know that none of the watched literals are sat
     let mut k: usize = 2;
     let clause_len: usize = clause.len();
+    let mut search = clause.search;
     while k < clause_len {
-        let curr_lit = clause[k];
+        let curr_lit = clause[search];
         if !(curr_lit.lit_unsat(&trail.assignments)){
             if curr_lit.lit_sat(&trail.assignments) {
                 watches[lit.to_watchidx()][j].blocker = curr_lit;
+                //clause.search = search;
+                clause.search = search;
                 return Ok(true);
             }
             watches[lit.to_watchidx()][j].blocker = other_lit;
             clause[0] = curr_lit;
             clause[1] = other_lit;
-            clause[k] = neg_lit;
+            clause[search] = neg_lit;
 
             let end = watches.watches[lit.to_watchidx()].len() - 1;
             watches.watches[lit.to_watchidx()].swap(j, end);
@@ -50,9 +53,14 @@ fn unit_prop_do_outer(
     }
             //update_watch(f, trail, watches, cref, j, 0, lit);
 
+            clause.search = search;
             return Ok(false); // dont increase j
         }
         k += 1;
+        search += 1;
+        if search == clause_len {
+            search = 2;
+        }
     }
     if other_lit.lit_unsat(&trail.assignments) {
         return Err(cref);

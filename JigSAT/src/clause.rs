@@ -4,6 +4,7 @@ use std::{ops::{Index, IndexMut}, cmp::Ordering};
 pub struct Clause {
     pub deleted: bool,
     pub lbd: u32,
+    pub search: usize,
     pub rest: Vec<Lit>,
 }
 
@@ -92,7 +93,7 @@ impl Clause {
     }
 
     pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
-        Clause { deleted: false, lbd: 0, rest: vec.clone() }
+        Clause { deleted: false, lbd: 0, search: 2, rest: vec.clone() }
     }
 
     #[inline(always)]
