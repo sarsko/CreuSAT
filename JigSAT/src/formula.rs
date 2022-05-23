@@ -91,6 +91,11 @@ impl Formula {
         cref
     }
 
+    // This is only valid to run before solver is created and before watches are added.
+    pub fn remove_clause_in_preprocessing(&mut self, cref: usize) {
+        self.clauses.remove(cref);
+    }
+
     fn delete_clause(&mut self, cref: usize, watches: &mut Watches, t: &Trail) {
         watches.unwatch(self, t, cref, self[cref][0]);
         watches.unwatch(self, t, cref, self[cref][1]);
@@ -138,7 +143,7 @@ impl Formula {
             }
             */
         }
-        i = s.initial_len + 1;
+        i = s.initial_len;
         while i < self.len() {
             watches.add_watcher(self[i][0], i, self);
             watches.add_watcher(self[i][1], i, self);

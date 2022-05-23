@@ -105,7 +105,7 @@ impl Trail {
         self.enq_assignment(Step { lit, decision_level: 0, reason: Reason::Unit }, f);
     }
 
-    pub fn learn_units(&mut self, f: &Formula, d: &mut Decisions) -> Option<usize> {
+    pub fn learn_units(&mut self, f: &mut Formula) -> Option<usize> {
         let mut i = 0;
         while i < f.len() {
             let clause = &f[i];
@@ -116,11 +116,12 @@ impl Trail {
                     if lit.lit_unsat(&self.assignments) {
                         return Some(i);
                     }
-                } else {
-                    self.learn_unit(lit, f, d);
-                }
+                } 
+                self.enq_assignment(Step { lit, decision_level: 0, reason: Reason::Unit }, f);
+                f.remove_clause_in_preprocessing(i);
+            } else {
+                i += 1;
             }
-            i += 1;
         }
         None
     }

@@ -81,7 +81,7 @@ impl Watches {
         while i < self.watches.len() {
             let mut j = 0;
             while j < self.watches[i].len() {
-                if self.watches[i][j].cref > s.initial_len {
+                if self.watches[i][j].cref >= s.initial_len {
                     let end = self.watches[i].len() - 1;
                     self.watches[i].swap(j, end);
                     self.watches[i].pop();

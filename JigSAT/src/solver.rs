@@ -187,10 +187,10 @@ impl Solver {
 
     #[inline]
     fn inner(
-        &mut self, formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut watches: Watches,
+        &mut self, mut formula: Formula, mut decisions: Decisions, mut trail: Trail, mut watches: Watches,
     ) -> SatResult {
         loop {
-            match self.outer_loop(formula, &mut decisions, &mut trail, &mut watches) {
+            match self.outer_loop(&mut formula, &mut decisions, &mut trail, &mut watches) {
                 SatResult::Unknown => {} // continue
                 SatResult::Sat(_) => {
                     return SatResult::Sat(trail.assignments.0);
@@ -203,21 +203,24 @@ impl Solver {
     }
 }
 
-pub fn solver(formula: &mut Formula) -> SatResult {
+pub fn solver(mut formula: Formula) -> SatResult {
     match formula.check_formula_invariant() {
         SatResult::Unknown => {}
         o => return o,
     }
-    let mut trail = Trail::new(formula, Assignments::new(formula));
-    let mut decisions = Decisions::new(formula);
-    let mut watches = Watches::new(formula);
-    watches.init_watches(formula);
-    match trail.learn_units(formula, &mut decisions) {
+    let mut trail = Trail::new(&formula, Assignments::new(&formula));
+    match trail.learn_units(&mut formula) {
         Some(_) => {
             return SatResult::Unsat;
         }
         None => {}
     }
-    let mut solver = Solver::new(formula);
+    if formula.len() == 0 {
+        return SatResult::Sat(Vec::new());
+    }
+    let decisions = Decisions::new(&formula);
+    let mut watches = Watches::new(&formula);
+    watches.init_watches(&formula);
+    let mut solver = Solver::new(&formula);
     solver.inner(formula, decisions, trail, watches)
 }
