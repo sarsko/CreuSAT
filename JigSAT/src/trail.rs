@@ -45,7 +45,7 @@ impl Trail {
                 self.assignments[step.lit.index()] += 2; 
                 // Removing this would be hard to prove lol.
                 //self.lit_to_level[step.lit.index()] = u32::MAX;
-                return step.lit.index();
+                step.lit.index()
             }
             None => {
                 unreachable!();
@@ -63,10 +63,10 @@ impl Trail {
         let how_many = self.trail.len() - self.decisions[level as usize];
         let mut i: usize = 0;
         let mut curr = d.search;
-        let mut timestamp = d.linked_list[curr].ts;
+        let mut timestamp = d[curr].ts;
         while i < how_many {
             let idx = self.backstep(f);
-            let curr_timestamp = d.linked_list[idx].ts;
+            let curr_timestamp = d[idx].ts;
             if curr_timestamp > timestamp {
                 timestamp = curr_timestamp;
                 curr = idx;
@@ -95,14 +95,14 @@ impl Trail {
         self.lit_to_level[idx] = dlevel;
         self.assignments[idx] -= 2;
         let lit = Lit::phase_saved(idx, &self.assignments);
-        let step = Step { lit: lit, decision_level: dlevel, reason: Reason::Decision };
+        let step = Step { lit, decision_level: dlevel, reason: Reason::Decision };
         self.trail.push(step);
     }
 
     #[inline]
     pub fn learn_unit(&mut self, lit: Lit, f: &Formula, d: &mut Decisions) {
         self.backtrack_safe(0, f, d);
-        self.enq_assignment(Step { lit: lit, decision_level: 0, reason: Reason::Unit }, f);
+        self.enq_assignment(Step { lit, decision_level: 0, reason: Reason::Unit }, f);
     }
 
     pub fn learn_units(&mut self, f: &Formula, d: &mut Decisions) -> Option<usize> {
@@ -122,6 +122,6 @@ impl Trail {
             }
             i += 1;
         }
-        return None;
+        None
     }
 }

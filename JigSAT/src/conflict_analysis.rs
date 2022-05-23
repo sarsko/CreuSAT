@@ -1,4 +1,4 @@
-use crate::{clause::*, formula::*, lit::*, trail::*};
+use crate::{clause::*, formula::*, lit::*, trail::*, solver::Solver};
 
 //#[derive(Debug)]
 pub enum Conflict {
@@ -7,7 +7,7 @@ pub enum Conflict {
     Learned(u32, Clause),
 }
 
-pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
+pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, s: &mut Solver) -> Conflict {
     let decisionlevel = trail.decision_level();
     if decisionlevel == 0 {
         return Conflict::Ground;
@@ -65,7 +65,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
         }
     }
     if out_learnt.len() == 1 {
-        return Conflict::Unit(out_learnt[0]);
+        Conflict::Unit(out_learnt[0])
     } else {
         let mut max_i: usize = 1;
         let mut max_level = trail.lit_to_level[out_learnt[1].index()];
@@ -79,6 +79,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             i += 1;
         }
         out_learnt.swap(1, max_i);
-        Conflict::Learned(max_level, Clause{ deleted: false, lbd: 0, rest: out_learnt})
+        let clause = Clause::new_and_set_lbd(out_learnt, trail, s);
+        Conflict::Learned(max_level, clause)
     }
 }

@@ -19,12 +19,12 @@ fn unit_prop_check_rest(
         }
         return Ok(()); // dont increase j
     }
-    return Err(());
+    Err(())
 }
 
 #[inline(always)]
 fn swap(f: &mut Formula, _trail: &Trail, _watches: &Watches, cref: usize, j: usize, k: usize) {
-    f[cref].rest.swap(j, k);
+    f[cref].swap(j, k);
 }
 
 
@@ -71,11 +71,10 @@ fn unit_prop_do_outer(
 
         trail.enq_assignment(step, f);
         // slowdown in swapping
-        f[cref].rest.swap(0,1);
+        f[cref].swap(0,1);
         return Ok(true);
-    } else {
-        return Err(cref);
-    }
+    } 
+    Err(cref)
 }
 
 #[inline]

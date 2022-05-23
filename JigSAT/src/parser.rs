@@ -36,9 +36,9 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
         for line in lines {
             line_cntr += 1;
             if let Ok(line) = line {
-                let split = line.split(" ").filter(|e| e != &"").collect::<Vec<_>>();
+                let split = line.split(' ').filter(|e| e != &"").collect::<Vec<_>>();
                 if split.len() > 0 {
-                    match split[0].chars().nth(0).unwrap() {
+                    match split[0].chars().next().unwrap() {
                         'c' => {}
                         'p' => match split[2].parse::<usize>() {
                             Ok(n) => {
@@ -66,7 +66,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                                             out_clauses.push(curr_clause);
                                             curr_clause = vec![];
                                         } else {
-                                            let n_abs = n.abs() as usize;
+                                            let n_abs = n.unsigned_abs() as usize;
                                             if n_abs > max_literal {
                                                 max_literal = n_abs;
                                             }
@@ -79,7 +79,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                                     Err(_) => {
                                         return Err(format!(
                                             "Error in input file on line {}",
-                                            line_cntr.to_string()
+                                            line_cntr
                                         ));
                                     }
                                 }

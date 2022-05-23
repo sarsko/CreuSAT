@@ -58,7 +58,7 @@ impl Formula {
             }
             i += 1;
         }
-        return SatResult::Unknown;
+        SatResult::Unknown
     }
 
     pub fn is_clause_sat(&self, idx: usize, a: &Assignments) -> bool {
@@ -70,11 +70,11 @@ impl Formula {
             }
             i += 1;
         }
-        return false;
+        false
     }
 
     pub fn swap_lits_in_clause(&mut self, trail: &Trail, watches: &Watches, cref: usize, j: usize, k: usize) {
-        self[cref].rest.swap(j, k);
+        self[cref].swap(j, k);
     }
 
     pub fn add_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {

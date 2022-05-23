@@ -20,7 +20,7 @@ impl Lit {
 
     #[inline(always)]
     pub fn check_lit_invariant(self, n: usize) -> bool {
-        return self.index() < n;
+        self.index() < n
     }
 
     #[inline(always)]

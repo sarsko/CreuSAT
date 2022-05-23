@@ -68,13 +68,7 @@ impl Watches {
             if self.watches[watchidx][i].cref == cref {
                 let end = self.watches[watchidx].len() - 1;
                 self.watches[watchidx].swap(i, end);
-                match self.watches[watchidx].pop() {
-                    Some(w) => {
-                    }
-                    None => {
-                        unreachable!();
-                    }
-                }
+                self.watches[watchidx].pop();
                 return;
             }
             i += 1;

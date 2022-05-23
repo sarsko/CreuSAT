@@ -88,10 +88,8 @@ impl Solver {
 
     #[inline]
     fn handle_long_clause(
-        &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, level: u32,
+        &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, clause: Clause, level: u32,
     ) {
-        let mut i: usize = 0;
-        clause.calc_and_set_lbd(t, self);
         let lbd = clause.lbd;
         let cref = f.add_clause(clause, w, t);
         update_fast(&mut self.fast, lbd as usize);
@@ -99,7 +97,7 @@ impl Solver {
         d.increment_and_move(f, cref, &t.assignments);
         t.backtrack_to(level, f, d);
         let lit = f[cref][0];
-        let step = Step { lit: lit, decision_level: level, reason: Reason::Long(cref) };
+        let step = Step { lit, decision_level: level, reason: Reason::Long(cref) };
         t.enq_assignment(step, f);
         self.increase_num_conflicts();
     }
@@ -108,7 +106,7 @@ impl Solver {
     fn handle_conflict(
         &mut self, f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches, d: &mut Decisions,
     ) -> Option<bool> {
-        let res = analyze_conflict(f, t, cref);
+        let res = analyze_conflict(f, t, cref, self);
         match res {
             Conflict::Ground => {
                 return Some(false);
@@ -127,14 +125,14 @@ impl Solver {
 
     #[inline]
     fn unit_prop_step(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> ConflictResult {
-        return match unit_propagate(f, t, w) {
+        match unit_propagate(f, t, w) {
             Ok(_) => ConflictResult::Ok,
             Err(cref) => match self.handle_conflict(f, t, cref, w, d) {
                 Some(false) => ConflictResult::Ground,
                 Some(true) => ConflictResult::Err,
                 None => ConflictResult::Continue,
             },
-        };
+        }
     }
 
     #[inline]
@@ -213,7 +211,7 @@ pub fn solver(formula: &mut Formula) -> SatResult {
     let mut watches = Watches::new(formula);
     watches.init_watches(formula);
     match trail.learn_units(formula, &mut decisions) {
-        Some(cref) => {
+        Some(_) => {
             return SatResult::Unsat;
         }
         None => {}

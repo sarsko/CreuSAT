@@ -19,7 +19,7 @@ impl Default for Node {
 }
 
 pub struct Decisions {
-    pub linked_list: Vec<Node>,
+    linked_list: Vec<Node>,
     timestamp: usize,
     pub start: usize,
     pub search: usize,
@@ -76,7 +76,7 @@ impl Decisions {
             linked_list[j].ts = f.num_vars - i;
             i += 1;
         }
-        Decisions { linked_list: linked_list, timestamp: f.num_vars + 1, start: head, search: head }
+        Decisions { linked_list, timestamp: f.num_vars + 1, start: head, search: head }
     }
 
     pub fn new(f: &Formula) -> Decisions {
@@ -190,6 +190,6 @@ impl Decisions {
             }
             i += 1;
         }
-        return None;
+        None
     }
 }
