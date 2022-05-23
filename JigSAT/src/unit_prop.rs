@@ -4,21 +4,6 @@ use crate::{formula::*, lit::*, trail::*, watches::*};
 fn unit_prop_check_rest(
     f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit, other_lit: Lit,
 ) -> Result<bool, ()> {
-    let clause = &mut f[cref];
-    let curr_lit = clause[k];
-    if !(curr_lit.lit_unsat(&trail.assignments)){
-        if curr_lit.lit_sat(&trail.assignments) {
-            watches[lit.to_watchidx()][j].blocker = curr_lit;
-            return Ok(true);
-        }
-        watches[lit.to_watchidx()][j].blocker = other_lit;
-        clause[0] = curr_lit;
-        clause[1] = other_lit;
-        clause[k] = !lit;
-        update_watch(f, trail, watches, cref, j, 0, lit);
-
-        return Ok(false); // dont increase j
-    }
     return Err(());
 }
 
@@ -31,8 +16,9 @@ fn swap(f: &mut Formula, _trail: &Trail, _watches: &Watches, cref: usize, j: usi
 fn unit_prop_do_outer(
     f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize,
 ) -> Result<bool, usize> {
-    let clause = &f[cref];
-    let other_lit = (!lit).select_other(clause[0], clause[1]);
+    let clause = &mut f[cref];
+    let neg_lit = !lit;
+    let other_lit = neg_lit.select_other(clause[0], clause[1]);
     if other_lit.lit_sat(&trail.assignments) {
         watches[lit.to_watchidx()][j].blocker = other_lit;
         return Ok(true);
@@ -41,20 +27,27 @@ fn unit_prop_do_outer(
     let mut k: usize = 2;
     let clause_len: usize = clause.len();
     while k < clause_len {
-        match unit_prop_check_rest(f, trail, watches, cref, j, k, lit, other_lit) {
-            Err(_) => {
+        let curr_lit = clause[k];
+        if !(curr_lit.lit_unsat(&trail.assignments)){
+            if curr_lit.lit_sat(&trail.assignments) {
+                watches[lit.to_watchidx()][j].blocker = curr_lit;
+                return Ok(true);
             }
-            Ok(b) => {
-                return Ok(b);
-            }
+            watches[lit.to_watchidx()][j].blocker = other_lit;
+            clause[0] = curr_lit;
+            clause[1] = other_lit;
+            clause[k] = neg_lit;
+            update_watch(f, trail, watches, cref, j, 0, lit);
+
+            return Ok(false); // dont increase j
         }
         k += 1;
     }
     if other_lit.lit_unsat(&trail.assignments) {
         return Err(cref);
     }
-    f[cref][0] = other_lit;
-    f[cref][1] = !lit;
+    clause[0] = other_lit;
+    clause[1] = neg_lit;
     let step = Step {
         lit: other_lit,
         decision_level: trail.decision_level(),
