@@ -30,19 +30,6 @@ fn swap(f: &mut Formula, _trail: &Trail, _watches: &Watches, cref: usize, j: usi
 fn unit_prop_do_outer(
     f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize,
 ) -> Result<bool, usize> {
-    /*
-    let first_lit = f[cref][0];
-    if first_lit.lit_sat(&trail.assignments) {
-        return Ok(true);
-    }
-    let second_lit = f[cref][1];
-    if second_lit.lit_sat(&trail.assignments) {
-        // We swap to make it faster the next time
-        //swap_zero_one(f, trail, watches, cref, lit, j);
-        //swap(f, trail, watches, cref, 0, 1);
-        return Ok(true);
-    }
-    */
     let clause = &f[cref];
     let other_lit = (!lit).select_other(clause[0], clause[1]);
     if other_lit.lit_sat(&trail.assignments) {
@@ -52,15 +39,21 @@ fn unit_prop_do_outer(
     // At this point we know that none of the watched literals are sat
     let mut k: usize = 2;
     let clause_len: usize = clause.len();
+    let mut search = clause.search;
     while k < clause_len {
-        match unit_prop_check_rest(f, trail, watches, cref, j, k, lit) {
+        match unit_prop_check_rest(f, trail, watches, cref, j, search, lit) {
             Err(_) => {
             }
             Ok(_) => {
+                f[cref].search = search;
                 return Ok(false);
             }
         }
         k += 1;
+        search += 1;
+        if search == clause_len {
+            search = 2;
+        }
     }
     if other_lit.lit_unsat(&trail.assignments) {
         return Err(cref);
