@@ -39,6 +39,7 @@ impl Watches {
         Watches { watches }
     }
 
+    #[inline]
     pub fn add_watcher(&mut self, lit: Lit, cref: usize, _f: &Formula) {
         self.watches[lit.to_neg_watchidx()].push(Watcher { cref });
     }
@@ -80,6 +81,7 @@ impl Watches {
         }
     }
 
+    #[inline]
     pub fn unwatch_all_lemmas(&mut self, f: &Formula, s: &Solver) {
         let mut i: usize = 0;
         while i < self.watches.len() {

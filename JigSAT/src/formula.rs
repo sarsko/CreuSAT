@@ -119,6 +119,7 @@ impl Formula {
         // Ideally remove UNSAT lits
     }
 
+    #[inline]
     pub fn reduceDB(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
         s.max_len += self.len() + 300;
         let mut i = self.len() - 1;

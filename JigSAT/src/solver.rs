@@ -78,6 +78,7 @@ impl Solver {
         }
     }
 
+    #[inline]
     fn increase_num_conflicts(&mut self) {
         if self.num_conflicts < usize::MAX {
             self.num_conflicts += 1;
@@ -85,6 +86,7 @@ impl Solver {
     }
 
 
+    #[inline]
     fn handle_long_clause(
         &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, level: u32,
     ) {
@@ -102,6 +104,7 @@ impl Solver {
         self.increase_num_conflicts();
     }
 
+    #[inline]
     fn handle_conflict(
         &mut self, f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches, d: &mut Decisions,
     ) -> Option<bool> {
@@ -111,10 +114,7 @@ impl Solver {
                 return Some(false);
             }
             Conflict::Unit(lit) => {
-                match t.learn_unit(lit, f, d) {
-                    Err(_) => return Some(true),
-                    Ok(_) => {}
-                }
+                t.learn_unit(lit, f, d);
                 f.reduceDB(w, t, self);
                 f.simplify_formula(w, t);
             }
@@ -125,6 +125,7 @@ impl Solver {
         None
     }
 
+    #[inline]
     fn unit_prop_step(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> ConflictResult {
         return match unit_propagate(f, t, w) {
             Ok(_) => ConflictResult::Ok,
@@ -136,6 +137,7 @@ impl Solver {
         };
     }
 
+    #[inline]
     fn unit_prop_loop(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
         loop {
             match self.unit_prop_step(f, d, t, w) {
@@ -153,12 +155,16 @@ impl Solver {
         }
     }
 
+    #[inline]
     fn outer_loop(&mut self, f: &mut Formula, d: &mut Decisions, trail: &mut Trail, w: &mut Watches) -> SatResult {
+        let old_len = f.len();
         match self.unit_prop_loop(f, d, trail, w) {
             Some(false) => return SatResult::Unsat,
             None => return SatResult::Err,
             _ => {}
         }
+        if f.len() > old_len {
+
         let slow = (self.slow / 100) * 125;
         if self.fast > slow {
             self.fast = slow;
@@ -166,6 +172,7 @@ impl Solver {
             if f.len() > self.max_len {
                 f.reduceDB(w, trail, self);
             }
+        }
         }
         match d.get_next(&trail.assignments, f) {
             Some(next) => {
@@ -178,6 +185,7 @@ impl Solver {
         SatResult::Unknown
     }
 
+    #[inline]
     fn inner(
         &mut self, formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut watches: Watches,
     ) -> SatResult {

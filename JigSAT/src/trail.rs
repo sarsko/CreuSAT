@@ -99,10 +99,10 @@ impl Trail {
         self.trail.push(step);
     }
 
-    pub fn learn_unit(&mut self, lit: Lit, f: &Formula, d: &mut Decisions) -> Result<(), ()> {
+    #[inline]
+    pub fn learn_unit(&mut self, lit: Lit, f: &Formula, d: &mut Decisions) {
         self.backtrack_safe(0, f, d);
         self.enq_assignment(Step { lit: lit, decision_level: 0, reason: Reason::Unit }, f);
-        Ok(())
     }
 
     pub fn learn_units(&mut self, f: &Formula, d: &mut Decisions) -> Option<usize> {
