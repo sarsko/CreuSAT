@@ -37,7 +37,18 @@ fn unit_prop_do_outer(
             clause[0] = curr_lit;
             clause[1] = other_lit;
             clause[k] = neg_lit;
-            update_watch(f, trail, watches, cref, j, 0, lit);
+
+            let end = watches.watches[lit.to_watchidx()].len() - 1;
+            watches.watches[lit.to_watchidx()].swap(j, end);
+            match watches.watches[lit.to_watchidx()].pop() {
+                Some(w) => {
+                    watches.watches[curr_lit.to_neg_watchidx()].push(w);
+                }
+                None => {
+                    unreachable!();
+                }
+    }
+            //update_watch(f, trail, watches, cref, j, 0, lit);
 
             return Ok(false); // dont increase j
         }
