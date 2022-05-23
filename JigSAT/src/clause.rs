@@ -1,5 +1,5 @@
 use crate::{formula::*, lit::*, solver::Solver, trail::*};
-use std::{ops::{Index}, cmp::Ordering};
+use std::{ops::{Index, IndexMut}, cmp::Ordering};
 
 pub struct Clause {
     pub deleted: bool,
@@ -18,6 +18,17 @@ impl Index<usize> for Clause {
         }
         //#[cfg(not(feature = "unsafe_access"))]
         //&self.lits[i]
+    }
+}
+impl IndexMut<usize> for Clause {
+    #[inline]
+    fn index_mut(&mut self, i: usize) -> &mut Lit {
+        //#[cfg(feature = "unsafe_access")]
+        unsafe {
+            self.rest.get_unchecked_mut(i)
+        }
+        //#[cfg(not(feature = "unsafe_access"))]
+        //&mut self.lits[i]
     }
 }
 

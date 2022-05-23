@@ -1,14 +1,42 @@
 use crate::{formula::*, lit::*, trail::*, solver::*};
+use std::{
+    ops::{Index, IndexMut},
+};
 
 // Lets try this scheme and see how well it fares
 // Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
 pub struct Watcher {
     pub cref: usize,
-    //blocker: Lit,
+    pub blocker: Lit,
 }
 
 pub struct Watches {
     pub watches: Vec<Vec<Watcher>>,
+}
+
+impl Index<usize> for Watches {
+    type Output = Vec<Watcher>;
+    #[inline]
+    fn index(&self, i: usize) -> &Vec<Watcher> {
+        //#[cfg(feature = "unsafe_access")]
+        unsafe {
+            self.watches.get_unchecked(i)
+        }
+        //#[cfg(not(feature = "unsafe_access"))]
+        //&self.watches[i]
+    }
+}
+
+impl IndexMut<usize> for Watches {
+    #[inline]
+    fn index_mut(&mut self, i: usize) -> &mut Vec<Watcher> {
+        //#[cfg(feature = "unsafe_access")]
+        unsafe {
+            self.watches.get_unchecked_mut(i)
+        }
+        //#[cfg(not(feature = "unsafe_access"))]
+        //&mut self.watches[i]
+    }
 }
 
 pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit) {
@@ -39,10 +67,6 @@ impl Watches {
         Watches { watches }
     }
 
-    pub fn add_watcher(&mut self, lit: Lit, cref: usize, _f: &Formula) {
-        self.watches[lit.to_neg_watchidx()].push(Watcher { cref });
-    }
-
     pub fn move_to_end(&mut self, old_idx: usize, old_pos: usize, new_lit: Lit, _f: &Formula) {
         let end = self.watches[old_idx].len() - 1;
         self.watches[old_idx].swap(old_pos, end);
@@ -53,8 +77,8 @@ impl Watches {
         while i < f.len() {
             let clause = &f[i];
             if clause.len() > 1 {
-                self.add_watcher(clause[0], i, f);
-                self.add_watcher(clause[1], i, f);
+                self.watches[clause[0].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause[1]});
+                self.watches[clause[1].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause[0]});
             }
             i += 1;
         }

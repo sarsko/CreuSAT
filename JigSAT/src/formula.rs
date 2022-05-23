@@ -86,8 +86,8 @@ impl Formula {
         let first_lit = clause[0];
         let second_lit = clause[1];
         self.clauses.push(clause);
-        watches.add_watcher(first_lit, cref, self);
-        watches.add_watcher(second_lit, cref, self);
+        watches[first_lit.to_neg_watchidx()].push(Watcher { cref, blocker: second_lit});
+        watches[second_lit.to_neg_watchidx()].push(Watcher { cref, blocker: first_lit});
         cref
     }
 
@@ -139,8 +139,8 @@ impl Formula {
         }
         i = s.initial_len;
         while i < self.len() {
-            watches.add_watcher(self[i][0], i, self);
-            watches.add_watcher(self[i][1], i, self);
+            watches[self[i][0].to_neg_watchidx()].push(Watcher { cref: i, blocker: self[i][1]});
+            watches[self[i][1].to_neg_watchidx()].push(Watcher { cref: i, blocker: self[i][0]});
             i += 1;
         }
     }

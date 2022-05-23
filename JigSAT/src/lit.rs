@@ -55,6 +55,13 @@ impl Lit {
             code: (idx << 1) as u32 | (polarity as u32)
         }
     }
+
+    #[inline]
+    pub fn select_other(self, a: Self, b: Self) -> Self {
+        Self {
+            code: self.code ^ a.code ^ b.code,
+        }
+    }
 }
 
 impl ops::Not for Lit {
