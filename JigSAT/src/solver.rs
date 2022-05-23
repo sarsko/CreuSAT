@@ -113,7 +113,7 @@ impl Solver {
             }
             Conflict::Unit(lit) => {
                 t.learn_unit(lit, f, d);
-                if f.len() > self.initial_len {
+                if f.len() > self.max_len {
                     f.reduceDB(w, t, self);
                 }
                 f.simplify_formula(w, t);
