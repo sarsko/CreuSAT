@@ -10,14 +10,14 @@ pub struct Clause {
 
 impl Index<usize> for Clause {
     type Output = Lit;
-    #[inline]
+    #[inline(always)]
     fn index(&self, i: usize) -> &Lit {
         //#[cfg(feature = "unsafe_access")]
         unsafe {
             self.rest.get_unchecked(i)
         }
         //#[cfg(not(feature = "unsafe_access"))]
-        //&self.lits[i]
+        //&self.rest[i]
     }
 }
 

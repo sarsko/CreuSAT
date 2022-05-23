@@ -115,8 +115,13 @@ impl Solver {
                     Err(_) => return Some(true),
                     Ok(_) => {}
                 }
-                f.reduceDB(w, t, self);
-                f.simplify_formula(w, t);
+                if f.len() > self.initial_len {
+                    f.reduceDB_no_watch(self);
+                }
+                match f.simplify_formula(w, t, self) {
+                    Err(_) => return Some(false),
+                    Ok(_) => {}
+                }
             }
             Conflict::Learned(level, clause) => {
                 self.handle_long_clause(f, t, w, d, clause, level);
@@ -164,6 +169,8 @@ impl Solver {
             self.fast = slow;
             trail.backtrack_safe(0, f, d);
             if f.len() > self.max_len {
+                println!("{}", f.len());
+                println!("{}", self.max_len);
                 f.reduceDB(w, trail, self);
             }
         }

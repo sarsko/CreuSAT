@@ -39,6 +39,7 @@ impl Watches {
         Watches { watches }
     }
 
+    #[inline(always)]
     pub fn add_watcher(&mut self, lit: Lit, cref: usize, _f: &Formula) {
         self.watches[lit.to_neg_watchidx()].push(Watcher { cref });
     }
@@ -55,26 +56,6 @@ impl Watches {
             if clause.len() > 1 {
                 self.add_watcher(clause[0], i, f);
                 self.add_watcher(clause[1], i, f);
-            }
-            i += 1;
-        }
-    }
-
-    pub fn unwatch(&mut self, f: &Formula, trail: &Trail, cref: usize, lit: Lit) {
-        let watchidx = lit.to_neg_watchidx();
-        let mut i: usize = 0;
-        while i < self.watches[watchidx].len() {
-            if self.watches[watchidx][i].cref == cref {
-                let end = self.watches[watchidx].len() - 1;
-                self.watches[watchidx].swap(i, end);
-                match self.watches[watchidx].pop() {
-                    Some(w) => {
-                    }
-                    None => {
-                        unreachable!();
-                    }
-                }
-                return;
             }
             i += 1;
         }

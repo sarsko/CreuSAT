@@ -28,7 +28,7 @@ impl IndexMut<usize> for Formula {
             self.clauses.get_unchecked_mut(i)
         }
         //#[cfg(not(feature = "unsafe_access"))]
-        //&mut self.lits[i]
+        //&mut self.clauses[i]
     }
 }
 
@@ -91,37 +91,84 @@ impl Formula {
         cref
     }
 
-    fn delete_clause(&mut self, cref: usize, watches: &mut Watches, t: &Trail) {
-        watches.unwatch(self, t, cref, self[cref][0]);
-        watches.unwatch(self, t, cref, self[cref][1]);
-        self[cref].deleted = true;
+    fn delete_clause(&mut self, cref: usize, t: &Trail, s: &mut Solver) -> Result<(), ()>{
+        //println!("del");
+        //watches.unwatch(self, t, cref, self[cref][0]);
+        //watches.unwatch(self, t, cref, self[cref][1]);
+        //self[cref].deleted = true;
+
+        let end = self.clauses.len() - 1;
+        if cref < s.initial_len && s.initial_len != self.len() { // cref is initial and there are learned clauses
+            self.clauses.swap(s.initial_len, cref);
+            self.clauses.swap(s.initial_len, end);
+            s.initial_len -= 1;
+        } else { // Learned clause or no learned clauses
+            self.clauses.swap(cref, end);
+        }
+        self.clauses.pop();
+        /* 
+        if s.initial_len == 0 {
+            return Err(());
+        }
+        */
+        Ok(())
     }
 
-    pub fn delete_clauses(&mut self, watches: &mut Watches, t: &Trail) {
+    pub fn delete_clauses(&mut self, t: &Trail, s: &mut Solver) -> Result<(), ()> {
         // unwatch trivially SAT
         let mut i = 0;
         while i < self.len() {
-            if !self[i].deleted {
-                if self[i].len() > 1 && self.is_clause_sat(i, &t.assignments) {
-                    self.delete_clause(i, watches, t);
-                }
+            //if !self[i].deleted {
+            if self.is_clause_sat(i, &t.assignments) {
+                self.delete_clause(i, t, s)?;
             }
-            i += 1;
+            //}
+            else {
+                i += 1;
+
+            }
         }
+        Ok(())
         // TODO: Actually delete + remove UNSAT lits
 
         // Ideally remove UNSAT lits
     }
 
-    pub fn simplify_formula(&mut self, watches: &mut Watches, t: &Trail) {
+    pub fn simplify_formula(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) -> Result<(), ()> {
         // unwatch trivially SAT
-        self.delete_clauses(watches, t);
+        self.delete_clauses(t, s)?;
+        *watches = Watches::new(self);
+        watches.init_watches(self);
         // Ideally remove UNSAT lits
+        Ok(())
+    }
+
+    pub fn reduceDB_no_watch(&mut self, s: &mut Solver) {
+        s.max_len += self.len() + 300;
+        let mut i = self.len() - 1;
+        self.clauses[s.initial_len+1..].sort_unstable_by(|a, b| a.less_than(b));
+        let mut limit = (self.len() - s.initial_len) / 2;
+        while i > s.initial_len && limit > 0 {
+            self.clauses.pop();
+            limit -= 1;
+            i -= 1;
+            /* 
+            let clause = &self[i];
+            if clause.lbd > 2 && clause.len() > 2 {
+            } else {
+                break;
+            }
+            */
+        }
+        i = s.initial_len + 1;
     }
 
     pub fn reduceDB(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
         s.max_len += self.len() + 300;
         let mut i = self.len() - 1;
+        if self.len() <= s.initial_len + 1 {
+            panic!();
+        }
         self.clauses[s.initial_len+1..].sort_unstable_by(|a, b| a.less_than(b));
         watches.unwatch_all_lemmas(self, s);
         let mut limit = (self.len() - s.initial_len) / 2;
