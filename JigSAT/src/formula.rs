@@ -122,7 +122,7 @@ impl Formula {
     pub fn reduceDB(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
         s.max_len += self.len() + 300;
         let mut i = self.len() - 1;
-        self.clauses[s.initial_len+1..].sort_unstable_by(|a, b| a.less_than(b));
+        self.clauses[s.initial_len..].sort_unstable_by(|a, b| a.less_than(b));
         watches.unwatch_all_lemmas(self, s);
         let mut limit = (self.len() - s.initial_len) / 2;
         while i > s.initial_len && limit > 0 {
@@ -137,7 +137,7 @@ impl Formula {
             }
             */
         }
-        i = s.initial_len + 1;
+        i = s.initial_len;
         while i < self.len() {
             watches.add_watcher(self[i][0], i, self);
             watches.add_watcher(self[i][1], i, self);
