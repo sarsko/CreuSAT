@@ -74,7 +74,7 @@ impl Solver {
             inc_reduce_db: 300,
             fast: 16777216, // 1 << 24
             slow: 16777216, // 1 << 24
-            perm_diff: vec![0; f.num_vars],
+            perm_diff: vec![usize::MAX; f.num_vars],
         }
     }
 
@@ -113,9 +113,11 @@ impl Solver {
             }
             Conflict::Unit(lit) => {
                 t.learn_unit(lit, f, d);
-                if f.len() > self.max_len {
-                    f.reduceDB(w, t, self);
-                }
+                //if f.len() > self.max_len {
+                //    f.reduceDB(w, t, self);
+                //}
+
+                self.max_len += f.len() + 300;
                 f.simplify_formula(w, t);
             }
             Conflict::Learned(level, clause) => {

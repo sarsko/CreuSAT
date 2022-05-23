@@ -16,7 +16,7 @@ impl Index<usize> for Formula {
             self.clauses.get_unchecked(i)
         }
         //#[cfg(not(feature = "unsafe_access"))]
-        //&self.lits[i]
+        //&self.clauses[i]
     }
 }
 
@@ -28,7 +28,7 @@ impl IndexMut<usize> for Formula {
             self.clauses.get_unchecked_mut(i)
         }
         //#[cfg(not(feature = "unsafe_access"))]
-        //&mut self.lits[i]
+        //&mut self.clauses[i]
     }
 }
 
@@ -128,7 +128,7 @@ impl Formula {
     pub fn reduceDB(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
         s.max_len += self.len() + 300;
         let mut i = self.len() - 1;
-        self.clauses[s.initial_len+1..].sort_unstable_by(|a, b| a.less_than(b));
+        self.clauses[s.initial_len..].sort_unstable_by(|a, b| a.less_than(b));
         watches.unwatch_all_lemmas(self, s);
         let mut limit = (self.len() - s.initial_len) / 2;
         while i > s.initial_len && limit > 0 {
@@ -143,6 +143,7 @@ impl Formula {
             }
             */
         }
+        i = 0;
         i = s.initial_len;
         while i < self.len() {
             watches.add_watcher(self[i][0], i, self);

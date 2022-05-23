@@ -1,6 +1,7 @@
 use crate::{formula::*, lit::*, solver::Solver, trail::*};
 use std::{ops::{Index}, cmp::Ordering};
 
+#[derive(Debug)]
 pub struct Clause {
     pub deleted: bool,
     pub lbd: u32,
