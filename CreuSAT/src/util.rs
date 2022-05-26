@@ -13,9 +13,9 @@ use crate::logic::logic_util::*;
 #[ensures((@^v).permutation_of(@v))]
 pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
     let mut i: usize = 0;
-    let old_v = Ghost::record(&v);
-    #[invariant(proph_const, ^v == ^@old_v)]
-    #[invariant(permutation, (@v).permutation_of(@*@old_v))]
+    let old_v = ghost! { v };
+    #[invariant(proph_const, ^v == ^old_v.inner())]
+    #[invariant(permutation, (@v).permutation_of(@*old_v.inner()))]
     #[invariant(i_bound, @i <= (@v).len())]
     #[invariant(sorted, sorted_range_rev(@v, 0, @i))]
     #[invariant(partition, partition_rev(@v, @i))]
@@ -78,9 +78,9 @@ pub fn insertion_sort(arr: &mut Vec<(usize, usize)>) {
 #[ensures((@^v).permutation_of(@v))]
 pub fn sort(v: &mut Vec<(usize, usize)>) {
     let mut i: usize = 0;
-    let old_v = Ghost::record(&v);
-    #[invariant(proph_const, ^v == ^@old_v)]
-    #[invariant(permutation, (@v).permutation_of(@*@old_v))]
+    let old_v = ghost! { v };
+    #[invariant(proph_const, ^v == ^old_v.inner())]
+    #[invariant(permutation, (@v).permutation_of(@*old_v.inner()))]
     #[invariant(i_bound, @i <= (@v).len())]
     #[invariant(sorted, sorted_range_tuple_zeroth(@v, 0, @i))]
     #[invariant(partition, partition(@v, @i))]
