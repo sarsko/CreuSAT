@@ -41,6 +41,10 @@ fn unit_prop_do_outer(
     let clause_len: usize = clause.len();
     let mut search = clause.search;
     while k < clause_len {
+        search += 1;
+        if search == clause_len {
+            search = 2;
+        }
         match unit_prop_check_rest(f, trail, watches, cref, j, search, lit) {
             Err(_) => {
             }
@@ -50,10 +54,6 @@ fn unit_prop_do_outer(
             }
         }
         k += 1;
-        search += 1;
-        if search == clause_len {
-            search = 2;
-        }
     }
     if other_lit.lit_unsat(&trail.assignments) {
         return Err(cref);

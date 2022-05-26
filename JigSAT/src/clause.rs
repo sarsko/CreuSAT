@@ -93,7 +93,7 @@ impl Clause {
     }
 
     pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
-        Clause { deleted: false, lbd: 0, search: 2, rest: vec.clone() }
+        Clause { deleted: false, lbd: 0, search: 1, rest: vec.clone() }
     }
 
     #[inline(always)]
