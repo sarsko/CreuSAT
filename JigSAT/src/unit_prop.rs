@@ -80,8 +80,8 @@ fn unit_prop_do_outer(
 fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, lit: Lit) -> Result<(), usize> {
     let mut j = 0;
     let watchidx = lit.to_watchidx();
-    while j < watches.watches[watchidx].len() {
-        let curr_watch = &watches.watches[watchidx][j];
+    while j < watches[watchidx].len() {
+        let curr_watch = &watches[watchidx][j];
         if curr_watch.blocker.lit_sat(&trail.assignments) {
             j += 1;
         } else {

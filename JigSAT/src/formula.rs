@@ -135,7 +135,7 @@ impl Formula {
             let clause = &self[i];
             if clause.lbd > 2 && clause.len() > 2 {
                 //self.clauses.pop();
-                self.clauses.remove(i);
+                self.clauses.swap_remove(i);
                 limit -= 1;
             } 
             i -= 1;

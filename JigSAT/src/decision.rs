@@ -105,16 +105,16 @@ impl Decisions {
         moving.prev = INVALID;
         moving.next = self.start;
         moving.ts = self.timestamp;
-        if self.timestamp == usize::MAX {
-            self.rescore(_f);
-        } else {
-            self.timestamp += 1;
-        }
         self.linked_list[self.start].prev = tomove;
         self.start = tomove;
         self.linked_list[prev].next = old_next;
         if old_next != INVALID {
             self.linked_list[old_next].prev = prev;
+        }
+        if self.timestamp == usize::MAX {
+            self.rescore(_f);
+        } else {
+            self.timestamp += 1;
         }
         /*
         // Why does Satch do this? It should be impossible...?
@@ -138,7 +138,7 @@ impl Decisions {
         //sort(&mut counts_with_index);
         // Better sort seems yield a few percentages lol
         //counts_with_index.sort_unstable();
-        counts_with_index.sort_by_key(|k| k.0);
+        counts_with_index.sort_unstable_by_key(|k| k.0);
         i = 0;
         while i < counts_with_index.len() {
             self.move_to_front(counts_with_index[i].1, f);
