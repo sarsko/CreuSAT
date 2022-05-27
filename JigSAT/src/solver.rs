@@ -54,6 +54,7 @@ pub struct Solver {
     pub num_conflicts: usize,
     pub initial_len: usize,
     pub inc_reduce_db: usize,
+    pub special_inc_reduce_db: usize,
     pub fast: usize,
     pub slow: usize,
     pub perm_diff: Vec<usize>,
@@ -72,6 +73,7 @@ impl Solver {
             num_conflicts: 0,
             initial_len: f.len(),
             inc_reduce_db: 300,
+            special_inc_reduce_db: 1000,
             fast: 16777216, // 1 << 24
             slow: 16777216, // 1 << 24
             perm_diff: vec![0; f.num_vars],
@@ -79,16 +81,18 @@ impl Solver {
     }
 
     fn increase_num_conflicts(&mut self) {
-        if self.num_conflicts < usize::MAX {
+        //if self.num_conflicts < usize::MAX {
             self.num_conflicts += 1;
-        }
+        //}
     }
 
 
+    #[inline]
     fn handle_long_clause(
         &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, level: u32,
     ) {
         let mut i: usize = 0;
+        self.increase_num_conflicts();
         clause.calc_and_set_lbd(t, self);
         let lbd = clause.lbd;
         let cref = f.add_clause(clause, w, t);
@@ -99,7 +103,6 @@ impl Solver {
         let lit = f[cref][0];
         let step = Step { lit: lit, decision_level: level, reason: Reason::Long(cref) };
         t.enq_assignment(step, f);
-        self.increase_num_conflicts();
     }
 
     fn handle_conflict(
@@ -111,10 +114,7 @@ impl Solver {
                 return Some(false);
             }
             Conflict::Unit(lit) => {
-                match t.learn_unit(lit, f, d) {
-                    Err(_) => return Some(true),
-                    Ok(_) => {}
-                }
+                t.learn_unit(lit, f, d);
                 f.reduceDB(w, t, self);
                 f.simplify_formula(w, t);
             }

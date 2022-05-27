@@ -60,7 +60,6 @@ fn unit_prop_do_outer(
     }
     if f[cref][0].lit_unset(&trail.assignments) {
         let step = Step {
-            //lit: other_lit,
             lit: f[cref][0],
             decision_level: trail.decision_level(),
             reason: Reason::Long(cref),

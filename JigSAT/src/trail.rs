@@ -24,6 +24,7 @@ pub struct Trail {
 }
 
 impl Trail {
+    #[inline]
     pub fn decision_level(&self) -> u32 {
         self.decisions.len() as u32
     }
@@ -78,7 +79,7 @@ impl Trail {
         while self.decision_level() > level {
             self.decisions.pop();
         }
-        self.curr_i = level as usize;
+        self.curr_i = self.trail.len() as usize;
     }
 
     pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
@@ -99,10 +100,9 @@ impl Trail {
         self.trail.push(step);
     }
 
-    pub fn learn_unit(&mut self, lit: Lit, f: &Formula, d: &mut Decisions) -> Result<(), ()> {
+    pub fn learn_unit(&mut self, lit: Lit, f: &Formula, d: &mut Decisions) {
         self.backtrack_safe(0, f, d);
         self.enq_assignment(Step { lit: lit, decision_level: 0, reason: Reason::Unit }, f);
-        Ok(())
     }
 
     pub fn learn_units(&mut self, f: &Formula, d: &mut Decisions) -> Option<usize> {
