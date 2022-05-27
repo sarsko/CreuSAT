@@ -1,5 +1,9 @@
-use crate::{formula::*, lit::*, trail::*, watches::*};
+use crate::{formula::*, lit::*, trail::*, watches::*, watches_binary::*};
 
+pub enum Conflict {
+    Binary([Lit; 2]),
+    Long(usize),
+}
 
 fn unit_prop_check_rest(
     f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
@@ -78,7 +82,7 @@ fn unit_prop_do_outer(
     }
 }
 
-fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, lit: Lit) -> Result<(), usize> {
+fn unit_prop_long(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, lit: Lit) -> Result<(), Conflict> {
     let mut j = 0;
     let watchidx = lit.to_watchidx();
     while j < watches.watches[watchidx].len() {
@@ -91,9 +95,9 @@ fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Wat
                 Ok(true) => {
                     j += 1;
                 }
-                Ok(false) => {}
+                Ok(false) => {} // We popped the current watch --- don't increase j
                 Err(cref) => {
-                    return Err(cref);
+                    return Err(Conflict::Long(cref));
                 }
             }
         }
@@ -101,16 +105,30 @@ fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Wat
     Ok(())
 }
 
-pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
+fn unit_prop_binary(f: &mut Formula, trail: &mut Trail, watches: &mut BinWatches, lit: Lit) -> Result<(), Conflict> {
+    let mut j = 0;
+    let watchidx = lit.to_watchidx();
+    while j < watches.watches[watchidx].len() {
+        let other_lit = watches.watches[watchidx][j];
+        if other_lit.lit_unsat(&trail.assignments) {
+            return Err(Conflict::Binary([!lit, other_lit]));
+        } else {
+            if other_lit.lit_sat(&trail.assignments) {
+            } else {
+                trail.enq_binary(lit, other_lit, f); // Both !lit and lit yield the correct result
+            }
+            j += 1;
+        }
+    }
+    Ok(())
+}
+
+pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, binary_watches: &mut BinWatches) -> Result<(), Conflict> {
     let mut i = trail.curr_i;
     while i < trail.trail.len() {
         let lit = trail.trail[i].lit;
-        match unit_prop_current_level(f, trail, watches, lit) {
-            Ok(_) => {}
-            Err(cref) => {
-                return Err(cref);
-            }
-        }
+        unit_prop_binary(f, trail, binary_watches, lit)?;
+        unit_prop_long(f, trail, watches, lit)?;
         i += 1;
     }
     trail.curr_i = i;

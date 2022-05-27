@@ -1,23 +1,17 @@
-use crate::{formula::*, lit::*, trail::*, solver::*};
+use crate::{clause::*, formula::*, lit::*, trail::*};
 use std::{
     ops::{Index, IndexMut},
 };
 
-// Lets try this scheme and see how well it fares
-// Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
-pub struct Watcher {
-    pub cref: usize,
-    pub blocker: Lit,
+// From lit to implied lits:
+pub struct BinWatches {
+    pub watches: Vec<Vec<Lit>>,
 }
 
-pub struct Watches {
-    pub watches: Vec<Vec<Watcher>>,
-}
-
-impl Index<usize> for Watches {
-    type Output = Vec<Watcher>;
+impl Index<usize> for BinWatches {
+    type Output = Vec<Lit>;
     #[inline]
-    fn index(&self, i: usize) -> &Vec<Watcher> {
+    fn index(&self, i: usize) -> &Vec<Lit> {
         //#[cfg(feature = "unsafe_access")]
         unsafe {
             self.watches.get_unchecked(i)
@@ -27,9 +21,9 @@ impl Index<usize> for Watches {
     }
 }
 
-impl IndexMut<usize> for Watches {
+impl IndexMut<usize> for BinWatches {
     #[inline]
-    fn index_mut(&mut self, i: usize) -> &mut Vec<Watcher> {
+    fn index_mut(&mut self, i: usize) -> &mut Vec<Lit> {
         //#[cfg(feature = "unsafe_access")]
         unsafe {
             self.watches.get_unchecked_mut(i)
@@ -39,24 +33,9 @@ impl IndexMut<usize> for Watches {
     }
 }
 
-pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit) {
-    let watchidx = lit.to_watchidx();
-    let end = watches.watches[watchidx].len() - 1;
-    watches.watches[watchidx].swap(j, end);
-    let curr_lit = f[cref][k];
-    match watches.watches[watchidx].pop() {
-        Some(w) => {
-            watches.watches[curr_lit.to_neg_watchidx()].push(w);
-        }
-        None => {
-            unreachable!();
-        }
-    }
-}
 
-
-impl Watches {
-    pub fn new(f: &Formula) -> Watches {
+impl BinWatches {
+    pub fn new(f: &Formula) -> BinWatches {
         let mut i: usize = 0;
         let mut watches = Vec::new();
         while i < f.num_vars {
@@ -64,26 +43,27 @@ impl Watches {
             watches.push(Vec::new());
             i += 1;
         }
-        Watches { watches }
-    }
-
-    pub fn move_to_end(&mut self, old_idx: usize, old_pos: usize, new_lit: Lit, _f: &Formula) {
-        let end = self.watches[old_idx].len() - 1;
-        self.watches[old_idx].swap(old_pos, end);
+        BinWatches { watches }
     }
 
     pub fn init_watches(&mut self, f: &Formula) {
         let mut i = 0;
         while i < f.len() {
             let clause = &f[i];
-            if clause.len() > 2 {
-                self.watches[clause[0].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause[1]});
-                self.watches[clause[1].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause[0]});
+            if clause.len() == 2 {
+                self.watches[clause[0].to_neg_watchidx()].push(clause[1]);
+                self.watches[clause[1].to_neg_watchidx()].push(clause[0]);
             }
             i += 1;
         }
     }
 
+    pub fn add_watch(&mut self, lit1: Lit, lit2: Lit) {
+        self.watches[lit1.to_neg_watchidx()].push(lit2);
+        self.watches[lit2.to_neg_watchidx()].push(lit1);
+    }
+
+    /* 
     pub fn unwatch(&mut self, f: &Formula, trail: &Trail, cref: usize, lit: Lit) {
         let watchidx = lit.to_neg_watchidx();
         let mut i: usize = 0;
@@ -104,6 +84,12 @@ impl Watches {
         }
     }
 
+    pub fn move_to_end(&mut self, old_idx: usize, old_pos: usize, new_lit: Lit, _f: &Formula) {
+        let end = self.watches[old_idx].len() - 1;
+        self.watches[old_idx].swap(old_pos, end);
+    }
+
+
     pub fn unwatch_all_lemmas(&mut self, f: &Formula, s: &Solver) {
         let mut i: usize = 0;
         while i < self.watches.len() {
@@ -120,4 +106,5 @@ impl Watches {
             i += 1;
         }
     }
+    */
 }

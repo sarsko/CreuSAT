@@ -5,6 +5,7 @@ pub enum Reason {
     //Undefined,
     Decision,
     Unit,
+    Binary(Lit),
     Long(usize),
 }
 
@@ -88,6 +89,13 @@ impl Trail {
         self.trail.push(step);
     }
 
+    pub fn enq_binary(&mut self, reason_lit: Lit, implied_lit: Lit, _f: &Formula) {
+        self.lit_to_level[implied_lit.index()] = self.decision_level();
+        self.assignments.set_assignment(implied_lit, _f, &self.trail);
+        let step = Step { lit: implied_lit, decision_level: self.decision_level(), reason: Reason::Binary(reason_lit) };
+        self.trail.push(step);
+    }
+
     pub fn enq_decision(&mut self, idx: usize, _f: &Formula) {
         let trail_len = self.trail.len();
         self.decisions.push(trail_len);
@@ -99,10 +107,9 @@ impl Trail {
         self.trail.push(step);
     }
 
-    pub fn learn_unit(&mut self, lit: Lit, f: &Formula, d: &mut Decisions) -> Result<(), ()> {
+    pub fn learn_unit(&mut self, lit: Lit, f: &Formula, d: &mut Decisions) {
         self.backtrack_safe(0, f, d);
         self.enq_assignment(Step { lit: lit, decision_level: 0, reason: Reason::Unit }, f);
-        Ok(())
     }
 
     pub fn learn_units(&mut self, f: &Formula, d: &mut Decisions) -> Option<usize> {

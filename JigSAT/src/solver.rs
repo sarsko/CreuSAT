@@ -1,6 +1,6 @@
 use crate::{
     assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, trail::*, unit_prop::*, util::*,
-    watches::*,
+    watches::*, watches_binary::*,
 };
 
 
@@ -103,32 +103,34 @@ impl Solver {
     }
 
     fn handle_conflict(
-        &mut self, f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches, d: &mut Decisions,
+        &mut self, f: &mut Formula, t: &mut Trail, confl: Conflict, w: &mut Watches, bw: &mut BinWatches, d: &mut Decisions,
     ) -> Option<bool> {
-        let res = analyze_conflict(f, t, cref);
+        let res = analyze_conflict(f, t, confl);
         match res {
-            Conflict::Ground => {
+            ConflictRes::Ground => {
                 return Some(false);
             }
-            Conflict::Unit(lit) => {
-                match t.learn_unit(lit, f, d) {
-                    Err(_) => return Some(true),
-                    Ok(_) => {}
-                }
+            ConflictRes::Unit(lit) => {
+                t.learn_unit(lit, f, d);
                 f.reduceDB(w, t, self);
                 f.simplify_formula(w, t);
             }
-            Conflict::Learned(level, clause) => {
+            ConflictRes::Binary(lit, lit2) => {
+                bw.add_watch(lit, lit2);
+                t.backtrack_to(t.lit_to_level[lit2.index()], f, d);
+                t.enq_binary(lit2, lit, f);
+            }
+            ConflictRes::Learned(level, clause) => {
                 self.handle_long_clause(f, t, w, d, clause, level);
             }
         }
         None
     }
 
-    fn unit_prop_step(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> ConflictResult {
-        return match unit_propagate(f, t, w) {
+    fn unit_prop_step(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches, bw: &mut BinWatches) -> ConflictResult {
+        return match unit_propagate(f, t, w, bw) {
             Ok(_) => ConflictResult::Ok,
-            Err(cref) => match self.handle_conflict(f, t, cref, w, d) {
+            Err(confl) => match self.handle_conflict(f, t, confl, w, bw, d) {
                 Some(false) => ConflictResult::Ground,
                 Some(true) => ConflictResult::Err,
                 None => ConflictResult::Continue,
@@ -136,9 +138,9 @@ impl Solver {
         };
     }
 
-    fn unit_prop_loop(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
+    fn unit_prop_loop(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches, bw: &mut BinWatches) -> Option<bool> {
         loop {
-            match self.unit_prop_step(f, d, t, w) {
+            match self.unit_prop_step(f, d, t, w, bw) {
                 ConflictResult::Ok => {
                     return Some(true);
                 }
@@ -153,8 +155,8 @@ impl Solver {
         }
     }
 
-    fn outer_loop(&mut self, f: &mut Formula, d: &mut Decisions, trail: &mut Trail, w: &mut Watches) -> SatResult {
-        match self.unit_prop_loop(f, d, trail, w) {
+    fn outer_loop(&mut self, f: &mut Formula, d: &mut Decisions, trail: &mut Trail, w: &mut Watches, bw: &mut BinWatches) -> SatResult {
+        match self.unit_prop_loop(f, d, trail, w, bw) {
             Some(false) => return SatResult::Unsat,
             None => return SatResult::Err,
             _ => {}
@@ -179,10 +181,10 @@ impl Solver {
     }
 
     fn inner(
-        &mut self, formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut watches: Watches,
+        &mut self, formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut watches: Watches, mut binWatches: BinWatches,
     ) -> SatResult {
         loop {
-            match self.outer_loop(formula, &mut decisions, &mut trail, &mut watches) {
+            match self.outer_loop(formula, &mut decisions, &mut trail, &mut watches, &mut binWatches) {
                 SatResult::Unknown => {} // continue
                 SatResult::Sat(_) => {
                     return SatResult::Sat(trail.assignments.0);
@@ -203,7 +205,9 @@ pub fn solver(formula: &mut Formula) -> SatResult {
     let mut trail = Trail::new(formula, Assignments::new(formula));
     let mut decisions = Decisions::new(formula);
     let mut watches = Watches::new(formula);
+    let mut binary_watches = BinWatches::new(formula);
     watches.init_watches(formula);
+    binary_watches.init_watches(formula);
     match trail.learn_units(formula, &mut decisions) {
         Some(cref) => {
             return SatResult::Unsat;
@@ -211,5 +215,5 @@ pub fn solver(formula: &mut Formula) -> SatResult {
         None => {}
     }
     let mut solver = Solver::new(formula);
-    solver.inner(formula, decisions, trail, watches)
+    solver.inner(formula, decisions, trail, watches, binary_watches)
 }

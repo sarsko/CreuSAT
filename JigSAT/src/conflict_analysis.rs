@@ -1,16 +1,18 @@
-use crate::{clause::*, formula::*, lit::*, trail::*};
+use crate::{clause::*, formula::*, lit::*, trail::*, unit_prop::Conflict};
+use std::slice::from_ref;
 
 //#[derive(Debug)]
-pub enum Conflict {
+pub enum ConflictRes {
     Ground,
     Unit(Lit),
+    Binary(Lit, Lit),
     Learned(u32, Clause),
 }
 
-pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
+pub fn analyze_conflict(f: &Formula, trail: &Trail, confl: Conflict) -> ConflictRes {
     let decisionlevel = trail.decision_level();
     if decisionlevel == 0 {
-        return Conflict::Ground;
+        return ConflictRes::Ground;
     }
     // `seen` should be persistent across calls to `analyze_conflict`.
     // Solved by somehow keeping it in `solver`, either as a buffer or by making
@@ -18,11 +20,19 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     let mut seen = vec![false; f.num_vars];
     let mut out_learnt:Vec<Lit> = vec![Lit::new(0, true); 1]; // I really don't like this way of reserving space.
     let mut path_c = 0;
-    let mut confl = cref;
+    let mut perm_lits = Vec::new();
+    let mut clause: &[Lit] = match confl {
+        Conflict::Binary(lits) => {
+            for lit in lits {
+                perm_lits.push(lit);
+            }
+            &perm_lits[..]
+        },
+        Conflict::Long(cref) => &f[cref].rest[..],
+    };
     let mut i = trail.trail.len();
     loop {
-        let clause = &f[confl];
-        let mut k = if confl == cref {0} else {1};
+        let mut k = 0;
         while k < clause.len() {
             let lit = clause[k];
             if !seen[lit.index()] {
@@ -59,13 +69,21 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             out_learnt[0] = !next.lit;
             break;
         }
-        match &next.reason {
-            Reason::Long(c) => confl = *c,
+        clause = match &next.reason {
+            Reason::Long(c) => &f[*c].rest[1..],
+            Reason::Binary(lit) => {
+                //let p_len = perm_lits.len();
+                //perm_lits.push(*lit);
+                //&perm_lits[p_len..]
+                from_ref(lit)
+            }
             other => panic!("{:?}", other),
         }
     }
     if out_learnt.len() == 1 {
-        return Conflict::Unit(out_learnt[0]);
+        return ConflictRes::Unit(out_learnt[0]);
+    } else if out_learnt.len() == 2 {
+        return ConflictRes::Binary(out_learnt[0], out_learnt[1]);
     } else {
         let mut max_i: usize = 1;
         let mut max_level = trail.lit_to_level[out_learnt[1].index()];
@@ -79,6 +97,6 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             i += 1;
         }
         out_learnt.swap(1, max_i);
-        Conflict::Learned(max_level, Clause{ deleted: false, lbd: 0, search: 2, rest: out_learnt})
+        ConflictRes::Learned(max_level, Clause{ deleted: false, lbd: 0, search: 2, rest: out_learnt})
     }
 }
