@@ -144,7 +144,6 @@ impl Formula {
         self.clauses.push(clause);
         watches.add_watcher(first_lit, cref, self);
         watches.add_watcher(second_lit, cref, self);
-        proof_assert!(^old_self.inner() == ^self);
         proof_assert!((old_self.inner()).equisat_compatible(*self));
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
@@ -169,7 +168,6 @@ impl Formula {
         let old_self = ghost! { self };
         let cref = self.clauses.len();
         self.clauses.push(clause);
-        proof_assert!(^old_self.inner() == ^self);
         proof_assert!((old_self.inner()).equisat_compatible(*self));
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
@@ -197,7 +195,6 @@ impl Formula {
         let second_lit = self.clauses[cref].rest[1];
         watches.add_watcher(first_lit, cref, self);
         watches.add_watcher(second_lit, cref, self);
-        proof_assert!(^old_self.inner() == ^self);
         proof_assert!((old_self.inner()).equisat(*self));
     }
 
@@ -243,7 +240,6 @@ impl Formula {
         let old_self = ghost! { self };
         let cref = self.clauses.len();
         self.clauses.push(clause);
-        proof_assert!(^old_self.inner() == ^self);
         proof_assert!((old_self.inner()).equisat_compatible(*self));
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref

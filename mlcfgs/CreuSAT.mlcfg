@@ -2560,7 +2560,6 @@ module CreuSat_Assignments_Impl0_SetAssignment
   var _18 : Type.creusat_lit_lit;
   var _19 : ();
   var _20 : ();
-  var _21 : ();
   {
     self_1 <- self;
     lit_2 <- lit;
@@ -2625,10 +2624,8 @@ module CreuSat_Assignments_Impl0_SetAssignment
   BB9 {
     assert { [#"/Users/xavier/Code/sat/CreuSAT/src/assignments.rs" 63 8 106] let _ = LemmaAssignMaintainsLongArePostUnit0.lemma_assign_maintains_long_are_post_unit (Model0.model _t_4) _f_3 ( * old_self_5) lit_2 in true };
     _19 <- ();
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/assignments.rs" 64 8 49]  ^ old_self_5 =  ^ self_1 };
+    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/assignments.rs" 64 8 64] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model _t_4) _f_3 (Model1.model self_1) };
     _20 <- ();
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/assignments.rs" 65 8 64] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model _t_4) _f_3 (Model1.model self_1) };
-    _21 <- ();
     _0 <- ();
     return _0
   }
@@ -2642,8 +2639,8 @@ module CreuSat_Assignments_Impl0_New_Interface
   clone CreuSat_Logic_LogicFormula_Impl1_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
   axiom .
   val new [@cfg:stackify] (f : Type.creusat_formula_formula) : Type.creusat_assignments_assignments
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/assignments.rs" 70 4 30] Invariant0.invariant' f}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/assignments.rs" 71 4 36] Invariant1.invariant' result f }
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/assignments.rs" 69 4 30] Invariant0.invariant' f}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/assignments.rs" 70 4 36] Invariant1.invariant' result f }
     
 end
 module CreuSat_Assignments_Impl0_New
@@ -2677,9 +2674,9 @@ module CreuSat_Assignments_Impl0_New
   predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant, axiom .
   use mach.int.UInt64
   clone Alloc_Vec_FromElem_Interface as FromElem0 with type t = uint8, function Model0.model = Model4.model
-  let rec cfg new [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/assignments.rs" 72 4 35] (f : Type.creusat_formula_formula) : Type.creusat_assignments_assignments
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/assignments.rs" 70 4 30] Invariant0.invariant' f}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/assignments.rs" 71 4 36] Invariant1.invariant' result f }
+  let rec cfg new [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/assignments.rs" 71 4 35] (f : Type.creusat_formula_formula) : Type.creusat_assignments_assignments
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/assignments.rs" 69 4 30] Invariant0.invariant' f}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/assignments.rs" 70 4 36] Invariant1.invariant' result f }
     
    =
   var _0 : Type.creusat_assignments_assignments;
@@ -2692,7 +2689,7 @@ module CreuSat_Assignments_Impl0_New
   }
   BB0 {
     _3 <- Type.creusat_formula_formula_Formula_num_vars f_1;
-    _2 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/assignments.rs" 73 20 49] FromElem0.from_elem (2 : uint8) _3);
+    _2 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/assignments.rs" 72 20 49] FromElem0.from_elem (2 : uint8) _3);
     goto BB1
   }
   BB1 {
@@ -3450,7 +3447,6 @@ module CreuSat_Clause_Impl1_MoveToEnd
   var _12 : borrowed (Type.alloc_vec_vec (Type.creusat_lit_lit) (Type.alloc_alloc_global));
   var _13 : usize;
   var _14 : usize;
-  var _15 : ();
   {
     self_1 <- self;
     idx_2 <- idx;
@@ -3485,8 +3481,6 @@ module CreuSat_Clause_Impl1_MoveToEnd
   }
   BB4 {
     assume { Resolve1.resolve _11 };
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 97 8 49]  ^ old_self_4 =  ^ self_1 };
-    _15 <- ();
     _0 <- ();
     return _0
   }
@@ -3545,12 +3539,12 @@ module CreuSat_Clause_Impl1_RemoveFromClause_Interface
   clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model0 with type t = Type.creusat_clause_clause,
   type ModelTy0.modelTy = ModelTy0.modelTy
   val remove_from_clause [@cfg:stackify] (self : borrowed (Type.creusat_clause_clause)) (idx : usize) (_f : Type.creusat_formula_formula) : ()
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 104 4 37] UInt64.to_int idx < Seq.length (Model0.model self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 103 4 34] Seq.length (Model0.model self) > 0}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 102 4 61] InvariantUnaryOk0.invariant_unary_ok ( * self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 107 4 53] Seq.length (Model1.model ( ^ self)) + 1 = Seq.length (Model0.model self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 105 4 83] forall i : (int) . 0 <= i && i < Seq.length (Model1.model ( ^ self)) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model self) && Seq.get (Model1.model ( ^ self)) i = Seq.get (Model0.model self) j) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 102 4 61] InvariantUnaryOk0.invariant_unary_ok ( ^ self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)) }
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 103 4 37] UInt64.to_int idx < Seq.length (Model0.model self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 102 4 34] Seq.length (Model0.model self) > 0}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 101 4 61] InvariantUnaryOk0.invariant_unary_ok ( * self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 106 4 53] Seq.length (Model1.model ( ^ self)) + 1 = Seq.length (Model0.model self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 104 4 83] forall i : (int) . 0 <= i && i < Seq.length (Model1.model ( ^ self)) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model self) && Seq.get (Model1.model ( ^ self)) i = Seq.get (Model0.model self) j) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 101 4 61] InvariantUnaryOk0.invariant_unary_ok ( ^ self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)) }
     
 end
 module CreuSat_Clause_Impl1_RemoveFromClause
@@ -3586,13 +3580,13 @@ module CreuSat_Clause_Impl1_RemoveFromClause
   clone CreuSat_Clause_Impl1_MoveToEnd_Interface as MoveToEnd0 with function Model0.model = Model0.model,
   predicate InvariantUnaryOk0.invariant_unary_ok = InvariantUnaryOk0.invariant_unary_ok,
   function Model1.model = Model1.model
-  let rec cfg remove_from_clause [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 108 4 66] (self : borrowed (Type.creusat_clause_clause)) (idx : usize) (_f : Type.creusat_formula_formula) : ()
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 104 4 37] UInt64.to_int idx < Seq.length (Model0.model self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 103 4 34] Seq.length (Model0.model self) > 0}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 102 4 61] InvariantUnaryOk0.invariant_unary_ok ( * self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 107 4 53] Seq.length (Model1.model ( ^ self)) + 1 = Seq.length (Model0.model self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 105 4 83] forall i : (int) . 0 <= i && i < Seq.length (Model1.model ( ^ self)) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model self) && Seq.get (Model1.model ( ^ self)) i = Seq.get (Model0.model self) j) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 102 4 61] InvariantUnaryOk0.invariant_unary_ok ( ^ self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)) }
+  let rec cfg remove_from_clause [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 107 4 66] (self : borrowed (Type.creusat_clause_clause)) (idx : usize) (_f : Type.creusat_formula_formula) : ()
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 103 4 37] UInt64.to_int idx < Seq.length (Model0.model self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 102 4 34] Seq.length (Model0.model self) > 0}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 101 4 61] InvariantUnaryOk0.invariant_unary_ok ( * self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 106 4 53] Seq.length (Model1.model ( ^ self)) + 1 = Seq.length (Model0.model self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 104 4 83] forall i : (int) . 0 <= i && i < Seq.length (Model1.model ( ^ self)) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model self) && Seq.get (Model1.model ( ^ self)) i = Seq.get (Model0.model self) j) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 101 4 61] InvariantUnaryOk0.invariant_unary_ok ( ^ self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)) }
     
    =
   var _0 : ();
@@ -3616,13 +3610,13 @@ module CreuSat_Clause_Impl1_RemoveFromClause
     self_1 <- { self_1 with current = ( ^ _5) };
     _6 <- idx_2;
     _7 <- _f_3;
-    _4 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 109 8 33] MoveToEnd0.move_to_end _5 _6 _7);
+    _4 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 108 8 33] MoveToEnd0.move_to_end _5 _6 _7);
     goto BB1
   }
   BB1 {
     _9 <- borrow_mut (Type.creusat_clause_clause_Clause_rest ( * self_1));
     self_1 <- { self_1 with current = (let Type.CreuSat_Clause_Clause a b =  * self_1 in Type.CreuSat_Clause_Clause a ( ^ _9)) };
-    _8 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 110 8 23] Pop0.pop _9);
+    _8 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 109 8 23] Pop0.pop _9);
     goto BB2
   }
   BB2 {
@@ -3942,11 +3936,11 @@ module CreuSat_Clause_Impl1_UnitAndUnset_Interface
   clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model0 with type t = Type.creusat_clause_clause,
   type ModelTy0.modelTy = ModelTy0.modelTy
   val unit_and_unset [@cfg:stackify] (self : Type.creusat_clause_clause) (a : Type.creusat_assignments_assignments) (_f : Type.creusat_formula_formula) : bool
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 117 4 34] Seq.length (Model0.model self) > 1}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 116 4 33] Invariant0.invariant' a _f}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 115 4 56] InvariantInternal0.invariant_internal (Model0.model self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 119 4 47] result -> Unset0.unset (Seq.get (Model0.model self) 0) a }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 118 4 40] result -> Unit0.unit self a }
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 116 4 34] Seq.length (Model0.model self) > 1}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 115 4 33] Invariant0.invariant' a _f}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 114 4 56] InvariantInternal0.invariant_internal (Model0.model self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 118 4 47] result -> Unset0.unset (Seq.get (Model0.model self) 0) a }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 117 4 40] result -> Unit0.unit self a }
     
 end
 module CreuSat_Clause_Impl1_UnitAndUnset
@@ -4008,12 +4002,12 @@ module CreuSat_Clause_Impl1_UnitAndUnset
   type Output0.output = Output0.output
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.creusat_lit_lit, type a = Type.alloc_alloc_global,
   function Model0.model = Model3.model
-  let rec cfg unit_and_unset [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 120 4 71] (self : Type.creusat_clause_clause) (a : Type.creusat_assignments_assignments) (_f : Type.creusat_formula_formula) : bool
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 117 4 34] Seq.length (Model0.model self) > 1}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 116 4 33] Invariant0.invariant' a _f}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 115 4 56] InvariantInternal0.invariant_internal (Model0.model self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 119 4 47] result -> Unset0.unset (Seq.get (Model0.model self) 0) a }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 118 4 40] result -> Unit0.unit self a }
+  let rec cfg unit_and_unset [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 119 4 71] (self : Type.creusat_clause_clause) (a : Type.creusat_assignments_assignments) (_f : Type.creusat_formula_formula) : bool
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 116 4 34] Seq.length (Model0.model self) > 1}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 115 4 33] Invariant0.invariant' a _f}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 114 4 56] InvariantInternal0.invariant_internal (Model0.model self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 118 4 47] result -> Unset0.unset (Seq.get (Model0.model self) 0) a }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 117 4 40] result -> Unit0.unit self a }
     
    =
   var _0 : bool;
@@ -4054,14 +4048,14 @@ module CreuSat_Clause_Impl1_UnitAndUnset
     goto BB1
   }
   BB1 {
-    invariant unsat { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 122 8 85] forall j : (int) . 1 <= j && j < UInt64.to_int i_4 -> Unsat0.unsat (Seq.get (Model0.model self_1) j) a_2 };
+    invariant unsat { [#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 121 8 85] forall j : (int) . 1 <= j && j < UInt64.to_int i_4 -> Unsat0.unsat (Seq.get (Model0.model self_1) j) a_2 };
     _8 <- i_4;
     _10 <- Type.creusat_clause_clause_Clause_rest self_1;
-    _9 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 123 18 33] Len0.len _10);
+    _9 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 122 18 33] Len0.len _10);
     goto BB2
   }
   BB2 {
-    _7 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 123 14 33] _8 < _9);
+    _7 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 122 14 33] _8 < _9);
     switch (_7)
       | False -> goto BB8
       | _ -> goto BB3
@@ -4070,13 +4064,13 @@ module CreuSat_Clause_Impl1_UnitAndUnset
   BB3 {
     _16 <- Type.creusat_clause_clause_Clause_rest self_1;
     _17 <- i_4;
-    _15 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 124 16 28] Index0.index _16 _17);
+    _15 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 123 16 28] Index0.index _16 _17);
     goto BB4
   }
   BB4 {
     _14 <- _15;
     _18 <- a_2;
-    _13 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 124 16 41] LitUnsat0.lit_unsat _14 _18);
+    _13 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 123 16 41] LitUnsat0.lit_unsat _14 _18);
     goto BB5
   }
   BB5 {
@@ -4092,20 +4086,20 @@ module CreuSat_Clause_Impl1_UnitAndUnset
   }
   BB7 {
     _11 <- ();
-    i_4 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 127 12 18] i_4 + (1 : usize));
+    i_4 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 126 12 18] i_4 + (1 : usize));
     _6 <- ();
     goto BB1
   }
   BB8 {
     _5 <- ();
     _25 <- Type.creusat_clause_clause_Clause_rest self_1;
-    _24 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 129 8 20] Index0.index _25 (0 : usize));
+    _24 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 128 8 20] Index0.index _25 (0 : usize));
     goto BB9
   }
   BB9 {
     _23 <- _24;
     _26 <- a_2;
-    _0 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 129 8 33] LitUnset0.lit_unset _23 _26);
+    _0 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/clause.rs" 128 8 33] LitUnset0.lit_unset _23 _26);
     goto BB10
   }
   BB10 {
@@ -8319,12 +8313,12 @@ module CreuSat_Decision_Impl1_MakeLinkedList
   }
   
 end
-module CreusotContracts_Logic_Seq_Impl0_PermutationOf_Interface
+module CreusotContracts_Logic_Seq_Impl2_PermutationOf_Interface
   type t
   use seq.Seq
   predicate permutation_of (self : Seq.seq t) (o : Seq.seq t)
 end
-module CreusotContracts_Logic_Seq_Impl0_PermutationOf
+module CreusotContracts_Logic_Seq_Impl2_PermutationOf
   type t
   use seq.Seq
   use mach.int.Int
@@ -8392,7 +8386,7 @@ module CreuSat_Util_SortReverse_Interface
   use mach.int.Int
   use mach.int.UInt64
   clone CreuSat_Logic_LogicUtil_SortedRev_Interface as SortedRev0
-  clone CreusotContracts_Logic_Seq_Impl0_PermutationOf_Interface as PermutationOf0 with type t = (usize, usize)
+  clone CreusotContracts_Logic_Seq_Impl2_PermutationOf_Interface as PermutationOf0 with type t = (usize, usize)
   clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = (usize, usize),
   type a = Type.alloc_alloc_global
   clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model1 with type t = Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global),
@@ -8414,7 +8408,7 @@ module CreuSat_Util_SortReverse
   clone CreuSat_Logic_LogicUtil_PartitionRev as PartitionRev0
   clone CreuSat_Logic_LogicUtil_SortedRangeRev as SortedRangeRev0
   clone CreuSat_Logic_LogicUtil_SortedRev as SortedRev0 with predicate SortedRangeRev0.sorted_range_rev = SortedRangeRev0.sorted_range_rev
-  clone CreusotContracts_Logic_Seq_Impl0_PermutationOf as PermutationOf0 with type t = (usize, usize)
+  clone CreusotContracts_Logic_Seq_Impl2_PermutationOf as PermutationOf0 with type t = (usize, usize)
   clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = (usize, usize),
   type a = Type.alloc_alloc_global
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = (usize, usize), type a = Type.alloc_alloc_global,
@@ -8687,7 +8681,7 @@ module CreuSat_Decision_Impl1_New
   clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve2 with type t = Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global)
   clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy5 with type t = (usize, usize),
   type a = Type.alloc_alloc_global
-  clone CreusotContracts_Logic_Seq_Impl0_PermutationOf as PermutationOf0 with type t = (usize, usize)
+  clone CreusotContracts_Logic_Seq_Impl2_PermutationOf as PermutationOf0 with type t = (usize, usize)
   clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve1 with type t = (usize, usize)
   clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy4 with type t = (usize, usize)
   clone Core_Slice_Index_Impl2_Output as Output3 with type t = (usize, usize)
@@ -9574,7 +9568,7 @@ module CreuSat_Util_Sort_Interface
   use mach.int.Int
   use mach.int.UInt64
   clone CreuSat_Logic_LogicUtil_SortedTupleZeroth_Interface as SortedTupleZeroth0
-  clone CreusotContracts_Logic_Seq_Impl0_PermutationOf_Interface as PermutationOf0 with type t = (usize, usize)
+  clone CreusotContracts_Logic_Seq_Impl2_PermutationOf_Interface as PermutationOf0 with type t = (usize, usize)
   clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = (usize, usize),
   type a = Type.alloc_alloc_global
   clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model1 with type t = Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global),
@@ -9596,7 +9590,7 @@ module CreuSat_Util_Sort
   clone CreuSat_Logic_LogicUtil_Partition as Partition0
   clone CreuSat_Logic_LogicUtil_SortedRangeTupleZeroth as SortedRangeTupleZeroth0
   clone CreuSat_Logic_LogicUtil_SortedTupleZeroth as SortedTupleZeroth0 with predicate SortedRangeTupleZeroth0.sorted_range_tuple_zeroth = SortedRangeTupleZeroth0.sorted_range_tuple_zeroth
-  clone CreusotContracts_Logic_Seq_Impl0_PermutationOf as PermutationOf0 with type t = (usize, usize)
+  clone CreusotContracts_Logic_Seq_Impl2_PermutationOf as PermutationOf0 with type t = (usize, usize)
   clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = (usize, usize),
   type a = Type.alloc_alloc_global
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = (usize, usize), type a = Type.alloc_alloc_global,
@@ -9856,7 +9850,7 @@ module CreuSat_Decision_Impl1_IncrementAndMove
   clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve1 with type t = Type.alloc_vec_vec (usize, usize) (Type.alloc_alloc_global)
   clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy5 with type t = (usize, usize),
   type a = Type.alloc_alloc_global
-  clone CreusotContracts_Logic_Seq_Impl0_PermutationOf as PermutationOf0 with type t = (usize, usize)
+  clone CreusotContracts_Logic_Seq_Impl2_PermutationOf as PermutationOf0 with type t = (usize, usize)
   clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = (usize, usize)
   clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy4 with type t = (usize, usize)
   clone Core_Slice_Index_Impl2_Output as Output3 with type t = (usize, usize)
@@ -12009,7 +12003,6 @@ module CreuSat_Formula_Impl0_AddClause
   var _27 : Type.creusat_formula_formula;
   var _28 : ();
   var _29 : ();
-  var _30 : ();
   {
     self_1 <- self;
     clause_2 <- clause;
@@ -12082,12 +12075,10 @@ module CreuSat_Formula_Impl0_AddClause
   }
   BB12 {
     assume { Resolve1.resolve watches_3 };
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 147 8 49]  ^ old_self_5 =  ^ self_1 };
+    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 147 8 67] EquisatCompatible0.equisat_compatible ( * old_self_5) ( * self_1) };
     _28 <- ();
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 148 8 67] EquisatCompatible0.equisat_compatible ( * old_self_5) ( * self_1) };
+    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 148 8 56] TrailInvariant0.trail_invariant (Model3.model (Type.creusat_trail_trail_Trail_trail _t_4)) ( * self_1) };
     _29 <- ();
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 149 8 56] TrailInvariant0.trail_invariant (Model3.model (Type.creusat_trail_trail_Trail_trail _t_4)) ( * self_1) };
-    _30 <- ();
     _0 <- cref_7;
     goto BB13
   }
@@ -12119,22 +12110,22 @@ module CreuSat_Formula_Impl0_AddUnwatchedClause_Interface
   clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model0 with type t = Type.creusat_formula_formula,
   type ModelTy0.modelTy = ModelTy0.modelTy
   val add_unwatched_clause [@cfg:stackify] (self : borrowed (Type.creusat_formula_formula)) (clause : Type.creusat_clause_clause) (watches : borrowed (Type.creusat_watches_watches)) (_t : Type.creusat_trail_trail) : usize
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 161 4 55] EquisatExtensionInner0.equisat_extension_inner clause (Model0.model self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 160 4 52] NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model1.model clause)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 159 4 61] VarsInRangeInner0.vars_in_range_inner (Model1.model clause) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)))}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 158 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 157 4 37] Seq.length (Model1.model clause) >= 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 156 4 51] Invariant0.invariant' ( * watches) ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 155 4 40] Invariant1.invariant' _t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 154 4 40] Invariant2.invariant' ( * self)}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 167 4 69] Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) + 1 = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 166 4 53] Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) (UInt64.to_int result) = clause }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 165 4 48] UInt64.to_int result = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 164 4 35] Equisat0.equisat ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 162 4 51] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( ^ self)) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 156 4 51] Invariant0.invariant' ( ^ watches) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 155 4 40] Invariant1.invariant' _t ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 154 4 40] Invariant2.invariant' ( ^ self) }
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 160 4 55] EquisatExtensionInner0.equisat_extension_inner clause (Model0.model self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 159 4 52] NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model1.model clause)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 158 4 61] VarsInRangeInner0.vars_in_range_inner (Model1.model clause) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)))}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 157 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 156 4 37] Seq.length (Model1.model clause) >= 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 155 4 51] Invariant0.invariant' ( * watches) ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 154 4 40] Invariant1.invariant' _t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 153 4 40] Invariant2.invariant' ( * self)}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 166 4 69] Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) + 1 = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 165 4 53] Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) (UInt64.to_int result) = clause }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 164 4 48] UInt64.to_int result = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 163 4 35] Equisat0.equisat ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 161 4 51] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( ^ self)) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 155 4 51] Invariant0.invariant' ( ^ watches) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 154 4 40] Invariant1.invariant' _t ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 153 4 40] Invariant2.invariant' ( ^ self) }
     
 end
 module CreuSat_Formula_Impl0_AddUnwatchedClause
@@ -12264,23 +12255,23 @@ module CreuSat_Formula_Impl0_AddUnwatchedClause
   type a = Type.alloc_alloc_global, function Model0.model = Model2.model
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.creusat_clause_clause,
   type a = Type.alloc_alloc_global, function Model0.model = Model2.model
-  let rec cfg add_unwatched_clause [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 168 4 102] (self : borrowed (Type.creusat_formula_formula)) (clause : Type.creusat_clause_clause) (watches : borrowed (Type.creusat_watches_watches)) (_t : Type.creusat_trail_trail) : usize
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 161 4 55] EquisatExtensionInner0.equisat_extension_inner clause (Model0.model self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 160 4 52] NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model1.model clause)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 159 4 61] VarsInRangeInner0.vars_in_range_inner (Model1.model clause) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)))}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 158 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 157 4 37] Seq.length (Model1.model clause) >= 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 156 4 51] Invariant0.invariant' ( * watches) ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 155 4 40] Invariant1.invariant' _t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 154 4 40] Invariant2.invariant' ( * self)}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 167 4 69] Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) + 1 = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 166 4 53] Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) (UInt64.to_int result) = clause }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 165 4 48] UInt64.to_int result = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 164 4 35] Equisat0.equisat ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 162 4 51] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( ^ self)) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 156 4 51] Invariant0.invariant' ( ^ watches) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 155 4 40] Invariant1.invariant' _t ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 154 4 40] Invariant2.invariant' ( ^ self) }
+  let rec cfg add_unwatched_clause [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 167 4 102] (self : borrowed (Type.creusat_formula_formula)) (clause : Type.creusat_clause_clause) (watches : borrowed (Type.creusat_watches_watches)) (_t : Type.creusat_trail_trail) : usize
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 160 4 55] EquisatExtensionInner0.equisat_extension_inner clause (Model0.model self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 159 4 52] NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model1.model clause)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 158 4 61] VarsInRangeInner0.vars_in_range_inner (Model1.model clause) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)))}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 157 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 156 4 37] Seq.length (Model1.model clause) >= 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 155 4 51] Invariant0.invariant' ( * watches) ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 154 4 40] Invariant1.invariant' _t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 153 4 40] Invariant2.invariant' ( * self)}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 166 4 69] Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) + 1 = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 165 4 53] Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) (UInt64.to_int result) = clause }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 164 4 48] UInt64.to_int result = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 163 4 35] Equisat0.equisat ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 161 4 51] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( ^ self)) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 155 4 51] Invariant0.invariant' ( ^ watches) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 154 4 40] Invariant1.invariant' _t ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 153 4 40] Invariant2.invariant' ( ^ self) }
     
    =
   var _0 : usize;
@@ -12297,7 +12288,6 @@ module CreuSat_Formula_Impl0_AddUnwatchedClause
   var _11 : Type.creusat_clause_clause;
   var _12 : ();
   var _13 : ();
-  var _14 : ();
   {
     self_1 <- self;
     clause_2 <- clause;
@@ -12323,29 +12313,27 @@ module CreuSat_Formula_Impl0_AddUnwatchedClause
   }
   BB5 {
     _6 <- ();
-    old_self_5 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 169 23 38] self_1);
+    old_self_5 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 168 23 38] self_1);
     goto BB6
   }
   BB6 {
     _8 <- Type.creusat_formula_formula_Formula_clauses ( * self_1);
-    cref_7 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 170 19 37] Len0.len _8);
+    cref_7 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 169 19 37] Len0.len _8);
     goto BB7
   }
   BB7 {
     _10 <- borrow_mut (Type.creusat_formula_formula_Formula_clauses ( * self_1));
     self_1 <- { self_1 with current = (let Type.CreuSat_Formula_Formula a b =  * self_1 in Type.CreuSat_Formula_Formula ( ^ _10) b) };
     _11 <- clause_2;
-    _9 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 171 8 33] Push0.push _10 _11);
+    _9 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 170 8 33] Push0.push _10 _11);
     goto BB8
   }
   BB8 {
     assume { Resolve1.resolve self_1 };
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 172 8 49]  ^ old_self_5 =  ^ self_1 };
+    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 171 8 67] EquisatCompatible0.equisat_compatible ( * old_self_5) ( * self_1) };
     _12 <- ();
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 173 8 67] EquisatCompatible0.equisat_compatible ( * old_self_5) ( * self_1) };
+    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 172 8 56] TrailInvariant0.trail_invariant (Model3.model (Type.creusat_trail_trail_Trail_trail _t_4)) ( * self_1) };
     _13 <- ();
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 174 8 56] TrailInvariant0.trail_invariant (Model3.model (Type.creusat_trail_trail_Trail_trail _t_4)) ( * self_1) };
-    _14 <- ();
     _0 <- cref_7;
     goto BB9
   }
@@ -12371,20 +12359,20 @@ module CreuSat_Formula_Impl0_MakeAssertingClauseAndWatch_Interface
   clone CreuSat_Logic_LogicTrail_Impl2_Invariant_Interface as Invariant1
   clone CreuSat_Logic_LogicWatches_Impl0_Invariant_Interface as Invariant0
   val make_asserting_clause_and_watch [@cfg:stackify] (self : borrowed (Type.creusat_formula_formula)) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) (idx : usize) (cref : usize) : ()
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 188 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 187 4 51] Invariant0.invariant' ( * watches) ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 186 4 39] Invariant1.invariant' t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 185 4 40] Invariant2.invariant' ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 184 4 55] Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) (UInt64.to_int cref))) > UInt64.to_int idx}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 183 4 52] Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) (UInt64.to_int cref))) > 1}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 182 4 46] UInt64.to_int cref < Seq.length (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self)))}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 192 4 65] Seq.length (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) = Seq.length (Model0.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 191 4 35] Equisat0.equisat ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 190 4 51] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( ^ self)) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 189 4 85] Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) (UInt64.to_int cref))) = Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) (UInt64.to_int cref))) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 187 4 51] Invariant0.invariant' ( ^ watches) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 186 4 39] Invariant1.invariant' t ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 185 4 40] Invariant2.invariant' ( ^ self) }
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 186 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 185 4 51] Invariant0.invariant' ( * watches) ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 184 4 39] Invariant1.invariant' t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 183 4 40] Invariant2.invariant' ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 182 4 55] Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) (UInt64.to_int cref))) > UInt64.to_int idx}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 181 4 52] Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) (UInt64.to_int cref))) > 1}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 180 4 46] UInt64.to_int cref < Seq.length (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self)))}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 190 4 65] Seq.length (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) = Seq.length (Model0.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 189 4 35] Equisat0.equisat ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 188 4 51] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( ^ self)) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 187 4 85] Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) (UInt64.to_int cref))) = Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) (UInt64.to_int cref))) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 185 4 51] Invariant0.invariant' ( ^ watches) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 184 4 39] Invariant1.invariant' t ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 183 4 40] Invariant2.invariant' ( ^ self) }
     
 end
 module CreuSat_Formula_Impl0_MakeAssertingClauseAndWatch
@@ -12523,21 +12511,21 @@ module CreuSat_Formula_Impl0_MakeAssertingClauseAndWatch
   function Model1.model = Model1.model, predicate Invariant0.invariant' = Invariant0.invariant',
   predicate Invariant1.invariant' = Invariant2.invariant', predicate Invariant2.invariant' = Invariant1.invariant',
   predicate Equisat0.equisat = Equisat0.equisat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  let rec cfg make_asserting_clause_and_watch [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 193 4 112] (self : borrowed (Type.creusat_formula_formula)) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) (idx : usize) (cref : usize) : ()
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 188 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 187 4 51] Invariant0.invariant' ( * watches) ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 186 4 39] Invariant1.invariant' t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 185 4 40] Invariant2.invariant' ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 184 4 55] Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) (UInt64.to_int cref))) > UInt64.to_int idx}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 183 4 52] Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) (UInt64.to_int cref))) > 1}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 182 4 46] UInt64.to_int cref < Seq.length (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self)))}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 192 4 65] Seq.length (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) = Seq.length (Model0.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 191 4 35] Equisat0.equisat ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 190 4 51] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( ^ self)) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 189 4 85] Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) (UInt64.to_int cref))) = Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) (UInt64.to_int cref))) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 187 4 51] Invariant0.invariant' ( ^ watches) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 186 4 39] Invariant1.invariant' t ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 185 4 40] Invariant2.invariant' ( ^ self) }
+  let rec cfg make_asserting_clause_and_watch [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 191 4 112] (self : borrowed (Type.creusat_formula_formula)) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) (idx : usize) (cref : usize) : ()
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 186 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 185 4 51] Invariant0.invariant' ( * watches) ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 184 4 39] Invariant1.invariant' t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 183 4 40] Invariant2.invariant' ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 182 4 55] Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) (UInt64.to_int cref))) > UInt64.to_int idx}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 181 4 52] Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) (UInt64.to_int cref))) > 1}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 180 4 46] UInt64.to_int cref < Seq.length (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self)))}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 190 4 65] Seq.length (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) = Seq.length (Model0.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 189 4 35] Equisat0.equisat ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 188 4 51] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( ^ self)) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 187 4 85] Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) (UInt64.to_int cref))) = Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) (UInt64.to_int cref))) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 185 4 51] Invariant0.invariant' ( ^ watches) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 184 4 39] Invariant1.invariant' t ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 183 4 40] Invariant2.invariant' ( ^ self) }
     
    =
   var _0 : ();
@@ -12577,7 +12565,6 @@ module CreuSat_Formula_Impl0_MakeAssertingClauseAndWatch
   var _34 : usize;
   var _35 : Type.creusat_formula_formula;
   var _36 : ();
-  var _37 : ();
   {
     self_1 <- self;
     watches_2 <- watches;
@@ -12588,7 +12575,7 @@ module CreuSat_Formula_Impl0_MakeAssertingClauseAndWatch
   }
   BB0 {
     _7 <- ();
-    old_self_6 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 194 23 37] self_1);
+    old_self_6 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 192 23 37] self_1);
     goto BB1
   }
   BB1 {
@@ -12598,30 +12585,30 @@ module CreuSat_Formula_Impl0_MakeAssertingClauseAndWatch
     _11 <-  * watches_2;
     _12 <- cref_5;
     _13 <- idx_4;
-    _8 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 195 8 58] SwapLitsInClause0.swap_lits_in_clause _9 _10 _11 _12 (1 : usize) _13);
+    _8 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 193 8 58] SwapLitsInClause0.swap_lits_in_clause _9 _10 _11 _12 (1 : usize) _13);
     goto BB2
   }
   BB2 {
     _18 <- Type.creusat_formula_formula_Formula_clauses ( * self_1);
     _19 <- cref_5;
-    _17 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 196 24 42] Index0.index _18 _19);
+    _17 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 194 24 42] Index0.index _18 _19);
     goto BB3
   }
   BB3 {
     _16 <- Type.creusat_clause_clause_Clause_rest _17;
-    _15 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 196 24 50] Index1.index _16 (0 : usize));
+    _15 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 194 24 50] Index1.index _16 (0 : usize));
     goto BB4
   }
   BB4 {
     first_lit_14 <- _15;
     _24 <- Type.creusat_formula_formula_Formula_clauses ( * self_1);
     _25 <- cref_5;
-    _23 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 197 25 43] Index0.index _24 _25);
+    _23 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 195 25 43] Index0.index _24 _25);
     goto BB5
   }
   BB5 {
     _22 <- Type.creusat_clause_clause_Clause_rest _23;
-    _21 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 197 25 51] Index1.index _22 (1 : usize));
+    _21 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 195 25 51] Index1.index _22 (1 : usize));
     goto BB6
   }
   BB6 {
@@ -12631,7 +12618,7 @@ module CreuSat_Formula_Impl0_MakeAssertingClauseAndWatch
     _28 <- first_lit_14;
     _29 <- cref_5;
     _30 <-  * self_1;
-    _26 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 198 8 50] AddWatcher0.add_watcher _27 _28 _29 _30);
+    _26 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 196 8 50] AddWatcher0.add_watcher _27 _28 _29 _30);
     goto BB7
   }
   BB7 {
@@ -12641,15 +12628,13 @@ module CreuSat_Formula_Impl0_MakeAssertingClauseAndWatch
     _34 <- cref_5;
     _35 <-  * self_1;
     assume { Resolve0.resolve self_1 };
-    _31 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 199 8 51] AddWatcher0.add_watcher _32 _33 _34 _35);
+    _31 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 197 8 51] AddWatcher0.add_watcher _32 _33 _34 _35);
     goto BB8
   }
   BB8 {
     assume { Resolve1.resolve watches_2 };
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 200 8 49]  ^ old_self_6 =  ^ self_1 };
+    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 198 8 56] Equisat0.equisat ( * old_self_6) ( * self_1) };
     _36 <- ();
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 201 8 56] Equisat0.equisat ( * old_self_6) ( * self_1) };
-    _37 <- ();
     _0 <- ();
     return _0
   }
@@ -12678,23 +12663,23 @@ module CreuSat_Formula_Impl0_AddAndSwapFirst_Interface
   clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model0 with type t = Type.creusat_formula_formula,
   type ModelTy0.modelTy = ModelTy0.modelTy
   val add_and_swap_first [@cfg:stackify] (self : borrowed (Type.creusat_formula_formula)) (clause : Type.creusat_clause_clause) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) (s_idx : usize) : usize
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 213 4 55] EquisatExtensionInner0.equisat_extension_inner clause (Model0.model self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 212 4 52] NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model1.model clause)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 211 4 61] VarsInRangeInner0.vars_in_range_inner (Model1.model clause) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)))}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 210 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 209 4 37] Seq.length (Model1.model clause) >= 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 208 4 51] Invariant0.invariant' ( * watches) ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 207 4 39] Invariant1.invariant' t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 206 4 40] Invariant2.invariant' ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 205 4 41] UInt64.to_int s_idx < Seq.length (Model1.model clause)}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 218 4 69] Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) + 1 = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 217 4 48] UInt64.to_int result = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 216 4 35] Equisat0.equisat ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 215 4 51] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( ^ self)) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 214 4 71] Seq.length (Model1.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) (UInt64.to_int result))) = Seq.length (Model1.model clause) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 208 4 51] Invariant0.invariant' ( ^ watches) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 207 4 39] Invariant1.invariant' t ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 206 4 40] Invariant2.invariant' ( ^ self) }
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 210 4 55] EquisatExtensionInner0.equisat_extension_inner clause (Model0.model self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 209 4 52] NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model1.model clause)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 208 4 61] VarsInRangeInner0.vars_in_range_inner (Model1.model clause) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)))}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 207 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 206 4 37] Seq.length (Model1.model clause) >= 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 205 4 51] Invariant0.invariant' ( * watches) ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 204 4 39] Invariant1.invariant' t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 203 4 40] Invariant2.invariant' ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 202 4 41] UInt64.to_int s_idx < Seq.length (Model1.model clause)}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 215 4 69] Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) + 1 = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 214 4 48] UInt64.to_int result = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 213 4 35] Equisat0.equisat ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 212 4 51] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( ^ self)) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 211 4 71] Seq.length (Model1.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) (UInt64.to_int result))) = Seq.length (Model1.model clause) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 205 4 51] Invariant0.invariant' ( ^ watches) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 204 4 39] Invariant1.invariant' t ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 203 4 40] Invariant2.invariant' ( ^ self) }
     
 end
 module CreuSat_Formula_Impl0_AddAndSwapFirst
@@ -12825,24 +12810,24 @@ module CreuSat_Formula_Impl0_AddAndSwapFirst
   predicate Invariant0.invariant' = Invariant0.invariant', predicate Invariant1.invariant' = Invariant1.invariant',
   predicate Invariant2.invariant' = Invariant2.invariant', function Model2.model = Model2.model,
   predicate Equisat0.equisat = Equisat0.equisat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  let rec cfg add_and_swap_first [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 219 4 113] (self : borrowed (Type.creusat_formula_formula)) (clause : Type.creusat_clause_clause) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) (s_idx : usize) : usize
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 213 4 55] EquisatExtensionInner0.equisat_extension_inner clause (Model0.model self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 212 4 52] NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model1.model clause)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 211 4 61] VarsInRangeInner0.vars_in_range_inner (Model1.model clause) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)))}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 210 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 209 4 37] Seq.length (Model1.model clause) >= 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 208 4 51] Invariant0.invariant' ( * watches) ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 207 4 39] Invariant1.invariant' t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 206 4 40] Invariant2.invariant' ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 205 4 41] UInt64.to_int s_idx < Seq.length (Model1.model clause)}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 218 4 69] Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) + 1 = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 217 4 48] UInt64.to_int result = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 216 4 35] Equisat0.equisat ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 215 4 51] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( ^ self)) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 214 4 71] Seq.length (Model1.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) (UInt64.to_int result))) = Seq.length (Model1.model clause) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 208 4 51] Invariant0.invariant' ( ^ watches) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 207 4 39] Invariant1.invariant' t ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 206 4 40] Invariant2.invariant' ( ^ self) }
+  let rec cfg add_and_swap_first [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 216 4 113] (self : borrowed (Type.creusat_formula_formula)) (clause : Type.creusat_clause_clause) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) (s_idx : usize) : usize
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 210 4 55] EquisatExtensionInner0.equisat_extension_inner clause (Model0.model self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 209 4 52] NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model1.model clause)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 208 4 61] VarsInRangeInner0.vars_in_range_inner (Model1.model clause) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)))}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 207 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 206 4 37] Seq.length (Model1.model clause) >= 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 205 4 51] Invariant0.invariant' ( * watches) ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 204 4 39] Invariant1.invariant' t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 203 4 40] Invariant2.invariant' ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 202 4 41] UInt64.to_int s_idx < Seq.length (Model1.model clause)}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 215 4 69] Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) + 1 = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 214 4 48] UInt64.to_int result = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 213 4 35] Equisat0.equisat ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 212 4 51] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( ^ self)) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 211 4 71] Seq.length (Model1.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) (UInt64.to_int result))) = Seq.length (Model1.model clause) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 205 4 51] Invariant0.invariant' ( ^ watches) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 204 4 39] Invariant1.invariant' t ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 203 4 40] Invariant2.invariant' ( ^ self) }
     
    =
   var _0 : usize;
@@ -12892,7 +12877,7 @@ module CreuSat_Formula_Impl0_AddAndSwapFirst
   }
   BB6 {
     _7 <- ();
-    old_self_6 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 220 23 38] self_1);
+    old_self_6 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 217 23 38] self_1);
     goto BB7
   }
   BB7 {
@@ -12902,7 +12887,7 @@ module CreuSat_Formula_Impl0_AddAndSwapFirst
     _11 <- borrow_mut ( * watches_3);
     watches_3 <- { watches_3 with current = ( ^ _11) };
     _12 <- t_4;
-    cref_8 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 221 19 64] AddUnwatchedClause0.add_unwatched_clause _9 _10 _11 _12);
+    cref_8 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 218 19 64] AddUnwatchedClause0.add_unwatched_clause _9 _10 _11 _12);
     goto BB8
   }
   BB8 {
@@ -12913,7 +12898,7 @@ module CreuSat_Formula_Impl0_AddAndSwapFirst
     assume { Resolve0.resolve watches_3 };
     _17 <- cref_8;
     _18 <- s_idx_5;
-    _13 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 222 8 60] SwapLitsInClause0.swap_lits_in_clause _14 _15 _16 _17 (0 : usize) _18);
+    _13 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 219 8 60] SwapLitsInClause0.swap_lits_in_clause _14 _15 _16 _17 (0 : usize) _18);
     goto BB9
   }
   BB9 {
@@ -12950,22 +12935,22 @@ module CreuSat_Formula_Impl0_AddUnit_Interface
   clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model0 with type t = Type.creusat_formula_formula,
   type ModelTy0.modelTy = ModelTy0.modelTy
   val add_unit [@cfg:stackify] (self : borrowed (Type.creusat_formula_formula)) (clause : Type.creusat_clause_clause) (_t : Type.creusat_trail_trail) : usize
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 235 4 55] EquisatExtensionInner0.equisat_extension_inner clause (Model0.model self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 234 4 52] NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model1.model clause)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 233 4 61] VarsInRangeInner0.vars_in_range_inner (Model1.model clause) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)))}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 232 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 231 4 49] Invariant0.invariant' clause (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)))}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 230 4 37] Seq.length (Model1.model clause) = 1}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 229 4 40] Invariant1.invariant' _t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 228 4 40] Invariant2.invariant' ( * self)}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 241 4 69] Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) + 1 = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 240 4 57] Seq.length (Model1.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) (UInt64.to_int result))) = 1 }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 239 4 48] UInt64.to_int result = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 238 4 35] Equisat0.equisat ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 237 4 46] EquisatCompatible0.equisat_compatible ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 236 4 51] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( ^ self)) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 229 4 40] Invariant1.invariant' _t ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 228 4 40] Invariant2.invariant' ( ^ self) }
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 232 4 55] EquisatExtensionInner0.equisat_extension_inner clause (Model0.model self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 231 4 52] NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model1.model clause)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 230 4 61] VarsInRangeInner0.vars_in_range_inner (Model1.model clause) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)))}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 229 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 228 4 49] Invariant0.invariant' clause (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)))}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 227 4 37] Seq.length (Model1.model clause) = 1}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 226 4 40] Invariant1.invariant' _t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 225 4 40] Invariant2.invariant' ( * self)}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 238 4 69] Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) + 1 = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 237 4 57] Seq.length (Model1.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) (UInt64.to_int result))) = 1 }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 236 4 48] UInt64.to_int result = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 235 4 35] Equisat0.equisat ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 234 4 46] EquisatCompatible0.equisat_compatible ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 233 4 51] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( ^ self)) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 226 4 40] Invariant1.invariant' _t ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 225 4 40] Invariant2.invariant' ( ^ self) }
     
 end
 module CreuSat_Formula_Impl0_AddUnit
@@ -13086,23 +13071,23 @@ module CreuSat_Formula_Impl0_AddUnit
   type a = Type.alloc_alloc_global, function Model0.model = Model2.model
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.creusat_clause_clause,
   type a = Type.alloc_alloc_global, function Model0.model = Model2.model
-  let rec cfg add_unit [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 242 4 67] (self : borrowed (Type.creusat_formula_formula)) (clause : Type.creusat_clause_clause) (_t : Type.creusat_trail_trail) : usize
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 235 4 55] EquisatExtensionInner0.equisat_extension_inner clause (Model0.model self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 234 4 52] NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model1.model clause)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 233 4 61] VarsInRangeInner0.vars_in_range_inner (Model1.model clause) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)))}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 232 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 231 4 49] Invariant0.invariant' clause (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)))}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 230 4 37] Seq.length (Model1.model clause) = 1}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 229 4 40] Invariant1.invariant' _t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 228 4 40] Invariant2.invariant' ( * self)}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 241 4 69] Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) + 1 = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 240 4 57] Seq.length (Model1.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) (UInt64.to_int result))) = 1 }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 239 4 48] UInt64.to_int result = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 238 4 35] Equisat0.equisat ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 237 4 46] EquisatCompatible0.equisat_compatible ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 236 4 51] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( ^ self)) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 229 4 40] Invariant1.invariant' _t ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 228 4 40] Invariant2.invariant' ( ^ self) }
+  let rec cfg add_unit [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 239 4 67] (self : borrowed (Type.creusat_formula_formula)) (clause : Type.creusat_clause_clause) (_t : Type.creusat_trail_trail) : usize
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 232 4 55] EquisatExtensionInner0.equisat_extension_inner clause (Model0.model self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 231 4 52] NoDuplicateIndexesInner0.no_duplicate_indexes_inner (Model1.model clause)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 230 4 61] VarsInRangeInner0.vars_in_range_inner (Model1.model clause) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)))}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 229 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 228 4 49] Invariant0.invariant' clause (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)))}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 227 4 37] Seq.length (Model1.model clause) = 1}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 226 4 40] Invariant1.invariant' _t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 225 4 40] Invariant2.invariant' ( * self)}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 238 4 69] Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) + 1 = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 237 4 57] Seq.length (Model1.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses ( ^ self))) (UInt64.to_int result))) = 1 }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 236 4 48] UInt64.to_int result = Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses ( * self))) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 235 4 35] Equisat0.equisat ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 234 4 46] EquisatCompatible0.equisat_compatible ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 233 4 51] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( ^ self)) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 226 4 40] Invariant1.invariant' _t ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 225 4 40] Invariant2.invariant' ( ^ self) }
     
    =
   var _0 : usize;
@@ -13118,7 +13103,6 @@ module CreuSat_Formula_Impl0_AddUnit
   var _10 : Type.creusat_clause_clause;
   var _11 : ();
   var _12 : ();
-  var _13 : ();
   {
     self_1 <- self;
     clause_2 <- clause;
@@ -13142,29 +13126,27 @@ module CreuSat_Formula_Impl0_AddUnit
   }
   BB5 {
     _5 <- ();
-    old_self_4 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 243 23 38] self_1);
+    old_self_4 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 240 23 38] self_1);
     goto BB6
   }
   BB6 {
     _7 <- Type.creusat_formula_formula_Formula_clauses ( * self_1);
-    cref_6 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 244 19 37] Len0.len _7);
+    cref_6 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 241 19 37] Len0.len _7);
     goto BB7
   }
   BB7 {
     _9 <- borrow_mut (Type.creusat_formula_formula_Formula_clauses ( * self_1));
     self_1 <- { self_1 with current = (let Type.CreuSat_Formula_Formula a b =  * self_1 in Type.CreuSat_Formula_Formula ( ^ _9) b) };
     _10 <- clause_2;
-    _8 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 245 8 33] Push0.push _9 _10);
+    _8 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 242 8 33] Push0.push _9 _10);
     goto BB8
   }
   BB8 {
     assume { Resolve0.resolve self_1 };
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 246 8 49]  ^ old_self_4 =  ^ self_1 };
+    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 243 8 67] EquisatCompatible0.equisat_compatible ( * old_self_4) ( * self_1) };
     _11 <- ();
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 247 8 67] EquisatCompatible0.equisat_compatible ( * old_self_4) ( * self_1) };
+    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 244 8 56] TrailInvariant0.trail_invariant (Model3.model (Type.creusat_trail_trail_Trail_trail _t_3)) ( * self_1) };
     _12 <- ();
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 248 8 56] TrailInvariant0.trail_invariant (Model3.model (Type.creusat_trail_trail_Trail_trail _t_3)) ( * self_1) };
-    _13 <- ();
     _0 <- cref_6;
     goto BB9
   }
@@ -13231,9 +13213,9 @@ module CreuSat_Formula_Impl0_IsSat_Interface
   axiom .
   clone CreuSat_Logic_LogicAssignments_Impl1_Invariant_Interface as Invariant0
   val is_sat [@cfg:stackify] (self : Type.creusat_formula_formula) (a : Type.creusat_assignments_assignments) : bool
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 254 4 35] Invariant0.invariant' a self}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 253 4 33] Invariant1.invariant' self}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 255 4 38] result = Sat0.sat self a }
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 250 4 35] Invariant0.invariant' a self}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 249 4 33] Invariant1.invariant' self}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 251 4 38] result = Sat0.sat self a }
     
 end
 module CreuSat_Formula_Impl0_IsSat
@@ -13286,10 +13268,10 @@ module CreuSat_Formula_Impl0_IsSat
   clone CreuSat_Formula_Impl0_IsClauseSat_Interface as IsClauseSat0 with function Model0.model = Model0.model,
   predicate Invariant0.invariant' = Invariant0.invariant', predicate Invariant1.invariant' = Invariant1.invariant',
   predicate Sat0.sat = Sat1.sat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  let rec cfg is_sat [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 256 4 49] (self : Type.creusat_formula_formula) (a : Type.creusat_assignments_assignments) : bool
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 254 4 35] Invariant0.invariant' a self}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 253 4 33] Invariant1.invariant' self}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 255 4 38] result = Sat0.sat self a }
+  let rec cfg is_sat [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 252 4 49] (self : Type.creusat_formula_formula) (a : Type.creusat_assignments_assignments) : bool
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 250 4 35] Invariant0.invariant' a self}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 249 4 33] Invariant1.invariant' self}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 251 4 38] result = Sat0.sat self a }
     
    =
   var _0 : bool;
@@ -13322,14 +13304,14 @@ module CreuSat_Formula_Impl0_IsSat
     goto BB1
   }
   BB1 {
-    invariant prev { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 258 8 90] forall k : (int) . 0 <= k && k < UInt64.to_int i_3 -> Sat1.sat (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses self_1)) k) a_2 };
+    invariant prev { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 254 8 90] forall k : (int) . 0 <= k && k < UInt64.to_int i_3 -> Sat1.sat (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses self_1)) k) a_2 };
     _7 <- i_3;
     _9 <- Type.creusat_formula_formula_Formula_clauses self_1;
-    _8 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 259 18 36] Len0.len _9);
+    _8 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 255 18 36] Len0.len _9);
     goto BB2
   }
   BB2 {
-    _6 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 259 14 36] _7 < _8);
+    _6 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 255 14 36] _7 < _8);
     switch (_6)
       | False -> goto BB7
       | _ -> goto BB3
@@ -13339,7 +13321,7 @@ module CreuSat_Formula_Impl0_IsSat
     _13 <- self_1;
     _14 <- i_3;
     _15 <- a_2;
-    _12 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 260 16 40] IsClauseSat0.is_clause_sat _13 _14 _15);
+    _12 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 256 16 40] IsClauseSat0.is_clause_sat _13 _14 _15);
     goto BB4
   }
   BB4 {
@@ -13355,7 +13337,7 @@ module CreuSat_Formula_Impl0_IsSat
   }
   BB6 {
     _10 <- ();
-    i_3 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 263 12 18] i_3 + (1 : usize));
+    i_3 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 259 12 18] i_3 + (1 : usize));
     _5 <- ();
     goto BB1
   }
@@ -13886,17 +13868,17 @@ module CreuSat_Formula_Impl0_DeleteClause_Interface
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.creusat_clause_clause,
   type a = Type.alloc_alloc_global, axiom .
   val delete_clause [@cfg:stackify] (self : borrowed (Type.creusat_formula_formula)) (cref : usize) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) : ()
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 274 4 46] UInt64.to_int cref < Seq.length (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self)))}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 273 4 52] Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) (UInt64.to_int cref))) > 1}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 272 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 271 4 42] Invariant0.invariant' t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 270 4 40] Invariant1.invariant' ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 269 4 51] Invariant2.invariant' ( * watches) ( * self)}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 276 4 49] Type.creusat_formula_formula_Formula_num_vars ( * self) = Type.creusat_formula_formula_Formula_num_vars ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 275 4 35] Equisat0.equisat ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 271 4 42] Invariant0.invariant' t ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 270 4 40] Invariant1.invariant' ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 269 4 51] Invariant2.invariant' ( ^ watches) ( ^ self) }
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 270 4 46] UInt64.to_int cref < Seq.length (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self)))}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 269 4 52] Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) (UInt64.to_int cref))) > 1}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 268 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 267 4 42] Invariant0.invariant' t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 266 4 40] Invariant1.invariant' ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 265 4 51] Invariant2.invariant' ( * watches) ( * self)}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 272 4 49] Type.creusat_formula_formula_Formula_num_vars ( * self) = Type.creusat_formula_formula_Formula_num_vars ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 271 4 35] Equisat0.equisat ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 267 4 42] Invariant0.invariant' t ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 266 4 40] Invariant1.invariant' ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 265 4 51] Invariant2.invariant' ( ^ watches) ( ^ self) }
     
 end
 module CreuSat_Formula_Impl0_DeleteClause
@@ -14036,18 +14018,18 @@ module CreuSat_Formula_Impl0_DeleteClause
   predicate Invariant1.invariant' = Invariant1.invariant', function IndexLogic0.index_logic = IndexLogic0.index_logic,
   predicate Invariant2.invariant' = Invariant2.invariant',
   predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  let rec cfg delete_clause [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 277 4 78] (self : borrowed (Type.creusat_formula_formula)) (cref : usize) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) : ()
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 274 4 46] UInt64.to_int cref < Seq.length (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self)))}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 273 4 52] Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) (UInt64.to_int cref))) > 1}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 272 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 271 4 42] Invariant0.invariant' t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 270 4 40] Invariant1.invariant' ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 269 4 51] Invariant2.invariant' ( * watches) ( * self)}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 276 4 49] Type.creusat_formula_formula_Formula_num_vars ( * self) = Type.creusat_formula_formula_Formula_num_vars ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 275 4 35] Equisat0.equisat ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 271 4 42] Invariant0.invariant' t ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 270 4 40] Invariant1.invariant' ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 269 4 51] Invariant2.invariant' ( ^ watches) ( ^ self) }
+  let rec cfg delete_clause [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 273 4 78] (self : borrowed (Type.creusat_formula_formula)) (cref : usize) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) : ()
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 270 4 46] UInt64.to_int cref < Seq.length (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self)))}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 269 4 52] Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self))) (UInt64.to_int cref))) > 1}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 268 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 267 4 42] Invariant0.invariant' t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 266 4 40] Invariant1.invariant' ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 265 4 51] Invariant2.invariant' ( * watches) ( * self)}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 272 4 49] Type.creusat_formula_formula_Formula_num_vars ( * self) = Type.creusat_formula_formula_Formula_num_vars ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 271 4 35] Equisat0.equisat ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 267 4 42] Invariant0.invariant' t ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 266 4 40] Invariant1.invariant' ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 265 4 51] Invariant2.invariant' ( ^ watches) ( ^ self) }
     
    =
   var _0 : ();
@@ -14094,7 +14076,7 @@ module CreuSat_Formula_Impl0_DeleteClause
   }
   BB0 {
     _6 <- ();
-    old_f_5 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 278 20 35] self_1);
+    old_f_5 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 274 20 35] self_1);
     goto BB1
   }
   BB1 {
@@ -14105,17 +14087,17 @@ module CreuSat_Formula_Impl0_DeleteClause
     _11 <- cref_2;
     _16 <- Type.creusat_formula_formula_Formula_clauses ( * self_1);
     _17 <- cref_2;
-    _15 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 279 39 57] Index0.index _16 _17);
+    _15 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 275 39 57] Index0.index _16 _17);
     goto BB2
   }
   BB2 {
     _14 <- Type.creusat_clause_clause_Clause_rest _15;
-    _13 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 279 39 65] Index1.index _14 (0 : usize));
+    _13 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 275 39 65] Index1.index _14 (0 : usize));
     goto BB3
   }
   BB3 {
     _12 <- _13;
-    _7 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 279 8 66] Unwatch0.unwatch _8 _9 _10 _11 _12);
+    _7 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 275 8 66] Unwatch0.unwatch _8 _9 _10 _11 _12);
     goto BB4
   }
   BB4 {
@@ -14126,17 +14108,17 @@ module CreuSat_Formula_Impl0_DeleteClause
     _22 <- cref_2;
     _27 <- Type.creusat_formula_formula_Formula_clauses ( * self_1);
     _28 <- cref_2;
-    _26 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 280 39 57] Index0.index _27 _28);
+    _26 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 276 39 57] Index0.index _27 _28);
     goto BB5
   }
   BB5 {
     _25 <- Type.creusat_clause_clause_Clause_rest _26;
-    _24 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 280 39 65] Index1.index _25 (1 : usize));
+    _24 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 276 39 65] Index1.index _25 (1 : usize));
     goto BB6
   }
   BB6 {
     _23 <- _24;
-    _18 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 280 8 66] Unwatch0.unwatch _19 _20 _21 _22 _23);
+    _18 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 276 8 66] Unwatch0.unwatch _19 _20 _21 _22 _23);
     goto BB7
   }
   BB7 {
@@ -14145,17 +14127,17 @@ module CreuSat_Formula_Impl0_DeleteClause
     self_1 <- { self_1 with current = (let Type.CreuSat_Formula_Formula a b =  * self_1 in Type.CreuSat_Formula_Formula ( ^ _30) b) };
     assume { Resolve1.resolve self_1 };
     _31 <- cref_2;
-    _29 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 281 8 26] IndexMut0.index_mut _30 _31);
+    _29 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 277 8 26] IndexMut0.index_mut _30 _31);
     goto BB8
   }
   BB8 {
     _29 <- { _29 with current = (let Type.CreuSat_Clause_Clause a b =  * _29 in Type.CreuSat_Clause_Clause true b) };
     assume { Resolve2.resolve _29 };
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 282 8 84] forall i : (int) . 0 <= i && i < Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self_1))) (UInt64.to_int cref_2))) -> Seq.get (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self_1))) (UInt64.to_int cref_2))) i = Seq.get (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * old_f_5))) (UInt64.to_int cref_2))) i };
+    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 278 8 84] forall i : (int) . 0 <= i && i < Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self_1))) (UInt64.to_int cref_2))) -> Seq.get (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self_1))) (UInt64.to_int cref_2))) i = Seq.get (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * old_f_5))) (UInt64.to_int cref_2))) i };
     _32 <- ();
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 284 8 53] Equisat0.equisat ( * old_f_5) ( * self_1) };
+    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 280 8 53] Equisat0.equisat ( * old_f_5) ( * self_1) };
     _33 <- ();
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 285 8 46]  ^ self_1 =  ^ old_f_5 };
+    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 281 8 46]  ^ self_1 =  ^ old_f_5 };
     _34 <- ();
     _0 <- ();
     return _0
@@ -14175,16 +14157,16 @@ module CreuSat_Formula_Impl0_DeleteClauses_Interface
   clone CreuSat_Logic_LogicWatches_Impl0_Invariant_Interface as Invariant1
   clone CreuSat_Logic_LogicTrail_Impl2_Invariant_Interface as Invariant0
   val delete_clauses [@cfg:stackify] (self : borrowed (Type.creusat_formula_formula)) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) : ()
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 294 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 293 4 35] Invariant0.invariant' t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 292 4 42] Invariant0.invariant' t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 291 4 51] Invariant1.invariant' ( * watches) ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 290 4 40] Invariant2.invariant' ( * self)}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 296 4 35] Equisat0.equisat ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 295 4 49] Type.creusat_formula_formula_Formula_num_vars ( * self) = Type.creusat_formula_formula_Formula_num_vars ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 292 4 42] Invariant0.invariant' t ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 291 4 51] Invariant1.invariant' ( ^ watches) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 290 4 40] Invariant2.invariant' ( ^ self) }
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 290 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 289 4 35] Invariant0.invariant' t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 288 4 42] Invariant0.invariant' t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 287 4 51] Invariant1.invariant' ( * watches) ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 286 4 40] Invariant2.invariant' ( * self)}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 292 4 35] Equisat0.equisat ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 291 4 49] Type.creusat_formula_formula_Formula_num_vars ( * self) = Type.creusat_formula_formula_Formula_num_vars ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 288 4 42] Invariant0.invariant' t ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 287 4 51] Invariant1.invariant' ( ^ watches) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 286 4 40] Invariant2.invariant' ( ^ self) }
     
 end
 module CreuSat_Formula_Impl0_DeleteClauses
@@ -14318,17 +14300,17 @@ module CreuSat_Formula_Impl0_DeleteClauses
   function Model1.model = Model7.model, predicate Invariant0.invariant' = Invariant0.invariant',
   predicate Invariant1.invariant' = Invariant2.invariant', predicate Invariant2.invariant' = Invariant1.invariant',
   predicate Equisat0.equisat = Equisat0.equisat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  let rec cfg delete_clauses [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 297 4 70] (self : borrowed (Type.creusat_formula_formula)) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) : ()
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 294 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 293 4 35] Invariant0.invariant' t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 292 4 42] Invariant0.invariant' t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 291 4 51] Invariant1.invariant' ( * watches) ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 290 4 40] Invariant2.invariant' ( * self)}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 296 4 35] Equisat0.equisat ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 295 4 49] Type.creusat_formula_formula_Formula_num_vars ( * self) = Type.creusat_formula_formula_Formula_num_vars ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 292 4 42] Invariant0.invariant' t ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 291 4 51] Invariant1.invariant' ( ^ watches) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 290 4 40] Invariant2.invariant' ( ^ self) }
+  let rec cfg delete_clauses [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 293 4 70] (self : borrowed (Type.creusat_formula_formula)) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) : ()
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 290 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 289 4 35] Invariant0.invariant' t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 288 4 42] Invariant0.invariant' t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 287 4 51] Invariant1.invariant' ( * watches) ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 286 4 40] Invariant2.invariant' ( * self)}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 292 4 35] Equisat0.equisat ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 291 4 49] Type.creusat_formula_formula_Formula_num_vars ( * self) = Type.creusat_formula_formula_Formula_num_vars ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 288 4 42] Invariant0.invariant' t ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 287 4 51] Invariant1.invariant' ( ^ watches) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 286 4 40] Invariant2.invariant' ( ^ self) }
     
    =
   var _0 : ();
@@ -14380,12 +14362,12 @@ module CreuSat_Formula_Impl0_DeleteClauses
   }
   BB0 {
     _5 <- ();
-    old_f_4 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 298 20 35] self_1);
+    old_f_4 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 294 20 35] self_1);
     goto BB1
   }
   BB1 {
     _7 <- ();
-    old_w_6 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 299 20 38] watches_2);
+    old_w_6 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 295 20 38] watches_2);
     goto BB2
   }
   BB2 {
@@ -14393,20 +14375,20 @@ module CreuSat_Formula_Impl0_DeleteClauses
     goto BB3
   }
   BB3 {
-    invariant w_inv { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 302 8 53] Invariant1.invariant' ( * watches_2) ( * self_1) };
-    invariant t_inv { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 303 8 47] Invariant0.invariant' t_3 ( * self_1) };
-    invariant f_inv { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 304 8 45] Invariant2.invariant' ( * self_1) };
-    invariant proph_w { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 305 8 57]  ^ watches_2 =  ^ old_w_6 };
-    invariant proph_f { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 306 8 54]  ^ self_1 =  ^ old_f_4 };
-    invariant num_vars_unch { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 307 8 80] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self_1)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * old_f_4)) };
-    invariant equi { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 308 8 56] Equisat0.equisat ( * self_1) ( * old_f_4) };
+    invariant w_inv { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 298 8 53] Invariant1.invariant' ( * watches_2) ( * self_1) };
+    invariant t_inv { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 299 8 47] Invariant0.invariant' t_3 ( * self_1) };
+    invariant f_inv { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 300 8 45] Invariant2.invariant' ( * self_1) };
+    invariant proph_w { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 301 8 57]  ^ watches_2 =  ^ old_w_6 };
+    invariant proph_f { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 302 8 54]  ^ self_1 =  ^ old_f_4 };
+    invariant num_vars_unch { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 303 8 80] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self_1)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * old_f_4)) };
+    invariant equi { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 304 8 56] Equisat0.equisat ( * self_1) ( * old_f_4) };
     _11 <- i_8;
     _13 <- Type.creusat_formula_formula_Formula_clauses ( * self_1);
-    _12 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 309 18 36] Len0.len _13);
+    _12 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 305 18 36] Len0.len _13);
     goto BB4
   }
   BB4 {
-    _10 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 309 14 36] _11 < _12);
+    _10 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 305 14 36] _11 < _12);
     switch (_10)
       | False -> goto BB20
       | _ -> goto BB5
@@ -14415,7 +14397,7 @@ module CreuSat_Formula_Impl0_DeleteClauses
   BB5 {
     _18 <- Type.creusat_formula_formula_Formula_clauses ( * self_1);
     _19 <- i_8;
-    _17 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 310 16 31] Index0.index _18 _19);
+    _17 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 306 16 31] Index0.index _18 _19);
     goto BB6
   }
   BB6 {
@@ -14427,11 +14409,11 @@ module CreuSat_Formula_Impl0_DeleteClauses
       end
   }
   BB7 {
-    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 311 16 61] Invariant3.invariant' (Type.creusat_trail_trail_Trail_assignments t_3) ( * self_1) };
+    assert { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 307 16 61] Invariant3.invariant' (Type.creusat_trail_trail_Trail_assignments t_3) ( * self_1) };
     _20 <- ();
     _26 <- Type.creusat_formula_formula_Formula_clauses ( * self_1);
     _27 <- i_8;
-    _25 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 312 19 34] Index0.index _26 _27);
+    _25 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 308 19 34] Index0.index _26 _27);
     goto BB11
   }
   BB8 {
@@ -14443,7 +14425,7 @@ module CreuSat_Formula_Impl0_DeleteClauses
     _30 <- i_8;
     _32 <- Type.creusat_trail_trail_Trail_assignments t_3;
     _31 <- _32;
-    _28 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 312 48 85] IsClauseSat0.is_clause_sat _29 _30 _31);
+    _28 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 308 48 85] IsClauseSat0.is_clause_sat _29 _30 _31);
     goto BB13
   }
   BB10 {
@@ -14454,11 +14436,11 @@ module CreuSat_Formula_Impl0_DeleteClauses
   }
   BB11 {
     _24 <- _25;
-    _23 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 312 19 40] Len1.len _24);
+    _23 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 308 19 40] Len1.len _24);
     goto BB12
   }
   BB12 {
-    _22 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 312 19 44] _23 > (1 : usize));
+    _22 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 308 19 44] _23 > (1 : usize));
     switch (_22)
       | False -> goto BB8
       | _ -> goto BB9
@@ -14475,7 +14457,7 @@ module CreuSat_Formula_Impl0_DeleteClauses
     _36 <- borrow_mut ( * watches_2);
     watches_2 <- { watches_2 with current = ( ^ _36) };
     _37 <- t_3;
-    _33 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 313 20 53] DeleteClause0.delete_clause _34 _35 _36 _37);
+    _33 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 309 20 53] DeleteClause0.delete_clause _34 _35 _36 _37);
     goto BB15
   }
   BB15 {
@@ -14494,7 +14476,7 @@ module CreuSat_Formula_Impl0_DeleteClauses
     goto BB19
   }
   BB19 {
-    i_8 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 316 12 18] i_8 + (1 : usize));
+    i_8 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 312 12 18] i_8 + (1 : usize));
     _9 <- ();
     goto BB3
   }
@@ -14519,15 +14501,15 @@ module CreuSat_Formula_Impl0_SimplifyFormula_Interface
   clone CreuSat_Logic_LogicWatches_Impl0_Invariant_Interface as Invariant1
   clone CreuSat_Logic_LogicTrail_Impl2_Invariant_Interface as Invariant0
   val simplify_formula [@cfg:stackify] (self : borrowed (Type.creusat_formula_formula)) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) : ()
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 326 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 325 4 42] Invariant0.invariant' t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 324 4 51] Invariant1.invariant' ( * watches) ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 323 4 40] Invariant2.invariant' ( * self)}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 328 4 35] Equisat0.equisat ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 327 4 49] Type.creusat_formula_formula_Formula_num_vars ( * self) = Type.creusat_formula_formula_Formula_num_vars ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 325 4 42] Invariant0.invariant' t ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 324 4 51] Invariant1.invariant' ( ^ watches) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 323 4 40] Invariant2.invariant' ( ^ self) }
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 322 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 321 4 42] Invariant0.invariant' t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 320 4 51] Invariant1.invariant' ( * watches) ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 319 4 40] Invariant2.invariant' ( * self)}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 324 4 35] Equisat0.equisat ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 323 4 49] Type.creusat_formula_formula_Formula_num_vars ( * self) = Type.creusat_formula_formula_Formula_num_vars ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 321 4 42] Invariant0.invariant' t ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 320 4 51] Invariant1.invariant' ( ^ watches) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 319 4 40] Invariant2.invariant' ( ^ self) }
     
 end
 module CreuSat_Formula_Impl0_SimplifyFormula
@@ -14641,16 +14623,16 @@ module CreuSat_Formula_Impl0_SimplifyFormula
   clone CreuSat_Formula_Impl0_DeleteClauses_Interface as DeleteClauses0 with predicate Invariant0.invariant' = Invariant0.invariant',
   predicate Invariant1.invariant' = Invariant1.invariant', predicate Invariant2.invariant' = Invariant2.invariant',
   predicate Equisat0.equisat = Equisat0.equisat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  let rec cfg simplify_formula [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 329 4 72] (self : borrowed (Type.creusat_formula_formula)) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) : ()
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 326 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 325 4 42] Invariant0.invariant' t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 324 4 51] Invariant1.invariant' ( * watches) ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 323 4 40] Invariant2.invariant' ( * self)}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 328 4 35] Equisat0.equisat ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 327 4 49] Type.creusat_formula_formula_Formula_num_vars ( * self) = Type.creusat_formula_formula_Formula_num_vars ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 325 4 42] Invariant0.invariant' t ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 324 4 51] Invariant1.invariant' ( ^ watches) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 323 4 40] Invariant2.invariant' ( ^ self) }
+  let rec cfg simplify_formula [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 325 4 72] (self : borrowed (Type.creusat_formula_formula)) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) : ()
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 322 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 321 4 42] Invariant0.invariant' t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 320 4 51] Invariant1.invariant' ( * watches) ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 319 4 40] Invariant2.invariant' ( * self)}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 324 4 35] Equisat0.equisat ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 323 4 49] Type.creusat_formula_formula_Formula_num_vars ( * self) = Type.creusat_formula_formula_Formula_num_vars ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 321 4 42] Invariant0.invariant' t ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 320 4 51] Invariant1.invariant' ( ^ watches) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 319 4 40] Invariant2.invariant' ( ^ self) }
     
    =
   var _0 : ();
@@ -14673,7 +14655,7 @@ module CreuSat_Formula_Impl0_SimplifyFormula
     _6 <- borrow_mut ( * watches_2);
     watches_2 <- { watches_2 with current = ( ^ _6) };
     _7 <- t_3;
-    _4 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 331 8 39] DeleteClauses0.delete_clauses _5 _6 _7);
+    _4 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 327 8 39] DeleteClauses0.delete_clauses _5 _6 _7);
     goto BB1
   }
   BB1 {
@@ -14697,17 +14679,17 @@ module CreuSat_Formula_Impl0_ReduceDb_Interface
   axiom .
   clone CreuSat_Logic_LogicTrail_Impl2_Invariant_Interface as Invariant0
   val reduceDB [@cfg:stackify] (self : borrowed (Type.creusat_formula_formula)) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) (s : borrowed (Type.creusat_solver_solver)) : ()
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 341 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 340 4 35] Invariant0.invariant' t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 339 4 33] Invariant1.invariant' ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 338 4 42] Invariant0.invariant' t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 337 4 51] Invariant2.invariant' ( * watches) ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 336 4 40] Invariant1.invariant' ( * self)}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 343 4 35] Equisat0.equisat ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 342 4 49] Type.creusat_formula_formula_Formula_num_vars ( * self) = Type.creusat_formula_formula_Formula_num_vars ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 338 4 42] Invariant0.invariant' t ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 337 4 51] Invariant2.invariant' ( ^ watches) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 336 4 40] Invariant1.invariant' ( ^ self) }
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 337 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 336 4 35] Invariant0.invariant' t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 335 4 33] Invariant1.invariant' ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 334 4 42] Invariant0.invariant' t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 333 4 51] Invariant2.invariant' ( * watches) ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 332 4 40] Invariant1.invariant' ( * self)}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 339 4 35] Equisat0.equisat ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 338 4 49] Type.creusat_formula_formula_Formula_num_vars ( * self) = Type.creusat_formula_formula_Formula_num_vars ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 334 4 42] Invariant0.invariant' t ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 333 4 51] Invariant2.invariant' ( ^ watches) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 332 4 40] Invariant1.invariant' ( ^ self) }
     
 end
 module CreuSat_Formula_Impl0_ReduceDb
@@ -14850,18 +14832,18 @@ module CreuSat_Formula_Impl0_ReduceDb
   function Model1.model = Model6.model, predicate Invariant0.invariant' = Invariant0.invariant',
   predicate Invariant1.invariant' = Invariant1.invariant', predicate Invariant2.invariant' = Invariant2.invariant',
   predicate Equisat0.equisat = Equisat0.equisat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  let rec cfg reduceDB [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 344 4 80] (self : borrowed (Type.creusat_formula_formula)) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) (s : borrowed (Type.creusat_solver_solver)) : ()
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 341 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 340 4 35] Invariant0.invariant' t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 339 4 33] Invariant1.invariant' ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 338 4 42] Invariant0.invariant' t ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 337 4 51] Invariant2.invariant' ( * watches) ( * self)}
-    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 336 4 40] Invariant1.invariant' ( * self)}
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 343 4 35] Equisat0.equisat ( * self) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 342 4 49] Type.creusat_formula_formula_Formula_num_vars ( * self) = Type.creusat_formula_formula_Formula_num_vars ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 338 4 42] Invariant0.invariant' t ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 337 4 51] Invariant2.invariant' ( ^ watches) ( ^ self) }
-    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 336 4 40] Invariant1.invariant' ( ^ self) }
+  let rec cfg reduceDB [@cfg:stackify] [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 340 4 80] (self : borrowed (Type.creusat_formula_formula)) (watches : borrowed (Type.creusat_watches_watches)) (t : Type.creusat_trail_trail) (s : borrowed (Type.creusat_solver_solver)) : ()
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 337 4 47] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self)) < div 18446744073709551615 2}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 336 4 35] Invariant0.invariant' t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 335 4 33] Invariant1.invariant' ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 334 4 42] Invariant0.invariant' t ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 333 4 51] Invariant2.invariant' ( * watches) ( * self)}
+    requires {[#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 332 4 40] Invariant1.invariant' ( * self)}
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 339 4 35] Equisat0.equisat ( * self) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 338 4 49] Type.creusat_formula_formula_Formula_num_vars ( * self) = Type.creusat_formula_formula_Formula_num_vars ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 334 4 42] Invariant0.invariant' t ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 333 4 51] Invariant2.invariant' ( ^ watches) ( ^ self) }
+    ensures { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 332 4 40] Invariant1.invariant' ( ^ self) }
     
    =
   var _0 : ();
@@ -14955,23 +14937,23 @@ module CreuSat_Formula_Impl0_ReduceDb
   BB1 {
     _8 <- Type.creusat_solver_solver_Solver_num_lemmas ( * s_4);
     _9 <- Type.creusat_solver_solver_Solver_max_lemmas ( * s_4);
-    _7 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 346 14 41] _8 > _9);
+    _7 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 342 14 41] _8 > _9);
     switch (_7)
       | False -> goto BB5
       | _ -> goto BB2
       end
   }
   BB2 {
-    _11 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 347 15 31] (18446744073709551615 : usize) - (300 : usize));
+    _11 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 343 15 31] (18446744073709551615 : usize) - (300 : usize));
     _12 <- Type.creusat_solver_solver_Solver_max_lemmas ( * s_4);
-    _10 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 347 15 46] _11 > _12);
+    _10 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 343 15 46] _11 > _12);
     switch (_10)
       | False -> goto BB4
       | _ -> goto BB3
       end
   }
   BB3 {
-    s_4 <- { s_4 with current = (let Type.CreuSat_Solver_Solver a b c d e f g h =  * s_4 in Type.CreuSat_Solver_Solver a ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 348 16 35] Type.creusat_solver_solver_Solver_max_lemmas ( * s_4) + (300 : usize)) c d e f g h) };
+    s_4 <- { s_4 with current = (let Type.CreuSat_Solver_Solver a b c d e f g h =  * s_4 in Type.CreuSat_Solver_Solver a ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 344 16 35] Type.creusat_solver_solver_Solver_max_lemmas ( * s_4) + (300 : usize)) c d e f g h) };
     _6 <- ();
     goto BB1
   }
@@ -14986,32 +14968,32 @@ module CreuSat_Formula_Impl0_ReduceDb
   BB6 {
     i_17 <- Type.creusat_solver_solver_Solver_initial_len ( * s_4);
     _19 <- ();
-    old_f_18 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 355 20 35] self_1);
+    old_f_18 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 351 20 35] self_1);
     goto BB7
   }
   BB7 {
     _21 <- ();
-    old_w_20 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 356 20 38] watches_2);
+    old_w_20 <- ghost ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 352 20 38] watches_2);
     goto BB8
   }
   BB8 {
     goto BB9
   }
   BB9 {
-    invariant w_inv { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 357 8 53] Invariant2.invariant' ( * watches_2) ( * self_1) };
-    invariant t_inv { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 358 8 47] Invariant0.invariant' t_3 ( * self_1) };
-    invariant f_inv { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 359 8 45] Invariant1.invariant' ( * self_1) };
-    invariant proph_w { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 360 8 57]  ^ watches_2 =  ^ old_w_20 };
-    invariant proph_f { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 361 8 54]  ^ self_1 =  ^ old_f_18 };
-    invariant num_vars_unch { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 362 8 80] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self_1)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * old_f_18)) };
-    invariant equi { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 363 8 56] Equisat0.equisat ( * self_1) ( * old_f_18) };
+    invariant w_inv { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 353 8 53] Invariant2.invariant' ( * watches_2) ( * self_1) };
+    invariant t_inv { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 354 8 47] Invariant0.invariant' t_3 ( * self_1) };
+    invariant f_inv { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 355 8 45] Invariant1.invariant' ( * self_1) };
+    invariant proph_w { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 356 8 57]  ^ watches_2 =  ^ old_w_20 };
+    invariant proph_f { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 357 8 54]  ^ self_1 =  ^ old_f_18 };
+    invariant num_vars_unch { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 358 8 80] UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * self_1)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars ( * old_f_18)) };
+    invariant equi { [#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 359 8 56] Equisat0.equisat ( * self_1) ( * old_f_18) };
     _23 <- i_17;
     _25 <- Type.creusat_formula_formula_Formula_clauses ( * self_1);
-    _24 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 364 18 36] Len0.len _25);
+    _24 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 360 18 36] Len0.len _25);
     goto BB10
   }
   BB10 {
-    _22 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 364 14 36] _23 < _24);
+    _22 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 360 14 36] _23 < _24);
     switch (_22)
       | False -> goto BB42
       | _ -> goto BB11
@@ -15020,7 +15002,7 @@ module CreuSat_Formula_Impl0_ReduceDb
   BB11 {
     _30 <- Type.creusat_formula_formula_Formula_clauses ( * self_1);
     _31 <- i_17;
-    _29 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 365 16 31] Index0.index _30 _31);
+    _29 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 361 16 31] Index0.index _30 _31);
     goto BB12
   }
   BB12 {
@@ -15034,16 +15016,16 @@ module CreuSat_Formula_Impl0_ReduceDb
   BB13 {
     _36 <- Type.creusat_formula_formula_Formula_clauses ( * self_1);
     _37 <- i_17;
-    _35 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 367 19 34] Index0.index _36 _37);
+    _35 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 363 19 34] Index0.index _36 _37);
     goto BB14
   }
   BB14 {
     _34 <- _35;
-    _33 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 367 19 40] Len1.len _34);
+    _33 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 363 19 40] Len1.len _34);
     goto BB15
   }
   BB15 {
-    _32 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 367 19 44] _33 > (6 : usize));
+    _32 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 363 19 44] _33 > (6 : usize));
     switch (_32)
       | False -> goto BB38
       | _ -> goto BB16
@@ -15058,7 +15040,7 @@ module CreuSat_Formula_Impl0_ReduceDb
     _43 <- j_39;
     _47 <- Type.creusat_formula_formula_Formula_clauses ( * self_1);
     _48 <- i_17;
-    _46 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 370 30 45] Index0.index _47 _48);
+    _46 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 366 30 45] Index0.index _47 _48);
     goto BB21
   }
   BB18 {
@@ -15067,7 +15049,7 @@ module CreuSat_Formula_Impl0_ReduceDb
   }
   BB19 {
     _50 <- cnt_38;
-    _49 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 370 55 62] _50 < (6 : int32));
+    _49 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 366 55 62] _50 < (6 : int32));
     _41 <- _49;
     goto BB20
   }
@@ -15079,11 +15061,11 @@ module CreuSat_Formula_Impl0_ReduceDb
   }
   BB21 {
     _45 <- _46;
-    _44 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 370 30 51] Len1.len _45);
+    _44 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 366 30 51] Len1.len _45);
     goto BB22
   }
   BB22 {
-    _42 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 370 26 51] _43 < _44);
+    _42 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 366 26 51] _43 < _44);
     switch (_42)
       | False -> goto BB18
       | _ -> goto BB19
@@ -15092,20 +15074,20 @@ module CreuSat_Formula_Impl0_ReduceDb
   BB23 {
     _57 <- Type.creusat_formula_formula_Formula_clauses ( * self_1);
     _58 <- i_17;
-    _56 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 371 27 42] Index0.index _57 _58);
+    _56 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 367 27 42] Index0.index _57 _58);
     goto BB24
   }
   BB24 {
     _55 <- Type.creusat_clause_clause_Clause_rest _56;
     _59 <- j_39;
-    _54 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 371 27 50] Index1.index _55 _59);
+    _54 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 367 27 50] Index1.index _55 _59);
     goto BB25
   }
   BB25 {
     _53 <- _54;
     _61 <- Type.creusat_trail_trail_Trail_assignments t_3;
     _60 <- _61;
-    _52 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 371 27 74] LitSat0.lit_sat _53 _60);
+    _52 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 367 27 74] LitSat0.lit_sat _53 _60);
     goto BB26
   }
   BB26 {
@@ -15115,7 +15097,7 @@ module CreuSat_Formula_Impl0_ReduceDb
       end
   }
   BB27 {
-    cnt_38 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 372 28 36] cnt_38 + (1 : int32));
+    cnt_38 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 368 28 36] cnt_38 + (1 : int32));
     _51 <- ();
     goto BB29
   }
@@ -15124,14 +15106,14 @@ module CreuSat_Formula_Impl0_ReduceDb
     goto BB29
   }
   BB29 {
-    j_39 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 374 24 30] j_39 + (1 : usize));
+    j_39 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 370 24 30] j_39 + (1 : usize));
     _6 <- ();
     goto BB17
   }
   BB30 {
     _40 <- ();
     _66 <- cnt_38;
-    _65 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 376 23 31] _66 >= (6 : int32));
+    _65 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 372 23 31] _66 >= (6 : int32));
     switch (_65)
       | False -> goto BB32
       | _ -> goto BB31
@@ -15139,7 +15121,7 @@ module CreuSat_Formula_Impl0_ReduceDb
   }
   BB31 {
     _69 <- Type.creusat_solver_solver_Solver_num_lemmas ( * s_4);
-    _68 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 378 27 43] _69 > (0 : usize));
+    _68 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 374 27 43] _69 > (0 : usize));
     switch (_68)
       | False -> goto BB34
       | _ -> goto BB33
@@ -15150,7 +15132,7 @@ module CreuSat_Formula_Impl0_ReduceDb
     goto BB37
   }
   BB33 {
-    s_4 <- { s_4 with current = (let Type.CreuSat_Solver_Solver a b c d e f g h =  * s_4 in Type.CreuSat_Solver_Solver ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 379 28 45] Type.creusat_solver_solver_Solver_num_lemmas ( * s_4) - (1 : usize)) b c d e f g h) };
+    s_4 <- { s_4 with current = (let Type.CreuSat_Solver_Solver a b c d e f g h =  * s_4 in Type.CreuSat_Solver_Solver ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 375 28 45] Type.creusat_solver_solver_Solver_num_lemmas ( * s_4) - (1 : usize)) b c d e f g h) };
     _67 <- ();
     goto BB35
   }
@@ -15165,7 +15147,7 @@ module CreuSat_Formula_Impl0_ReduceDb
     _73 <- borrow_mut ( * watches_2);
     watches_2 <- { watches_2 with current = ( ^ _73) };
     _74 <- t_3;
-    _70 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 381 24 57] DeleteClause0.delete_clause _71 _72 _73 _74);
+    _70 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 377 24 57] DeleteClause0.delete_clause _71 _72 _73 _74);
     goto BB36
   }
   BB36 {
@@ -15187,7 +15169,7 @@ module CreuSat_Formula_Impl0_ReduceDb
     goto BB41
   }
   BB41 {
-    i_17 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 385 12 18] i_17 + (1 : usize));
+    i_17 <- ([#"/Users/xavier/Code/sat/CreuSAT/src/formula.rs" 381 12 18] i_17 + (1 : usize));
     _6 <- ();
     goto BB9
   }

@@ -94,7 +94,6 @@ impl Clause {
         let old_self = ghost! { self };
         let end = self.rest.len() - 1;
         self.rest.swap(idx, end);
-        proof_assert!(^old_self.inner() == ^self);
     }
 
     #[inline(always)]

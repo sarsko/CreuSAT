@@ -61,7 +61,6 @@ impl Assignments {
             self.0[lit.index()] = 0;
         }
         proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *old_self.inner(), lit)); true);
-        proof_assert!(^old_self.inner() == ^self);
         proof_assert!(long_are_post_unit_inner(@_t, *_f, @self));
     }
 
