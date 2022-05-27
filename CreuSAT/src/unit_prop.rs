@@ -104,10 +104,11 @@ fn swap_zero_one(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize)
 */
 
 // OK on Mac
-#[cfg_attr(feature = "trust_unit", trusted)]
+//#[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
+#[requires(lit.to_watchidx_logic() < (@watches.watches).len())]
 #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(lit.index_logic() < @f.num_vars)]
@@ -125,10 +126,13 @@ fn swap_zero_one(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize)
 fn unit_prop_do_outer(
     f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize,
 ) -> Result<bool, usize> {
+    let old_w = ghost! { watches };
     let clause = &f.clauses[cref];
     let first_lit = clause.rest[0];
     if first_lit.lit_sat(&trail.assignments) {
         // We know blocker cannot be first, as then we would not be here
+        proof_assert!(^watches == ^old_w.inner());
+        proof_assert!(first_lit.index_logic() < @f.num_vars);
         watches.watches[lit.to_watchidx()][j].blocker = first_lit;
         return Ok(true);
     }
@@ -139,14 +143,15 @@ fn unit_prop_do_outer(
         //swap_zero_one(f, trail, watches, cref, lit, j);
         //swap(f, trail, watches, cref, 0, 1);
         // We know blocker cannot be second, as then we would not be here
-        watches.watches[lit.to_watchidx()][j].blocker = first_lit;
+        proof_assert!(^watches == ^old_w.inner());
+        proof_assert!(second_lit.index_logic() < @f.num_vars);
+        watches.watches[lit.to_watchidx()][j].blocker = second_lit;
         return Ok(true);
     }
     // At this point we know that none of the watched literals are sat
     let mut k: usize = 2;
     let clause_len: usize = f.clauses[cref].rest.len();
     let old_trail = ghost! { trail };
-    let old_w = ghost! { watches };
     #[invariant(k_bound, 2 <= @k && @k <= @clause_len)]
     #[invariant(watch_len, (@watches.watches).len() == (@(old_w.inner()).watches).len())]
     #[invariant(watch_inv, watches.invariant(*f))]
