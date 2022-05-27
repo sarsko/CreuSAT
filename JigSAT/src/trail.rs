@@ -82,6 +82,24 @@ impl Trail {
         self.curr_i = self.trail.len();
     }
 
+    pub fn restart(&mut self, f: &Formula, d: &mut Decisions) {
+        if self.decision_level() == 0 {
+            return;
+        }
+        let how_many = self.trail.len() - self.decisions[0];
+        let mut i: usize = 0;
+        while i < how_many {
+            self.backstep(f);
+            i += 1;
+        }
+        d.search = d.start;
+
+        while self.decision_level() > 0 {
+            self.decisions.pop();
+        }
+        self.curr_i = self.trail.len();
+    }
+
     pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
         self.lit_to_level[step.lit.index()] = self.decision_level();
         self.assignments.set_assignment(step.lit, _f, &self.trail);

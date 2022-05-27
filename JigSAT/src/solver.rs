@@ -1,6 +1,6 @@
 use crate::{
     assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, trail::*, unit_prop::*, util::*,
-    watches::*,
+    watches::{*, self},
 };
 
 
@@ -86,6 +86,15 @@ impl Solver {
         //}
     }
 
+    fn restart(&mut self, t: &mut Trail, f: &mut Formula, w: &mut Watches, d: &mut Decisions) {
+        t.restart(f, d);
+        if f.len() > self.max_len {
+            w.unwatch_all_lemmas(f, self);
+            f.reduceDB(t, self);
+            w.watch_all_lemmas(f, self);
+        }
+    }
+
 
     #[inline]
     fn handle_long_clause(
@@ -115,8 +124,11 @@ impl Solver {
             }
             Conflict::Unit(lit) => {
                 t.learn_unit(lit, f, d);
-                f.reduceDB(w, t, self);
-                f.simplify_formula(w, t);
+                f.reduceDB(t, self);
+                f.simplify_formula(w, t, self);
+                *w = Watches::new(f);
+                w.init_watches(f);
+                //w.watch_all_lemmas(f, self);
             }
             Conflict::Learned(level, clause) => {
                 self.handle_long_clause(f, t, w, d, clause, level);
@@ -162,10 +174,7 @@ impl Solver {
         let slow = (self.slow / 100) * 125;
         if self.fast > slow {
             self.fast = slow;
-            trail.backtrack_safe(0, f, d);
-            if f.len() > self.max_len {
-                f.reduceDB(w, trail, self);
-            }
+            self.restart(trail, f, w, d);
         }
         match d.get_next(&trail.assignments, f) {
             Some(next) => {

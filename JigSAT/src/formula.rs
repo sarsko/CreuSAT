@@ -94,32 +94,35 @@ impl Formula {
     fn delete_clause(&mut self, cref: usize, watches: &mut Watches, t: &Trail) {
         watches.unwatch(self, t, cref, self[cref][0]);
         watches.unwatch(self, t, cref, self[cref][1]);
-        self[cref].deleted = true;
+        //self[cref].deleted = true;
     }
 
-    pub fn delete_clauses(&mut self, watches: &mut Watches, t: &Trail) {
-        // unwatch trivially SAT
+    pub fn delete_clauses(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
         let mut i = 0;
         while i < self.len() {
-            if !self[i].deleted {
-                if self[i].len() > 1 && self.is_clause_sat(i, &t.assignments) {
-                    self.delete_clause(i, watches, t);
+            if !self[i].deleted && self[i].len() > 1 && self.is_clause_sat(i, &t.assignments) {
+                //self.delete_clause(i, watches, t);
+                if i < s.initial_len {
+                    s.initial_len -= 1;
+                    self.clauses.swap(i, s.initial_len);
+                    self.clauses.swap_remove(s.initial_len);
+                } else {
+                    self.clauses.swap_remove(i);
                 }
+            } else {
+                i += 1;
             }
-            i += 1;
         }
-        // TODO: Actually delete + remove UNSAT lits
-
         // Ideally remove UNSAT lits
     }
 
-    pub fn simplify_formula(&mut self, watches: &mut Watches, t: &Trail) {
+    pub fn simplify_formula(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
         // unwatch trivially SAT
-        self.delete_clauses(watches, t);
+        self.delete_clauses(watches, t, s);
         // Ideally remove UNSAT lits
     }
 
-    pub fn reduceDB(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
+    pub fn reduceDB(&mut self, t: &Trail, s: &mut Solver) {
         let mut i = self.len() - 1;
         self.clauses[s.initial_len..].sort_unstable_by(|a, b| a.less_than(b));
         s.max_len += self.len() + 300;
@@ -129,7 +132,6 @@ impl Formula {
         if self[self.len()-1].lbd <= 5 {
             s.max_len += s.special_inc_reduce_db;
         }
-        watches.unwatch_all_lemmas(self, s);
         let mut limit = (self.len() - s.initial_len) / 2;
         while i > s.initial_len && limit > 0 {
             let clause = &self[i];
@@ -146,12 +148,6 @@ impl Formula {
                 break;
             }
             */
-        }
-        i = s.initial_len;
-        while i < self.len() {
-            watches[self[i][0].to_neg_watchidx()].push(Watcher { cref: i, blocker: self[i][1]});
-            watches[self[i][1].to_neg_watchidx()].push(Watcher { cref: i, blocker: self[i][0]});
-            i += 1;
         }
     }
 }

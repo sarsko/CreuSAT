@@ -132,4 +132,13 @@ impl Watches {
             i += 1;
         }
     }
+
+    pub fn watch_all_lemmas(&mut self, f: &Formula, s: &Solver) {
+        let mut i = s.initial_len;
+        while i < f.len() {
+            self[f[i][0].to_neg_watchidx()].push(Watcher { cref: i, blocker: f[i][1]});
+            self[f[i][1].to_neg_watchidx()].push(Watcher { cref: i, blocker: f[i][0]});
+            i += 1;
+        }
+    }
 }
