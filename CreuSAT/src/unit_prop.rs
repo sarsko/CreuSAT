@@ -125,16 +125,8 @@ fn exists_new_watchable_lit(
     let mut k: usize = 2;
     let clause_len: usize = f.clauses[cref].rest.len();
     #[invariant(k_bound, 2 <= @k && @k <= @clause_len)]
-    #[invariant(watch_len, (@watches.watches).len() == (@(old_w.inner()).watches).len())]
-    #[invariant(watch_inv, watches.invariant(*f))]
-    #[invariant(trail_inv, trail.invariant(*f))]
-    #[invariant(f_equi, (old_f.inner()).equisat(*f))]
-    #[invariant(f_inv, f.invariant())]
-    #[invariant(f_len, (@f.clauses).len() == (@(old_f.inner()).clauses).len())]
-    #[invariant(len_same, (@(@f.clauses)[@cref]).len() == @clause_len)]
-    #[invariant(nvars_unch, @f.num_vars == @(old_f.inner()).num_vars)]
-    #[invariant(f_unch, f == old_f.inner())]
-    #[invariant(w_unch, *watches == *old_w.inner())]
+    #[invariant(f_unchanged, f == old_f.inner())]
+    #[invariant(w_unchanged, *watches == *old_w.inner())]
     #[invariant(proph_f, ^f == ^old_f.inner())]
     #[invariant(proph_w, ^watches == ^old_w.inner())]
     #[invariant(uns, forall<m: Int> 2 <= m && m < @k ==> ((@(@f.clauses)[@cref])[m]).unsat(trail.assignments))]
