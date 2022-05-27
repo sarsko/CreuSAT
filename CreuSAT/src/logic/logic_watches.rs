@@ -13,8 +13,9 @@ pub fn watches_invariant_internal(w: Seq<Vec<Watcher>>, n: Int, f: Formula) -> b
         2 * n == w.len() &&
         forall<i: Int> 0 <= i && i < w.len() ==>
         forall<j: Int> 0 <= j && j < (@w[i]).len() ==>
-            (@(@w[i])[j].cref < (@f.clauses).len() &&
-            (@(@f.clauses)[@(@w[i])[j].cref]).len() > 1)
+            (@(@w[i])[j].cref < (@f.clauses).len()
+            && (@(@f.clauses)[@(@w[i])[j].cref]).len() > 1)
+            && (@w[i])[j].blocker.index_logic() < @f.num_vars
     }
 }
 

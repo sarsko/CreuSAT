@@ -142,8 +142,12 @@ impl Formula {
         let first_lit = clause.rest[0];
         let second_lit = clause.rest[1];
         self.clauses.push(clause);
-        watches.add_watcher(first_lit, cref, self);
-        watches.add_watcher(second_lit, cref, self);
+        //watches.add_watcher(first_lit, cref, self);
+        //watches.add_watcher(second_lit, cref, self);
+        watches.add_watcher(first_lit, cref, self, second_lit);
+        watches.add_watcher(second_lit, cref, self, first_lit);
+        //watches.watches[first_lit.to_neg_watchidx()].push(Watcher { cref, blocker: second_lit});
+        //watches.watches[second_lit.to_neg_watchidx()].push(Watcher { cref, blocker: first_lit});
         proof_assert!((old_self.inner()).equisat_compatible(*self));
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
@@ -193,8 +197,10 @@ impl Formula {
         self.swap_lits_in_clause(t, watches, cref, 1, idx);
         let first_lit = self.clauses[cref].rest[0];
         let second_lit = self.clauses[cref].rest[1];
-        watches.add_watcher(first_lit, cref, self);
-        watches.add_watcher(second_lit, cref, self);
+        //watches.add_watcher(first_lit, cref, self);
+        //watches.add_watcher(second_lit, cref, self);
+        watches.watches[first_lit.to_neg_watchidx()].push(Watcher { cref, blocker: second_lit});
+        watches.watches[second_lit.to_neg_watchidx()].push(Watcher { cref, blocker: first_lit});
         proof_assert!((old_self.inner()).equisat(*self));
     }
 

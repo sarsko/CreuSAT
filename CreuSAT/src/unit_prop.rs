@@ -13,7 +13,7 @@ use crate::logic::{
 };
 
 // OK
-#[cfg_attr(feature = "trust_unit", trusted)]
+//#[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains(trail.invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
@@ -36,15 +36,16 @@ fn unit_prop_check_rest(
     f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
 ) -> Result<(), ()> {
     let curr_lit = f.clauses[cref].rest[k];
-    if curr_lit.lit_unset(&trail.assignments) || curr_lit.lit_sat(&trail.assignments) {
-        // Can swap to !unsat
+    if !curr_lit.lit_unsat(&trail.assignments) { //curr_lit.lit_unset(&trail.assignments) || curr_lit.lit_sat(&trail.assignments) {
         if f.clauses[cref].rest[0].index() == lit.index() {
             // First
             swap(f, trail, watches, cref, k, 0);
             update_watch(f, trail, watches, cref, j, 0, lit);
         } else {
             swap(f, trail, watches, cref, k, 1);
-            update_watch(f, trail, watches, cref, j, 1, lit);
+            swap(f, trail, watches, cref, 1, 0);
+            //update_watch(f, trail, watches, cref, j, 1, lit);
+            update_watch(f, trail, watches, cref, j, 0, lit);
         }
         return Ok(()); // dont increase j
     }
@@ -124,16 +125,21 @@ fn swap_zero_one(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize)
 fn unit_prop_do_outer(
     f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize,
 ) -> Result<bool, usize> {
-    let first_lit = f.clauses[cref].rest[0];
+    let clause = &f.clauses[cref];
+    let first_lit = clause.rest[0];
     if first_lit.lit_sat(&trail.assignments) {
+        // We know blocker cannot be first, as then we would not be here
+        watches.watches[lit.to_watchidx()][j].blocker = first_lit;
         return Ok(true);
     }
-    let second_lit = f.clauses[cref].rest[1];
+    let second_lit = clause.rest[1];
     let old_f = ghost! { f };
     if second_lit.lit_sat(&trail.assignments) {
         // We swap to make it faster the next time
         //swap_zero_one(f, trail, watches, cref, lit, j);
-        swap(f, trail, watches, cref, 0, 1);
+        //swap(f, trail, watches, cref, 0, 1);
+        // We know blocker cannot be second, as then we would not be here
+        watches.watches[lit.to_watchidx()][j].blocker = first_lit;
         return Ok(true);
     }
     // At this point we know that none of the watched literals are sat
@@ -222,7 +228,7 @@ fn unit_prop_do_outer(
 }
 
 // OK on Mac
-#[cfg_attr(feature = "trust_unit", trusted)]
+//#[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
@@ -253,14 +259,19 @@ fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Wat
     #[invariant(proph_f, ^f == ^old_f.inner())]
     #[invariant(proph_w, ^watches == ^old_w.inner())]
     while j < watches.watches[watchidx].len() {
-        let cref = watches.watches[watchidx][j].cref;
-        match unit_prop_do_outer(f, trail, watches, cref, lit, j) {
-            Ok(true) => {
-                j += 1;
-            }
-            Ok(false) => {}
-            Err(cref) => {
-                return Err(cref);
+        let curr_watch = &watches.watches[watchidx][j];
+        if curr_watch.blocker.lit_sat(&trail.assignments) {
+            j += 1;
+        } else {
+            let cref = curr_watch.cref;
+            match unit_prop_do_outer(f, trail, watches, cref, lit, j) {
+                Ok(true) => {
+                    j += 1;
+                }
+                Ok(false) => {}
+                Err(cref) => {
+                    return Err(cref);
+                }
             }
         }
     }
