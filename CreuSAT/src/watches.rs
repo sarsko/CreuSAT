@@ -101,7 +101,7 @@ impl Watches {
     }
     */
 
-    //#[cfg_attr(feature = "trust_watches", trusted)]
+    #[cfg_attr(feature = "trust_watches", trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(@cref < (@_f.clauses).len())]
     #[requires(lit.index_logic() < @usize::MAX/2)]

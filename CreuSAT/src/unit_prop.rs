@@ -12,8 +12,7 @@ use crate::logic::{
     logic_trail::*, //tmp
 };
 
-// OK
-//#[cfg_attr(feature = "trust_unit", trusted)]
+#[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains(trail.invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
@@ -28,7 +27,7 @@ use crate::logic::{
 #[ensures(f.equisat(^f))]
 #[ensures((@f.clauses).len() == (@(^f).clauses).len())]
 #[ensures(!result ==> (@(@(^f).clauses)[@cref])[@k].unsat(trail.assignments) && ^f == *f && *watches == ^watches)]
-#[ensures((@(@(^f).clauses)[@cref]).len() == (@(@f.clauses)[@cref]).len())] // ADDDED, will need proving
+#[ensures((@(@(^f).clauses)[@cref]).len() == (@(@f.clauses)[@cref]).len())]
 fn check_and_move_watch(
     f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
 ) -> bool {
@@ -100,7 +99,7 @@ fn swap_zero_one(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize)
 }
 */
 
-//#[cfg_attr(feature = "trust_unit", trusted)]
+#[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
@@ -111,7 +110,6 @@ fn swap_zero_one(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize)
 #[requires(watches.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
 #[requires((@(@f.clauses)[@cref]).len() >= 2)]
-#[ensures(result ==> true)]
 #[ensures(!result ==> forall<m: Int> 2 <= m && m < (@(@f.clauses)[@cref]).len() ==> (@(@f.clauses)[@cref])[m].unsat(trail.assignments))]
 #[ensures(!result ==> (@(@f.clauses)[@cref]) == (@(@(^f).clauses)[@cref]))]
 #[ensures(@f.num_vars == @(^f).num_vars)]
@@ -139,7 +137,7 @@ fn exists_new_watchable_lit(
     false
 }
 
-//#[cfg_attr(feature = "trust_unit", trusted)]
+#[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
@@ -172,7 +170,6 @@ fn propagate_lit_with_regard_to_clause(
         return Ok(true);
     }
     let second_lit = clause.rest[1];
-    let old_f = ghost! { f };
     if second_lit.lit_sat(&trail.assignments) {
         // We swap to make it faster the next time
         //swap_zero_one(f, trail, watches, cref, lit, j);
@@ -187,7 +184,6 @@ fn propagate_lit_with_regard_to_clause(
     if exists_new_watchable_lit(f, trail, watches, cref, j, lit) {
         return Ok(false); // Watches have been updated -> don't increase j
     }
-    //proof_assert!((old_trail.inner()).decisions == trail.decisions);
     // If we have gotten here, the clause is either all false or unit
     proof_assert!((@f.clauses)[@cref].unsat(trail.assignments) || ((@(@f.clauses)[@cref])[0]).unset(trail.assignments) || ((@(@f.clauses)[@cref])[1]).unset(trail.assignments));
     if first_lit.lit_unset(&trail.assignments) {
@@ -237,8 +233,7 @@ fn propagate_lit_with_regard_to_clause(
     }
 }
 
-// OK on Mac
-//#[cfg_attr(feature = "trust_unit", trusted)]
+#[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
@@ -288,7 +283,6 @@ fn propagate_literal(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, 
     Ok(())
 }
 
-// OK on Mac
 #[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
