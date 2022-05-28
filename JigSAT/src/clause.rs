@@ -5,7 +5,7 @@ pub struct Clause {
     pub deleted: bool,
     pub lbd: u32,
     pub search: usize,
-    pub rest: Vec<Lit>,
+    pub lits: Vec<Lit>,
 }
 
 
@@ -26,7 +26,7 @@ impl IndexMut<usize> for Clause {
     fn index_mut(&mut self, i: usize) -> &mut Lit {
         //#[cfg(feature = "unsafe_access")]
         unsafe {
-            self.rest.get_unchecked_mut(i)
+            self.lits.get_unchecked_mut(i)
         }
         //#[cfg(not(feature = "unsafe_access"))]
         //&mut self.lits[i]
@@ -101,7 +101,7 @@ impl Clause {
     }
 
     pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
-        Clause { deleted: false, lbd: 0, search: 1, rest: vec.clone() }
+        Clause { deleted: false, lbd: 0, search: 1, lits: vec.clone() }
     }
 
     #[inline(always)]
@@ -134,9 +134,11 @@ impl Clause {
         lbd
     }
 
+    /*
     pub fn new_and_set_lbd(lits: Vec<Lit>, trail: &Trail, solver: &mut Solver) -> Clause {
         let lbd = Clause::calc_lbd(&lits, trail, solver);
         Clause { deleted: false, lbd, lits }
     }
+    */
 
 }

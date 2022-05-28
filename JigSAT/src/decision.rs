@@ -19,7 +19,7 @@ impl Default for Node {
 }
 
 pub struct Decisions {
-    linked_list: Vec<Node>,
+    pub linked_list: Vec<Node>,
     timestamp: usize,
     pub start: usize,
     pub search: usize,
