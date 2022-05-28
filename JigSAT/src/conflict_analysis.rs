@@ -82,6 +82,6 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
             i += 1;
         }
         out_learnt.swap(1, max_i);
-        Conflict::Learned(max_level, Clause{ deleted: false, lbd: 0, search: 2, rest: out_learnt})
+        Conflict::Learned(max_level, Clause{ deleted: false, lbd: 0, search: 1, rest: out_learnt})
     }
 }
