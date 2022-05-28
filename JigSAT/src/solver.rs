@@ -91,14 +91,13 @@ impl Solver {
     fn handle_long_clause(
         &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, level: u32,
     ) {
-        let mut i: usize = 0;
         self.increase_num_conflicts();
         clause.calc_and_set_lbd(t, self);
         let lbd = clause.lbd;
         let cref = f.add_clause(clause, w, t);
         update_fast(&mut self.fast, lbd as usize);
         update_slow(&mut self.slow, lbd as usize);
-        d.increment_and_move(f, cref, &t.assignments);
+        //d.increment_and_move(f, cref, &t.assignments);
         t.backtrack_to(level, f, d);
         let lit = f[cref][0];
         let step = Step { lit: lit, decision_level: level, reason: Reason::Long(cref) };
@@ -108,7 +107,7 @@ impl Solver {
     fn handle_conflict(
         &mut self, f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches, d: &mut Decisions,
     ) -> Option<bool> {
-        let res = analyze_conflict(f, t, cref);
+        let res = analyze_conflict(f, t, cref, d);
         match res {
             Conflict::Ground => {
                 return Some(false);
