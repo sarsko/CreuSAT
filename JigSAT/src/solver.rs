@@ -90,10 +90,10 @@ impl Solver {
 
     #[inline]
     fn handle_long_clause(
-        &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, clause: Clause, level: u32,
+        &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, level: u32,
     ) {
         self.increase_num_conflicts();
-        //clause.calc_and_set_lbd(t, self);
+        clause.calc_and_set_lbd(t, self);
         let lbd = clause.lbd;
         let cref = f.add_clause(clause, w, t);
         update_fast(&mut self.fast, lbd as usize);

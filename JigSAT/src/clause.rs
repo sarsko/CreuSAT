@@ -116,15 +116,15 @@ impl Clause {
         self.pop();
     }
 
-    fn calc_lbd(lits: &Vec<Lit>, trail: &Trail, solver: &mut Solver) -> u32 {
+    fn calc_lbd(&self, trail: &Trail, solver: &mut Solver) -> u32 {
         // We don't bother calculating for long clauses.
-        if lits.len() >= 2024 {
+        if self.len() >= 2024 {
             return 2024;
         }
         let mut lbd: u32 = 0;
         let mut i = 0;
-        while i < lits.len() {
-            let level = trail.lit_to_level[lits[i].index()];
+        while i < self.len() {
+            let level = trail.lit_to_level[self[i].index()];
             if solver.perm_diff[level as usize] != solver.num_conflicts {
                 solver.perm_diff[level as usize] = solver.num_conflicts;
                 lbd += 1;
@@ -134,11 +134,8 @@ impl Clause {
         lbd
     }
 
-    /*
-    pub fn new_and_set_lbd(lits: Vec<Lit>, trail: &Trail, solver: &mut Solver) -> Clause {
-        let lbd = Clause::calc_lbd(&lits, trail, solver);
-        Clause { deleted: false, lbd, lits }
+    pub fn calc_and_set_lbd(&mut self, trail: &Trail, solver: &mut Solver) {
+        self.lbd = self.calc_lbd(trail, solver);
     }
-    */
 
 }
