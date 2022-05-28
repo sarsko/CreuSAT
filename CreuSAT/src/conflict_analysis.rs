@@ -72,14 +72,14 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
         (@c)[j].lit_in_internal(@new) && true && true && true)]
     #[invariant(from_c, forall<j: Int> 0 <= j && j < (@new).len() ==> (@new)[j].lit_in(*c))]
     while i < c.rest.len() {
-        let old_new = Ghost::record(&new);
+        let old_new = ghost! { new };
         if c.rest[i].index() == idx {
-            proof_assert!(@new == @@old_new);
+            proof_assert!(@new == @old_new.inner());
             proof_assert!((@c)[@i].index_logic() == @idx);
             proof_assert!(forall<j: Int> 0 <= j && j < @i && (@c)[j].index_logic() != @idx ==>
             (@c)[j].lit_in_internal(@new));
         } else if idx_in(&new, c.rest[i].index()) {
-            proof_assert!(@new == @@old_new);
+            proof_assert!(@new == @old_new.inner());
             proof_assert!((@c)[@i].lit_in_internal(@new));
             proof_assert!((@c)[@i].index_logic() != @idx);
             proof_assert!(forall<j: Int> 0 <= j && j < @i && (@c)[j].index_logic() != @idx ==>
@@ -96,10 +96,10 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
         i += 1;
     }
     let mut _o_idx: Option<usize> = None;
-    let old_new = Ghost::record(&new);
-    proof_assert!(@new == @@old_new);
-    proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==>
-        (@new)[j] == (@@old_new)[j]);
+    let old_new = ghost! { new };
+    proof_assert!(@new == @old_new.inner());
+    proof_assert!(forall<j: Int> 0 <= j && j < (@old_new.inner()).len() ==>
+        (@new)[j] == (@old_new.inner())[j]);
     i = 0;
     #[invariant(i_less, @i <= (@o.rest).len())]
     #[invariant(new_elems, forall<j: Int> 0 <= j && j < (@new).len() ==>
@@ -109,10 +109,10 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
     #[invariant(not_idx, forall<j: Int> 0 <= j && j < (@new).len() ==> (@new)[j].index_logic() != @idx)]
     #[invariant(resolve, forall<j: Int> 0 <= j && j < @i && (@o)[j].index_logic() != @idx ==>
         (@o)[j].lit_in_internal(@new))]
-    #[invariant(from_o, forall<j: Int> 0 <= j && j < (@new).len() - (@@old_new).len() ==> (@new)[(@@old_new).len() + j].lit_in(*o))]
-    #[invariant(from_c, forall<j: Int> 0 <= j && j < (@@old_new).len() ==> (@new)[j].lit_in(*c))]
-    #[invariant(old_unchanged, forall<j: Int> 0 <= j && j < (@@old_new).len() ==>
-        (@new)[j] == (@@old_new)[j])]
+    #[invariant(from_o, forall<j: Int> 0 <= j && j < (@new).len() - (@old_new.inner()).len() ==> (@new)[(@old_new.inner()).len() + j].lit_in(*o))]
+    #[invariant(from_c, forall<j: Int> 0 <= j && j < (@old_new.inner()).len() ==> (@new)[j].lit_in(*c))]
+    #[invariant(old_unchanged, forall<j: Int> 0 <= j && j < (@old_new.inner()).len() ==>
+        (@new)[j] == (@old_new.inner())[j])]
     #[invariant(maintains,
             (forall<j: Int> 0 <= j && j < (@c ).len() && (@c)[j].index_logic() != @idx ==> (@c )[j].lit_in_internal(@new))
     )]
@@ -136,14 +136,14 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
             new.push(o.rest[i]);
         }
         */
-        let old_new2 = Ghost::record(&new);
-        proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==>
-            (@@old_new2)[j] == (@@old_new)[j]);
-        proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==>
-            (@new)[j] == (@@old_new)[j]);
-        proof_assert!(@new == @@old_new2);
+        let old_new2 = ghost! { new };
+        proof_assert!(forall<j: Int> 0 <= j && j < (@old_new.inner()).len() ==>
+            (@old_new2.inner())[j] == (@old_new.inner())[j]);
+        proof_assert!(forall<j: Int> 0 <= j && j < (@old_new.inner()).len() ==>
+            (@new)[j] == (@old_new.inner())[j]);
+        proof_assert!(@new == @old_new2.inner());
         if idx_in(&new, o.rest[i].index()) {
-            proof_assert!(@new == @@old_new2);
+            proof_assert!(@new == @old_new2.inner());
             proof_assert!(@c_idx < (@c).len() && (@c)[@c_idx].index_logic() == @idx &&
                 (exists<k: Int> 0 <= k && k < (@o).len() && k != @i &&
                     (@o)[k].is_opp((@c)[@c_idx]))
@@ -166,25 +166,25 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
                     (@o)[@i].lit_in_internal(@new)
             );
         } else if o.rest[i].index() == idx {
-            proof_assert!(@new == @@old_new2);
+            proof_assert!(@new == @old_new2.inner());
             proof_assert!((@o)[@i].index_logic() == @idx);
             _o_idx = Some(i);
         } else {
             new.push(o.rest[i]);
             proof_assert!((@new)[(@new).len() - 1] == (@o.rest)[@i]);
             proof_assert!((@new)[(@new).len() - 1].lit_in(*o));
-            proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new2).len() ==>
-                (@new)[j] == (@@old_new2)[j]);
-            proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==>
-                (@new)[j] == (@@old_new)[j]);
-            proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==>
-                (@@old_new2)[j] == (@@old_new)[j]);
+            proof_assert!(forall<j: Int> 0 <= j && j < (@old_new2.inner()).len() ==>
+                (@new)[j] == (@old_new2.inner())[j]);
+            proof_assert!(forall<j: Int> 0 <= j && j < (@old_new.inner()).len() ==>
+                (@new)[j] == (@old_new.inner())[j]);
+            proof_assert!(forall<j: Int> 0 <= j && j < (@old_new.inner()).len() ==>
+                (@old_new2.inner())[j] == (@old_new.inner())[j]);
             proof_assert!((@o)[@i].lit_in_internal(@new));
         }
-        proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==>
-            (@@old_new2)[j] == (@@old_new)[j]);
-        proof_assert!(forall<j: Int> 0 <= j && j < (@@old_new).len() ==>
-            (@new)[j] == (@@old_new)[j]);
+        proof_assert!(forall<j: Int> 0 <= j && j < (@old_new.inner()).len() ==>
+            (@old_new2.inner())[j] == (@old_new.inner())[j]);
+        proof_assert!(forall<j: Int> 0 <= j && j < (@old_new.inner()).len() ==>
+            (@new)[j] == (@old_new.inner())[j]);
         i += 1;
     }
     let out = Clause { deleted: false, rest: new };
@@ -244,7 +244,7 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
 #[ensures((@c).len() > 0)] // TODO: Need to prove this
 fn resolve_mut(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, _a: &Assignments) {
     let mut i: usize = 0;
-    let old_c = Ghost::record(&c);
+    let old_c = ghost! (&c);
     c.remove_from_clause(c_idx, _f);
     proof_assert!(forall<j: Int> 0 <= j && j < (@c).len() ==>
         (@c)[j].invariant(@_f.num_vars));
@@ -286,15 +286,15 @@ fn resolve_mut(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usiz
 })]
 #[ensures(@^i < (@trail.trail).len())] // Not needed?
 fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula) -> Option<usize> {
-    let old_i = Ghost::record(&i);
+    let old_i = ghost!{i};
     #[invariant(i_bound, 0 <= @i && @i <= (@trail.trail).len())]
-    #[invariant(proph_i, ^i == ^@old_i)]
+    #[invariant(proph_i, ^i == ^old_i.inner())]
     while *i > 0 {
         *i -= 1;
         let mut k: usize = 0;
         #[invariant(i_bound2, 0 <= @i && @i < (@trail.trail).len())]
         #[invariant(k_bound, 0 <= @k && @k <= (@c).len())]
-        #[invariant(proph_i2, ^i == ^@old_i)]
+        #[invariant(proph_i2, ^i == ^old_i.inner())]
         while k < c.rest.len() {
             if trail.trail[*i].lit.index() == c.rest[k].index() {
                 return Some(k);

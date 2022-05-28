@@ -134,15 +134,15 @@ impl Decisions {
     #[ensures((@(^self).linked_list).len() == (@self.linked_list).len())]
     fn rescore(&mut self, _f: &Formula) {
         let INVALID: usize = usize::MAX;
-        let old_self = Ghost::record(&self);
+        let old_self = ghost! { self };
         let mut curr_score = self.linked_list.len();
         let mut i: usize = 0;
         let mut curr = self.start;
         #[invariant(curr_ok, curr == usize::MAX || @curr < (@self.linked_list).len())]
-        #[invariant(proph, ^@old_self == ^self)]
+        #[invariant(proph, ^old_self.inner() == ^self)]
         #[invariant(unch, forall<j: Int> 0 <= j && j < (@self.linked_list).len() ==>
-            ((@self.linked_list)[j].next == (@(@old_self).linked_list)[j].next
-            && (@self.linked_list)[j].prev == (@(@old_self).linked_list)[j].prev)
+            ((@self.linked_list)[j].next == (@(old_self.inner()).linked_list)[j].next
+            && (@self.linked_list)[j].prev == (@(old_self.inner()).linked_list)[j].prev)
         )]
         #[invariant(inv, self.invariant(@_f.num_vars))]
         while curr != INVALID {
@@ -205,10 +205,10 @@ impl Decisions {
     pub fn increment_and_move(&mut self, f: &Formula, cref: usize, a: &Assignments) {
         let clause = &f.clauses[cref];
         let mut counts_with_index: Vec<(usize, usize)> = vec::from_elem((0, 0), clause.rest.len());
-        let old_self = Ghost::record(&self);
+        let old_self = ghost! { self };
         let mut i: usize = 0;
-        #[invariant(unch, @old_self == self)]
-        #[invariant(proph, ^@old_self == ^self)]
+        #[invariant(unch, old_self.inner() == self)]
+        #[invariant(proph, ^old_self.inner() == ^self)]
         #[invariant(len_same, (@clause).len() == (@counts_with_index).len())]
         #[invariant(all_less, forall<j: Int> 0 <= j && j < @i ==>
             @(@counts_with_index)[j].1 < (@self.linked_list).len()
@@ -222,7 +222,7 @@ impl Decisions {
         sort(&mut counts_with_index);
         //counts_with_index.sort_by_key(|k| k.0);
         i = 0;
-        #[invariant(proph, ^@old_self == ^self)]
+        #[invariant(proph, ^old_self.inner() == ^self)]
         #[invariant(inv, self.invariant(@f.num_vars))]
         #[invariant(len_same, (@clause).len() == (@counts_with_index).len())]
         while i < counts_with_index.len() {

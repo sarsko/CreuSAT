@@ -46,7 +46,7 @@ impl Trail {
                 self.assignments[step.lit.index()] += 2; 
                 // Removing this would be hard to prove lol.
                 //self.lit_to_level[step.lit.index()] = u32::MAX;
-                return step.lit.index();
+                step.lit.index()
             }
             None => {
                 unreachable!();
@@ -95,16 +95,17 @@ impl Trail {
         self.lit_to_level[idx] = dlevel;
         self.assignments[idx] -= 2;
         let lit = Lit::phase_saved(idx, &self.assignments);
-        let step = Step { lit: lit, decision_level: dlevel, reason: Reason::Decision };
+        let step = Step { lit, decision_level: dlevel, reason: Reason::Decision };
         self.trail.push(step);
     }
 
+    #[inline]
     pub fn learn_unit(&mut self, lit: Lit, f: &Formula, d: &mut Decisions) {
         self.backtrack_safe(0, f, d);
-        self.enq_assignment(Step { lit: lit, decision_level: 0, reason: Reason::Unit }, f);
+        self.enq_assignment(Step { lit, decision_level: 0, reason: Reason::Unit }, f);
     }
 
-    pub fn learn_units(&mut self, f: &Formula, d: &mut Decisions) -> Option<usize> {
+    pub fn learn_units(&mut self, f: &mut Formula) -> Option<usize> {
         let mut i = 0;
         while i < f.len() {
             let clause = &f[i];
@@ -115,12 +116,13 @@ impl Trail {
                     if lit.lit_unsat(&self.assignments) {
                         return Some(i);
                     }
-                } else {
-                    self.learn_unit(lit, f, d);
-                }
+                } 
+                self.enq_assignment(Step { lit, decision_level: 0, reason: Reason::Unit }, f);
+                f.remove_clause_in_preprocessing(i);
+            } else {
+                i += 1;
             }
-            i += 1;
         }
-        return None;
+        None
     }
 }

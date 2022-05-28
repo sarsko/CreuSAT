@@ -64,7 +64,7 @@ impl Trail {
     #[ensures(@result < @f.num_vars)]
     //#[ensures((@self.trail).len() == (@(^self).trail).len() + 1)] // added
     fn backstep(&mut self, f: &Formula) -> usize {
-        let old_t = Ghost::record(&self);
+        let old_t = ghost! { self };
         //proof_assert!(self == @old_t);
         let last = self.trail.pop();
         match last {
@@ -77,8 +77,8 @@ impl Trail {
                     self.assignments.0[step.lit.index()] = 3; // TODO lol
                 }
                 */
-                proof_assert!(@self.trail == pop(@(@old_t).trail));
-                proof_assert!(^@old_t == ^self);
+                proof_assert!(@self.trail == pop(@(old_t.inner()).trail));
+                proof_assert!(^old_t.inner() == ^self);
                 proof_assert!((lemma_backtrack_ok(*self, *f, step.lit)); true);
                 self.lit_to_level[step.lit.index()] = usize::MAX;
                 proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
@@ -124,21 +124,21 @@ impl Trail {
     #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
     // Backtracks to the start of level
     pub fn backtrack_to(&mut self, level: usize, f: &Formula, d: &mut Decisions) {
-        let old_t = Ghost::record(&self);
-        let old_d = Ghost::record(&d);
+        let old_t = ghost! { self };
+        let old_d = ghost! { d };
         let how_many = self.trail.len() - self.decisions[level];
         let des = self.decisions[level];
         let mut i: usize = 0;
         let mut curr = d.search;
         let mut timestamp = if curr != usize::MAX { d.linked_list[curr].ts } else { 0 }; // revisit this later
-        #[invariant(i_less2, @i <= (@(@old_t).trail).len())]
+        #[invariant(i_less2, @i <= (@(old_t.inner()).trail).len())]
         #[invariant(i_less, i <= how_many)]
         #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
         #[invariant(inv, self.invariant_no_decision(*f))]
         #[invariant(d_inv, d.invariant(@f.num_vars))]
-        //#[invariant(len_is, (@self.trail).len() == (@(@old_t).trail).len() - @i)] // we don't care anymore
-        #[invariant(proph, ^@old_t == ^self)]
-        #[invariant(proph_d, ^@old_d == ^d)]
+        //#[invariant(len_is, (@self.trail).len() == (@(old_t.inner()).trail).len() - @i)] // we don't care anymore
+        #[invariant(proph, ^old_t.inner() == ^self)]
+        #[invariant(proph_d, ^old_d.inner() == ^d)]
         #[invariant(curr_less, @curr < (@d.linked_list).len() || @curr == @usize::MAX)]
         // Hmm maybe change invariant
         while i < how_many {
@@ -155,16 +155,16 @@ impl Trail {
 
         #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
         #[invariant(inv, self.invariant_no_decision(*f))]
-        #[invariant(proph, ^@old_t == ^self)]
+        #[invariant(proph, ^old_t.inner() == ^self)]
         while self.decisions.len() > level {
-            let old_t2 = Ghost::record(&self);
+            let old_t2 = ghost! { self };
             proof_assert!(sorted(@self.decisions));
             proof_assert!((@self.decisions).len() > 0);
             proof_assert!(lemma_pop_maintains_sorted(@self.decisions); true);
             match self.decisions.pop() {
                 Some(_) => {
-                    proof_assert!(@self.decisions == pop(@(@old_t2).decisions));
-                    proof_assert!((^@old_t2) == ^self);
+                    proof_assert!(@self.decisions == pop(@(old_t2.inner()).decisions));
+                    proof_assert!((^old_t2.inner()) == ^self);
                 }
                 None => {
                     unreachable!();
@@ -175,23 +175,23 @@ impl Trail {
         // This is a noop, and should be proven away.
         #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
         #[invariant(inv, self.invariant_no_decision(*f))]
-        #[invariant(proph, ^@old_t == ^self)]
+        #[invariant(proph, ^old_t.inner() == ^self)]
         while self.decisions.len() > 0 && self.decisions[self.decisions.len() - 1] > self.trail.len() {
-            let old_t3 = Ghost::record(&self);
+            let old_t3 = ghost! { self };
             proof_assert!(sorted(@self.decisions));
             proof_assert!((@self.decisions).len() > 0);
             proof_assert!(lemma_pop_maintains_sorted(@self.decisions); true);
             //proof_assert!((@self.decisions) == (@(@old_trail).decisions));
             match self.decisions.pop() {
                 Some(_) => {
-                    proof_assert!((@self.decisions) == pop(@(@old_t3).decisions));
-                    proof_assert!((^@old_t3) == ^self);
+                    proof_assert!((@self.decisions) == pop(@(old_t3.inner()).decisions));
+                    proof_assert!((^old_t3.inner()) == ^self);
                 }
                 None => {
                     unreachable!();
                 }
             }
-            proof_assert!(lemma_pop_maintains_sorted(@(@old_t3).decisions); true);
+            proof_assert!(lemma_pop_maintains_sorted(@(old_t3.inner()).decisions); true);
             proof_assert!(sorted(@self.decisions));
         }
         proof_assert!(
@@ -338,11 +338,11 @@ impl Trail {
     })]
     pub fn learn_units(&mut self, f: &Formula, d: &mut Decisions) -> Option<usize> {
         let mut i = 0;
-        let old_d = Ghost::record(&d);
-        let old_self = Ghost::record(&self);
+        let old_d = ghost! { d };
+        let old_self = ghost! { self };
         #[invariant(self_inv, self.invariant(*f))]
-        #[invariant(proph, ^@old_self == ^self)]
-        #[invariant(proph_d, ^@old_d == ^d)]
+        #[invariant(proph, ^old_self.inner() == ^self)]
+        #[invariant(proph_d, ^old_d.inner() == ^d)]
         #[invariant(d_inv, d.invariant(@f.num_vars))]
         while i < f.clauses.len() {
             let clause = &f.clauses[i];

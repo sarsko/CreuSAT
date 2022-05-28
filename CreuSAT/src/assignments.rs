@@ -19,9 +19,10 @@ pub type AssignedState = u8;
 pub struct Assignments(pub Vec<AssignedState>);
 
 #[cfg_attr(not(untrust_perm), trusted)]
+#[trusted]
 #[ensures(@l <= @result && @result  < @u)]
 fn rand_in_range(l: usize, u: usize) -> u8 {
-    use creusot_contracts::rand::Rng;
+    use rand::Rng;
     let n = rand::thread_rng().gen_range(l..u);
     n as u8
 }
@@ -51,16 +52,15 @@ impl Assignments {
             && j != lit.index_logic() ==> (@*self)[j] == (@^self)[j]))]
     #[ensures(lit.sat(^self))]
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {
-        let old_self = Ghost::record(&self);
+        let old_self = ghost! { self };
         //self.0[lit.index()] = lit.is_positive() as u8;
-        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *@old_self, lit)); true);
+        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *old_self.inner(), lit)); true);
         if lit.is_positive() {
             self.0[lit.index()] = 1;
         } else {
             self.0[lit.index()] = 0;
         }
-        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *@old_self, lit)); true);
-        proof_assert!(^@old_self == ^self);
+        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *old_self.inner(), lit)); true);
         proof_assert!(long_are_post_unit_inner(@_t, *_f, @self));
     }
 

@@ -106,15 +106,15 @@ impl Formula {
     #[ensures((@(@self.clauses)[@cref]).len() == (@(@(^self).clauses)[@cref]).len())]
     #[ensures(self.equisat(^self))]
     pub fn swap_lits_in_clause(&mut self, trail: &Trail, watches: &Watches, cref: usize, j: usize, k: usize) {
-        let old_f = Ghost::record(&self);
+        let old_f = ghost! { self };
         proof_assert!(no_duplicate_indexes_inner(@(@self.clauses)[@cref]));
         proof_assert!(long_are_post_unit_inner(@trail.trail, *self, @trail.assignments) && true);
         self.clauses[cref].rest.swap(j, k);
-        proof_assert!(lemma_swap_maintains_post_unit(((@(@old_f).clauses)[@cref]), ((@self.clauses)[@cref]), @j, @k, trail.assignments); true);
+        proof_assert!(lemma_swap_maintains_post_unit(((@(old_f.inner()).clauses)[@cref]), ((@self.clauses)[@cref]), @j, @k, trail.assignments); true);
         proof_assert!(vars_in_range_inner(@(@self.clauses)[@cref], @self.num_vars));
         proof_assert!(no_duplicate_indexes_inner(@(@self.clauses)[@cref]));
         proof_assert!(long_are_post_unit_inner(@trail.trail, *self, @trail.assignments));
-        proof_assert!(^@old_f == ^self);
+        proof_assert!(^old_f.inner() == ^self);
     }
 
     #[cfg_attr(feature = "trust_formula", trusted)]
@@ -133,7 +133,7 @@ impl Formula {
     #[ensures((@(^self).clauses)[@result] == clause)]
     #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
     pub fn add_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
-        let old_self = Ghost::record(&self);
+        let old_self = ghost! { self };
         let cref = self.clauses.len();
         // The weird assignment to first_/second_lit is because otherwise we break the precond for
         // add_watcher that the cref should be less than f.clauses.len(). We can't update the watches
@@ -144,8 +144,7 @@ impl Formula {
         self.clauses.push(clause);
         watches.add_watcher(first_lit, cref, self);
         watches.add_watcher(second_lit, cref, self);
-        proof_assert!(^@old_self == ^self);
-        proof_assert!((@old_self).equisat_compatible(*self));
+        proof_assert!((old_self.inner()).equisat_compatible(*self));
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
@@ -166,11 +165,10 @@ impl Formula {
     #[ensures((@(^self).clauses)[@result] == clause)]
     #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
     pub fn add_unwatched_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
-        let old_self = Ghost::record(&self);
+        let old_self = ghost! { self };
         let cref = self.clauses.len();
         self.clauses.push(clause);
-        proof_assert!(^@old_self == ^self);
-        proof_assert!((@old_self).equisat_compatible(*self));
+        proof_assert!((old_self.inner()).equisat_compatible(*self));
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
@@ -191,14 +189,13 @@ impl Formula {
     #[ensures(self.equisat(^self))]
     #[ensures((@self.clauses).len() == (@(^self).clauses).len())]
     pub fn make_asserting_clause_and_watch(&mut self, watches: &mut Watches, t: &Trail, idx: usize, cref: usize) {
-        let old_self = Ghost::record(&self);
+        let old_self = ghost!{ self };
         self.swap_lits_in_clause(t, watches, cref, 1, idx);
         let first_lit = self.clauses[cref].rest[0];
         let second_lit = self.clauses[cref].rest[1];
         watches.add_watcher(first_lit, cref, self);
         watches.add_watcher(second_lit, cref, self);
-        proof_assert!(^@old_self == ^self);
-        proof_assert!((@old_self).equisat(*self));
+        proof_assert!((old_self.inner()).equisat(*self));
     }
 
     #[cfg_attr(feature = "trust_formula", trusted)]
@@ -217,7 +214,7 @@ impl Formula {
     #[ensures(@result == (@self.clauses).len())]
     #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
     pub fn add_and_swap_first(&mut self, clause: Clause, watches: &mut Watches, t: &Trail, s_idx: usize) -> usize {
-        let old_self = Ghost::record(&self);
+        let old_self = ghost! { self };
         let cref = self.add_unwatched_clause(clause, watches, t);
         self.swap_lits_in_clause(t, watches, cref, 0, s_idx);
         cref
@@ -240,11 +237,10 @@ impl Formula {
     #[ensures((@(@(^self).clauses)[@result]).len() == 1)]
     #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
     pub fn add_unit(&mut self, clause: Clause, _t: &Trail) -> usize {
-        let old_self = Ghost::record(&self);
+        let old_self = ghost! { self };
         let cref = self.clauses.len();
         self.clauses.push(clause);
-        proof_assert!(^@old_self == ^self);
-        proof_assert!((@old_self).equisat_compatible(*self));
+        proof_assert!((old_self.inner()).equisat_compatible(*self));
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
@@ -275,14 +271,14 @@ impl Formula {
     #[ensures(self.equisat(^self))]
     #[ensures(self.num_vars == (^self).num_vars)]
     fn delete_clause(&mut self, cref: usize, watches: &mut Watches, t: &Trail) {
-        let old_f = Ghost::record(&self);
+        let old_f = ghost! { self };
         watches.unwatch(self, t, cref, self.clauses[cref].rest[0]);
         watches.unwatch(self, t, cref, self.clauses[cref].rest[1]);
         self.clauses[cref].deleted = true;
         proof_assert!(forall<i: Int> 0 <= i && i < (@(@self.clauses)[@cref]).len() ==>
-            (@(@self.clauses)[@cref])[i] == (@(@(@old_f).clauses)[@cref])[i]);
-        proof_assert!((@old_f).equisat(*self)); // This assertion helps with the invariant, which otherwise takes a long time.
-        proof_assert!(^self == ^@old_f);
+            (@(@self.clauses)[@cref])[i] == (@(@(old_f.inner()).clauses)[@cref])[i]);
+        proof_assert!((old_f.inner()).equisat(*self)); // This assertion helps with the invariant, which otherwise takes a long time.
+        proof_assert!(^self == ^old_f.inner());
     }
 
     // OK
@@ -295,17 +291,17 @@ impl Formula {
     #[ensures(self.num_vars == (^self).num_vars)]
     #[ensures(self.equisat(^self))]
     pub fn delete_clauses(&mut self, watches: &mut Watches, t: &Trail) {
-        let old_f = Ghost::record(&self);
-        let old_w = Ghost::record(&watches);
+        let old_f = ghost! { self };
+        let old_w = ghost! { watches };
         // unwatch trivially SAT
         let mut i = 0;
         #[invariant(w_inv, watches.invariant(*self))]
         #[invariant(t_inv, t.invariant(*self))]
         #[invariant(f_inv, self.invariant())]
-        #[invariant(proph_w, ^watches == ^@old_w)]
-        #[invariant(proph_f, ^self == ^@old_f)]
-        #[invariant(num_vars_unch, @self.num_vars == @(@old_f).num_vars)]
-        #[invariant(equi, self.equisat(*@old_f))]
+        #[invariant(proph_w, ^watches == ^old_w.inner())]
+        #[invariant(proph_f, ^self == ^old_f.inner())]
+        #[invariant(num_vars_unch, @self.num_vars == @(old_f.inner()).num_vars)]
+        #[invariant(equi, self.equisat(*old_f.inner()))]
         while i < self.clauses.len() {
             if !self.clauses[i].deleted {
                 proof_assert!(t.assignments.invariant(*self));
@@ -352,15 +348,15 @@ impl Formula {
         }
         //s.num_lemmas = 0;
         let mut i = s.initial_len;
-        let old_f = Ghost::record(&self);
-        let old_w = Ghost::record(&watches);
+        let old_f = ghost! { self };
+        let old_w = ghost! { watches };
         #[invariant(w_inv, watches.invariant(*self))]
         #[invariant(t_inv, t.invariant(*self))]
         #[invariant(f_inv, self.invariant())]
-        #[invariant(proph_w, ^watches == ^@old_w)]
-        #[invariant(proph_f, ^self == ^@old_f)]
-        #[invariant(num_vars_unch, @self.num_vars == @(@old_f).num_vars)]
-        #[invariant(equi, self.equisat(*@old_f))]
+        #[invariant(proph_w, ^watches == ^old_w.inner())]
+        #[invariant(proph_f, ^self == ^old_f.inner())]
+        #[invariant(num_vars_unch, @self.num_vars == @(old_f.inner()).num_vars)]
+        #[invariant(equi, self.equisat(*old_f.inner()))]
         while i < self.clauses.len() {
             if !self.clauses[i].deleted {
                 //if self.clauses[i].len() > 12 {

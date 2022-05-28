@@ -65,15 +65,15 @@ fn unit_prop_check_rest(
 #[ensures((@(@f.clauses)[@cref]).len() == (@(@(^f).clauses)[@cref]).len())]
 #[ensures(f.equisat(^f))]
 fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize, k: usize) {
-    let old_f = Ghost::record(&f);
+    let old_f = ghost! { f };
     proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
     proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments) && true);
     f.clauses[cref].rest.swap(j, k);
-    proof_assert!(lemma_swap_maintains_post_unit(((@(@old_f).clauses)[@cref]), ((@f.clauses)[@cref]), @j, @k, trail.assignments); true);
+    proof_assert!(lemma_swap_maintains_post_unit(((@(old_f.inner()).clauses)[@cref]), ((@f.clauses)[@cref]), @j, @k, trail.assignments); true);
     proof_assert!(vars_in_range_inner(@(@f.clauses)[@cref], @f.num_vars));
     proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
     proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments));
-    proof_assert!(^@old_f == ^f);
+    proof_assert!(^old_f.inner() == ^f);
 }
 
 /*
@@ -94,11 +94,11 @@ fn swap_zero_one(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize)
     proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
     proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments) && true);
     f.clauses[cref].rest.swap(0, 1);
-    proof_assert!(lemma_swap_maintains_post_unit(((@(@old_f).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1, trail.assignments); true);
+    proof_assert!(lemma_swap_maintains_post_unit(((@(old_f.inner()).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1, trail.assignments); true);
     proof_assert!(vars_in_range_inner(@(@f.clauses)[@cref], @f.num_vars));
     proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
     proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments));
-    proof_assert!(^@old_f == ^f);
+    proof_assert!(^old_f.inner() == ^f);
 }
 */
 
@@ -129,7 +129,7 @@ fn unit_prop_do_outer(
         return Ok(true);
     }
     let second_lit = f.clauses[cref].rest[1];
-    let old_f = Ghost::record(&f);
+    let old_f = ghost! { f };
     if second_lit.lit_sat(&trail.assignments) {
         // We swap to make it faster the next time
         //swap_zero_one(f, trail, watches, cref, lit, j);
@@ -139,31 +139,31 @@ fn unit_prop_do_outer(
     // At this point we know that none of the watched literals are sat
     let mut k: usize = 2;
     let clause_len: usize = f.clauses[cref].rest.len();
-    let old_trail = Ghost::record(&trail);
-    let old_w = Ghost::record(&watches);
+    let old_trail = ghost! { trail };
+    let old_w = ghost! { watches };
     #[invariant(k_bound, 2 <= @k && @k <= @clause_len)]
-    #[invariant(watch_len, (@watches.watches).len() == (@(@old_w).watches).len())]
+    #[invariant(watch_len, (@watches.watches).len() == (@(old_w.inner()).watches).len())]
     #[invariant(watch_inv, watches.invariant(*f))]
     #[invariant(trail_inv, trail.invariant(*f))]
-    #[invariant(f_equi, (@old_f).equisat(*f))]
+    #[invariant(f_equi, (old_f.inner()).equisat(*f))]
     #[invariant(f_inv, f.invariant())]
-    #[invariant(f_len, (@f.clauses).len() == (@(@old_f).clauses).len())]
+    #[invariant(f_len, (@f.clauses).len() == (@(old_f.inner()).clauses).len())]
     #[invariant(len_same, (@(@f.clauses)[@cref]).len() == @clause_len)]
-    #[invariant(nvars_unch, @f.num_vars == @(@old_f).num_vars)]
-    #[invariant(f_unch, f == @old_f)]
-    #[invariant(w_unch, *watches == *@old_w)]
-    #[invariant(dec_unch, (@trail.decisions) == (@(@old_trail).decisions))]
-    #[invariant(proph_t, ^trail == ^@old_trail)]
-    #[invariant(proph_f, ^f == ^@old_f)]
-    #[invariant(proph_w, ^watches == ^@old_w)]
+    #[invariant(nvars_unch, @f.num_vars == @(old_f.inner()).num_vars)]
+    #[invariant(f_unch, f == old_f.inner())]
+    #[invariant(w_unch, *watches == *old_w.inner())]
+    #[invariant(dec_unch, (@trail.decisions) == (@(old_trail.inner()).decisions))]
+    #[invariant(proph_t, ^trail == ^old_trail.inner())]
+    #[invariant(proph_f, ^f == ^old_f.inner())]
+    #[invariant(proph_w, ^watches == ^old_w.inner())]
     #[invariant(uns, forall<m: Int> 2 <= m && m < @k ==> ((@(@f.clauses)[@cref])[m]).unsat(trail.assignments))]
     while k < clause_len {
         proof_assert!((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j);
         match unit_prop_check_rest(f, trail, watches, cref, j, k, lit) {
             Err(_) => {
-                proof_assert!((@old_trail).decisions == trail.decisions);
-                proof_assert!(*watches == *@old_w);
-                proof_assert!(*f == *@old_f);
+                proof_assert!((old_trail.inner()).decisions == trail.decisions);
+                proof_assert!(*watches == *old_w.inner());
+                proof_assert!(*f == *old_f.inner());
             }
             Ok(_) => {
                 return Ok(false);
@@ -171,7 +171,7 @@ fn unit_prop_do_outer(
         }
         k += 1;
     }
-    proof_assert!((@old_trail).decisions == trail.decisions);
+    proof_assert!((old_trail.inner()).decisions == trail.decisions);
     // If we have gotten here, the clause is either all false or unit
     proof_assert!((@f.clauses)[@cref].unsat(trail.assignments) || ((@(@f.clauses)[@cref])[0]).unset(trail.assignments) || ((@(@f.clauses)[@cref])[1]).unset(trail.assignments));
     if first_lit.lit_unset(&trail.assignments) {
@@ -207,13 +207,13 @@ fn unit_prop_do_outer(
         //f.clauses[cref].rest.swap(0,1);
         //proof_assert!((@f.clauses)[@cref].unit(*a) && true);
         /*
-        proof_assert!(lemma_swap_clause_no_dups(((@(@old_f).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1); true);
-        proof_assert!(lemma_swap_maintains_post_unit(((@(@old_f).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1, *a); true);
+        proof_assert!(lemma_swap_clause_no_dups(((@(old_f.inner()).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1); true);
+        proof_assert!(lemma_swap_maintains_post_unit(((@(old_f.inner()).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1, *a); true);
         // Not sure if this really helps, as we are sort of "short circuiting" the j
-        proof_assert!(lemma_swap_maintains_post_with_regards_to(((@(@old_f).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1, *a, second_lit.index_logic()); true);
+        proof_assert!(lemma_swap_maintains_post_with_regards_to(((@(old_f.inner()).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1, *a, second_lit.index_logic()); true);
         // Can add a lemma here to make the formula invariant faster
-        proof_assert!(lemma_permut_clause_in_formula_maintains_sat(*@old_f, *f, @cref); true);
-        proof_assert!(lemma_permut_clause_in_formula_maintains_unsat(*@old_f, *f, @cref); true);
+        proof_assert!(lemma_permut_clause_in_formula_maintains_sat(*old_f.inner(), *f, @cref); true);
+        proof_assert!(lemma_permut_clause_in_formula_maintains_unsat(*old_f.inner(), *f, @cref); true);
         */
         return Ok(true);
     } else {
@@ -239,19 +239,19 @@ fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Wat
     let watchidx = lit.to_watchidx();
     proof_assert!((@watches.watches).len() == 2 * @f.num_vars);
     proof_assert!((@watches.watches).len() > @watchidx);
-    let old_trail = Ghost::record(&trail);
-    let old_f = Ghost::record(&f);
-    let old_w = Ghost::record(&watches);
+    let old_trail = ghost! { trail };
+    let old_f = ghost! { f };
+    let old_w = ghost! { watches };
     #[invariant(trail_inv, trail.invariant(*f))]
-    #[invariant(watch_len, (@watches.watches).len() == (@(@old_w).watches).len())]
+    #[invariant(watch_len, (@watches.watches).len() == (@(old_w.inner()).watches).len())]
     #[invariant(watch_inv, watches.invariant(*f))]
-    #[invariant(f_equi, (@old_f).equisat(*f))]
+    #[invariant(f_equi, (old_f.inner()).equisat(*f))]
     #[invariant(f_inv, f.invariant())]
-    #[invariant(dec_unch, (@trail.decisions) == (@(@old_trail).decisions))]
-    #[invariant(nvars_unch, @f.num_vars == @(@old_f).num_vars)]
-    #[invariant(proph_t, ^trail == ^@old_trail)]
-    #[invariant(proph_f, ^f == ^@old_f)]
-    #[invariant(proph_w, ^watches == ^@old_w)]
+    #[invariant(dec_unch, (@trail.decisions) == (@(old_trail.inner()).decisions))]
+    #[invariant(nvars_unch, @f.num_vars == @(old_f.inner()).num_vars)]
+    #[invariant(proph_t, ^trail == ^old_trail.inner())]
+    #[invariant(proph_f, ^f == ^old_f.inner())]
+    #[invariant(proph_w, ^watches == ^old_w.inner())]
     while j < watches.watches[watchidx].len() {
         let cref = watches.watches[watchidx][j].cref;
         match unit_prop_do_outer(f, trail, watches, cref, lit, j) {
@@ -281,18 +281,18 @@ fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Wat
 #[ensures(f.equisat(^f))]
 pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
     let mut i = trail.curr_i;
-    let old_trail = Ghost::record(&trail);
-    let old_f = Ghost::record(&f);
-    let old_w = Ghost::record(&watches);
+    let old_trail = ghost! { trail };
+    let old_f = ghost! { f };
+    let old_w = ghost! { watches };
     #[invariant(f_inv, f.invariant())]
     #[invariant(trail_inv, trail.invariant(*f))]
-    #[invariant(watch_len, (@watches.watches).len() == (@(@old_w).watches).len())]
+    #[invariant(watch_len, (@watches.watches).len() == (@(old_w.inner()).watches).len())]
     #[invariant(watch_inv, watches.invariant(*f))]
-    #[invariant(f_equi, (@old_f).equisat(*f))]
-    #[invariant(nvars_unch, @f.num_vars == @(@old_f).num_vars)]
-    #[invariant(proph_t, ^trail == ^@old_trail)]
-    #[invariant(proph_f, ^f == ^@old_f)]
-    #[invariant(proph_w, ^watches == ^@old_w)]
+    #[invariant(f_equi, (old_f.inner()).equisat(*f))]
+    #[invariant(nvars_unch, @f.num_vars == @(old_f.inner()).num_vars)]
+    #[invariant(proph_t, ^trail == ^old_trail.inner())]
+    #[invariant(proph_f, ^f == ^old_f.inner())]
+    #[invariant(proph_w, ^watches == ^old_w.inner())]
     while i < trail.trail.len() {
         let lit = trail.trail[i].lit;
         match unit_prop_current_level(f, trail, watches, lit) {

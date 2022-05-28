@@ -80,6 +80,7 @@ impl Solver {
         }
     }
 
+    #[inline]
     fn increase_num_conflicts(&mut self) {
         //if self.num_conflicts < usize::MAX {
             self.num_conflicts += 1;
@@ -89,7 +90,7 @@ impl Solver {
 
     #[inline]
     fn handle_long_clause(
-        &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, level: u32,
+        &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, clause: Clause, level: u32,
     ) {
         self.increase_num_conflicts();
         clause.calc_and_set_lbd(t, self);
@@ -100,10 +101,11 @@ impl Solver {
         //d.increment_and_move(f, cref, &t.assignments);
         t.backtrack_to(level, f, d);
         let lit = f[cref][0];
-        let step = Step { lit: lit, decision_level: level, reason: Reason::Long(cref) };
+        let step = Step { lit, decision_level: level, reason: Reason::Long(cref) };
         t.enq_assignment(step, f);
     }
 
+    #[inline]
     fn handle_conflict(
         &mut self, f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches, d: &mut Decisions,
     ) -> Option<bool> {
@@ -124,17 +126,19 @@ impl Solver {
         None
     }
 
+    #[inline]
     fn unit_prop_step(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> ConflictResult {
-        return match unit_propagate(f, t, w) {
+        match unit_propagate(f, t, w) {
             Ok(_) => ConflictResult::Ok,
             Err(cref) => match self.handle_conflict(f, t, cref, w, d) {
                 Some(false) => ConflictResult::Ground,
                 Some(true) => ConflictResult::Err,
                 None => ConflictResult::Continue,
             },
-        };
+        }
     }
 
+    #[inline]
     fn unit_prop_loop(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
         loop {
             match self.unit_prop_step(f, d, t, w) {
@@ -152,12 +156,16 @@ impl Solver {
         }
     }
 
+    #[inline]
     fn outer_loop(&mut self, f: &mut Formula, d: &mut Decisions, trail: &mut Trail, w: &mut Watches) -> SatResult {
+        let old_len = f.len();
         match self.unit_prop_loop(f, d, trail, w) {
             Some(false) => return SatResult::Unsat,
             None => return SatResult::Err,
             _ => {}
         }
+        if f.len() > old_len {
+
         let slow = (self.slow / 100) * 125;
         if self.fast > slow {
             self.fast = slow;
@@ -165,6 +173,7 @@ impl Solver {
             if f.len() > self.max_len {
                 f.reduceDB(w, trail, self);
             }
+        }
         }
         match d.get_next(&trail.assignments, f) {
             Some(next) => {
@@ -177,11 +186,12 @@ impl Solver {
         SatResult::Unknown
     }
 
+    #[inline]
     fn inner(
-        &mut self, formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut watches: Watches,
+        &mut self, mut formula: Formula, mut decisions: Decisions, mut trail: Trail, mut watches: Watches,
     ) -> SatResult {
         loop {
-            match self.outer_loop(formula, &mut decisions, &mut trail, &mut watches) {
+            match self.outer_loop(&mut formula, &mut decisions, &mut trail, &mut watches) {
                 SatResult::Unknown => {} // continue
                 SatResult::Sat(_) => {
                     return SatResult::Sat(trail.assignments.0);
@@ -194,21 +204,24 @@ impl Solver {
     }
 }
 
-pub fn solver(formula: &mut Formula) -> SatResult {
+pub fn solver(mut formula: Formula) -> SatResult {
     match formula.check_formula_invariant() {
         SatResult::Unknown => {}
         o => return o,
     }
-    let mut trail = Trail::new(formula, Assignments::new(formula));
-    let mut decisions = Decisions::new(formula);
-    let mut watches = Watches::new(formula);
-    watches.init_watches(formula);
-    match trail.learn_units(formula, &mut decisions) {
-        Some(cref) => {
+    let mut trail = Trail::new(&formula, Assignments::new(&formula));
+    match trail.learn_units(&mut formula) {
+        Some(_) => {
             return SatResult::Unsat;
         }
         None => {}
     }
-    let mut solver = Solver::new(formula);
+    if formula.len() == 0 {
+        return SatResult::Sat(Vec::new());
+    }
+    let decisions = Decisions::new(&formula);
+    let mut watches = Watches::new(&formula);
+    watches.init_watches(&formula);
+    let mut solver = Solver::new(&formula);
     solver.inner(formula, decisions, trail, watches)
 }

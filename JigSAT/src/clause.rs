@@ -15,7 +15,7 @@ impl Index<usize> for Clause {
     fn index(&self, i: usize) -> &Lit {
         //#[cfg(feature = "unsafe_access")]
         unsafe {
-            self.rest.get_unchecked(i)
+            self.lits.get_unchecked(i)
         }
         //#[cfg(not(feature = "unsafe_access"))]
         //&self.lits[i]
@@ -34,15 +34,23 @@ impl IndexMut<usize> for Clause {
 }
 
 impl Clause {
+    pub fn swap(&mut self, i: usize, j: usize) {
+        self.lits.swap(i, j);
+    }
+
+    pub fn pop(&mut self) {
+        self.lits.pop();
+    }
+
     pub fn less_than(&self, other: &Clause) -> Ordering {
         if self.len() == 2 {
             if other.len() == 2 {
-                return Ordering::Equal;
+                Ordering::Equal
             } else {
-                return Ordering::Less;
+                Ordering::Less
             }
         } else if other.len() == 2 {
-            return Ordering::Greater;
+            Ordering::Greater
         } else if self.lbd < other.lbd {
             Ordering::Less
         } else if self.lbd > other.lbd {
@@ -67,7 +75,7 @@ impl Clause {
         if self.no_duplicates() {
             return true;
         }
-        return false;
+        false
     }
 
     pub fn no_duplicates(&self) -> bool {
@@ -84,12 +92,12 @@ impl Clause {
             }
             i += 1;
         }
-        return true;
+        true
     }
 
     #[inline(always)]
     pub fn len(&self) -> usize {
-        self.rest.len()
+        self.lits.len()
     }
 
     pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
@@ -98,36 +106,37 @@ impl Clause {
 
     #[inline(always)]
     fn move_to_end(&mut self, idx: usize, _f: &Formula) {
-        let end = self.rest.len() - 1;
-        self.rest.swap(idx, end);
+        let end = self.len() - 1;
+        self.swap(idx, end);
     }
 
     #[inline(always)]
     pub fn remove_from_clause(&mut self, idx: usize, _f: &Formula) {
         self.move_to_end(idx, _f);
-        self.rest.pop();
+        self.pop();
     }
 
-    fn calc_lbd(&self, trail: &Trail, solver: &mut Solver) -> u32 {
+    fn calc_lbd(lits: &Vec<Lit>, trail: &Trail, solver: &mut Solver) -> u32 {
         // We don't bother calculating for long clauses.
-        if self.len() >= 2024 {
+        if lits.len() >= 2024 {
             return 2024;
         }
         let mut lbd: u32 = 0;
         let mut i = 0;
-        while i < self.len() {
-            let level = trail.lit_to_level[self[i].index()];
+        while i < lits.len() {
+            let level = trail.lit_to_level[lits[i].index()];
             if solver.perm_diff[level as usize] != solver.num_conflicts {
                 solver.perm_diff[level as usize] = solver.num_conflicts;
                 lbd += 1;
             }
             i += 1;
         }
-        return lbd;
+        lbd
     }
 
-    pub fn calc_and_set_lbd(&mut self, trail: &Trail, solver: &mut Solver) {
-        self.lbd = self.calc_lbd(trail, solver);
+    pub fn new_and_set_lbd(lits: Vec<Lit>, trail: &Trail, solver: &mut Solver) -> Clause {
+        let lbd = Clause::calc_lbd(&lits, trail, solver);
+        Clause { deleted: false, lbd, lits }
     }
 
 }

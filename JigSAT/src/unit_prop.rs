@@ -1,6 +1,7 @@
 use crate::{formula::*, lit::*, trail::*, watches::*};
 
 
+#[inline]
 fn unit_prop_check_rest(
     f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
 ) -> Result<(), ()> {
@@ -18,15 +19,16 @@ fn unit_prop_check_rest(
         }
         return Ok(()); // dont increase j
     }
-    return Err(());
+    Err(())
 }
 
 #[inline(always)]
 fn swap(f: &mut Formula, _trail: &Trail, _watches: &Watches, cref: usize, j: usize, k: usize) {
-    f[cref].rest.swap(j, k);
+    f[cref].swap(j, k);
 }
 
 
+#[inline]
 fn unit_prop_do_outer(
     f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize,
 ) -> Result<bool, usize> {
@@ -72,11 +74,12 @@ fn unit_prop_do_outer(
 
         trail.enq_assignment(step, f);
         // slowdown in swapping
-        f[cref].rest.swap(0,1);
+        f[cref].swap(0,1);
         return Ok(true);
     }
 }
 
+#[inline]
 fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, lit: Lit) -> Result<(), usize> {
     let mut j = 0;
     let watchidx = lit.to_watchidx();
@@ -100,6 +103,7 @@ fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Wat
     Ok(())
 }
 
+#[inline]
 pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
     let mut i = trail.curr_i;
     while i < trail.trail.len() {

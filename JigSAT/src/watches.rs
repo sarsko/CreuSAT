@@ -115,6 +115,7 @@ impl Watches {
         }
     }
 
+    #[inline]
     pub fn unwatch_all_lemmas(&mut self, f: &Formula, s: &Solver) {
         let mut i: usize = 0;
         while i < self.len() {

@@ -58,7 +58,7 @@ impl Formula {
             }
             i += 1;
         }
-        return SatResult::Unknown;
+        SatResult::Unknown
     }
 
     pub fn is_clause_sat(&self, idx: usize, a: &Assignments) -> bool {
@@ -70,11 +70,11 @@ impl Formula {
             }
             i += 1;
         }
-        return false;
+        false
     }
 
     pub fn swap_lits_in_clause(&mut self, trail: &Trail, watches: &Watches, cref: usize, j: usize, k: usize) {
-        self[cref].rest.swap(j, k);
+        self[cref].swap(j, k);
     }
 
     pub fn add_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
@@ -89,6 +89,11 @@ impl Formula {
         watches[first_lit.to_neg_watchidx()].push(Watcher { cref, blocker: second_lit});
         watches[second_lit.to_neg_watchidx()].push(Watcher { cref, blocker: first_lit});
         cref
+    }
+
+    // This is only valid to run before solver is created and before watches are added.
+    pub fn remove_clause_in_preprocessing(&mut self, cref: usize) {
+        self.clauses.remove(cref);
     }
 
     fn delete_clause(&mut self, cref: usize, watches: &mut Watches, t: &Trail) {
@@ -119,6 +124,7 @@ impl Formula {
         // Ideally remove UNSAT lits
     }
 
+    #[inline]
     pub fn reduceDB(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
         let mut i = self.len() - 1;
         self.clauses[s.initial_len..].sort_unstable_by(|a, b| a.less_than(b));

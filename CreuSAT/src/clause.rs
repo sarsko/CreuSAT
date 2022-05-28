@@ -91,10 +91,9 @@ impl Clause {
         (exists<j: Int> 0 <= j && j < (@(^self)).len() && (@(^self))[i] == (@self)[j]))]
     #[ensures((@(^self)).len() == (@self).len())]
     fn move_to_end(&mut self, idx: usize, _f: &Formula) {
-        let old_self = Ghost::record(&self);
+        let old_self = ghost! { self };
         let end = self.rest.len() - 1;
         self.rest.swap(idx, end);
-        proof_assert!(^@old_self == ^self);
     }
 
     #[inline(always)]

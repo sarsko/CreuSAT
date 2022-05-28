@@ -68,7 +68,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
     }
     d.increment_and_move_new(f, to_bump);
     if out_learnt.len() == 1 {
-        return Conflict::Unit(out_learnt[0]);
+        Conflict::Unit(out_learnt[0])
     } else {
         let mut max_i: usize = 1;
         let mut max_level = trail.lit_to_level[out_learnt[1].index()];
