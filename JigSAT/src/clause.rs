@@ -1,10 +1,11 @@
 use crate::{formula::*, lit::*, solver::Solver, trail::*};
-use std::{ops::{Index}, cmp::Ordering};
+use std::{ops::{Index, IndexMut}, cmp::Ordering};
 
 pub struct Clause {
     pub deleted: bool,
     pub lbd: u32,
-    lits: Vec<Lit>,
+    pub search: usize,
+    pub rest: Vec<Lit>,
 }
 
 
@@ -18,6 +19,17 @@ impl Index<usize> for Clause {
         }
         //#[cfg(not(feature = "unsafe_access"))]
         //&self.lits[i]
+    }
+}
+impl IndexMut<usize> for Clause {
+    #[inline]
+    fn index_mut(&mut self, i: usize) -> &mut Lit {
+        //#[cfg(feature = "unsafe_access")]
+        unsafe {
+            self.rest.get_unchecked_mut(i)
+        }
+        //#[cfg(not(feature = "unsafe_access"))]
+        //&mut self.lits[i]
     }
 }
 
@@ -88,8 +100,8 @@ impl Clause {
         self.lits.len()
     }
 
-    pub fn clause_from_vec(vec: &[Lit]) -> Clause {
-        Clause { deleted: false, lbd: 0, lits: vec.to_vec() }
+    pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
+        Clause { deleted: false, lbd: 0, search: 1, rest: vec.clone() }
     }
 
     #[inline(always)]

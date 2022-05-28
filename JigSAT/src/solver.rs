@@ -54,6 +54,7 @@ pub struct Solver {
     pub num_conflicts: usize,
     pub initial_len: usize,
     pub inc_reduce_db: usize,
+    pub special_inc_reduce_db: usize,
     pub fast: usize,
     pub slow: usize,
     pub perm_diff: Vec<usize>,
@@ -72,6 +73,7 @@ impl Solver {
             num_conflicts: 0,
             initial_len: f.len(),
             inc_reduce_db: 300,
+            special_inc_reduce_db: 1000,
             fast: 16777216, // 1 << 24
             slow: 16777216, // 1 << 24
             perm_diff: vec![0; f.num_vars],
@@ -80,9 +82,9 @@ impl Solver {
 
     #[inline]
     fn increase_num_conflicts(&mut self) {
-        if self.num_conflicts < usize::MAX {
+        //if self.num_conflicts < usize::MAX {
             self.num_conflicts += 1;
-        }
+        //}
     }
 
 
@@ -90,32 +92,31 @@ impl Solver {
     fn handle_long_clause(
         &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, clause: Clause, level: u32,
     ) {
+        self.increase_num_conflicts();
+        clause.calc_and_set_lbd(t, self);
         let lbd = clause.lbd;
         let cref = f.add_clause(clause, w, t);
         update_fast(&mut self.fast, lbd as usize);
         update_slow(&mut self.slow, lbd as usize);
-        d.increment_and_move(f, cref, &t.assignments);
+        //d.increment_and_move(f, cref, &t.assignments);
         t.backtrack_to(level, f, d);
         let lit = f[cref][0];
         let step = Step { lit, decision_level: level, reason: Reason::Long(cref) };
         t.enq_assignment(step, f);
-        self.increase_num_conflicts();
     }
 
     #[inline]
     fn handle_conflict(
         &mut self, f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches, d: &mut Decisions,
     ) -> Option<bool> {
-        let res = analyze_conflict(f, t, cref, self);
+        let res = analyze_conflict(f, t, cref, d);
         match res {
             Conflict::Ground => {
                 return Some(false);
             }
             Conflict::Unit(lit) => {
                 t.learn_unit(lit, f, d);
-                if f.len() > self.max_len {
-                    f.reduceDB(w, t, self);
-                }
+                f.reduceDB(w, t, self);
                 f.simplify_formula(w, t);
             }
             Conflict::Learned(level, clause) => {

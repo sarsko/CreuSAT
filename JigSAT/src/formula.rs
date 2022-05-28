@@ -86,8 +86,8 @@ impl Formula {
         let first_lit = clause[0];
         let second_lit = clause[1];
         self.clauses.push(clause);
-        watches.add_watcher(first_lit, cref, self);
-        watches.add_watcher(second_lit, cref, self);
+        watches[first_lit.to_neg_watchidx()].push(Watcher { cref, blocker: second_lit});
+        watches[second_lit.to_neg_watchidx()].push(Watcher { cref, blocker: first_lit});
         cref
     }
 
@@ -126,14 +126,24 @@ impl Formula {
 
     #[inline]
     pub fn reduceDB(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
-        s.max_len += self.len() + 300;
         let mut i = self.len() - 1;
-        self.clauses[s.initial_len+1..].sort_unstable_by(|a, b| a.less_than(b));
+        self.clauses[s.initial_len..].sort_unstable_by(|a, b| a.less_than(b));
+        s.max_len += self.len() + 300;
+        if self[(self.len() - s.initial_len) / 2].lbd <= 3 {
+            s.max_len += s.special_inc_reduce_db;
+        }
+        if self[self.len()-1].lbd <= 5 {
+            s.max_len += s.special_inc_reduce_db;
+        }
         watches.unwatch_all_lemmas(self, s);
         let mut limit = (self.len() - s.initial_len) / 2;
         while i > s.initial_len && limit > 0 {
-            self.clauses.pop();
-            limit -= 1;
+            let clause = &self[i];
+            if clause.lbd > 2 && clause.len() > 2 {
+                //self.clauses.pop();
+                self.clauses.swap_remove(i);
+                limit -= 1;
+            } 
             i -= 1;
             /* 
             let clause = &self[i];
@@ -145,8 +155,8 @@ impl Formula {
         }
         i = s.initial_len;
         while i < self.len() {
-            watches.add_watcher(self[i][0], i, self);
-            watches.add_watcher(self[i][1], i, self);
+            watches[self[i][0].to_neg_watchidx()].push(Watcher { cref: i, blocker: self[i][1]});
+            watches[self[i][1].to_neg_watchidx()].push(Watcher { cref: i, blocker: self[i][0]});
             i += 1;
         }
     }
