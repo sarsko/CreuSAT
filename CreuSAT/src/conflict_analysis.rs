@@ -220,55 +220,73 @@ fn resolve(_f: &Formula, c: &Clause, o: &Clause, idx: usize, c_idx: usize, _a: &
     out
 }
 
-/*
-// Started on this, but can't be bothered finishing it now
-// So the great thing is that this seems to not be any faster?
-#[cfg_attr(all(any(trust_conflict, trust_all), not(untrust_all)), trusted)]
+
+//#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(_f.invariant())]
 #[requires(equisat_extension_inner(*c, @_f))]
-#[ensures(equisat_extension_inner(^c, @_f))]
-#[maintains((mut c).unsat_inner(@_a))]
-#[maintains((mut c).invariant_unary_ok(@_f.num_vars))]
-#[maintains((mut c).vars_in_range(@_f.num_vars))]
 #[requires(o.in_formula(*_f))]
-#[requires(@c_idx < (@c).len() && @(@c)[@c_idx].idx == @idx &&
-    (exists<k: Int> 0 <= k && k < (@o).len() &&
-        (@o)[k].is_opp((@c)[@c_idx]))
+#[requires(@c_idx < (@c).len() 
+    && (@c)[@c_idx].index_logic() == @idx 
+    && (@o)[0].is_opp((@c)[@c_idx])
 )]
 #[requires(forall<j: Int, k: Int> 0 <= j && j < (@o).len() && 0 <= k && k < (@c).len() &&
-    k != @c_idx && @(@o)[j].idx != @idx ==> !(@c)[k].is_opp((@o)[j]))]
+    k != @c_idx && (@o)[j].index_logic() != @idx ==> !(@c)[k].is_opp((@o)[j]))]
 #[requires(c.same_idx_same_polarity_except(*o, @idx))]
 #[requires(@idx < @_f.num_vars)]
 #[requires(o.post_unit_inner(@_a))]
-#[requires(o.invariant_unary_ok(@_f.num_vars))]
-#[ensures((@c).len() > 0)] // TODO: Need to prove this
-fn resolve_mut(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, _a: &Assignments) {
-    let mut i: usize = 0;
-    let old_c = ghost! (&c);
+#[requires((@o)[0].sat_inner(@_a))]
+#[requires(forall<j: Int> 1 <= j && j < (@o).len() ==> (@o)[j].unsat_inner(@_a))]
+#[requires(c.unsat_inner(@_a))]
+#[requires(c.invariant(@_f.num_vars))]
+#[requires(o.invariant(@_f.num_vars))]
+#[ensures((^c).unsat_inner(@_a))]
+#[ensures((^c).vars_in_range(@_f.num_vars))]
+#[ensures((^c).no_duplicate_indexes())]
+#[ensures((^c).invariant(@_f.num_vars))]
+#[ensures(equisat_extension_inner(^c, @_f))]
+fn resolve2(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, _a: &Assignments){
+    let old_c = ghost!(c);
+    // Remove the literal from the clause
     c.remove_from_clause(c_idx, _f);
-    proof_assert!(forall<j: Int> 0 <= j && j < (@c).len() ==>
-        (@c)[j].invariant(@_f.num_vars));
-    proof_assert!(forall<j: Int, k: Int> 0 <= j && j < (@c).len() && 0 <= k && k < j ==>
-        @(@c)[j].idx != @(@c)[k].idx);
-    proof_assert!(forall<j: Int> 0 <= j && j < (@c).len() ==> @(@c)[j].idx != @idx); // TODO on this one
-    proof_assert!(forall<j: Int> 0 <= j && j < @i && @(@@old_c)[j].idx != @idx ==>
-        (@@old_c)[j].lit_in_internal(@c));
-    proof_assert!(forall<j: Int> 0 <= j && j < (@c).len() ==> (@c)[j].lit_in(*c));
-    proof_assert!(forall<j: Int> 0 <= j && j < @i && j != @c_idx ==>
-        (@@old_c)[j].lit_in_internal(@c));
-    proof_assert!(^@old_c == ^c);
-    /*
-    while i < o.rest.len() {
-        if idx_in(&c.rest, o.rest[i].idx) {
-        } else if o.rest[i].idx == idx {
-        } else {
+    let old_c2 = ghost!(c);
+    proof_assert!(!(@old_c.inner())[@c_idx].lit_in(*c));
+    proof_assert!(^c == ^old_c.inner());
+    proof_assert!(forall<j: Int> 0 <= j && j < (@old_c.inner()).len()
+        && j != @c_idx ==> (@old_c.inner())[j].lit_in(*c));
+    // Add all the literals from the other clause
+    let mut i: usize = 1;
+    #[invariant(inv, c.invariant(@_f.num_vars))]
+    #[invariant(all_unsat, c.unsat_inner(@_a))]
+    #[invariant(proph_c, ^c == ^old_c.inner())]
+    #[invariant(i_bound, 1 <= @i && @i <= (@o).len())]
+    #[invariant(not_in, !(@old_c.inner())[@c_idx].lit_in(*c) && !(@o)[0].lit_in(*c))]
+    #[invariant(all_in, forall<j: Int> 1 <= j && j < @i ==> (@o)[j].lit_in(*c))]
+    #[invariant(all_in2, forall<j: Int> 0 <= j && j < (@old_c.inner()).len() 
+        && j != @c_idx ==> (@old_c.inner())[j].lit_in(*c))]
+    #[invariant(from_c_or_o, (forall<j: Int> 0 <= j && j < (@c).len() ==> 
+                    ((@c)[j].lit_in(*old_c.inner()) ||  (@c)[j].lit_in(*o))))]
+    #[invariant(only_push, forall<j: Int> 0 <= j && j < (@old_c2.inner()).len() ==>
+            (@c)[j] == (@old_c2.inner())[j])]
+    while i < o.len() {
+        if idx_in(&c.rest, o.rest[i].index()) { } else {
             c.rest.push(o.rest[i]);
         }
+        proof_assert!((@o)[@i].lit_in(*c));
         i += 1;
     }
+    /*
+    proof_assert!(forall<i: Int> 0 <= i && i < (@old_c.inner()).len() && i != @c_idx ==> (@old_c.inner())[i].lit_in(*c));
+    proof_assert!(forall<i: Int> 0 <= i && i < (@o).len() && i != 0 ==> (@o)[i].lit_in(*c));
+    proof_assert!(forall<i: Int> 0 <= i && i < (@c).len()     ==> ((@c)[i].lit_in(*old_c.inner())
+                                                                ||  (@c)[i].lit_in(*o)));
+    
+    proof_assert!(!(@old_c.inner())[@c_idx].lit_in(*c) && !(@o)[0].lit_in(*c));
     */
+    proof_assert!(c.resolvent_of(*old_c.inner(), *o, 0, @c_idx));
+    proof_assert!(lemma_resolvent_of_equisat_extension_is_equisat(@_f, *old_c.inner(), *o, *c, @c_idx, 0);true);
+    proof_assert!(equisat_extension_inner(*c, @_f));
 }
-*/
+
 
 // OK
 #[cfg_attr(feature = "trust_conflict", trusted)]

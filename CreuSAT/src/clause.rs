@@ -80,8 +80,9 @@ impl Clause {
         Clause { deleted: false, rest: vec.to_owned() }
     }
 
+    // This does better without splitting
     #[inline(always)]
-    #[cfg_attr(feature = "trust_clause", trusted)]
+    //#[cfg_attr(feature = "trust_clause", trusted)]
     #[maintains((mut self).invariant_unary_ok(@_f.num_vars))]
     #[requires((@self).len() > 0)]
     #[requires(@idx < (@self).len())]
@@ -89,24 +90,32 @@ impl Clause {
         (exists<j: Int> 0 <= j && j < (@self).len() && (@(^self))[i] == (@self)[j]))]
     #[ensures(forall<i: Int> 0 <= i && i < (@(self)).len() ==>
         (exists<j: Int> 0 <= j && j < (@(^self)).len() && (@(^self))[i] == (@self)[j]))]
+    #[ensures((@(^self))[(@^self).len() - 1] == (@self)[@idx])]
     #[ensures((@(^self)).len() == (@self).len())]
+    #[ensures(forall<j: Int> 0 <= j && j < (@self).len()
+        ==> (@self)[j].lit_in(^self))]
     fn move_to_end(&mut self, idx: usize, _f: &Formula) {
-        let old_self = ghost! { self };
         let end = self.rest.len() - 1;
         self.rest.swap(idx, end);
     }
 
+    // This does better without splitting
     #[inline(always)]
-    #[cfg_attr(feature = "trust_clause", trusted)]
+    //#[cfg_attr(feature = "trust_clause", trusted)]
     #[maintains((mut self).invariant_unary_ok(@_f.num_vars))]
     #[requires((@self).len() > 0)]
     #[requires(@idx < (@self).len())]
     #[ensures(forall<i: Int> 0 <= i && i < (@(^self)).len() ==>
         exists<j: Int> 0 <= j && j < (@self).len() && (@(^self))[i] == (@self)[j])]
     #[ensures((@(^self)).len() + 1 == (@self).len())]
+    #[ensures(!(@self)[@idx].lit_in(^self))]
+    #[ensures(forall<j: Int> 0 <= j && j < (@self).len()
+        && j != @idx ==> (@self)[j].lit_in(^self))]
     pub fn remove_from_clause(&mut self, idx: usize, _f: &Formula) {
+        let old_self = ghost! { self };
         self.move_to_end(idx, _f);
         self.rest.pop();
+        proof_assert!(^self == ^old_self.inner());
     }
 
     // This is an ugly runtime check

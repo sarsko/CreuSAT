@@ -13,7 +13,7 @@ use crate::logic::{logic_util::*, logic_watches::*};
 // Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
 pub struct Watcher {
     pub cref: usize,
-    //blocker: Lit,
+    pub blocker: Lit,
 }
 
 pub struct Watches {
@@ -42,7 +42,7 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
     watches.watches[watchidx].swap(j, end);
     let curr_lit = f.clauses[cref].rest[k];
     proof_assert!(@watchidx < (@watches.watches).len());
-    let old_w = ghost!{ watches };
+    let old_w = ghost!( watches );;
     proof_assert!((old_w.inner()).watches == watches.watches);
     proof_assert!(watcher_crefs_in_range(@(@watches.watches)[@watchidx], *f));
     match watches.watches[watchidx].pop() {
@@ -85,6 +85,7 @@ impl Watches {
         Watches { watches }
     }
 
+    /*
     // This whole should be updated/merged with formula add_clause
     // We watch the negated literal for updates
     // OK
@@ -97,6 +98,19 @@ impl Watches {
     #[ensures((@self.watches).len() == (@(^self).watches).len())]
     pub fn add_watcher(&mut self, lit: Lit, cref: usize, _f: &Formula) {
         self.watches[lit.to_neg_watchidx()].push(Watcher { cref });
+    }
+    */
+
+    #[cfg_attr(feature = "trust_watches", trusted)]
+    #[maintains((mut self).invariant(*_f))]
+    #[requires(@cref < (@_f.clauses).len())]
+    #[requires(lit.index_logic() < @usize::MAX/2)]
+    #[requires(blocker.index_logic() < @_f.num_vars)]
+    #[requires(lit.to_neg_watchidx_logic() < (@self.watches).len())]
+    #[requires((@(@_f.clauses)[@cref]).len() > 1)]
+    #[ensures((@self.watches).len() == (@(^self).watches).len())]
+    pub fn add_watcher(&mut self, lit: Lit, cref: usize, _f: &Formula, blocker: Lit) {
+        self.watches[lit.to_neg_watchidx()].push(Watcher { cref, blocker });
     }
 
     // OK
@@ -127,8 +141,10 @@ impl Watches {
         while i < f.clauses.len() {
             let clause = &f.clauses[i];
             if clause.rest.len() > 1 {
-                self.add_watcher(clause.rest[0], i, f);
-                self.add_watcher(clause.rest[1], i, f);
+                //self.add_watcher(clause.rest[0], i, f);
+                //self.add_watcher(clause.rest[1], i, f);
+                self.watches[clause.rest[0].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause.rest[1]});
+                self.watches[clause.rest[1].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause.rest[0]});
             }
             i += 1;
         }

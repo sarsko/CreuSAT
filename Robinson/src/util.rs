@@ -28,9 +28,9 @@ fn partition_rev(v: Seq<(usize, usize)>, i: Int) -> bool {
 #[ensures((@^v).permutation_of(@v))]
 pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
     let mut i: usize = 0;
-    let _old_v = Ghost::record(&v);
-    #[invariant(proph_const, ^v == ^@_old_v)]
-    #[invariant(permutation, (@v).permutation_of(@*@_old_v))]
+    let _old_v = ghost!(v);
+    #[invariant(proph_const, ^v == ^_old_v.inner())]
+    #[invariant(permutation, (@v).permutation_of(@_old_v.inner()))]
     #[invariant(sorted, sorted_range_rev(@v, 0, @i))]
     #[invariant(partition, partition_rev(@v, @i))]
     while i < v.len() {
