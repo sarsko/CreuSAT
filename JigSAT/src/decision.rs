@@ -19,7 +19,7 @@ impl Default for Node {
 }
 
 pub struct Decisions {
-    linked_list: Vec<Node>,
+    pub linked_list: Vec<Node>,
     timestamp: usize,
     pub start: usize,
     pub search: usize,
@@ -133,16 +133,16 @@ impl Decisions {
         moving.prev = INVALID;
         moving.next = self.start;
         moving.ts = self.timestamp;
-        if self.timestamp < usize::MAX {
-            self.timestamp += 1;
-        } else {
-            self.rescore(_f);
-        }
-        unsafe { self.linked_list.get_unchecked_mut(self.start).prev = tomove; }
+        self.linked_list[self.start].prev = tomove;
         self.start = tomove;
         unsafe { self.linked_list.get_unchecked_mut(prev).next = old_next; }
         if old_next != INVALID {
             unsafe { self.linked_list.get_unchecked_mut(old_next).prev = prev; }
+        }
+        if self.timestamp == usize::MAX {
+            self.rescore(_f);
+        } else {
+            self.timestamp += 1;
         }
         /*
         // Why does Satch do this? It should be impossible...?
@@ -166,7 +166,27 @@ impl Decisions {
         //sort(&mut counts_with_index);
         // Better sort seems yield a few percentages lol
         //counts_with_index.sort_unstable();
-        counts_with_index.sort_by_key(|k| k.0);
+        counts_with_index.sort_unstable_by_key(|k| k.0);
+        i = 0;
+        while i < counts_with_index.len() {
+            self.move_to_front(counts_with_index[i].1, f);
+            i += 1;
+        }
+    }
+
+    pub fn increment_and_move_new(&mut self, f: &Formula, v: Vec<usize>) {
+        let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); v.len()];
+        let mut i: usize = 0;
+        while i < v.len() {
+            counts_with_index[i] = (self.linked_list[v[i]].ts, v[i]);
+            i += 1;
+        }
+        // TODO: Check actual speed. I believe selection sort is the slowest. Only need permut property.
+        //insertion_sort(&mut counts_with_index);
+        //sort(&mut counts_with_index);
+        // Better sort seems yield a few percentages lol
+        //counts_with_index.sort_unstable();
+        counts_with_index.sort_unstable_by_key(|k| k.0);
         i = 0;
         while i < counts_with_index.len() {
             self.move_to_front(counts_with_index[i].1, f);

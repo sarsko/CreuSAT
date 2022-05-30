@@ -24,6 +24,7 @@ pub struct Trail {
 }
 
 impl Trail {
+    #[inline]
     pub fn decision_level(&self) -> u32 {
         self.decisions.len() as u32
     }
@@ -63,10 +64,10 @@ impl Trail {
         let how_many = self.trail.len() - self.decisions[level as usize];
         let mut i: usize = 0;
         let mut curr = d.search;
-        let mut timestamp = d[curr].ts;
+        let mut timestamp = unsafe { d.linked_list.get_unchecked(curr).ts };
         while i < how_many {
             let idx = self.backstep(f);
-            let curr_timestamp = d[idx].ts;
+            let curr_timestamp = unsafe { d.linked_list.get_unchecked(idx).ts };
             if curr_timestamp > timestamp {
                 timestamp = curr_timestamp;
                 curr = idx;
@@ -78,13 +79,12 @@ impl Trail {
         while self.decision_level() > level {
             self.decisions.pop();
         }
-        self.curr_i = level as usize;
+        self.curr_i = self.trail.len();
     }
 
     pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
         self.lit_to_level[step.lit.index()] = self.decision_level();
-        let trail = &self.trail;
-        self.assignments.set_assignment(step.lit, _f, trail);
+        self.assignments.set_assignment(step.lit, _f, &self.trail);
         self.trail.push(step);
     }
 

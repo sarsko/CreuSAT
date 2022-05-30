@@ -32,64 +32,71 @@ fn swap(f: &mut Formula, _trail: &Trail, _watches: &Watches, cref: usize, j: usi
 fn unit_prop_do_outer(
     f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize,
 ) -> Result<bool, usize> {
-    let first_lit = f[cref][0];
-    if first_lit.lit_sat(&trail.assignments) {
-        return Ok(true);
-    }
-    let second_lit = f[cref][1];
-    if second_lit.lit_sat(&trail.assignments) {
-        // We swap to make it faster the next time
-        //swap_zero_one(f, trail, watches, cref, lit, j);
-        swap(f, trail, watches, cref, 0, 1);
+    let clause = &f[cref];
+    let other_lit = (!lit).select_other(clause[0], clause[1]);
+    if other_lit.lit_sat(&trail.assignments) {
+        watches[lit.to_watchidx()][j].blocker = other_lit;
         return Ok(true);
     }
     // At this point we know that none of the watched literals are sat
     let mut k: usize = 2;
-    let clause_len: usize = f[cref].len();
+    let clause_len: usize = clause.len();
+    let mut search = clause.search;
     while k < clause_len {
-        match unit_prop_check_rest(f, trail, watches, cref, j, k, lit) {
+        search += 1;
+        if search == clause_len {
+            search = 2;
+        }
+        match unit_prop_check_rest(f, trail, watches, cref, j, search, lit) {
             Err(_) => {
             }
             Ok(_) => {
+                f[cref].search = search;
                 return Ok(false);
             }
         }
         k += 1;
     }
-    if first_lit.lit_unset(&trail.assignments) {
+    if other_lit.lit_unsat(&trail.assignments) {
+        return Err(cref);
+    }
+    if f[cref][0].lit_unset(&trail.assignments) {
         let step = Step {
-            lit: first_lit,
-            //lit: f[cref].rest[0],
+            lit: f[cref][0],
             decision_level: trail.decision_level(),
             reason: Reason::Long(cref),
         };
 
         trail.enq_assignment(step, f);
         return Ok(true);
-    } else if second_lit.lit_unset(&trail.assignments) {
-        let step = Step { lit: second_lit, decision_level: trail.decision_level(), reason: Reason::Long(cref) };
+    } else {
+        let step = Step { lit: f[cref][1], decision_level: trail.decision_level(), reason: Reason::Long(cref) };
 
         trail.enq_assignment(step, f);
         // slowdown in swapping
         f[cref].swap(0,1);
         return Ok(true);
-    } 
-    Err(cref)
+    }
 }
 
 #[inline]
 fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, lit: Lit) -> Result<(), usize> {
     let mut j = 0;
     let watchidx = lit.to_watchidx();
-    while j < watches.watches[watchidx].len() {
-        let cref = watches.watches[watchidx][j].cref;
-        match unit_prop_do_outer(f, trail, watches, cref, lit, j) {
-            Ok(true) => {
-                j += 1;
-            }
-            Ok(false) => {}
-            Err(cref) => {
-                return Err(cref);
+    while j < watches[watchidx].len() {
+        let curr_watch = &watches[watchidx][j];
+        if curr_watch.blocker.lit_sat(&trail.assignments) {
+            j += 1;
+        } else {
+            let cref = curr_watch.cref;
+            match unit_prop_do_outer(f, trail, watches, cref, lit, j) {
+                Ok(true) => {
+                    j += 1;
+                }
+                Ok(false) => {}
+                Err(cref) => {
+                    return Err(cref);
+                }
             }
         }
     }

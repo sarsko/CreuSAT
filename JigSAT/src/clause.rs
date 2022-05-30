@@ -1,10 +1,11 @@
 use crate::{formula::*, lit::*, solver::Solver, trail::*};
-use std::{ops::{Index}, cmp::Ordering};
+use std::{ops::{Index, IndexMut}, cmp::Ordering};
 
 pub struct Clause {
     pub deleted: bool,
     pub lbd: u32,
-    lits: Vec<Lit>,
+    pub search: usize,
+    pub lits: Vec<Lit>,
 }
 
 
@@ -18,6 +19,17 @@ impl Index<usize> for Clause {
         }
         //#[cfg(not(feature = "unsafe_access"))]
         //&self.lits[i]
+    }
+}
+impl IndexMut<usize> for Clause {
+    #[inline]
+    fn index_mut(&mut self, i: usize) -> &mut Lit {
+        //#[cfg(feature = "unsafe_access")]
+        unsafe {
+            self.lits.get_unchecked_mut(i)
+        }
+        //#[cfg(not(feature = "unsafe_access"))]
+        //&mut self.lits[i]
     }
 }
 
@@ -88,8 +100,8 @@ impl Clause {
         self.lits.len()
     }
 
-    pub fn clause_from_vec(vec: &[Lit]) -> Clause {
-        Clause { deleted: false, lbd: 0, lits: vec.to_vec() }
+    pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
+        Clause { deleted: false, lbd: 0, search: 1, lits: vec.clone() }
     }
 
     #[inline(always)]
@@ -104,15 +116,15 @@ impl Clause {
         self.pop();
     }
 
-    fn calc_lbd(lits: &Vec<Lit>, trail: &Trail, solver: &mut Solver) -> u32 {
+    fn calc_lbd(&self, trail: &Trail, solver: &mut Solver) -> u32 {
         // We don't bother calculating for long clauses.
-        if lits.len() >= 2024 {
+        if self.len() >= 2024 {
             return 2024;
         }
         let mut lbd: u32 = 0;
         let mut i = 0;
-        while i < lits.len() {
-            let level = trail.lit_to_level[lits[i].index()];
+        while i < self.len() {
+            let level = trail.lit_to_level[self[i].index()];
             if solver.perm_diff[level as usize] != solver.num_conflicts {
                 solver.perm_diff[level as usize] = solver.num_conflicts;
                 lbd += 1;
@@ -122,9 +134,8 @@ impl Clause {
         lbd
     }
 
-    pub fn new_and_set_lbd(lits: Vec<Lit>, trail: &Trail, solver: &mut Solver) -> Clause {
-        let lbd = Clause::calc_lbd(&lits, trail, solver);
-        Clause { deleted: false, lbd, lits }
+    pub fn calc_and_set_lbd(&mut self, trail: &Trail, solver: &mut Solver) {
+        self.lbd = self.calc_lbd(trail, solver);
     }
 
 }

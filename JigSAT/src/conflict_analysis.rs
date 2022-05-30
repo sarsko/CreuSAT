@@ -1,4 +1,4 @@
-use crate::{clause::*, formula::*, lit::*, trail::*, solver::Solver};
+use crate::{clause::*, formula::*, lit::*, trail::*, decision::*};
 
 //#[derive(Debug)]
 pub enum Conflict {
@@ -7,7 +7,7 @@ pub enum Conflict {
     Learned(u32, Clause),
 }
 
-pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, s: &mut Solver) -> Conflict {
+pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisions) -> Conflict {
     let decisionlevel = trail.decision_level();
     if decisionlevel == 0 {
         return Conflict::Ground;
@@ -15,6 +15,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, s: &mut Solver)
     // `seen` should be persistent across calls to `analyze_conflict`.
     // Solved by somehow keeping it in `solver`, either as a buffer or by making
     // conflict analysis a struct which is instatiated once and then kept.
+    let mut to_bump = Vec::new();
     let mut seen = vec![false; f.num_vars];
     let mut out_learnt:Vec<Lit> = vec![Lit::new(0, true); 1]; // I really don't like this way of reserving space.
     let mut path_c = 0;
@@ -35,6 +36,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, s: &mut Solver)
                 */
                 if level > 0 {
                     seen[lit.index()] = true;
+                    to_bump.push(lit.index());
                     if level >= decisionlevel {
                         path_c += 1;
                     } else {
@@ -64,6 +66,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, s: &mut Solver)
             other => panic!("{:?}", other),
         }
     }
+    d.increment_and_move_new(f, to_bump);
     if out_learnt.len() == 1 {
         Conflict::Unit(out_learnt[0])
     } else {
@@ -79,7 +82,6 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, s: &mut Solver)
             i += 1;
         }
         out_learnt.swap(1, max_i);
-        let clause = Clause::new_and_set_lbd(out_learnt, trail, s);
-        Conflict::Learned(max_level, clause)
+        Conflict::Learned(max_level, Clause{ deleted: false, lbd: 0, search: 1, lits: out_learnt})
     }
 }
