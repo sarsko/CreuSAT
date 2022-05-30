@@ -1,11 +1,13 @@
 use crate::{formula::*, lit::*, solver::Solver, trail::*};
 use std::{ops::{Index, IndexMut}, cmp::Ordering};
+use smallvec::{SmallVec, smallvec};
 
 pub struct Clause {
     pub deleted: bool,
     pub lbd: u32,
     pub search: usize,
-    pub lits: Vec<Lit>,
+    //pub lits: SmallVec<Lit>,
+    pub lits: SmallVec<[Lit; 8]>,
 }
 
 
@@ -100,8 +102,8 @@ impl Clause {
         self.lits.len()
     }
 
-    pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
-        Clause { deleted: false, lbd: 0, search: 1, lits: vec.clone() }
+    pub fn clause_from_vec(vec: Vec<Lit>) -> Clause {
+        Clause { deleted: false, lbd: 0, search: 1, lits: SmallVec::from_vec(vec) }
     }
 
     #[inline(always)]

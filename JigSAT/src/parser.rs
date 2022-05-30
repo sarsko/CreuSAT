@@ -125,7 +125,7 @@ pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_li
         if currclause.len() == 0 {
             return false;
         } else {
-            let clause2: Clause2 = Clause2::clause_from_vec(&currclause);
+            let clause2: Clause2 = Clause2::clause_from_vec(currclause);
             formula.clauses.push(clause2);
         }
     }

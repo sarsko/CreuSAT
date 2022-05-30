@@ -1,4 +1,5 @@
 use crate::{clause::*, formula::*, lit::*, trail::*, decision::*};
+use smallvec::{SmallVec, smallvec};
 
 //#[derive(Debug)]
 pub enum Conflict {
@@ -17,7 +18,9 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
     // conflict analysis a struct which is instatiated once and then kept.
     let mut to_bump = Vec::new();
     let mut seen = vec![false; f.num_vars];
-    let mut out_learnt:Vec<Lit> = vec![Lit::new(0, true); 1]; // I really don't like this way of reserving space.
+    //let mut out_learnt:Vec<Lit> = vec![Lit::new(0, true); 1]; // I really don't like this way of reserving space.
+    let mut out_learnt = SmallVec::<[Lit; 8]>::new();
+    out_learnt.push(Lit::new(0, true));
     let mut path_c = 0;
     let mut confl = cref;
     let mut i = trail.trail.len();
