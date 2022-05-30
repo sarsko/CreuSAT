@@ -162,8 +162,8 @@ impl Assignments {
     #[ensures((self).complete() ==> *self == ^self && ((result == ClauseState::Unsat) || (result == ClauseState::Sat)))]
     pub fn unit_prop_once(&mut self, i: usize, f: &Formula) -> ClauseState {
         let clause = &f.clauses[i];
-        let _old_a = Ghost::record(&self);
-        proof_assert!(^self == ^@_old_a);
+        let _old_a = ghost!(self);
+        proof_assert!(^self == ^_old_a.inner());
         match clause.check_if_unit(self, f) {
             ClauseState::Unit => {
                 // I tried both to make ClauseState::Unit contain a usize and to return a tuple, but
@@ -180,9 +180,9 @@ impl Assignments {
                 } else {
                     self.0[lit.index()] = 0;
                 }
-                proof_assert!(lemma_extension_sat_base_sat(*f, @@_old_a, lit.index_logic(), bool_to_assignedstate(lit.polarity)); true);
-                proof_assert!(lemma_extensions_unsat_base_unsat(@@_old_a, lit.index_logic(), *f); true);
-                proof_assert!(^self == ^@_old_a);
+                proof_assert!(lemma_extension_sat_base_sat(*f, @_old_a.inner(), lit.index_logic(), bool_to_assignedstate(lit.polarity)); true);
+                proof_assert!(lemma_extensions_unsat_base_unsat(@_old_a.inner(), lit.index_logic(), *f); true);
+                proof_assert!(^self == ^_old_a.inner());
                 return ClauseState::Unit;
             }
             o => return o,
@@ -203,23 +203,23 @@ impl Assignments {
     })]
     #[ensures((self).complete() ==> *self == (^self) && ((result == ClauseState::Unsat) || f.sat(*self)))]
     pub fn unit_propagate(&mut self, f: &Formula) -> ClauseState {
-        let _old_a = Ghost::record(&self);
+        let _old_a = ghost!(self);
         let mut i: usize = 0;
         let mut out = ClauseState::Sat;
         #[invariant(assignment_invariant, self.invariant(*f))]
-        #[invariant(proph, ^self == ^@_old_a)]
-        #[invariant(maintains_compat, (*@_old_a).compatible(*self))]
-        #[invariant(maintains_sat, f.eventually_sat_complete(*@_old_a) == f.eventually_sat_complete(*self))]
+        #[invariant(proph, ^self == ^_old_a.inner())]
+        #[invariant(maintains_compat, (*_old_a.inner()).compatible(*self))]
+        #[invariant(maintains_sat, f.eventually_sat_complete(*_old_a.inner()) == f.eventually_sat_complete(*self))]
         #[invariant(out_not_unsat, !(out == ClauseState::Unsat))]
-        #[invariant(inv, (@_old_a).complete() ==>
-            *@_old_a == *self && forall<j: Int> 0 <= j && j < @i ==>
+        #[invariant(inv, (_old_a.inner()).complete() ==>
+            *_old_a.inner() == *self && forall<j: Int> 0 <= j && j < @i ==>
             !(@f.clauses)[j].unknown(*self) && !(@f.clauses)[j].unit(*self) && (@f.clauses)[j].sat(*self)
         )]
         #[invariant(inv2,
             out == ClauseState::Sat ==> forall<j: Int> 0 <= j && j < @i ==>
             !(@f.clauses)[j].unsat(*self) && !(@f.clauses)[j].unknown(*self) && !(@f.clauses)[j].unit(*self) && (@f.clauses)[j].sat(*self)
         )]
-        #[invariant(inv3, out == ClauseState::Unit ==> !(*@_old_a).complete())]
+        #[invariant(inv3, out == ClauseState::Unit ==> !(*_old_a.inner()).complete())]
         #[invariant(inv4, out == ClauseState::Unknown ==> !self.complete())]
         while i < f.clauses.len() {
             match self.unit_prop_once(i, f) {
@@ -253,11 +253,11 @@ impl Assignments {
     #[ensures(result == Some(true) ==> f.sat(^self))]
     #[ensures(result == None ==> !(^self).complete())]
     pub fn do_unit_propagation(&mut self, f: &Formula) -> Option<bool> {
-        let _old_a = Ghost::record(&self);
+        let _old_a = ghost!(self);
         #[invariant(assignments_invariant, self.invariant(*f))]
-        #[invariant(proph, ^self == ^@_old_a)]
-        #[invariant(maintains_compat, (*@_old_a).compatible(*self))]
-        #[invariant(maintains_sat, f.eventually_sat_complete(*@_old_a) ==> f.eventually_sat_complete(*self))]
+        #[invariant(proph, ^self == ^_old_a.inner())]
+        #[invariant(maintains_compat, (*_old_a.inner()).compatible(*self))]
+        #[invariant(maintains_sat, f.eventually_sat_complete(*_old_a.inner()) ==> f.eventually_sat_complete(*self))]
         loop {
             match self.unit_propagate(f) {
                 ClauseState::Sat => {
