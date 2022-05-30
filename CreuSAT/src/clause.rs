@@ -82,7 +82,7 @@ impl Clause {
 
     // This does better without splitting
     #[inline(always)]
-    //#[cfg_attr(feature = "trust_clause", trusted)]
+    #[cfg_attr(feature = "trust_clause", trusted)]
     #[maintains((mut self).invariant_unary_ok(@_f.num_vars))]
     #[requires((@self).len() > 0)]
     #[requires(@idx < (@self).len())]
@@ -101,7 +101,7 @@ impl Clause {
 
     // This does better without splitting
     #[inline(always)]
-    //#[cfg_attr(feature = "trust_clause", trusted)]
+    #[cfg_attr(feature = "trust_clause", trusted)]
     #[maintains((mut self).invariant_unary_ok(@_f.num_vars))]
     #[requires((@self).len() > 0)]
     #[requires(@idx < (@self).len())]

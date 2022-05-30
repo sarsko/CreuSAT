@@ -1,4 +1,6 @@
 extern crate creusot_contracts;
+use ::std::panic;
+
 use creusot_contracts::std::*;
 use creusot_contracts::logic::Ghost;
 use creusot_contracts::*;
@@ -199,7 +201,7 @@ impl Solver {
     fn handle_conflict(
         &mut self, f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches, d: &mut Decisions,
     ) -> Option<bool> {
-        let res = analyze_conflict(f, t, cref);
+        let res = analyze_conflict2(f, t, cref);
         match res {
             Conflict::Ground => {
                 return Some(false);
@@ -219,8 +221,8 @@ impl Solver {
             Conflict::Learned(s_idx, mut clause) => {
                 self.handle_long_clause(f, t, w, d, clause, s_idx);
             }
-            Conflict::Panic => {
-                return Some(true);
+            _ => {
+                panic!();
             }
         }
         None
@@ -406,12 +408,15 @@ pub fn solver(formula: &mut Formula) -> SatResult {
     watches.init_watches(formula);
     match trail.learn_units(formula, &mut decisions) {
         Some(cref) => {
+            panic!(); // TODO
+            /*
             if derive_empty_formula(formula, &trail, cref) {
                 return SatResult::Unsat;
             } else {
                 // There is absolutely no way that this can happen, and it should pe provable
                 return SatResult::Err;
             }
+            */
         }
         None => {}
     }

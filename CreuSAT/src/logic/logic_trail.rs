@@ -12,14 +12,31 @@ impl Reason {
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
             match self {
-                Reason::Long(i) =>
-                    (0 <= @i && @i < (@f.clauses).len())
-                    && (@(@f.clauses)[@i]).len() > 1
-                ,
-                Reason::Unit(i) =>
-                    (0 <= @i && @i < (@f.clauses).len())
-                    && (@(@f.clauses)[@i]).len() == 1
-                ,
+                Reason::Long(cref) =>
+                    (0 <= @cref && @cref < (@f.clauses).len())
+                    && (@(@f.clauses)[@cref]).len() > 1,
+                Reason::Unit(cref) =>
+                    (0 <= @cref && @cref < (@f.clauses).len())
+                    && (@(@f.clauses)[@cref]).len() == 1,
+                _ => true
+            }
+        }
+    }
+
+    #[predicate]
+    pub fn invariant_reason_new(self, f: Formula, a: Assignments) -> bool {
+        pearlite! {
+            match self {
+                Reason::Long(cref) =>
+                    (0 <= @cref && @cref < (@f.clauses).len())
+                    && (@(@f.clauses)[@cref]).len() > 1
+                    && (forall<i: Int> 1 <= i && i < (@(@f.clauses)[@cref]).len() ==>
+                        (@(@f.clauses)[@cref])[i].unsat_inner(@a))
+                    && (@(@f.clauses)[@cref])[0].sat_inner(@a),
+                Reason::Unit(cref) =>
+                    (0 <= @cref && @cref < (@f.clauses).len())
+                    && (@(@f.clauses)[@cref]).len() == 1
+                    && (@(@f.clauses)[@cref])[0].sat_inner(@a),
                 _ => true
             }
         }
@@ -87,13 +104,22 @@ impl Trail {
             // added, watch out
             && self.lit_not_in_less(f)
             && self.lit_is_unique()
-            && long_are_post_unit_inner(@self.trail, f, @self.assignments)
+            && long_are_post_unit_inner(@self.trail, f, @self.assignments) // Gonna remove this
+            && self.new_post_unit(f)
             && self.trail_entries_are_assigned() // ADDED
             && self.decisions_are_sorted() // NEW
             && unit_are_sat(@self.trail, f, self.assignments)
             // I am not sure these will be needed
             //trail_entries_are_assigned_inner(@self.trail, @self.assignments) && // added
             //assignments_are_in_trail(@self.trail, @self.assignments) // added
+        }
+    }
+
+    #[predicate]
+    pub fn new_post_unit(self, f: Formula) -> bool {
+        pearlite! {
+            forall<j: Int> 0 <= j && j < (@self.trail).len() ==>
+            (@self.trail)[j].reason.invariant_reason_new(f, self.assignments)
         }
     }
 
@@ -127,6 +153,7 @@ impl Trail {
         }
     }
 }
+
 
 #[predicate]
 pub fn lit_not_in_less_inner(t: Seq<Step>, f: Formula) -> bool {

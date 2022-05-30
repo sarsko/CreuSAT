@@ -216,7 +216,7 @@ fn propagate_lit_with_regard_to_clause(
         proof_assert!(((@f.clauses)[@cref]).post_unit(trail.assignments));
         proof_assert!(clause_post_with_regards_to_lit(((@f.clauses)[@cref]), trail.assignments, second_lit));
         // slowdown in swapping
-        //f.clauses[cref].rest.swap(0,1);
+        f.clauses[cref].rest.swap(0,1); // TODO
         //proof_assert!((@f.clauses)[@cref].unit(*a) && true);
         /*
         proof_assert!(lemma_swap_clause_no_dups(((@(old_f.inner()).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1); true);
