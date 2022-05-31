@@ -1,0 +1,52 @@
+name: Rust
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Rust fmt
+      run: |
+        shopt -s globstar
+        rustfmt **/*.rs --check
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    - name: Check
+      run: cargo check
+    - name: Run tests
+      run: |
+        cargo make gen-cfg-CreuSAT
+        git diff-index --quiet HEAD --
+  replay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use OCaml ${{ env.OCAML_COMPILER }}
+      uses: ocaml/setup-ocaml@v2
+      with:
+        ocaml-compiler: ${{ env.OCAML_COMPILER }}
+      - name: Install Why3
+        run: |
+          opam pin add why3 https://gitlab.inria.fr/why3/why3.git
+          opam install why3
+      - name: Replay
+        WHY3CONFIG= why3 replay -Lprelude --only-obsolete mlcfgs/CreuSAT.mlcfg
+
