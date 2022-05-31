@@ -92,7 +92,8 @@ impl Formula {
     }
     */
 
-    #[cfg_attr(feature = "trust_unit", trusted)]
+    /*
+    //#[cfg_attr(feature = "trust_unit", trusted)]
     #[maintains((*trail).invariant(mut self))]
     #[maintains((mut self).invariant())]
     #[maintains((*watches).invariant(mut self))]
@@ -116,6 +117,7 @@ impl Formula {
         proof_assert!(long_are_post_unit_inner(@trail.trail, *self, @trail.assignments));
         proof_assert!(^old_f.inner() == ^self);
     }
+    */
 
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
@@ -177,6 +179,7 @@ impl Formula {
         cref
     }
 
+    /*
     // The reason why we are doing this so "weirdly" is that swapping before adding makes the SMT
     // solvers not believe that the clause is equisat. This could probably be solved, but pushing,
     // then swapping, then adding watches works just fine.
@@ -203,7 +206,9 @@ impl Formula {
         watches.watches[second_lit.to_neg_watchidx()].push(Watcher { cref, blocker: first_lit});
         proof_assert!((old_self.inner()).equisat(*self));
     }
+    */
 
+    /*
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[requires(@s_idx < (@clause).len())]
     #[maintains((mut self).invariant())]
@@ -225,6 +230,7 @@ impl Formula {
         self.swap_lits_in_clause(t, watches, cref, 0, s_idx);
         cref
     }
+    */
 
     // Passing, but needs the same help as add_clause
     #[cfg_attr(feature = "trust_formula", trusted)]

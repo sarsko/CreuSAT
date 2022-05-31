@@ -44,8 +44,6 @@ pub fn lemma_permut_clause_ok2(c: Clause, c2: Clause, a: Assignments) {}
 
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
-#[requires((@c).len() >= 2)]
-#[requires((@c2).len() == (@c).len())]
 #[requires((@c2).exchange(@c, a, b))]
 #[requires(no_duplicate_indexes_inner(@c))]
 #[ensures(no_duplicate_indexes_inner(@c2))]
@@ -53,8 +51,6 @@ pub fn lemma_swap_clause_no_dups(c: Clause, c2: Clause, a: Int, b: Int) {}
 
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
-#[requires((@c).len() >= 2)]
-#[requires((@c2).len() == (@c).len())]
 #[requires((@c2).exchange(@c, a, b))]
 #[requires(c.post_unit(ass))]
 #[ensures(c2.post_unit(ass))]
@@ -62,7 +58,9 @@ pub fn lemma_swap_maintains_post_unit(c: Clause, c2: Clause, a: Int, b: Int, ass
     lemma_swap_clause_no_dups(c, c2, a, b);
 }
 
-#[cfg_attr(feature = "trust_logic_logic", trusted)]
+/*
+// TODO : Not correct anymore
+//#[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
 #[requires((@c).len() >= 2)]
 #[requires((@c2).len() == (@c).len())]
@@ -73,6 +71,7 @@ pub fn lemma_swap_maintains_post_unit(c: Clause, c2: Clause, a: Int, b: Int, ass
 pub fn lemma_swap_maintains_post_with_regards_to(c: Clause, c2: Clause, a: Int, b: Int, ass: Assignments, j: Int) {
     lemma_swap_maintains_post_unit(c, c2, a, b, ass);
 }
+*/
 
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]

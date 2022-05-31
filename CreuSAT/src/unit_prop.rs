@@ -6,6 +6,7 @@ use creusot_contracts::*;
 
 use crate::{formula::*, lit::*, trail::*, watches::*};
 
+
 use crate::logic::{
     logic::*,
     logic_clause::*,
@@ -19,6 +20,7 @@ use crate::logic::{
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(lit.index_logic() < @f.num_vars)]
 //#[requires((@trail.trail).len() > 0)]
+#[requires(!(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
 #[requires(@cref < (@f.clauses).len())]
 #[requires(2 <= @k && @k < (@(@f.clauses)[@cref]).len())]
 #[requires((@(@f.clauses)[@cref]).len() > 2)]
@@ -49,55 +51,38 @@ fn check_and_move_watch(
 }
 
 #[cfg_attr(feature = "trust_unit", trusted)]
-#[maintains((*trail).invariant(mut f))]
 #[maintains((mut f).invariant())]
+#[maintains((*trail).invariant(mut f))]
 #[maintains((*watches).invariant(mut f))]
 #[requires((@(@f.clauses)[@cref]).len() >= 2)]
+#[requires(@cref < (@f.clauses).len())]
 #[requires((@(@f.clauses)[@cref]).len() > @j)]
 #[requires((@(@f.clauses)[@cref]).len() > @k)]
-#[requires(@f.num_vars < @usize::MAX/2)]
-#[requires(@cref < (@f.clauses).len())]
+#[requires(!(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
+//#[requires(@f.num_vars < @usize::MAX/2)]
+#[ensures(((@(@(^f).clauses)[@cref]).exchange(@(@f.clauses)[@cref], @j, @k)))]
 #[ensures(@f.num_vars == @(^f).num_vars)]
 #[ensures((@f.clauses).len() == (@(^f).clauses).len())]
-#[ensures((@(@f.clauses)[@cref]).len() == (@(@(^f).clauses)[@cref]).len())]
+//#[ensures((@(@f.clauses)[@cref]).len() == (@(@(^f).clauses)[@cref]).len())]
 #[ensures(f.equisat(^f))]
 fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize, k: usize) {
     let old_f = ghost! { f };
     proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
     proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments) && true);
     f.clauses[cref].rest.swap(j, k);
-    proof_assert!(lemma_swap_maintains_post_unit(((@(old_f.inner()).clauses)[@cref]), ((@f.clauses)[@cref]), @j, @k, trail.assignments); true);
+    proof_assert!((@(@f.clauses)[@cref]).exchange(@(@(old_f.inner()).clauses)[@cref], @j, @k));
+    proof_assert!(forall<i: Int> 0 <= i && i < (@trail.trail).len() ==>
+        match (@trail.trail)[i].reason {
+        Reason::Long(cref2) => { @cref != @cref2 },
+            _ => true,
+        });
     proof_assert!(vars_in_range_inner(@(@f.clauses)[@cref], @f.num_vars));
     proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
     proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments));
     proof_assert!(^old_f.inner() == ^f);
+    proof_assert!(lit_not_in_less_inner(@trail.trail, *f));
+    proof_assert!(crefs_in_range(@trail.trail, *f));
 }
-
-/*
-// OK
-//#[cfg_attr(feature = "trust_unit", trusted)]
-#[maintains((*trail).invariant(mut f))]
-#[maintains((mut f).invariant())]
-#[maintains((*watches).invariant(mut f))]
-#[requires(@f.num_vars < @usize::MAX/2)]
-#[requires(@cref < (@f.clauses).len())]
-#[requires((@(@f.clauses)[@cref]).len() >= 2)]
-#[ensures(@f.num_vars == @(^f).num_vars)]
-#[ensures((@f.clauses).len() == (@(^f).clauses).len())]
-#[ensures((@(@f.clauses)[@cref]).len() == (@(@(^f).clauses)[@cref]).len())]
-#[ensures(f.equisat(^f))]
-fn swap_zero_one(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize) {
-    let old_f = Ghost::record(&f);
-    proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
-    proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments) && true);
-    f.clauses[cref].rest.swap(0, 1);
-    proof_assert!(lemma_swap_maintains_post_unit(((@(old_f.inner()).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1, trail.assignments); true);
-    proof_assert!(vars_in_range_inner(@(@f.clauses)[@cref], @f.num_vars));
-    proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
-    proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments));
-    proof_assert!(^old_f.inner() == ^f);
-}
-*/
 
 #[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
@@ -110,6 +95,7 @@ fn swap_zero_one(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize)
 #[requires(watches.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
 #[requires((@(@f.clauses)[@cref]).len() >= 2)]
+#[requires(!(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
 #[ensures(!result ==> forall<m: Int> 2 <= m && m < (@(@f.clauses)[@cref]).len() ==> (@(@f.clauses)[@cref])[m].unsat(trail.assignments))]
 #[ensures(!result ==> (@(@f.clauses)[@cref]) == (@(@(^f).clauses)[@cref]))]
 #[ensures(@f.num_vars == @(^f).num_vars)]
@@ -128,6 +114,7 @@ fn exists_new_watchable_lit(
     #[invariant(proph_f, ^f == ^old_f.inner())]
     #[invariant(proph_w, ^watches == ^old_w.inner())]
     #[invariant(uns, forall<m: Int> 2 <= m && m < @k ==> ((@(@f.clauses)[@cref])[m]).unsat(trail.assignments))]
+    #[invariant(first_not_sat, !(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
     while k < clause_len {
         if check_and_move_watch(f, trail, watches, cref, j, k, lit) {
             return true;
@@ -145,7 +132,6 @@ fn exists_new_watchable_lit(
 #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(lit.index_logic() < @f.num_vars)]
-#[requires(watches.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
 #[requires((@(@f.clauses)[@cref]).len() >= 2)]
 #[ensures((^trail).decisions == trail.decisions)] // added
@@ -207,26 +193,15 @@ fn propagate_lit_with_regard_to_clause(
         proof_assert!(clause_post_with_regards_to_lit(((@f.clauses)[@cref]), trail.assignments, first_lit));
         return Ok(true);
     } else if second_lit.lit_unset(&trail.assignments) {
-        //} else if f.clauses[cref].rest[1].lit_unset(&trail.assignments) {
-        proof_assert!(!(@f.clauses)[@cref].unsat(trail.assignments) && true && true);
-        proof_assert!((@f.clauses)[@cref].unit(trail.assignments));
         let step = Step { lit: second_lit, decision_level: trail.decision_level(), reason: Reason::Long(cref) };
-
+        let old_c = ghost! { f.clauses[cref] };
+        proof_assert!((@(@f.clauses)[@cref])[1].unset(trail.assignments));
+        swap(f, trail, watches, cref, 0, 1);
+        proof_assert!((@(@f.clauses)[@cref]).exchange(@old_c.inner(), 0, 1));
+        proof_assert!((@(@f.clauses)[@cref])[0].unset(trail.assignments));
         trail.enq_assignment(step, f);
         proof_assert!(((@f.clauses)[@cref]).post_unit(trail.assignments));
         proof_assert!(clause_post_with_regards_to_lit(((@f.clauses)[@cref]), trail.assignments, second_lit));
-        // slowdown in swapping
-        //f.clauses[cref].rest.swap(0,1);
-        //proof_assert!((@f.clauses)[@cref].unit(*a) && true);
-        /*
-        proof_assert!(lemma_swap_clause_no_dups(((@(old_f.inner()).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1); true);
-        proof_assert!(lemma_swap_maintains_post_unit(((@(old_f.inner()).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1, *a); true);
-        // Not sure if this really helps, as we are sort of "short circuiting" the j
-        proof_assert!(lemma_swap_maintains_post_with_regards_to(((@(old_f.inner()).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1, *a, second_lit.index_logic()); true);
-        // Can add a lemma here to make the formula invariant faster
-        proof_assert!(lemma_permut_clause_in_formula_maintains_sat(*old_f.inner(), *f, @cref); true);
-        proof_assert!(lemma_permut_clause_in_formula_maintains_unsat(*old_f.inner(), *f, @cref); true);
-        */
         return Ok(true);
     } else {
         return Err(cref);

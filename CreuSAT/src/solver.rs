@@ -1,4 +1,6 @@
 extern crate creusot_contracts;
+use ::std::panic;
+
 use creusot_contracts::std::*;
 use creusot_contracts::logic::Ghost;
 use creusot_contracts::*;
@@ -130,7 +132,7 @@ impl Solver {
         }
     }
 
-    #[cfg_attr(feature = "trust_solver", trusted)]
+    //#[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut w).invariant(mut f))]
@@ -147,22 +149,16 @@ impl Solver {
     fn handle_long_clause(
         &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, s_idx: usize,
     ) {
-        let cref = f.add_and_swap_first(clause, w, t, s_idx);
-        let (idx, level) = get_asserting_level(&f.clauses[cref], t, f);
-        let mut i: usize = 0;
-        let mut lbd: usize = 0;
-        #[invariant(lbd_bound, @lbd <= @i)]
-        while i < f.clauses[cref].rest.len() {
-            let level = t.lit_to_level[f.clauses[cref].rest[i].index()];
-            if level < self.perm_diff.len() && // Lazy
-                self.perm_diff[level] != self.num_conflicts
-            {
-                self.perm_diff[level] = self.num_conflicts;
-                lbd += 1;
-            }
-            i += 1;
-        }
-        f.make_asserting_clause_and_watch(w, t, idx, cref);
+        //let cref = f.add_and_swap_first(clause, w, t, s_idx);
+        //let cref = 0;
+        clause.swap_lits_in_clause(f, s_idx, 0  );
+        let (idx, level) = get_asserting_level(&clause, t, f);
+        clause.swap_lits_in_clause(f, idx, 1);
+        // TODO: Store lbd in clause
+        let lbd = clause.calc_lbd(f, self, t);
+        let clause = clause;
+        //f.make_asserting_clause_and_watch(w, t, idx, cref);
+        let cref = f.add_clause(clause, w, t);
         update_fast(&mut self.fast, lbd);
         update_slow(&mut self.slow, lbd);
         d.increment_and_move(f, cref, &t.assignments);
@@ -181,7 +177,7 @@ impl Solver {
         self.increase_num_conflicts();
     }
 
-    #[cfg_attr(feature = "trust_solver", trusted)]
+    //#[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut w).invariant(mut f))]
@@ -219,8 +215,9 @@ impl Solver {
             Conflict::Learned(s_idx, mut clause) => {
                 self.handle_long_clause(f, t, w, d, clause, s_idx);
             }
-            Conflict::Panic => {
-                return Some(true);
+            Conflict::Restart(clause) => {
+                f.add_clause(clause, w, t);
+                t.backtrack_safe(0, f, d);
             }
         }
         None
@@ -389,7 +386,7 @@ impl Solver {
     }
 }
 
-#[cfg_attr(feature = "trust_solver", trusted)]
+//#[cfg_attr(feature = "trust_solver", trusted)]
 #[ensures(match result {
     SatResult::Sat(assn) => { formula_sat_inner(@(^formula), @assn) && formula.equisat(^formula) },
     SatResult::Unsat     => { (^formula).not_satisfiable() && formula.equisat(^formula) },
@@ -405,15 +402,9 @@ pub fn solver(formula: &mut Formula) -> SatResult {
     let mut watches = Watches::new(formula);
     watches.init_watches(formula);
     match trail.learn_units(formula, &mut decisions) {
-        Some(cref) => {
-            if derive_empty_formula(formula, &trail, cref) {
-                return SatResult::Unsat;
-            } else {
-                // There is absolutely no way that this can happen, and it should pe provable
-                return SatResult::Err;
-            }
-        }
-        None => {}
+        None => {},
+        Some(true) => return SatResult::Unsat,
+        Some(false) => return SatResult::Err,
     }
     let mut solver = Solver::new(formula);
     solver.inner(formula, decisions, trail, watches)
