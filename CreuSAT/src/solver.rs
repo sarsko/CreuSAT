@@ -161,7 +161,7 @@ impl Solver {
         let cref = f.add_clause(clause, w, t);
         update_fast(&mut self.fast, lbd);
         update_slow(&mut self.slow, lbd);
-        d.increment_and_move(f, cref, &t.assignments);
+        //d.increment_and_move(f, cref, &t.assignments);
         // This should be removed by updating the post of get_asserting_level
         t.backtrack_safe(level, f, d);
         let lit = f.clauses[cref].rest[0];
@@ -195,7 +195,7 @@ impl Solver {
     fn handle_conflict(
         &mut self, f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches, d: &mut Decisions,
     ) -> Option<bool> {
-        let res = analyze_conflict(f, t, cref);
+        let res = analyze_conflict(f, t, cref, d);
         match res {
             Conflict::Ground => {
                 return Some(false);
@@ -386,7 +386,7 @@ impl Solver {
     }
 }
 
-//#[cfg_attr(feature = "trust_solver", trusted)]
+#[cfg_attr(feature = "trust_solver", trusted)]
 #[ensures(match result {
     SatResult::Sat(assn) => { formula_sat_inner(@(^formula), @assn) && formula.equisat(^formula) },
     SatResult::Unsat     => { (^formula).not_satisfiable() && formula.equisat(^formula) },

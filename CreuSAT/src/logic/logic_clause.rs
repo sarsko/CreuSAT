@@ -5,7 +5,7 @@ use creusot_contracts::*;
 use crate::{assignments::*, clause::*, formula::*, lit::*};
 
 #[cfg(feature = "contracts")]
-use crate::logic::{logic_formula::*, logic_assignments::complete_inner};
+use crate::logic::{logic_formula::*, logic_assignments::complete_inner, logic_lit::idx_in_logic2};
 
 #[cfg(feature = "contracts")]
 impl Model for Clause {
@@ -296,6 +296,14 @@ impl Clause {
         pearlite! {
             (forall<a : Seq<AssignedState>> a.len() == @f.num_vars && complete_inner(a) ==> (self.sat_inner(a) == o.sat_inner(a)))
             && (forall<a : Seq<AssignedState>> a.len() == @f.num_vars && complete_inner(a) ==> (self.unsat_inner(a) == o.unsat_inner(a)))
+        }
+    }
+
+    #[predicate]
+    pub fn clause_is_seen(self, seen: Vec<bool>) -> bool {
+        pearlite! {
+            forall<idx: Int> 0 <= idx && idx < (@seen).len() ==>
+                ((@seen)[idx] == idx_in_logic2(idx, @self))
         }
     }
 }
