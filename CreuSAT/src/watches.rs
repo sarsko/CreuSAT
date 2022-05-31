@@ -1,7 +1,7 @@
 // Wactches is Mac OK 11.04 22.10 and 13.04 12:25
 extern crate creusot_contracts;
-use creusot_contracts::std::*;
 use creusot_contracts::logic::Ghost;
+use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 use crate::{formula::*, lit::*, trail::*};
@@ -42,7 +42,7 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
     watches.watches[watchidx].swap(j, end);
     let curr_lit = f.clauses[cref].rest[k];
     proof_assert!(@watchidx < (@watches.watches).len());
-    let old_w = ghost!( watches );;
+    let old_w = ghost!(watches);
     proof_assert!((old_w.inner()).watches == watches.watches);
     proof_assert!(watcher_crefs_in_range(@(@watches.watches)[@watchidx], *f));
     match watches.watches[watchidx].pop() {
@@ -143,8 +143,8 @@ impl Watches {
             if clause.rest.len() > 1 {
                 //self.add_watcher(clause.rest[0], i, f);
                 //self.add_watcher(clause.rest[1], i, f);
-                self.watches[clause.rest[0].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause.rest[1]});
-                self.watches[clause.rest[1].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause.rest[0]});
+                self.watches[clause.rest[0].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause.rest[1] });
+                self.watches[clause.rest[1].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause.rest[0] });
             }
             i += 1;
         }

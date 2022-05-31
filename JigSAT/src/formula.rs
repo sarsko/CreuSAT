@@ -1,7 +1,5 @@
 use crate::{assignments::*, clause::*, solver::*, trail::*, watches::*};
-use std::{
-    ops::{Index, IndexMut},
-};
+use std::ops::{Index, IndexMut};
 pub struct Formula {
     pub clauses: Vec<Clause>,
     pub num_vars: usize,
@@ -12,9 +10,7 @@ impl Index<usize> for Formula {
     #[inline]
     fn index(&self, i: usize) -> &Clause {
         //#[cfg(feature = "unsafe_access")]
-        unsafe {
-            self.clauses.get_unchecked(i)
-        }
+        unsafe { self.clauses.get_unchecked(i) }
         //#[cfg(not(feature = "unsafe_access"))]
         //&self.lits[i]
     }
@@ -24,9 +20,7 @@ impl IndexMut<usize> for Formula {
     #[inline]
     fn index_mut(&mut self, i: usize) -> &mut Clause {
         //#[cfg(feature = "unsafe_access")]
-        unsafe {
-            self.clauses.get_unchecked_mut(i)
-        }
+        unsafe { self.clauses.get_unchecked_mut(i) }
         //#[cfg(not(feature = "unsafe_access"))]
         //&mut self.lits[i]
     }
@@ -86,8 +80,8 @@ impl Formula {
         let first_lit = clause[0];
         let second_lit = clause[1];
         self.clauses.push(clause);
-        watches[first_lit.to_neg_watchidx()].push(Watcher { cref, blocker: second_lit});
-        watches[second_lit.to_neg_watchidx()].push(Watcher { cref, blocker: first_lit});
+        watches[first_lit.to_neg_watchidx()].push(Watcher { cref, blocker: second_lit });
+        watches[second_lit.to_neg_watchidx()].push(Watcher { cref, blocker: first_lit });
         cref
     }
 
@@ -132,7 +126,7 @@ impl Formula {
         if self[(self.len() - s.initial_len) / 2].lbd <= 3 {
             s.max_len += s.special_inc_reduce_db;
         }
-        if self[self.len()-1].lbd <= 5 {
+        if self[self.len() - 1].lbd <= 5 {
             s.max_len += s.special_inc_reduce_db;
         }
         watches.unwatch_all_lemmas(self, s);
@@ -143,9 +137,9 @@ impl Formula {
                 //self.clauses.pop();
                 self.clauses.swap_remove(i);
                 limit -= 1;
-            } 
+            }
             i -= 1;
-            /* 
+            /*
             let clause = &self[i];
             if clause.lbd > 2 && clause.len() > 2 {
             } else {
@@ -155,8 +149,8 @@ impl Formula {
         }
         i = s.initial_len;
         while i < self.len() {
-            watches[self[i][0].to_neg_watchidx()].push(Watcher { cref: i, blocker: self[i][1]});
-            watches[self[i][1].to_neg_watchidx()].push(Watcher { cref: i, blocker: self[i][0]});
+            watches[self[i][0].to_neg_watchidx()].push(Watcher { cref: i, blocker: self[i][1] });
+            watches[self[i][1].to_neg_watchidx()].push(Watcher { cref: i, blocker: self[i][0] });
             i += 1;
         }
     }

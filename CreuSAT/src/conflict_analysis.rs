@@ -1,12 +1,14 @@
 extern crate creusot_contracts;
-use creusot_contracts::std::*;
 use creusot_contracts::logic::Ghost;
+use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*, decision::*};
+use crate::{assignments::*, clause::*, decision::*, formula::*, lit::*, trail::*};
 
 #[cfg(feature = "contracts")]
-use crate::logic::{logic::*, logic_clause::*, logic_conflict_analysis::*, logic_formula::*, logic_lit::*, logic_util::*};
+use crate::logic::{
+    logic::*, logic_clause::*, logic_conflict_analysis::*, logic_formula::*, logic_lit::*, logic_util::*,
+};
 
 //#[derive(Debug)]
 pub enum Conflict {
@@ -26,22 +28,19 @@ fn idx_in(c: &Vec<Lit>, idx: usize, seen: &Vec<bool>) -> bool {
     seen[idx]
 }
 
-
 //#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(_f.invariant())]
 #[requires(trail.invariant(*_f))]
 #[requires(@idx < @_f.num_vars)]
 #[requires(o.in_formula(*_f))]
-#[requires(@c_idx < (@c).len() 
-    && (@c)[@c_idx].index_logic() == @idx 
+#[requires(@c_idx < (@c).len()
+    && (@c)[@c_idx].index_logic() == @idx
     && (@o)[0].is_opp((@c)[@c_idx])
 )]
 #[requires(c.same_idx_same_polarity_except(*o, @idx))]
-
 // New post unit -> abstract away
 #[requires(forall<j: Int> 1 <= j && j < (@o).len() ==> (@o)[j].unsat_inner(@trail.assignments))]
 #[requires((@o)[0].sat_inner(@trail.assignments))]
-
 #[requires(@path_c > 0 && @path_c <= (@c).len())]
 #[ensures(@^path_c <= (@^c).len())]
 // Maintains:
@@ -53,7 +52,10 @@ fn idx_in(c: &Vec<Lit>, idx: usize, seen: &Vec<bool>) -> bool {
 #[maintains((mut c).clause_is_seen(mut seen))]
 #[maintains((mut c).unsat_inner(@trail.assignments))]
 #[maintains((mut c).invariant(@_f.num_vars))]
-fn resolve(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, trail: &Trail, seen: &mut Vec<bool>, path_c: &mut usize, to_bump: &mut Vec<usize>){
+fn resolve(
+    _f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, trail: &Trail, seen: &mut Vec<bool>,
+    path_c: &mut usize, to_bump: &mut Vec<usize>,
+) {
     let old_c = ghost!(c);
     let old_seen = ghost!(seen);
     let old_path_c = ghost!(path_c);
@@ -78,9 +80,9 @@ fn resolve(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, t
     #[invariant(i_bound, 1 <= @i && @i <= (@o).len())]
     #[invariant(not_in, !(@old_c.inner())[@c_idx].lit_in(*c) && !(@o)[0].lit_in(*c))]
     #[invariant(all_in, forall<j: Int> 1 <= j && j < @i ==> (@o)[j].lit_in(*c))]
-    #[invariant(all_in2, forall<j: Int> 0 <= j && j < (@old_c.inner()).len() 
+    #[invariant(all_in2, forall<j: Int> 0 <= j && j < (@old_c.inner()).len()
         && j != @c_idx ==> (@old_c.inner())[j].lit_in(*c))]
-    #[invariant(from_c_or_o, (forall<j: Int> 0 <= j && j < (@c).len() ==> 
+    #[invariant(from_c_or_o, (forall<j: Int> 0 <= j && j < (@c).len() ==>
                     ((@c)[j].lit_in(*old_c.inner()) ||  (@c)[j].lit_in(*o))))]
     #[invariant(path_c_less, @path_c <= (@c).len())]
     #[invariant(seen_is_clause, c.clause_is_seen(*seen))]
@@ -94,7 +96,7 @@ fn resolve(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, t
         let old_c3 = ghost!(c);
         proof_assert!(^c == ^old_c3.inner());
         if idx_in(&c.rest, o.rest[i].index(), &seen) {
-        //if seen[o.rest[i].index()] { 
+            //if seen[o.rest[i].index()] {
             proof_assert!((@o)[@i].lit_in(*c));
             proof_assert!(@c == @old_c3.inner());
         } else {
@@ -116,7 +118,6 @@ fn resolve(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, t
     //proof_assert!(equisat_extension_inner(*c, @_f));
 }
 
-
 #[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(trail.invariant(*_f))]
 #[requires(c.unsat(trail.assignments))]
@@ -132,7 +133,7 @@ fn resolve(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, t
     None => @^i == 0
 })]
 fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula, seen: &Vec<bool>) -> Option<usize> {
-    let old_i = ghost!{i};
+    let old_i = ghost! {i};
     #[invariant(i_bound, 0 <= @i && @i <= (@trail.trail).len())]
     #[invariant(proph_i, ^i == ^old_i.inner())]
     while *i > 0 {
@@ -194,7 +195,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula, seen: 
 pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisions) -> Conflict {
     let decisionlevel = trail.decision_level();
     let mut to_bump = Vec::new();
-    let break_cond = if decisionlevel == 0 {0} else {1};
+    let break_cond = if decisionlevel == 0 { 0 } else { 1 };
     let mut path_c: usize = 0;
     let mut seen = vec![false; f.num_vars];
     let mut i = trail.trail.len();
@@ -262,7 +263,6 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
     }
 }
 
-
 //#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
@@ -279,7 +279,8 @@ pub fn resolve_empty_clause(f: &Formula, trail: &Trail, cref: usize) -> bool {
     #[invariant(seen_is_clause, forall<idx: Int> 0 <= idx && idx < (@seen).len() ==>
         ((@seen)[idx] == (exists<i: Int> 0 <= i && i < @j && (@clause)[i].index_logic() == idx)))]
     #[invariant(seen_len, (@seen).len() == @f.num_vars)]
-    #[invariant(j_is_len, @j <= (@clause).len())] // This is needed to establish the loop invariant for the next loop
+    #[invariant(j_is_len, @j <= (@clause).len())]
+    // This is needed to establish the loop invariant for the next loop
     while j < clause.len() {
         seen[clause.rest[j].index()] = true;
         j += 1;

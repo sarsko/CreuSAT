@@ -1,8 +1,8 @@
 extern crate creusot_contracts;
 use ::std::panic;
 
-use creusot_contracts::std::*;
 use creusot_contracts::logic::Ghost;
+use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 use crate::{
@@ -121,7 +121,7 @@ impl Solver {
     ) {
         //let cref = f.add_and_swap_first(clause, w, t, s_idx);
         //let cref = 0;
-        clause.swap_lits_in_clause(f, s_idx, 0  );
+        clause.swap_lits_in_clause(f, s_idx, 0);
         let (idx, level) = get_asserting_level(&clause, t, f);
         clause.swap_lits_in_clause(f, idx, 1);
         // TODO: Store lbd in clause
@@ -369,7 +369,7 @@ pub fn solver(formula: &mut Formula) -> SatResult {
     let mut watches = Watches::new(formula);
     watches.init_watches(formula);
     match trail.learn_units(formula, &mut decisions) {
-        None => {},
+        None => {}
         Some(true) => return SatResult::Unsat,
         Some(false) => return SatResult::Err,
     }

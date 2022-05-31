@@ -1,11 +1,10 @@
 // Just swap missing (15.04, 16:31)
 extern crate creusot_contracts;
-use creusot_contracts::std::*;
 use creusot_contracts::logic::Ghost;
+use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 use crate::{formula::*, lit::*, trail::*, watches::*};
-
 
 use crate::logic::{
     logic::*,
@@ -34,7 +33,8 @@ fn check_and_move_watch(
     f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
 ) -> bool {
     let curr_lit = f.clauses[cref].rest[k];
-    if !curr_lit.lit_unsat(&trail.assignments) { //curr_lit.lit_unset(&trail.assignments) || curr_lit.lit_sat(&trail.assignments) {
+    if !curr_lit.lit_unsat(&trail.assignments) {
+        //curr_lit.lit_unset(&trail.assignments) || curr_lit.lit_sat(&trail.assignments) {
         if f.clauses[cref].rest[0].index() == lit.index() {
             // First
             swap(f, trail, watches, cref, k, 0);
@@ -72,10 +72,10 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
     f.clauses[cref].rest.swap(j, k);
     proof_assert!((@(@f.clauses)[@cref]).exchange(@(@(old_f.inner()).clauses)[@cref], @j, @k));
     proof_assert!(forall<i: Int> 0 <= i && i < (@trail.trail).len() ==>
-        match (@trail.trail)[i].reason {
-        Reason::Long(cref2) => { @cref != @cref2 },
-            _ => true,
-        });
+    match (@trail.trail)[i].reason {
+    Reason::Long(cref2) => { @cref != @cref2 },
+        _ => true,
+    });
     proof_assert!(vars_in_range_inner(@(@f.clauses)[@cref], @f.num_vars));
     proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
     proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments));

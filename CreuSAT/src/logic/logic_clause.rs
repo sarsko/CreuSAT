@@ -5,7 +5,7 @@ use creusot_contracts::*;
 use crate::{assignments::*, clause::*, formula::*, lit::*};
 
 #[cfg(feature = "contracts")]
-use crate::logic::{logic_formula::*, logic_assignments::complete_inner, logic_lit::idx_in_logic2};
+use crate::logic::{logic_assignments::complete_inner, logic_formula::*, logic_lit::idx_in_logic2};
 
 #[cfg(feature = "contracts")]
 impl Model for Clause {

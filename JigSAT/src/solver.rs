@@ -3,7 +3,6 @@ use crate::{
     watches::*,
 };
 
-
 pub enum SatResult {
     Sat(Vec<AssignedState>),
     Unsat,
@@ -48,7 +47,6 @@ update_fast_average (double *average, unsigned value)
 
 //&& @level < (@trail.decisions).len() //added
 
-
 pub struct Solver {
     pub max_len: usize,
     pub num_conflicts: usize,
@@ -83,10 +81,9 @@ impl Solver {
     #[inline]
     fn increase_num_conflicts(&mut self) {
         //if self.num_conflicts < usize::MAX {
-            self.num_conflicts += 1;
+        self.num_conflicts += 1;
         //}
     }
-
 
     #[inline]
     fn handle_long_clause(
@@ -165,15 +162,14 @@ impl Solver {
             _ => {}
         }
         if f.len() > old_len {
-
-        let slow = (self.slow / 100) * 125;
-        if self.fast > slow {
-            self.fast = slow;
-            trail.backtrack_safe(0, f, d);
-            if f.len() > self.max_len {
-                f.reduceDB(w, trail, self);
+            let slow = (self.slow / 100) * 125;
+            if self.fast > slow {
+                self.fast = slow;
+                trail.backtrack_safe(0, f, d);
+                if f.len() > self.max_len {
+                    f.reduceDB(w, trail, self);
+                }
             }
-        }
         }
         match d.get_next(&trail.assignments, f) {
             Some(next) => {

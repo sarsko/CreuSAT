@@ -1,6 +1,6 @@
 extern crate creusot_contracts;
-use creusot_contracts::std::*;
 use creusot_contracts::logic::Ghost;
+use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 use crate::{assignments::*, decision::*, formula::*, lit::*};
@@ -71,12 +71,12 @@ impl Trail {
             Some(step) => {
                 // TODO: Wrap in abstraction
                 self.assignments.0[step.lit.index()] += 2; // TODO: Prove safety
-                /*
-                if self.assignments.0[step.lit.index()] < 2 {
-                } else {
-                    self.assignments.0[step.lit.index()] = 3; // TODO lol
-                }
-                */
+                                                           /*
+                                                           if self.assignments.0[step.lit.index()] < 2 {
+                                                           } else {
+                                                               self.assignments.0[step.lit.index()] = 3; // TODO lol
+                                                           }
+                                                           */
                 proof_assert!(@self.trail == pop(@(old_t.inner()).trail));
                 proof_assert!(^old_t.inner() == ^self);
                 proof_assert!((lemma_backtrack_ok(*self, *f, step.lit)); true);

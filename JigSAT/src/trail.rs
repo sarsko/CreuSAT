@@ -43,7 +43,7 @@ impl Trail {
         let last = self.trail.pop();
         match last {
             Some(step) => {
-                self.assignments[step.lit.index()] += 2; 
+                self.assignments[step.lit.index()] += 2;
                 // Removing this would be hard to prove lol.
                 //self.lit_to_level[step.lit.index()] = u32::MAX;
                 step.lit.index()
@@ -116,7 +116,7 @@ impl Trail {
                     if lit.lit_unsat(&self.assignments) {
                         return Some(i);
                     }
-                } 
+                }
                 self.enq_assignment(Step { lit, decision_level: 0, reason: Reason::Unit }, f);
                 f.remove_clause_in_preprocessing(i);
             } else {

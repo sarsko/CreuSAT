@@ -1,7 +1,5 @@
-use std::{
-    ops::{Index, IndexMut},
-};
 use crate::{assignments::*, formula::*, util::*};
+use std::ops::{Index, IndexMut};
 
 #[derive(Clone, Copy)]
 pub struct Node {
@@ -30,9 +28,7 @@ impl Index<usize> for Decisions {
     #[inline]
     fn index(&self, i: usize) -> &Node {
         //#[cfg(feature = "unsafe_access")]
-        unsafe {
-            self.linked_list.get_unchecked(i)
-        }
+        unsafe { self.linked_list.get_unchecked(i) }
         //#[cfg(not(feature = "unsafe_access"))]
         //&self.linked_list[i]
     }
@@ -42,14 +38,11 @@ impl IndexMut<usize> for Decisions {
     #[inline]
     fn index_mut(&mut self, i: usize) -> &mut Node {
         //#[cfg(feature = "unsafe_access")]
-        unsafe {
-            self.linked_list.get_unchecked_mut(i)
-        }
+        unsafe { self.linked_list.get_unchecked_mut(i) }
         //#[cfg(not(feature = "unsafe_access"))]
         //&mut self.linked_list[i]
     }
 }
-
 
 impl Decisions {
     pub fn make_linked_list(f: &Formula, lit_order: Vec<usize>) -> Decisions {
@@ -135,9 +128,13 @@ impl Decisions {
         moving.ts = self.timestamp;
         self.linked_list[self.start].prev = tomove;
         self.start = tomove;
-        unsafe { self.linked_list.get_unchecked_mut(prev).next = old_next; }
+        unsafe {
+            self.linked_list.get_unchecked_mut(prev).next = old_next;
+        }
         if old_next != INVALID {
-            unsafe { self.linked_list.get_unchecked_mut(old_next).prev = prev; }
+            unsafe {
+                self.linked_list.get_unchecked_mut(old_next).prev = prev;
+            }
         }
         if self.timestamp == usize::MAX {
             self.rescore(_f);

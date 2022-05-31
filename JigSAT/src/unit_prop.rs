@@ -1,12 +1,11 @@
 use crate::{formula::*, lit::*, trail::*, watches::*};
 
-
 #[inline]
 fn unit_prop_check_rest(
     f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
 ) -> Result<(), ()> {
     let curr_lit = f[cref][k];
-    if !curr_lit.lit_unsat(&trail.assignments){
+    if !curr_lit.lit_unsat(&trail.assignments) {
         if f[cref][0].index() == lit.index() {
             // First
             swap(f, trail, watches, cref, k, 0);
@@ -26,7 +25,6 @@ fn unit_prop_check_rest(
 fn swap(f: &mut Formula, _trail: &Trail, _watches: &Watches, cref: usize, j: usize, k: usize) {
     f[cref].swap(j, k);
 }
-
 
 #[inline]
 fn unit_prop_do_outer(
@@ -48,8 +46,7 @@ fn unit_prop_do_outer(
             search = 2;
         }
         match unit_prop_check_rest(f, trail, watches, cref, j, search, lit) {
-            Err(_) => {
-            }
+            Err(_) => {}
             Ok(_) => {
                 f[cref].search = search;
                 return Ok(false);
@@ -61,11 +58,7 @@ fn unit_prop_do_outer(
         return Err(cref);
     }
     if f[cref][0].lit_unset(&trail.assignments) {
-        let step = Step {
-            lit: f[cref][0],
-            decision_level: trail.decision_level(),
-            reason: Reason::Long(cref),
-        };
+        let step = Step { lit: f[cref][0], decision_level: trail.decision_level(), reason: Reason::Long(cref) };
 
         trail.enq_assignment(step, f);
         return Ok(true);
@@ -74,7 +67,7 @@ fn unit_prop_do_outer(
 
         trail.enq_assignment(step, f);
         // slowdown in swapping
-        f[cref].swap(0,1);
+        f[cref].swap(0, 1);
         return Ok(true);
     }
 }

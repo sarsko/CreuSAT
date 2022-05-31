@@ -254,7 +254,6 @@ fn flip_v(v: AssignedState) -> AssignedState {
     }
 }
 
-
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
 #[requires(f.invariant())]

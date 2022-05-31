@@ -1,10 +1,10 @@
 use ::std::ops;
 
-use crate::{assignments::*};
+use crate::assignments::*;
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
 pub struct Lit {
-    code: u32
+    code: u32,
 }
 
 impl Lit {
@@ -54,23 +54,17 @@ impl Lit {
 
     #[inline(always)]
     pub fn phase_saved(idx: usize, assignments: &Assignments) -> Lit {
-        Lit {
-            code: (idx << 1) as u32 | ((assignments[idx] == 1) as u32)
-        }
+        Lit { code: (idx << 1) as u32 | ((assignments[idx] == 1) as u32) }
     }
 
     // This is only called in the parser
     pub fn new(idx: usize, polarity: bool) -> Lit {
-        Lit {
-            code: (idx << 1) as u32 | (polarity as u32)
-        }
+        Lit { code: (idx << 1) as u32 | (polarity as u32) }
     }
 
     #[inline]
     pub fn select_other(self, a: Self, b: Self) -> Self {
-        Self {
-            code: self.code ^ a.code ^ b.code,
-        }
+        Self { code: self.code ^ a.code ^ b.code }
     }
 }
 

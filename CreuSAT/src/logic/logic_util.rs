@@ -59,7 +59,6 @@ pub fn elems_less_than(v: Seq<usize>, n: Int) -> bool {
     pearlite! { forall<i: Int> 0 <= i && i < v.len() ==> @v[i] < n }
 }
 
-
 #[logic]
 #[cfg_attr(feature = "trust_util_logic", trusted)]
 #[requires(s.len() > 0)]
@@ -92,5 +91,3 @@ pub fn last_elem<T>(s: Seq<T>) -> T {
 #[requires(sorted(s))]
 #[ensures(sorted(pop(s)))]
 pub fn lemma_pop_maintains_sorted(s: Seq<usize>) {}
-
-

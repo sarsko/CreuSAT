@@ -156,7 +156,6 @@ impl Trail {
     }
 }
 
-
 #[predicate]
 pub fn lit_not_in_less_inner(t: Seq<Step>, f: Formula) -> bool {
     pearlite! {

@@ -3,7 +3,7 @@ use ::std::ops;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::{assignments::*};
+use crate::assignments::*;
 
 #[cfg(feature = "contracts")]
 use crate::logic::logic_lit::*;
@@ -106,18 +106,12 @@ impl Lit {
     #[ensures(result.index_logic() == @idx)]
     #[ensures(result.is_positive_logic() == (@(@assignments)[@idx] == 1))]
     pub fn phase_saved(idx: usize, assignments: &Assignments) -> Lit {
-        Lit {
-            idx: idx,
-            polarity: if assignments.0[idx] == 1 { true } else { false },
-        }
+        Lit { idx: idx, polarity: if assignments.0[idx] == 1 { true } else { false } }
     }
 
     // This is only called in the parser
     pub fn new(idx: usize, polarity: bool) -> Lit {
-        Lit {
-            idx: idx,
-            polarity: polarity,
-        }
+        Lit { idx: idx, polarity: polarity }
     }
 }
 

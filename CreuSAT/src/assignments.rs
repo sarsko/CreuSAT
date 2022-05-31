@@ -1,6 +1,6 @@
 extern crate creusot_contracts;
-use creusot_contracts::std::*;
 use creusot_contracts::logic::Ghost;
+use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 use crate::{formula::*, lit::*, trail::*};
@@ -48,7 +48,7 @@ impl Assignments {
     #[ensures(long_are_post_unit_inner(@_t, *_f, @^self))]
     #[ensures(!unset((@^self)[lit.index_logic()]))]
     #[ensures((@^self).len() == (@self).len())]
-    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() 
+    #[ensures((forall<j : Int> 0 <= j && j < (@self).len()
             && j != lit.index_logic() ==> (@*self)[j] == (@^self)[j]))]
     #[ensures(lit.sat(^self))]
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {

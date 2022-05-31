@@ -1,4 +1,4 @@
-use crate::{clause::*, formula::*, lit::*, trail::*, decision::*};
+use crate::{clause::*, decision::*, formula::*, lit::*, trail::*};
 
 //#[derive(Debug)]
 pub enum Conflict {
@@ -17,18 +17,18 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
     // conflict analysis a struct which is instatiated once and then kept.
     let mut to_bump = Vec::new();
     let mut seen = vec![false; f.num_vars];
-    let mut out_learnt:Vec<Lit> = vec![Lit::new(0, true); 1]; // I really don't like this way of reserving space.
+    let mut out_learnt: Vec<Lit> = vec![Lit::new(0, true); 1]; // I really don't like this way of reserving space.
     let mut path_c = 0;
     let mut confl = cref;
     let mut i = trail.trail.len();
     loop {
         let clause = &f[confl];
-        let mut k = if confl == cref {0} else {1};
+        let mut k = if confl == cref { 0 } else { 1 };
         while k < clause.len() {
             let lit = clause[k];
             if !seen[lit.index()] {
                 let level = trail.lit_to_level[lit.index()];
-                /* 
+                /*
                 // This is nonsensical as we are not wiping lit_to_level anymore.
                 if level == u32::MAX {
                     panic!();
@@ -82,6 +82,6 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
             i += 1;
         }
         out_learnt.swap(1, max_i);
-        Conflict::Learned(max_level, Clause{ deleted: false, lbd: 0, search: 1, lits: out_learnt})
+        Conflict::Learned(max_level, Clause { deleted: false, lbd: 0, search: 1, lits: out_learnt })
     }
 }

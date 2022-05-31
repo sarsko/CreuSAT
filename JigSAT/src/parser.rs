@@ -43,9 +43,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                         'p' => match split[2].parse::<usize>() {
                             Ok(n) => {
                                 if num_lits_set {
-                                    return Err(
-                                        "Error in input file - multiple p lines".to_string()
-                                    );
+                                    return Err("Error in input file - multiple p lines".to_string());
                                 }
                                 num_lits_set = true;
                                 num_literals = n
@@ -73,14 +71,11 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                                             if !seen.contains(&n) {
                                                 curr_clause.push(n);
                                                 seen.insert(n);
-                                            } 
+                                            }
                                         }
                                     }
                                     Err(_) => {
-                                        return Err(format!(
-                                            "Error in input file on line {}",
-                                            line_cntr
-                                        ));
+                                        return Err(format!("Error in input file on line {}", line_cntr));
                                     }
                                 }
                             }
@@ -115,10 +110,10 @@ pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_li
         for lit in clause {
             assert!(*lit != 0);
             if *lit < 0 {
-                let new_lit = Lit2::new((lit.abs() - 1 ) as usize, false);
+                let new_lit = Lit2::new((lit.abs() - 1) as usize, false);
                 currclause.push(new_lit);
             } else {
-                let new_lit = Lit2::new((*lit - 1 ) as usize, true);
+                let new_lit = Lit2::new((*lit - 1) as usize, true);
                 currclause.push(new_lit);
             }
         }

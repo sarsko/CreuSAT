@@ -1,7 +1,5 @@
-use crate::{formula::*, lit::*, trail::*, solver::*};
-use std::{
-    ops::{Index, IndexMut},
-};
+use crate::{formula::*, lit::*, solver::*, trail::*};
+use std::ops::{Index, IndexMut};
 
 // Lets try this scheme and see how well it fares
 // Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
@@ -19,9 +17,7 @@ impl Index<usize> for Watches {
     #[inline]
     fn index(&self, i: usize) -> &Vec<Watcher> {
         //#[cfg(feature = "unsafe_access")]
-        unsafe {
-            self.watches.get_unchecked(i)
-        }
+        unsafe { self.watches.get_unchecked(i) }
         //#[cfg(not(feature = "unsafe_access"))]
         //&self.watches[i]
     }
@@ -31,9 +27,7 @@ impl IndexMut<usize> for Watches {
     #[inline]
     fn index_mut(&mut self, i: usize) -> &mut Vec<Watcher> {
         //#[cfg(feature = "unsafe_access")]
-        unsafe {
-            self.watches.get_unchecked_mut(i)
-        }
+        unsafe { self.watches.get_unchecked_mut(i) }
         //#[cfg(not(feature = "unsafe_access"))]
         //&mut self.watches[i]
     }
@@ -53,7 +47,6 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
         }
     }
 }
-
 
 impl Watches {
     #[inline]
@@ -82,8 +75,8 @@ impl Watches {
         while i < f.len() {
             let clause = &f[i];
             if clause.len() > 1 {
-                self[clause[0].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause[1]});
-                self[clause[1].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause[0]});
+                self[clause[0].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause[1] });
+                self[clause[1].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause[0] });
             }
             i += 1;
         }
@@ -121,7 +114,7 @@ impl Watches {
         while i < self.len() {
             let mut j = 0;
             while j < self[i].len() {
-                if self[i][j].cref > s.initial_len - 1{
+                if self[i][j].cref > s.initial_len - 1 {
                     self[i].swap_remove(j);
                     //let end = self.watches[i].len() - 1;
                     //self.watches[i].swap(j, end);

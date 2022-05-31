@@ -1,8 +1,8 @@
 // Formula is Mac OK with an inline_full + split on VC #12 for add_clause 11.04 22.18
 extern crate creusot_contracts;
 
-use creusot_contracts::std::*;
 use creusot_contracts::logic::Ghost;
+use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 use crate::{assignments::*, clause::*, solver::*, trail::*, watches::*};

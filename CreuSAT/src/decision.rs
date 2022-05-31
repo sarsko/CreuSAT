@@ -1,6 +1,6 @@
 extern crate creusot_contracts;
-use creusot_contracts::std::*;
 use creusot_contracts::logic::Ghost;
+use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 use crate::{assignments::*, formula::*, util::*};
@@ -32,7 +32,6 @@ pub struct Decisions {
     pub start: usize,
     pub search: usize,
 }
-
 
 impl Decisions {
     // It is possible to sacrifice some readability for a tad faster proofs here(by adding assertions).
@@ -195,7 +194,7 @@ impl Decisions {
         }
         */
     }
-    
+
     #[cfg_attr(feature = "trust_decision", trusted)]
     #[requires(elems_less_than(@v, @f.num_vars))]
     #[requires(@f.num_vars < @usize::MAX)]
@@ -228,7 +227,6 @@ impl Decisions {
             i += 1;
         }
     }
-
 
     #[cfg_attr(feature = "trust_decision", trusted)]
     #[maintains((mut self).invariant(@_f.num_vars))]

@@ -1,5 +1,8 @@
 use crate::{formula::*, lit::*, solver::Solver, trail::*};
-use std::{ops::{Index, IndexMut}, cmp::Ordering};
+use std::{
+    cmp::Ordering,
+    ops::{Index, IndexMut},
+};
 
 pub struct Clause {
     pub deleted: bool,
@@ -8,15 +11,12 @@ pub struct Clause {
     pub lits: Vec<Lit>,
 }
 
-
 impl Index<usize> for Clause {
     type Output = Lit;
     #[inline]
     fn index(&self, i: usize) -> &Lit {
         //#[cfg(feature = "unsafe_access")]
-        unsafe {
-            self.lits.get_unchecked(i)
-        }
+        unsafe { self.lits.get_unchecked(i) }
         //#[cfg(not(feature = "unsafe_access"))]
         //&self.lits[i]
     }
@@ -25,9 +25,7 @@ impl IndexMut<usize> for Clause {
     #[inline]
     fn index_mut(&mut self, i: usize) -> &mut Lit {
         //#[cfg(feature = "unsafe_access")]
-        unsafe {
-            self.lits.get_unchecked_mut(i)
-        }
+        unsafe { self.lits.get_unchecked_mut(i) }
         //#[cfg(not(feature = "unsafe_access"))]
         //&mut self.lits[i]
     }
@@ -137,5 +135,4 @@ impl Clause {
     pub fn calc_and_set_lbd(&mut self, trail: &Trail, solver: &mut Solver) {
         self.lbd = self.calc_lbd(trail, solver);
     }
-
 }

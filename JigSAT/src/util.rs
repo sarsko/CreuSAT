@@ -1,4 +1,3 @@
-
 pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
     let mut i: usize = 0;
     while i < v.len() {
