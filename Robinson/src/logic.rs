@@ -73,7 +73,10 @@ pub fn lemma_unit_forces(f: Formula, a: Seq<AssignedState>, ix: Int, v: Assigned
 #[requires(forall<j: Int> 0 <= j && j < (@c).len() && !((@c)[j].index_logic() == ix) ==> (@c)[j].unsat_inner(a))]
 #[ensures(!f.eventually_sat_complete_inner(a.set(ix, flip_v(v))))]
 #[ensures(f.unsat_inner(a.set(ix, flip_v(v))))]
-pub fn lemma_unit_wrong_polarity_unsat_formula(c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
+pub fn lemma_unit_wrong_polarity_unsat_formula(
+    c: Clause, f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState,
+) {
+}
 
 #[logic]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]

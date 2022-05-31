@@ -126,7 +126,7 @@ impl Formula {
             return SatResult::Err;
         }
         if self.clauses.len() == 0 {
-            let a= Vec::new();
+            let a = Vec::new();
             // These just help the proof along.
             proof_assert!(self.sat_inner(@a));
             proof_assert!(self.eventually_sat_no_ass());
