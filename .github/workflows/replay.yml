@@ -38,15 +38,15 @@ jobs:
   replay:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Use OCaml ${{ env.OCAML_COMPILER }}
-      uses: ocaml/setup-ocaml@v2
-      with:
-        ocaml-compiler: ${{ env.OCAML_COMPILER }}
-      - name: Install Why3
-        run: |
-          opam pin add why3 https://gitlab.inria.fr/why3/why3.git
-          opam install why3
-      - name: Replay
-        WHY3CONFIG= why3 replay -Lprelude --only-obsolete mlcfgs/CreuSAT.mlcfg
+    - uses: actions/checkout@v2
+    - name: Use OCaml ${{ env.OCAML_COMPILER }}
+    uses: ocaml/setup-ocaml@v2
+    with:
+      ocaml-compiler: ${{ env.OCAML_COMPILER }}
+    - name: Install Why3
+      run: |
+        opam pin add why3 https://gitlab.inria.fr/why3/why3.git
+        opam install why3
+    - name: Replay
+      WHY3CONFIG= why3 replay -Lprelude --only-obsolete mlcfgs/CreuSAT.mlcfg
 
