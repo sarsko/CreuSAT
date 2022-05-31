@@ -55,22 +55,6 @@ pub fn update_slow(slow: &mut usize, lbd: usize) {
         *slow += lbd_shl_five;
     }
 }
-/*
-#[cfg_attr(feature = "trust_util", trusted)]
-#[ensures(sorted_tuple_first(@^v))]
-#[ensures((@^v).permutation_of(@v))]
-pub fn insertion_sort(arr: &mut Vec<(usize, usize)>) {
-    let mut i = 1;
-    while i < arr.len() {
-        let mut j = i;
-        while j > 0 && arr[j].0 < arr[j-1].0 {
-            arr.swap(j, j-1);
-            j = j-1;
-        }
-        i += 1;
-    }
-}
-*/
 
 // Regular selection sort. Based on the one in Creusot repo by me and Xavier
 #[cfg_attr(feature = "trust_util", trusted)]

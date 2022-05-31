@@ -3,15 +3,7 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::{
-    assignments::*,
-    clause::*,
-    formula::*,
-    lit::*,
-    trail::*,
-    //solver_dpll::*,
-    watches::*,
-};
+use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*, watches::*};
 
 use crate::logic::{logic::*, logic_assignments::*};
 
@@ -28,11 +20,9 @@ impl Model for Formula {
 #[predicate]
 pub fn formula_invariant(f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
-        //(@f.clauses).len() > 0 && // added
         (forall<i: Int> 0 <= i && i < f.0.len() ==>
             f.0[i].invariant(f.1))
         &&
-        // Added, will break stuff
         (forall<i: Int> 0 <= i && i < f.0.len() ==>
             (@f.0[i]).len() > 0)
     }
@@ -67,16 +57,6 @@ pub fn compatible(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
         o.0.len() >= f.0.len() &&
         forall<i: Int> 0 <= i && i < f.0.len() ==>
             (f.0[i]).equals(o.0[i])
-        /*
-        (@o.clauses).len() >= (@self.clauses).len() &&
-        forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
-            (@self.clauses)[i] == (@o.clauses)[i]
-            */
-        /*
-            (@(@self.clauses)[i]).len() == (@(@o.clauses)[i]).len() &&
-            forall<j: Int> 0 <= j && j < (@(@self.clauses)[i]).len() ==>
-            (@(@self.clauses)[i])[j] == (@(@o.clauses)[i])[j]
-            */
     }
 }
 
@@ -107,37 +87,20 @@ impl Formula {
     pub fn compatible(self, o: Formula) -> bool {
         pearlite! {
             @self.num_vars == @o.num_vars &&
-            /*
-            (@o.clauses).len() >= (@self.clauses).len() &&
-            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
-                (@self.clauses)[i] == (@o.clauses)[i]
-                */
             (@o.clauses).len() >= (@self.clauses).len() &&
             forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
                 ((@self.clauses)[i]).equals((@o.clauses)[i])
-            /*
-                (@(@self.clauses)[i]).len() == (@(@o.clauses)[i]).len() &&
-                forall<j: Int> 0 <= j && j < (@(@self.clauses)[i]).len() ==>
-                (@(@self.clauses)[i])[j] == (@(@o.clauses)[i])[j]
-                */
         }
     }
 
     #[predicate]
     pub fn equisat_compatible(self, o: Formula) -> bool {
-        pearlite! {
-            equisat_compatible_inner(@self, @o)
-            /*
-            self.compatible(o) &&
-            self.equisat(o)
-            */
-        }
+        pearlite! { equisat_compatible_inner(@self, @o) }
     }
 
     #[predicate]
     pub fn invariant_old(self) -> bool {
         pearlite! {
-            //(@f.clauses).len() > 0 && // added
             (forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
                 (@self.clauses)[i].invariant(@self.num_vars))
             &&
@@ -152,9 +115,7 @@ impl Formula {
     #[ensures(result == self.invariant_old())]
     pub fn invariant(self) -> bool {
         pearlite! {
-            //(@f.clauses).len() > 0 && // added
             formula_invariant(@self)
-            //&& @self.num_vars < @usize::MAX/2 // Added this as it ends up being a pervasive condition otherwise
         }
     }
 
@@ -194,10 +155,7 @@ impl Formula {
     #[cfg_attr(feature = "trust_formula_logic", trusted)]
     #[ensures(result == self.sat_inner(@a))]
     pub fn sat(self, a: Assignments) -> bool {
-        pearlite! {
-            //self.sat_inner(@a)
-            formula_sat_inner(@self, @a)
-        }
+        pearlite! { formula_sat_inner(@self, @a) }
     }
 
     #[predicate]
@@ -210,9 +168,7 @@ impl Formula {
 
     #[predicate]
     pub fn unsat(self, a: Assignments) -> bool {
-        pearlite! {
-            self.unsat_inner(@a)
-        }
+        pearlite! { self.unsat_inner(@a) }
     }
 
     #[predicate]

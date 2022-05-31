@@ -72,53 +72,6 @@ impl Formula {
         false
     }
 
-    /*
-    #[cfg_attr(feature = "trust_formula", trusted)]
-    #[requires(selff.invariant())]
-    #[requires(a.invariant(*f))]
-    #[requires(@idx < (@self.clauses).len())]
-    #[ensures(result == (@self.clauses)[@idx].unsat(*a))]
-    pub fn is_clause_unsat(&self, idx: usize, a: &Assignments) -> bool {
-        let clause = &self.clauses[idx];
-        let mut i: usize = 0;
-        #[invariant(previous, forall<j: Int> 0 <= j && j < @i ==> (@clause)[j].unsat(*a))]
-        while i < clause.rest.len() {
-            if !clause.rest[i].lit_unsat(a) {
-                return false;
-            }
-            i += 1;
-        }
-        return true;
-    }
-    */
-
-    /*
-    //#[cfg_attr(feature = "trust_unit", trusted)]
-    #[maintains((*trail).invariant(mut self))]
-    #[maintains((mut self).invariant())]
-    #[maintains((*watches).invariant(mut self))]
-    //#[requires((@(@self.clauses)[@cref]).len() >= 2)]
-    #[requires((@(@self.clauses)[@cref]).len() > @j)]
-    #[requires((@(@self.clauses)[@cref]).len() > @k)]
-    #[requires(@self.num_vars < @usize::MAX/2)]
-    #[requires(@cref < (@self.clauses).len())]
-    #[ensures(@self.num_vars == @(^self).num_vars)]
-    #[ensures((@self.clauses).len() == (@(^self).clauses).len())]
-    #[ensures((@(@self.clauses)[@cref]).len() == (@(@(^self).clauses)[@cref]).len())]
-    #[ensures(self.equisat(^self))]
-    pub fn swap_lits_in_clause(&mut self, trail: &Trail, watches: &Watches, cref: usize, j: usize, k: usize) {
-        let old_f = ghost! { self };
-        proof_assert!(no_duplicate_indexes_inner(@(@self.clauses)[@cref]));
-        proof_assert!(long_are_post_unit_inner(@trail.trail, *self, @trail.assignments) && true);
-        self.clauses[cref].rest.swap(j, k);
-        proof_assert!(lemma_swap_maintains_post_unit(((@(old_f.inner()).clauses)[@cref]), ((@self.clauses)[@cref]), @j, @k, trail.assignments); true);
-        proof_assert!(vars_in_range_inner(@(@self.clauses)[@cref], @self.num_vars));
-        proof_assert!(no_duplicate_indexes_inner(@(@self.clauses)[@cref]));
-        proof_assert!(long_are_post_unit_inner(@trail.trail, *self, @trail.assignments));
-        proof_assert!(^old_f.inner() == ^self);
-    }
-    */
-
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains(_t.invariant(mut self))]
@@ -129,7 +82,6 @@ impl Formula {
     #[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(equisat_extension_inner(clause, @self))]
     #[ensures(@self.num_vars == @(^self).num_vars)]
-    //#[ensures(self.equisat_compatible(^self))] // Not needed
     #[ensures(self.equisat(^self))] // Added/changed
     #[ensures(@result == (@self.clauses).len())]
     #[ensures((@(^self).clauses)[@result] == clause)]
@@ -144,12 +96,8 @@ impl Formula {
         let first_lit = clause.rest[0];
         let second_lit = clause.rest[1];
         self.clauses.push(clause);
-        //watches.add_watcher(first_lit, cref, self);
-        //watches.add_watcher(second_lit, cref, self);
         watches.add_watcher(first_lit, cref, self, second_lit);
         watches.add_watcher(second_lit, cref, self, first_lit);
-        //watches.watches[first_lit.to_neg_watchidx()].push(Watcher { cref, blocker: second_lit});
-        //watches.watches[second_lit.to_neg_watchidx()].push(Watcher { cref, blocker: first_lit});
         proof_assert!((old_self.inner()).equisat_compatible(*self));
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
@@ -165,7 +113,6 @@ impl Formula {
     #[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(equisat_extension_inner(clause, @self))]
     #[ensures(@self.num_vars == @(^self).num_vars)]
-    //#[ensures(self.equisat_compatible(^self))]
     #[ensures(self.equisat(^self))] // Added/changed
     #[ensures(@result == (@self.clauses).len())]
     #[ensures((@(^self).clauses)[@result] == clause)]
@@ -178,59 +125,6 @@ impl Formula {
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
-
-    /*
-    // The reason why we are doing this so "weirdly" is that swapping before adding makes the SMT
-    // solvers not believe that the clause is equisat. This could probably be solved, but pushing,
-    // then swapping, then adding watches works just fine.
-    #[cfg_attr(feature = "trust_formula", trusted)]
-    #[requires(@cref < (@self.clauses).len())]
-    #[requires((@(@self.clauses)[@cref]).len() > 1)]
-    #[requires((@(@self.clauses)[@cref]).len() > @idx)]
-    #[maintains((mut self).invariant())]
-    #[maintains(t.invariant(mut self))]
-    #[maintains((mut watches).invariant(mut self))] // new
-    #[requires(@self.num_vars < @usize::MAX/2)]
-    #[ensures((@(@(^self).clauses)[@cref]).len() == (@(@self.clauses)[@cref]).len())]
-    #[ensures(@self.num_vars == @(^self).num_vars)]
-    #[ensures(self.equisat(^self))]
-    #[ensures((@self.clauses).len() == (@(^self).clauses).len())]
-    pub fn make_asserting_clause_and_watch(&mut self, watches: &mut Watches, t: &Trail, idx: usize, cref: usize) {
-        let old_self = ghost!{ self };
-        self.swap_lits_in_clause(t, watches, cref, 1, idx);
-        let first_lit = self.clauses[cref].rest[0];
-        let second_lit = self.clauses[cref].rest[1];
-        //watches.add_watcher(first_lit, cref, self);
-        //watches.add_watcher(second_lit, cref, self);
-        watches.watches[first_lit.to_neg_watchidx()].push(Watcher { cref, blocker: second_lit});
-        watches.watches[second_lit.to_neg_watchidx()].push(Watcher { cref, blocker: first_lit});
-        proof_assert!((old_self.inner()).equisat(*self));
-    }
-    */
-
-    /*
-    #[cfg_attr(feature = "trust_formula", trusted)]
-    #[requires(@s_idx < (@clause).len())]
-    #[maintains((mut self).invariant())]
-    #[maintains(t.invariant(mut self))]
-    #[maintains((mut watches).invariant(mut self))] // new
-    #[requires((@clause).len() >= 2)]
-    #[requires(@self.num_vars < @usize::MAX/2)]
-    #[requires(vars_in_range_inner(@clause, @self.num_vars))]
-    #[requires(no_duplicate_indexes_inner(@clause))]
-    #[requires(equisat_extension_inner(clause, @self))]
-    #[ensures((@(@(^self).clauses)[@result]).len() == (@clause).len())]
-    #[ensures(@self.num_vars == @(^self).num_vars)]
-    #[ensures(self.equisat(^self))]
-    #[ensures(@result == (@self.clauses).len())]
-    #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
-    pub fn add_and_swap_first(&mut self, clause: Clause, watches: &mut Watches, t: &Trail, s_idx: usize) -> usize {
-        let old_self = ghost! { self };
-        let cref = self.add_unwatched_clause(clause, watches, t);
-        self.swap_lits_in_clause(t, watches, cref, 0, s_idx);
-        cref
-    }
-    */
 
     // Passing, but needs the same help as add_clause
     #[cfg_attr(feature = "trust_formula", trusted)]
@@ -394,42 +288,3 @@ impl Formula {
         }
     }
 }
-
-/*
-// UNUSED
-impl Formula {
-    // NONE OF THESE ARE IN USE
-    #[requires(self.invariant())]
-    #[requires(a.invariant(*self))]
-    #[ensures(result == self.unsat(*a))]
-    pub fn is_unsat(&self, a: &Assignments) -> bool {
-        let mut i: usize = 0;
-        #[invariant(prev,
-            forall<k: Int> 0 <= k && k < @i ==>
-            !(@self.clauses)[k].unsat(*a))]
-        while i < self.clauses.len() {
-            if is_clause_unsat(self, i, a) {
-                return true;
-            }
-            i += 1;
-        }
-        return false;
-    }
-
-
-    #[requires(self.invariant())]
-    #[requires(a.invariant(*self))]
-    #[ensures((result == SatState::Sat) == self.sat(*a))]
-    #[ensures((result == SatState::Unsat) == self.unsat(*a))]
-    #[ensures((result == SatState::Unknown) ==> !a.complete())]
-    pub fn eval(&self, a: &Assignments) -> SatState {
-        if self.is_sat(a) {
-            return SatState::Sat;
-        } else if self.is_unsat(a) {
-            return SatState::Unsat;
-        } else {
-            return SatState::Unknown;
-        }
-    }
-}
-*/
