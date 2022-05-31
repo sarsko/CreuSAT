@@ -3,7 +3,7 @@ use creusot_contracts::std::*;
 use creusot_contracts::logic::Ghost;
 use creusot_contracts::*;
 
-use crate::{assignments::*, formula::*, lit::*};
+use crate::{assignments::*, formula::*, lit::*, trail::*, solver::*};
 
 #[cfg(feature = "contracts")]
 use crate::logic::{logic_clause::*, logic_formula::*};
@@ -159,5 +159,24 @@ impl Clause {
         proof_assert!(eventually_sat_complete_no_ass((((@_f).0).push(*self), (@_f).1)) ==
                       eventually_sat_complete_no_ass((((@_f).0).push(*old_c.inner()), (@_f).1)));
         proof_assert!(self.equisat_extension(*_f));
+    }
+
+    #[requires((@t.lit_to_level).len() == (@_f.num_vars))]
+    #[requires(self.invariant(@_f.num_vars))]
+    pub fn calc_lbd(&self, _f: &Formula, s: &mut Solver, t: &Trail) -> usize {
+        let mut i: usize = 0;
+        let mut lbd: usize = 0;
+        #[invariant(lbd_bound, @lbd <= @i)]
+        while i < self.len() {
+            let level = t.lit_to_level[self.rest[i].index()];
+            if level < s.perm_diff.len() && // Lazy
+                s.perm_diff[level] != s.num_conflicts
+            {
+                s.perm_diff[level] = s.num_conflicts;
+                lbd += 1;
+            }
+            i += 1;
+        }
+        lbd
     }
 }

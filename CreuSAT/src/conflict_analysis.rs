@@ -13,7 +13,7 @@ pub enum Conflict {
     Ground,
     Unit(Clause),
     Learned(usize, Clause),
-    Restart(Clause),
+    Restart(Clause), // This is an error state where we derive a non-asserting clause
 }
 
 #[inline(always)]
@@ -171,7 +171,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula, seen: 
     None
 }
 
-#[cfg_attr(feature = "trust_conflict", trusted)]
+//#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
@@ -193,7 +193,13 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula, seen: 
         && equisat_extension_inner(clause, @f)
         && @s_idx < (@clause).len()
     },
-    _ => { true }
+    Conflict::Restart(clause) => {
+        clause.invariant(@f.num_vars)
+        && (@clause).len() > 1
+        && vars_in_range_inner(@clause, @f.num_vars)
+        && no_duplicate_indexes_inner(@clause)
+        && equisat_extension_inner(clause, @f)
+    },
 })]
 /*
 #[ensures(match result {
@@ -247,6 +253,9 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     } else if clause.len() == 1 {
         Conflict::Unit(clause)
     } else {
+        if path_c > break_cond {
+            return Conflict::Restart(clause);
+        }
         let mut k: usize = 0;
         let mut s_idx: usize = 0;
         #[invariant(k_bound, @k <= (@clause).len())]
@@ -259,5 +268,47 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             k += 1;
         }
         Conflict::Learned(s_idx, clause)
+    }
+}
+
+
+#[cfg_attr(feature = "trust_conflict", trusted)]
+#[requires(f.invariant())]
+#[requires(trail.invariant(*f))]
+#[requires(@cref < (@f.clauses).len())]
+#[requires((@f.clauses)[@cref].unsat(trail.assignments))]
+#[ensures(result ==> f.not_satisfiable())]
+pub fn resolve_empty_clause(f: &Formula, trail: &Trail, cref: usize) -> bool {
+    let decisionlevel = trail.decision_level();
+    let mut seen = vec![false; f.num_vars];
+    let mut i = trail.trail.len();
+    let clause = f.clauses[cref].clone();
+    let mut j: usize = 0;
+    #[invariant(seen_is_clause, forall<idx: Int> 0 <= idx && idx < (@seen).len() ==>
+        ((@seen)[idx] == (exists<i: Int> 0 <= i && i < @j && (@clause)[i].index_logic() == idx)))]
+    #[invariant(seen_len, (@seen).len() == @f.num_vars)]
+    #[invariant(j_is_len, @j <= (@clause).len())] // This is needed to establish the loop invariant for the next loop
+    while j < clause.len() {
+        seen[clause.rest[j].index()] = true;
+        j += 1;
+    }
+    let mut clause = clause;
+    proof_assert!(forall<idx: Int> 0 <= idx && idx < (@seen).len() ==>
+        ((@seen)[idx] == idx_in_logic2(idx, @clause)));
+    let c_idx = match choose_literal(&clause, trail, &mut i, f, &seen) {
+        Some(c_idx) => c_idx,
+        None => return false,
+    };
+    let ante = match &trail.trail[i].reason {
+        //Reason::Long(c) => &f.clauses[*c],
+        Reason::Unit(c) => &f.clauses[*c],
+        _ => return false,
+    };
+    let mut path_c = 1;
+    resolve(f, &mut clause, ante, trail.trail[i].lit.index(), c_idx, &trail, &mut seen, &mut path_c);
+    if clause.len() == 0 {
+        return true;
+    } else {
+        return false;
     }
 }

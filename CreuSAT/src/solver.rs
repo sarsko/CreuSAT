@@ -132,7 +132,7 @@ impl Solver {
         }
     }
 
-    #[cfg_attr(feature = "trust_solver", trusted)]
+    //#[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut w).invariant(mut f))]
@@ -154,20 +154,9 @@ impl Solver {
         clause.swap_lits_in_clause(f, s_idx, 0  );
         let (idx, level) = get_asserting_level(&clause, t, f);
         clause.swap_lits_in_clause(f, idx, 1);
+        // TODO: Store lbd in clause
+        let lbd = clause.calc_lbd(f, self, t);
         let clause = clause;
-        let mut i: usize = 0;
-        let mut lbd: usize = 0;
-        #[invariant(lbd_bound, @lbd <= @i)]
-        while i < clause.len() {
-            let level = t.lit_to_level[clause.rest[i].index()];
-            if level < self.perm_diff.len() && // Lazy
-                self.perm_diff[level] != self.num_conflicts
-            {
-                self.perm_diff[level] = self.num_conflicts;
-                lbd += 1;
-            }
-            i += 1;
-        }
         //f.make_asserting_clause_and_watch(w, t, idx, cref);
         let cref = f.add_clause(clause, w, t);
         update_fast(&mut self.fast, lbd);
@@ -226,8 +215,9 @@ impl Solver {
             Conflict::Learned(s_idx, mut clause) => {
                 self.handle_long_clause(f, t, w, d, clause, s_idx);
             }
-            _ => {
-                panic!(); // TODO
+            Conflict::Restart(clause) => {
+                f.add_clause(clause, w, t);
+                t.backtrack_safe(0, f, d);
             }
         }
         None
@@ -412,18 +402,9 @@ pub fn solver(formula: &mut Formula) -> SatResult {
     let mut watches = Watches::new(formula);
     watches.init_watches(formula);
     match trail.learn_units(formula, &mut decisions) {
-        Some(cref) => {
-            panic!(); // TODO
-            /*
-            if derive_empty_formula(formula, &trail, cref) {
-                return SatResult::Unsat;
-            } else {
-                // There is absolutely no way that this can happen, and it should pe provable
-                return SatResult::Err;
-            }
-            */
-        }
-        None => {}
+        None => {},
+        Some(true) => return SatResult::Unsat,
+        Some(false) => return SatResult::Err,
     }
     let mut solver = Solver::new(formula);
     solver.inner(formula, decisions, trail, watches)

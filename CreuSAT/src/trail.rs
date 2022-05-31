@@ -331,18 +331,15 @@ impl Trail {
         Ok(())
     }
 
-    #[cfg_attr(feature = "trust_trail", trusted)]
+    //#[cfg_attr(feature = "trust_trail", trusted)]
     #[maintains((mut self).invariant(*f))]
     #[maintains((mut d).invariant(@f.num_vars))]
     #[requires(f.invariant())]
     #[ensures(match result {
-        Some(cref) => @cref < (@f.clauses).len()
-                   && (@(@f.clauses)[@cref]).len() == 1
-                   && (@f.clauses)[@cref].unsat((^self).assignments)
-                   && (@(@f.clauses)[@cref])[0].unsat((^self).assignments),
+        Some(true) => f.not_satisfiable(),
         _ => true,
     })]
-    pub fn learn_units(&mut self, f: &Formula, d: &mut Decisions) -> Option<usize> {
+    pub fn learn_units(&mut self, f: &Formula, d: &mut Decisions) -> Option<bool> {
         let mut i = 0;
         let old_d = ghost! { d };
         let old_self = ghost! { self };
@@ -354,10 +351,12 @@ impl Trail {
             let clause = &f.clauses[i];
             if clause.rest.len() == 1 {
                 let lit = clause.rest[0];
-                // This check should be removed by an invariant that the formula only contains unique clauses
                 if lit.lit_set(&self.assignments) {
                     if lit.lit_unsat(&self.assignments) {
-                        return Some(i);
+                        // TODO: As soon as the bijection between trail and assignments is reestablished,
+                        // this should come quite easily.
+                        use crate::conflict_analysis::resolve_empty_clause;
+                        return Some(resolve_empty_clause(f, self, i));
                     }
                 } else {
                     self.learn_unit(i, f, d);
