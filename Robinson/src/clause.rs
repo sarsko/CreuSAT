@@ -19,7 +19,7 @@ impl Model for Clause {
 
     #[logic]
     fn model(self) -> Self::ModelTy {
-        self.rest.model() //.push(self.first)//.push(self.second)
+        self.rest.model()
     }
 }
 
@@ -35,19 +35,15 @@ impl Clause {
     #[predicate]
     pub fn unit_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
-            self.vars_in_range(a.len()) &&
-                !self.sat_inner(a) &&
-                    exists<i: Int> 0 <= i && i < (@self).len() &&
-                        (@self)[i].unset_inner(a) &&
-                            (forall<j: Int> 0 <= j && j < (@self).len() && j != i ==>
-                                !(@self)[j].unset_inner(a))
+            self.vars_in_range(a.len())
+            && !self.sat_inner(a)
+            && exists<i: Int> 0 <= i && i < (@self).len() && (@self)[i].unset_inner(a)
+            && (forall<j: Int> 0 <= j && j < (@self).len() && j != i ==> !(@self)[j].unset_inner(a))
         }
     }
     #[predicate]
     pub fn unit(self, a: Assignments) -> bool {
-        pearlite! {
-            self.unit_inner(@a)
-        }
+        pearlite! { self.unit_inner(@a) }
     }
 
     #[predicate]
@@ -60,9 +56,7 @@ impl Clause {
 
     #[predicate]
     pub fn unsat(self, a: Assignments) -> bool {
-        pearlite! {
-            self.unsat_inner(@a)
-        }
+        pearlite! { self.unsat_inner(@a) }
     }
 
     #[predicate]
@@ -75,9 +69,7 @@ impl Clause {
 
     #[predicate]
     pub fn sat(self, a: Assignments) -> bool {
-        pearlite! {
-            self.sat_inner(@a)
-        }
+        pearlite! { self.sat_inner(@a) }
     }
 
     #[predicate]
@@ -103,7 +95,7 @@ impl Clause {
 
     #[predicate]
     pub fn invariant(self, n: Int) -> bool {
-        pearlite! { self.vars_in_range(n) && self.no_duplicate_indexes() }
+        self.vars_in_range(n) && self.no_duplicate_indexes()
     }
 }
 

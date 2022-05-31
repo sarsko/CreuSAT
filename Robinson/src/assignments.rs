@@ -24,14 +24,6 @@ impl Model for Assignments {
 }
 
 #[predicate]
-pub fn assignments_equality(a: Assignments, a2: Assignments) -> bool {
-    pearlite! {
-        (@a).len() == (@a2).len() &&
-            forall<i: Int> 0 <= i && i < (@a).len() ==> (@a)[i] == (@a2)[i]
-    }
-}
-
-#[predicate]
 pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     pearlite! {
         a.len() == a2.len() && (forall<i: Int> 0 <= i && i < a.len() ==>
@@ -48,16 +40,12 @@ pub fn complete_inner(a: Seq<AssignedState>) -> bool {
 
 #[predicate]
 pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
-    pearlite! {
-        compatible_inner(a, a2) && complete_inner(a2)
-    }
+    compatible_inner(a, a2) && complete_inner(a2)
 }
 
 #[predicate]
 pub fn assignments_invariant(a: Seq<AssignedState>, f: Formula) -> bool {
-    pearlite! {
-        @f.num_vars == a.len()
-    }
+    pearlite! { @f.num_vars == a.len() }
 }
 
 // Predicates
@@ -92,22 +80,16 @@ impl Assignments {
     #[ensures(forall<i: Int> 0 <= i && i < (@self).len() ==> (@self)[i] == (@result)[i])]
     #[ensures((@self).len() == (@result).len())]
     #[ensures(@result.1 == @self.1)]
-    //#[ensures(*self == result)] // This is broken
     pub fn clone(&self) -> Self {
         let mut out = Vec::new();
         let mut i: usize = 0;
-        #[invariant(loop_invariant, 0 <= @i && @i <= (@self).len())]
+        #[invariant(loop_invariant, @i <= (@self).len())]
         #[invariant(equality, forall<j: Int> 0 <= j && j < @i ==> (@out)[j] == (@self)[j])]
         #[invariant(len, (@out).len() == @i)]
         while i < self.0.len() {
-            let curr = self.0[i];
-            //out.push(curr.clone());
-            out.push(curr);
+            out.push(self.0[i]);
             i += 1;
         }
-        proof_assert!((@out).len() == (@self).len());
-        proof_assert!(forall<j: Int> 0 <= j && j < (@self).len() ==> (@out)[j] == (@self)[j]);
-        //proof_assert!(out == self.0);
         Assignments(out, self.1)
     }
 
@@ -163,7 +145,6 @@ impl Assignments {
     pub fn unit_prop_once(&mut self, i: usize, f: &Formula) -> ClauseState {
         let clause = &f.clauses[i];
         let _old_a = ghost!(self);
-        proof_assert!(^self == ^_old_a.inner());
         match clause.check_if_unit(self, f) {
             ClauseState::Unit => {
                 // I tried both to make ClauseState::Unit contain a usize and to return a tuple, but
@@ -171,9 +152,7 @@ impl Assignments {
                 // rare and we on average have to traverse n/2 lits to find the unit lit. If I make formula
                 // mutable, then I can swap to index 0 and skip the call to clause.get_unit()
                 let lit = clause.get_unit(self, f);
-                proof_assert!(clause.invariant((@self).len()));
                 proof_assert!(lemma_unit_wrong_polarity_unsat_formula(*clause, *f, @self, lit.index_logic(), bool_to_assignedstate(lit.polarity)); true);
-                proof_assert!(forall<j: Int> 0 <= j && j < (@clause).len() && !((@clause)[j].index_logic() == lit.index_logic()) ==> !((@clause)[j].unset(*self)));
                 proof_assert!(lemma_unit_forces(*f, @self, lit.index_logic(), bool_to_assignedstate(lit.polarity)); true);
                 if lit.polarity {
                     self.0[lit.index()] = 1;
@@ -245,8 +224,6 @@ impl Assignments {
     #[cfg_attr(feature = "trust_assignments", trusted)]
     #[requires(f.invariant())]
     #[maintains((mut self).invariant(*f))]
-    //#[requires(self.invariant(*f))]
-    //#[ensures((^self).invariant(*f))]
     #[ensures(f.eventually_sat_complete(*self) == f.eventually_sat_complete(^self))]
     #[ensures((*self).compatible(^self))]
     #[ensures(result == Some(false) ==> f.unsat(^self))]
