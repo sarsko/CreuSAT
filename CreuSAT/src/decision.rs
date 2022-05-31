@@ -195,48 +195,13 @@ impl Decisions {
         }
         */
     }
-
-    #[cfg_attr(feature = "trust_decision", trusted)]
-    #[requires(@f.num_vars < @usize::MAX)]
-    #[requires(f.invariant())]
-    #[requires(a.invariant(*f))]
-    #[requires(@cref < (@f.clauses).len())]
-    #[maintains((mut self).invariant(@f.num_vars))]
-    pub fn increment_and_move(&mut self, f: &Formula, cref: usize, a: &Assignments) {
-        let clause = &f.clauses[cref];
-        let mut counts_with_index: Vec<(usize, usize)> = vec::from_elem((0, 0), clause.rest.len());
-        let old_self = ghost! { self };
-        let mut i: usize = 0;
-        #[invariant(unch, old_self.inner() == self)]
-        #[invariant(proph, ^old_self.inner() == ^self)]
-        #[invariant(len_same, (@clause).len() == (@counts_with_index).len())]
-        #[invariant(all_less, forall<j: Int> 0 <= j && j < @i ==>
-            @(@counts_with_index)[j].1 < (@self.linked_list).len()
-        )]
-        while i < clause.rest.len() {
-            counts_with_index[i] = (self.linked_list[clause.rest[i].index()].ts, clause.rest[i].index());
-            i += 1;
-        }
-        // TODO: Check actual speed. I believe selection sort is the slowest. Only need permut property.
-        //insertion_sort(&mut counts_with_index);
-        sort(&mut counts_with_index);
-        //counts_with_index.sort_by_key(|k| k.0);
-        i = 0;
-        #[invariant(proph, ^old_self.inner() == ^self)]
-        #[invariant(inv, self.invariant(@f.num_vars))]
-        #[invariant(len_same, (@clause).len() == (@counts_with_index).len())]
-        while i < counts_with_index.len() {
-            self.move_to_front(counts_with_index[i].1, f);
-            i += 1;
-        }
-    }
     
-    //#[cfg_attr(feature = "trust_decision", trusted)]
+    #[cfg_attr(feature = "trust_decision", trusted)]
     #[requires(elems_less_than(@v, @f.num_vars))]
     #[requires(@f.num_vars < @usize::MAX)]
     #[requires(f.invariant())]
     #[maintains((mut self).invariant(@f.num_vars))]
-    pub fn increment_and_move_new(&mut self, f: &Formula, v: Vec<usize>) {
+    pub fn increment_and_move(&mut self, f: &Formula, v: Vec<usize>) {
         let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); v.len()];
         let old_self = ghost! { self };
         let mut i: usize = 0;

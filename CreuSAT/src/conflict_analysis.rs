@@ -238,7 +238,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
         proof_assert!(clause.same_idx_same_polarity_except(*ante, @idx));
         resolve(f, &mut clause, ante, idx, c_idx, &trail, &mut seen, &mut path_c, &mut to_bump);
     }
-    d.increment_and_move_new(f, to_bump);
+    d.increment_and_move(f, to_bump);
     if clause.len() == 0 {
         Conflict::Ground
     } else if clause.len() == 1 {
