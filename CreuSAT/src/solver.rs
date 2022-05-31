@@ -27,36 +27,6 @@ pub enum ConflictResult {
     Ground,
     Continue,
 }
-// Satch:
-/*
-// fast_alpha = 0.03
-  {
-    struct averages *a = averages (solver);
-    update_fast_average (&a->fast_glue, glue);
-    update_slow_average (&a->slow_glue, glue);
-    update_slow_average (&a->conflict_level, conflict_level);
-    {
-      const uint64_t decisions = DECISIONS;
-      const uint64_t delta_decisions = decisions - a->saved_decisions;
-      a->saved_decisions = decisions;
-      update_slow_average (&a->decision_rate, delta_decisions);
-    }
-    {
-      double trail_filled = percent (SIZE_STACK (solver->trail),
-                     solver->statistics.remaining);
-      update_slow_average (&a->trail_filled, trail_filled);
-    }
-    update_betas (solver);
-  }
-
-static void
-update_fast_average (double *average, unsigned value)
-{
-  *average += fast_alpha * (value - *average);
-}
-*/
-
-//&& @level < (@trail.decisions).len() //added
 
 #[cfg_attr(feature = "trust_solver", trusted)]
 #[requires(f.invariant())]
@@ -334,9 +304,6 @@ impl Solver {
                 // Okay so this got broken from unit prop not returning full eval anymore.
                 // Seems like we either have to become ternary and do a check(which cannot fail)
                 // or do a rather long proof about the correctness of watched literals
-                //proof_assert!(a.complete());
-                //proof_assert!(!f.unsat(*a));
-                //proof_assert!(lemma_complete_and_not_unsat_implies_sat(*f, @a); true);
                 if f.is_sat(&trail.assignments) {
                     return SatResult::Sat(Vec::new());
                 } else {

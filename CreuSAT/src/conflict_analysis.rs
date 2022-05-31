@@ -74,8 +74,7 @@ fn resolve(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, t
     proof_assert!(^seen == ^old_seen.inner());
     proof_assert!(forall<idx: Int> 0 <= idx && idx < (@seen).len() ==>
         ((@seen)[idx] == idx_in_logic2(idx, @c)));
-    //proof_assert!(forall<j: Int> 0 <= j && j < (@seen).len() ==> !(@seen)[j] ==> !idx_in_logic(j, *c));
-    //proof_assert!(forall<j: Int> 0 <= j && j < (@c).len() ==> (@seen)[(@c)[j].index_logic()]);
+
     let old_c2 = ghost!(c);
     proof_assert!(!(@old_c.inner())[@c_idx].lit_in(*c));
     proof_assert!(^c == ^old_c.inner());
@@ -121,14 +120,7 @@ fn resolve(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, t
             ((@old_c3.inner())[j] == (@c)[j]));
         i += 1;
     }
-    /*
-    proof_assert!(forall<i: Int> 0 <= i && i < (@old_c.inner()).len() && i != @c_idx ==> (@old_c.inner())[i].lit_in(*c));
-    proof_assert!(forall<i: Int> 0 <= i && i < (@o).len() && i != 0 ==> (@o)[i].lit_in(*c));
-    proof_assert!(forall<i: Int> 0 <= i && i < (@c).len()     ==> ((@c)[i].lit_in(*old_c.inner())
-                                                                ||  (@c)[i].lit_in(*o)));
-    
-    proof_assert!(!(@old_c.inner())[@c_idx].lit_in(*c) && !(@o)[0].lit_in(*c));
-    */
+
     proof_assert!(c.resolvent_of(*old_c.inner(), *o, 0, @c_idx));
     proof_assert!(lemma_resolvent_of_equisat_extension_is_equisat(@_f, *old_c.inner(), *o, *c, @c_idx, 0);true);
     proof_assert!(equisat_extension_inner(*c, @_f));
