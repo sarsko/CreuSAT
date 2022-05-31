@@ -33,6 +33,7 @@ jobs:
       run: cargo check
     - name: Run tests
       run: |
+        cargo install cargo-make
         cargo make gen-cfg-CreuSAT
         git diff-index --quiet HEAD --
   replay:
@@ -48,5 +49,7 @@ jobs:
         opam pin add why3 https://gitlab.inria.fr/why3/why3.git
         opam install why3
     - name: Replay
-      run: WHY3CONFIG= why3 replay -Lprelude --only-obsolete mlcfgs/CreuSAT.mlcfg
+      run: |
+        eval $(opam env)
+        WHY3CONFIG= why3 replay -Lprelude --obsolete-only mlcfgs/CreuSAT
 
