@@ -16,19 +16,18 @@ pub enum Conflict {
     Restart(Clause),
 }
 
-//#[cfg_attr(feature = "trust_conflict", trusted)]
-//#[requires((@seen).len() == @_f.num_vars)]
+#[inline(always)]
+#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(vars_in_range_inner(@c, (@seen).len()))]
 #[requires(@idx < (@seen).len())]
 #[requires((@seen)[@idx] == idx_in_logic2(@idx, @c))]
 #[ensures(result == (exists<i: Int> 0 <= i && i < (@c).len() && (@c)[i].index_logic() == @idx))]
-//#[ensures(result == (exists<i: Int> 0 <= i && i < (@c).len() && idx_in_logic2(i, @c)))]
 fn idx_in(c: &Vec<Lit>, idx: usize, seen: &Vec<bool>) -> bool {
     seen[idx]
 }
 
 
-//#[cfg_attr(feature = "trust_conflict", trusted)]
+#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(_f.invariant())]
 #[requires(trail.invariant(*_f))]
 #[requires(equisat_extension_inner(*c, @_f))]
@@ -60,7 +59,7 @@ fn idx_in(c: &Vec<Lit>, idx: usize, seen: &Vec<bool>) -> bool {
 #[ensures((^c).no_duplicate_indexes())]
 #[ensures((^c).invariant(@_f.num_vars))]
 #[ensures(equisat_extension_inner(^c, @_f))]
-fn resolve2(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, trail: &Trail, seen: &mut Vec<bool>, path_c: &mut usize){
+fn resolve(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, trail: &Trail, seen: &mut Vec<bool>, path_c: &mut usize){
     let old_c = ghost!(c);
     let old_seen = ghost!(seen);
     let old_path_c = ghost!(path_c);
@@ -136,7 +135,7 @@ fn resolve2(_f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, 
 }
 
 
-//#[cfg_attr(feature = "trust_conflict", trusted)]
+#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(trail.invariant(*_f))]
 #[requires(c.unsat(trail.assignments))]
 #[requires(@i <= (@trail.trail).len())]
@@ -172,12 +171,11 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula, seen: 
     None
 }
 
-//#[cfg_attr(feature = "trust_conflict", trusted)]
+#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
 #[requires((@f.clauses)[@cref].unsat(trail.assignments))]
-/*
 #[ensures(match result {
     Conflict::Ground => f.not_satisfiable(),
     Conflict::Unit(clause) => {
@@ -197,15 +195,15 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula, seen: 
     },
     _ => { true }
 })]
+/*
 #[ensures(match result {
     Conflict::Ground => (@trail.decisions).len() == 0,
-    Conflict::Panic  => true,
     _                => {(@trail.decisions).len() > 0 },
 })]
 */
-pub fn analyze_conflict2(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
+pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
     let decisionlevel = trail.decision_level();
-    let break_cond = if trail.decision_level() == 0 {0} else {1};
+    let break_cond = if decisionlevel == 0 {0} else {1};
     let mut path_c: usize = 0;
     let mut seen = vec![false; f.num_vars];
     let mut i = trail.trail.len();
@@ -242,7 +240,7 @@ pub fn analyze_conflict2(f: &Formula, trail: &Trail, cref: usize) -> Conflict {
             Reason::Unit(c) => &f.clauses[*c],
             _ => break,
         };
-        resolve2(f, &mut clause, ante, trail.trail[i].lit.index(), c_idx, &trail, &mut seen, &mut path_c);
+        resolve(f, &mut clause, ante, trail.trail[i].lit.index(), c_idx, &trail, &mut seen, &mut path_c);
     }
     if clause.len() == 0 {
         Conflict::Ground

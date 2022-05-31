@@ -53,7 +53,7 @@ impl Trail {
     }
 
     // For some reason the post takes forever(but it solved on Mac with auto level 3)
-    #[cfg_attr(feature = "trust_trail", trusted)]
+    //#[cfg_attr(feature = "trust_trail", trusted)]
     #[inline(always)]
     #[requires(f.invariant())]
     #[requires(@f.num_vars > 0)]
@@ -212,7 +212,7 @@ impl Trail {
     }
 
     // Could help it a bit in seeing that unit are sat
-    #[cfg_attr(feature = "trust_trail", trusted)]
+    //#[cfg_attr(feature = "trust_trail", trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(_f.invariant())]
     #[requires(step.lit.invariant(@_f.num_vars))]
@@ -263,7 +263,7 @@ impl Trail {
 
     // Checks out on mac with introduction of lemma. For some reason trail_entries_are_assigned
     // is now slowest. Should be solveable by another lemma
-    #[cfg_attr(feature = "trust_trail", trusted)]
+    //#[cfg_attr(feature = "trust_trail", trusted)]
     #[requires(_f.invariant())]
     #[maintains((mut self).invariant(*_f))]
     #[requires(@idx < @_f.num_vars)]

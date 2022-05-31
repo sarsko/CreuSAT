@@ -77,6 +77,7 @@ impl Trail {
         }
     }
 
+    /*
     #[predicate]
     pub fn invariant_swap(self, f: Formula) -> bool {
         pearlite! {
@@ -94,6 +95,7 @@ impl Trail {
             //assignments_are_in_trail(@self.trail, @self.assignments) // added
         }
     }
+    */
 
     #[predicate]
     pub fn invariant_no_decision(self, f: Formula) -> bool {
@@ -105,7 +107,7 @@ impl Trail {
             && self.lit_not_in_less(f)
             && self.lit_is_unique()
             && long_are_post_unit_inner(@self.trail, f, @self.assignments) // Gonna remove this
-            && self.new_post_unit(f)
+            //&& self.new_post_unit(f)
             && self.trail_entries_are_assigned() // ADDED
             && self.decisions_are_sorted() // NEW
             && unit_are_sat(@self.trail, f, self.assignments)
@@ -223,31 +225,47 @@ pub fn assignments_are_in_trail(t: Seq<Step>, a: Seq<AssignedState>) -> bool {
 #[predicate]
 pub fn clause_post_with_regards_to(c: Clause, a: Assignments, j: Int) -> bool {
     pearlite! {
+        clause_post_with_regards_to_inner(c, @a, j)
+        /*
+        (@c)[0].index_logic() == j
+        && (@c)[0].sat(a)
+        && (forall<i: Int> 1 <= i && i < (@c).len() ==> (@c)[i].unsat(a))
+        */
+        /*
         c.post_unit(a) &&
         exists<i: Int> 0 <= i && i < (@c).len() &&
             (@c)[i].index_logic() == j &&
             (@c)[i].sat(a)
+            */
     }
 }
 
 #[predicate]
 pub fn clause_post_with_regards_to_inner(c: Clause, a: Seq<AssignedState>, j: Int) -> bool {
     pearlite! {
+        (@c)[0].index_logic() == j
+        && (@c)[0].sat_inner(a)
+        && (forall<i: Int> 1 <= i && i < (@c).len() ==> (@c)[i].unsat_inner(a))
+        /*
         c.post_unit_inner(a) &&
         exists<i: Int> 0 <= i && i < (@c).len() &&
             (@c)[i].index_logic() == j &&
             (@c)[i].sat_inner(a)
+            */
     }
 }
 
 #[predicate]
 pub fn clause_post_with_regards_to_lit(c: Clause, a: Assignments, lit: Lit) -> bool {
     pearlite! {
+        clause_post_with_regards_to_inner(c, @a, @lit.idx)
+        /*
         c.post_unit(a) &&
         exists<i: Int> 0 <= i && i < (@c).len() &&
             (@c)[i].is_positive_logic() == lit.is_positive_logic() &&
             (@c)[i].index_logic() == lit.index_logic() &&
             (@c)[i].sat(a)
+            */
     }
 }
 
@@ -295,6 +313,7 @@ pub fn unit_are_sat(trail: Seq<Step>, f: Formula, a: Assignments) -> bool {
     }
 }
 
+// TODO: I think this can be simplified.
 #[cfg_attr(feature = "trust_trail_logic", trusted)]
 #[logic]
 #[requires(f.invariant())]

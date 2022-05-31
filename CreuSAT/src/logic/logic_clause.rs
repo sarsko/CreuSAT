@@ -5,7 +5,7 @@ use creusot_contracts::*;
 use crate::{assignments::*, clause::*, formula::*, lit::*};
 
 #[cfg(feature = "contracts")]
-use crate::logic::logic_formula::*;
+use crate::logic::{logic_formula::*, logic_assignments::complete_inner};
 
 #[cfg(feature = "contracts")]
 impl Model for Clause {
@@ -279,4 +279,23 @@ impl Clause {
                 (@self)[j] == (@o)[j]
         }
     }
+
+    #[predicate]
+    pub fn equisat(self, o: Clause) -> bool {
+        pearlite! {
+            (forall<a : Seq<AssignedState>> self.sat_inner(a) == o.sat_inner(a))
+            && forall<a : Seq<AssignedState>> self.unsat_inner(a) == o.unsat_inner(a)
+        }
+    }
+
+    #[predicate]
+    pub fn equisat2(self, o: Clause, f: Formula) -> bool {
+        pearlite! {
+            (forall<a : Seq<AssignedState>> a.len() == @f.num_vars && complete_inner(a) ==> (self.sat_inner(a) == o.sat_inner(a)))
+            && (forall<a : Seq<AssignedState>> a.len() == @f.num_vars && complete_inner(a) ==> (self.unsat_inner(a) == o.unsat_inner(a)))
+        }
+    }
+
+            //exists<a2 : Seq<AssignedState>> a2.len() == @self.num_vars && complete_inner(a2) && self.sat_inner(a2)
+
 }

@@ -101,6 +101,7 @@ impl Lit {
         self.index() * 2 + if self.is_positive() { 1 } else { 0 }
     }
 
+    #[cfg_attr(feature = "trust_lit", trusted)]
     #[requires(@idx < (@assignments).len())]
     #[ensures(result.index_logic() == @idx)]
     #[ensures(result.is_positive_logic() == (@(@assignments)[@idx] == 1))]

@@ -48,7 +48,7 @@ fn check_and_move_watch(
     return false;
 }
 
-#[cfg_attr(feature = "trust_unit", trusted)]
+//#[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((*trail).invariant(mut f))]
 #[maintains((mut f).invariant())]
 #[maintains((*watches).invariant(mut f))]
@@ -137,7 +137,7 @@ fn exists_new_watchable_lit(
     false
 }
 
-#[cfg_attr(feature = "trust_unit", trusted)]
+//#[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((mut trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
@@ -208,15 +208,16 @@ fn propagate_lit_with_regard_to_clause(
         return Ok(true);
     } else if second_lit.lit_unset(&trail.assignments) {
         //} else if f.clauses[cref].rest[1].lit_unset(&trail.assignments) {
-        proof_assert!(!(@f.clauses)[@cref].unsat(trail.assignments) && true && true);
-        proof_assert!((@f.clauses)[@cref].unit(trail.assignments));
+        //proof_assert!(!(@f.clauses)[@cref].unsat(trail.assignments));
+        //proof_assert!((@f.clauses)[@cref].unit(trail.assignments));
         let step = Step { lit: second_lit, decision_level: trail.decision_level(), reason: Reason::Long(cref) };
 
+        f.clauses[cref].rest.swap(0,1); // TODO
+        proof_assert!((@(@f.clauses)[@cref])[0].unset(trail.assignments));
         trail.enq_assignment(step, f);
         proof_assert!(((@f.clauses)[@cref]).post_unit(trail.assignments));
         proof_assert!(clause_post_with_regards_to_lit(((@f.clauses)[@cref]), trail.assignments, second_lit));
         // slowdown in swapping
-        f.clauses[cref].rest.swap(0,1); // TODO
         //proof_assert!((@f.clauses)[@cref].unit(*a) && true);
         /*
         proof_assert!(lemma_swap_clause_no_dups(((@(old_f.inner()).clauses)[@cref]), ((@f.clauses)[@cref]), 0, 1); true);
