@@ -98,7 +98,8 @@ impl Formula {
         self.clauses.push(clause);
         watches.add_watcher(first_lit, cref, self, second_lit);
         watches.add_watcher(second_lit, cref, self, first_lit);
-        proof_assert!((old_self.inner()).equisat_compatible(*self));
+        proof_assert!(^old_self.inner() == ^self);
+        proof_assert!((old_self.inner()).equisat(*self));
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
