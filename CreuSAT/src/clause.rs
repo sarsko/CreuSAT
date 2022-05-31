@@ -161,6 +161,7 @@ impl Clause {
         proof_assert!(self.equisat_extension(*_f));
     }
 
+    #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires((@t.lit_to_level).len() == (@_f.num_vars))]
     #[requires(self.invariant(@_f.num_vars))]
     pub fn calc_lbd(&self, _f: &Formula, s: &mut Solver, t: &Trail) -> usize {

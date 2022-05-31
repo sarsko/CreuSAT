@@ -54,6 +54,12 @@ pub fn partition_rev(v: Seq<(usize, usize)>, i: Int) -> bool {
     pearlite! { forall<k1 : Int, k2: Int> 0 <= k1 && k1 < i && i <= k2 && k2 < v.len() ==> v[k1].0 >= v[k2].0}
 }
 
+#[predicate]
+pub fn elems_less_than(v: Seq<usize>, n: Int) -> bool {
+    pearlite! { forall<i: Int> 0 <= i && i < v.len() ==> @v[i] < n }
+}
+
+
 #[logic]
 #[cfg_attr(feature = "trust_util_logic", trusted)]
 #[requires(s.len() > 0)]
@@ -86,3 +92,5 @@ pub fn last_elem<T>(s: Seq<T>) -> T {
 #[requires(sorted(s))]
 #[ensures(sorted(pop(s)))]
 pub fn lemma_pop_maintains_sorted(s: Seq<usize>) {}
+
+
