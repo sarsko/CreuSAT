@@ -138,7 +138,7 @@ impl Clause {
     }
 
     // ONLY VALID FOR CLAUSES NOT IN THE FORMULA
-    //#[cfg_attr(feature = "trust_clause", trusted)]
+    #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires((@self).len() > @j)]
     #[requires((@self).len() > @k)]
     #[maintains((mut self).invariant(@_f.num_vars))]
@@ -155,6 +155,7 @@ impl Clause {
         proof_assert!(self.equisat(*old_c.inner()));
         proof_assert!(self.equisat2(*old_c.inner(), *_f));
         proof_assert!(^old_c.inner() == ^self);
+        // This is the critical assertion. TODO: Look at the assertions above and remove the unneded ones.
         proof_assert!(eventually_sat_complete_no_ass((((@_f).0).push(*self), (@_f).1)) ==
                       eventually_sat_complete_no_ass((((@_f).0).push(*old_c.inner()), (@_f).1)));
         proof_assert!(self.equisat_extension(*_f));

@@ -271,6 +271,7 @@ impl Clause {
         pearlite! { self.vars_in_range(n) && self.no_duplicate_indexes() }
     }
 
+    // TODO: Revisit and see if it is needed
     #[predicate]
     pub fn equals(self, o: Clause) -> bool {
         pearlite! {
@@ -280,6 +281,7 @@ impl Clause {
         }
     }
 
+    // TODO: Revisit and see if it is needed
     #[predicate]
     pub fn equisat(self, o: Clause) -> bool {
         pearlite! {
@@ -288,6 +290,7 @@ impl Clause {
         }
     }
 
+    // TODO: Revisit and see if it is needed
     #[predicate]
     pub fn equisat2(self, o: Clause, f: Formula) -> bool {
         pearlite! {
@@ -295,7 +298,4 @@ impl Clause {
             && (forall<a : Seq<AssignedState>> a.len() == @f.num_vars && complete_inner(a) ==> (self.unsat_inner(a) == o.unsat_inner(a)))
         }
     }
-
-            //exists<a2 : Seq<AssignedState>> a2.len() == @self.num_vars && complete_inner(a2) && self.sat_inner(a2)
-
 }

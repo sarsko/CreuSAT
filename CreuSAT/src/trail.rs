@@ -211,22 +211,28 @@ impl Trail {
         //self.curr_i = self.trail.len();
     }
 
-    // Could help it a bit in seeing that unit are sat
-    //#[cfg_attr(feature = "trust_trail", trusted)]
+    // TODO: Revisit
+    #[cfg_attr(feature = "trust_trail", trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(_f.invariant())]
     #[requires(step.lit.invariant(@_f.num_vars))]
     #[requires(step.invariant(*_f))]
     #[requires(match step.reason {
         Reason::Long(cref) => {@cref < (@_f.clauses).len()
-                            && (@_f.clauses)[@cref].unit(self.assignments)
-                            && step.lit.lit_in((@_f.clauses)[@cref])}, // Changed
+                            && (@(@_f.clauses)[@cref])[0].unset(self.assignments)
+                            && (forall<i: Int> 1 <= i && i < (@((@_f.clauses))[@cref]).len() ==>
+                                (@(@_f.clauses)[@cref])[i].unsat(self.assignments))
+                            && (@(@_f.clauses)[@cref])[0] == step.lit
+                            },
+                            //&& step.lit.lit_in((@_f.clauses)[@cref])}, // Changed
+                            //&& (@_f.clauses)[@cref].unit(self.assignments)
+                            //&& step.lit.lit_in((@_f.clauses)[@cref])}, // Changed
         Reason::Unit(cref) => {@cref < (@_f.clauses).len()
                             && step.lit == (@(@_f.clauses)[@cref])[0]},
         _                  => true,
     })]
     #[requires(!step.lit.idx_in_trail(self.trail))]
-    #[requires(unset((@self.assignments)[step.lit.index_logic()]))]
+    #[requires(unset((@self.assignments)[step.lit.index_logic()]))] // Should not be needed anymore
     #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
     #[ensures((forall<j : Int> 0 <= j && j < (@self.assignments).len() &&
         j != step.lit.index_logic() ==> (@self.assignments)[j] == (@(^self).assignments)[j]))]
@@ -261,13 +267,13 @@ impl Trail {
         proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
     }
 
+    // TODO: Revisit
     // Checks out on mac with introduction of lemma. For some reason trail_entries_are_assigned
     // is now slowest. Should be solveable by another lemma
-    //#[cfg_attr(feature = "trust_trail", trusted)]
+    #[cfg_attr(feature = "trust_trail", trusted)]
     #[requires(_f.invariant())]
     #[maintains((mut self).invariant(*_f))]
     #[requires(@idx < @_f.num_vars)]
-    //#[requires(@(@self.assignments)[@idx] <= 3)] // This will trickle everywhere(add as invariant?)
     #[requires(unset((@self.assignments)[@idx]))]
     #[ensures((forall<j : Int> 0 <= j && j < (@self.assignments).len() &&
         j != @idx ==> (@self.assignments)[j] == (@(^self).assignments)[j]))]
