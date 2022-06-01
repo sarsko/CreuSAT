@@ -10,6 +10,8 @@ use crate::logic::{logic_clause::*, logic_formula::*};
 
 pub struct Clause {
     pub deleted: bool,
+    pub lbd: u32,
+    pub search: usize,
     pub rest: Vec<Lit>,
 }
 
@@ -21,7 +23,7 @@ impl Clone for Clause {
     #[trusted] // TODO
     #[ensures(result == *self)]
     fn clone(&self) -> Self {
-        Clause { deleted: self.deleted, rest: self.rest.clone() }
+        Clause { deleted: self.deleted, lbd: self.lbd, search: self.search, rest: self.rest.clone() }
     }
 }
 
@@ -77,7 +79,7 @@ impl Clause {
     #[inline]
     #[trusted]
     pub fn clause_from_vec(vec: &[Lit]) -> Clause {
-        Clause { deleted: false, rest: vec.to_owned() }
+        Clause { deleted: false, lbd: 0, search: 1, rest: vec.to_owned() }
     }
 
     // This does better without splitting

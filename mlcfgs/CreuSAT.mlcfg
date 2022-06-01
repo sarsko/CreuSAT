@@ -44,17 +44,17 @@ module Type
     | Alloc_Alloc_Global
     
   type creusat_clause_clause  =
-    | CreuSat_Clause_Clause bool (alloc_vec_vec (creusat_lit_lit) (alloc_alloc_global))
+    | CreuSat_Clause_Clause bool uint32 usize (alloc_vec_vec (creusat_lit_lit) (alloc_alloc_global))
     
   let function creusat_clause_clause_Clause_rest (self : creusat_clause_clause) : alloc_vec_vec (creusat_lit_lit) (alloc_alloc_global)
     
    =
     match (self) with
-      | CreuSat_Clause_Clause _ a -> a
+      | CreuSat_Clause_Clause _ _ _ a -> a
       end
   let function creusat_clause_clause_Clause_deleted (self : creusat_clause_clause) : bool =
     match (self) with
-      | CreuSat_Clause_Clause a _ -> a
+      | CreuSat_Clause_Clause a _ _ _ -> a
       end
   type creusat_formula_formula  =
     | CreuSat_Formula_Formula (alloc_vec_vec (creusat_clause_clause) (alloc_alloc_global)) usize
@@ -2718,14 +2718,14 @@ module CreuSat_Clause_Impl0_Clone_Interface
   use prelude.Prelude
   use Type
   val clone' [@cfg:stackify] (self : Type.creusat_clause_clause) : Type.creusat_clause_clause
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 22 4 31] result = self }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 24 4 31] result = self }
     
 end
 module CreuSat_Clause_Impl0_Clone
   use prelude.Prelude
   use Type
   val clone' [@cfg:stackify] (self : Type.creusat_clause_clause) : Type.creusat_clause_clause
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 22 4 31] result = self }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 24 4 31] result = self }
     
 end
 module CreuSat_Clause_Impl1_Len_Interface
@@ -2738,7 +2738,7 @@ module CreuSat_Clause_Impl1_Len_Interface
   clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model0 with type t = Type.creusat_clause_clause,
   type ModelTy0.modelTy = ModelTy0.modelTy
   val len [@cfg:stackify] (self : Type.creusat_clause_clause) : usize
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 71 4 40] UInt64.to_int result = Seq.length (Model0.model self) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 73 4 40] UInt64.to_int result = Seq.length (Model0.model self) }
     
 end
 module CreuSat_Clause_Impl1_Len
@@ -2755,8 +2755,8 @@ module CreuSat_Clause_Impl1_Len
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model1.model
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.creusat_lit_lit, type a = Type.alloc_alloc_global,
   function Model0.model = Model2.model
-  let rec cfg len [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 72 4 30] (self : Type.creusat_clause_clause) : usize
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 71 4 40] UInt64.to_int result = Seq.length (Model0.model self) }
+  let rec cfg len [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 74 4 30] (self : Type.creusat_clause_clause) : usize
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 73 4 40] UInt64.to_int result = Seq.length (Model0.model self) }
     
    =
   var _0 : usize;
@@ -2768,7 +2768,7 @@ module CreuSat_Clause_Impl1_Len
   }
   BB0 {
     _2 <- Type.creusat_clause_clause_Clause_rest self_1;
-    _0 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 73 8 23] Len0.len _2);
+    _0 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 75 8 23] Len0.len _2);
     goto BB1
   }
   BB1 {
@@ -2918,7 +2918,7 @@ module CreuSat_Clause_Impl1_NoDuplicates_Interface
   use Type
   clone CreuSat_Logic_LogicClause_Impl2_NoDuplicateIndexes_Interface as NoDuplicateIndexes0
   val no_duplicates [@cfg:stackify] (self : Type.creusat_clause_clause) : bool
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 47 4 53] result = NoDuplicateIndexes0.no_duplicate_indexes self }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 49 4 53] result = NoDuplicateIndexes0.no_duplicate_indexes self }
     
 end
 module CreuSat_Clause_Impl1_NoDuplicates
@@ -2949,8 +2949,8 @@ module CreuSat_Clause_Impl1_NoDuplicates
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.creusat_lit_lit, type a = Type.alloc_alloc_global,
   function Model0.model = Model2.model
   clone CreuSat_Lit_Impl1_Index_Interface as Index1 with function IndexLogic0.index_logic = IndexLogic0.index_logic
-  let rec cfg no_duplicates [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 48 4 39] (self : Type.creusat_clause_clause) : bool
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 47 4 53] result = NoDuplicateIndexes0.no_duplicate_indexes self }
+  let rec cfg no_duplicates [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 50 4 39] (self : Type.creusat_clause_clause) : bool
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 49 4 53] result = NoDuplicateIndexes0.no_duplicate_indexes self }
     
    =
   var _0 : bool;
@@ -2997,14 +2997,14 @@ module CreuSat_Clause_Impl1_NoDuplicates
     goto BB1
   }
   BB1 {
-    invariant no_dups { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 50 8 87] forall k : (int) . forall j : (int) . 0 <= j && j < UInt64.to_int i_2 && 0 <= k && k < j -> IndexLogic0.index_logic (Seq.get (Model0.model self_1) j) <> IndexLogic0.index_logic (Seq.get (Model0.model self_1) k) };
+    invariant no_dups { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 52 8 87] forall k : (int) . forall j : (int) . 0 <= j && j < UInt64.to_int i_2 && 0 <= k && k < j -> IndexLogic0.index_logic (Seq.get (Model0.model self_1) j) <> IndexLogic0.index_logic (Seq.get (Model0.model self_1) k) };
     _6 <- i_2;
     _8 <- Type.creusat_clause_clause_Clause_rest self_1;
-    _7 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 53 18 33] Len0.len _8);
+    _7 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 55 18 33] Len0.len _8);
     goto BB2
   }
   BB2 {
-    _5 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 53 14 33] _6 < _7);
+    _5 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 55 14 33] _6 < _7);
     switch (_5)
       | False -> goto BB13
       | _ -> goto BB3
@@ -3013,7 +3013,7 @@ module CreuSat_Clause_Impl1_NoDuplicates
   BB3 {
     _11 <- Type.creusat_clause_clause_Clause_rest self_1;
     _12 <- i_2;
-    _10 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 54 23 35] Index0.index _11 _12);
+    _10 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 56 23 35] Index0.index _11 _12);
     goto BB4
   }
   BB4 {
@@ -3022,10 +3022,10 @@ module CreuSat_Clause_Impl1_NoDuplicates
     goto BB5
   }
   BB5 {
-    invariant inv { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 56 12 113] forall k : (int) . 0 <= k && k < UInt64.to_int j_13 -> IndexLogic0.index_logic lit1_9 <> IndexLogic0.index_logic (Seq.get (Model0.model self_1) k) };
+    invariant inv { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 58 12 113] forall k : (int) . 0 <= k && k < UInt64.to_int j_13 -> IndexLogic0.index_logic lit1_9 <> IndexLogic0.index_logic (Seq.get (Model0.model self_1) k) };
     _16 <- j_13;
     _17 <- i_2;
-    _15 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 57 18 23] _16 < _17);
+    _15 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 59 18 23] _16 < _17);
     switch (_15)
       | False -> goto BB12
       | _ -> goto BB6
@@ -3034,22 +3034,22 @@ module CreuSat_Clause_Impl1_NoDuplicates
   BB6 {
     _20 <- Type.creusat_clause_clause_Clause_rest self_1;
     _21 <- j_13;
-    _19 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 58 27 39] Index0.index _20 _21);
+    _19 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 60 27 39] Index0.index _20 _21);
     goto BB7
   }
   BB7 {
     lit2_18 <- _19;
     _25 <- lit1_9;
-    _24 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 59 19 31] Index1.index _25);
+    _24 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 61 19 31] Index1.index _25);
     goto BB8
   }
   BB8 {
     _27 <- lit2_18;
-    _26 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 59 35 47] Index1.index _27);
+    _26 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 61 35 47] Index1.index _27);
     goto BB9
   }
   BB9 {
-    _23 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 59 19 47] _24 = _26);
+    _23 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 61 19 47] _24 = _26);
     switch (_23)
       | False -> goto BB11
       | _ -> goto BB10
@@ -3061,13 +3061,13 @@ module CreuSat_Clause_Impl1_NoDuplicates
   }
   BB11 {
     _22 <- ();
-    j_13 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 62 16 22] j_13 + (1 : usize));
+    j_13 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 64 16 22] j_13 + (1 : usize));
     _4 <- ();
     goto BB5
   }
   BB12 {
     _14 <- ();
-    i_2 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 64 12 18] i_2 + (1 : usize));
+    i_2 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 66 12 18] i_2 + (1 : usize));
     _4 <- ();
     goto BB1
   }
@@ -3088,7 +3088,7 @@ module CreuSat_Clause_Impl1_CheckClauseInvariant_Interface
   use mach.int.Int
   clone CreuSat_Logic_LogicClause_Impl2_Invariant_Interface as Invariant0
   val check_clause_invariant [@cfg:stackify] (self : Type.creusat_clause_clause) (n : usize) : bool
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 30 4 44] result = Invariant0.invariant' self (UInt64.to_int n) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 32 4 44] result = Invariant0.invariant' self (UInt64.to_int n) }
     
 end
 module CreuSat_Clause_Impl1_CheckClauseInvariant
@@ -3125,8 +3125,8 @@ module CreuSat_Clause_Impl1_CheckClauseInvariant
   clone CreuSat_Clause_Impl1_NoDuplicates_Interface as NoDuplicates0 with predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
   clone CreuSat_Lit_Impl1_CheckLitInvariant_Interface as CheckLitInvariant0 with predicate Invariant0.invariant' = Invariant1.invariant'
   clone CreuSat_Clause_Impl1_Len_Interface as Len0 with function Model0.model = Model0.model
-  let rec cfg check_clause_invariant [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 31 4 58] (self : Type.creusat_clause_clause) (n : usize) : bool
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 30 4 44] result = Invariant0.invariant' self (UInt64.to_int n) }
+  let rec cfg check_clause_invariant [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 33 4 58] (self : Type.creusat_clause_clause) (n : usize) : bool
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 32 4 44] result = Invariant0.invariant' self (UInt64.to_int n) }
     
    =
   var _0 : bool;
@@ -3165,14 +3165,14 @@ module CreuSat_Clause_Impl1_CheckClauseInvariant
     goto BB1
   }
   BB1 {
-    invariant inv { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 33 8 87] forall j : (int) . 0 <= j && j < UInt64.to_int i_3 -> Invariant1.invariant' (Seq.get (Model0.model self_1) j) (UInt64.to_int n_2) };
+    invariant inv { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 35 8 87] forall j : (int) . 0 <= j && j < UInt64.to_int i_3 -> Invariant1.invariant' (Seq.get (Model0.model self_1) j) (UInt64.to_int n_2) };
     _7 <- i_3;
     _9 <- self_1;
-    _8 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 34 18 28] Len0.len _9);
+    _8 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 36 18 28] Len0.len _9);
     goto BB2
   }
   BB2 {
-    _6 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 34 14 28] _7 < _8);
+    _6 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 36 14 28] _7 < _8);
     switch (_6)
       | False -> goto BB8
       | _ -> goto BB3
@@ -3181,13 +3181,13 @@ module CreuSat_Clause_Impl1_CheckClauseInvariant
   BB3 {
     _15 <- Type.creusat_clause_clause_Clause_rest self_1;
     _16 <- i_3;
-    _14 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 35 16 28] Index0.index _15 _16);
+    _14 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 37 16 28] Index0.index _15 _16);
     goto BB4
   }
   BB4 {
     _13 <- _14;
     _17 <- n_2;
-    _12 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 35 16 51] CheckLitInvariant0.check_lit_invariant _13 _17);
+    _12 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 37 16 51] CheckLitInvariant0.check_lit_invariant _13 _17);
     goto BB5
   }
   BB5 {
@@ -3203,14 +3203,14 @@ module CreuSat_Clause_Impl1_CheckClauseInvariant
   }
   BB7 {
     _10 <- ();
-    i_3 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 38 12 18] i_3 + (1 : usize));
+    i_3 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 40 12 18] i_3 + (1 : usize));
     _5 <- ();
     goto BB1
   }
   BB8 {
     _4 <- ();
     _24 <- self_1;
-    _23 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 40 11 31] NoDuplicates0.no_duplicates _24);
+    _23 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 42 11 31] NoDuplicates0.no_duplicates _24);
     goto BB9
   }
   BB9 {
@@ -3407,15 +3407,15 @@ module CreuSat_Clause_Impl1_MoveToEnd_Interface
   clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model0 with type t = Type.creusat_clause_clause,
   type ModelTy0.modelTy = ModelTy0.modelTy
   val move_to_end [@cfg:stackify] (self : borrowed (Type.creusat_clause_clause)) (idx : usize) (_f : Type.creusat_formula_formula) : ()
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 88 4 37] UInt64.to_int idx < Seq.length (Model0.model self)}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 87 4 34] Seq.length (Model0.model self) > 0}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 86 4 61] InvariantUnaryOk0.invariant_unary_ok ( * self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 95 4 38] forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) -> LitIn0.lit_in (Seq.get (Model0.model self) j) ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 94 4 49] Seq.length (Model1.model ( ^ self)) = Seq.length (Model0.model self) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 93 4 63] Seq.get (Model1.model ( ^ self)) (Seq.length (Model1.model ( ^ self)) - 1) = Seq.get (Model0.model self) (UInt64.to_int idx) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 91 4 88] forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> (exists j : (int) . 0 <= j && j < Seq.length (Model1.model ( ^ self)) && Seq.get (Model1.model ( ^ self)) i = Seq.get (Model0.model self) j) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 89 4 85] forall i : (int) . 0 <= i && i < Seq.length (Model1.model ( ^ self)) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model self) && Seq.get (Model1.model ( ^ self)) i = Seq.get (Model0.model self) j) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 86 4 61] InvariantUnaryOk0.invariant_unary_ok ( ^ self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)) }
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 90 4 37] UInt64.to_int idx < Seq.length (Model0.model self)}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 89 4 34] Seq.length (Model0.model self) > 0}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 88 4 61] InvariantUnaryOk0.invariant_unary_ok ( * self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 97 4 38] forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) -> LitIn0.lit_in (Seq.get (Model0.model self) j) ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 96 4 49] Seq.length (Model1.model ( ^ self)) = Seq.length (Model0.model self) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 95 4 63] Seq.get (Model1.model ( ^ self)) (Seq.length (Model1.model ( ^ self)) - 1) = Seq.get (Model0.model self) (UInt64.to_int idx) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 93 4 88] forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> (exists j : (int) . 0 <= j && j < Seq.length (Model1.model ( ^ self)) && Seq.get (Model1.model ( ^ self)) i = Seq.get (Model0.model self) j) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 91 4 85] forall i : (int) . 0 <= i && i < Seq.length (Model1.model ( ^ self)) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model self) && Seq.get (Model1.model ( ^ self)) i = Seq.get (Model0.model self) j) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 88 4 61] InvariantUnaryOk0.invariant_unary_ok ( ^ self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)) }
     
 end
 module CreuSat_Clause_Impl1_MoveToEnd
@@ -3454,16 +3454,16 @@ module CreuSat_Clause_Impl1_MoveToEnd
   type a = Type.alloc_alloc_global, function Model0.model = Model3.model, function Model1.model = Model2.model
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.creusat_lit_lit, type a = Type.alloc_alloc_global,
   function Model0.model = Model2.model
-  let rec cfg move_to_end [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 97 4 55] (self : borrowed (Type.creusat_clause_clause)) (idx : usize) (_f : Type.creusat_formula_formula) : ()
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 88 4 37] UInt64.to_int idx < Seq.length (Model0.model self)}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 87 4 34] Seq.length (Model0.model self) > 0}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 86 4 61] InvariantUnaryOk0.invariant_unary_ok ( * self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 95 4 38] forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) -> LitIn0.lit_in (Seq.get (Model0.model self) j) ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 94 4 49] Seq.length (Model1.model ( ^ self)) = Seq.length (Model0.model self) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 93 4 63] Seq.get (Model1.model ( ^ self)) (Seq.length (Model1.model ( ^ self)) - 1) = Seq.get (Model0.model self) (UInt64.to_int idx) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 91 4 88] forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> (exists j : (int) . 0 <= j && j < Seq.length (Model1.model ( ^ self)) && Seq.get (Model1.model ( ^ self)) i = Seq.get (Model0.model self) j) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 89 4 85] forall i : (int) . 0 <= i && i < Seq.length (Model1.model ( ^ self)) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model self) && Seq.get (Model1.model ( ^ self)) i = Seq.get (Model0.model self) j) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 86 4 61] InvariantUnaryOk0.invariant_unary_ok ( ^ self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)) }
+  let rec cfg move_to_end [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 99 4 55] (self : borrowed (Type.creusat_clause_clause)) (idx : usize) (_f : Type.creusat_formula_formula) : ()
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 90 4 37] UInt64.to_int idx < Seq.length (Model0.model self)}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 89 4 34] Seq.length (Model0.model self) > 0}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 88 4 61] InvariantUnaryOk0.invariant_unary_ok ( * self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 97 4 38] forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) -> LitIn0.lit_in (Seq.get (Model0.model self) j) ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 96 4 49] Seq.length (Model1.model ( ^ self)) = Seq.length (Model0.model self) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 95 4 63] Seq.get (Model1.model ( ^ self)) (Seq.length (Model1.model ( ^ self)) - 1) = Seq.get (Model0.model self) (UInt64.to_int idx) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 93 4 88] forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> (exists j : (int) . 0 <= j && j < Seq.length (Model1.model ( ^ self)) && Seq.get (Model1.model ( ^ self)) i = Seq.get (Model0.model self) j) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 91 4 85] forall i : (int) . 0 <= i && i < Seq.length (Model1.model ( ^ self)) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model self) && Seq.get (Model1.model ( ^ self)) i = Seq.get (Model0.model self) j) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 88 4 61] InvariantUnaryOk0.invariant_unary_ok ( ^ self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)) }
     
    =
   var _0 : ();
@@ -3487,15 +3487,15 @@ module CreuSat_Clause_Impl1_MoveToEnd
   }
   BB0 {
     _6 <- Type.creusat_clause_clause_Clause_rest ( * self_1);
-    _5 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 98 18 33] Len0.len _6);
+    _5 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 100 18 33] Len0.len _6);
     goto BB1
   }
   BB1 {
-    end'_4 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 98 18 37] _5 - (1 : usize));
+    end'_4 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 100 18 37] _5 - (1 : usize));
     _10 <- borrow_mut (Type.creusat_clause_clause_Clause_rest ( * self_1));
-    self_1 <- { self_1 with current = (let Type.CreuSat_Clause_Clause a b =  * self_1 in Type.CreuSat_Clause_Clause a ( ^ _10)) };
+    self_1 <- { self_1 with current = (let Type.CreuSat_Clause_Clause a b c d =  * self_1 in Type.CreuSat_Clause_Clause a b c ( ^ _10)) };
     assume { Resolve0.resolve self_1 };
-    _9 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 99 8 32] DerefMut0.deref_mut _10);
+    _9 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 101 8 32] DerefMut0.deref_mut _10);
     goto BB2
   }
   BB2 {
@@ -3503,7 +3503,7 @@ module CreuSat_Clause_Impl1_MoveToEnd
     _9 <- { _9 with current = ( ^ _8) };
     _11 <- idx_2;
     _12 <- end'_4;
-    _7 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 99 8 32] Swap0.swap _8 _11 _12);
+    _7 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 101 8 32] Swap0.swap _8 _11 _12);
     goto BB3
   }
   BB3 {
@@ -3567,14 +3567,14 @@ module CreuSat_Clause_Impl1_RemoveFromClause_Interface
   clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model0 with type t = Type.creusat_clause_clause,
   type ModelTy0.modelTy = ModelTy0.modelTy
   val remove_from_clause [@cfg:stackify] (self : borrowed (Type.creusat_clause_clause)) (idx : usize) (_f : Type.creusat_formula_formula) : ()
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 107 4 37] UInt64.to_int idx < Seq.length (Model0.model self)}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 106 4 34] Seq.length (Model0.model self) > 0}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 105 4 61] InvariantUnaryOk0.invariant_unary_ok ( * self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 112 4 51] forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) && j <> UInt64.to_int idx -> LitIn0.lit_in (Seq.get (Model0.model self) j) ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 111 4 44] not LitIn0.lit_in (Seq.get (Model0.model self) (UInt64.to_int idx)) ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 110 4 53] Seq.length (Model1.model ( ^ self)) + 1 = Seq.length (Model0.model self) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 108 4 83] forall i : (int) . 0 <= i && i < Seq.length (Model1.model ( ^ self)) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model self) && Seq.get (Model1.model ( ^ self)) i = Seq.get (Model0.model self) j) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 105 4 61] InvariantUnaryOk0.invariant_unary_ok ( ^ self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)) }
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 109 4 37] UInt64.to_int idx < Seq.length (Model0.model self)}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 108 4 34] Seq.length (Model0.model self) > 0}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 107 4 61] InvariantUnaryOk0.invariant_unary_ok ( * self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 114 4 51] forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) && j <> UInt64.to_int idx -> LitIn0.lit_in (Seq.get (Model0.model self) j) ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 113 4 44] not LitIn0.lit_in (Seq.get (Model0.model self) (UInt64.to_int idx)) ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 112 4 53] Seq.length (Model1.model ( ^ self)) + 1 = Seq.length (Model0.model self) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 110 4 83] forall i : (int) . 0 <= i && i < Seq.length (Model1.model ( ^ self)) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model self) && Seq.get (Model1.model ( ^ self)) i = Seq.get (Model0.model self) j) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 107 4 61] InvariantUnaryOk0.invariant_unary_ok ( ^ self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)) }
     
 end
 module CreuSat_Clause_Impl1_RemoveFromClause
@@ -3611,15 +3611,15 @@ module CreuSat_Clause_Impl1_RemoveFromClause
   clone CreuSat_Clause_Impl1_MoveToEnd_Interface as MoveToEnd0 with function Model0.model = Model0.model,
   predicate InvariantUnaryOk0.invariant_unary_ok = InvariantUnaryOk0.invariant_unary_ok,
   predicate LitIn0.lit_in = LitIn0.lit_in, function Model1.model = Model1.model
-  let rec cfg remove_from_clause [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 114 4 66] (self : borrowed (Type.creusat_clause_clause)) (idx : usize) (_f : Type.creusat_formula_formula) : ()
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 107 4 37] UInt64.to_int idx < Seq.length (Model0.model self)}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 106 4 34] Seq.length (Model0.model self) > 0}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 105 4 61] InvariantUnaryOk0.invariant_unary_ok ( * self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 112 4 51] forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) && j <> UInt64.to_int idx -> LitIn0.lit_in (Seq.get (Model0.model self) j) ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 111 4 44] not LitIn0.lit_in (Seq.get (Model0.model self) (UInt64.to_int idx)) ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 110 4 53] Seq.length (Model1.model ( ^ self)) + 1 = Seq.length (Model0.model self) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 108 4 83] forall i : (int) . 0 <= i && i < Seq.length (Model1.model ( ^ self)) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model self) && Seq.get (Model1.model ( ^ self)) i = Seq.get (Model0.model self) j) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 105 4 61] InvariantUnaryOk0.invariant_unary_ok ( ^ self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)) }
+  let rec cfg remove_from_clause [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 116 4 66] (self : borrowed (Type.creusat_clause_clause)) (idx : usize) (_f : Type.creusat_formula_formula) : ()
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 109 4 37] UInt64.to_int idx < Seq.length (Model0.model self)}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 108 4 34] Seq.length (Model0.model self) > 0}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 107 4 61] InvariantUnaryOk0.invariant_unary_ok ( * self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 114 4 51] forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) && j <> UInt64.to_int idx -> LitIn0.lit_in (Seq.get (Model0.model self) j) ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 113 4 44] not LitIn0.lit_in (Seq.get (Model0.model self) (UInt64.to_int idx)) ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 112 4 53] Seq.length (Model1.model ( ^ self)) + 1 = Seq.length (Model0.model self) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 110 4 83] forall i : (int) . 0 <= i && i < Seq.length (Model1.model ( ^ self)) -> (exists j : (int) . 0 <= j && j < Seq.length (Model0.model self) && Seq.get (Model1.model ( ^ self)) i = Seq.get (Model0.model self) j) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 107 4 61] InvariantUnaryOk0.invariant_unary_ok ( ^ self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)) }
     
    =
   var _0 : ();
@@ -3643,7 +3643,7 @@ module CreuSat_Clause_Impl1_RemoveFromClause
   }
   BB0 {
     _5 <- ();
-    old_self_4 <- ghost ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 115 23 38] self_1);
+    old_self_4 <- ghost ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 117 23 38] self_1);
     goto BB1
   }
   BB1 {
@@ -3651,18 +3651,18 @@ module CreuSat_Clause_Impl1_RemoveFromClause
     self_1 <- { self_1 with current = ( ^ _7) };
     _8 <- idx_2;
     _9 <- _f_3;
-    _6 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 116 8 33] MoveToEnd0.move_to_end _7 _8 _9);
+    _6 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 118 8 33] MoveToEnd0.move_to_end _7 _8 _9);
     goto BB2
   }
   BB2 {
     _11 <- borrow_mut (Type.creusat_clause_clause_Clause_rest ( * self_1));
-    self_1 <- { self_1 with current = (let Type.CreuSat_Clause_Clause a b =  * self_1 in Type.CreuSat_Clause_Clause a ( ^ _11)) };
-    _10 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 117 8 23] Pop0.pop _11);
+    self_1 <- { self_1 with current = (let Type.CreuSat_Clause_Clause a b c d =  * self_1 in Type.CreuSat_Clause_Clause a b c ( ^ _11)) };
+    _10 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 119 8 23] Pop0.pop _11);
     goto BB3
   }
   BB3 {
     assume { Resolve0.resolve self_1 };
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 118 8 49]  ^ self_1 =  ^ old_self_4 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 120 8 49]  ^ self_1 =  ^ old_self_4 };
     _12 <- ();
     _0 <- ();
     return _0
@@ -3979,11 +3979,11 @@ module CreuSat_Clause_Impl1_UnitAndUnset_Interface
   clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model0 with type t = Type.creusat_clause_clause,
   type ModelTy0.modelTy = ModelTy0.modelTy
   val unit_and_unset [@cfg:stackify] (self : Type.creusat_clause_clause) (a : Type.creusat_assignments_assignments) (_f : Type.creusat_formula_formula) : bool
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 125 4 34] Seq.length (Model0.model self) > 1}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 124 4 33] Invariant0.invariant' a _f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 123 4 56] InvariantInternal0.invariant_internal (Model0.model self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 127 4 47] result -> Unset0.unset (Seq.get (Model0.model self) 0) a }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 126 4 40] result -> Unit0.unit self a }
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 127 4 34] Seq.length (Model0.model self) > 1}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 126 4 33] Invariant0.invariant' a _f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 125 4 56] InvariantInternal0.invariant_internal (Model0.model self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 129 4 47] result -> Unset0.unset (Seq.get (Model0.model self) 0) a }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 128 4 40] result -> Unit0.unit self a }
     
 end
 module CreuSat_Clause_Impl1_UnitAndUnset
@@ -4045,12 +4045,12 @@ module CreuSat_Clause_Impl1_UnitAndUnset
   type Output0.output = Output0.output
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.creusat_lit_lit, type a = Type.alloc_alloc_global,
   function Model0.model = Model3.model
-  let rec cfg unit_and_unset [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 128 4 71] (self : Type.creusat_clause_clause) (a : Type.creusat_assignments_assignments) (_f : Type.creusat_formula_formula) : bool
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 125 4 34] Seq.length (Model0.model self) > 1}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 124 4 33] Invariant0.invariant' a _f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 123 4 56] InvariantInternal0.invariant_internal (Model0.model self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 127 4 47] result -> Unset0.unset (Seq.get (Model0.model self) 0) a }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 126 4 40] result -> Unit0.unit self a }
+  let rec cfg unit_and_unset [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 130 4 71] (self : Type.creusat_clause_clause) (a : Type.creusat_assignments_assignments) (_f : Type.creusat_formula_formula) : bool
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 127 4 34] Seq.length (Model0.model self) > 1}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 126 4 33] Invariant0.invariant' a _f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 125 4 56] InvariantInternal0.invariant_internal (Model0.model self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 129 4 47] result -> Unset0.unset (Seq.get (Model0.model self) 0) a }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 128 4 40] result -> Unit0.unit self a }
     
    =
   var _0 : bool;
@@ -4091,14 +4091,14 @@ module CreuSat_Clause_Impl1_UnitAndUnset
     goto BB1
   }
   BB1 {
-    invariant unsat { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 130 8 85] forall j : (int) . 1 <= j && j < UInt64.to_int i_4 -> Unsat0.unsat (Seq.get (Model0.model self_1) j) a_2 };
+    invariant unsat { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 132 8 85] forall j : (int) . 1 <= j && j < UInt64.to_int i_4 -> Unsat0.unsat (Seq.get (Model0.model self_1) j) a_2 };
     _8 <- i_4;
     _10 <- Type.creusat_clause_clause_Clause_rest self_1;
-    _9 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 131 18 33] Len0.len _10);
+    _9 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 133 18 33] Len0.len _10);
     goto BB2
   }
   BB2 {
-    _7 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 131 14 33] _8 < _9);
+    _7 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 133 14 33] _8 < _9);
     switch (_7)
       | False -> goto BB8
       | _ -> goto BB3
@@ -4107,13 +4107,13 @@ module CreuSat_Clause_Impl1_UnitAndUnset
   BB3 {
     _16 <- Type.creusat_clause_clause_Clause_rest self_1;
     _17 <- i_4;
-    _15 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 132 16 28] Index0.index _16 _17);
+    _15 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 134 16 28] Index0.index _16 _17);
     goto BB4
   }
   BB4 {
     _14 <- _15;
     _18 <- a_2;
-    _13 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 132 16 41] LitUnsat0.lit_unsat _14 _18);
+    _13 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 134 16 41] LitUnsat0.lit_unsat _14 _18);
     goto BB5
   }
   BB5 {
@@ -4129,20 +4129,20 @@ module CreuSat_Clause_Impl1_UnitAndUnset
   }
   BB7 {
     _11 <- ();
-    i_4 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 135 12 18] i_4 + (1 : usize));
+    i_4 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 137 12 18] i_4 + (1 : usize));
     _6 <- ();
     goto BB1
   }
   BB8 {
     _5 <- ();
     _25 <- Type.creusat_clause_clause_Clause_rest self_1;
-    _24 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 137 8 20] Index0.index _25 (0 : usize));
+    _24 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 139 8 20] Index0.index _25 (0 : usize));
     goto BB9
   }
   BB9 {
     _23 <- _24;
     _26 <- a_2;
-    _0 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 137 8 33] LitUnset0.lit_unset _23 _26);
+    _0 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 139 8 33] LitUnset0.lit_unset _23 _26);
     goto BB10
   }
   BB10 {
@@ -4313,13 +4313,13 @@ module CreuSat_Clause_Impl1_SwapLitsInClause_Interface
   clone CreuSat_Logic_LogicClause_Impl2_Invariant_Interface as Invariant0
   clone CreuSat_Logic_LogicClause_Impl2_EquisatExtension_Interface as EquisatExtension0
   val swap_lits_in_clause [@cfg:stackify] (self : borrowed (Type.creusat_clause_clause)) (_f : Type.creusat_formula_formula) (j : usize) (k : usize) : ()
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 145 4 51] EquisatExtension0.equisat_extension ( * self) _f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 144 4 52] Invariant0.invariant' ( * self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 143 4 35] Seq.length (Model0.model self) > UInt64.to_int k}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 142 4 35] Seq.length (Model0.model self) > UInt64.to_int j}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 146 4 49] Seq.length (Model0.model self) = Seq.length (Model1.model ( ^ self)) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 145 4 51] EquisatExtension0.equisat_extension ( ^ self) _f }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 144 4 52] Invariant0.invariant' ( ^ self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)) }
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 147 4 51] EquisatExtension0.equisat_extension ( * self) _f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 146 4 52] Invariant0.invariant' ( * self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 145 4 35] Seq.length (Model0.model self) > UInt64.to_int k}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 144 4 35] Seq.length (Model0.model self) > UInt64.to_int j}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 148 4 49] Seq.length (Model0.model self) = Seq.length (Model1.model ( ^ self)) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 147 4 51] EquisatExtension0.equisat_extension ( ^ self) _f }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 146 4 52] Invariant0.invariant' ( ^ self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)) }
     
 end
 module CreuSat_Clause_Impl1_SwapLitsInClause
@@ -4381,14 +4381,14 @@ module CreuSat_Clause_Impl1_SwapLitsInClause
   clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = Type.creusat_clause_clause
   clone Alloc_Vec_Impl11_DerefMut_Interface as DerefMut0 with type t = Type.creusat_lit_lit,
   type a = Type.alloc_alloc_global, function Model0.model = Model6.model, function Model1.model = Model4.model
-  let rec cfg swap_lits_in_clause [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 147 4 75] (self : borrowed (Type.creusat_clause_clause)) (_f : Type.creusat_formula_formula) (j : usize) (k : usize) : ()
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 145 4 51] EquisatExtension0.equisat_extension ( * self) _f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 144 4 52] Invariant0.invariant' ( * self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 143 4 35] Seq.length (Model0.model self) > UInt64.to_int k}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 142 4 35] Seq.length (Model0.model self) > UInt64.to_int j}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 146 4 49] Seq.length (Model0.model self) = Seq.length (Model1.model ( ^ self)) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 145 4 51] EquisatExtension0.equisat_extension ( ^ self) _f }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 144 4 52] Invariant0.invariant' ( ^ self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)) }
+  let rec cfg swap_lits_in_clause [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 149 4 75] (self : borrowed (Type.creusat_clause_clause)) (_f : Type.creusat_formula_formula) (j : usize) (k : usize) : ()
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 147 4 51] EquisatExtension0.equisat_extension ( * self) _f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 146 4 52] Invariant0.invariant' ( * self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 145 4 35] Seq.length (Model0.model self) > UInt64.to_int k}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 144 4 35] Seq.length (Model0.model self) > UInt64.to_int j}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 148 4 49] Seq.length (Model0.model self) = Seq.length (Model1.model ( ^ self)) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 147 4 51] EquisatExtension0.equisat_extension ( ^ self) _f }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 146 4 52] Invariant0.invariant' ( ^ self) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)) }
     
    =
   var _0 : ();
@@ -4423,14 +4423,14 @@ module CreuSat_Clause_Impl1_SwapLitsInClause
   }
   BB0 {
     _6 <- ();
-    old_c_5 <- ghost ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 148 20 35] self_1);
+    old_c_5 <- ghost ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 150 20 35] self_1);
     goto BB1
   }
   BB1 {
     _10 <- borrow_mut (Type.creusat_clause_clause_Clause_rest ( * self_1));
-    self_1 <- { self_1 with current = (let Type.CreuSat_Clause_Clause a b =  * self_1 in Type.CreuSat_Clause_Clause a ( ^ _10)) };
+    self_1 <- { self_1 with current = (let Type.CreuSat_Clause_Clause a b c d =  * self_1 in Type.CreuSat_Clause_Clause a b c ( ^ _10)) };
     assume { Resolve0.resolve self_1 };
-    _9 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 149 8 28] DerefMut0.deref_mut _10);
+    _9 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 151 8 28] DerefMut0.deref_mut _10);
     goto BB2
   }
   BB2 {
@@ -4438,30 +4438,30 @@ module CreuSat_Clause_Impl1_SwapLitsInClause
     _9 <- { _9 with current = ( ^ _8) };
     _11 <- j_3;
     _12 <- k_4;
-    _7 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 149 8 28] Swap0.swap _8 _11 _12);
+    _7 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 151 8 28] Swap0.swap _8 _11 _12);
     goto BB3
   }
   BB3 {
     assume { Resolve1.resolve _9 };
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 150 8 46]  ^ old_c_5 =  ^ self_1 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 152 8 46]  ^ old_c_5 =  ^ self_1 };
     _13 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 151 8 62] EquisatExtension0.equisat_extension ( * old_c_5) _f_2 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 153 8 62] EquisatExtension0.equisat_extension ( * old_c_5) _f_2 };
     _14 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 152 8 51] Invariant0.invariant' ( * self_1) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f_2)) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 154 8 51] Invariant0.invariant' ( * self_1) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f_2)) };
     _15 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 153 8 63] Permut.exchange (Model0.model self_1) (Model0.model old_c_5) (UInt64.to_int j_3) (UInt64.to_int k_4) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 155 8 63] Permut.exchange (Model0.model self_1) (Model0.model old_c_5) (UInt64.to_int j_3) (UInt64.to_int k_4) };
     _16 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 154 8 71] Permut.permut (Model0.model old_c_5) (Model0.model self_1) 0 (Seq.length (Model0.model self_1)) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 156 8 71] Permut.permut (Model0.model old_c_5) (Model0.model self_1) 0 (Seq.length (Model0.model self_1)) };
     _17 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 155 8 51] Equisat0.equisat ( * self_1) ( * old_c_5) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 157 8 51] Equisat0.equisat ( * self_1) ( * old_c_5) };
     _18 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 156 8 57] Equisat20.equisat2 ( * self_1) ( * old_c_5) _f_2 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 158 8 57] Equisat20.equisat2 ( * self_1) ( * old_c_5) _f_2 };
     _19 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 157 8 46]  ^ old_c_5 =  ^ self_1 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 159 8 46]  ^ old_c_5 =  ^ self_1 };
     _20 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 159 8 96] EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass (Seq.snoc (let (a, _) = Model2.model _f_2 in a) ( * self_1), let (_, a) = Model2.model _f_2 in a) = EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass (Seq.snoc (let (a, _) = Model2.model _f_2 in a) ( * old_c_5), let (_, a) = Model2.model _f_2 in a) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 161 8 96] EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass (Seq.snoc (let (a, _) = Model2.model _f_2 in a) ( * self_1), let (_, a) = Model2.model _f_2 in a) = EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass (Seq.snoc (let (a, _) = Model2.model _f_2 in a) ( * old_c_5), let (_, a) = Model2.model _f_2 in a) };
     _21 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 161 8 50] EquisatExtension0.equisat_extension ( * self_1) _f_2 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 163 8 50] EquisatExtension0.equisat_extension ( * self_1) _f_2 };
     _22 <- ();
     _0 <- ();
     return _0
@@ -4478,8 +4478,8 @@ module CreuSat_Clause_Impl1_CalcLbd_Interface
   axiom .
   clone CreuSat_Logic_LogicClause_Impl2_Invariant_Interface as Invariant0
   val calc_lbd [@cfg:stackify] (self : Type.creusat_clause_clause) (_f : Type.creusat_formula_formula) (s : borrowed (Type.creusat_solver_solver)) (t : Type.creusat_trail_trail) : usize
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 166 4 45] Invariant0.invariant' self (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 165 4 58] Seq.length (Model0.model (Type.creusat_trail_trail_Trail_lit_to_level t)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 168 4 45] Invariant0.invariant' self (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 167 4 58] Seq.length (Model0.model (Type.creusat_trail_trail_Trail_lit_to_level t)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)}
     
 end
 module CreuSat_Clause_Impl1_CalcLbd
@@ -4531,9 +4531,9 @@ module CreuSat_Clause_Impl1_CalcLbd
   type a = Type.alloc_alloc_global, function Model0.model = Model0.model,
   predicate InBounds0.in_bounds = InBounds1.in_bounds, predicate HasValue0.has_value = HasValue1.has_value,
   type Output0.output = Output1.output
-  let rec cfg calc_lbd [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 167 4 76] (self : Type.creusat_clause_clause) (_f : Type.creusat_formula_formula) (s : borrowed (Type.creusat_solver_solver)) (t : Type.creusat_trail_trail) : usize
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 166 4 45] Invariant0.invariant' self (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 165 4 58] Seq.length (Model0.model (Type.creusat_trail_trail_Trail_lit_to_level t)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)}
+  let rec cfg calc_lbd [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 169 4 76] (self : Type.creusat_clause_clause) (_f : Type.creusat_formula_formula) (s : borrowed (Type.creusat_solver_solver)) (t : Type.creusat_trail_trail) : usize
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 168 4 45] Invariant0.invariant' self (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 167 4 58] Seq.length (Model0.model (Type.creusat_trail_trail_Trail_lit_to_level t)) = UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)}
     
    =
   var _0 : usize;
@@ -4589,14 +4589,14 @@ module CreuSat_Clause_Impl1_CalcLbd
     goto BB1
   }
   BB1 {
-    invariant lbd_bound { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 170 8 43] UInt64.to_int lbd_6 <= UInt64.to_int i_5 };
+    invariant lbd_bound { [#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 172 8 43] UInt64.to_int lbd_6 <= UInt64.to_int i_5 };
     _10 <- i_5;
     _12 <- self_1;
-    _11 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 171 18 28] Len0.len _12);
+    _11 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 173 18 28] Len0.len _12);
     goto BB2
   }
   BB2 {
-    _9 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 171 14 28] _10 < _11);
+    _9 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 173 14 28] _10 < _11);
     switch (_9)
       | False -> goto BB16
       | _ -> goto BB3
@@ -4606,23 +4606,23 @@ module CreuSat_Clause_Impl1_CalcLbd
     _15 <- Type.creusat_trail_trail_Trail_lit_to_level t_4;
     _19 <- Type.creusat_clause_clause_Clause_rest self_1;
     _20 <- i_5;
-    _18 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 172 39 51] Index0.index _19 _20);
+    _18 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 174 39 51] Index0.index _19 _20);
     goto BB4
   }
   BB4 {
     _17 <- _18;
-    _16 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 172 39 59] Index1.index _17);
+    _16 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 174 39 59] Index1.index _17);
     goto BB5
   }
   BB5 {
-    _14 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 172 24 60] Index2.index _15 _16);
+    _14 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 174 24 60] Index2.index _15 _16);
     goto BB6
   }
   BB6 {
     level_13 <- _14;
     _24 <- level_13;
     _26 <- Type.creusat_solver_solver_Solver_perm_diff ( * s_3);
-    _25 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 173 23 40] Len1.len _26);
+    _25 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 175 23 40] Len1.len _26);
     goto BB10
   }
   BB7 {
@@ -4632,7 +4632,7 @@ module CreuSat_Clause_Impl1_CalcLbd
   BB8 {
     _30 <- Type.creusat_solver_solver_Solver_perm_diff ( * s_3);
     _31 <- level_13;
-    _29 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 174 16 34] Index2.index _30 _31);
+    _29 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 176 16 34] Index2.index _30 _31);
     goto BB11
   }
   BB9 {
@@ -4642,7 +4642,7 @@ module CreuSat_Clause_Impl1_CalcLbd
       end
   }
   BB10 {
-    _23 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 173 15 40] _24 < _25);
+    _23 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 175 15 40] _24 < _25);
     switch (_23)
       | False -> goto BB7
       | _ -> goto BB8
@@ -4651,7 +4651,7 @@ module CreuSat_Clause_Impl1_CalcLbd
   BB11 {
     _28 <- _29;
     _32 <- Type.creusat_solver_solver_Solver_num_conflicts ( * s_3);
-    _27 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 174 16 53] _28 <> _32);
+    _27 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 176 16 53] _28 <> _32);
     _22 <- _27;
     goto BB9
   }
@@ -4660,13 +4660,13 @@ module CreuSat_Clause_Impl1_CalcLbd
     _35 <- borrow_mut (Type.creusat_solver_solver_Solver_perm_diff ( * s_3));
     s_3 <- { s_3 with current = (let Type.CreuSat_Solver_Solver a b c d e f g h =  * s_3 in Type.CreuSat_Solver_Solver a b c d e f g ( ^ _35)) };
     _36 <- level_13;
-    _34 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 176 16 34] IndexMut0.index_mut _35 _36);
+    _34 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 178 16 34] IndexMut0.index_mut _35 _36);
     goto BB13
   }
   BB13 {
     _34 <- { _34 with current = _33 };
     assume { Resolve0.resolve _34 };
-    lbd_6 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 177 16 24] lbd_6 + (1 : usize));
+    lbd_6 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 179 16 24] lbd_6 + (1 : usize));
     _21 <- ();
     goto BB15
   }
@@ -4675,7 +4675,7 @@ module CreuSat_Clause_Impl1_CalcLbd
     goto BB15
   }
   BB15 {
-    i_5 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 179 12 18] i_5 + (1 : usize));
+    i_5 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/clause.rs" 181 12 18] i_5 + (1 : usize));
     _8 <- ();
     goto BB1
   }
@@ -6259,7 +6259,7 @@ module CreuSat_ConflictAnalysis_Resolve
   }
   BB22 {
     _71 <- borrow_mut (Type.creusat_clause_clause_Clause_rest ( * c_2));
-    c_2 <- { c_2 with current = (let Type.CreuSat_Clause_Clause a b =  * c_2 in Type.CreuSat_Clause_Clause a ( ^ _71)) };
+    c_2 <- { c_2 with current = (let Type.CreuSat_Clause_Clause a b c d =  * c_2 in Type.CreuSat_Clause_Clause a b c ( ^ _71)) };
     _74 <- Type.creusat_clause_clause_Clause_rest o_3;
     _75 <- i_33;
     _73 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/conflict_analysis.rs" 105 24 33] Index0.index _74 _75);
@@ -13636,7 +13636,7 @@ module CreuSat_Formula_Impl0_DeleteClause
     goto BB8
   }
   BB8 {
-    _29 <- { _29 with current = (let Type.CreuSat_Clause_Clause a b =  * _29 in Type.CreuSat_Clause_Clause true b) };
+    _29 <- { _29 with current = (let Type.CreuSat_Clause_Clause a b c d =  * _29 in Type.CreuSat_Clause_Clause true b c d) };
     assume { Resolve2.resolve _29 };
     assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/formula.rs" 185 8 84] forall i : (int) . 0 <= i && i < Seq.length (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self_1))) (UInt64.to_int cref_2))) -> Seq.get (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * self_1))) (UInt64.to_int cref_2))) i = Seq.get (Model1.model (Seq.get (Model0.model (Type.creusat_formula_formula_Formula_clauses ( * old_f_5))) (UInt64.to_int cref_2))) i };
     _32 <- ();
@@ -19389,6 +19389,7 @@ module CreuSat_Trail_Impl0_Backstep
   use mach.int.Int32
   use prelude.Prelude
   use Type
+  use seq.Seq
   use prelude.UInt8
   clone CreuSat_Logic_LogicUtil_SortedRange as SortedRange0
   clone CreuSat_Logic_LogicUtil_Sorted as Sorted0 with predicate SortedRange0.sorted_range = SortedRange0.sorted_range
@@ -19588,13 +19589,13 @@ module CreuSat_Trail_Impl0_Backstep
   var _16 : ();
   var _17 : ();
   var _18 : ();
-  var _19 : borrowed usize;
-  var _20 : borrowed (Type.alloc_vec_vec usize (Type.alloc_alloc_global));
-  var _21 : usize;
-  var _22 : Type.creusat_lit_lit;
-  var _23 : ();
+  var _19 : ();
+  var _20 : ();
+  var _21 : borrowed usize;
+  var _22 : borrowed (Type.alloc_vec_vec usize (Type.alloc_alloc_global));
+  var _23 : usize;
   var _24 : Type.creusat_lit_lit;
-  var _25 : ();
+  var _25 : Type.creusat_lit_lit;
   var _26 : ();
   var _27 : ();
   var _28 : ();
@@ -19602,6 +19603,7 @@ module CreuSat_Trail_Impl0_Backstep
   var _30 : ();
   var _31 : ();
   var _32 : ();
+  var _33 : ();
   {
     self_1 <- self;
     f_2 <- f;
@@ -19626,23 +19628,23 @@ module CreuSat_Trail_Impl0_Backstep
   }
   BB3 {
     assume { Resolve0.resolve self_1 };
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 90 16 91] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_2 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
-    _25 <- ();
-    _8 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 93 8 53] Invariant1.invariant' (Type.creusat_trail_trail_Trail_assignments ( * self_1)) f_2 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 85 16 98] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_2 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) && true };
     _26 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 94 8 55] TrailInvariant0.trail_invariant (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_2 };
+    _8 <- ();
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 88 8 53] Invariant1.invariant' (Type.creusat_trail_trail_Trail_assignments ( * self_1)) f_2 };
     _27 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 95 8 69] LitToLevelInvariant0.lit_to_level_invariant (Model2.model (Type.creusat_trail_trail_Trail_lit_to_level ( * self_1))) f_2 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 89 8 55] TrailInvariant0.trail_invariant (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_2 };
     _28 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 97 8 47] LitNotInLess0.lit_not_in_less ( * self_1) f_2 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 90 8 69] LitToLevelInvariant0.lit_to_level_invariant (Model2.model (Type.creusat_trail_trail_Trail_lit_to_level ( * self_1))) f_2 };
     _29 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 98 8 43] LitIsUnique0.lit_is_unique ( * self_1) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 92 8 47] LitNotInLess0.lit_not_in_less ( * self_1) f_2 };
     _30 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 99 8 83] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_2 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 93 8 43] LitIsUnique0.lit_is_unique ( * self_1) };
     _31 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 100 8 56] TrailEntriesAreAssigned0.trail_entries_are_assigned ( * self_1) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 94 8 83] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_2 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
     _32 <- ();
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 95 8 56] TrailEntriesAreAssigned0.trail_entries_are_assigned ( * self_1) };
+    _33 <- ();
     _0 <- (0 : usize);
     goto BB11
   }
@@ -19665,30 +19667,32 @@ module CreuSat_Trail_Impl0_Backstep
   BB7 {
     _12 <- { _12 with current = ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 73 16 57]  * _12 + (2 : uint8)) };
     assume { Resolve1.resolve _12 };
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 80 16 73] Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1)) = Pop0.pop (Model0.model (Type.creusat_trail_trail_Trail_trail ( * old_t_4))) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 74 16 73] Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1)) = Pop0.pop (Model0.model (Type.creusat_trail_trail_Trail_trail ( * old_t_4))) };
     _16 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 81 16 54]  ^ old_t_4 =  ^ self_1 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 75 16 54]  ^ old_t_4 =  ^ self_1 };
     _17 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 82 16 78] let _ = LemmaBacktrackOk0.lemma_backtrack_ok ( * self_1) f_2 (Type.creusat_trail_step_Step_lit step_10) in true };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 76 16 78] let _ = LemmaBacktrackOk0.lemma_backtrack_ok ( * self_1) f_2 (Type.creusat_trail_step_Step_lit step_10) in true };
     _18 <- ();
-    _20 <- borrow_mut (Type.creusat_trail_trail_Trail_lit_to_level ( * self_1));
-    self_1 <- { self_1 with current = (let Type.CreuSat_Trail_Trail a b c d e =  * self_1 in Type.CreuSat_Trail_Trail a ( ^ _20) c d e) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 77 16 135] Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) (IndexLogic0.index_logic (Type.creusat_trail_step_Step_lit step_10)) = (2 : uint8) || Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) (IndexLogic0.index_logic (Type.creusat_trail_step_Step_lit step_10)) = (3 : uint8) };
+    _19 <- ();
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 78 16 107] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_2 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) && true && true };
+    _20 <- ();
+    _22 <- borrow_mut (Type.creusat_trail_trail_Trail_lit_to_level ( * self_1));
+    self_1 <- { self_1 with current = (let Type.CreuSat_Trail_Trail a b c d e =  * self_1 in Type.CreuSat_Trail_Trail a ( ^ _22) c d e) };
     assume { Resolve0.resolve self_1 };
-    _22 <- Type.creusat_trail_step_Step_lit step_10;
-    _21 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 83 34 50] Index0.index _22);
+    _24 <- Type.creusat_trail_step_Step_lit step_10;
+    _23 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 79 34 50] Index0.index _24);
     goto BB8
   }
   BB8 {
-    _19 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 83 16 51] IndexMut1.index_mut _20 _21);
+    _21 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 79 16 51] IndexMut1.index_mut _22 _23);
     goto BB9
   }
   BB9 {
-    _19 <- { _19 with current = (18446744073709551615 : usize) };
-    assume { Resolve2.resolve _19 };
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 84 16 91] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_2 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
-    _23 <- ();
-    _24 <- Type.creusat_trail_step_Step_lit step_10;
-    _0 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 85 23 39] Index0.index _24);
+    _21 <- { _21 with current = (18446744073709551615 : usize) };
+    assume { Resolve2.resolve _21 };
+    _25 <- Type.creusat_trail_step_Step_lit step_10;
+    _0 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 80 23 39] Index0.index _25);
     goto BB10
   }
   BB10 {
@@ -19717,14 +19721,14 @@ module CreuSat_Trail_Impl0_BacktrackTo_Interface
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.creusat_trail_step,
   type a = Type.alloc_alloc_global, axiom .
   val backtrack_to [@cfg:stackify] (self : borrowed (Type.creusat_trail_trail)) (level : usize) (f : Type.creusat_formula_formula) (d : borrowed (Type.creusat_decision_decisions)) : ()
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 123 4 77] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 121 4 48] Invariant0.invariant' ( * d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 120 4 42] Invariant1.invariant' ( * self) f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 119 4 30] Invariant2.invariant' f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 118 4 49] Seq.length (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self))) > UInt64.to_int level}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 124 4 86] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 121 4 48] Invariant0.invariant' ( ^ d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f)) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 120 4 42] Invariant1.invariant' ( ^ self) f }
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 118 4 77] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 116 4 48] Invariant0.invariant' ( * d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 115 4 42] Invariant1.invariant' ( * self) f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 114 4 30] Invariant2.invariant' f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 113 4 49] Seq.length (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self))) > UInt64.to_int level}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 119 4 86] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 116 4 48] Invariant0.invariant' ( ^ d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f)) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 115 4 42] Invariant1.invariant' ( ^ self) f }
     
 end
 module CreuSat_Trail_Impl0_BacktrackTo
@@ -19855,15 +19859,15 @@ module CreuSat_Trail_Impl0_BacktrackTo
   predicate InvariantNoDecision0.invariant_no_decision = InvariantNoDecision0.invariant_no_decision,
   predicate Invariant0.invariant' = Invariant2.invariant',
   predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  let rec cfg backtrack_to [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 126 4 80] (self : borrowed (Type.creusat_trail_trail)) (level : usize) (f : Type.creusat_formula_formula) (d : borrowed (Type.creusat_decision_decisions)) : ()
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 123 4 77] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 121 4 48] Invariant0.invariant' ( * d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 120 4 42] Invariant1.invariant' ( * self) f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 119 4 30] Invariant2.invariant' f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 118 4 49] Seq.length (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self))) > UInt64.to_int level}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 124 4 86] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 121 4 48] Invariant0.invariant' ( ^ d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f)) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 120 4 42] Invariant1.invariant' ( ^ self) f }
+  let rec cfg backtrack_to [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 121 4 80] (self : borrowed (Type.creusat_trail_trail)) (level : usize) (f : Type.creusat_formula_formula) (d : borrowed (Type.creusat_decision_decisions)) : ()
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 118 4 77] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 116 4 48] Invariant0.invariant' ( * d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 115 4 42] Invariant1.invariant' ( * self) f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 114 4 30] Invariant2.invariant' f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 113 4 49] Seq.length (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self))) > UInt64.to_int level}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 119 4 86] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 116 4 48] Invariant0.invariant' ( ^ d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f)) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 115 4 42] Invariant1.invariant' ( ^ self) f }
     
    =
   var _0 : ();
@@ -19990,31 +19994,31 @@ module CreuSat_Trail_Impl0_BacktrackTo
   }
   BB0 {
     _6 <- ();
-    old_t_5 <- ghost ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 127 20 35] self_1);
+    old_t_5 <- ghost ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 122 20 35] self_1);
     goto BB1
   }
   BB1 {
     _8 <- ();
-    old_d_7 <- ghost ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 128 20 32] d_4);
+    old_d_7 <- ghost ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 123 20 32] d_4);
     goto BB2
   }
   BB2 {
     _11 <- Type.creusat_trail_trail_Trail_trail ( * self_1);
-    _10 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 129 23 39] Len0.len _11);
+    _10 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 124 23 39] Len0.len _11);
     goto BB3
   }
   BB3 {
     _14 <- Type.creusat_trail_trail_Trail_decisions ( * self_1);
     _15 <- level_2;
-    _13 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 129 42 63] Index0.index _14 _15);
+    _13 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 124 42 63] Index0.index _14 _15);
     goto BB4
   }
   BB4 {
     _12 <- _13;
-    how_many_9 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 129 23 63] _10 - _12);
+    how_many_9 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 124 23 63] _10 - _12);
     _18 <- Type.creusat_trail_trail_Trail_decisions ( * self_1);
     _19 <- level_2;
-    _17 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 130 18 39] Index0.index _18 _19);
+    _17 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 125 18 39] Index0.index _18 _19);
     goto BB5
   }
   BB5 {
@@ -20022,7 +20026,7 @@ module CreuSat_Trail_Impl0_BacktrackTo
     i_20 <- (0 : usize);
     curr_21 <- Type.creusat_decision_decisions_Decisions_search ( * d_4);
     _24 <- curr_21;
-    _23 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 133 31 49] _24 <> (18446744073709551615 : usize));
+    _23 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 128 31 49] _24 <> (18446744073709551615 : usize));
     switch (_23)
       | False -> goto BB8
       | _ -> goto BB6
@@ -20031,7 +20035,7 @@ module CreuSat_Trail_Impl0_BacktrackTo
   BB6 {
     _26 <- Type.creusat_decision_decisions_Decisions_linked_list ( * d_4);
     _27 <- curr_21;
-    _25 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 133 52 71] Index1.index _26 _27);
+    _25 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 128 52 71] Index1.index _26 _27);
     goto BB7
   }
   BB7 {
@@ -20046,17 +20050,17 @@ module CreuSat_Trail_Impl0_BacktrackTo
     goto BB10
   }
   BB10 {
-    invariant i_less2 { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 134 8 67] UInt64.to_int i_20 <= Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( * old_t_5))) };
-    invariant i_less { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 135 8 43] i_20 <= how_many_9 };
-    invariant post_unit { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 136 8 93] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_3 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
-    invariant inv { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 137 8 57] InvariantNoDecision0.invariant_no_decision ( * self_1) f_3 };
-    invariant d_inv { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 138 8 53] Invariant0.invariant' ( * d_4) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f_3)) };
-    invariant proph { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 140 8 52]  ^ old_t_5 =  ^ self_1 };
-    invariant proph_d { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 141 8 51]  ^ old_d_7 =  ^ d_4 };
-    invariant curr_less { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 142 8 87] UInt64.to_int curr_21 < Seq.length (Model3.model (Type.creusat_decision_decisions_Decisions_linked_list ( * d_4))) || UInt64.to_int curr_21 = 18446744073709551615 };
+    invariant i_less2 { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 129 8 67] UInt64.to_int i_20 <= Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( * old_t_5))) };
+    invariant i_less { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 130 8 43] i_20 <= how_many_9 };
+    invariant post_unit { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 131 8 93] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_3 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
+    invariant inv { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 132 8 57] InvariantNoDecision0.invariant_no_decision ( * self_1) f_3 };
+    invariant d_inv { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 133 8 53] Invariant0.invariant' ( * d_4) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f_3)) };
+    invariant proph { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 135 8 52]  ^ old_t_5 =  ^ self_1 };
+    invariant proph_d { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 136 8 51]  ^ old_d_7 =  ^ d_4 };
+    invariant curr_less { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 137 8 87] UInt64.to_int curr_21 < Seq.length (Model3.model (Type.creusat_decision_decisions_Decisions_linked_list ( * d_4))) || UInt64.to_int curr_21 = 18446744073709551615 };
     _31 <- i_20;
     _32 <- how_many_9;
-    _30 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 144 14 26] _31 < _32);
+    _30 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 139 14 26] _31 < _32);
     switch (_30)
       | False -> goto BB17
       | _ -> goto BB11
@@ -20066,22 +20070,22 @@ module CreuSat_Trail_Impl0_BacktrackTo
     _34 <- borrow_mut ( * self_1);
     self_1 <- { self_1 with current = ( ^ _34) };
     _35 <- f_3;
-    idx_33 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 145 22 38] Backstep0.backstep _34 _35);
+    idx_33 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 140 22 38] Backstep0.backstep _34 _35);
     goto BB12
   }
   BB12 {
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 146 12 45] UInt64.to_int idx_33 < UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f_3) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 141 12 45] UInt64.to_int idx_33 < UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f_3) };
     _36 <- ();
     _39 <- Type.creusat_decision_decisions_Decisions_linked_list ( * d_4);
     _40 <- idx_33;
-    _38 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 147 33 51] Index1.index _39 _40);
+    _38 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 142 33 51] Index1.index _39 _40);
     goto BB13
   }
   BB13 {
     curr_timestamp_37 <- Type.creusat_decision_node_Node_ts _38;
     _43 <- curr_timestamp_37;
     _44 <- timestamp_22;
-    _42 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 148 15 41] _43 > _44);
+    _42 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 143 15 41] _43 > _44);
     switch (_42)
       | False -> goto BB15
       | _ -> goto BB14
@@ -20100,7 +20104,7 @@ module CreuSat_Trail_Impl0_BacktrackTo
     goto BB16
   }
   BB16 {
-    i_20 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 152 12 18] i_20 + (1 : usize));
+    i_20 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 147 12 18] i_20 + (1 : usize));
     _29 <- ();
     goto BB10
   }
@@ -20112,16 +20116,16 @@ module CreuSat_Trail_Impl0_BacktrackTo
     goto BB18
   }
   BB18 {
-    invariant post_unit { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 156 8 93] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_3 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
-    invariant inv { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 157 8 57] InvariantNoDecision0.invariant_no_decision ( * self_1) f_3 };
-    invariant proph { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 158 8 52]  ^ old_t_5 =  ^ self_1 };
+    invariant post_unit { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 151 8 93] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_3 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
+    invariant inv { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 152 8 57] InvariantNoDecision0.invariant_no_decision ( * self_1) f_3 };
+    invariant proph { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 153 8 52]  ^ old_t_5 =  ^ self_1 };
     _54 <- Type.creusat_trail_trail_Trail_decisions ( * self_1);
-    _53 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 159 14 34] Len1.len _54);
+    _53 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 154 14 34] Len1.len _54);
     goto BB19
   }
   BB19 {
     _55 <- level_2;
-    _52 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 159 14 42] _53 > _55);
+    _52 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 154 14 42] _53 > _55);
     switch (_52)
       | False -> goto BB26
       | _ -> goto BB20
@@ -20129,19 +20133,19 @@ module CreuSat_Trail_Impl0_BacktrackTo
   }
   BB20 {
     _57 <- ();
-    old_t2_56 <- ghost ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 160 25 40] self_1);
+    old_t2_56 <- ghost ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 155 25 40] self_1);
     goto BB21
   }
   BB21 {
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 161 12 50] Sorted0.sorted (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 156 12 50] Sorted0.sorted (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) };
     _58 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 162 12 54] Seq.length (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) > 0 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 157 12 54] Seq.length (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) > 0 };
     _59 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 163 12 76] let _ = LemmaPopMaintainsSorted0.lemma_pop_maintains_sorted (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) in true };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 158 12 76] let _ = LemmaPopMaintainsSorted0.lemma_pop_maintains_sorted (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) in true };
     _60 <- ();
     _63 <- borrow_mut (Type.creusat_trail_trail_Trail_decisions ( * self_1));
     self_1 <- { self_1 with current = (let Type.CreuSat_Trail_Trail a b c d e =  * self_1 in Type.CreuSat_Trail_Trail a b c d ( ^ _63)) };
-    _62 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 164 18 38] Pop1.pop _63);
+    _62 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 159 18 38] Pop1.pop _63);
     goto BB22
   }
   BB22 {
@@ -20159,12 +20163,12 @@ module CreuSat_Trail_Impl0_BacktrackTo
     absurd
   }
   BB25 {
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 166 20 86] Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1)) = Pop0.pop (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * old_t2_56))) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 161 20 86] Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1)) = Pop0.pop (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * old_t2_56))) };
     _65 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 167 20 61]  ^ old_t2_56 =  ^ self_1 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 162 20 61]  ^ old_t2_56 =  ^ self_1 };
     _66 <- ();
     _61 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 173 12 50] Sorted0.sorted (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 168 12 50] Sorted0.sorted (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) };
     _69 <- ();
     _29 <- ();
     goto BB18
@@ -20174,11 +20178,11 @@ module CreuSat_Trail_Impl0_BacktrackTo
     goto BB27
   }
   BB27 {
-    invariant post_unit { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 176 8 93] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_3 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
-    invariant inv { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 177 8 57] InvariantNoDecision0.invariant_no_decision ( * self_1) f_3 };
-    invariant proph { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 178 8 52]  ^ old_t_5 =  ^ self_1 };
+    invariant post_unit { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 171 8 93] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_3 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
+    invariant inv { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 172 8 57] InvariantNoDecision0.invariant_no_decision ( * self_1) f_3 };
+    invariant proph { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 173 8 52]  ^ old_t_5 =  ^ self_1 };
     _77 <- Type.creusat_trail_trail_Trail_decisions ( * self_1);
-    _76 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 179 14 34] Len1.len _77);
+    _76 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 174 14 34] Len1.len _77);
     goto BB31
   }
   BB28 {
@@ -20188,7 +20192,7 @@ module CreuSat_Trail_Impl0_BacktrackTo
   BB29 {
     _81 <- Type.creusat_trail_trail_Trail_decisions ( * self_1);
     _84 <- Type.creusat_trail_trail_Trail_decisions ( * self_1);
-    _83 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 179 57 77] Len1.len _84);
+    _83 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 174 57 77] Len1.len _84);
     goto BB32
   }
   BB30 {
@@ -20198,43 +20202,43 @@ module CreuSat_Trail_Impl0_BacktrackTo
       end
   }
   BB31 {
-    _75 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 179 14 38] _76 > (0 : usize));
+    _75 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 174 14 38] _76 > (0 : usize));
     switch (_75)
       | False -> goto BB28
       | _ -> goto BB29
       end
   }
   BB32 {
-    _82 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 179 57 81] _83 - (1 : usize));
-    _80 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 179 42 82] Index0.index _81 _82);
+    _82 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 174 57 81] _83 - (1 : usize));
+    _80 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 174 42 82] Index0.index _81 _82);
     goto BB33
   }
   BB33 {
     _79 <- _80;
     _86 <- Type.creusat_trail_trail_Trail_trail ( * self_1);
-    _85 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 179 85 101] Len0.len _86);
+    _85 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 174 85 101] Len0.len _86);
     goto BB34
   }
   BB34 {
-    _78 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 179 42 101] _79 > _85);
+    _78 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 174 42 101] _79 > _85);
     _74 <- _78;
     goto BB30
   }
   BB35 {
     _88 <- ();
-    old_t3_87 <- ghost ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 180 25 40] self_1);
+    old_t3_87 <- ghost ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 175 25 40] self_1);
     goto BB36
   }
   BB36 {
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 181 12 50] Sorted0.sorted (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 176 12 50] Sorted0.sorted (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) };
     _89 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 182 12 54] Seq.length (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) > 0 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 177 12 54] Seq.length (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) > 0 };
     _90 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 183 12 76] let _ = LemmaPopMaintainsSorted0.lemma_pop_maintains_sorted (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) in true };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 178 12 76] let _ = LemmaPopMaintainsSorted0.lemma_pop_maintains_sorted (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) in true };
     _91 <- ();
     _94 <- borrow_mut (Type.creusat_trail_trail_Trail_decisions ( * self_1));
     self_1 <- { self_1 with current = (let Type.CreuSat_Trail_Trail a b c d e =  * self_1 in Type.CreuSat_Trail_Trail a b c d ( ^ _94)) };
-    _93 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 185 18 38] Pop1.pop _94);
+    _93 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 180 18 38] Pop1.pop _94);
     goto BB37
   }
   BB37 {
@@ -20252,37 +20256,37 @@ module CreuSat_Trail_Impl0_BacktrackTo
     absurd
   }
   BB40 {
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 187 20 88] Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1)) = Pop0.pop (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * old_t3_87))) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 182 20 88] Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1)) = Pop0.pop (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * old_t3_87))) };
     _96 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 188 20 61]  ^ old_t3_87 =  ^ self_1 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 183 20 61]  ^ old_t3_87 =  ^ self_1 };
     _97 <- ();
     _92 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 194 12 88] let _ = LemmaPopMaintainsSorted0.lemma_pop_maintains_sorted (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * old_t3_87))) in true };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 189 12 88] let _ = LemmaPopMaintainsSorted0.lemma_pop_maintains_sorted (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * old_t3_87))) in true };
     _100 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 195 12 50] Sorted0.sorted (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 190 12 50] Sorted0.sorted (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) };
     _101 <- ();
     _29 <- ();
     goto BB27
   }
   BB41 {
     _73 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 197 8 9] Seq.length (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) = 0 || UInt64.to_int (Seq.get (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) (Seq.length (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) - 1)) <= Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 192 8 9] Seq.length (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) = 0 || UInt64.to_int (Seq.get (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) (Seq.length (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) - 1)) <= Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) };
     _105 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 201 8 72] DecisionsInvariant0.decisions_invariant (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 196 8 72] DecisionsInvariant0.decisions_invariant (Model2.model (Type.creusat_trail_trail_Trail_decisions ( * self_1))) (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) };
     _106 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 202 8 53] Invariant3.invariant' (Type.creusat_trail_trail_Trail_assignments ( * self_1)) f_3 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 197 8 53] Invariant3.invariant' (Type.creusat_trail_trail_Trail_assignments ( * self_1)) f_3 };
     _107 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 203 8 55] TrailInvariant0.trail_invariant (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_3 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 198 8 55] TrailInvariant0.trail_invariant (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_3 };
     _108 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 204 8 69] LitToLevelInvariant0.lit_to_level_invariant (Model2.model (Type.creusat_trail_trail_Trail_lit_to_level ( * self_1))) f_3 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 199 8 69] LitToLevelInvariant0.lit_to_level_invariant (Model2.model (Type.creusat_trail_trail_Trail_lit_to_level ( * self_1))) f_3 };
     _109 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 205 8 47] LitNotInLess0.lit_not_in_less ( * self_1) f_3 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 200 8 47] LitNotInLess0.lit_not_in_less ( * self_1) f_3 };
     _110 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 206 8 43] LitIsUnique0.lit_is_unique ( * self_1) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 201 8 43] LitIsUnique0.lit_is_unique ( * self_1) };
     _111 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 207 8 83] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_3 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 202 8 83] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) f_3 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
     _112 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 208 8 56] TrailEntriesAreAssigned0.trail_entries_are_assigned ( * self_1) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 203 8 56] TrailEntriesAreAssigned0.trail_entries_are_assigned ( * self_1) };
     _113 <- ();
     _114 <- level_2;
     self_1 <- { self_1 with current = (let Type.CreuSat_Trail_Trail a b c d e =  * self_1 in Type.CreuSat_Trail_Trail a b c _114 e) };
@@ -20307,13 +20311,13 @@ module CreuSat_Trail_Impl0_BacktrackSafe_Interface
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.creusat_trail_step,
   type a = Type.alloc_alloc_global, axiom .
   val backtrack_safe [@cfg:stackify] (self : borrowed (Type.creusat_trail_trail)) (level : usize) (f : Type.creusat_formula_formula) (d : borrowed (Type.creusat_decision_decisions)) : ()
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 109 4 77] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 108 4 48] Invariant0.invariant' ( * d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 107 4 42] Invariant1.invariant' ( * self) f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 106 4 30] Invariant2.invariant' f}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 110 4 86] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 108 4 48] Invariant0.invariant' ( ^ d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f)) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 107 4 42] Invariant1.invariant' ( ^ self) f }
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 104 4 77] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 103 4 48] Invariant0.invariant' ( * d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 102 4 42] Invariant1.invariant' ( * self) f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 101 4 30] Invariant2.invariant' f}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 105 4 86] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 103 4 48] Invariant0.invariant' ( ^ d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f)) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 102 4 42] Invariant1.invariant' ( ^ self) f }
     
 end
 module CreuSat_Trail_Impl0_BacktrackSafe
@@ -20414,14 +20418,14 @@ module CreuSat_Trail_Impl0_BacktrackSafe
   predicate Invariant0.invariant' = Invariant0.invariant', predicate Invariant1.invariant' = Invariant1.invariant',
   predicate Invariant2.invariant' = Invariant2.invariant', function Model2.model = Model5.model,
   predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  let rec cfg backtrack_safe [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 111 4 82] (self : borrowed (Type.creusat_trail_trail)) (level : usize) (f : Type.creusat_formula_formula) (d : borrowed (Type.creusat_decision_decisions)) : ()
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 109 4 77] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 108 4 48] Invariant0.invariant' ( * d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 107 4 42] Invariant1.invariant' ( * self) f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 106 4 30] Invariant2.invariant' f}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 110 4 86] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 108 4 48] Invariant0.invariant' ( ^ d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f)) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 107 4 42] Invariant1.invariant' ( ^ self) f }
+  let rec cfg backtrack_safe [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 106 4 82] (self : borrowed (Type.creusat_trail_trail)) (level : usize) (f : Type.creusat_formula_formula) (d : borrowed (Type.creusat_decision_decisions)) : ()
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 104 4 77] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 103 4 48] Invariant0.invariant' ( * d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 102 4 42] Invariant1.invariant' ( * self) f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 101 4 30] Invariant2.invariant' f}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 105 4 86] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 103 4 48] Invariant0.invariant' ( ^ d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f)) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 102 4 42] Invariant1.invariant' ( ^ self) f }
     
    =
   var _0 : ();
@@ -20448,11 +20452,11 @@ module CreuSat_Trail_Impl0_BacktrackSafe
   BB0 {
     _6 <- level_2;
     _8 <-  * self_1;
-    _7 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 112 19 40] DecisionLevel0.decision_level _8);
+    _7 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 107 19 40] DecisionLevel0.decision_level _8);
     goto BB1
   }
   BB1 {
-    _5 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 112 11 40] _6 < _7);
+    _5 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 107 11 40] _6 < _7);
     switch (_5)
       | False -> goto BB4
       | _ -> goto BB2
@@ -20465,7 +20469,7 @@ module CreuSat_Trail_Impl0_BacktrackSafe
     _12 <- f_3;
     _13 <- borrow_mut ( * d_4);
     d_4 <- { d_4 with current = ( ^ _13) };
-    _9 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 113 12 42] BacktrackTo0.backtrack_to _10 _11 _12 _13);
+    _9 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 108 12 42] BacktrackTo0.backtrack_to _10 _11 _12 _13);
     goto BB3
   }
   BB3 {
@@ -20513,28 +20517,28 @@ module CreuSat_Trail_Impl0_EnqAssignment_Interface
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.creusat_trail_step,
   type a = Type.alloc_alloc_global, axiom .
   val enq_assignment [@cfg:stackify] (self : borrowed (Type.creusat_trail_trail)) (step : Type.creusat_trail_step) (_f : Type.creusat_formula_formula) : ()
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 236 4 78] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) _f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 235 4 67] Unset0.unset (Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) (IndexLogic0.index_logic (Type.creusat_trail_step_Step_lit step)))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 234 4 51] not IdxInTrail0.idx_in_trail (Type.creusat_trail_step_Step_lit step) (Type.creusat_trail_trail_Trail_trail ( * self))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 220 4 7] match (Type.creusat_trail_step_Step_reason step) with
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 231 4 78] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) _f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 230 4 67] Unset0.unset (Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) (IndexLogic0.index_logic (Type.creusat_trail_step_Step_lit step)))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 229 4 51] not IdxInTrail0.idx_in_trail (Type.creusat_trail_step_Step_lit step) (Type.creusat_trail_trail_Trail_trail ( * self))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 215 4 7] match (Type.creusat_trail_step_Step_reason step) with
       | Type.CreuSat_Trail_Reason_Long cref -> UInt64.to_int cref < Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses _f)) && Unset1.unset (Seq.get (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses _f)) (UInt64.to_int cref))) 0) (Type.creusat_trail_trail_Trail_assignments ( * self)) && (forall i : (int) . 1 <= i && i < Seq.length (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses _f)) (UInt64.to_int cref))) -> Unsat0.unsat (Seq.get (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses _f)) (UInt64.to_int cref))) i) (Type.creusat_trail_trail_Trail_assignments ( * self))) && Seq.get (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses _f)) (UInt64.to_int cref))) 0 = Type.creusat_trail_step_Step_lit step
       | Type.CreuSat_Trail_Reason_Unit cref -> UInt64.to_int cref < Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses _f)) && Type.creusat_trail_step_Step_lit step = Seq.get (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses _f)) (UInt64.to_int cref))) 0
       | _ -> true
       end}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 219 4 36] Invariant0.invariant' step _f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 218 4 49] Invariant1.invariant' (Type.creusat_trail_step_Step_lit step) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 217 4 31] Invariant2.invariant' _f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 216 4 43] Invariant3.invariant' ( * self) _f}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 246 4 51] Type.creusat_trail_trail_Trail_decisions ( ^ self) = Type.creusat_trail_trail_Trail_decisions ( * self) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 245 4 65] Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) = 1 + Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 241 4 7] match (Type.creusat_trail_step_Step_reason step) with
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 214 4 36] Invariant0.invariant' step _f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 213 4 49] Invariant1.invariant' (Type.creusat_trail_step_Step_lit step) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 212 4 31] Invariant2.invariant' _f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 211 4 43] Invariant3.invariant' ( * self) _f}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 241 4 51] Type.creusat_trail_trail_Trail_decisions ( ^ self) = Type.creusat_trail_trail_Trail_decisions ( * self) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 240 4 65] Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) = 1 + Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 236 4 7] match (Type.creusat_trail_step_Step_reason step) with
       | Type.CreuSat_Trail_Reason_Long k -> ClausePostWithRegardsToLit0.clause_post_with_regards_to_lit (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses _f)) (UInt64.to_int k)) (Type.creusat_trail_trail_Trail_assignments ( ^ self)) (Type.creusat_trail_step_Step_lit step)
       | _ -> true
       end }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 240 4 87] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) _f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 239 4 49] Sat0.sat (Type.creusat_trail_step_Step_lit step) (Type.creusat_trail_trail_Trail_assignments ( ^ self)) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 237 4 94] forall j : (int) . 0 <= j && j < Seq.length (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) && j <> IndexLogic0.index_logic (Type.creusat_trail_step_Step_lit step) -> Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) j = Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) j }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 216 4 43] Invariant3.invariant' ( ^ self) _f }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 235 4 87] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) _f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 234 4 49] Sat0.sat (Type.creusat_trail_step_Step_lit step) (Type.creusat_trail_trail_Trail_assignments ( ^ self)) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 232 4 94] forall j : (int) . 0 <= j && j < Seq.length (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) && j <> IndexLogic0.index_logic (Type.creusat_trail_step_Step_lit step) -> Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) j = Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) j }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 211 4 43] Invariant3.invariant' ( ^ self) _f }
     
 end
 module CreuSat_Trail_Impl0_EnqAssignment
@@ -20686,29 +20690,29 @@ module CreuSat_Trail_Impl0_EnqAssignment
   function Model2.model = Model1.model, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
   clone Alloc_Vec_Impl1_Push_Interface as Push0 with type t = Type.creusat_trail_step, type a = Type.alloc_alloc_global,
   function Model0.model = Model0.model
-  let rec cfg enq_assignment [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 247 4 62] (self : borrowed (Type.creusat_trail_trail)) (step : Type.creusat_trail_step) (_f : Type.creusat_formula_formula) : ()
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 236 4 78] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) _f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 235 4 67] Unset0.unset (Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) (IndexLogic0.index_logic (Type.creusat_trail_step_Step_lit step)))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 234 4 51] not IdxInTrail0.idx_in_trail (Type.creusat_trail_step_Step_lit step) (Type.creusat_trail_trail_Trail_trail ( * self))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 220 4 7] match (Type.creusat_trail_step_Step_reason step) with
+  let rec cfg enq_assignment [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 242 4 62] (self : borrowed (Type.creusat_trail_trail)) (step : Type.creusat_trail_step) (_f : Type.creusat_formula_formula) : ()
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 231 4 78] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) _f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 230 4 67] Unset0.unset (Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) (IndexLogic0.index_logic (Type.creusat_trail_step_Step_lit step)))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 229 4 51] not IdxInTrail0.idx_in_trail (Type.creusat_trail_step_Step_lit step) (Type.creusat_trail_trail_Trail_trail ( * self))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 215 4 7] match (Type.creusat_trail_step_Step_reason step) with
       | Type.CreuSat_Trail_Reason_Long cref -> UInt64.to_int cref < Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses _f)) && Unset1.unset (Seq.get (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses _f)) (UInt64.to_int cref))) 0) (Type.creusat_trail_trail_Trail_assignments ( * self)) && (forall i : (int) . 1 <= i && i < Seq.length (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses _f)) (UInt64.to_int cref))) -> Unsat0.unsat (Seq.get (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses _f)) (UInt64.to_int cref))) i) (Type.creusat_trail_trail_Trail_assignments ( * self))) && Seq.get (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses _f)) (UInt64.to_int cref))) 0 = Type.creusat_trail_step_Step_lit step
       | Type.CreuSat_Trail_Reason_Unit cref -> UInt64.to_int cref < Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses _f)) && Type.creusat_trail_step_Step_lit step = Seq.get (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses _f)) (UInt64.to_int cref))) 0
       | _ -> true
       end}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 219 4 36] Invariant0.invariant' step _f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 218 4 49] Invariant1.invariant' (Type.creusat_trail_step_Step_lit step) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 217 4 31] Invariant2.invariant' _f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 216 4 43] Invariant3.invariant' ( * self) _f}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 246 4 51] Type.creusat_trail_trail_Trail_decisions ( ^ self) = Type.creusat_trail_trail_Trail_decisions ( * self) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 245 4 65] Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) = 1 + Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 241 4 7] match (Type.creusat_trail_step_Step_reason step) with
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 214 4 36] Invariant0.invariant' step _f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 213 4 49] Invariant1.invariant' (Type.creusat_trail_step_Step_lit step) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 212 4 31] Invariant2.invariant' _f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 211 4 43] Invariant3.invariant' ( * self) _f}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 241 4 51] Type.creusat_trail_trail_Trail_decisions ( ^ self) = Type.creusat_trail_trail_Trail_decisions ( * self) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 240 4 65] Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) = 1 + Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 236 4 7] match (Type.creusat_trail_step_Step_reason step) with
       | Type.CreuSat_Trail_Reason_Long k -> ClausePostWithRegardsToLit0.clause_post_with_regards_to_lit (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses _f)) (UInt64.to_int k)) (Type.creusat_trail_trail_Trail_assignments ( ^ self)) (Type.creusat_trail_step_Step_lit step)
       | _ -> true
       end }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 240 4 87] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) _f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 239 4 49] Sat0.sat (Type.creusat_trail_step_Step_lit step) (Type.creusat_trail_trail_Trail_assignments ( ^ self)) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 237 4 94] forall j : (int) . 0 <= j && j < Seq.length (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) && j <> IndexLogic0.index_logic (Type.creusat_trail_step_Step_lit step) -> Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) j = Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) j }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 216 4 43] Invariant3.invariant' ( ^ self) _f }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 235 4 87] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) _f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 234 4 49] Sat0.sat (Type.creusat_trail_step_Step_lit step) (Type.creusat_trail_trail_Trail_assignments ( ^ self)) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 232 4 94] forall j : (int) . 0 <= j && j < Seq.length (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) && j <> IndexLogic0.index_logic (Type.creusat_trail_step_Step_lit step) -> Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) j = Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) j }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 211 4 43] Invariant3.invariant' ( ^ self) _f }
     
    =
   var _0 : ();
@@ -20745,18 +20749,18 @@ module CreuSat_Trail_Impl0_EnqAssignment
   }
   BB0 {
     _5 <-  * self_1;
-    _4 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 248 46 67] DecisionLevel0.decision_level _5);
+    _4 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 243 46 67] DecisionLevel0.decision_level _5);
     goto BB1
   }
   BB1 {
     _7 <- borrow_mut (Type.creusat_trail_trail_Trail_lit_to_level ( * self_1));
     self_1 <- { self_1 with current = (let Type.CreuSat_Trail_Trail a b c d e =  * self_1 in Type.CreuSat_Trail_Trail a ( ^ _7) c d e) };
     _9 <- Type.creusat_trail_step_Step_lit step_2;
-    _8 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 248 26 42] Index0.index _9);
+    _8 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 243 26 42] Index0.index _9);
     goto BB2
   }
   BB2 {
-    _6 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 248 8 43] IndexMut0.index_mut _7 _8);
+    _6 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 243 8 43] IndexMut0.index_mut _7 _8);
     goto BB3
   }
   BB3 {
@@ -20768,34 +20772,34 @@ module CreuSat_Trail_Impl0_EnqAssignment
     _13 <- Type.creusat_trail_step_Step_lit step_2;
     _14 <- _f_3;
     _15 <- trail_10;
-    _11 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 251 8 60] SetAssignment0.set_assignment _12 _13 _14 _15);
+    _11 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 246 8 60] SetAssignment0.set_assignment _12 _13 _14 _15);
     goto BB4
   }
   BB4 {
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 253 8 62] LitNotInLessInner0.lit_not_in_less_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) _f_3 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 248 8 62] LitNotInLessInner0.lit_not_in_less_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) _f_3 };
     _16 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 254 8 42] Invariant0.invariant' step_2 _f_3 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 249 8 42] Invariant0.invariant' step_2 _f_3 };
     _17 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 255 8 83] let _ = LemmaPushMaintainsLitNotInLess0.lemma_push_maintains_lit_not_in_less ( * self_1) _f_3 step_2 in true };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 250 8 83] let _ = LemmaPushMaintainsLitNotInLess0.lemma_push_maintains_lit_not_in_less ( * self_1) _f_3 step_2 in true };
     _18 <- ();
     _20 <- borrow_mut (Type.creusat_trail_trail_Trail_trail ( * self_1));
     self_1 <- { self_1 with current = (let Type.CreuSat_Trail_Trail a b c d e =  * self_1 in Type.CreuSat_Trail_Trail a b ( ^ _20) d e) };
     _21 <- step_2;
-    _19 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 256 8 29] Push0.push _20 _21);
+    _19 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 251 8 29] Push0.push _20 _21);
     goto BB5
   }
   BB5 {
     assume { Resolve1.resolve self_1 };
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 257 8 9] match (Type.creusat_trail_step_Step_reason step_2) with
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 252 8 9] match (Type.creusat_trail_step_Step_reason step_2) with
       | Type.CreuSat_Trail_Reason_Long k -> ClausePostWithRegardsToInner0.clause_post_with_regards_to_inner (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses _f_3)) (UInt64.to_int k)) (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) (IndexLogic0.index_logic (Type.creusat_trail_step_Step_lit step_2))
       | _ -> true
       end };
     _22 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 264 8 43] LitIsUnique0.lit_is_unique ( * self_1) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 259 8 43] LitIsUnique0.lit_is_unique ( * self_1) };
     _23 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 265 8 48] LitNotInLess0.lit_not_in_less ( * self_1) _f_3 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 260 8 48] LitNotInLess0.lit_not_in_less ( * self_1) _f_3 };
     _24 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 267 8 84] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) _f_3 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 262 8 84] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) _f_3 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
     _25 <- ();
     _0 <- ();
     return _0
@@ -21360,20 +21364,20 @@ module CreuSat_Trail_Impl0_LearnUnit_Interface
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.creusat_trail_step,
   type a = Type.alloc_alloc_global, axiom .
   val learn_unit [@cfg:stackify] (self : borrowed (Type.creusat_trail_trail)) (cref : usize) (f : Type.creusat_formula_formula) (d : borrowed (Type.creusat_decision_decisions)) : Type.core_result_result () ()
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 319 4 77] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 313 4 59] Invariant0.invariant' (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses f)) (UInt64.to_int cref)) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 312 4 50] Seq.length (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses f)) (UInt64.to_int cref))) = 1}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 311 4 43] UInt64.to_int cref < Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 310 4 30] Invariant1.invariant' f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 309 4 48] Invariant2.invariant' ( * d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 308 4 42] Invariant3.invariant' ( * self) f}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 320 4 86] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 316 4 70] match (result) with
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 314 4 77] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 308 4 59] Invariant0.invariant' (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses f)) (UInt64.to_int cref)) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 307 4 50] Seq.length (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses f)) (UInt64.to_int cref))) = 1}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 306 4 43] UInt64.to_int cref < Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 305 4 30] Invariant1.invariant' f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 304 4 48] Invariant2.invariant' ( * d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 303 4 42] Invariant3.invariant' ( * self) f}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 315 4 86] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 311 4 70] match (result) with
       | Type.Core_Result_Result_Err _ -> true
       | Type.Core_Result_Result_Ok _ -> Sat0.sat (Seq.get (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses f)) (UInt64.to_int cref))) 0) (Type.creusat_trail_trail_Trail_assignments ( ^ self))
       end }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 309 4 48] Invariant2.invariant' ( ^ d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f)) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 308 4 42] Invariant3.invariant' ( ^ self) f }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 304 4 48] Invariant2.invariant' ( ^ d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f)) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 303 4 42] Invariant3.invariant' ( ^ self) f }
     
 end
 module CreuSat_Trail_Impl0_LearnUnit
@@ -21517,21 +21521,21 @@ module CreuSat_Trail_Impl0_LearnUnit
   predicate Invariant0.invariant' = Invariant2.invariant', predicate Invariant1.invariant' = Invariant3.invariant',
   predicate Invariant2.invariant' = Invariant1.invariant', function Model2.model = Model8.model,
   predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  let rec cfg learn_unit [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 321 4 95] (self : borrowed (Type.creusat_trail_trail)) (cref : usize) (f : Type.creusat_formula_formula) (d : borrowed (Type.creusat_decision_decisions)) : Type.core_result_result () ()
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 319 4 77] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 313 4 59] Invariant0.invariant' (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses f)) (UInt64.to_int cref)) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 312 4 50] Seq.length (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses f)) (UInt64.to_int cref))) = 1}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 311 4 43] UInt64.to_int cref < Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 310 4 30] Invariant1.invariant' f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 309 4 48] Invariant2.invariant' ( * d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 308 4 42] Invariant3.invariant' ( * self) f}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 320 4 86] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 316 4 70] match (result) with
+  let rec cfg learn_unit [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 316 4 95] (self : borrowed (Type.creusat_trail_trail)) (cref : usize) (f : Type.creusat_formula_formula) (d : borrowed (Type.creusat_decision_decisions)) : Type.core_result_result () ()
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 314 4 77] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 308 4 59] Invariant0.invariant' (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses f)) (UInt64.to_int cref)) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 307 4 50] Seq.length (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses f)) (UInt64.to_int cref))) = 1}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 306 4 43] UInt64.to_int cref < Seq.length (Model2.model (Type.creusat_formula_formula_Formula_clauses f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 305 4 30] Invariant1.invariant' f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 304 4 48] Invariant2.invariant' ( * d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 303 4 42] Invariant3.invariant' ( * self) f}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 315 4 86] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 311 4 70] match (result) with
       | Type.Core_Result_Result_Err _ -> true
       | Type.Core_Result_Result_Ok _ -> Sat0.sat (Seq.get (Model3.model (Seq.get (Model2.model (Type.creusat_formula_formula_Formula_clauses f)) (UInt64.to_int cref))) 0) (Type.creusat_trail_trail_Trail_assignments ( ^ self))
       end }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 309 4 48] Invariant2.invariant' ( ^ d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f)) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 308 4 42] Invariant3.invariant' ( ^ self) f }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 304 4 48] Invariant2.invariant' ( ^ d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f)) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 303 4 42] Invariant3.invariant' ( ^ self) f }
     
    =
   var _0 : Type.core_result_result () ();
@@ -21581,11 +21585,11 @@ module CreuSat_Trail_Impl0_LearnUnit
   }
   BB0 {
     _8 <-  * self_1;
-    _7 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 322 11 32] DecisionLevel0.decision_level _8);
+    _7 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 317 11 32] DecisionLevel0.decision_level _8);
     goto BB1
   }
   BB1 {
-    _6 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 322 11 36] _7 > (0 : usize));
+    _6 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 317 11 36] _7 > (0 : usize));
     switch (_6)
       | False -> goto BB4
       | _ -> goto BB2
@@ -21597,7 +21601,7 @@ module CreuSat_Trail_Impl0_LearnUnit
     _11 <- f_3;
     _12 <- borrow_mut ( * d_4);
     d_4 <- { d_4 with current = ( ^ _12) };
-    _9 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 323 12 38] BacktrackTo0.backtrack_to _10 (0 : usize) _11 _12);
+    _9 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 318 12 38] BacktrackTo0.backtrack_to _10 (0 : usize) _11 _12);
     goto BB3
   }
   BB3 {
@@ -21613,19 +21617,19 @@ module CreuSat_Trail_Impl0_LearnUnit
   BB5 {
     _19 <- Type.creusat_formula_formula_Formula_clauses f_3;
     _20 <- cref_2;
-    _18 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 327 11 26] Index0.index _19 _20);
+    _18 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 322 11 26] Index0.index _19 _20);
     goto BB6
   }
   BB6 {
     _17 <- Type.creusat_clause_clause_Clause_rest _18;
-    _16 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 327 11 34] Index1.index _17 (0 : usize));
+    _16 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 322 11 34] Index1.index _17 (0 : usize));
     goto BB7
   }
   BB7 {
     _15 <- _16;
     _22 <- Type.creusat_trail_trail_Trail_assignments ( * self_1);
     _21 <- _22;
-    _14 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 327 11 61] LitSet0.lit_set _15 _21);
+    _14 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 322 11 61] LitSet0.lit_set _15 _21);
     goto BB8
   }
   BB8 {
@@ -21646,12 +21650,12 @@ module CreuSat_Trail_Impl0_LearnUnit
     self_1 <- { self_1 with current = ( ^ _26) };
     _32 <- Type.creusat_formula_formula_Formula_clauses f_3;
     _33 <- cref_2;
-    _31 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 330 40 55] Index0.index _32 _33);
+    _31 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 325 40 55] Index0.index _32 _33);
     goto BB11
   }
   BB11 {
     _30 <- Type.creusat_clause_clause_Clause_rest _31;
-    _29 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 330 40 63] Index1.index _30 (0 : usize));
+    _29 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 325 40 63] Index1.index _30 (0 : usize));
     goto BB12
   }
   BB12 {
@@ -21660,7 +21664,7 @@ module CreuSat_Trail_Impl0_LearnUnit
     _34 <- Type.CreuSat_Trail_Reason_Unit _35;
     _27 <- Type.CreuSat_Trail_Step _28 (0 : usize) _34;
     _36 <- f_3;
-    _25 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 330 8 116] EnqAssignment0.enq_assignment _26 _27 _36);
+    _25 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 325 8 116] EnqAssignment0.enq_assignment _26 _27 _36);
     goto BB13
   }
   BB13 {
@@ -22424,7 +22428,7 @@ module CreuSat_UnitProp_Swap
   }
   BB2 {
     _14 <- borrow_mut (Type.creusat_clause_clause_Clause_rest ( * _15));
-    _15 <- { _15 with current = (let Type.CreuSat_Clause_Clause a b =  * _15 in Type.CreuSat_Clause_Clause a ( ^ _14)) };
+    _15 <- { _15 with current = (let Type.CreuSat_Clause_Clause a b c d =  * _15 in Type.CreuSat_Clause_Clause a b c ( ^ _14)) };
     assume { Resolve1.resolve _15 };
     _13 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/unit_prop.rs" 72 4 35] DerefMut0.deref_mut _14);
     goto BB3
@@ -25734,16 +25738,16 @@ module CreuSat_Trail_Impl0_EnqDecision_Interface
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.creusat_trail_step,
   type a = Type.alloc_alloc_global, axiom .
   val enq_decision [@cfg:stackify] (self : borrowed (Type.creusat_trail_trail)) (idx : usize) (_f : Type.creusat_formula_formula) : ()
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 281 4 78] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) _f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 277 4 49] Unset0.unset (Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) (UInt64.to_int idx))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 276 4 36] UInt64.to_int idx < UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 275 4 43] Invariant0.invariant' ( * self) _f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 274 4 31] Invariant1.invariant' _f}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 283 4 65] Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) = 1 + Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 282 4 87] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) _f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 280 4 88] UInt8.to_int (Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) (UInt64.to_int idx)) = 1 || UInt8.to_int (Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) (UInt64.to_int idx)) = 0 }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 278 4 76] forall j : (int) . 0 <= j && j < Seq.length (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) && j <> UInt64.to_int idx -> Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) j = Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) j }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 275 4 43] Invariant0.invariant' ( ^ self) _f }
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 276 4 78] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) _f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 272 4 49] Unset0.unset (Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) (UInt64.to_int idx))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 271 4 36] UInt64.to_int idx < UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 270 4 43] Invariant0.invariant' ( * self) _f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 269 4 31] Invariant1.invariant' _f}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 278 4 65] Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) = 1 + Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 277 4 87] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) _f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 275 4 88] UInt8.to_int (Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) (UInt64.to_int idx)) = 1 || UInt8.to_int (Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) (UInt64.to_int idx)) = 0 }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 273 4 76] forall j : (int) . 0 <= j && j < Seq.length (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) && j <> UInt64.to_int idx -> Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) j = Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) j }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 270 4 43] Invariant0.invariant' ( ^ self) _f }
     
 end
 module CreuSat_Trail_Impl0_EnqDecision
@@ -25872,17 +25876,17 @@ module CreuSat_Trail_Impl0_EnqDecision
   function Model0.model = Model0.model
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.creusat_trail_step, type a = Type.alloc_alloc_global,
   function Model0.model = Model0.model
-  let rec cfg enq_decision [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 284 4 60] (self : borrowed (Type.creusat_trail_trail)) (idx : usize) (_f : Type.creusat_formula_formula) : ()
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 281 4 78] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) _f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 277 4 49] Unset0.unset (Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) (UInt64.to_int idx))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 276 4 36] UInt64.to_int idx < UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 275 4 43] Invariant0.invariant' ( * self) _f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 274 4 31] Invariant1.invariant' _f}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 283 4 65] Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) = 1 + Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 282 4 87] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) _f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 280 4 88] UInt8.to_int (Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) (UInt64.to_int idx)) = 1 || UInt8.to_int (Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) (UInt64.to_int idx)) = 0 }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 278 4 76] forall j : (int) . 0 <= j && j < Seq.length (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) && j <> UInt64.to_int idx -> Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) j = Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) j }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 275 4 43] Invariant0.invariant' ( ^ self) _f }
+  let rec cfg enq_decision [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 279 4 60] (self : borrowed (Type.creusat_trail_trail)) (idx : usize) (_f : Type.creusat_formula_formula) : ()
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 276 4 78] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) _f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self)))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 272 4 49] Unset0.unset (Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) (UInt64.to_int idx))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 271 4 36] UInt64.to_int idx < UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars _f)}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 270 4 43] Invariant0.invariant' ( * self) _f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 269 4 31] Invariant1.invariant' _f}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 278 4 65] Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) = 1 + Seq.length (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self))) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 277 4 87] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( ^ self))) _f (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 275 4 88] UInt8.to_int (Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) (UInt64.to_int idx)) = 1 || UInt8.to_int (Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) (UInt64.to_int idx)) = 0 }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 273 4 76] forall j : (int) . 0 <= j && j < Seq.length (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) && j <> UInt64.to_int idx -> Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self))) j = Seq.get (Model1.model (Type.creusat_trail_trail_Trail_assignments ( ^ self))) j }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 270 4 43] Invariant0.invariant' ( ^ self) _f }
     
    =
   var _0 : ();
@@ -25927,19 +25931,19 @@ module CreuSat_Trail_Impl0_EnqDecision
   }
   BB0 {
     _5 <- Type.creusat_trail_trail_Trail_trail ( * self_1);
-    trail_len_4 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 285 24 40] Len0.len _5);
+    trail_len_4 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 280 24 40] Len0.len _5);
     goto BB1
   }
   BB1 {
     _7 <- borrow_mut (Type.creusat_trail_trail_Trail_decisions ( * self_1));
     self_1 <- { self_1 with current = (let Type.CreuSat_Trail_Trail a b c d e =  * self_1 in Type.CreuSat_Trail_Trail a b c d ( ^ _7)) };
     _8 <- trail_len_4;
-    _6 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 286 8 38] Push0.push _7 _8);
+    _6 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 281 8 38] Push0.push _7 _8);
     goto BB2
   }
   BB2 {
     _10 <- Type.creusat_trail_trail_Trail_decisions ( * self_1);
-    dlevel_9 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 287 21 41] Len1.len _10);
+    dlevel_9 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 282 21 41] Len1.len _10);
     goto BB3
   }
   BB3 {
@@ -25947,7 +25951,7 @@ module CreuSat_Trail_Impl0_EnqDecision
     _13 <- borrow_mut (Type.creusat_trail_trail_Trail_lit_to_level ( * self_1));
     self_1 <- { self_1 with current = (let Type.CreuSat_Trail_Trail a b c d e =  * self_1 in Type.CreuSat_Trail_Trail a ( ^ _13) c d e) };
     _14 <- idx_2;
-    _12 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 288 8 30] IndexMut0.index_mut _13 _14);
+    _12 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 283 8 30] IndexMut0.index_mut _13 _14);
     goto BB4
   }
   BB4 {
@@ -25956,16 +25960,16 @@ module CreuSat_Trail_Impl0_EnqDecision
     _16 <- borrow_mut (Type.creusat_assignments_assignments_Assignments_0 (Type.creusat_trail_trail_Trail_assignments ( * self_1)));
     self_1 <- { self_1 with current = (let Type.CreuSat_Trail_Trail a b c d e =  * self_1 in Type.CreuSat_Trail_Trail (let Type.CreuSat_Assignments_Assignments a = Type.creusat_trail_trail_Trail_assignments ( * self_1) in Type.CreuSat_Assignments_Assignments ( ^ _16)) b c d e) };
     _17 <- idx_2;
-    _15 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 289 8 31] IndexMut1.index_mut _16 _17);
+    _15 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 284 8 31] IndexMut1.index_mut _16 _17);
     goto BB5
   }
   BB5 {
-    _15 <- { _15 with current = ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 289 8 36]  * _15 - (2 : uint8)) };
+    _15 <- { _15 with current = ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 284 8 36]  * _15 - (2 : uint8)) };
     assume { Resolve1.resolve _15 };
     _19 <- idx_2;
     _21 <- Type.creusat_trail_trail_Trail_assignments ( * self_1);
     _20 <- _21;
-    lit_18 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 290 18 58] PhaseSaved0.phase_saved _19 _20);
+    lit_18 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 285 18 58] PhaseSaved0.phase_saved _19 _20);
     goto BB6
   }
   BB6 {
@@ -25976,20 +25980,20 @@ module CreuSat_Trail_Impl0_EnqDecision
     _27 <- borrow_mut (Type.creusat_trail_trail_Trail_trail ( * self_1));
     self_1 <- { self_1 with current = (let Type.CreuSat_Trail_Trail a b c d e =  * self_1 in Type.CreuSat_Trail_Trail a b ( ^ _27) d e) };
     _28 <- step_22;
-    _26 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 294 8 29] Push1.push _27 _28);
+    _26 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 289 8 29] Push1.push _27 _28);
     goto BB7
   }
   BB7 {
     assume { Resolve2.resolve self_1 };
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 295 8 48] LitNotInLess0.lit_not_in_less ( * self_1) _f_3 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 290 8 48] LitNotInLess0.lit_not_in_less ( * self_1) _f_3 };
     _29 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 298 8 84] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) _f_3 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 293 8 84] LongArePostUnitInner0.long_are_post_unit_inner (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) _f_3 (Model1.model (Type.creusat_trail_trail_Trail_assignments ( * self_1))) };
     _30 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 300 8 56] TrailInvariant0.trail_invariant (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) _f_3 };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 295 8 56] TrailInvariant0.trail_invariant (Model0.model (Type.creusat_trail_trail_Trail_trail ( * self_1))) _f_3 };
     _31 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 302 8 43] LitIsUnique0.lit_is_unique ( * self_1) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 297 8 43] LitIsUnique0.lit_is_unique ( * self_1) };
     _32 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 303 8 56] TrailEntriesAreAssigned0.trail_entries_are_assigned ( * self_1) };
+    assert { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 298 8 56] TrailEntriesAreAssigned0.trail_entries_are_assigned ( * self_1) };
     _33 <- ();
     _0 <- ();
     return _0
@@ -27432,15 +27436,15 @@ module CreuSat_Trail_Impl0_LearnUnits_Interface
   clone CreuSat_Logic_LogicFormula_Impl1_Invariant_Interface as Invariant0 with predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old,
   axiom .
   val learn_units [@cfg:stackify] (self : borrowed (Type.creusat_trail_trail)) (f : Type.creusat_formula_formula) (d : borrowed (Type.creusat_decision_decisions)) : Type.core_option_option bool
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 337 4 30] Invariant0.invariant' f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 336 4 48] Invariant1.invariant' ( * d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 335 4 42] Invariant2.invariant' ( * self) f}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 338 4 7] match (result) with
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 332 4 30] Invariant0.invariant' f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 331 4 48] Invariant1.invariant' ( * d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 330 4 42] Invariant2.invariant' ( * self) f}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 333 4 7] match (result) with
       | Type.Core_Option_Option_Some (True) -> NotSatisfiable0.not_satisfiable f
       | _ -> true
       end }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 336 4 48] Invariant1.invariant' ( ^ d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f)) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 335 4 42] Invariant2.invariant' ( ^ self) f }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 331 4 48] Invariant1.invariant' ( ^ d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f)) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 330 4 42] Invariant2.invariant' ( ^ self) f }
     
 end
 module CreuSat_Trail_Impl0_LearnUnits
@@ -27594,16 +27598,16 @@ module CreuSat_Trail_Impl0_LearnUnits
   function Model3.model = Model4.model, predicate Invariant1.invariant' = Invariant0.invariant',
   predicate Invariant2.invariant' = Invariant1.invariant', predicate Invariant3.invariant' = Invariant2.invariant',
   predicate Sat0.sat = Sat0.sat, predicate InvariantOld0.invariant_old = InvariantOld0.invariant_old
-  let rec cfg learn_units [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 342 4 81] (self : borrowed (Type.creusat_trail_trail)) (f : Type.creusat_formula_formula) (d : borrowed (Type.creusat_decision_decisions)) : Type.core_option_option bool
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 337 4 30] Invariant0.invariant' f}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 336 4 48] Invariant1.invariant' ( * d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
-    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 335 4 42] Invariant2.invariant' ( * self) f}
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 338 4 7] match (result) with
+  let rec cfg learn_units [@cfg:stackify] [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 337 4 81] (self : borrowed (Type.creusat_trail_trail)) (f : Type.creusat_formula_formula) (d : borrowed (Type.creusat_decision_decisions)) : Type.core_option_option bool
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 332 4 30] Invariant0.invariant' f}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 331 4 48] Invariant1.invariant' ( * d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f))}
+    requires {[#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 330 4 42] Invariant2.invariant' ( * self) f}
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 333 4 7] match (result) with
       | Type.Core_Option_Option_Some (True) -> NotSatisfiable0.not_satisfiable f
       | _ -> true
       end }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 336 4 48] Invariant1.invariant' ( ^ d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f)) }
-    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 335 4 42] Invariant2.invariant' ( ^ self) f }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 331 4 48] Invariant1.invariant' ( ^ d) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f)) }
+    ensures { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 330 4 42] Invariant2.invariant' ( ^ self) f }
     
    =
   var _0 : Type.core_option_option bool;
@@ -27663,29 +27667,29 @@ module CreuSat_Trail_Impl0_LearnUnits
   BB0 {
     i_5 <- (0 : usize);
     _7 <- ();
-    old_d_6 <- ghost ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 344 20 32] d_3);
+    old_d_6 <- ghost ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 339 20 32] d_3);
     goto BB1
   }
   BB1 {
     _9 <- ();
-    old_self_8 <- ghost ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 345 23 38] self_1);
+    old_self_8 <- ghost ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 340 23 38] self_1);
     goto BB2
   }
   BB2 {
     goto BB3
   }
   BB3 {
-    invariant self_inv { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 346 8 50] Invariant2.invariant' ( * self_1) f_2 };
-    invariant proph { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 347 8 55]  ^ old_self_8 =  ^ self_1 };
-    invariant proph_d { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 348 8 51]  ^ old_d_6 =  ^ d_3 };
-    invariant d_inv { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 349 8 53] Invariant1.invariant' ( * d_3) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f_2)) };
+    invariant self_inv { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 341 8 50] Invariant2.invariant' ( * self_1) f_2 };
+    invariant proph { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 342 8 55]  ^ old_self_8 =  ^ self_1 };
+    invariant proph_d { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 343 8 51]  ^ old_d_6 =  ^ d_3 };
+    invariant d_inv { [#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 344 8 53] Invariant1.invariant' ( * d_3) (UInt64.to_int (Type.creusat_formula_formula_Formula_num_vars f_2)) };
     _13 <- i_5;
     _15 <- Type.creusat_formula_formula_Formula_clauses f_2;
-    _14 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 350 18 33] Len0.len _15);
+    _14 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 345 18 33] Len0.len _15);
     goto BB4
   }
   BB4 {
-    _12 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 350 14 33] _13 < _14);
+    _12 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 345 14 33] _13 < _14);
     switch (_12)
       | False -> goto BB21
       | _ -> goto BB5
@@ -27694,17 +27698,17 @@ module CreuSat_Trail_Impl0_LearnUnits
   BB5 {
     _18 <- Type.creusat_formula_formula_Formula_clauses f_2;
     _19 <- i_5;
-    _17 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 351 26 38] Index0.index _18 _19);
+    _17 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 346 26 38] Index0.index _18 _19);
     goto BB6
   }
   BB6 {
     clause_16 <- _17;
     _23 <- Type.creusat_clause_clause_Clause_rest clause_16;
-    _22 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 352 15 32] Len1.len _23);
+    _22 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 347 15 32] Len1.len _23);
     goto BB7
   }
   BB7 {
-    _21 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 352 15 37] _22 = (1 : usize));
+    _21 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 347 15 37] _22 = (1 : usize));
     switch (_21)
       | False -> goto BB19
       | _ -> goto BB8
@@ -27712,7 +27716,7 @@ module CreuSat_Trail_Impl0_LearnUnits
   }
   BB8 {
     _26 <- Type.creusat_clause_clause_Clause_rest clause_16;
-    _25 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 353 26 40] Index1.index _26 (0 : usize));
+    _25 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 348 26 40] Index1.index _26 (0 : usize));
     goto BB9
   }
   BB9 {
@@ -27720,7 +27724,7 @@ module CreuSat_Trail_Impl0_LearnUnits
     _28 <- lit_24;
     _30 <- Type.creusat_trail_trail_Trail_assignments ( * self_1);
     _29 <- _30;
-    _27 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 354 19 49] LitSet0.lit_set _28 _29);
+    _27 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 349 19 49] LitSet0.lit_set _28 _29);
     goto BB10
   }
   BB10 {
@@ -27733,7 +27737,7 @@ module CreuSat_Trail_Impl0_LearnUnits
     _32 <- lit_24;
     _34 <- Type.creusat_trail_trail_Trail_assignments ( * self_1);
     _33 <- _34;
-    _31 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 355 23 55] LitUnsat0.lit_unsat _32 _33);
+    _31 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 350 23 55] LitUnsat0.lit_unsat _32 _33);
     goto BB12
   }
   BB12 {
@@ -27748,7 +27752,7 @@ module CreuSat_Trail_Impl0_LearnUnits
     _38 <-  * self_1;
     assume { Resolve1.resolve self_1 };
     _39 <- i_5;
-    _36 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 359 36 68] ResolveEmptyClause0.resolve_empty_clause _37 _38 _39);
+    _36 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 354 36 68] ResolveEmptyClause0.resolve_empty_clause _37 _38 _39);
     goto BB14
   }
   BB14 {
@@ -27766,7 +27770,7 @@ module CreuSat_Trail_Impl0_LearnUnits
     _43 <- f_2;
     _44 <- borrow_mut ( * d_3);
     d_3 <- { d_3 with current = ( ^ _44) };
-    _40 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 362 20 44] LearnUnit0.learn_unit _41 _42 _43 _44);
+    _40 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 357 20 44] LearnUnit0.learn_unit _41 _42 _43 _44);
     goto BB17
   }
   BB17 {
@@ -27781,7 +27785,7 @@ module CreuSat_Trail_Impl0_LearnUnits
     goto BB20
   }
   BB20 {
-    i_5 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 365 12 18] i_5 + (1 : usize));
+    i_5 <- ([#"/home/sarek/master/sat-mirror/CreuSAT/src/trail.rs" 360 12 18] i_5 + (1 : usize));
     _11 <- ();
     goto BB3
   }
