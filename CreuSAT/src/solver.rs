@@ -102,7 +102,7 @@ impl Solver {
         }
     }
 
-    //#[cfg_attr(feature = "trust_solver", trusted)]
+    #[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut w).invariant(mut f))]
@@ -147,7 +147,7 @@ impl Solver {
         self.increase_num_conflicts();
     }
 
-    //#[cfg_attr(feature = "trust_solver", trusted)]
+    #[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut w).invariant(mut f))]

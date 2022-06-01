@@ -28,7 +28,7 @@ fn idx_in(c: &Vec<Lit>, idx: usize, seen: &Vec<bool>) -> bool {
     seen[idx]
 }
 
-//#[cfg_attr(feature = "trust_conflict", trusted)]
+#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(_f.invariant())]
 #[requires(trail.invariant(*_f))]
 #[requires(@idx < @_f.num_vars)]
@@ -154,7 +154,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula, seen: 
     None
 }
 
-//#[cfg_attr(feature = "trust_conflict", trusted)]
+#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(f.invariant())]
 #[requires(@f.num_vars < @usize::MAX)]
 #[requires(trail.invariant(*f))]
@@ -245,6 +245,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
     } else if clause.len() == 1 {
         Conflict::Unit(clause)
     } else {
+        clause.search = 2;
         if path_c > break_cond {
             return Conflict::Restart(clause);
         }
@@ -263,7 +264,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
     }
 }
 
-//#[cfg_attr(feature = "trust_conflict", trusted)]
+#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]

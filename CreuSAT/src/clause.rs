@@ -79,7 +79,7 @@ impl Clause {
     #[inline]
     #[trusted]
     pub fn clause_from_vec(vec: &[Lit]) -> Clause {
-        Clause { deleted: false, lbd: 0, search: 1, rest: vec.to_owned() }
+        Clause { deleted: false, lbd: 0, search: 2, rest: vec.to_owned() }
     }
 
     // This does better without splitting

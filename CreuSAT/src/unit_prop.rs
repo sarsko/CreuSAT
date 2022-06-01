@@ -84,7 +84,9 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
     proof_assert!(crefs_in_range(@trail.trail, *f));
 }
 
-#[cfg_attr(feature = "trust_unit", trusted)]
+//#[cfg_attr(feature = "trust_unit", trusted)]
+#[requires(@(@f.clauses)[@cref].search >= 2 && @(@f.clauses)[@cref].search <= (@(@f.clauses)[@cref]).len())]
+#[ensures(@(@(^f).clauses)[@cref].search >= 2 && @(@(^f).clauses)[@cref].search <= (@(@(^f).clauses)[@cref]).len())]
 #[maintains((mut f).invariant())]
 #[maintains((trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
@@ -106,20 +108,50 @@ fn exists_new_watchable_lit(
 ) -> bool {
     let old_w = ghost! { watches };
     let old_f = ghost! { f };
-    let mut k: usize = 2;
+    let mut search = f.clauses[cref].search;
+    let init_search = f.clauses[cref].search; //search;
     let clause_len: usize = f.clauses[cref].rest.len();
-    #[invariant(k_bound, 2 <= @k && @k <= @clause_len)]
+    #[invariant(search, @(@f.clauses)[@cref].search >= @init_search && @search <= @clause_len)]
+    #[invariant(uns, forall<m: Int> @init_search <= m && m < @search ==> ((@(@f.clauses)[@cref])[m]).unsat(trail.assignments))]
+    #[invariant(first_not_sat, !(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
+    #[invariant(search_bound, 2 <= @search && @search <= @clause_len)]
+    #[invariant(equi, old_f.inner().equisat(*f))]
     #[invariant(f_unchanged, f == old_f.inner())]
     #[invariant(w_unchanged, *watches == *old_w.inner())]
     #[invariant(proph_f, ^f == ^old_f.inner())]
     #[invariant(proph_w, ^watches == ^old_w.inner())]
-    #[invariant(uns, forall<m: Int> 2 <= m && m < @k ==> ((@(@f.clauses)[@cref])[m]).unsat(trail.assignments))]
-    #[invariant(first_not_sat, !(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
-    while k < clause_len {
-        if check_and_move_watch(f, trail, watches, cref, j, k, lit) {
+    while search < clause_len {
+        if check_and_move_watch(f, trail, watches, cref, j, search, lit) {
+            proof_assert!(old_f.inner().equisat(*f)); // TODO on proving setting search
+            let old_f2 = ghost! { f };
+            f.clauses[cref].search = search;
+            proof_assert!(forall<j: Int> 0 <= j && j < (@f.clauses).len() ==> @(@f.clauses)[j] == @(@(old_f2.inner()).clauses)[j]);
+            proof_assert!(old_f2.inner().equisat(*f)); // TODO on proving setting search
             return true;
         }
-        k += 1;
+        search += 1;
+    }
+    search = 2;
+    #[invariant(search, @(@f.clauses)[@cref].search >= @init_search && @search <= @clause_len)]
+    #[invariant(uns, forall<m: Int> @init_search <= m && m < @clause_len ==> ((@(@f.clauses)[@cref])[m]).unsat(trail.assignments))]
+    #[invariant(uns2, forall<m: Int> 2 <= m && m < @search ==> ((@(@f.clauses)[@cref])[m]).unsat(trail.assignments))]
+    #[invariant(first_not_sat, !(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
+    #[invariant(search_bound, 2 <= @search && @search <= @clause_len)]
+    #[invariant(equi, old_f.inner().equisat(*f))]
+    #[invariant(f_unchanged, f == old_f.inner())]
+    #[invariant(w_unchanged, *watches == *old_w.inner())]
+    #[invariant(proph_f, ^f == ^old_f.inner())]
+    #[invariant(proph_w, ^watches == ^old_w.inner())]
+    while search < init_search {
+        if check_and_move_watch(f, trail, watches, cref, j, search, lit) {
+            proof_assert!(old_f.inner().equisat(*f));
+            let old_f2 = ghost! { f };
+            f.clauses[cref].search = search;
+            proof_assert!(forall<j: Int> 0 <= j && j < (@f.clauses).len() ==> @(@f.clauses)[j] == @(@(old_f2.inner()).clauses)[j]);
+            proof_assert!(old_f2.inner().equisat(*f));
+            return true;
+        }
+        search += 1;
     }
     false
 }
