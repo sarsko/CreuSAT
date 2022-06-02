@@ -79,7 +79,6 @@ impl Trail {
                                                            */
                 proof_assert!(@self.trail == pop(@(old_t.inner()).trail));
                 proof_assert!(^old_t.inner() == ^self);
-                proof_assert!((lemma_backtrack_ok(*self, *f, step.lit)); true);
                 self.lit_to_level[step.lit.index()] = usize::MAX;
                 proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
                 return step.lit.index();

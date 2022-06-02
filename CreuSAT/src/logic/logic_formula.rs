@@ -44,14 +44,14 @@ pub fn eventually_sat_complete_no_ass(f: (Seq<Clause>, Int)) -> bool {
 }
 
 #[predicate]
-pub fn equisat(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
+fn equisat(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
     pearlite! {
         eventually_sat_complete_no_ass(f) == eventually_sat_complete_no_ass(o)
     }
 }
 
 #[predicate]
-pub fn compatible(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
+fn compatible(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
     pearlite! {
         f.1 == o.1 &&
         o.0.len() >= f.0.len() &&
@@ -99,7 +99,7 @@ impl Formula {
     }
 
     #[predicate]
-    pub fn invariant_old(self) -> bool {
+    fn invariant_old(self) -> bool {
         pearlite! {
             (forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
                 (@self.clauses)[i].invariant(@self.num_vars))
@@ -120,7 +120,7 @@ impl Formula {
     }
 
     #[predicate]
-    pub fn eventually_sat_inner(self, a: Seq<AssignedState>) -> bool {
+    fn eventually_sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             exists<a2 : Seq<AssignedState>> a2.len() == @self.num_vars && compatible_inner(a, a2) && self.sat_inner(a2)
         }
@@ -134,12 +134,12 @@ impl Formula {
     }
 
     #[predicate]
-    pub fn eventually_sat_complete(self, a: Assignments) -> bool {
+    fn eventually_sat_complete(self, a: Assignments) -> bool {
         pearlite! { self.eventually_sat_complete_inner(@a)}
     }
 
     #[predicate]
-    pub fn eventually_sat(self, a: Assignments) -> bool {
+    fn eventually_sat(self, a: Assignments) -> bool {
         pearlite! { self.eventually_sat_inner(@a)}
     }
 
