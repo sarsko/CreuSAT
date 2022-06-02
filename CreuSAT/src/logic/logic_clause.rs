@@ -25,6 +25,7 @@ pub fn vars_in_range_inner(s: Seq<Lit>, n: Int) -> bool {
     }
 }
 
+// TODO: remove
 #[predicate]
 pub fn invariant_unary_ok_internal(s: Seq<Lit>, n: Int) -> bool {
     pearlite! {
@@ -33,6 +34,8 @@ pub fn invariant_unary_ok_internal(s: Seq<Lit>, n: Int) -> bool {
     }
 }
 
+// WATCH OUT: This is not the same as the clause invariant, as the clause invariant is also stated over the clause header
+// TODO: Make harder to access (it should only be accessible from logic functions)
 #[predicate]
 pub fn invariant_internal(s: Seq<Lit>, n: Int) -> bool {
     pearlite! {
@@ -259,16 +262,25 @@ impl Clause {
     }
 
     #[predicate]
-    pub fn invariant(self, n: Int) -> bool {
-        // Should remove the possibility of empty clauses
-        //pearlite! { self.vars_in_range(n) && self.no_duplicate_indexes() }
-        pearlite! { invariant_internal(@self, n) }
+    fn search_idx_in_range(self) -> bool {
+        pearlite! {
+            2 <= @self.search && @self.search <= (@self).len()
+        }
     }
 
     #[predicate]
+    pub fn invariant(self, n: Int) -> bool {
+        pearlite! {
+            invariant_internal(@self, n)
+            && self.search_idx_in_range()
+        }
+    }
+
+    // TODO: remove
+    #[predicate]
     pub fn invariant_unary_ok(self, n: Int) -> bool {
         // Should remove the possibility of empty clauses
-        pearlite! { self.vars_in_range(n) && self.no_duplicate_indexes() }
+        pearlite! { self.vars_in_range(n) && self.no_duplicate_indexes() && self.search_idx_in_range() }
     }
 
     // TODO: Revisit and see if it is needed

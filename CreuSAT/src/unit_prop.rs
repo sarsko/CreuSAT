@@ -85,8 +85,6 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
 }
 
 //#[cfg_attr(feature = "trust_unit", trusted)]
-#[requires(@(@f.clauses)[@cref].search >= 2 && @(@f.clauses)[@cref].search <= (@(@f.clauses)[@cref]).len())]
-#[ensures(@(@(^f).clauses)[@cref].search >= 2 && @(@(^f).clauses)[@cref].search <= (@(@(^f).clauses)[@cref]).len())]
 #[maintains((mut f).invariant())]
 #[maintains((trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
