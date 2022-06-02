@@ -91,8 +91,8 @@ impl Trail {
             }
         }
         proof_assert!(self.assignments.invariant(*f));
-        proof_assert!(trail_invariant(@self.trail, *f));
-        proof_assert!(lit_to_level_invariant(@self.lit_to_level, *f));
+        // proof_assert!(trail_invariant(@self.trail, *f));
+        // proof_assert!(lit_to_level_invariant(@self.lit_to_level, *f));
         //proof_assert!(decisions_invariant(@self.decisions, @self.trail));
         proof_assert!(self.lit_not_in_less(*f));
         proof_assert!(self.lit_is_unique());
@@ -198,10 +198,10 @@ impl Trail {
             (@self.decisions).len() == 0 ||
             @(@self.decisions)[(@self.decisions).len()-1] <= (@self.trail).len()
         );
-        proof_assert!(decisions_invariant(@self.decisions, @self.trail));
+        // proof_assert!(decisions_invariant(@self.decisions, @self.trail));
         proof_assert!(self.assignments.invariant(*f));
-        proof_assert!(trail_invariant(@self.trail, *f));
-        proof_assert!(lit_to_level_invariant(@self.lit_to_level, *f));
+        // proof_assert!(trail_invariant(@self.trail, *f));
+        // proof_assert!(lit_to_level_invariant(@self.lit_to_level, *f));
         proof_assert!(self.lit_not_in_less(*f));
         proof_assert!(self.lit_is_unique());
         proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
@@ -250,7 +250,6 @@ impl Trail {
 
         self.assignments.set_assignment(step.lit, _f, trail);
 
-        proof_assert!(lit_not_in_less_inner(@self.trail, *_f));
         proof_assert!(step.invariant(*_f));
         proof_assert!(lemma_push_maintains_lit_not_in_less(*self, *_f, step); true);
         self.trail.push(step);
@@ -297,7 +296,7 @@ impl Trail {
         //proof_assert!(lemma_assign_maintains_long_are_post_unit2(@self.trail, *_f, self.assignments, idx); true);
         proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
         // This is just the trail invariant unwrapped
-        proof_assert!(trail_invariant(@self.trail, *_f));
+        // proof_assert!(trail_invariant(@self.trail, *_f));
 
         proof_assert!(self.lit_is_unique());
         proof_assert!(self.trail_entries_are_assigned());

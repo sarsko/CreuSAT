@@ -79,8 +79,6 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
     proof_assert!(vars_in_range_inner(@(@f.clauses)[@cref], @f.num_vars));
     proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
     proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments));
-    proof_assert!(^old_f.inner() == ^f);
-    proof_assert!(lit_not_in_less_inner(@trail.trail, *f));
     proof_assert!(crefs_in_range(@trail.trail, *f));
 }
 

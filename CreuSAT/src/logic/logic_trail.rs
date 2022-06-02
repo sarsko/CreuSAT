@@ -145,7 +145,7 @@ pub fn trail_invariant(trail: Seq<Step>, f: Formula) -> bool {
 }
 
 #[predicate]
-pub fn decisions_invariant(decisions: Seq<usize>, trail: Seq<Step>) -> bool {
+fn decisions_invariant(decisions: Seq<usize>, trail: Seq<Step>) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < decisions.len() ==>
             @decisions[i] <= trail.len()
@@ -153,7 +153,7 @@ pub fn decisions_invariant(decisions: Seq<usize>, trail: Seq<Step>) -> bool {
 }
 
 #[predicate]
-pub fn lit_to_level_invariant(lit_to_level: Seq<usize>, f: Formula) -> bool {
+fn lit_to_level_invariant(lit_to_level: Seq<usize>, f: Formula) -> bool {
     pearlite! {
         lit_to_level.len() == @f.num_vars
     }
@@ -169,7 +169,7 @@ pub fn crefs_in_range(trail: Seq<Step>, f: Formula) -> bool {
 }
 
 #[predicate]
-pub fn trail_entries_are_assigned_inner(t: Seq<Step>, a: Seq<AssignedState>) -> bool {
+fn trail_entries_are_assigned_inner(t: Seq<Step>, a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<j: Int> 0 <= j && j < t.len() ==>
             t[j].lit.sat_inner(a) // Should be equivalent

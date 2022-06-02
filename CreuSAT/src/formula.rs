@@ -148,7 +148,7 @@ impl Formula {
         let cref = self.clauses.len();
         self.clauses.push(clause);
         proof_assert!((old_self.inner()).equisat_compatible(*self));
-        proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
+        // proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
 
