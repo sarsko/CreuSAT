@@ -112,7 +112,6 @@ fn exists_new_watchable_lit(
     let init_search = f.clauses[cref].search; //search;
     let clause_len: usize = f.clauses[cref].rest.len();
     #[invariant(search, @(@f.clauses)[@cref].search >= @init_search)]
-    #[invariant(first_not_sat, !(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
     #[invariant(search_bound, 2 <= @search)]
     #[invariant(f_unchanged, f == *old_f)]
     #[invariant(w_unchanged, watches == *old_w)]
@@ -129,7 +128,6 @@ fn exists_new_watchable_lit(
     }
     search = 2;
     #[invariant(search, @(@f.clauses)[@cref].search >= @init_search)]
-    #[invariant(first_not_sat, !(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
     #[invariant(search_bound, 2 <= @search)]
     #[invariant(f_unchanged, f == *old_f)]
     #[invariant(w_unchanged, watches == *old_w)]
