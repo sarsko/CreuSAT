@@ -92,7 +92,9 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
 #[maintains((mut watches).invariant(mut f))]
 #[requires(lit.to_watchidx_logic() < (@watches.watches).len())]
 #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)]
+#[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(lit.index_logic() < @f.num_vars)]
+#[requires(watches.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
 #[requires((@(@f.clauses)[@cref]).len() >= 2)]
 #[requires(!(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
@@ -110,6 +112,7 @@ fn exists_new_watchable_lit(
     let init_search = f.clauses[cref].search; //search;
     let clause_len: usize = f.clauses[cref].rest.len();
     #[invariant(search, @(@f.clauses)[@cref].search >= @init_search)]
+    #[invariant(first_not_sat, !(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
     #[invariant(search_bound, 2 <= @search)]
     #[invariant(f_unchanged, f == *old_f)]
     #[invariant(w_unchanged, watches == *old_w)]
@@ -126,6 +129,7 @@ fn exists_new_watchable_lit(
     }
     search = 2;
     #[invariant(search, @(@f.clauses)[@cref].search >= @init_search)]
+    #[invariant(first_not_sat, !(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
     #[invariant(search_bound, 2 <= @search)]
     #[invariant(f_unchanged, f == *old_f)]
     #[invariant(w_unchanged, watches == *old_w)]
