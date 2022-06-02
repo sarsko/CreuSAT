@@ -61,7 +61,7 @@ pub fn compatible(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
 }
 
 #[predicate]
-pub fn equisat_compatible_inner(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
+fn equisat_compatible_inner(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
     pearlite! {
         compatible(f, o) && equisat(f, o)
     }
@@ -127,7 +127,7 @@ impl Formula {
     }
 
     #[predicate]
-    pub fn eventually_sat_complete_inner(self, a: Seq<AssignedState>) -> bool {
+    fn eventually_sat_complete_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             exists<a2 : Seq<AssignedState>> a2.len() == @self.num_vars && compatible_complete_inner(a, a2) && self.sat_inner(a2)
         }
@@ -153,13 +153,13 @@ impl Formula {
 
     #[predicate]
     #[cfg_attr(feature = "trust_formula_logic", trusted)]
-    #[ensures(result == self.sat_inner(@a))]
+    // #[ensures(result == self.sat_inner(@a))]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! { formula_sat_inner(@self, @a) }
     }
 
     #[predicate]
-    pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
+    fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < (@self.clauses).len() &&
                 (@self.clauses)[i].unsat_inner(a)

@@ -48,21 +48,10 @@ impl Step {
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
             self.lit.invariant(@f.num_vars) &&
-            //self.decision_level >= 0 &&
             self.reason.invariant(f)
-            //self.reason != Reason::Undefined
         }
     }
 }
-/*
-#[predicate]
-pub fn trail_entries_are_assigned_inner(trail: Seq<Step>, a: Seq<AssignedState>) -> bool {
-    pearlite! {
-        forall<j: Int> 0 <= j && j < trail.len() ==>
-                a[@(@trail[j]).lit.idx] == bool_to_assignedstate((@trail[j]).lit.is_positive())
-    }
-}
-*/
 
 // LOGIC
 impl Trail {
@@ -76,26 +65,6 @@ impl Trail {
             //assignments_are_in_trail(@self.trail, @self.assignments) // added
         }
     }
-
-    /*
-    #[predicate]
-    pub fn invariant_swap(self, f: Formula) -> bool {
-        pearlite! {
-            self.assignments.invariant(f)
-            && trail_invariant(@self.trail, f)
-            && lit_to_level_invariant(@self.lit_to_level, f)
-            && decisions_invariant(@self.decisions, @self.trail)
-            // added, watch out
-            && self.lit_not_in_less(f)
-            && self.lit_is_unique()
-            && long_are_post_unit_inner(@self.trail, f, @self.assignments)
-            && self.trail_entries_are_assigned() // ADDED
-            // I am not sure these will be needed
-            //trail_entries_are_assigned_inner(@self.trail, @self.assignments) && // added
-            //assignments_are_in_trail(@self.trail, @self.assignments) // added
-        }
-    }
-    */
 
     #[predicate]
     pub fn invariant_no_decision(self, f: Formula) -> bool {
@@ -171,7 +140,6 @@ pub fn lit_not_in_less_inner(t: Seq<Step>, f: Formula) -> bool {
 #[predicate]
 pub fn trail_invariant(trail: Seq<Step>, f: Formula) -> bool {
     pearlite! {
-        //trail.len() <= @f.num_vars && // Is this really needed? // might reintroduce it. If so I'll do a proof in enq_assignments
         crefs_in_range(trail, f)
     }
 }
@@ -181,7 +149,6 @@ pub fn decisions_invariant(decisions: Seq<usize>, trail: Seq<Step>) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < decisions.len() ==>
             @decisions[i] <= trail.len()
-        // Might want to add some semantics? Or nah?
     }
 }
 
@@ -189,7 +156,6 @@ pub fn decisions_invariant(decisions: Seq<usize>, trail: Seq<Step>) -> bool {
 pub fn lit_to_level_invariant(lit_to_level: Seq<usize>, f: Formula) -> bool {
     pearlite! {
         lit_to_level.len() == @f.num_vars
-        // Might want to add some semantics? Or nah?
     }
 }
 
@@ -206,18 +172,7 @@ pub fn crefs_in_range(trail: Seq<Step>, f: Formula) -> bool {
 pub fn trail_entries_are_assigned_inner(t: Seq<Step>, a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<j: Int> 0 <= j && j < t.len() ==>
-            //a[@t[j].lit.idx] == bool_to_assignedstate(t[j].lit.is_positive())
             t[j].lit.sat_inner(a) // Should be equivalent
-    }
-}
-
-#[predicate]
-pub fn assignments_are_in_trail(t: Seq<Step>, a: Seq<AssignedState>) -> bool {
-    pearlite! {
-        forall<j: Int> 0 <= j && j < a.len() ==>
-            exists<i: Int> 0 <= i && i < t.len() &&
-                t[i].lit.index_logic() == j &&
-                bool_to_assignedstate(t[i].lit.is_positive_logic()) == a[j]
     }
 }
 
@@ -225,17 +180,6 @@ pub fn assignments_are_in_trail(t: Seq<Step>, a: Seq<AssignedState>) -> bool {
 pub fn clause_post_with_regards_to(c: Clause, a: Assignments, j: Int) -> bool {
     pearlite! {
         clause_post_with_regards_to_inner(c, @a, j)
-        /*
-        (@c)[0].index_logic() == j
-        && (@c)[0].sat(a)
-        && (forall<i: Int> 1 <= i && i < (@c).len() ==> (@c)[i].unsat(a))
-        */
-        /*
-        c.post_unit(a) &&
-        exists<i: Int> 0 <= i && i < (@c).len() &&
-            (@c)[i].index_logic() == j &&
-            (@c)[i].sat(a)
-            */
     }
 }
 
@@ -245,12 +189,6 @@ pub fn clause_post_with_regards_to_inner(c: Clause, a: Seq<AssignedState>, j: In
         (@c)[0].index_logic() == j
         && (@c)[0].sat_inner(a)
         && (forall<i: Int> 1 <= i && i < (@c).len() ==> (@c)[i].unsat_inner(a))
-        /*
-        c.post_unit_inner(a) &&
-        exists<i: Int> 0 <= i && i < (@c).len() &&
-            (@c)[i].index_logic() == j &&
-            (@c)[i].sat_inner(a)
-            */
     }
 }
 
@@ -258,18 +196,11 @@ pub fn clause_post_with_regards_to_inner(c: Clause, a: Seq<AssignedState>, j: In
 pub fn clause_post_with_regards_to_lit(c: Clause, a: Assignments, lit: Lit) -> bool {
     pearlite! {
         clause_post_with_regards_to_inner(c, @a, @lit.idx)
-        /*
-        c.post_unit(a) &&
-        exists<i: Int> 0 <= i && i < (@c).len() &&
-            (@c)[i].is_positive_logic() == lit.is_positive_logic() &&
-            (@c)[i].index_logic() == lit.index_logic() &&
-            (@c)[i].sat(a)
-            */
     }
 }
 
 #[predicate]
-pub fn lit_is_unique_inner(trail: Seq<Step>) -> bool {
+fn lit_is_unique_inner(trail: Seq<Step>) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < trail.len() ==>
             forall<j: Int> 0 <= j && j < i ==>
@@ -414,25 +345,6 @@ fn lemma_trail_fin2(t: Trail, f: Formula, lit: Lit) {
     lemma_trail_only_last(f, lit, t);
 }
 
-#[cfg_attr(feature = "trust_trail_logic", trusted)]
-#[logic]
-#[requires(f.invariant())]
-#[requires(t.invariant(f))]
-#[requires(t.lit_not_in_less(f))]
-#[requires(t.lit_is_unique())]
-#[requires(lit.invariant(@f.num_vars))]
-#[requires((@t.trail).len() > 0)]
-#[requires(lit == (@t.trail)[(@t.trail).len() - 1].lit)]
-#[requires(long_are_post_unit_inner(@t.trail, f, @t.assignments))]
-#[ensures(long_are_post_unit_inner(pop(@t.trail), f, (@t.assignments).set(lit.index_logic(), 3u8)))]
-#[ensures(long_are_post_unit_inner(pop(@t.trail), f, (@t.assignments).set(lit.index_logic(), 2u8)))]
-fn lemma_trail_fin3(t: Trail, f: Formula, lit: Lit) {
-    //lemma_trail_post(f, lit, t);
-    //lemma_trail_only_last(f, lit, t);
-    lemma_trail_fin(t, f, lit);
-    lemma_trail_fin2(t, f, lit);
-}
-
 // OK to pop, but need to fix wipe.
 //#[cfg_attr(all(any(trust_trail, trust_all, trust_logic), all(not(untrust_all), not(untrust_all_logic))), trusted)]
 #[cfg_attr(feature = "trust_trail_logic", trusted)]
@@ -521,39 +433,6 @@ pub fn lemma_assign_maintains_long_are_post_unit(v: Seq<Step>, f: Formula, a: As
     lemma_assign_maintains_post_for_each(f, a, lit);
     lemma_assign_maintains_for_each_to_post(v, f, a, lit);
 }
-
-// with lit unwrapped // TODO
-#[cfg_attr(feature = "trust_trail_logic", trusted)]
-#[logic]
-#[requires(a.invariant(f))]
-#[requires(f.invariant())]
-#[requires(trail_invariant(v, f))]
-#[requires(crefs_in_range(v, f))]
-#[requires(@idx < @f.num_vars)]
-#[requires(unset((@a)[@idx]))]
-#[requires(long_are_post_unit_inner(v, f, @a))]
-#[ensures(long_are_post_unit_inner(v, f, (@a).set(@idx, 1u8)))]
-#[ensures(long_are_post_unit_inner(v, f, (@a).set(@idx, 0u8)))]
-pub fn lemma_assign_maintains_long_are_post_unit2(v: Seq<Step>, f: Formula, a: Assignments, idx: usize) {
-    //lemma_assign_maintains_post_for_each(f, a, idx)
-    //lemma_assign_maintains_for_each_to_post(v, f, a, idx);
-}
-
-#[cfg_attr(feature = "trust_trail_logic", trusted)]
-#[logic]
-#[requires(c.invariant(@f.num_vars))]
-#[requires(c.post_unit(t.assignments))]
-#[ensures(forall<i: Int> 0 <= i && i < (@c).len() ==> !(@c)[i].unset(t.assignments))]
-fn lemma_post_unit_no_unset(c: Clause, t: Trail, f: Formula) {}
-
-#[cfg_attr(feature = "trust_trail_logic", trusted)]
-#[logic]
-#[requires(c.invariant(@f.num_vars))]
-#[requires(c.post_unit(t.assignments))]
-#[requires(idx < @f.num_vars)]
-#[requires(unset((@t.assignments)[idx]))]
-#[ensures(forall<i: Int> 0 <= i && i < (@c).len() ==> (@c)[i].index_logic() != idx)]
-fn lemma_idx_not_in_post_unit(c: Clause, t: Trail, f: Formula, idx: Int) {}
 
 #[cfg_attr(feature = "trust_trail_logic", trusted)]
 #[logic]
