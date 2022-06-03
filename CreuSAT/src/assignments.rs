@@ -7,12 +7,7 @@ use crate::{formula::*, lit::*, trail::*};
 
 #[allow(unused_features)]
 #[cfg(feature = "contracts")]
-use crate::logic::{
-    logic::*,
-    logic_assignments::*,
-    logic_clause::*,
-    logic_trail::*,
-};
+use crate::logic::{logic::*, logic_assignments::*, logic_clause::*, logic_trail::*};
 
 pub type AssignedState = u8;
 pub struct Assignments(pub Vec<AssignedState>);

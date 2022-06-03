@@ -27,8 +27,7 @@ pub fn vars_in_range_inner(s: Seq<Lit>, n: Int) -> bool {
 
 #[predicate]
 pub fn invariant_internal(s: Seq<Lit>, n: Int) -> bool {
-       vars_in_range_inner(s, n)
-    && no_duplicate_indexes_inner(s)
+    vars_in_range_inner(s, n) && no_duplicate_indexes_inner(s)
 }
 
 #[predicate]
