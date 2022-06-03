@@ -4,25 +4,11 @@ use creusot_contracts::*;
 
 use crate::{assignments::*, clause::*, lit::*, trail::*};
 
-#[predicate]
-//#[ensures(result == self.lit_in_internal(@c))]
-#[why3::attr = "inline:trivial"]
-pub fn idx_in_logic(idx: Int, c: Clause) -> bool {
-    pearlite! {
-        exists<i: Int> 0 <= i && i < (@c).len() &&
-            (@c)[i].index_logic() == idx
-        /*
-        exists<i: Int> 0 <= i && i < (@c).len() &&
-            (@c)[i].idx == self.idx &&
-            (@c)[i].is_positive() == self.is_positive()
-            */
-    }
-}
 
 #[predicate]
 //#[ensures(result == self.lit_in_internal(@c))]
 #[why3::attr = "inline:trivial"]
-pub fn idx_in_logic2(idx: Int, c: Seq<Lit>) -> bool {
+pub fn idx_in_logic(idx: Int, c: Seq<Lit>) -> bool {
     pearlite! {
         exists<i: Int> 0 <= i && i < c.len() &&
             c[i].index_logic() == idx

@@ -22,7 +22,7 @@ pub enum Conflict {
 #[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(vars_in_range_inner(@c, (@seen).len()))]
 #[requires(@idx < (@seen).len())]
-#[requires((@seen)[@idx] == idx_in_logic2(@idx, @c))]
+#[requires((@seen)[@idx] == idx_in_logic(@idx, @c))]
 #[ensures(result == (exists<i: Int> 0 <= i && i < (@c).len() && (@c)[i].index_logic() == @idx))]
 fn idx_in(c: &Vec<Lit>, idx: usize, seen: &Vec<bool>) -> bool {
     seen[idx]
@@ -212,7 +212,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
     let mut clause = clause;
     #[invariant(seen_len, (@seen).len() == @f.num_vars)]
     #[invariant(seen_is_clause, forall<idx: Int> 0 <= idx && idx < (@seen).len() ==>
-        ((@seen)[idx] == idx_in_logic2(idx, @clause)))]
+        ((@seen)[idx] == idx_in_logic(idx, @clause)))]
     #[invariant(clause_vars, clause.invariant(@f.num_vars))]
     #[invariant(clause_equi, equisat_extension_inner(clause, @f))]
     #[invariant(clause_unsat, clause.unsat(trail.assignments))]
