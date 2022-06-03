@@ -325,7 +325,7 @@ impl Trail {
         Ok(())
     }
 
-    //#[cfg_attr(feature = "trust_trail", trusted)]
+    #[cfg_attr(feature = "trust_trail", trusted)]
     #[maintains((mut self).invariant(*f))]
     #[maintains((mut d).invariant(@f.num_vars))]
     #[requires(f.invariant())]

@@ -64,6 +64,27 @@ impl Trail {
     }
 
     #[predicate]
+    fn invariant_no_decision_mirror(self, f: Formula) -> bool {
+        pearlite! {
+            (@f.num_vars == (@self.assignments).len() && forall<i : Int> 0 <= i && i < (@self.assignments).len() ==> @(@self.assignments)[i] <= 3)
+            && (forall<i: Int> 0 <= i && i < (@self.trail).len() ==> (@self.trail)[i].invariant(f))
+            && (@self.lit_to_level).len() == @f.num_vars
+            && (forall<i: Int> 0 <= i && i < (@self.trail).len() ==>
+                    forall<j: Int> 0 <= j && j < i ==>
+                        match (@self.trail)[j].reason {
+                            Reason::Long(cref) => !(@self.trail)[i].lit.lit_idx_in((@f.clauses)[@cref]),
+                            _ => true,
+                        }) // lit_not_in_less_inner(@self.trail, f)
+            && lit_is_unique_inner(@self.trail)
+            && long_are_post_unit_inner(@self.trail, f, @self.assignments)
+            && (forall<j: Int> 0 <= j && j < (@self.trail).len() ==> (@self.trail)[j].lit.sat(self.assignments))
+            && sorted(@self.decisions)
+            && unit_are_sat(@self.trail, f, self.assignments)
+        }
+    }
+
+    #[predicate]
+    #[ensures(result == self.invariant_no_decision_mirror(f))]
     pub fn invariant_no_decision(self, f: Formula) -> bool {
         pearlite! {
             self.assignments.invariant(f)
@@ -72,14 +93,11 @@ impl Trail {
             // added, watch out
             && self.lit_not_in_less(f)
             && self.lit_is_unique()
-            && long_are_post_unit_inner(@self.trail, f, @self.assignments) // Gonna remove this
-            //&& self.new_post_unit(f)
-            && self.trail_entries_are_assigned() // ADDED
-            && self.decisions_are_sorted() // NEW
+            && long_are_post_unit_inner(@self.trail, f, @self.assignments)
+            && self.trail_entries_are_assigned()
+            && self.decisions_are_sorted()
             && unit_are_sat(@self.trail, f, self.assignments)
-            // I am not sure these will be needed
-            //trail_entries_are_assigned_inner(@self.trail, @self.assignments) && // added
-            //assignments_are_in_trail(@self.trail, @self.assignments) // added
+            // assignments_are_in_trail(@self.trail, @self.assignments) // Gonna get added in the future
         }
     }
 
