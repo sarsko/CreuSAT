@@ -72,17 +72,17 @@ impl Formula {
         false
     }
 
-    //#[cfg_attr(feature = "trust_formula", trusted)]
+    #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains(_t.invariant(mut self))]
-    #[maintains((mut watches).invariant(mut self))] // new
+    #[maintains((mut watches).invariant(mut self))]
     #[requires((@clause).len() >= 2)]
     #[requires(@self.num_vars < @usize::MAX/2)]
     #[requires(vars_in_range_inner(@clause, @self.num_vars))]
     #[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(equisat_extension_inner(clause, @self))]
     #[ensures(@self.num_vars == @(^self).num_vars)]
-    #[ensures(self.equisat(^self))] // Added/changed
+    #[ensures(self.equisat(^self))]
     #[ensures(@result == (@self.clauses).len())]
     #[ensures((@(^self).clauses)[@result] == clause)]
     #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
@@ -108,14 +108,14 @@ impl Formula {
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains(_t.invariant(mut self))]
-    #[maintains((mut watches).invariant(mut self))] // new
+    #[maintains((mut watches).invariant(mut self))]
     #[requires((@clause).len() >= 2)]
     #[requires(@self.num_vars < @usize::MAX/2)]
     #[requires(vars_in_range_inner(@clause, @self.num_vars))]
     #[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(equisat_extension_inner(clause, @self))]
     #[ensures(@self.num_vars == @(^self).num_vars)]
-    #[ensures(self.equisat(^self))] // Added/changed
+    #[ensures(self.equisat(^self))]
     #[ensures(@result == (@self.clauses).len())]
     #[ensures((@(^self).clauses)[@result] == clause)]
     #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
@@ -128,7 +128,6 @@ impl Formula {
         cref
     }
 
-    // Passing, but needs the same help as add_clause
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains(_t.invariant(mut self))]

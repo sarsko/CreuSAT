@@ -57,8 +57,7 @@ impl Trail {
     #[inline(always)]
     #[requires(f.invariant())]
     #[requires(@f.num_vars > 0)]
-    #[requires(self.invariant_no_decision(*f))]
-    #[ensures((^self).invariant_no_decision(*f))] // added since last run
+    #[maintains((mut self).invariant_no_decision(*f))]
     #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
     #[ensures(@result < @f.num_vars)]
@@ -70,16 +69,13 @@ impl Trail {
         match last {
             Some(step) => {
                 // TODO: Wrap in abstraction
-                self.assignments.0[step.lit.index()] += 2; // TODO: Prove safety
-                                                           /*
-                                                           if self.assignments.0[step.lit.index()] < 2 {
-                                                           } else {
-                                                               self.assignments.0[step.lit.index()] = 3; // TODO lol
-                                                           }
-                                                           */
+                self.assignments.0[step.lit.index()] += 2;
+
                 proof_assert!(@self.trail == pop(@(old_t.inner()).trail));
                 proof_assert!(^old_t.inner() == ^self);
+
                 self.lit_to_level[step.lit.index()] = usize::MAX;
+
                 proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
                 return step.lit.index();
             }

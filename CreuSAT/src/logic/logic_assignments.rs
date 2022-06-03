@@ -38,9 +38,7 @@ pub fn complete_inner(a: Seq<AssignedState>) -> bool {
 
 #[predicate]
 pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
-    pearlite! {
-        compatible_inner(a, a2) && complete_inner(a2)
-    }
+    compatible_inner(a, a2) && complete_inner(a2)
 }
 
 // Predicates

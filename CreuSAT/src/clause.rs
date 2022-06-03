@@ -13,11 +13,7 @@ pub struct Clause {
     pub rest: Vec<Lit>,
 }
 
-// Split up invariant and at least binary and revert to
-// old invariant instead of invariant_unary_ok
-
 impl Clone for Clause {
-    // Will do last
     #[trusted] // TODO
     #[ensures(result == *self)]
     fn clone(&self) -> Self {
@@ -110,10 +106,8 @@ impl Clause {
     #[ensures(forall<j: Int> 0 <= j && j < (@self).len()
         && j != @idx ==> (@self)[j].lit_in(^self))]
     pub fn remove_from_clause(&mut self, idx: usize, _f: &Formula) {
-        //let old_self = ghost! { self };
         self.move_to_end(idx, _f);
         self.rest.pop();
-        //proof_assert!(^self == ^old_self.inner());
     }
 
     // This is an ugly runtime check
@@ -136,7 +130,7 @@ impl Clause {
     }
 
     // ONLY VALID FOR CLAUSES NOT IN THE FORMULA
-    //#[cfg_attr(feature = "trust_clause", trusted)]
+    #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires((@self).len() > @j)]
     #[requires((@self).len() > @k)]
     #[maintains((mut self).invariant(@_f.num_vars))]

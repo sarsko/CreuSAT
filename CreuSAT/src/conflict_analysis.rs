@@ -15,7 +15,7 @@ pub enum Conflict {
     Ground,
     Unit(Clause),
     Learned(usize, Clause),
-    Restart(Clause), // This is an error state where we derive a non-asserting clause
+    Restart(Clause), // This is an error state when we derive a non-asserting clause
 }
 
 #[inline(always)]
@@ -61,11 +61,13 @@ fn resolve(
     let old_path_c = ghost!(path_c);
     let old_to_bump = ghost!(to_bump);
 
-    // Remove the literal from the clause
     proof_assert!(c.clause_is_seen(*seen));
+
     c.remove_from_clause(c_idx, _f);
+
     *path_c -= 1;
     seen[idx] = false;
+
     proof_assert!(^seen == ^old_seen.inner());
     proof_assert!(c.clause_is_seen(*seen));
     let old_c2 = ghost!(c);
@@ -73,6 +75,7 @@ fn resolve(
     proof_assert!(^c == ^old_c.inner());
     proof_assert!(forall<j: Int> 0 <= j && j < (@old_c.inner()).len()
         && j != @c_idx ==> (@old_c.inner())[j].lit_in(*c));
+
     // Add all the literals from the other clause
     let mut i: usize = 1;
     #[invariant(inv, c.invariant(@_f.num_vars))]
@@ -154,7 +157,7 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula, seen: 
     None
 }
 
-//#[cfg_attr(feature = "trust_conflict", trusted)]
+#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(f.invariant())]
 #[requires(@f.num_vars < @usize::MAX)]
 #[requires(trail.invariant(*f))]

@@ -11,11 +11,10 @@ use crate::logic::{
     logic::*,
     logic_assignments::*,
     logic_clause::*,
-    logic_trail::*, //{trail_invariant, long_are_post_unit_inner_new},
+    logic_trail::*,
 };
 
 pub type AssignedState = u8;
-// A.1 is temporary
 pub struct Assignments(pub Vec<AssignedState>);
 
 impl Assignments {
@@ -44,14 +43,11 @@ impl Assignments {
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {
         let old_self = ghost! { self };
         //self.0[lit.index()] = lit.is_positive() as u8;
-        //proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *old_self.inner(), lit)); true);
         if lit.is_positive() {
             self.0[lit.index()] = 1;
         } else {
             self.0[lit.index()] = 0;
         }
-        //proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *old_self.inner(), lit)); true);
-        //proof_assert!(long_are_post_unit_inner(@_t, *_f, @self));
     }
 
     // OK

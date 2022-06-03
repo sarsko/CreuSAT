@@ -27,10 +27,8 @@ pub fn vars_in_range_inner(s: Seq<Lit>, n: Int) -> bool {
 
 #[predicate]
 pub fn invariant_internal(s: Seq<Lit>, n: Int) -> bool {
-    pearlite! {
-           vars_in_range_inner(s, n)
-        && no_duplicate_indexes_inner(s)
-    }
+       vars_in_range_inner(s, n)
+    && no_duplicate_indexes_inner(s)
 }
 
 #[predicate]
@@ -205,7 +203,7 @@ impl Clause {
     #[predicate]
     pub fn equisat(self, o: Clause) -> bool {
         pearlite! {
-              (forall<a : Seq<AssignedState>> self.sat_inner(a) == o.sat_inner(a))
+              (forall<a : Seq<AssignedState>> self.sat_inner(a)   == o.sat_inner(a))
             && forall<a : Seq<AssignedState>> self.unsat_inner(a) == o.unsat_inner(a)
         }
     }
