@@ -28,7 +28,7 @@ fn idx_in(c: &Vec<Lit>, idx: usize, seen: &Vec<bool>) -> bool {
     seen[idx]
 }
 
-//#[cfg_attr(feature = "trust_conflict", trusted)]
+#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(_f.invariant())]
 #[requires(trail.invariant(*_f))]
 #[requires(@idx < @_f.num_vars)]
@@ -50,7 +50,7 @@ fn idx_in(c: &Vec<Lit>, idx: usize, seen: &Vec<bool>) -> bool {
 #[ensures(elems_less_than(@^to_bump, @_f.num_vars))]
 #[maintains(equisat_extension_inner(mut c, @_f))]
 #[maintains((mut c).clause_is_seen(mut seen))]
-#[maintains((mut c).unsat_inner(@trail.assignments))]
+#[maintains((mut c).unsat(trail.assignments))] // TODO: Should be stated with regards to seq
 #[maintains((mut c).invariant(@_f.num_vars))]
 fn resolve(
     _f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, trail: &Trail, seen: &mut Vec<bool>,
@@ -76,7 +76,7 @@ fn resolve(
     // Add all the literals from the other clause
     let mut i: usize = 1;
     #[invariant(inv, c.invariant(@_f.num_vars))]
-    #[invariant(all_unsat, c.unsat_inner(@trail.assignments))]
+    #[invariant(all_unsat, c.unsat(trail.assignments))] // TODO: Should be stated with regards to seq
     #[invariant(i_bound, 1 <= @i && @i <= (@o).len())]
     #[invariant(not_in, !(@old_c.inner())[@c_idx].lit_in(*c) && !(@o)[0].lit_in(*c))]
     #[invariant(all_in, forall<j: Int> 1 <= j && j < @i ==> (@o)[j].lit_in(*c))]
@@ -185,12 +185,6 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula, seen: 
         && equisat_extension_inner(clause, @f)
     },
 })]
-/*
-#[ensures(match result {
-    Conflict::Ground => (@trail.decisions).len() == 0,
-    _                => {(@trail.decisions).len() > 0 },
-})]
-*/
 #[maintains((mut d).invariant(@f.num_vars))]
 pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisions) -> Conflict {
     let decisionlevel = trail.decision_level();
@@ -219,7 +213,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
     #[invariant(seen_len, (@seen).len() == @f.num_vars)]
     #[invariant(seen_is_clause, forall<idx: Int> 0 <= idx && idx < (@seen).len() ==>
         ((@seen)[idx] == idx_in_logic2(idx, @clause)))]
-    #[invariant(clause_vars, clause.invariant_unary_ok(@f.num_vars))]
+    #[invariant(clause_vars, clause.invariant(@f.num_vars))]
     #[invariant(clause_equi, equisat_extension_inner(clause, @f))]
     #[invariant(clause_unsat, clause.unsat(trail.assignments))]
     #[invariant(i_bound, 0 <= @i && @i <= (@trail.trail).len())]
@@ -263,7 +257,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
     }
 }
 
-//#[cfg_attr(feature = "trust_conflict", trusted)]
+#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
@@ -286,8 +280,6 @@ pub fn resolve_empty_clause(f: &Formula, trail: &Trail, cref: usize) -> bool {
         j += 1;
     }
     let mut clause = clause;
-    //proof_assert!(forall<idx: Int> 0 <= idx && idx < (@seen).len() ==>
-    //    ((@seen)[idx] == idx_in_logic2(idx, @clause)));
     proof_assert!(clause.clause_is_seen(seen));
     let c_idx = match choose_literal(&clause, trail, &mut i, f, &seen) {
         Some(c_idx) => c_idx,

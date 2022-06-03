@@ -141,7 +141,6 @@ pub fn trail_invariant(trail: Seq<Step>, f: Formula) -> bool {
     }
 }
 
-
 #[predicate]
 fn lit_to_level_invariant(lit_to_level: Seq<usize>, f: Formula) -> bool {
     pearlite! {
@@ -244,8 +243,7 @@ fn unit_are_sat(trail: Seq<Step>, f: Formula, a: Assignments) -> bool {
 #[requires(long_are_post_unit_inner(v, f, @a))]
 #[ensures(long_are_post_unit_inner(v, f, (@a).set(lit.index_logic(), 1u8)))]
 #[ensures(long_are_post_unit_inner(v, f, (@a).set(lit.index_logic(), 0u8)))]
-pub fn lemma_assign_maintains_long_are_post_unit(v: Seq<Step>, f: Formula, a: Assignments, lit: Lit) {
-}
+pub fn lemma_assign_maintains_long_are_post_unit(v: Seq<Step>, f: Formula, a: Assignments, lit: Lit) {}
 
 #[cfg_attr(feature = "trust_trail_logic", trusted)]
 #[logic]
@@ -255,5 +253,4 @@ pub fn lemma_assign_maintains_long_are_post_unit(v: Seq<Step>, f: Formula, a: As
 #[requires(step.invariant(f))]
 #[requires(lit_not_in_less_inner(@t.trail, f))]
 #[ensures(lit_not_in_less_inner((@t.trail).push(step), f))]
-pub fn lemma_push_maintains_lit_not_in_less(t: Trail, f: Formula, step: Step) {
-}
+pub fn lemma_push_maintains_lit_not_in_less(t: Trail, f: Formula, step: Step) {}

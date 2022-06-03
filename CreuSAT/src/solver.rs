@@ -147,7 +147,7 @@ impl Solver {
         self.increase_num_conflicts();
     }
 
-    //#[cfg_attr(feature = "trust_solver", trusted)]
+    #[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut w).invariant(mut f))]
@@ -193,7 +193,6 @@ impl Solver {
         None
     }
 
-    // OK
     #[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut w).invariant(mut f))]
@@ -217,7 +216,6 @@ impl Solver {
         }
     }
 
-    // OK
     #[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut t).invariant(mut f))]
@@ -240,8 +238,8 @@ impl Solver {
         #[invariant(maintains_t, t.invariant(*f))]
         #[invariant(maintains_w, w.invariant(*f))]
         #[invariant(maintains_d, d.invariant(@f.num_vars))]
-        #[invariant(equi, (old_f.inner()).equisat(*f))]
-        #[invariant(num_vars, @f.num_vars == @(old_f.inner()).num_vars)]
+        #[invariant(equi, old_f.inner().equisat(*f))]
+        #[invariant(num_vars, @f.num_vars == @old_f.inner().num_vars)]
         #[invariant(prophf, ^f == ^old_f.inner())]
         #[invariant(propht, ^t == ^old_t.inner())]
         #[invariant(prophw, ^w == ^old_w.inner())]
@@ -262,7 +260,6 @@ impl Solver {
         }
     }
 
-    // OK
     #[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut trail).invariant(mut f))]
@@ -332,13 +329,13 @@ impl Solver {
         &mut self, formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut watches: Watches,
     ) -> SatResult {
         let old_f = ghost! { formula };
-        #[invariant(equi, (old_f.inner()).equisat(*formula))]
-        #[invariant(num_vars, @formula.num_vars == @(old_f.inner()).num_vars)]
+        #[invariant(equi, old_f.inner().equisat(*formula))]
+        #[invariant(num_vars, @formula.num_vars == @old_f.inner().num_vars)]
         #[invariant(maintains_f, formula.invariant())]
         #[invariant(maintains_t, trail.invariant(*formula))]
         #[invariant(maintains_w, watches.invariant(*formula))]
         #[invariant(maintains_d, decisions.invariant(@formula.num_vars))]
-        #[invariant(prophf, ^formula == ^old_f.inner())]
+        #[invariant(proph_f, ^formula == ^old_f.inner())]
         loop {
             match self.outer_loop(formula, &mut decisions, &mut trail, &mut watches) {
                 SatResult::Unknown => {} // continue

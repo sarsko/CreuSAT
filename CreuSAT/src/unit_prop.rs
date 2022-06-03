@@ -155,9 +155,6 @@ fn propagate_lit_with_regard_to_clause(
     }
     let second_lit = clause.rest[1];
     if second_lit.lit_sat(&trail.assignments) {
-        // We swap to make it faster the next time
-        //swap_zero_one(f, trail, watches, cref, lit, j);
-        //swap(f, trail, watches, cref, 0, 1);
         // We know blocker cannot be second, as then we would not be here
         proof_assert!(^watches == ^old_w.inner());
         proof_assert!(second_lit.index_logic() < @f.num_vars);

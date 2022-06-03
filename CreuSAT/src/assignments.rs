@@ -18,15 +18,6 @@ pub type AssignedState = u8;
 // A.1 is temporary
 pub struct Assignments(pub Vec<AssignedState>);
 
-#[cfg_attr(not(untrust_perm), trusted)]
-#[trusted]
-#[ensures(@l <= @result && @result  < @u)]
-fn rand_in_range(l: usize, u: usize) -> u8 {
-    use rand::Rng;
-    let n = rand::thread_rng().gen_range(l..u);
-    n as u8
-}
-
 impl Assignments {
     // Ok
     #[inline(always)]
@@ -36,7 +27,6 @@ impl Assignments {
         self.0.len()
     }
 
-    // OK
     #[inline(always)]
     #[cfg_attr(feature = "trust_assignments", trusted)]
     #[maintains((mut self).invariant(*_f))]
@@ -54,14 +44,14 @@ impl Assignments {
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {
         let old_self = ghost! { self };
         //self.0[lit.index()] = lit.is_positive() as u8;
-        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *old_self.inner(), lit)); true);
+        //proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *old_self.inner(), lit)); true);
         if lit.is_positive() {
             self.0[lit.index()] = 1;
         } else {
             self.0[lit.index()] = 0;
         }
-        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *old_self.inner(), lit)); true);
-        proof_assert!(long_are_post_unit_inner(@_t, *_f, @self));
+        //proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *old_self.inner(), lit)); true);
+        //proof_assert!(long_are_post_unit_inner(@_t, *_f, @self));
     }
 
     // OK
