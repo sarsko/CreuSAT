@@ -53,9 +53,9 @@ fn equisat(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
 #[predicate]
 fn compatible(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
     pearlite! {
-        f.1 == o.1 &&
-        o.0.len() >= f.0.len() &&
-        forall<i: Int> 0 <= i && i < f.0.len() ==>
+        f.1 == o.1
+        && o.0.len() >= f.0.len()
+        && forall<i: Int> 0 <= i && i < f.0.len() ==>
             (f.0[i]).equals(o.0[i])
     }
 }
@@ -69,7 +69,6 @@ fn equisat_compatible_inner(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> boo
 
 // Predicates
 impl Formula {
-    // New stuff:
     #[predicate]
     pub fn eventually_sat_complete_no_ass(self) -> bool {
         pearlite! {
@@ -78,17 +77,15 @@ impl Formula {
     }
     #[predicate]
     pub fn equisat(self, o: Formula) -> bool {
-        pearlite! {
-            self.eventually_sat_complete_no_ass() == o.eventually_sat_complete_no_ass()
-        }
+        self.eventually_sat_complete_no_ass() == o.eventually_sat_complete_no_ass()
     }
 
     #[predicate]
     pub fn compatible(self, o: Formula) -> bool {
         pearlite! {
-            @self.num_vars == @o.num_vars &&
-            (@o.clauses).len() >= (@self.clauses).len() &&
-            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+            @self.num_vars == @o.num_vars
+            && (@o.clauses).len() >= (@self.clauses).len()
+            && forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
                 ((@self.clauses)[i]).equals((@o.clauses)[i])
         }
     }
@@ -99,7 +96,14 @@ impl Formula {
     }
 
     #[predicate]
-    fn invariant_old(self) -> bool {
+    #[cfg_attr(feature = "trust_formula_logic", trusted)]
+    #[ensures(result == self.invariant_mirror())] // Removing this makes a bunch of seemingly unrelated things fail
+    pub fn invariant(self) -> bool {
+        pearlite! { formula_invariant(@self) }
+    }
+
+    #[predicate]
+    fn invariant_mirror(self) -> bool {
         pearlite! {
             (forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
                 (@self.clauses)[i].invariant(@self.num_vars))
@@ -107,15 +111,6 @@ impl Formula {
             (forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
                 (@(@self.clauses)[i]).len() >= 1)
 
-        }
-    }
-
-    #[predicate]
-    #[cfg_attr(feature = "trust_formula_logic", trusted)]
-    #[ensures(result == self.invariant_old())]
-    pub fn invariant(self) -> bool {
-        pearlite! {
-            formula_invariant(@self)
         }
     }
 
@@ -152,8 +147,6 @@ impl Formula {
     }
 
     #[predicate]
-    #[cfg_attr(feature = "trust_formula_logic", trusted)]
-    // #[ensures(result == self.sat_inner(@a))]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! { formula_sat_inner(@self, @a) }
     }
@@ -174,8 +167,7 @@ impl Formula {
     #[predicate]
     pub fn not_satisfiable(self) -> bool {
         pearlite! {
-            exists<c: Clause> (@c).len() == 0
-            && c.equisat_extension(self)
+            exists<c: Clause> (@c).len() == 0 && c.equisat_extension(self)
         }
     }
 }
