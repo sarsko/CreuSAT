@@ -109,33 +109,30 @@ impl Solver {
     #[maintains((mut d).invariant(@f.num_vars))]
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(clause.invariant(@f.num_vars))]
+    #[requires(equisat_extension_inner(clause, @f))]
     #[requires((@clause).len() > 1)]
     #[requires(@s_idx < (@clause).len())]
-    #[requires(vars_in_range_inner(@clause, @f.num_vars))]
-    #[requires(no_duplicate_indexes_inner(@clause))]
-    #[requires(equisat_extension_inner(clause, @f))]
     #[ensures(@f.num_vars == @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
     fn handle_long_clause(
         &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, s_idx: usize,
     ) {
-        //let cref = f.add_and_swap_first(clause, w, t, s_idx);
-        //let cref = 0;
         clause.swap_lits_in_clause(f, s_idx, 0);
         let (idx, level) = get_asserting_level(&clause, t, f);
         clause.swap_lits_in_clause(f, idx, 1);
+
         // TODO: Store lbd in clause
         let lbd = clause.calc_lbd(f, self, t);
-        let clause = clause;
-        //f.make_asserting_clause_and_watch(w, t, idx, cref);
         let cref = f.add_clause(clause, w, t);
         update_fast(&mut self.fast, lbd);
         update_slow(&mut self.slow, lbd);
-        //d.increment_and_move(f, cref, &t.assignments);
-        // This should be removed by updating the post of get_asserting_level
+
+        // TODO: Remove by updating the post of get_asserting_level
         t.backtrack_safe(level, f, d);
+
         let lit = f.clauses[cref].rest[0];
         let step = Step { lit: lit, decision_level: level, reason: Reason::Long(cref) };
+
         // TODO:
         // These two have to be ensured by analysis + backtrack
         //proof_assert!((@f.clauses)[@cref].unit(t.assignments));
@@ -143,6 +140,7 @@ impl Solver {
         if f.clauses[cref].unit_and_unset(&t.assignments, f) {
             t.enq_assignment(step, f);
         }
+
         self.increase_num_lemmas();
         self.increase_num_conflicts();
     }
@@ -193,7 +191,6 @@ impl Solver {
         None
     }
 
-    // OK
     #[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut w).invariant(mut f))]
@@ -217,7 +214,6 @@ impl Solver {
         }
     }
 
-    // OK
     #[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut t).invariant(mut f))]
@@ -240,8 +236,8 @@ impl Solver {
         #[invariant(maintains_t, t.invariant(*f))]
         #[invariant(maintains_w, w.invariant(*f))]
         #[invariant(maintains_d, d.invariant(@f.num_vars))]
-        #[invariant(equi, (old_f.inner()).equisat(*f))]
-        #[invariant(num_vars, @f.num_vars == @(old_f.inner()).num_vars)]
+        #[invariant(equi, old_f.inner().equisat(*f))]
+        #[invariant(num_vars, @f.num_vars == @old_f.inner().num_vars)]
         #[invariant(prophf, ^f == ^old_f.inner())]
         #[invariant(propht, ^t == ^old_t.inner())]
         #[invariant(prophw, ^w == ^old_w.inner())]
@@ -262,7 +258,6 @@ impl Solver {
         }
     }
 
-    // OK
     #[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut trail).invariant(mut f))]
@@ -295,7 +290,6 @@ impl Solver {
         }
         //proof_assert!(!a.complete() || !f.unsat(*a)); // Need to get from unit_prop_loop
         match d.get_next(&trail.assignments, f) {
-            //match trail.assignments.find_unassigned(d, f) {
             Some(next) => {
                 trail.enq_decision(next, f);
             }
@@ -332,13 +326,13 @@ impl Solver {
         &mut self, formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut watches: Watches,
     ) -> SatResult {
         let old_f = ghost! { formula };
-        #[invariant(equi, (old_f.inner()).equisat(*formula))]
-        #[invariant(num_vars, @formula.num_vars == @(old_f.inner()).num_vars)]
+        #[invariant(equi, old_f.inner().equisat(*formula))]
+        #[invariant(num_vars, @formula.num_vars == @old_f.inner().num_vars)]
         #[invariant(maintains_f, formula.invariant())]
         #[invariant(maintains_t, trail.invariant(*formula))]
         #[invariant(maintains_w, watches.invariant(*formula))]
         #[invariant(maintains_d, decisions.invariant(@formula.num_vars))]
-        #[invariant(prophf, ^formula == ^old_f.inner())]
+        #[invariant(proph_f, ^formula == ^old_f.inner())]
         loop {
             match self.outer_loop(formula, &mut decisions, &mut trail, &mut watches) {
                 SatResult::Unknown => {} // continue

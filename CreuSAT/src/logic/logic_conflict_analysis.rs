@@ -2,69 +2,29 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::{assignments::*, clause::*, conflict_analysis::*, formula::*, lit::*, trail::*};
+use crate::clause::*;
+use crate::logic::{logic_assignments::*, logic_clause::*, logic_formula::*};
 
-#[cfg(feature = "contracts")]
-use crate::logic::{logic::*, logic_clause::*};
-
-#[cfg_attr(feature = "trust_conflict_logic", trusted)]
+#[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
-//#[requires(v[i].index_logic() == idx)]
-#[requires(0 <= c_idx && c_idx < c.len() && (c)[c_idx].index_logic() == idx &&
-    (exists<k: Int> 0 <= k && k < o.len() && k != i &&
-        o[k].is_opp(c[c_idx]))
-)]
-#[requires(forall<j: Int, k: Int> 0 <= j && j < o.len() && 0 <= k && k < c.len() &&
-    k != c_idx && o[j].index_logic() != idx ==> !c[k].is_opp((o)[j]))]
-#[requires(0 <= i && i < o.len() && o[i].index_logic() != idx)]
-#[requires(invariant_internal(o, @_f.num_vars))]
-#[requires(invariant_internal(c, @_f.num_vars))]
-#[requires(forall<j: Int> 0 <= j && j < c.len() && c[j].index_logic() != idx ==> c[j].lit_in_internal(new))]
-#[requires(forall<j: Int> 0 <= j && j < new.len() ==> (new)[j].lit_in_internal(c) || (new)[j].lit_in_internal(o))]
-#[requires(exists<k: Int> 0 <= k && k < new.len() && o[i].index_logic() == (new)[k].index_logic())]
-#[ensures(exists<k: Int> 0 <= k && k < c.len() && o[i].index_logic() == c[k].index_logic() || (o)[i].lit_in_internal(new))]
-#[ensures(exists<k: Int> 0 <= k && k < c.len() && o[i].index_logic() == c[k].index_logic() && o[i].is_positive_logic() == c[k].is_positive_logic() || (o)[i].lit_in_internal(new))]
-//#[ensures(((o)[i].lit_in_internal(new)))]
-pub fn lemma_idx(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_idx: Int, _f: Formula) {}
+#[requires(f2.0 == f.0.push(c))]
+#[requires(formula_invariant(f))]
+#[ensures((f.0).len() + 1 == (f2.0).len())]
+#[ensures(forall<i: Int> 0 <= i && i < (f.0).len() ==> ((f.0)[i]).equals((f2.0)[i]))]
+#[ensures(@(f2.0)[(f2.0).len()-1] == @c)]
+//#[ensures(formula_invariant(f2))]
+//#[ensures(f.1 == f2.1)]
+fn lemma_eq_formulas(f: (Seq<Clause>, Int), f2: (Seq<Clause>, Int), c: Clause) {}
 
-// OK [04.04] [[Doesnt check out on Mac [04.04]. Super easy on Linux]]
-#[cfg_attr(feature = "trust_conflict_logic", trusted)]
+#[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
-//#[requires(v[i].index_logic() == idx)]
-#[requires(0 <= c_idx && c_idx < c.len() && (c)[c_idx].index_logic() == idx &&
-    (exists<k: Int> 0 <= k && k < o.len() && k != i &&
-        o[k].is_opp(c[c_idx]))
-)]
-#[requires(forall<j: Int, k: Int> 0 <= j && j < o.len() && 0 <= k && k < c.len() &&
-    k != c_idx && o[j].index_logic() != idx ==> !c[k].is_opp((o)[j]))]
-#[requires(0 <= i && i < o.len() && o[i].index_logic() != idx)]
-#[requires(invariant_internal(o, @_f.num_vars))]
-#[requires(invariant_internal(c, @_f.num_vars))]
-#[requires(forall<j: Int> 0 <= j && j < c.len() && c[j].index_logic() != idx ==> c[j].lit_in_internal(new))]
-#[requires(forall<j: Int> 0 <= j && j < new.len() ==> (new)[j].lit_in_internal(c) || (new)[j].lit_in_internal(o))]
-#[requires(exists<k: Int> 0 <= k && k < new.len() && o[i].index_logic() == new[k].index_logic())]
-#[ensures(((o)[i].lit_in_internal(new)))]
-pub fn lemma_idx2(c: Seq<Lit>, o: Seq<Lit>, new: Seq<Lit>, i: Int, idx: Int, c_idx: Int, _f: Formula) {
-    lemma_idx(c, o, new, i, idx, c_idx, _f);
+#[requires(formula_invariant(f))]
+#[requires(equisat_extension_inner(c, f))]
+#[requires(c2.in_formula_inner(f))]
+#[requires(c3.resolvent_of(c, c2, k, m))]
+#[ensures(equisat_extension_inner(c3, f))]
+pub fn lemma_resolvent_of_equisat_extension_is_equisat(
+    f: (Seq<Clause>, Int), c: Clause, c2: Clause, c3: Clause, k: Int, m: Int,
+) {
+    lemma_eq_formulas(f, (f.0.push(c3), f.1), c3);
 }
-
-/*
-#[logic]
-#[requires(c.invariant(a.len()))]
-#[requires(c2.invariant(a.len()))]
-#[requires(0 <= c_idx && c_idx < (@c).len())]
-#[requires(0 <= c2_idx && c2_idx < (@c2).len())]
-#[requires(c3.resolvent_of(c, c2, c2_idx, c_idx))]
-//#[ensures((@c3).len() >= (@c2).len() - 1)]
-#[ensures((forall<i: Int> 0 <= i && i < (@c ).len() && i != c_idx ==> (@c   )[i].lit_in(c3)))]
-pub fn lemma_resolved_len(c: Clause, c2: Clause, c3: Clause, a: Seq<AssignedState>, c_idx: Int, c2_idx: Int) {}
-*/
-
-/*
-#[requires(c.invariant(a.len()))]
-#[requires(c2.invariant(a.len()))]
-#[requires(0 <= c_idx && c_idx < (@c).len())]
-#[requires((forall<i: Int> 0 <= i && i < (@c ).len() && i != c_idx ==> (@c   )[i].lit_in(c3)))]
-#[ensures((@c3).len() + 1 >= (@c).len())]
-pub fn lemma_resolved_len2(c: Clause, c2: Clause, c3: Clause, a: Seq<AssignedState>, c_idx: Int, c2_idx: Int) {}
-*/

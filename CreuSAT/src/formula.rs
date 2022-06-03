@@ -75,7 +75,7 @@ impl Formula {
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains(_t.invariant(mut self))]
-    #[maintains((mut watches).invariant(mut self))] // new
+    #[maintains((mut watches).invariant(mut self))]
     #[requires((@clause).len() >= 2)]
     #[requires(@self.num_vars < @usize::MAX/2)]
     //#[requires(vars_in_range_inner(@clause, @self.num_vars))]
@@ -83,7 +83,7 @@ impl Formula {
     #[requires(clause.invariant(@self.num_vars))]
     #[requires(equisat_extension_inner(clause, @self))]
     #[ensures(@self.num_vars == @(^self).num_vars)]
-    #[ensures(self.equisat(^self))] // Added/changed
+    #[ensures(self.equisat(^self))]
     #[ensures(@result == (@self.clauses).len())]
     #[ensures((@(^self).clauses)[@result] == clause)]
     #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
@@ -100,6 +100,7 @@ impl Formula {
         watches.add_watcher(first_lit, cref, self, second_lit);
         watches.add_watcher(second_lit, cref, self, first_lit);
         proof_assert!(^old_self.inner() == ^self);
+        proof_assert!((old_self.inner()).equisat_compatible(*self));
         proof_assert!((old_self.inner()).equisat(*self));
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
@@ -108,7 +109,7 @@ impl Formula {
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains(_t.invariant(mut self))]
-    #[maintains((mut watches).invariant(mut self))] // new
+    #[maintains((mut watches).invariant(mut self))]
     #[requires((@clause).len() >= 2)]
     #[requires(@self.num_vars < @usize::MAX/2)]
     //#[requires(vars_in_range_inner(@clause, @self.num_vars))]
@@ -116,7 +117,7 @@ impl Formula {
     #[requires(clause.invariant(@self.num_vars))]
     #[requires(equisat_extension_inner(clause, @self))]
     #[ensures(@self.num_vars == @(^self).num_vars)]
-    #[ensures(self.equisat(^self))] // Added/changed
+    #[ensures(self.equisat(^self))]
     #[ensures(@result == (@self.clauses).len())]
     #[ensures((@(^self).clauses)[@result] == clause)]
     #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
@@ -129,7 +130,6 @@ impl Formula {
         cref
     }
 
-    // Passing, but needs the same help as add_clause
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains(_t.invariant(mut self))]
@@ -150,7 +150,7 @@ impl Formula {
         let cref = self.clauses.len();
         self.clauses.push(clause);
         proof_assert!((old_self.inner()).equisat_compatible(*self));
-        proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
+        // proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
 
