@@ -79,8 +79,6 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
     proof_assert!(vars_in_range_inner(@(@f.clauses)[@cref], @f.num_vars));
     proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
     proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments));
-    proof_assert!(^old_f.inner() == ^f);
-    proof_assert!(lit_not_in_less_inner(@trail.trail, *f));
     proof_assert!(crefs_in_range(@trail.trail, *f));
 }
 
@@ -157,9 +155,6 @@ fn propagate_lit_with_regard_to_clause(
     }
     let second_lit = clause.rest[1];
     if second_lit.lit_sat(&trail.assignments) {
-        // We swap to make it faster the next time
-        //swap_zero_one(f, trail, watches, cref, lit, j);
-        //swap(f, trail, watches, cref, 0, 1);
         // We know blocker cannot be second, as then we would not be here
         proof_assert!(^watches == ^old_w.inner());
         proof_assert!(second_lit.index_logic() < @f.num_vars);

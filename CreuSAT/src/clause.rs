@@ -13,11 +13,7 @@ pub struct Clause {
     pub rest: Vec<Lit>,
 }
 
-// Split up invariant and at least binary and revert to
-// old invariant instead of invariant_unary_ok
-
 impl Clone for Clause {
-    // Will do last
     #[trusted] // TODO
     #[ensures(result == *self)]
     fn clone(&self) -> Self {
@@ -83,13 +79,11 @@ impl Clause {
     // This does better without splitting
     #[inline(always)]
     #[cfg_attr(feature = "trust_clause", trusted)]
-    #[maintains((mut self).invariant_unary_ok(@_f.num_vars))]
+    #[maintains((mut self).invariant(@_f.num_vars))]
     #[requires((@self).len() > 0)]
     #[requires(@idx < (@self).len())]
     #[ensures(forall<i: Int> 0 <= i && i < (@(^self)).len() ==>
         (exists<j: Int> 0 <= j && j < (@self).len() && (@(^self))[i] == (@self)[j]))]
-    #[ensures(forall<i: Int> 0 <= i && i < (@(self)).len() ==>
-        (exists<j: Int> 0 <= j && j < (@(^self)).len() && (@(^self))[i] == (@self)[j]))]
     #[ensures((@(^self))[(@^self).len() - 1] == (@self)[@idx])]
     #[ensures((@(^self)).len() == (@self).len())]
     #[ensures(forall<j: Int> 0 <= j && j < (@self).len()
@@ -102,7 +96,7 @@ impl Clause {
     // This does better without splitting
     #[inline(always)]
     #[cfg_attr(feature = "trust_clause", trusted)]
-    #[maintains((mut self).invariant_unary_ok(@_f.num_vars))]
+    #[maintains((mut self).invariant(@_f.num_vars))]
     #[requires((@self).len() > 0)]
     #[requires(@idx < (@self).len())]
     #[ensures(forall<i: Int> 0 <= i && i < (@(^self)).len() ==>
@@ -112,10 +106,8 @@ impl Clause {
     #[ensures(forall<j: Int> 0 <= j && j < (@self).len()
         && j != @idx ==> (@self)[j].lit_in(^self))]
     pub fn remove_from_clause(&mut self, idx: usize, _f: &Formula) {
-        let old_self = ghost! { self };
         self.move_to_end(idx, _f);
         self.rest.pop();
-        proof_assert!(^self == ^old_self.inner());
     }
 
     // This is an ugly runtime check
@@ -170,7 +162,7 @@ impl Clause {
         #[invariant(lbd_bound, @lbd <= @i)]
         while i < self.len() {
             let level = t.lit_to_level[self.rest[i].index()];
-            if level < s.perm_diff.len() && // Lazy
+            if level < s.perm_diff.len() && // TODO: Add this as an invariant to Solver
                 s.perm_diff[level] != s.num_conflicts
             {
                 s.perm_diff[level] = s.num_conflicts;
