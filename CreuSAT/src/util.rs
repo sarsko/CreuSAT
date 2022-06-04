@@ -83,3 +83,42 @@ pub fn sort(v: &mut Vec<(usize, usize)>) {
         i += 1;
     }
 }
+
+#[logic]
+fn min_log(a: Int, b: Int) -> Int {
+    if a <= b {
+        a
+    } else {
+        b
+    }
+}
+
+#[ensures(@result == min_log(@a, @b))]
+#[ensures(@a <= @b ==> @result == @a)]
+#[ensures(@b < @a ==> @result == @b)]
+#[ensures(@result <= @b && @result <= @a)]
+pub fn min(a: usize, b: usize) -> usize {
+    if a <= b {
+        a
+    } else {
+        b
+    }
+}
+
+#[logic]
+fn max_log(a: Int, b: Int) -> Int {
+    if a >= b {
+        a
+    } else {
+        b
+    }
+}
+
+#[ensures(@result == max_log(@a, @b))]
+pub fn max(a: usize, b: usize) -> usize {
+    if a >= b {
+        a
+    } else {
+        b
+    }
+}

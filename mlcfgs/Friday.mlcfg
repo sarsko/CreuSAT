@@ -29,6 +29,16 @@ module Type
   type alloc_vec_vec 't 'a =
     | Alloc_Vec_Vec (alloc_rawvec_rawvec 't 'a) usize
     
+  type alloc_alloc_global  =
+    | Alloc_Alloc_Global
+    
+  type friday_assignment  =
+    | Friday_Assignment (alloc_vec_vec bool (alloc_alloc_global))
+    
+  let function friday_assignment_Assignment_0 (self : friday_assignment) : alloc_vec_vec bool (alloc_alloc_global) =
+    match (self) with
+      | Friday_Assignment a -> a
+      end
   type friday_lit  =
     | Friday_Lit usize bool
     
@@ -40,9 +50,6 @@ module Type
     match (self) with
       | Friday_Lit _ a -> a
       end
-  type alloc_alloc_global  =
-    | Alloc_Alloc_Global
-    
   type friday_clause  =
     | Friday_Clause (alloc_vec_vec (friday_lit) (alloc_alloc_global))
     
@@ -50,13 +57,10 @@ module Type
     match (self) with
       | Friday_Clause a -> a
       end
-  type friday_assignment  =
-    | Friday_Assignment (alloc_vec_vec bool (alloc_alloc_global))
+  type core_option_option 't =
+    | Core_Option_Option_None
+    | Core_Option_Option_Some 't
     
-  let function friday_assignment_Assignment_0 (self : friday_assignment) : alloc_vec_vec bool (alloc_alloc_global) =
-    match (self) with
-      | Friday_Assignment a -> a
-      end
   type friday_pasn  =
     | Friday_Pasn (alloc_vec_vec bool (alloc_alloc_global)) usize
     
@@ -81,10 +85,6 @@ module Type
     match (self) with
       | Friday_Formula _ a -> a
       end
-  type core_option_option 't =
-    | Core_Option_Option_None
-    | Core_Option_Option_Some 't
-    
 end
 module CreusotContracts_Std1_Vec_Impl0_Model_Interface
   type t
@@ -116,10 +116,10 @@ module Friday_Impl3_VarsInRange
   use Type
   use mach.int.Int
   use mach.int.UInt64
-  predicate vars_in_range [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 77 4 42] (self : Type.friday_lit) (n : int)
+  predicate vars_in_range [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 103 4 42] (self : Type.friday_lit) (n : int)
     
    =
-    [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 77 4 42] UInt64.to_int (Type.friday_lit_Lit_var self) < n
+    [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 103 4 42] UInt64.to_int (Type.friday_lit_Lit_var self) < n
 end
 module Friday_Impl0_VarsInRange_Interface
   use Type
@@ -134,43 +134,10 @@ module Friday_Impl0_VarsInRange
   clone Friday_Impl3_VarsInRange_Interface as VarsInRange0
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.friday_lit,
   type a = Type.alloc_alloc_global, axiom .
-  predicate vars_in_range [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 33 4 42] (self : Type.friday_clause) (n : int)
+  predicate vars_in_range [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 59 4 42] (self : Type.friday_clause) (n : int)
     
    =
-    [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 33 4 42] forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.friday_clause_Clause_0 self)) -> VarsInRange0.vars_in_range (Seq.get (Model0.model (Type.friday_clause_Clause_0 self)) i) n
-end
-module Friday_Impl1_Compatible_Interface
-  use Type
-  predicate compatible (self : Type.friday_assignment) (pa : Type.friday_pasn)
-end
-module Friday_Impl1_Compatible
-  use Type
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.Int32
-  use mach.int.UInt64
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool, type a = Type.alloc_alloc_global,
-  axiom .
-  predicate compatible [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 43 4 41] (self : Type.friday_assignment) (pa : Type.friday_pasn)
-    
-   =
-    [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 43 4 41] Seq.length (Model0.model (Type.friday_pasn_Pasn_assign pa)) = Seq.length (Model0.model (Type.friday_assignment_Assignment_0 self)) && (forall i : (int) . 0 <= i && i < UInt64.to_int (Type.friday_pasn_Pasn_ix pa) -> Seq.get (Model0.model (Type.friday_pasn_Pasn_assign pa)) i = Seq.get (Model0.model (Type.friday_assignment_Assignment_0 self)) i)
-end
-module Friday_Impl2_Invariant_Interface
-  use Type
-  predicate invariant' (self : Type.friday_formula)
-end
-module Friday_Impl2_Invariant
-  use Type
-  use mach.int.Int
-  use mach.int.Int32
-  use seq.Seq
-  use mach.int.UInt64
-  clone Friday_Impl0_VarsInRange_Interface as VarsInRange0
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.friday_clause,
-  type a = Type.alloc_alloc_global, axiom .
-  predicate invariant' [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 54 4 30] (self : Type.friday_formula) =
-    [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 54 4 30] forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.friday_formula_Formula_clauses self)) -> VarsInRange0.vars_in_range (Seq.get (Model0.model (Type.friday_formula_Formula_clauses self)) i) (UInt64.to_int (Type.friday_formula_Formula_num_vars self))
+    [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 59 4 42] forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.friday_clause_Clause_0 self)) -> VarsInRange0.vars_in_range (Seq.get (Model0.model (Type.friday_clause_Clause_0 self)) i) n
 end
 module Friday_Impl3_Sat_Interface
   use Type
@@ -182,74 +149,10 @@ module Friday_Impl3_Sat
   use seq.Seq
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool, type a = Type.alloc_alloc_global,
   axiom .
-  predicate sat [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 71 4 39] (self : Type.friday_lit) (a : Type.friday_assignment)
+  predicate sat [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 97 4 39] (self : Type.friday_lit) (a : Type.friday_assignment)
     
    =
-    [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 71 4 39] Seq.get (Model0.model (Type.friday_assignment_Assignment_0 a)) (UInt64.to_int (Type.friday_lit_Lit_var self)) = Type.friday_lit_Lit_value self
-end
-module Friday_Impl5_Sat_Interface
-  use Type
-  predicate sat (self : Type.friday_clause) (a : Type.friday_assignment)
-end
-module Friday_Impl5_Sat
-  use Type
-  use mach.int.Int
-  use mach.int.Int32
-  use seq.Seq
-  clone Friday_Impl3_Sat_Interface as Sat0
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.friday_lit,
-  type a = Type.alloc_alloc_global, axiom .
-  predicate sat [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 96 4 39] (self : Type.friday_clause) (a : Type.friday_assignment)
-    
-   =
-    [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 96 4 39] exists i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.friday_clause_Clause_0 self)) && Sat0.sat (Seq.get (Model0.model (Type.friday_clause_Clause_0 self)) i) a
-end
-module Friday_Impl2_Sat_Interface
-  use Type
-  predicate sat (self : Type.friday_formula) (a : Type.friday_assignment)
-end
-module Friday_Impl2_Sat
-  use Type
-  use mach.int.Int
-  use mach.int.Int32
-  use seq.Seq
-  clone Friday_Impl5_Sat_Interface as Sat0
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.friday_clause,
-  type a = Type.alloc_alloc_global, axiom .
-  predicate sat [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 61 4 39] (self : Type.friday_formula) (a : Type.friday_assignment)
-    
-   =
-    [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 61 4 39] forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.friday_formula_Formula_clauses self)) -> Sat0.sat (Seq.get (Model0.model (Type.friday_formula_Formula_clauses self)) i) a
-end
-module Friday_Impl4_Invariant_Interface
-  use Type
-  use mach.int.Int
-  predicate invariant' (self : Type.friday_pasn) (n : int)
-end
-module Friday_Impl4_Invariant
-  use Type
-  use mach.int.Int
-  use mach.int.UInt64
-  use seq.Seq
-  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool, type a = Type.alloc_alloc_global,
-  axiom .
-  predicate invariant' [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 86 4 38] (self : Type.friday_pasn) (n : int)
-   =
-    [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 86 4 38] UInt64.to_int (Type.friday_pasn_Pasn_ix self) <= Seq.length (Model0.model (Type.friday_pasn_Pasn_assign self)) && Seq.length (Model0.model (Type.friday_pasn_Pasn_assign self)) = n
-end
-module Friday_Impl6_Clone_Interface
-  use prelude.Prelude
-  use Type
-  val clone' [@cfg:stackify] (self : Type.friday_pasn) : Type.friday_pasn
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 106 4 31] self = result }
-    
-end
-module Friday_Impl6_Clone
-  use prelude.Prelude
-  use Type
-  val clone' [@cfg:stackify] (self : Type.friday_pasn) : Type.friday_pasn
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 106 4 31] self = result }
-    
+    [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 97 4 39] Seq.get (Model0.model (Type.friday_assignment_Assignment_0 a)) (UInt64.to_int (Type.friday_lit_Lit_var self)) = Type.friday_lit_Lit_value self
 end
 module CreusotContracts_Logic_Model_Model_ModelTy
   type self
@@ -812,6 +715,288 @@ module CreusotContracts_Std1_Slice_Impl0
   function model = Model0.model, type ModelTy0.modelTy = ModelTy0.modelTy
   clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = seq t, type modelTy = ModelTy0.modelTy
 end
+module Friday_InterpClause2_Interface
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.Int32
+  use prelude.Prelude
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = Type.friday_lit,
+  type a = Type.alloc_alloc_global, axiom .
+  clone Friday_Impl0_VarsInRange_Interface as VarsInRange0
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool, type a = Type.alloc_alloc_global,
+  axiom .
+  val interp_clause2 [@cfg:stackify] (a : Type.friday_assignment) (c : Type.friday_clause) : bool
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 32 0 42] VarsInRange0.vars_in_range c (Seq.length (Model0.model (Type.friday_assignment_Assignment_0 a)))}
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 31 0 29] Seq.length (Model1.model (Type.friday_clause_Clause_0 c)) > 2}
+    
+end
+module Friday_InterpClause2
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.Int32
+  use prelude.Prelude
+  use Type
+  use mach.int.UInt64
+  clone Friday_Impl3_VarsInRange as VarsInRange1
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.friday_lit, type a = Type.alloc_alloc_global,
+  axiom .
+  clone Friday_Impl0_VarsInRange as VarsInRange0 with function Model0.model = Model1.model,
+  predicate VarsInRange0.vars_in_range = VarsInRange1.vars_in_range
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = bool, type a = Type.alloc_alloc_global, axiom .
+  clone Friday_Impl3_Sat as Sat0 with function Model0.model = Model0.model
+  clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy1 with type t = bool
+  clone Core_Slice_Index_Impl2_Output as Output1 with type t = bool
+  clone CreusotContracts_Std1_Slice_Impl3_HasValue as HasValue1 with type t = bool
+  clone CreusotContracts_Std1_Slice_Impl3_InBounds as InBounds1 with type t = bool
+  clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy0 with type t = Type.friday_lit
+  clone Core_Slice_Index_Impl2_Output as Output0 with type t = Type.friday_lit
+  clone CreusotContracts_Std1_Slice_Impl3_HasValue as HasValue0 with type t = Type.friday_lit
+  clone CreusotContracts_Std1_Slice_Impl3_InBounds as InBounds0 with type t = Type.friday_lit
+  clone Alloc_Vec_Impl16_Index_Interface as Index0 with type t = Type.friday_lit, type i = usize,
+  type a = Type.alloc_alloc_global, function Model0.model = Model1.model,
+  predicate InBounds0.in_bounds = InBounds0.in_bounds, predicate HasValue0.has_value = HasValue0.has_value,
+  type Output0.output = Output0.output
+  clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.friday_lit, type a = Type.alloc_alloc_global,
+  function Model0.model = Model1.model
+  clone Alloc_Vec_Impl16_Index_Interface as Index1 with type t = bool, type i = usize, type a = Type.alloc_alloc_global,
+  function Model0.model = Model0.model, predicate InBounds0.in_bounds = InBounds1.in_bounds,
+  predicate HasValue0.has_value = HasValue1.has_value, type Output0.output = Output1.output
+  let rec cfg interp_clause2 [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 34 0 53] (a : Type.friday_assignment) (c : Type.friday_clause) : bool
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 32 0 42] VarsInRange0.vars_in_range c (Seq.length (Model0.model (Type.friday_assignment_Assignment_0 a)))}
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 31 0 29] Seq.length (Model1.model (Type.friday_clause_Clause_0 c)) > 2}
+    
+   =
+  var _0 : bool;
+  var a_1 : Type.friday_assignment;
+  var c_2 : Type.friday_clause;
+  var i_3 : usize;
+  var j_4 : usize;
+  var clause_len_5 : usize;
+  var _6 : Type.alloc_vec_vec (Type.friday_lit) (Type.alloc_alloc_global);
+  var _7 : ();
+  var _8 : ();
+  var _9 : bool;
+  var _10 : usize;
+  var _11 : usize;
+  var _12 : ();
+  var _13 : bool;
+  var _14 : usize;
+  var _15 : usize;
+  var l_16 : bool;
+  var _17 : bool;
+  var _18 : Type.alloc_vec_vec bool (Type.alloc_alloc_global);
+  var _19 : usize;
+  var _20 : Type.friday_lit;
+  var _21 : Type.alloc_vec_vec (Type.friday_lit) (Type.alloc_alloc_global);
+  var _22 : usize;
+  var r_23 : bool;
+  var _24 : Type.friday_lit;
+  var _25 : Type.alloc_vec_vec (Type.friday_lit) (Type.alloc_alloc_global);
+  var _26 : usize;
+  var _27 : ();
+  var _28 : bool;
+  var _29 : bool;
+  var _30 : bool;
+  var _31 : ();
+  var _32 : ();
+  var _33 : ();
+  var _34 : ();
+  var _35 : ();
+  {
+    a_1 <- a;
+    c_2 <- c;
+    goto BB0
+  }
+  BB0 {
+    i_3 <- (0 : usize);
+    j_4 <- (1 : usize);
+    _6 <- Type.friday_clause_Clause_0 c_2;
+    clause_len_5 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 37 21 30] Len0.len _6);
+    goto BB1
+  }
+  BB1 {
+    goto BB2
+  }
+  BB2 {
+    invariant prev_not_sat { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 38 4 107] forall k : (int) . 0 <= k && k < UInt64.to_int i_3 && k < UInt64.to_int clause_len_5 -> not Sat0.sat (Seq.get (Model1.model (Type.friday_clause_Clause_0 c_2)) (k + 1)) a_1 };
+    invariant loop_invariant { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 39 4 51] UInt64.to_int i_3 <= UInt64.to_int clause_len_5 };
+    invariant loop_invariant { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 40 4 51] UInt64.to_int j_4 <= UInt64.to_int clause_len_5 };
+    _10 <- i_3;
+    _11 <- clause_len_5;
+    _9 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 41 10 24] _10 < _11);
+    switch (_9)
+      | False -> goto BB12
+      | _ -> goto BB3
+      end
+  }
+  BB3 {
+    _14 <- j_4;
+    _15 <- clause_len_5;
+    _13 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 42 11 26] _14 = _15);
+    switch (_13)
+      | False -> goto BB5
+      | _ -> goto BB4
+      end
+  }
+  BB4 {
+    j_4 <- (0 : usize);
+    _12 <- ();
+    goto BB6
+  }
+  BB5 {
+    _12 <- ();
+    goto BB6
+  }
+  BB6 {
+    _18 <- Type.friday_assignment_Assignment_0 a_1;
+    _21 <- Type.friday_clause_Clause_0 c_2;
+    _22 <- j_4;
+    _20 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 45 20 26] Index0.index _21 _22);
+    goto BB7
+  }
+  BB7 {
+    _19 <- Type.friday_lit_Lit_var _20;
+    _17 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 45 16 31] Index1.index _18 _19);
+    goto BB8
+  }
+  BB8 {
+    l_16 <- _17;
+    _25 <- Type.friday_clause_Clause_0 c_2;
+    _26 <- j_4;
+    _24 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 46 16 22] Index0.index _25 _26);
+    goto BB9
+  }
+  BB9 {
+    r_23 <- Type.friday_lit_Lit_value _24;
+    _29 <- l_16;
+    _30 <- r_23;
+    _28 <- Prelude.eqb _29 _30;
+    switch (_28)
+      | False -> goto BB11
+      | _ -> goto BB10
+      end
+  }
+  BB10 {
+    _0 <- true;
+    goto BB13
+  }
+  BB11 {
+    _27 <- ();
+    assert { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 50 8 42] not Sat0.sat (Seq.get (Model1.model (Type.friday_clause_Clause_0 c_2)) (UInt64.to_int j_4)) a_1 };
+    _32 <- ();
+    j_4 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 51 8 14] j_4 + (1 : usize));
+    i_3 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 52 8 14] i_3 + (1 : usize));
+    _8 <- ();
+    goto BB2
+  }
+  BB12 {
+    _7 <- ();
+    _0 <- false;
+    goto BB13
+  }
+  BB13 {
+    return _0
+  }
+  
+end
+module Friday_Impl1_Compatible_Interface
+  use Type
+  predicate compatible (self : Type.friday_assignment) (pa : Type.friday_pasn)
+end
+module Friday_Impl1_Compatible
+  use Type
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.Int32
+  use mach.int.UInt64
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool, type a = Type.alloc_alloc_global,
+  axiom .
+  predicate compatible [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 69 4 41] (self : Type.friday_assignment) (pa : Type.friday_pasn)
+    
+   =
+    [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 69 4 41] Seq.length (Model0.model (Type.friday_pasn_Pasn_assign pa)) = Seq.length (Model0.model (Type.friday_assignment_Assignment_0 self)) && (forall i : (int) . 0 <= i && i < UInt64.to_int (Type.friday_pasn_Pasn_ix pa) -> Seq.get (Model0.model (Type.friday_pasn_Pasn_assign pa)) i = Seq.get (Model0.model (Type.friday_assignment_Assignment_0 self)) i)
+end
+module Friday_Impl2_Invariant_Interface
+  use Type
+  predicate invariant' (self : Type.friday_formula)
+end
+module Friday_Impl2_Invariant
+  use Type
+  use mach.int.Int
+  use mach.int.Int32
+  use seq.Seq
+  use mach.int.UInt64
+  clone Friday_Impl0_VarsInRange_Interface as VarsInRange0
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.friday_clause,
+  type a = Type.alloc_alloc_global, axiom .
+  predicate invariant' [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 80 4 30] (self : Type.friday_formula) =
+    [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 80 4 30] forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.friday_formula_Formula_clauses self)) -> VarsInRange0.vars_in_range (Seq.get (Model0.model (Type.friday_formula_Formula_clauses self)) i) (UInt64.to_int (Type.friday_formula_Formula_num_vars self))
+end
+module Friday_Impl5_Sat_Interface
+  use Type
+  predicate sat (self : Type.friday_clause) (a : Type.friday_assignment)
+end
+module Friday_Impl5_Sat
+  use Type
+  use mach.int.Int
+  use mach.int.Int32
+  use seq.Seq
+  clone Friday_Impl3_Sat_Interface as Sat0
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.friday_lit,
+  type a = Type.alloc_alloc_global, axiom .
+  predicate sat [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 122 4 39] (self : Type.friday_clause) (a : Type.friday_assignment)
+    
+   =
+    [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 122 4 39] exists i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.friday_clause_Clause_0 self)) && Sat0.sat (Seq.get (Model0.model (Type.friday_clause_Clause_0 self)) i) a
+end
+module Friday_Impl2_Sat_Interface
+  use Type
+  predicate sat (self : Type.friday_formula) (a : Type.friday_assignment)
+end
+module Friday_Impl2_Sat
+  use Type
+  use mach.int.Int
+  use mach.int.Int32
+  use seq.Seq
+  clone Friday_Impl5_Sat_Interface as Sat0
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = Type.friday_clause,
+  type a = Type.alloc_alloc_global, axiom .
+  predicate sat [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 87 4 39] (self : Type.friday_formula) (a : Type.friday_assignment)
+    
+   =
+    [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 87 4 39] forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.friday_formula_Formula_clauses self)) -> Sat0.sat (Seq.get (Model0.model (Type.friday_formula_Formula_clauses self)) i) a
+end
+module Friday_Impl4_Invariant_Interface
+  use Type
+  use mach.int.Int
+  predicate invariant' (self : Type.friday_pasn) (n : int)
+end
+module Friday_Impl4_Invariant
+  use Type
+  use mach.int.Int
+  use mach.int.UInt64
+  use seq.Seq
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool, type a = Type.alloc_alloc_global,
+  axiom .
+  predicate invariant' [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 112 4 38] (self : Type.friday_pasn) (n : int)
+   =
+    [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 112 4 38] UInt64.to_int (Type.friday_pasn_Pasn_ix self) <= Seq.length (Model0.model (Type.friday_pasn_Pasn_assign self)) && Seq.length (Model0.model (Type.friday_pasn_Pasn_assign self)) = n
+end
+module Friday_Impl6_Clone_Interface
+  use prelude.Prelude
+  use Type
+  val clone' [@cfg:stackify] (self : Type.friday_pasn) : Type.friday_pasn
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 132 4 31] self = result }
+    
+end
+module Friday_Impl6_Clone
+  use prelude.Prelude
+  use Type
+  val clone' [@cfg:stackify] (self : Type.friday_pasn) : Type.friday_pasn
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 132 4 31] self = result }
+    
+end
 module Friday_InterpClause_Interface
   use seq.Seq
   use prelude.Prelude
@@ -821,8 +1006,8 @@ module Friday_InterpClause_Interface
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool, type a = Type.alloc_alloc_global,
   axiom .
   val interp_clause [@cfg:stackify] (a : Type.friday_assignment) (c : Type.friday_clause) : bool
-    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 112 0 42] VarsInRange0.vars_in_range c (Seq.length (Model0.model (Type.friday_assignment_Assignment_0 a)))}
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 113 0 31] result = Sat0.sat c a }
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 138 0 42] VarsInRange0.vars_in_range c (Seq.length (Model0.model (Type.friday_assignment_Assignment_0 a)))}
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 139 0 31] result = Sat0.sat c a }
     
 end
 module Friday_InterpClause
@@ -857,9 +1042,9 @@ module Friday_InterpClause
   clone Alloc_Vec_Impl16_Index_Interface as Index1 with type t = bool, type i = usize, type a = Type.alloc_alloc_global,
   function Model0.model = Model0.model, predicate InBounds0.in_bounds = InBounds1.in_bounds,
   predicate HasValue0.has_value = HasValue1.has_value, type Output0.output = Output1.output
-  let rec cfg interp_clause [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 114 0 52] (a : Type.friday_assignment) (c : Type.friday_clause) : bool
-    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 112 0 42] VarsInRange0.vars_in_range c (Seq.length (Model0.model (Type.friday_assignment_Assignment_0 a)))}
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 113 0 31] result = Sat0.sat c a }
+  let rec cfg interp_clause [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 140 0 52] (a : Type.friday_assignment) (c : Type.friday_clause) : bool
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 138 0 42] VarsInRange0.vars_in_range c (Seq.length (Model0.model (Type.friday_assignment_Assignment_0 a)))}
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 139 0 31] result = Sat0.sat c a }
     
    =
   var _0 : bool;
@@ -900,18 +1085,18 @@ module Friday_InterpClause
   BB0 {
     i_3 <- (0 : usize);
     _5 <- Type.friday_clause_Clause_0 c_2;
-    clause_len_4 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 116 21 30] Len0.len _5);
+    clause_len_4 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 142 21 30] Len0.len _5);
     goto BB1
   }
   BB1 {
     goto BB2
   }
   BB2 {
-    invariant prev_not_sat { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 117 4 86] forall j : (int) . 0 <= j && j < UInt64.to_int i_3 -> not Sat1.sat (Seq.get (Model1.model (Type.friday_clause_Clause_0 c_2)) j) a_1 };
-    invariant loop_invariant { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 118 4 51] UInt64.to_int i_3 <= UInt64.to_int clause_len_4 };
+    invariant prev_not_sat { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 143 4 86] forall j : (int) . 0 <= j && j < UInt64.to_int i_3 -> not Sat1.sat (Seq.get (Model1.model (Type.friday_clause_Clause_0 c_2)) j) a_1 };
+    invariant loop_invariant { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 144 4 51] UInt64.to_int i_3 <= UInt64.to_int clause_len_4 };
     _9 <- i_3;
     _10 <- clause_len_4;
-    _8 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 119 10 24] _9 < _10);
+    _8 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 145 10 24] _9 < _10);
     switch (_8)
       | False -> goto BB9
       | _ -> goto BB3
@@ -921,19 +1106,19 @@ module Friday_InterpClause
     _13 <- Type.friday_assignment_Assignment_0 a_1;
     _16 <- Type.friday_clause_Clause_0 c_2;
     _17 <- i_3;
-    _15 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 120 20 26] Index0.index _16 _17);
+    _15 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 146 20 26] Index0.index _16 _17);
     goto BB4
   }
   BB4 {
     _14 <- Type.friday_lit_Lit_var _15;
-    _12 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 120 16 31] Index1.index _13 _14);
+    _12 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 146 16 31] Index1.index _13 _14);
     goto BB5
   }
   BB5 {
     l_11 <- _12;
     _20 <- Type.friday_clause_Clause_0 c_2;
     _21 <- i_3;
-    _19 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 121 16 22] Index0.index _20 _21);
+    _19 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 147 16 22] Index0.index _20 _21);
     goto BB6
   }
   BB6 {
@@ -952,7 +1137,7 @@ module Friday_InterpClause
   }
   BB8 {
     _22 <- ();
-    i_3 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 125 8 14] i_3 + (1 : usize));
+    i_3 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 151 8 14] i_3 + (1 : usize));
     _7 <- ();
     goto BB2
   }
@@ -976,9 +1161,9 @@ module Friday_InterpFormula_Interface
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool, type a = Type.alloc_alloc_global,
   axiom .
   val interp_formula [@cfg:stackify] (a : Type.friday_assignment) (f : Type.friday_formula) : bool
-    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 131 0 40] Seq.length (Model0.model (Type.friday_assignment_Assignment_0 a)) = UInt64.to_int (Type.friday_formula_Formula_num_vars f)}
-    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 130 0 26] Invariant0.invariant' f}
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 132 0 31] result = Sat0.sat f a }
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 157 0 40] Seq.length (Model0.model (Type.friday_assignment_Assignment_0 a)) = UInt64.to_int (Type.friday_formula_Formula_num_vars f)}
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 156 0 26] Invariant0.invariant' f}
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 158 0 31] result = Sat0.sat f a }
     
 end
 module Friday_InterpFormula
@@ -1013,10 +1198,10 @@ module Friday_InterpFormula
   function Model0.model = Model1.model
   clone Friday_InterpClause_Interface as InterpClause0 with function Model0.model = Model0.model,
   predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range, predicate Sat0.sat = Sat1.sat
-  let rec cfg interp_formula [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 133 0 54] (a : Type.friday_assignment) (f : Type.friday_formula) : bool
-    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 131 0 40] Seq.length (Model0.model (Type.friday_assignment_Assignment_0 a)) = UInt64.to_int (Type.friday_formula_Formula_num_vars f)}
-    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 130 0 26] Invariant0.invariant' f}
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 132 0 31] result = Sat0.sat f a }
+  let rec cfg interp_formula [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 159 0 54] (a : Type.friday_assignment) (f : Type.friday_formula) : bool
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 157 0 40] Seq.length (Model0.model (Type.friday_assignment_Assignment_0 a)) = UInt64.to_int (Type.friday_formula_Formula_num_vars f)}
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 156 0 26] Invariant0.invariant' f}
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 158 0 31] result = Sat0.sat f a }
     
    =
   var _0 : bool;
@@ -1052,15 +1237,15 @@ module Friday_InterpFormula
     goto BB1
   }
   BB1 {
-    invariant prev_sat { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 135 4 87] forall j : (int) . 0 <= j && j < UInt64.to_int i_3 -> Sat1.sat (Seq.get (Model1.model (Type.friday_formula_Formula_clauses f_2)) j) a_1 };
-    invariant loop_invariant { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 136 4 58] UInt64.to_int i_3 <= Seq.length (Model1.model (Type.friday_formula_Formula_clauses f_2)) };
+    invariant prev_sat { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 161 4 87] forall j : (int) . 0 <= j && j < UInt64.to_int i_3 -> Sat1.sat (Seq.get (Model1.model (Type.friday_formula_Formula_clauses f_2)) j) a_1 };
+    invariant loop_invariant { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 162 4 58] UInt64.to_int i_3 <= Seq.length (Model1.model (Type.friday_formula_Formula_clauses f_2)) };
     _7 <- i_3;
     _9 <- Type.friday_formula_Formula_clauses f_2;
-    _8 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 137 14 29] Len0.len _9);
+    _8 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 163 14 29] Len0.len _9);
     goto BB2
   }
   BB2 {
-    _6 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 137 10 29] _7 < _8);
+    _6 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 163 10 29] _7 < _8);
     switch (_6)
       | False -> goto BB8
       | _ -> goto BB3
@@ -1070,13 +1255,13 @@ module Friday_InterpFormula
     _13 <- a_1;
     _17 <- Type.friday_formula_Formula_clauses f_2;
     _18 <- i_3;
-    _16 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 138 30 42] Index0.index _17 _18);
+    _16 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 164 30 42] Index0.index _17 _18);
     goto BB4
   }
   BB4 {
     _15 <- _16;
     _14 <- _15;
-    _12 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 138 12 43] InterpClause0.interp_clause _13 _14);
+    _12 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 164 12 43] InterpClause0.interp_clause _13 _14);
     goto BB5
   }
   BB5 {
@@ -1092,7 +1277,7 @@ module Friday_InterpFormula
   }
   BB7 {
     _10 <- ();
-    i_3 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 141 8 14] i_3 + (1 : usize));
+    i_3 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 167 8 14] i_3 + (1 : usize));
     _5 <- ();
     goto BB1
   }
@@ -1253,11 +1438,11 @@ module Friday_Set_Interface
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = bool, type a = Type.alloc_alloc_global,
   axiom .
   val set [@cfg:stackify] (pa : Type.friday_pasn) (b : bool) : Type.friday_pasn
-    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 147 0 46] Seq.length (Model0.model (Type.friday_pasn_Pasn_assign pa)) <= 18446744073709551615}
-    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 146 0 40] UInt64.to_int (Type.friday_pasn_Pasn_ix pa) < Seq.length (Model0.model (Type.friday_pasn_Pasn_assign pa))}
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 150 0 36] UInt64.to_int (Type.friday_pasn_Pasn_ix result) = UInt64.to_int (Type.friday_pasn_Pasn_ix pa) + 1 }
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 149 0 41] Seq.get (Model0.model (Type.friday_pasn_Pasn_assign result)) (UInt64.to_int (Type.friday_pasn_Pasn_ix pa)) = b }
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 148 0 53] Compatible0.compatible (Type.Friday_Assignment (Type.friday_pasn_Pasn_assign result)) pa }
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 173 0 46] Seq.length (Model0.model (Type.friday_pasn_Pasn_assign pa)) <= 18446744073709551615}
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 172 0 40] UInt64.to_int (Type.friday_pasn_Pasn_ix pa) < Seq.length (Model0.model (Type.friday_pasn_Pasn_assign pa))}
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 176 0 36] UInt64.to_int (Type.friday_pasn_Pasn_ix result) = UInt64.to_int (Type.friday_pasn_Pasn_ix pa) + 1 }
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 175 0 41] Seq.get (Model0.model (Type.friday_pasn_Pasn_assign result)) (UInt64.to_int (Type.friday_pasn_Pasn_ix pa)) = b }
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 174 0 53] Compatible0.compatible (Type.Friday_Assignment (Type.friday_pasn_Pasn_assign result)) pa }
     
 end
 module Friday_Set
@@ -1281,12 +1466,12 @@ module Friday_Set
   predicate InBounds0.in_bounds = InBounds0.in_bounds,
   predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
   predicate HasValue0.has_value = HasValue0.has_value, type Output0.output = Output0.output
-  let rec cfg set [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 151 0 34] (pa : Type.friday_pasn) (b : bool) : Type.friday_pasn
-    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 147 0 46] Seq.length (Model0.model (Type.friday_pasn_Pasn_assign pa)) <= 18446744073709551615}
-    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 146 0 40] UInt64.to_int (Type.friday_pasn_Pasn_ix pa) < Seq.length (Model0.model (Type.friday_pasn_Pasn_assign pa))}
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 150 0 36] UInt64.to_int (Type.friday_pasn_Pasn_ix result) = UInt64.to_int (Type.friday_pasn_Pasn_ix pa) + 1 }
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 149 0 41] Seq.get (Model0.model (Type.friday_pasn_Pasn_assign result)) (UInt64.to_int (Type.friday_pasn_Pasn_ix pa)) = b }
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 148 0 53] Compatible0.compatible (Type.Friday_Assignment (Type.friday_pasn_Pasn_assign result)) pa }
+  let rec cfg set [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 177 0 34] (pa : Type.friday_pasn) (b : bool) : Type.friday_pasn
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 173 0 46] Seq.length (Model0.model (Type.friday_pasn_Pasn_assign pa)) <= 18446744073709551615}
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 172 0 40] UInt64.to_int (Type.friday_pasn_Pasn_ix pa) < Seq.length (Model0.model (Type.friday_pasn_Pasn_assign pa))}
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 176 0 36] UInt64.to_int (Type.friday_pasn_Pasn_ix result) = UInt64.to_int (Type.friday_pasn_Pasn_ix pa) + 1 }
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 175 0 41] Seq.get (Model0.model (Type.friday_pasn_Pasn_assign result)) (UInt64.to_int (Type.friday_pasn_Pasn_ix pa)) = b }
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 174 0 53] Compatible0.compatible (Type.Friday_Assignment (Type.friday_pasn_Pasn_assign result)) pa }
     
    =
   var _0 : Type.friday_pasn;
@@ -1305,7 +1490,7 @@ module Friday_Set
   }
   BB0 {
     _4 <- pa_1;
-    new_pa_3 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 152 21 31] Clone0.clone' _4);
+    new_pa_3 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 178 21 31] Clone0.clone' _4);
     goto BB1
   }
   BB1 {
@@ -1313,13 +1498,13 @@ module Friday_Set
     _7 <- borrow_mut (Type.friday_pasn_Pasn_assign new_pa_3);
     new_pa_3 <- (let Type.Friday_Pasn a b = new_pa_3 in Type.Friday_Pasn ( ^ _7) b);
     _8 <- Type.friday_pasn_Pasn_ix pa_1;
-    _6 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 153 4 24] IndexMut0.index_mut _7 _8);
+    _6 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 179 4 24] IndexMut0.index_mut _7 _8);
     goto BB2
   }
   BB2 {
     _6 <- { _6 with current = _5 };
     assume { Resolve0.resolve _6 };
-    new_pa_3 <- (let Type.Friday_Pasn a b = new_pa_3 in Type.Friday_Pasn a ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 154 4 18] Type.friday_pasn_Pasn_ix new_pa_3 + (1 : usize)));
+    new_pa_3 <- (let Type.Friday_Pasn a b = new_pa_3 in Type.Friday_Pasn a ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 180 4 18] Type.friday_pasn_Pasn_ix new_pa_3 + (1 : usize)));
     _0 <- new_pa_3;
     goto BB3
   }
@@ -1379,9 +1564,9 @@ module Friday_Inner_Interface
   clone Friday_Impl4_Invariant_Interface as Invariant1
   clone Friday_Impl2_Invariant_Interface as Invariant0
   val inner [@cfg:stackify] (f : Type.friday_formula) (pa : Type.friday_pasn) : bool
-    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 160 0 26] Invariant0.invariant' f}
-    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 159 0 38] Invariant1.invariant' pa (UInt64.to_int (Type.friday_formula_Formula_num_vars f))}
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 161 0 75] (not result) = (forall a : (Type.friday_assignment) . Compatible0.compatible a pa -> not Sat0.sat f a) }
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 186 0 26] Invariant0.invariant' f}
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 185 0 38] Invariant1.invariant' pa (UInt64.to_int (Type.friday_formula_Formula_num_vars f))}
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 187 0 75] (not result) = (forall a : (Type.friday_assignment) . Compatible0.compatible a pa -> not Sat0.sat f a) }
     
 end
 module Friday_Inner
@@ -1413,11 +1598,11 @@ module Friday_Inner
   predicate Compatible0.compatible = Compatible0.compatible
   clone Friday_InterpFormula_Interface as InterpFormula0 with function Model0.model = Model1.model,
   predicate Invariant0.invariant' = Invariant0.invariant', predicate Sat0.sat = Sat0.sat
-  let rec cfg inner [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 162 0 39] (f : Type.friday_formula) (pa : Type.friday_pasn) : bool
-    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 160 0 26] Invariant0.invariant' f}
-    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 159 0 38] Invariant1.invariant' pa (UInt64.to_int (Type.friday_formula_Formula_num_vars f))}
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 161 0 75] (not result) = (forall a : (Type.friday_assignment) . Compatible0.compatible a pa -> not Sat0.sat f a) }
-    variant {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 158 0 32] UInt64.to_int (Type.friday_formula_Formula_num_vars f) - UInt64.to_int (Type.friday_pasn_Pasn_ix pa)}
+  let rec cfg inner [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 188 0 39] (f : Type.friday_formula) (pa : Type.friday_pasn) : bool
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 186 0 26] Invariant0.invariant' f}
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 185 0 38] Invariant1.invariant' pa (UInt64.to_int (Type.friday_formula_Formula_num_vars f))}
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 187 0 75] (not result) = (forall a : (Type.friday_assignment) . Compatible0.compatible a pa -> not Sat0.sat f a) }
+    variant {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 184 0 32] UInt64.to_int (Type.friday_formula_Formula_num_vars f) - UInt64.to_int (Type.friday_pasn_Pasn_ix pa)}
     
    =
   var _0 : bool;
@@ -1458,11 +1643,11 @@ module Friday_Inner
   BB2 {
     _4 <- Type.friday_pasn_Pasn_ix pa_2;
     _6 <- Type.friday_pasn_Pasn_assign pa_2;
-    _5 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 163 16 31] Len0.len _6);
+    _5 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 189 16 31] Len0.len _6);
     goto BB3
   }
   BB3 {
-    _3 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 163 7 31] _4 = _5);
+    _3 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 189 7 31] _4 = _5);
     switch (_3)
       | False -> goto BB7
       | _ -> goto BB4
@@ -1478,7 +1663,7 @@ module Friday_Inner
     _9 <- _10;
     _8 <- _9;
     _12 <- f_1;
-    _0 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 164 15 56] InterpFormula0.interp_formula _8 _12);
+    _0 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 190 15 56] InterpFormula0.interp_formula _8 _12);
     goto BB6
   }
   BB6 {
@@ -1488,7 +1673,7 @@ module Friday_Inner
     _15 <- f_1;
     _18 <- pa_2;
     _17 <- _18;
-    _16 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 166 24 38] Set0.set _17 true);
+    _16 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 192 24 38] Set0.set _17 true);
     goto BB11
   }
   BB8 {
@@ -1499,14 +1684,14 @@ module Friday_Inner
     _20 <- f_1;
     _23 <- pa_2;
     _22 <- _23;
-    _21 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 166 52 67] Set0.set _22 false);
+    _21 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 192 52 67] Set0.set _22 false);
     goto BB13
   }
   BB10 {
     goto BB16
   }
   BB11 {
-    _14 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 166 15 39] inner _15 _16);
+    _14 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 192 15 39] inner _15 _16);
     goto BB12
   }
   BB12 {
@@ -1516,7 +1701,7 @@ module Friday_Inner
       end
   }
   BB13 {
-    _19 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 166 43 68] inner _20 _21);
+    _19 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 192 43 68] inner _20 _21);
     goto BB14
   }
   BB14 {
@@ -1590,9 +1775,9 @@ module Friday_Solver_Interface
   clone Friday_Impl2_Sat_Interface as Sat0
   clone Friday_Impl2_Invariant_Interface as Invariant0
   val solver [@cfg:stackify] (f : Type.friday_formula) : bool
-    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 172 0 26] Invariant0.invariant' f}
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 171 0 54] result -> (exists a : (Type.friday_assignment) . Sat0.sat f a) }
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 170 0 87] not result -> (forall a : (Type.friday_assignment) . Seq.length (Model0.model (Type.friday_assignment_Assignment_0 a)) = UInt64.to_int (Type.friday_formula_Formula_num_vars f) -> not Sat0.sat f a) }
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 198 0 26] Invariant0.invariant' f}
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 197 0 54] result -> (exists a : (Type.friday_assignment) . Sat0.sat f a) }
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 196 0 87] not result -> (forall a : (Type.friday_assignment) . Seq.length (Model0.model (Type.friday_assignment_Assignment_0 a)) = UInt64.to_int (Type.friday_formula_Formula_num_vars f) -> not Sat0.sat f a) }
     
 end
 module Friday_Solver
@@ -1627,10 +1812,10 @@ module Friday_Solver
   clone Friday_Inner_Interface as Inner0 with predicate Invariant0.invariant' = Invariant0.invariant',
   predicate Invariant1.invariant' = Invariant1.invariant', predicate Compatible0.compatible = Compatible0.compatible,
   predicate Sat0.sat = Sat0.sat
-  let rec cfg solver [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 173 0 34] (f : Type.friday_formula) : bool
-    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 172 0 26] Invariant0.invariant' f}
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 171 0 54] result -> (exists a : (Type.friday_assignment) . Sat0.sat f a) }
-    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 170 0 87] not result -> (forall a : (Type.friday_assignment) . Seq.length (Model0.model (Type.friday_assignment_Assignment_0 a)) = UInt64.to_int (Type.friday_formula_Formula_num_vars f) -> not Sat0.sat f a) }
+  let rec cfg solver [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 199 0 34] (f : Type.friday_formula) : bool
+    requires {[#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 198 0 26] Invariant0.invariant' f}
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 197 0 54] result -> (exists a : (Type.friday_assignment) . Sat0.sat f a) }
+    ensures { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 196 0 87] not result -> (forall a : (Type.friday_assignment) . Seq.length (Model0.model (Type.friday_assignment_Assignment_0 a)) = UInt64.to_int (Type.friday_formula_Formula_num_vars f) -> not Sat0.sat f a) }
     
    =
   var _0 : bool;
@@ -1662,11 +1847,11 @@ module Friday_Solver
   }
   BB0 {
     _5 <- Type.friday_formula_Formula_clauses f_1;
-    _4 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 174 7 22] Len0.len _5);
+    _4 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 200 7 22] Len0.len _5);
     goto BB1
   }
   BB1 {
-    _3 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 174 7 27] _4 = (0 : usize));
+    _3 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 200 7 27] _4 = (0 : usize));
     switch (_3)
       | False -> goto BB3
       | _ -> goto BB2
@@ -1678,7 +1863,7 @@ module Friday_Solver
   }
   BB3 {
     _2 <- ();
-    assign_7 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 177 32 42] New0.new ());
+    assign_7 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 203 32 42] New0.new ());
     goto BB4
   }
   BB4 {
@@ -1689,11 +1874,11 @@ module Friday_Solver
     goto BB6
   }
   BB6 {
-    invariant loop_invariant { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 179 4 51] UInt64.to_int i_8 <= UInt64.to_int (Type.friday_formula_Formula_num_vars f_1) };
-    invariant len_invariant { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 180 4 54] Seq.length (Model0.model assign_7) = UInt64.to_int i_8 };
+    invariant loop_invariant { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 205 4 51] UInt64.to_int i_8 <= UInt64.to_int (Type.friday_formula_Formula_num_vars f_1) };
+    invariant len_invariant { [#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 206 4 54] Seq.length (Model0.model assign_7) = UInt64.to_int i_8 };
     _12 <- i_8;
     _13 <- Type.friday_formula_Formula_num_vars f_1;
-    _11 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 181 10 24] _12 < _13);
+    _11 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 207 10 24] _12 < _13);
     switch (_11)
       | False -> goto BB9
       | _ -> goto BB7
@@ -1702,11 +1887,11 @@ module Friday_Solver
   BB7 {
     _15 <- borrow_mut assign_7;
     assign_7 <-  ^ _15;
-    _14 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 182 8 26] Push0.push _15 false);
+    _14 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 208 8 26] Push0.push _15 false);
     goto BB8
   }
   BB8 {
-    i_8 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 183 8 14] i_8 + (1 : usize));
+    i_8 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 209 8 14] i_8 + (1 : usize));
     _10 <- ();
     goto BB6
   }
@@ -1720,7 +1905,7 @@ module Friday_Solver
   BB10 {
     _21 <- f_1;
     _22 <- base_19;
-    _0 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 186 4 18] Inner0.inner _21 _22);
+    _0 <- ([#"/home/sarek/master/sat-mirror/Friday/src/lib.rs" 212 4 18] Inner0.inner _21 _22);
     goto BB11
   }
   BB11 {
