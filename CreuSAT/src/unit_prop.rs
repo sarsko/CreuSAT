@@ -70,7 +70,7 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
     proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
     proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments) && true);
     f.clauses[cref].rest.swap(j, k);
-    proof_assert!((@(@f.clauses)[@cref]).exchange(@(@(old_f.inner()).clauses)[@cref], @j, @k));
+    proof_assert!((@(@f.clauses)[@cref]).exchange(@(@old_f.clauses)[@cref], @j, @k));
     proof_assert!(forall<i: Int> 0 <= i && i < (@trail.trail).len() ==>
     match (@trail.trail)[i].reason {
     Reason::Long(cref2) => { @cref != @cref2 },
@@ -192,7 +192,7 @@ fn propagate_lit_with_regard_to_clause(
         let old_c = ghost! { f.clauses[cref] };
         proof_assert!((@(@f.clauses)[@cref])[1].unset(trail.assignments));
         swap(f, trail, watches, cref, 0, 1);
-        proof_assert!((@(@f.clauses)[@cref]).exchange(@old_c.inner(), 0, 1));
+        proof_assert!((@(@f.clauses)[@cref]).exchange(@old_c, 0, 1));
         proof_assert!((@(@f.clauses)[@cref])[0].unset(trail.assignments));
         trail.enq_assignment(step, f);
         proof_assert!(((@f.clauses)[@cref]).post_unit(trail.assignments));
@@ -224,12 +224,12 @@ fn propagate_literal(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, 
     let old_f = ghost! { f };
     let old_w = ghost! { watches };
     #[invariant(trail_inv, trail.invariant(*f))]
-    #[invariant(watch_len, (@watches.watches).len() == (@(old_w.inner()).watches).len())]
+    #[invariant(watch_len, (@watches.watches).len() == (@old_w.watches).len())]
     #[invariant(watch_inv, watches.invariant(*f))]
-    #[invariant(f_equi, (old_f.inner()).equisat(*f))]
+    #[invariant(f_equi, old_f.equisat(*f))]
     #[invariant(f_inv, f.invariant())]
-    #[invariant(dec_unch, (@trail.decisions) == (@(old_trail.inner()).decisions))]
-    #[invariant(nvars_unch, @f.num_vars == @(old_f.inner()).num_vars)]
+    #[invariant(dec_unch, (@trail.decisions) == (@old_trail.decisions))]
+    #[invariant(nvars_unch, @f.num_vars == @old_f.num_vars)]
     #[invariant(proph_t, ^trail == ^old_trail.inner())]
     #[invariant(proph_f, ^f == ^old_f.inner())]
     #[invariant(proph_w, ^watches == ^old_w.inner())]
@@ -271,10 +271,10 @@ pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches)
     let old_w = ghost! { watches };
     #[invariant(f_inv, f.invariant())]
     #[invariant(trail_inv, trail.invariant(*f))]
-    #[invariant(watch_len, (@watches.watches).len() == (@(old_w.inner()).watches).len())]
+    #[invariant(watch_len, (@watches.watches).len() == (@old_w.watches).len())]
     #[invariant(watch_inv, watches.invariant(*f))]
-    #[invariant(f_equi, (old_f.inner()).equisat(*f))]
-    #[invariant(nvars_unch, @f.num_vars == @(old_f.inner()).num_vars)]
+    #[invariant(f_equi, old_f.equisat(*f))]
+    #[invariant(nvars_unch, @f.num_vars == @old_f.num_vars)]
     #[invariant(proph_t, ^trail == ^old_trail.inner())]
     #[invariant(proph_f, ^f == ^old_f.inner())]
     #[invariant(proph_w, ^watches == ^old_w.inner())]

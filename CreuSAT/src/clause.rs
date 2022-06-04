@@ -140,10 +140,10 @@ impl Clause {
         let old_c = ghost! { self };
         self.rest.swap(j, k);
         proof_assert!(^old_c.inner() == ^self);
-        proof_assert!((*old_c.inner()).equisat_extension(*_f));
+        proof_assert!(old_c.equisat_extension(*_f));
         proof_assert!(self.invariant(@_f.num_vars));
-        proof_assert!((@self).exchange(@old_c.inner(), @j, @k));
-        proof_assert!((@old_c.inner()).permut(@self, 0, (@self).len()));
+        proof_assert!((@self).exchange(@old_c, @j, @k));
+        proof_assert!((@old_c).permut(@self, 0, (@self).len()));
         proof_assert!(self.equisat(*old_c.inner()));
         proof_assert!(self.equisat2(*old_c.inner(), *_f));
         proof_assert!(^old_c.inner() == ^self);

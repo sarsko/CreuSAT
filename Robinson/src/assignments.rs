@@ -159,8 +159,8 @@ impl Assignments {
                 } else {
                     self.0[lit.index()] = 0;
                 }
-                proof_assert!(lemma_extension_sat_base_sat(*f, @_old_a.inner(), lit.index_logic(), bool_to_assignedstate(lit.polarity)); true);
-                proof_assert!(lemma_extensions_unsat_base_unsat(@_old_a.inner(), lit.index_logic(), *f); true);
+                proof_assert!(lemma_extension_sat_base_sat(*f, @_old_a, lit.index_logic(), bool_to_assignedstate(lit.polarity)); true);
+                proof_assert!(lemma_extensions_unsat_base_unsat(@_old_a, lit.index_logic(), *f); true);
                 proof_assert!(^self == ^_old_a.inner());
                 return ClauseState::Unit;
             }
@@ -187,10 +187,10 @@ impl Assignments {
         let mut out = ClauseState::Sat;
         #[invariant(assignment_invariant, self.invariant(*f))]
         #[invariant(proph, ^self == ^_old_a.inner())]
-        #[invariant(maintains_compat, (*_old_a.inner()).compatible(*self))]
+        #[invariant(maintains_compat, _old_a.compatible(*self))]
         #[invariant(maintains_sat, f.eventually_sat_complete(*_old_a.inner()) == f.eventually_sat_complete(*self))]
         #[invariant(out_not_unsat, !(out == ClauseState::Unsat))]
-        #[invariant(inv, (_old_a.inner()).complete() ==>
+        #[invariant(inv,_old_a.complete() ==>
             *_old_a.inner() == *self && forall<j: Int> 0 <= j && j < @i ==>
             !(@f.clauses)[j].unknown(*self) && !(@f.clauses)[j].unit(*self) && (@f.clauses)[j].sat(*self)
         )]
@@ -198,7 +198,7 @@ impl Assignments {
             out == ClauseState::Sat ==> forall<j: Int> 0 <= j && j < @i ==>
             !(@f.clauses)[j].unsat(*self) && !(@f.clauses)[j].unknown(*self) && !(@f.clauses)[j].unit(*self) && (@f.clauses)[j].sat(*self)
         )]
-        #[invariant(inv3, out == ClauseState::Unit ==> !(*_old_a.inner()).complete())]
+        #[invariant(inv3, out == ClauseState::Unit ==> !_old_a.complete())]
         #[invariant(inv4, out == ClauseState::Unknown ==> !self.complete())]
         while i < f.clauses.len() {
             match self.unit_prop_once(i, f) {
@@ -233,7 +233,7 @@ impl Assignments {
         let _old_a = ghost!(self);
         #[invariant(assignments_invariant, self.invariant(*f))]
         #[invariant(proph, ^self == ^_old_a.inner())]
-        #[invariant(maintains_compat, (*_old_a.inner()).compatible(*self))]
+        #[invariant(maintains_compat, _old_a.compatible(*self))]
         #[invariant(maintains_sat, f.eventually_sat_complete(*_old_a.inner()) ==> f.eventually_sat_complete(*self))]
         loop {
             match self.unit_propagate(f) {

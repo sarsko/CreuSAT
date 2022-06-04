@@ -237,7 +237,7 @@ impl Solver {
         #[invariant(maintains_w, w.invariant(*f))]
         #[invariant(maintains_d, d.invariant(@f.num_vars))]
         #[invariant(equi, old_f.inner().equisat(*f))]
-        #[invariant(num_vars, @f.num_vars == @old_f.inner().num_vars)]
+        #[invariant(num_vars, @f.num_vars == @old_f.num_vars)]
         #[invariant(prophf, ^f == ^old_f.inner())]
         #[invariant(propht, ^t == ^old_t.inner())]
         #[invariant(prophw, ^w == ^old_w.inner())]
@@ -327,7 +327,7 @@ impl Solver {
     ) -> SatResult {
         let old_f = ghost! { formula };
         #[invariant(equi, old_f.inner().equisat(*formula))]
-        #[invariant(num_vars, @formula.num_vars == @old_f.inner().num_vars)]
+        #[invariant(num_vars, @formula.num_vars == @old_f.num_vars)]
         #[invariant(maintains_f, formula.invariant())]
         #[invariant(maintains_t, trail.invariant(*formula))]
         #[invariant(maintains_w, watches.invariant(*formula))]

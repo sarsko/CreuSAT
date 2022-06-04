@@ -71,7 +71,7 @@ impl Trail {
                 // TODO: Wrap in abstraction
                 self.assignments.0[step.lit.index()] += 2;
 
-                proof_assert!(@self.trail == pop(@(old_t.inner()).trail));
+                proof_assert!(@self.trail == pop(@old_t.trail));
                 proof_assert!(^old_t.inner() == ^self);
 
                 self.lit_to_level[step.lit.index()] = usize::MAX;
@@ -126,12 +126,12 @@ impl Trail {
         let mut i: usize = 0;
         let mut curr = d.search;
         let mut timestamp = if curr != usize::MAX { d.linked_list[curr].ts } else { 0 }; // revisit this later
-        #[invariant(i_less2, @i <= (@(old_t.inner()).trail).len())]
+        #[invariant(i_less2, @i <= (@old_t.trail).len())]
         #[invariant(i_less, i <= how_many)]
         #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
         #[invariant(inv, self.invariant_no_decision(*f))]
         #[invariant(d_inv, d.invariant(@f.num_vars))]
-        //#[invariant(len_is, (@self.trail).len() == (@(old_t.inner()).trail).len() - @i)] // we don't care anymore
+        //#[invariant(len_is, (@self.trail).len() == (@old_t.trail).len() - @i)] // we don't care anymore
         #[invariant(proph, ^old_t.inner() == ^self)]
         #[invariant(proph_d, ^old_d.inner() == ^d)]
         #[invariant(curr_less, @curr < (@d.linked_list).len() || @curr == @usize::MAX)]
@@ -158,7 +158,7 @@ impl Trail {
             proof_assert!(lemma_pop_maintains_sorted(@self.decisions); true);
             match self.decisions.pop() {
                 Some(_) => {
-                    proof_assert!(@self.decisions == pop(@(old_t2.inner()).decisions));
+                    proof_assert!(@self.decisions == pop(@old_t2.decisions));
                     proof_assert!((^old_t2.inner()) == ^self);
                 }
                 None => {
@@ -179,14 +179,14 @@ impl Trail {
             //proof_assert!((@self.decisions) == (@(@old_trail).decisions));
             match self.decisions.pop() {
                 Some(_) => {
-                    proof_assert!((@self.decisions) == pop(@(old_t3.inner()).decisions));
+                    proof_assert!((@self.decisions) == pop(@old_t3.decisions));
                     proof_assert!((^old_t3.inner()) == ^self);
                 }
                 None => {
                     unreachable!();
                 }
             }
-            proof_assert!(lemma_pop_maintains_sorted(@(old_t3.inner()).decisions); true);
+            proof_assert!(lemma_pop_maintains_sorted(@old_t3.decisions); true);
             proof_assert!(sorted(@self.decisions));
         }
         proof_assert!(

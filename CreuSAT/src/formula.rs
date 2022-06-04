@@ -99,8 +99,8 @@ impl Formula {
         watches.add_watcher(first_lit, cref, self, second_lit);
         watches.add_watcher(second_lit, cref, self, first_lit);
         proof_assert!(^old_self.inner() == ^self);
-        proof_assert!((old_self.inner()).equisat_compatible(*self));
-        proof_assert!((old_self.inner()).equisat(*self));
+        proof_assert!(old_self.equisat_compatible(*self));
+        proof_assert!(old_self.equisat(*self));
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
@@ -123,7 +123,7 @@ impl Formula {
         let old_self = ghost! { self };
         let cref = self.clauses.len();
         self.clauses.push(clause);
-        proof_assert!((old_self.inner()).equisat_compatible(*self));
+        proof_assert!(old_self.equisat_compatible(*self));
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
@@ -147,7 +147,7 @@ impl Formula {
         let old_self = ghost! { self };
         let cref = self.clauses.len();
         self.clauses.push(clause);
-        proof_assert!((old_self.inner()).equisat_compatible(*self));
+        proof_assert!(old_self.equisat_compatible(*self));
         // proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
@@ -183,8 +183,8 @@ impl Formula {
         watches.unwatch(self, t, cref, self.clauses[cref].rest[1]);
         self.clauses[cref].deleted = true;
         proof_assert!(forall<i: Int> 0 <= i && i < (@(@self.clauses)[@cref]).len() ==>
-            (@(@self.clauses)[@cref])[i] == (@(@(old_f.inner()).clauses)[@cref])[i]);
-        proof_assert!((old_f.inner()).equisat(*self)); // This assertion helps with the invariant, which otherwise takes a long time.
+            (@(@self.clauses)[@cref])[i] == (@(@old_f.clauses)[@cref])[i]);
+        proof_assert!(old_f.equisat(*self)); // This assertion helps with the invariant, which otherwise takes a long time.
         proof_assert!(^self == ^old_f.inner());
     }
 
@@ -207,7 +207,7 @@ impl Formula {
         #[invariant(f_inv, self.invariant())]
         #[invariant(proph_w, ^watches == ^old_w.inner())]
         #[invariant(proph_f, ^self == ^old_f.inner())]
-        #[invariant(num_vars_unch, @self.num_vars == @(old_f.inner()).num_vars)]
+        #[invariant(num_vars_unch, @self.num_vars == @old_f.num_vars)]
         #[invariant(equi, self.equisat(*old_f.inner()))]
         while i < self.clauses.len() {
             if !self.clauses[i].deleted {
@@ -262,7 +262,7 @@ impl Formula {
         #[invariant(f_inv, self.invariant())]
         #[invariant(proph_w, ^watches == ^old_w.inner())]
         #[invariant(proph_f, ^self == ^old_f.inner())]
-        #[invariant(num_vars_unch, @self.num_vars == @(old_f.inner()).num_vars)]
+        #[invariant(num_vars_unch, @self.num_vars == @old_f.num_vars)]
         #[invariant(equi, self.equisat(*old_f.inner()))]
         while i < self.clauses.len() {
             if !self.clauses[i].deleted {
