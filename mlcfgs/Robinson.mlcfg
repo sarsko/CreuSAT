@@ -78,15 +78,6 @@ module Type
     match (self) with
       | Robinson_Formula_Formula a _ -> a
       end
-  type core_option_option 't =
-    | Core_Option_Option_None
-    | Core_Option_Option_Some 't
-    
-  let function core_option_option_Some_0 (self : core_option_option 't) : 't =
-    match (self) with
-      | Core_Option_Option_None -> any 't
-      | Core_Option_Option_Some a -> a
-      end
   type robinson_decision_decisions  =
     | Robinson_Decision_Decisions (alloc_vec_vec usize (alloc_alloc_global))
     
@@ -102,6 +93,15 @@ module Type
     | Robinson_Clause_ClauseState_Unit
     | Robinson_Clause_ClauseState_Unknown
     
+  type core_option_option 't =
+    | Core_Option_Option_None
+    | Core_Option_Option_Some 't
+    
+  let function core_option_option_Some_0 (self : core_option_option 't) : 't =
+    match (self) with
+      | Core_Option_Option_None -> any 't
+      | Core_Option_Option_Some a -> a
+      end
   type robinson_solver_satresult  =
     | Robinson_Solver_SatResult_Sat (alloc_vec_vec uint8 (alloc_alloc_global))
     | Robinson_Solver_SatResult_Unsat
@@ -157,45 +157,10 @@ module CreusotContracts_Std1_Vec_Impl1_Resolve
 end
 module CreusotContracts_Std1_Vec_Impl1
   type t
-  use Type
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve2 with type self = t
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = t, type a = Type.alloc_alloc_global, axiom .
-  clone CreusotContracts_Std1_Vec_Impl1_Resolve as Resolve0 with type t = t, function Model0.model = Model0.model,
-  predicate Resolve0.resolve = Resolve2.resolve
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve_Interface as Resolve1 with type self = Type.alloc_vec_vec t (Type.alloc_alloc_global),
-  predicate resolve = Resolve0.resolve
-end
-module CreusotContracts_Logic_Model_Model_ModelTy
-  type self
-  type modelTy
-end
-module CreusotContracts_Logic_Model_Model_Model_Interface
-  type self
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = self
-  function model (self : self) : ModelTy0.modelTy
-end
-module CreusotContracts_Logic_Model_Model_Model
-  type self
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = self
-  function model (self : self) : ModelTy0.modelTy
-end
-module CreusotContracts_Std1_Vec_Impl0_ModelTy
-  type t
-  type a
-  use seq.Seq
-  type modelTy  =
-    Seq.seq t
 end
 module CreusotContracts_Std1_Vec_Impl0
   type t
   type a
-  use Type
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = t, type a = a, axiom .
-  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = t, type a = a
-  clone CreusotContracts_Logic_Model_Model_Model_Interface as Model1 with type self = Type.alloc_vec_vec t a,
-  function model = Model0.model, type ModelTy0.modelTy = ModelTy0.modelTy
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = Type.alloc_vec_vec t a,
-  type modelTy = ModelTy0.modelTy
 end
 module CreusotContracts_Logic_Resolve_Impl2_Resolve_Interface
   type t
@@ -208,9 +173,6 @@ module CreusotContracts_Logic_Resolve_Impl2_Resolve
 end
 module CreusotContracts_Logic_Resolve_Impl2
   type t
-  clone CreusotContracts_Logic_Resolve_Impl2_Resolve as Resolve0 with type t = t
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve_Interface as Resolve1 with type self = t,
-  predicate resolve = Resolve0.resolve
 end
 module Robinson_Clause_Impl2_ClauseFromVec_Interface
   use Type
@@ -267,7 +229,7 @@ module Robinson_Assignments_Impl0_Model
   function model [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 21 4 35] (self : Type.robinson_assignments_assignments) : Seq.seq uint8
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 21 4 35] Model0.model (Type.robinson_assignments_assignments_Assignments_0 self)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 20 4 12] Model0.model (Type.robinson_assignments_assignments_Assignments_0 self)
 end
 module Robinson_Logic_Unset_Interface
   use mach.int.Int
@@ -281,7 +243,7 @@ module Robinson_Logic_Unset
   use prelude.UInt8
   use mach.int.Int32
   predicate unset [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 44 0 38] (v : uint8) =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 44 0 38] if UInt8.to_int v >= 2 then true else false
+    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 45 4 5] if UInt8.to_int v >= 2 then true else false
 end
 module Robinson_Assignments_CompatibleInner_Interface
   use seq.Seq
@@ -300,7 +262,7 @@ module Robinson_Assignments_CompatibleInner
   predicate compatible_inner [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 27 0 78] (a : Seq.seq uint8) (a2 : Seq.seq uint8)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 27 0 78] Seq.length a = Seq.length a2 && (forall i : (int) . 0 <= i && i < Seq.length a -> Unset0.unset (Seq.get a i) || Seq.get a i = Seq.get a2 i)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 28 4 5] Seq.length a = Seq.length a2 && (forall i : (int) . 0 <= i && i < Seq.length a -> Unset0.unset (Seq.get a i) || Seq.get a i = Seq.get a2 i)
 end
 module Robinson_Assignments_CompleteInner_Interface
   use seq.Seq
@@ -317,7 +279,7 @@ module Robinson_Assignments_CompleteInner
   use mach.int.Int32
   clone Robinson_Logic_Unset_Interface as Unset0
   predicate complete_inner [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 35 0 52] (a : Seq.seq uint8) =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 35 0 52] forall i : (int) . 0 <= i && i < Seq.length a -> not Unset0.unset (Seq.get a i)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 36 4 5] forall i : (int) . 0 <= i && i < Seq.length a -> not Unset0.unset (Seq.get a i)
 end
 module Robinson_Assignments_CompatibleCompleteInner_Interface
   use seq.Seq
@@ -336,7 +298,7 @@ module Robinson_Assignments_CompatibleCompleteInner
   predicate compatible_complete_inner [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 42 0 87] (a : Seq.seq uint8) (a2 : Seq.seq uint8)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 42 0 87] CompatibleInner0.compatible_inner a a2 && CompleteInner0.complete_inner a2
+    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 41 0 12] CompatibleInner0.compatible_inner a a2 && CompleteInner0.complete_inner a2
 end
 module Robinson_Assignments_AssignmentsInvariant_Interface
   use seq.Seq
@@ -356,7 +318,7 @@ module Robinson_Assignments_AssignmentsInvariant
   predicate assignments_invariant [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 47 0 71] (a : Seq.seq uint8) (f : Type.robinson_formula_formula)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 47 0 71] UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f) = Seq.length a
+    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 48 4 40] UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f) = Seq.length a
 end
 module Robinson_Assignments_Impl1_Invariant_Interface
   use Type
@@ -371,7 +333,7 @@ module Robinson_Assignments_Impl1_Invariant
   predicate invariant' [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 54 4 46] (self : Type.robinson_assignments_assignments) (f : Type.robinson_formula_formula)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 54 4 46] UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f) = Seq.length (Model0.model self) && UInt64.to_int (Type.robinson_assignments_assignments_Assignments_1 self) <= UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 55 8 9] UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f) = Seq.length (Model0.model self) && UInt64.to_int (Type.robinson_assignments_assignments_Assignments_1 self) <= UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f)
 end
 module Robinson_Assignments_Impl1_Compatible_Interface
   use Type
@@ -384,7 +346,7 @@ module Robinson_Assignments_Impl1_Compatible
   predicate compatible [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 61 4 52] (self : Type.robinson_assignments_assignments) (a2 : Type.robinson_assignments_assignments)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 61 4 52] CompatibleInner0.compatible_inner (Model0.model self) (Model0.model a2)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 62 8 50] CompatibleInner0.compatible_inner (Model0.model self) (Model0.model a2)
 end
 module Robinson_Assignments_Impl1_Complete_Interface
   use Type
@@ -400,7 +362,7 @@ module Robinson_Assignments_Impl1_Complete
   predicate complete [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 66 4 33] (self : Type.robinson_assignments_assignments)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 66 4 33] forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> not Unset0.unset (Seq.get (Model0.model self) i)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 67 8 9] forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> not Unset0.unset (Seq.get (Model0.model self) i)
 end
 module Robinson_Assignments_Impl1_CompatibleComplete_Interface
   use Type
@@ -414,7 +376,21 @@ module Robinson_Assignments_Impl1_CompatibleComplete
   predicate compatible_complete [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 73 4 61] (self : Type.robinson_assignments_assignments) (a2 : Type.robinson_assignments_assignments)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 73 4 61] Compatible0.compatible self a2 && Complete0.complete a2
+    [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 72 4 16] Compatible0.compatible self a2 && Complete0.complete a2
+end
+module CreusotContracts_Logic_Model_Model_ModelTy
+  type self
+  type modelTy
+end
+module CreusotContracts_Logic_Model_Model_Model_Interface
+  type self
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = self
+  function model (self : self) : ModelTy0.modelTy
+end
+module CreusotContracts_Logic_Model_Model_Model
+  type self
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = self
+  function model (self : self) : ModelTy0.modelTy
 end
 module CreusotContracts_Logic_Model_Impl0_Model_Interface
   type t
@@ -439,23 +415,8 @@ module Robinson_Assignments_Impl0_ModelTy
   type modelTy  =
     Seq.seq uint8
 end
-module CreusotContracts_Logic_Model_Impl0_ModelTy
-  type t
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
-  type modelTy  =
-    ModelTy0.modelTy
-end
 module CreusotContracts_Logic_Model_Impl0
   type t
-  use prelude.Prelude
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy2 with type self = t
-  clone CreusotContracts_Logic_Model_Model_Model as Model2 with type self = t, type ModelTy0.modelTy = ModelTy2.modelTy
-  clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = t, type ModelTy0.modelTy = ModelTy2.modelTy,
-  function Model0.model = Model2.model
-  clone CreusotContracts_Logic_Model_Impl0_ModelTy as ModelTy0 with type t = t, type ModelTy0.modelTy = ModelTy2.modelTy
-  clone CreusotContracts_Logic_Model_Model_Model_Interface as Model1 with type self = t, function model = Model0.model,
-  type ModelTy0.modelTy = ModelTy0.modelTy
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = t, type modelTy = ModelTy0.modelTy
 end
 module Robinson_Assignments_Impl0
   use mach.int.Int
@@ -518,29 +479,6 @@ module Alloc_Vec_Impl1_Len
   clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t, type a = a, axiom .
   val len [@cfg:stackify] (self : Type.alloc_vec_vec t a) : usize
     ensures { UInt64.to_int result = Seq.length (Model0.model self) }
-    
-end
-module Core_Ops_Index_Index_Output
-  type self
-  type idx
-  type output
-end
-module Core_Ops_Index_Index_Index_Interface
-  type self
-  type idx
-  use prelude.Prelude
-  clone Core_Ops_Index_Index_Output as Output0 with type self = self, type idx = idx
-  val index [@cfg:stackify] (self : self) (index : idx) : Output0.output
-    requires {false}
-    
-end
-module Core_Ops_Index_Index_Index
-  type self
-  type idx
-  use prelude.Prelude
-  clone Core_Ops_Index_Index_Output as Output0 with type self = self, type idx = idx
-  val index [@cfg:stackify] (self : self) (index : idx) : Output0.output
-    requires {false}
     
 end
 module CreusotContracts_Std1_Slice_SliceIndexSpec_InBounds_Interface
@@ -640,38 +578,10 @@ module Alloc_Vec_Impl1_Push
     ensures { Model0.model ( ^ self) = Seq.snoc (Model0.model ( * self)) value }
     
 end
-module Alloc_Vec_Impl16_Output
-  type t
-  type i
-  type a
-  use prelude.Prelude
-  use seq.Seq
-  clone Core_Slice_Index_SliceIndex_Output as Output0 with type self = i, type t = seq t
-  type output  =
-    Output0.output
-end
 module Alloc_Vec_Impl16
   type t
   type i
   type a
-  use prelude.Prelude
-  use seq.Seq
-  use Type
-  clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy0 with type t = t
-  clone CreusotContracts_Std1_Slice_SliceIndexSpec_InBounds as InBounds0 with type self = i, type t = seq t,
-  type ModelTy0.modelTy = ModelTy0.modelTy
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = t, type a = a, axiom .
-  clone Core_Slice_Index_SliceIndex_Output as Output2 with type self = i, type t = seq t
-  clone CreusotContracts_Std1_Slice_SliceIndexSpec_HasValue as HasValue0 with type self = i, type t = seq t,
-  type ModelTy0.modelTy = ModelTy0.modelTy, type Output0.output = Output2.output
-  clone Alloc_Vec_Impl16_Index_Interface as Index0 with type t = t, type i = i, type a = a,
-  function Model0.model = Model0.model, predicate InBounds0.in_bounds = InBounds0.in_bounds,
-  predicate HasValue0.has_value = HasValue0.has_value, type Output0.output = Output2.output
-  clone Alloc_Vec_Impl16_Output as Output0 with type t = t, type i = i, type a = a, type Output0.output = Output2.output
-  clone Core_Ops_Index_Index_Index_Interface as Index1 with type self = Type.alloc_vec_vec t a, type idx = i,
-  val index = Index0.index, type Output0.output = Output0.output
-  clone Core_Ops_Index_Index_Output as Output1 with type self = Type.alloc_vec_vec t a, type idx = i,
-  type output = Output0.output
 end
 module CreusotContracts_Std1_Slice_Impl3_InBounds_Interface
   type t
@@ -690,17 +600,8 @@ module CreusotContracts_Std1_Slice_Impl3_InBounds
   predicate in_bounds [@inline:trivial] (self : usize) (seq : Seq.seq t) =
     UInt64.to_int self < Seq.length seq
 end
-module CreusotContracts_Std1_Slice_SliceIndexSpec_ResolveElswhere_Interface
-  type self
+module CreusotContracts_Std1_Slice_Impl3
   type t
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
-  predicate resolve_elswhere (self : self) (old' : ModelTy0.modelTy) (fin : ModelTy0.modelTy)
-end
-module CreusotContracts_Std1_Slice_SliceIndexSpec_ResolveElswhere
-  type self
-  type t
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
-  predicate resolve_elswhere (self : self) (old' : ModelTy0.modelTy) (fin : ModelTy0.modelTy)
 end
 module CreusotContracts_Std1_Slice_Impl3_HasValue_Interface
   type t
@@ -719,331 +620,16 @@ module CreusotContracts_Std1_Slice_Impl3_HasValue
   predicate has_value [@inline:trivial] (self : usize) (seq : Seq.seq t) (out : t) =
     Seq.get seq (UInt64.to_int self) = out
 end
-module CreusotContracts_Std1_Slice_Impl3_ResolveElswhere_Interface
-  type t
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  use seq.Seq
-  predicate resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t)
-end
-module CreusotContracts_Std1_Slice_Impl3_ResolveElswhere
-  type t
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  use seq.Seq
-  use mach.int.Int32
-  predicate resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t) =
-    forall i : (int) . 0 <= i && i <> UInt64.to_int self && i < Seq.length old' -> Seq.get old' i = Seq.get fin i
-end
 module Core_Slice_Index_Impl2_Output
   type t
   type output  =
     t
 end
-module CreusotContracts_Std1_Slice_Impl3
-  type t
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  use seq.Seq
-  clone CreusotContracts_Std1_Slice_Impl3_ResolveElswhere as ResolveElswhere0 with type t = t
-  clone Core_Slice_Index_Impl2_Output as Output0 with type t = t
-  clone CreusotContracts_Std1_Slice_Impl3_HasValue as HasValue0 with type t = t
-  clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy0 with type t = t
-  clone CreusotContracts_Std1_Slice_SliceIndexSpec_ResolveElswhere_Interface as ResolveElswhere1 with type self = usize,
-  type t = seq t, predicate resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-  type ModelTy0.modelTy = ModelTy0.modelTy
-  clone CreusotContracts_Std1_Slice_SliceIndexSpec_HasValue_Interface as HasValue1 with type self = usize,
-  type t = seq t, predicate has_value = HasValue0.has_value, type ModelTy0.modelTy = ModelTy0.modelTy,
-  type Output0.output = Output0.output
-  clone CreusotContracts_Std1_Slice_Impl3_InBounds as InBounds0 with type t = t
-  clone CreusotContracts_Std1_Slice_SliceIndexSpec_InBounds_Interface as InBounds1 with type self = usize,
-  type t = seq t, predicate in_bounds = InBounds0.in_bounds, type ModelTy0.modelTy = ModelTy0.modelTy
-end
-module Core_Slice_Index_SliceIndex_Get_Interface
-  type self
-  type t
-  use prelude.Prelude
-  use Type
-  clone Core_Slice_Index_SliceIndex_Output as Output0 with type self = self, type t = t
-  val get [@cfg:stackify] (self : self) (slice : t) : Type.core_option_option Output0.output
-    requires {false}
-    
-end
-module Core_Slice_Index_SliceIndex_Get
-  type self
-  type t
-  use prelude.Prelude
-  use Type
-  clone Core_Slice_Index_SliceIndex_Output as Output0 with type self = self, type t = t
-  val get [@cfg:stackify] (self : self) (slice : t) : Type.core_option_option Output0.output
-    requires {false}
-    
-end
-module Core_Slice_Index_SliceIndex_GetMut_Interface
-  type self
-  type t
-  use prelude.Prelude
-  use Type
-  clone Core_Slice_Index_SliceIndex_Output as Output0 with type self = self, type t = t
-  val get_mut [@cfg:stackify] (self : self) (slice : borrowed t) : Type.core_option_option (borrowed Output0.output)
-    requires {false}
-    
-end
-module Core_Slice_Index_SliceIndex_GetMut
-  type self
-  type t
-  use prelude.Prelude
-  use Type
-  clone Core_Slice_Index_SliceIndex_Output as Output0 with type self = self, type t = t
-  val get_mut [@cfg:stackify] (self : self) (slice : borrowed t) : Type.core_option_option (borrowed Output0.output)
-    requires {false}
-    
-end
-module Core_Slice_Index_SliceIndex_GetUnchecked_Interface
-  type self
-  type t
-  use prelude.Prelude
-  val get_unchecked [@cfg:stackify] (self : self) (slice : opaque_ptr) : opaque_ptr
-    requires {false}
-    
-end
-module Core_Slice_Index_SliceIndex_GetUnchecked
-  type self
-  type t
-  use prelude.Prelude
-  val get_unchecked [@cfg:stackify] (self : self) (slice : opaque_ptr) : opaque_ptr
-    requires {false}
-    
-end
-module Core_Slice_Index_SliceIndex_GetUncheckedMut_Interface
-  type self
-  type t
-  use prelude.Prelude
-  val get_unchecked_mut [@cfg:stackify] (self : self) (slice : opaque_ptr) : opaque_ptr
-    requires {false}
-    
-end
-module Core_Slice_Index_SliceIndex_GetUncheckedMut
-  type self
-  type t
-  use prelude.Prelude
-  val get_unchecked_mut [@cfg:stackify] (self : self) (slice : opaque_ptr) : opaque_ptr
-    requires {false}
-    
-end
-module Core_Slice_Index_SliceIndex_Index_Interface
-  type self
-  type t
-  use prelude.Prelude
-  clone Core_Slice_Index_SliceIndex_Output as Output0 with type self = self, type t = t
-  val index [@cfg:stackify] (self : self) (slice : t) : Output0.output
-    requires {false}
-    
-end
-module Core_Slice_Index_SliceIndex_Index
-  type self
-  type t
-  use prelude.Prelude
-  clone Core_Slice_Index_SliceIndex_Output as Output0 with type self = self, type t = t
-  val index [@cfg:stackify] (self : self) (slice : t) : Output0.output
-    requires {false}
-    
-end
-module Core_Slice_Index_SliceIndex_IndexMut_Interface
-  type self
-  type t
-  use prelude.Prelude
-  clone Core_Slice_Index_SliceIndex_Output as Output0 with type self = self, type t = t
-  val index_mut [@cfg:stackify] (self : self) (slice : borrowed t) : borrowed Output0.output
-    requires {false}
-    
-end
-module Core_Slice_Index_SliceIndex_IndexMut
-  type self
-  type t
-  use prelude.Prelude
-  clone Core_Slice_Index_SliceIndex_Output as Output0 with type self = self, type t = t
-  val index_mut [@cfg:stackify] (self : self) (slice : borrowed t) : borrowed Output0.output
-    requires {false}
-    
-end
-module Core_Slice_Index_Impl2_Get_Interface
-  type t
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  use seq.Seq
-  use Type
-  val get [@cfg:stackify] (self : usize) (slice : seq t) : Type.core_option_option t
-    requires {false}
-    
-end
-module Core_Slice_Index_Impl2_Get
-  type t
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  use seq.Seq
-  use Type
-  val get [@cfg:stackify] (self : usize) (slice : seq t) : Type.core_option_option t
-    requires {false}
-    
-end
-module Core_Slice_Index_Impl2_GetMut_Interface
-  type t
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  use seq.Seq
-  use Type
-  val get_mut [@cfg:stackify] (self : usize) (slice : borrowed (seq t)) : Type.core_option_option (borrowed t)
-    requires {false}
-    
-end
-module Core_Slice_Index_Impl2_GetMut
-  type t
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  use seq.Seq
-  use Type
-  val get_mut [@cfg:stackify] (self : usize) (slice : borrowed (seq t)) : Type.core_option_option (borrowed t)
-    requires {false}
-    
-end
-module Core_Slice_Index_Impl2_GetUnchecked_Interface
-  type t
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  val get_unchecked [@cfg:stackify] (self : usize) (slice : opaque_ptr) : opaque_ptr
-    requires {false}
-    
-end
-module Core_Slice_Index_Impl2_GetUnchecked
-  type t
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  val get_unchecked [@cfg:stackify] (self : usize) (slice : opaque_ptr) : opaque_ptr
-    requires {false}
-    
-end
-module Core_Slice_Index_Impl2_GetUncheckedMut_Interface
-  type t
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  val get_unchecked_mut [@cfg:stackify] (self : usize) (slice : opaque_ptr) : opaque_ptr
-    requires {false}
-    
-end
-module Core_Slice_Index_Impl2_GetUncheckedMut
-  type t
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  val get_unchecked_mut [@cfg:stackify] (self : usize) (slice : opaque_ptr) : opaque_ptr
-    requires {false}
-    
-end
-module Core_Slice_Index_Impl2_Index_Interface
-  type t
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  use seq.Seq
-  val index [@cfg:stackify] (self : usize) (slice : seq t) : t
-    requires {false}
-    
-end
-module Core_Slice_Index_Impl2_Index
-  type t
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  use seq.Seq
-  val index [@cfg:stackify] (self : usize) (slice : seq t) : t
-    requires {false}
-    
-end
-module Core_Slice_Index_Impl2_IndexMut_Interface
-  type t
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  use seq.Seq
-  val index_mut [@cfg:stackify] (self : usize) (slice : borrowed (seq t)) : borrowed t
-    requires {false}
-    
-end
-module Core_Slice_Index_Impl2_IndexMut
-  type t
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  use seq.Seq
-  val index_mut [@cfg:stackify] (self : usize) (slice : borrowed (seq t)) : borrowed t
-    requires {false}
-    
-end
 module Core_Slice_Index_Impl2
   type t
-  use mach.int.Int
-  use prelude.Prelude
-  use mach.int.UInt64
-  use seq.Seq
-  clone Core_Slice_Index_Impl2_IndexMut_Interface as IndexMut0 with type t = t
-  clone Core_Slice_Index_Impl2_Index_Interface as Index0 with type t = t
-  clone Core_Slice_Index_Impl2_GetUncheckedMut_Interface as GetUncheckedMut0 with type t = t
-  clone Core_Slice_Index_SliceIndex_GetUncheckedMut_Interface as GetUncheckedMut1 with type self = usize,
-  type t = seq t, val get_unchecked_mut = GetUncheckedMut0.get_unchecked_mut
-  clone Core_Slice_Index_Impl2_GetUnchecked_Interface as GetUnchecked0 with type t = t
-  clone Core_Slice_Index_SliceIndex_GetUnchecked_Interface as GetUnchecked1 with type self = usize, type t = seq t,
-  val get_unchecked = GetUnchecked0.get_unchecked
-  clone Core_Slice_Index_Impl2_GetMut_Interface as GetMut0 with type t = t
-  clone Core_Slice_Index_Impl2_Get_Interface as Get0 with type t = t
-  clone Core_Slice_Index_Impl2_Output as Output0 with type t = t
-  clone Core_Slice_Index_SliceIndex_IndexMut_Interface as IndexMut1 with type self = usize, type t = seq t,
-  val index_mut = IndexMut0.index_mut, type Output0.output = Output0.output
-  clone Core_Slice_Index_SliceIndex_Index_Interface as Index1 with type self = usize, type t = seq t,
-  val index = Index0.index, type Output0.output = Output0.output
-  clone Core_Slice_Index_SliceIndex_GetMut_Interface as GetMut1 with type self = usize, type t = seq t,
-  val get_mut = GetMut0.get_mut, type Output0.output = Output0.output
-  clone Core_Slice_Index_SliceIndex_Get_Interface as Get1 with type self = usize, type t = seq t, val get = Get0.get,
-  type Output0.output = Output0.output
-  clone Core_Slice_Index_SliceIndex_Output as Output1 with type self = usize, type t = seq t,
-  type output = Output0.output
-end
-module CreusotContracts_Std1_Slice_Impl0_Model_Interface
-  type t
-  use prelude.Prelude
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.UInt64
-  function model (self : seq t) : Seq.seq t
-end
-module CreusotContracts_Std1_Slice_Impl0_Model
-  type t
-  use prelude.Prelude
-  use seq.Seq
-  use mach.int.Int
-  use mach.int.UInt64
-  function model (self : seq t) : Seq.seq t
-  axiom model_spec : forall self : seq t . Seq.length (model self) <= 18446744073709551615 && model self = Prelude.id self
 end
 module CreusotContracts_Std1_Slice_Impl0
   type t
-  use prelude.Prelude
-  use seq.Seq
-  clone CreusotContracts_Std1_Slice_Impl0_Model as Model0 with type t = t, axiom .
-  clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy0 with type t = t
-  clone CreusotContracts_Logic_Model_Model_Model_Interface as Model1 with type self = seq t,
-  function model = Model0.model, type ModelTy0.modelTy = ModelTy0.modelTy
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = seq t, type modelTy = ModelTy0.modelTy
 end
 module Robinson_Assignments_Impl2_Clone_Interface
   use mach.int.UInt64
@@ -1199,7 +785,7 @@ module Robinson_Clause_Impl0_Model
   function model [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 21 4 35] (self : Type.robinson_clause_clause) : Seq.seq (Type.robinson_lit_lit)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 21 4 35] Model0.model (Type.robinson_clause_clause_Clause_rest self)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 20 4 12] Model0.model (Type.robinson_clause_clause_Clause_rest self)
 end
 module Robinson_Lit_Impl1_Invariant_Interface
   use Type
@@ -1213,7 +799,7 @@ module Robinson_Lit_Impl1_Invariant
   predicate invariant' [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 37 4 42] (self : Type.robinson_lit_lit) (n : int)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 37 4 42] UInt64.to_int (Type.robinson_lit_lit_Lit_idx self) < n
+    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 38 8 35] UInt64.to_int (Type.robinson_lit_lit_Lit_idx self) < n
 end
 module Robinson_Clause_Impl1_VarsInRange_Interface
   use Type
@@ -1230,7 +816,7 @@ module Robinson_Clause_Impl1_VarsInRange
   predicate vars_in_range [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 81 4 46] (self : Type.robinson_clause_clause) (n : int)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 81 4 46] forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> Invariant0.invariant' (Seq.get (Model0.model self) i) n
+    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 82 8 9] forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> Invariant0.invariant' (Seq.get (Model0.model self) i) n
 end
 module Robinson_Lit_Impl0_IndexLogic_Interface
   use Type
@@ -1244,7 +830,7 @@ module Robinson_Lit_Impl0_IndexLogic
   function index_logic [@inline:trivial] [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 22 4 35] (self : Type.robinson_lit_lit) : int
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 22 4 35] UInt64.to_int (Type.robinson_lit_lit_Lit_idx self)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 23 8 31] UInt64.to_int (Type.robinson_lit_lit_Lit_idx self)
 end
 module Robinson_Clause_Impl1_NoDuplicateIndexes_Interface
   use Type
@@ -1260,7 +846,7 @@ module Robinson_Clause_Impl1_NoDuplicateIndexes
   predicate no_duplicate_indexes [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 89 4 45] (self : Type.robinson_clause_clause)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 89 4 45] forall k : (int) . forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) && 0 <= k && k < j -> not IndexLogic0.index_logic (Seq.get (Model0.model self) k) = IndexLogic0.index_logic (Seq.get (Model0.model self) j)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 90 8 9] forall k : (int) . forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) && 0 <= k && k < j -> not IndexLogic0.index_logic (Seq.get (Model0.model self) k) = IndexLogic0.index_logic (Seq.get (Model0.model self) j)
 end
 module Robinson_Clause_Impl1_Invariant_Interface
   use Type
@@ -1275,7 +861,7 @@ module Robinson_Clause_Impl1_Invariant
   predicate invariant' [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 97 4 42] (self : Type.robinson_clause_clause) (n : int)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 97 4 42] VarsInRange0.vars_in_range self n && NoDuplicateIndexes0.no_duplicate_indexes self
+    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 96 4 16] VarsInRange0.vars_in_range self n && NoDuplicateIndexes0.no_duplicate_indexes self
 end
 module Robinson_Formula_Impl1_Invariant_Interface
   use Type
@@ -1293,7 +879,7 @@ module Robinson_Formula_Impl1_Invariant
   predicate invariant' [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 38 4 34] (self : Type.robinson_formula_formula)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 38 4 34] forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses self)) -> Invariant0.invariant' (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses self)) i) (UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars self))
+    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 39 8 9] forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses self)) -> Invariant0.invariant' (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses self)) i) (UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars self))
 end
 module Robinson_Clause_Impl0_ModelTy
   use seq.Seq
@@ -1446,26 +1032,10 @@ module Robinson_Decision_Impl0_Invariant
   predicate invariant' [#"/home/sarek/master/sat-mirror/Robinson/src/decision.rs" 15 4 42] (self : Type.robinson_decision_decisions) (n : int)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/decision.rs" 15 4 42] Seq.length (Model0.model (Type.robinson_decision_decisions_Decisions_lit_order self)) = n && (forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.robinson_decision_decisions_Decisions_lit_order self)) -> UInt64.to_int (Seq.get (Model0.model (Type.robinson_decision_decisions_Decisions_lit_order self)) i) < n)
-end
-module CreusotContracts_Logic_Model_Impl1_ModelTy
-  type t
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
-  type modelTy  =
-    ModelTy0.modelTy
+    [#"/home/sarek/master/sat-mirror/Robinson/src/decision.rs" 16 8 9] Seq.length (Model0.model (Type.robinson_decision_decisions_Decisions_lit_order self)) = n && (forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.robinson_decision_decisions_Decisions_lit_order self)) -> UInt64.to_int (Seq.get (Model0.model (Type.robinson_decision_decisions_Decisions_lit_order self)) i) < n)
 end
 module CreusotContracts_Logic_Model_Impl1
   type t
-  use prelude.Prelude
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy2 with type self = t
-  clone CreusotContracts_Logic_Model_Model_Model as Model2 with type self = t, type ModelTy0.modelTy = ModelTy2.modelTy
-  clone CreusotContracts_Logic_Model_Impl1_Model as Model0 with type t = t, type ModelTy0.modelTy = ModelTy2.modelTy,
-  function Model0.model = Model2.model
-  clone CreusotContracts_Logic_Model_Impl1_ModelTy as ModelTy0 with type t = t, type ModelTy0.modelTy = ModelTy2.modelTy
-  clone CreusotContracts_Logic_Model_Model_Model_Interface as Model1 with type self = borrowed t,
-  function model = Model0.model, type ModelTy0.modelTy = ModelTy0.modelTy
-  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = borrowed t,
-  type modelTy = ModelTy0.modelTy
 end
 module CreusotContracts_Logic_Resolve_Impl1_Resolve_Interface
   type t
@@ -1480,10 +1050,6 @@ module CreusotContracts_Logic_Resolve_Impl1_Resolve
 end
 module CreusotContracts_Logic_Resolve_Impl1
   type t
-  use prelude.Prelude
-  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = t
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve_Interface as Resolve1 with type self = borrowed t,
-  predicate resolve = Resolve0.resolve
 end
 module Robinson_Assignments_Impl2_FindUnassigned_Interface
   use seq.Seq
@@ -1740,7 +1306,7 @@ module Robinson_Lit_Impl1_UnsatInner
   predicate unsat_inner [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 52 4 59] (self : Type.robinson_lit_lit) (a : Seq.seq uint8)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 52 4 59] if Type.robinson_lit_lit_Lit_polarity self then
+    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 53 8 9] if Type.robinson_lit_lit_Lit_polarity self then
       UInt8.to_int (Seq.get a (UInt64.to_int (Type.robinson_lit_lit_Lit_idx self))) = 0
     else
       UInt8.to_int (Seq.get a (UInt64.to_int (Type.robinson_lit_lit_Lit_idx self))) = 1
@@ -1766,7 +1332,7 @@ module Robinson_Clause_Impl1_UnsatInner
   predicate unsat_inner [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 50 4 59] (self : Type.robinson_clause_clause) (a : Seq.seq uint8)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 50 4 59] forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> UnsatInner0.unsat_inner (Seq.get (Model0.model self) i) a
+    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 51 8 9] forall i : (int) . 0 <= i && i < Seq.length (Model0.model self) -> UnsatInner0.unsat_inner (Seq.get (Model0.model self) i) a
 end
 module Robinson_Clause_Impl1_Unsat_Interface
   use Type
@@ -1779,7 +1345,7 @@ module Robinson_Clause_Impl1_Unsat
   predicate unsat [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 58 4 46] (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 58 4 46] UnsatInner0.unsat_inner self (Model0.model a)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 59 8 42] UnsatInner0.unsat_inner self (Model0.model a)
 end
 module Robinson_Lit_Impl1_SatInner_Interface
   use Type
@@ -1800,7 +1366,7 @@ module Robinson_Lit_Impl1_SatInner
   predicate sat_inner [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 42 4 57] (self : Type.robinson_lit_lit) (a : Seq.seq uint8)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 42 4 57] if Type.robinson_lit_lit_Lit_polarity self then
+    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 43 8 9] if Type.robinson_lit_lit_Lit_polarity self then
       UInt8.to_int (Seq.get a (UInt64.to_int (Type.robinson_lit_lit_Lit_idx self))) = 1
     else
       UInt8.to_int (Seq.get a (UInt64.to_int (Type.robinson_lit_lit_Lit_idx self))) = 0
@@ -1826,7 +1392,7 @@ module Robinson_Clause_Impl1_SatInner
   predicate sat_inner [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 63 4 57] (self : Type.robinson_clause_clause) (a : Seq.seq uint8)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 63 4 57] exists i : (int) . 0 <= i && i < Seq.length (Model0.model self) && SatInner0.sat_inner (Seq.get (Model0.model self) i) a
+    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 64 8 9] exists i : (int) . 0 <= i && i < Seq.length (Model0.model self) && SatInner0.sat_inner (Seq.get (Model0.model self) i) a
 end
 module Robinson_Clause_Impl1_Sat_Interface
   use Type
@@ -1839,7 +1405,7 @@ module Robinson_Clause_Impl1_Sat
   predicate sat [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 71 4 44] (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 71 4 44] SatInner0.sat_inner self (Model0.model a)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 72 8 40] SatInner0.sat_inner self (Model0.model a)
 end
 module Robinson_Lit_Impl1_UnsetInner_Interface
   use Type
@@ -1860,7 +1426,7 @@ module Robinson_Lit_Impl1_UnsetInner
   predicate unset_inner [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 62 4 59] (self : Type.robinson_lit_lit) (a : Seq.seq uint8)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 62 4 59] UInt8.to_int (Seq.get a (UInt64.to_int (Type.robinson_lit_lit_Lit_idx self))) >= 2
+    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 63 8 9] UInt8.to_int (Seq.get a (UInt64.to_int (Type.robinson_lit_lit_Lit_idx self))) >= 2
 end
 module Robinson_Clause_Impl1_UnitInner_Interface
   use Type
@@ -1884,7 +1450,7 @@ module Robinson_Clause_Impl1_UnitInner
   predicate unit_inner [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 36 4 58] (self : Type.robinson_clause_clause) (a : Seq.seq uint8)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 36 4 58] VarsInRange0.vars_in_range self (Seq.length a) && not SatInner0.sat_inner self a && (exists i : (int) . 0 <= i && i < Seq.length (Model0.model self) && UnsetInner0.unset_inner (Seq.get (Model0.model self) i) a && (forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) && j <> i -> not UnsetInner0.unset_inner (Seq.get (Model0.model self) j) a))
+    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 37 8 9] VarsInRange0.vars_in_range self (Seq.length a) && not SatInner0.sat_inner self a && (exists i : (int) . 0 <= i && i < Seq.length (Model0.model self) && UnsetInner0.unset_inner (Seq.get (Model0.model self) i) a && (forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) && j <> i -> not UnsetInner0.unset_inner (Seq.get (Model0.model self) j) a))
 end
 module Robinson_Clause_Impl1_Unit_Interface
   use Type
@@ -1897,7 +1463,7 @@ module Robinson_Clause_Impl1_Unit
   predicate unit [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 45 4 45] (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 45 4 45] UnitInner0.unit_inner self (Model0.model a)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 46 8 41] UnitInner0.unit_inner self (Model0.model a)
 end
 module Robinson_Formula_Impl1_SatInner_Interface
   use Type
@@ -1920,7 +1486,7 @@ module Robinson_Formula_Impl1_SatInner
   predicate sat_inner [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 82 4 57] (self : Type.robinson_formula_formula) (a : Seq.seq uint8)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 82 4 57] forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses self)) -> SatInner0.sat_inner (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses self)) i) a
+    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 83 8 9] forall i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses self)) -> SatInner0.sat_inner (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses self)) i) a
 end
 module Robinson_Formula_Impl1_EventuallySatCompleteInner_Interface
   use Type
@@ -1942,7 +1508,7 @@ module Robinson_Formula_Impl1_EventuallySatCompleteInner
   predicate eventually_sat_complete_inner [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 65 4 77] (self : Type.robinson_formula_formula) (a : Seq.seq uint8)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 65 4 77] exists a2 : (Seq.seq uint8) . Seq.length a2 = UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars self) && CompatibleCompleteInner0.compatible_complete_inner a a2 && SatInner0.sat_inner self a2
+    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 66 8 9] exists a2 : (Seq.seq uint8) . Seq.length a2 = UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars self) && CompatibleCompleteInner0.compatible_complete_inner a a2 && SatInner0.sat_inner self a2
 end
 module Robinson_Formula_Impl1_EventuallySatComplete_Interface
   use Type
@@ -1955,7 +1521,7 @@ module Robinson_Formula_Impl1_EventuallySatComplete
   predicate eventually_sat_complete [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 72 4 64] (self : Type.robinson_formula_formula) (a : Type.robinson_assignments_assignments)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 72 4 64] EventuallySatCompleteInner0.eventually_sat_complete_inner self (Model0.model a)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 73 8 60] EventuallySatCompleteInner0.eventually_sat_complete_inner self (Model0.model a)
 end
 module Robinson_Logic_BoolToAssignedstate_Interface
   use prelude.UInt8
@@ -1970,7 +1536,7 @@ module Robinson_Logic_BoolToAssignedstate
   use mach.int.Int32
   use prelude.Prelude
   function bool_to_assignedstate [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 12 0 54] (b : bool) : uint8 =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 12 0 54] if b then (1 : uint8) else (0 : uint8)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 9 0 8] if b then (1 : uint8) else (0 : uint8)
   axiom bool_to_assignedstate_spec : forall b : bool . ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 10 0 30] b -> UInt8.to_int (bool_to_assignedstate b) = 1) && ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 11 0 31] not b -> UInt8.to_int (bool_to_assignedstate b) = 0)
 end
 module Robinson_Logic_BoolToAssignedstate_Impl
@@ -1983,7 +1549,7 @@ module Robinson_Logic_BoolToAssignedstate_Impl
     ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 10 0 30] b -> UInt8.to_int result = 1 }
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 12 0 54] if b then (1 : uint8) else (0 : uint8)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 9 0 8] if b then (1 : uint8) else (0 : uint8)
 end
 module Robinson_Clause_Impl1_InFormula_Interface
   use Type
@@ -1999,7 +1565,7 @@ module Robinson_Clause_Impl1_InFormula
   predicate in_formula [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 28 4 47] (self : Type.robinson_clause_clause) (f : Type.robinson_formula_formula)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 28 4 47] exists i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) && Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) i = self
+    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 29 8 9] exists i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) && Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) i = self
 end
 module Robinson_Logic_FlipV_Interface
   use mach.int.Int
@@ -2013,7 +1579,7 @@ module Robinson_Logic_FlipV
   use prelude.UInt8
   use mach.int.Int32
   function flip_v [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 21 0 44] (v : uint8) : uint8 =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 21 0 44] if UInt8.to_int v = 0 then
+    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 22 4 5] if UInt8.to_int v = 0 then
       (1 : uint8)
     else
       if UInt8.to_int v = 1 then (0 : uint8) else v
@@ -2040,7 +1606,7 @@ module Robinson_Formula_Impl1_UnsatInner
   predicate unsat_inner [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 95 4 59] (self : Type.robinson_formula_formula) (a : Seq.seq uint8)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 95 4 59] exists i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses self)) && UnsatInner0.unsat_inner (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses self)) i) a
+    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 96 8 9] exists i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses self)) && UnsatInner0.unsat_inner (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses self)) i) a
 end
 module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Interface
   use mach.int.Int
@@ -2085,10 +1651,10 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula
   clone Robinson_Lit_Impl1_UnsatInner_Interface as UnsatInner0
   clone Robinson_Lit_Impl0_IndexLogic_Interface as IndexLogic0
   clone Robinson_Clause_Impl0_Model_Interface as Model0
-  function lemma_unit_wrong_polarity_unsat_formula [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 76 0 119] (c : Type.robinson_clause_clause) (f : Type.robinson_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
+  function lemma_unit_wrong_polarity_unsat_formula [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 76 0 1] (c : Type.robinson_clause_clause) (f : Type.robinson_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 76 0 119] ()
+    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 64 0 8] ()
   axiom lemma_unit_wrong_polarity_unsat_formula_spec : forall c : Type.robinson_clause_clause, f : Type.robinson_formula_formula, a : Seq.seq uint8, ix : int, v : uint8 . ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 73 0 113] forall j : (int) . 0 <= j && j < Seq.length (Model0.model c) && not IndexLogic0.index_logic (Seq.get (Model0.model c) j) = ix -> UnsatInner0.unsat_inner (Seq.get (Model0.model c) j) a) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 72 0 133] exists j : (int) . 0 <= j && j < Seq.length (Model0.model c) && IndexLogic0.index_logic (Seq.get (Model0.model c) j) = ix && BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity (Seq.get (Model0.model c) j)) = v) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 71 0 33] Invariant0.invariant' c (Seq.length a)) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 70 0 28] InFormula0.in_formula c f) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 69 0 28] UnitInner0.unit_inner c a) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 68 0 22] not Unset0.unset v) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 67 0 52] 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix)) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 66 0 35] UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f) = Seq.length a) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 65 0 26] Invariant1.invariant' f) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 74 0 66] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v))) && ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 75 0 47] UnsatInner1.unsat_inner f (Seq.set a ix (FlipV0.flip_v v)))
 end
 module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Impl
@@ -2152,7 +1718,7 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Impl
     ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 74 0 66] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v)) }
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 76 0 119] ()
+    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 64 0 8] ()
 end
 module Robinson_Logic_LemmaUnitForces_Interface
   use seq.Seq
@@ -2183,7 +1749,7 @@ module Robinson_Logic_LemmaUnitForces
   function lemma_unit_forces [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 62 0 86] (f : Type.robinson_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 62 0 86] ()
+    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 54 0 8] ()
   axiom lemma_unit_forces_spec : forall f : Type.robinson_formula_formula, a : Seq.seq uint8, ix : int, v : uint8 . ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 60 0 67] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v))) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 59 0 47] EventuallySatCompleteInner0.eventually_sat_complete_inner f a) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 58 0 22] not Unset0.unset v) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 57 0 52] 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix)) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 56 0 35] UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars f) = Seq.length a) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 55 0 26] Invariant0.invariant' f) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 61 0 57] EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix v))
 end
 module Robinson_Logic_LemmaUnitForces_Impl
@@ -2232,7 +1798,7 @@ module Robinson_Logic_LemmaUnitForces_Impl
     ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 61 0 57] EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix v) }
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 62 0 86] ()
+    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 54 0 8] ()
 end
 module Robinson_Logic_LemmaExtensionSatBaseSat_Interface
   use seq.Seq
@@ -2255,11 +1821,11 @@ module Robinson_Logic_LemmaExtensionSatBaseSat
   use prelude.UInt8
   clone Robinson_Logic_Unset_Interface as Unset0
   clone Robinson_Formula_Impl1_EventuallySatCompleteInner_Interface as EventuallySatCompleteInner0
-  function lemma_extension_sat_base_sat [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 82 0 97] (f : Type.robinson_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
+  function lemma_extension_sat_base_sat [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 85 0 97] (f : Type.robinson_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 82 0 97] ()
-  axiom lemma_extension_sat_base_sat_spec : forall f : Type.robinson_formula_formula, a : Seq.seq uint8, ix : int, v : uint8 . ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 80 0 58] EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix v)) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 79 0 52] 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix)) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 81 0 46] EventuallySatCompleteInner0.eventually_sat_complete_inner f a)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 81 0 8] ()
+  axiom lemma_extension_sat_base_sat_spec : forall f : Type.robinson_formula_formula, a : Seq.seq uint8, ix : int, v : uint8 . ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 83 0 58] EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix v)) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 82 0 52] 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix)) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 84 0 46] EventuallySatCompleteInner0.eventually_sat_complete_inner f a)
 end
 module Robinson_Logic_LemmaExtensionSatBaseSat_Impl
   use seq.Seq
@@ -2286,12 +1852,12 @@ module Robinson_Logic_LemmaExtensionSatBaseSat_Impl
   clone Robinson_Formula_Impl1_EventuallySatCompleteInner as EventuallySatCompleteInner0 with predicate CompatibleCompleteInner0.compatible_complete_inner = CompatibleCompleteInner0.compatible_complete_inner,
   predicate SatInner0.sat_inner = SatInner0.sat_inner
   let rec ghost function lemma_extension_sat_base_sat (f : Type.robinson_formula_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
-    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 80 0 58] EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix v)}
-    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 79 0 52] 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix)}
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 81 0 46] EventuallySatCompleteInner0.eventually_sat_complete_inner f a }
+    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 83 0 58] EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix v)}
+    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 82 0 52] 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix)}
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 84 0 46] EventuallySatCompleteInner0.eventually_sat_complete_inner f a }
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 82 0 97] ()
+    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 81 0 8] ()
 end
 module Robinson_Logic_Pos_Interface
   use mach.int.Int
@@ -2304,7 +1870,7 @@ module Robinson_Logic_Pos
   use prelude.Prelude
   use prelude.UInt8
   function pos [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 34 0 25] (_ : ()) : uint8 =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 34 0 25] (1 : uint8)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 35 4 7] (1 : uint8)
 end
 module Robinson_Logic_Neg_Interface
   use mach.int.Int
@@ -2317,7 +1883,7 @@ module Robinson_Logic_Neg
   use prelude.Prelude
   use prelude.UInt8
   function neg [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 39 0 25] (_ : ()) : uint8 =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 39 0 25] (0 : uint8)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 40 4 7] (0 : uint8)
 end
 module Robinson_Logic_LemmaExtensionsUnsatBaseUnsat_Interface
   use seq.Seq
@@ -2343,11 +1909,11 @@ module Robinson_Logic_LemmaExtensionsUnsatBaseUnsat
   clone Robinson_Logic_Neg_Interface as Neg0
   clone Robinson_Formula_Impl1_EventuallySatCompleteInner_Interface as EventuallySatCompleteInner0
   clone Robinson_Logic_Pos_Interface as Pos0
-  function lemma_extensions_unsat_base_unsat [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 89 0 84] (a : Seq.seq uint8) (ix : int) (f : Type.robinson_formula_formula) : ()
+  function lemma_extensions_unsat_base_unsat [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 92 0 84] (a : Seq.seq uint8) (ix : int) (f : Type.robinson_formula_formula) : ()
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 89 0 84] ()
-  axiom lemma_extensions_unsat_base_unsat_spec : forall a : Seq.seq uint8, ix : int, f : Type.robinson_formula_formula . ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 87 0 63] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (Pos0.pos ()))) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 86 0 63] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (Neg0.neg ()))) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 85 0 52] 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix)) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 88 0 47] not EventuallySatCompleteInner0.eventually_sat_complete_inner f a)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 87 0 8] ()
+  axiom lemma_extensions_unsat_base_unsat_spec : forall a : Seq.seq uint8, ix : int, f : Type.robinson_formula_formula . ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 90 0 63] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (Pos0.pos ()))) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 89 0 63] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (Neg0.neg ()))) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 88 0 52] 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix)) -> ([#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 91 0 47] not EventuallySatCompleteInner0.eventually_sat_complete_inner f a)
 end
 module Robinson_Logic_LemmaExtensionsUnsatBaseUnsat_Impl
   use seq.Seq
@@ -2376,13 +1942,13 @@ module Robinson_Logic_LemmaExtensionsUnsatBaseUnsat_Impl
   clone Robinson_Logic_Neg as Neg0
   clone Robinson_Logic_Pos as Pos0
   let rec ghost function lemma_extensions_unsat_base_unsat (a : Seq.seq uint8) (ix : int) (f : Type.robinson_formula_formula) : ()
-    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 87 0 63] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (Pos0.pos ()))}
-    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 86 0 63] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (Neg0.neg ()))}
-    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 85 0 52] 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix)}
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 88 0 47] not EventuallySatCompleteInner0.eventually_sat_complete_inner f a }
+    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 90 0 63] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (Pos0.pos ()))}
+    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 89 0 63] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (Neg0.neg ()))}
+    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 88 0 52] 0 <= ix && ix < Seq.length a && Unset0.unset (Seq.get a ix)}
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 91 0 47] not EventuallySatCompleteInner0.eventually_sat_complete_inner f a }
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 89 0 84] ()
+    [#"/home/sarek/master/sat-mirror/Robinson/src/logic.rs" 87 0 8] ()
 end
 module Robinson_Lit_Impl1_Unset_Interface
   use Type
@@ -2395,7 +1961,7 @@ module Robinson_Lit_Impl1_Unset
   predicate unset [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 76 4 46] (self : Type.robinson_lit_lit) (a : Type.robinson_assignments_assignments)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 76 4 46] UnsetInner0.unset_inner self (Model0.model a)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 77 8 42] UnsetInner0.unset_inner self (Model0.model a)
 end
 module Robinson_Lit_Impl1_Unsat_Interface
   use Type
@@ -2408,7 +1974,7 @@ module Robinson_Lit_Impl1_Unsat
   predicate unsat [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 81 4 46] (self : Type.robinson_lit_lit) (a : Type.robinson_assignments_assignments)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 81 4 46] UnsatInner0.unsat_inner self (Model0.model a)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 82 8 42] UnsatInner0.unsat_inner self (Model0.model a)
 end
 module Robinson_Lit_Impl1_Sat_Interface
   use Type
@@ -2421,7 +1987,7 @@ module Robinson_Lit_Impl1_Sat
   predicate sat [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 69 4 44] (self : Type.robinson_lit_lit) (a : Type.robinson_assignments_assignments)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 69 4 44] SatInner0.sat_inner self (Model0.model a)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 70 8 9] SatInner0.sat_inner self (Model0.model a)
 end
 module Robinson_Lit_Impl2_LitSat_Interface
   use seq.Seq
@@ -3055,23 +2621,17 @@ module Robinson_Lit_Impl2_Index
   }
   
 end
-module Core_Ops_Index_IndexMut_IndexMut_Interface
+module CreusotContracts_Std1_Slice_SliceIndexSpec_ResolveElswhere_Interface
   type self
-  type idx
-  use prelude.Prelude
-  clone Core_Ops_Index_Index_Output as Output0 with type self = self, type idx = idx
-  val index_mut [@cfg:stackify] (self : borrowed self) (index : idx) : borrowed Output0.output
-    requires {false}
-    
+  type t
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
+  predicate resolve_elswhere (self : self) (old' : ModelTy0.modelTy) (fin : ModelTy0.modelTy)
 end
-module Core_Ops_Index_IndexMut_IndexMut
+module CreusotContracts_Std1_Slice_SliceIndexSpec_ResolveElswhere
   type self
-  type idx
-  use prelude.Prelude
-  clone Core_Ops_Index_Index_Output as Output0 with type self = self, type idx = idx
-  val index_mut [@cfg:stackify] (self : borrowed self) (index : idx) : borrowed Output0.output
-    requires {false}
-    
+  type t
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
+  predicate resolve_elswhere (self : self) (old' : ModelTy0.modelTy) (fin : ModelTy0.modelTy)
 end
 module Alloc_Vec_Impl17_IndexMut_Interface
   type t
@@ -3125,25 +2685,24 @@ module Alloc_Vec_Impl17
   type t
   type i
   type a
+end
+module CreusotContracts_Std1_Slice_Impl3_ResolveElswhere_Interface
+  type t
+  use mach.int.Int
   use prelude.Prelude
+  use mach.int.UInt64
   use seq.Seq
-  use Type
-  clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy0 with type t = t
-  clone CreusotContracts_Std1_Slice_SliceIndexSpec_ResolveElswhere as ResolveElswhere0 with type self = i,
-  type t = seq t, type ModelTy0.modelTy = ModelTy0.modelTy
-  clone CreusotContracts_Std1_Slice_SliceIndexSpec_InBounds as InBounds0 with type self = i, type t = seq t,
-  type ModelTy0.modelTy = ModelTy0.modelTy
-  clone Core_Slice_Index_SliceIndex_Output as Output0 with type self = i, type t = seq t
-  clone Alloc_Vec_Impl16_Output as Output1 with type t = t, type i = i, type a = a, type Output0.output = Output0.output
-  clone CreusotContracts_Std1_Slice_SliceIndexSpec_HasValue as HasValue0 with type self = i, type t = seq t,
-  type ModelTy0.modelTy = ModelTy0.modelTy, type Output0.output = Output0.output
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = t, type a = a, axiom .
-  clone Alloc_Vec_Impl17_IndexMut_Interface as IndexMut0 with type t = t, type i = i, type a = a,
-  function Model0.model = Model0.model, predicate InBounds0.in_bounds = InBounds0.in_bounds,
-  predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-  predicate HasValue0.has_value = HasValue0.has_value, type Output0.output = Output0.output
-  clone Core_Ops_Index_IndexMut_IndexMut_Interface as IndexMut1 with type self = Type.alloc_vec_vec t a, type idx = i,
-  val index_mut = IndexMut0.index_mut, type Output0.output = Output1.output
+  predicate resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t)
+end
+module CreusotContracts_Std1_Slice_Impl3_ResolveElswhere
+  type t
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use seq.Seq
+  use mach.int.Int32
+  predicate resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t) =
+    forall i : (int) . 0 <= i && i <> UInt64.to_int self && i < Seq.length old' -> Seq.get old' i = Seq.get fin i
 end
 module Robinson_Assignments_Impl2_UnitPropOnce_Interface
   use mach.int.Int
@@ -3468,7 +3027,7 @@ module Robinson_Formula_Impl1_Sat
   predicate sat [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 90 4 44] (self : Type.robinson_formula_formula) (a : Type.robinson_assignments_assignments)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 90 4 44] SatInner0.sat_inner self (Model0.model a)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 91 8 40] SatInner0.sat_inner self (Model0.model a)
 end
 module Robinson_Formula_Impl1_Unsat_Interface
   use Type
@@ -3481,7 +3040,7 @@ module Robinson_Formula_Impl1_Unsat
   predicate unsat [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 103 4 46] (self : Type.robinson_formula_formula) (a : Type.robinson_assignments_assignments)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 103 4 46] UnsatInner0.unsat_inner self (Model0.model a)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 104 8 42] UnsatInner0.unsat_inner self (Model0.model a)
 end
 module Robinson_Clause_Impl1_Unknown_Interface
   use Type
@@ -3494,7 +3053,7 @@ module Robinson_Clause_Impl1_Unknown
   predicate unknown [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 76 4 48] (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 76 4 48] not Sat0.sat self a && not Unsat0.unsat self a
+    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 75 4 16] not Sat0.sat self a && not Unsat0.unsat self a
 end
 module Robinson_Assignments_Impl2_UnitPropagate_Interface
   use Type
@@ -3660,12 +3219,12 @@ module Robinson_Assignments_Impl2_UnitPropagate
   BB2 {
     invariant assignment_invariant { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 188 8 62] Invariant0.invariant' ( * self_1) f_2 };
     invariant proph { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 189 8 53]  ^ self_1 =  ^ _old_a_4 };
-    invariant maintains_compat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 190 8 75] Compatible0.compatible ( * _old_a_4) ( * self_1) };
+    invariant maintains_compat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 190 8 64] Compatible0.compatible ( * _old_a_4) ( * self_1) };
     invariant maintains_sat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 191 8 115] EventuallySatComplete0.eventually_sat_complete f_2 ( * _old_a_4) = EventuallySatComplete0.eventually_sat_complete f_2 ( * self_1) };
     invariant out_not_unsat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 192 8 65] not out_7 = Type.Robinson_Clause_ClauseState_Unsat };
     invariant inv { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 193 8 10] Complete0.complete ( * _old_a_4) ->  * _old_a_4 =  * self_1 && (forall j : (int) . 0 <= j && j < UInt64.to_int i_6 -> not Unknown0.unknown (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1) && not Unit0.unit (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1) && Sat1.sat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1)) };
     invariant inv2 { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 197 8 10] out_7 = Type.Robinson_Clause_ClauseState_Sat -> (forall j : (int) . 0 <= j && j < UInt64.to_int i_6 -> not Unsat1.unsat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1) && not Unknown0.unknown (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1) && not Unit0.unit (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1) && Sat1.sat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1)) };
-    invariant inv3 { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 201 8 86] out_7 = Type.Robinson_Clause_ClauseState_Unit -> not Complete0.complete ( * _old_a_4) };
+    invariant inv3 { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 201 8 75] out_7 = Type.Robinson_Clause_ClauseState_Unit -> not Complete0.complete ( * _old_a_4) };
     invariant inv4 { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 202 8 76] out_7 = Type.Robinson_Clause_ClauseState_Unknown -> not Complete0.complete ( * self_1) };
     _11 <- i_6;
     _13 <- Type.robinson_formula_formula_Formula_clauses f_2;
@@ -3865,7 +3424,7 @@ module Robinson_Assignments_Impl2_DoUnitPropagation
   BB2 {
     invariant assignments_invariant { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 234 8 63] Invariant0.invariant' ( * self_1) f_2 };
     invariant proph { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 235 8 53]  ^ self_1 =  ^ _old_a_3 };
-    invariant maintains_compat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 236 8 75] Compatible0.compatible ( * _old_a_3) ( * self_1) };
+    invariant maintains_compat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 236 8 64] Compatible0.compatible ( * _old_a_3) ( * self_1) };
     invariant maintains_sat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 237 8 116] EventuallySatComplete0.eventually_sat_complete f_2 ( * _old_a_3) -> EventuallySatComplete0.eventually_sat_complete f_2 ( * self_1) };
     _8 <- borrow_mut ( * self_1);
     self_1 <- { self_1 with current = ( ^ _8) };
@@ -4333,7 +3892,7 @@ module Robinson_Util_SortedRangeRev
   predicate sorted_range_rev [#"/home/sarek/master/sat-mirror/Robinson/src/util.rs" 8 0 67] (s : Seq.seq (usize, usize)) (l : int) (u : int)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/util.rs" 8 0 67] forall j : (int) . forall i : (int) . l <= i && i < j && j < u -> (let (a, _) = Seq.get s i in a) >= (let (a, _) = Seq.get s j in a)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/util.rs" 9 4 5] forall j : (int) . forall i : (int) . l <= i && i < j && j < u -> (let (a, _) = Seq.get s i in a) >= (let (a, _) = Seq.get s j in a)
 end
 module Robinson_Util_SortedRev_Interface
   use seq.Seq
@@ -4350,7 +3909,14 @@ module Robinson_Util_SortedRev
   use mach.int.Int32
   clone Robinson_Util_SortedRangeRev_Interface as SortedRangeRev0
   predicate sorted_rev [#"/home/sarek/master/sat-mirror/Robinson/src/util.rs" 15 0 49] (s : Seq.seq (usize, usize)) =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/util.rs" 15 0 49] SortedRangeRev0.sorted_range_rev s 0 (Seq.length s)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/util.rs" 14 0 12] SortedRangeRev0.sorted_range_rev s 0 (Seq.length s)
+end
+module CreusotContracts_Std1_Vec_Impl0_ModelTy
+  type t
+  type a
+  use seq.Seq
+  type modelTy  =
+    Seq.seq t
 end
 module Robinson_Util_PartitionRev_Interface
   use seq.Seq
@@ -4368,27 +3934,24 @@ module Robinson_Util_PartitionRev
   predicate partition_rev [#"/home/sarek/master/sat-mirror/Robinson/src/util.rs" 20 0 56] (v : Seq.seq (usize, usize)) (i : int)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/util.rs" 20 0 56] forall k2 : (int) . forall k1 : (int) . 0 <= k1 && k1 < i && i <= k2 && k2 < Seq.length v -> (let (a, _) = Seq.get v k1 in a) >= (let (a, _) = Seq.get v k2 in a)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/util.rs" 21 4 110] forall k2 : (int) . forall k1 : (int) . 0 <= k1 && k1 < i && i <= k2 && k2 < Seq.length v -> (let (a, _) = Seq.get v k1 in a) >= (let (a, _) = Seq.get v k2 in a)
 end
-module Core_Ops_Deref_Deref_Target
-  type self
-  type target
-end
-module Core_Ops_Deref_DerefMut_DerefMut_Interface
-  type self
+module CreusotContracts_Std1_Slice_Impl0_Model_Interface
+  type t
   use prelude.Prelude
-  clone Core_Ops_Deref_Deref_Target as Target0 with type self = self
-  val deref_mut [@cfg:stackify] (self : borrowed self) : borrowed Target0.target
-    requires {false}
-    
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.UInt64
+  function model (self : seq t) : Seq.seq t
 end
-module Core_Ops_Deref_DerefMut_DerefMut
-  type self
+module CreusotContracts_Std1_Slice_Impl0_Model
+  type t
   use prelude.Prelude
-  clone Core_Ops_Deref_Deref_Target as Target0 with type self = self
-  val deref_mut [@cfg:stackify] (self : borrowed self) : borrowed Target0.target
-    requires {false}
-    
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.UInt64
+  function model (self : seq t) : Seq.seq t
+  axiom model_spec : forall self : seq t . Seq.length (model self) <= 18446744073709551615 && model self = Prelude.id self
 end
 module Alloc_Vec_Impl11_DerefMut_Interface
   type t
@@ -4450,25 +4013,9 @@ module Core_Slice_Impl0_Swap
     ensures { Permut.exchange (Model1.model ( ^ self)) (Model1.model ( * self)) (UInt64.to_int a) (UInt64.to_int b) }
     
 end
-module Alloc_Vec_Impl10_Target
-  type t
-  type a
-  use prelude.Prelude
-  use seq.Seq
-  type target  =
-    seq t
-end
 module Alloc_Vec_Impl11
   type t
   type a
-  use Type
-  clone Alloc_Vec_Impl10_Target as Target0 with type t = t, type a = a
-  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = t, type a = a, axiom .
-  clone CreusotContracts_Std1_Slice_Impl0_Model as Model0 with type t = t, axiom .
-  clone Alloc_Vec_Impl11_DerefMut_Interface as DerefMut0 with type t = t, type a = a,
-  function Model0.model = Model0.model, function Model1.model = Model1.model
-  clone Core_Ops_Deref_DerefMut_DerefMut_Interface as DerefMut1 with type self = Type.alloc_vec_vec t a,
-  val deref_mut = DerefMut0.deref_mut, type Target0.target = Target0.target
 end
 module Robinson_Util_SortReverse_Interface
   use prelude.Prelude
@@ -4702,12 +4249,6 @@ end
 module CreusotContracts_Logic_Resolve_Impl0
   type t1
   type t2
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve3 with type self = t2
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve as Resolve2 with type self = t1
-  clone CreusotContracts_Logic_Resolve_Impl0_Resolve as Resolve0 with type t1 = t1, type t2 = t2,
-  predicate Resolve0.resolve = Resolve2.resolve, predicate Resolve1.resolve = Resolve3.resolve
-  clone CreusotContracts_Logic_Resolve_Resolve_Resolve_Interface as Resolve1 with type self = (t1, t2),
-  predicate resolve = Resolve0.resolve
 end
 module Robinson_Decision_Impl1_New_Interface
   use mach.int.UInt64
@@ -5159,7 +4700,7 @@ module Robinson_Formula_Impl0_Model
   function model [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 22 4 35] (self : Type.robinson_formula_formula) : (Seq.seq (Type.robinson_clause_clause), int)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 22 4 35] (Model0.model (Type.robinson_formula_formula_Formula_clauses self), UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars self))
+    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 21 4 12] (Model0.model (Type.robinson_formula_formula_Formula_clauses self), UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars self))
 end
 module Robinson_Formula_FormulaSatInner_Interface
   use seq.Seq
@@ -5180,7 +4721,7 @@ module Robinson_Formula_FormulaSatInner
   predicate formula_sat_inner [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 28 0 78] (f : (Seq.seq (Type.robinson_clause_clause), int)) (a : Seq.seq uint8)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 28 0 78] forall i : (int) . 0 <= i && i < Seq.length (let (a, _) = f in a) -> SatInner0.sat_inner (Seq.get (let (a, _) = f in a) i) a
+    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 29 4 5] forall i : (int) . 0 <= i && i < Seq.length (let (a, _) = f in a) -> SatInner0.sat_inner (Seq.get (let (a, _) = f in a) i) a
 end
 module Robinson_Formula_Impl1_EventuallySatInner_Interface
   use Type
@@ -5202,7 +4743,7 @@ module Robinson_Formula_Impl1_EventuallySatInner
   predicate eventually_sat_inner [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 46 4 68] (self : Type.robinson_formula_formula) (a : Seq.seq uint8)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 46 4 68] exists a2 : (Seq.seq uint8) . Seq.length a2 = UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars self) && CompatibleInner0.compatible_inner a a2 && SatInner0.sat_inner self a2
+    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 47 8 9] exists a2 : (Seq.seq uint8) . Seq.length a2 = UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars self) && CompatibleInner0.compatible_inner a a2 && SatInner0.sat_inner self a2
 end
 module Robinson_Formula_Impl1_EventuallySatNoAss_Interface
   use Type
@@ -5218,7 +4759,7 @@ module Robinson_Formula_Impl1_EventuallySatNoAss
   predicate eventually_sat_no_ass [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 53 4 46] (self : Type.robinson_formula_formula)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 53 4 46] exists a2 : (Seq.seq uint8) . SatInner0.sat_inner self a2
+    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 54 8 72] exists a2 : (Seq.seq uint8) . SatInner0.sat_inner self a2
 end
 module Robinson_Formula_Impl1_EventuallySatCompleteNoAss_Interface
   use Type
@@ -5236,7 +4777,7 @@ module Robinson_Formula_Impl1_EventuallySatCompleteNoAss
   predicate eventually_sat_complete_no_ass [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 58 4 55] (self : Type.robinson_formula_formula)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 58 4 55] exists a2 : (Seq.seq uint8) . Seq.length a2 = UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars self) && CompleteInner0.complete_inner a2 && SatInner0.sat_inner self a2
+    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 59 8 9] exists a2 : (Seq.seq uint8) . Seq.length a2 = UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars self) && CompleteInner0.complete_inner a2 && SatInner0.sat_inner self a2
 end
 module Robinson_Formula_Impl1_EventuallySat_Interface
   use Type
@@ -5249,7 +4790,7 @@ module Robinson_Formula_Impl1_EventuallySat
   predicate eventually_sat [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 77 4 55] (self : Type.robinson_formula_formula) (a : Type.robinson_assignments_assignments)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 77 4 55] EventuallySatInner0.eventually_sat_inner self (Model0.model a)
+    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 78 8 51] EventuallySatInner0.eventually_sat_inner self (Model0.model a)
 end
 module Robinson_Formula_Impl1_ContainsEmptyClause_Interface
   use Type
@@ -5266,7 +4807,7 @@ module Robinson_Formula_Impl1_ContainsEmptyClause
   predicate contains_empty_clause [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 108 4 46] (self : Type.robinson_formula_formula)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 108 4 46] exists i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses self)) && Seq.length (Model1.model (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses self)) i)) = 0
+    [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 109 8 9] exists i : (int) . 0 <= i && i < Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses self)) && Seq.length (Model1.model (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses self)) i)) = 0
 end
 module Robinson_Formula_Impl0_ModelTy
   use seq.Seq
@@ -5461,7 +5002,7 @@ module Robinson_Formula_Impl2_CheckFormulaInvariant
       end
   }
   BB5 {
-    a_14 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 129 19 29] New0.new ());
+    a_14 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 129 20 30] New0.new ());
     goto BB6
   }
   BB6 {
@@ -5620,7 +5161,7 @@ module Robinson_Lit_Impl1_LitIn
   predicate lit_in [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 30 4 42] (self : Type.robinson_lit_lit) (c : Type.robinson_clause_clause)
     
    =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 30 4 42] exists i : (int) . 0 <= i && i < Seq.length (Model0.model c) && Seq.get (Model0.model c) i = self
+    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 31 8 9] exists i : (int) . 0 <= i && i < Seq.length (Model0.model c) && Seq.get (Model0.model c) i = self
 end
 module Robinson_Lit_Impl2_LitUnsat_Interface
   use seq.Seq
@@ -6169,20 +5710,6 @@ module Robinson_Solver_Solver
   }
   
 end
-module Core_Clone_Clone_Clone_Interface
-  type self
-  use prelude.Prelude
-  val clone' [@cfg:stackify] (self : self) : self
-    requires {false}
-    
-end
-module Core_Clone_Clone_Clone
-  type self
-  use prelude.Prelude
-  val clone' [@cfg:stackify] (self : self) : self
-    requires {false}
-    
-end
 module Core_Clone_Clone_CloneFrom_Interface
   type self
   use prelude.Prelude
@@ -6194,6 +5721,20 @@ module Core_Clone_Clone_CloneFrom
   type self
   use prelude.Prelude
   val clone_from [@cfg:stackify] (self : borrowed self) (source : self) : ()
+    requires {false}
+    
+end
+module Core_Clone_Clone_Clone_Interface
+  type self
+  use prelude.Prelude
+  val clone' [@cfg:stackify] (self : self) : self
+    requires {false}
+    
+end
+module Core_Clone_Clone_Clone
+  type self
+  use prelude.Prelude
+  val clone' [@cfg:stackify] (self : self) : self
     requires {false}
     
 end

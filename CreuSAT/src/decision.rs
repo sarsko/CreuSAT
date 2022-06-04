@@ -140,8 +140,8 @@ impl Decisions {
         #[invariant(curr_ok, curr == usize::MAX || @curr < (@self.linked_list).len())]
         #[invariant(proph, ^old_self.inner() == ^self)]
         #[invariant(unch, forall<j: Int> 0 <= j && j < (@self.linked_list).len() ==>
-            ((@self.linked_list)[j].next == (@(old_self.inner()).linked_list)[j].next
-            && (@self.linked_list)[j].prev == (@(old_self.inner()).linked_list)[j].prev)
+            ((@self.linked_list)[j].next == (@old_self.linked_list)[j].next
+            && (@self.linked_list)[j].prev == (@old_self.linked_list)[j].prev)
         )]
         #[invariant(inv, self.invariant(@_f.num_vars))]
         while curr != INVALID {

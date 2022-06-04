@@ -71,20 +71,20 @@ fn resolve(
     proof_assert!(^seen == ^old_seen.inner());
     proof_assert!(c.clause_is_seen(*seen));
     let old_c2 = ghost!(c);
-    proof_assert!(!(@old_c.inner())[@c_idx].lit_in(*c));
+    proof_assert!(!(@old_c)[@c_idx].lit_in(*c));
     proof_assert!(^c == ^old_c.inner());
-    proof_assert!(forall<j: Int> 0 <= j && j < (@old_c.inner()).len()
-        && j != @c_idx ==> (@old_c.inner())[j].lit_in(*c));
+    proof_assert!(forall<j: Int> 0 <= j && j < (@old_c).len()
+        && j != @c_idx ==> (@old_c)[j].lit_in(*c));
 
     // Add all the literals from the other clause
     let mut i: usize = 1;
     #[invariant(inv, c.invariant(@_f.num_vars))]
     #[invariant(all_unsat, c.unsat(trail.assignments))] // TODO: Should be stated with regards to seq
     #[invariant(i_bound, 1 <= @i && @i <= (@o).len())]
-    #[invariant(not_in, !(@old_c.inner())[@c_idx].lit_in(*c) && !(@o)[0].lit_in(*c))]
+    #[invariant(not_in, !(@old_c)[@c_idx].lit_in(*c) && !(@o)[0].lit_in(*c))]
     #[invariant(all_in, forall<j: Int> 1 <= j && j < @i ==> (@o)[j].lit_in(*c))]
-    #[invariant(all_in2, forall<j: Int> 0 <= j && j < (@old_c.inner()).len()
-        && j != @c_idx ==> (@old_c.inner())[j].lit_in(*c))]
+    #[invariant(all_in2, forall<j: Int> 0 <= j && j < (@old_c).len()
+        && j != @c_idx ==> (@old_c)[j].lit_in(*c))]
     #[invariant(from_c_or_o, (forall<j: Int> 0 <= j && j < (@c).len() ==>
                     ((@c)[j].lit_in(*old_c.inner()) ||  (@c)[j].lit_in(*o))))]
     #[invariant(path_c_less, @path_c <= (@c).len())]
@@ -101,7 +101,7 @@ fn resolve(
         if idx_in(&c.rest, o.rest[i].index(), &seen) {
             //if seen[o.rest[i].index()] {
             proof_assert!((@o)[@i].lit_in(*c));
-            proof_assert!(@c == @old_c3.inner());
+            proof_assert!(@c == @old_c3);
         } else {
             seen[o.rest[i].index()] = true;
             to_bump.push(o.rest[i].index());
@@ -109,11 +109,11 @@ fn resolve(
             if trail.lit_to_level[o.rest[i].index()] >= trail.decision_level() {
                 *path_c += 1;
             }
-            proof_assert!(@c == (@old_c3.inner()).push((@o)[@i]));
+            proof_assert!(@c == (@old_c3).push((@o)[@i]));
             proof_assert!((@o)[@i].lit_in(*c));
         }
-        proof_assert!(forall<j: Int> 0 <= j && j < (@old_c3.inner()).len() ==>
-            ((@old_c3.inner())[j] == (@c)[j]));
+        proof_assert!(forall<j: Int> 0 <= j && j < (@old_c3).len() ==>
+            ((@old_c3)[j] == (@c)[j]));
         i += 1;
     }
     proof_assert!(c.resolvent_of(*old_c.inner(), *o, 0, @c_idx));
