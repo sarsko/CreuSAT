@@ -185,7 +185,7 @@ impl Clause {
     }
 
     #[predicate]
-    fn search_idx_in_range(self) -> bool {
+    pub fn search_idx_in_range(self) -> bool {
         pearlite! {
             2 <= @self.search && @self.search <= (@self).len()
         }
@@ -195,7 +195,6 @@ impl Clause {
     pub fn invariant(self, n: Int) -> bool {
         pearlite! {
             invariant_internal(@self, n)
-            && self.search_idx_in_range()
         }
     }
 

@@ -4,7 +4,7 @@ use creusot_contracts::logic::Ghost;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::{formula::*, lit::*, trail::*, watches::*};
+use crate::{formula::*, lit::*, trail::*, util, watches::*};
 
 use crate::logic::{
     logic::*,
@@ -18,11 +18,9 @@ use crate::logic::{
 #[maintains((mut watches).invariant(mut f))]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(lit.index_logic() < @f.num_vars)]
-//#[requires((@trail.trail).len() > 0)]
 #[requires(!(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
 #[requires(@cref < (@f.clauses).len())]
 #[requires(2 <= @k && @k < (@(@f.clauses)[@cref]).len())]
-#[requires((@(@f.clauses)[@cref]).len() > 2)]
 #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)]
 #[ensures(@f.num_vars == @(^f).num_vars)]
 #[ensures(f.equisat(^f))]
@@ -82,7 +80,7 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
     proof_assert!(crefs_in_range(@trail.trail, *f));
 }
 
-//#[cfg_attr(feature = "trust_unit", trusted)]
+#[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((trail).invariant(mut f))]
 #[maintains((mut watches).invariant(mut f))]
@@ -103,15 +101,15 @@ fn exists_new_watchable_lit(
 ) -> bool {
     let old_w = ghost! { watches };
     let old_f = ghost! { f };
-    let mut search = f.clauses[cref].search;
-    let init_search = search;
     let clause_len: usize = f.clauses[cref].rest.len();
-    #[invariant(search, @(@f.clauses)[@cref].search >= @init_search)]
-    #[invariant(search_bound, 2 <= @search)]
+    let init_search = util::max(util::min(f.clauses[cref].search, clause_len), 2); // TODO: Lame check
+    let mut search = init_search;
+    #[invariant(search, @search >= 2)]
     #[invariant(f_unchanged, f == *old_f)]
     #[invariant(w_unchanged, watches == *old_w)]
     #[invariant(uns, forall<m: Int> @init_search <= m && m < @search ==> (@(@f.clauses)[@cref])[m].unsat(trail.assignments))]
-    #[invariant(first_not_sat, !(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))] // Here to help the trail invariant
+    // Here to help the trail invariant
+    #[invariant(first_not_sat, !(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
     while search < clause_len {
         if check_and_move_watch(f, trail, watches, cref, j, search, lit) {
             let old_f2 = ghost! { f };
@@ -124,13 +122,13 @@ fn exists_new_watchable_lit(
         search += 1;
     }
     search = 2;
-    #[invariant(search, @(@f.clauses)[@cref].search >= @init_search)]
-    #[invariant(search_bound, 2 <= @search)]
+    #[invariant(search_bound, 2 <= @search && @search <= @clause_len)]
     #[invariant(f_unchanged, f == *old_f)]
     #[invariant(w_unchanged, watches == *old_w)]
     #[invariant(uns, forall<m: Int> @init_search <= m && m < @clause_len ==> ((@(@f.clauses)[@cref])[m]).unsat(trail.assignments))]
     #[invariant(uns2, forall<m: Int> 2 <= m && m < @search ==> ((@(@f.clauses)[@cref])[m]).unsat(trail.assignments))]
-    #[invariant(first_not_sat, !(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))] // Here to help the trail invariant
+    // Here to help the trail invariant
+    #[invariant(first_not_sat, !(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
     while search < init_search {
         if check_and_move_watch(f, trail, watches, cref, j, search, lit) {
             let old_f2 = ghost! { f };

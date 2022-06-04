@@ -16,6 +16,7 @@ pub fn watches_invariant_internal(w: Seq<Vec<Watcher>>, n: Int, f: Formula) -> b
                    ((@(@w[i])[j].cref < (@f.clauses).len()
                 && (@(@f.clauses)[@(@w[i])[j].cref]).len() > 1)
                 && (@w[i])[j].blocker.index_logic() < @f.num_vars)
+                //&& (@f.clauses)[@(@w[i])[j].cref].search_idx_in_range()
     }
 }
 
