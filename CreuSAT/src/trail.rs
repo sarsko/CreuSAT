@@ -82,7 +82,7 @@ impl Trail {
             None => {
                 // Could add a req on trail len and prove that this doesn't happen, but
                 // not sure if it really is needed.
-                proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
+                proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments)&& true);
             }
         }
         proof_assert!(self.assignments.invariant(*f));

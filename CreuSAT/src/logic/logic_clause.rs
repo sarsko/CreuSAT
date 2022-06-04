@@ -57,6 +57,7 @@ impl Clause {
         pearlite! {
             exists<i: Int> 0 <= i && i < (@self).len() && (@self)[i].sat_inner(a)
             && forall<j: Int> 0 <= j && j < (@self).len() && j != i ==> (@self)[j].unsat_inner(a)
+
         }
     }
 
@@ -184,11 +185,27 @@ impl Clause {
     }
 
     #[predicate]
-    pub fn invariant(self, n: Int) -> bool {
-        pearlite! { invariant_internal(@self, n) }
+    pub fn search_idx_in_range(self) -> bool {
+        pearlite! {
+            2 <= @self.search && @self.search <= (@self).len()
+        }
     }
 
-    // Neded in the equals lemma
+    #[predicate]
+    pub fn invariant(self, n: Int) -> bool {
+        pearlite! {
+            invariant_internal(@self, n)
+        }
+    }
+
+    // TODO: remove
+    #[predicate]
+    pub fn invariant_unary_ok(self, n: Int) -> bool {
+        // Should remove the possibility of empty clauses
+        pearlite! { self.vars_in_range(n) && self.no_duplicate_indexes() && self.search_idx_in_range() }
+    }
+
+    // TODO: Revisit and see if it is needed
     #[predicate]
     pub fn equals(self, o: Clause) -> bool {
         pearlite! {

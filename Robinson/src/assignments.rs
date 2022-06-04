@@ -159,8 +159,8 @@ impl Assignments {
                 } else {
                     self.0[lit.index()] = 0;
                 }
-                proof_assert!(lemma_extension_sat_base_sat(*f, @_old_a, lit.index_logic(), bool_to_assignedstate(lit.polarity)); true);
-                proof_assert!(lemma_extensions_unsat_base_unsat(@_old_a, lit.index_logic(), *f); true);
+                proof_assert!(lemma_extension_sat_base_sat(*f, @_old_a.inner(), lit.index_logic(), bool_to_assignedstate(lit.polarity)); true);
+                proof_assert!(lemma_extensions_unsat_base_unsat(@_old_a.inner(), lit.index_logic(), *f); true);
                 proof_assert!(^self == ^_old_a.inner());
                 return ClauseState::Unit;
             }
