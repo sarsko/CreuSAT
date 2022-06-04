@@ -98,15 +98,15 @@ fn resolve(
     while i < o.len() {
         let old_c3 = ghost!(c);
         proof_assert!(^c == ^old_c3.inner());
-        if idx_in(&c.rest, o.rest[i].index(), &seen) {
+        if idx_in(&c.lits, o[i].index(), &seen) {
             //if seen[o.rest[i].index()] {
             proof_assert!((@o)[@i].lit_in(*c));
             proof_assert!(@c == @old_c3);
         } else {
-            seen[o.rest[i].index()] = true;
-            to_bump.push(o.rest[i].index());
-            c.rest.push(o.rest[i]);
-            if trail.lit_to_level[o.rest[i].index()] >= trail.decision_level() {
+            seen[o[i].index()] = true;
+            to_bump.push(o[i].index());
+            c.lits.push(o[i]);
+            if trail.lit_to_level[o[i].index()] >= trail.decision_level() {
                 *path_c += 1;
             }
             proof_assert!(@c == (@old_c3).push((@o)[@i]));
@@ -146,8 +146,8 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula, seen: 
             #[invariant(i_bound2, 0 <= @i && @i < (@trail.trail).len())]
             #[invariant(k_bound, 0 <= @k && @k <= (@c).len())]
             #[invariant(proph_i2, ^i == ^old_i.inner())]
-            while k < c.rest.len() {
-                if trail.trail[*i].lit.index() == c.rest[k].index() {
+            while k < c.len() {
+                if trail.trail[*i].lit.index() == c[k].index() {
                     return Some(k);
                 }
                 k += 1;
@@ -196,7 +196,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
     let mut path_c: usize = 0;
     let mut seen = vec![false; f.num_vars];
     let mut i = trail.trail.len();
-    let clause = f.clauses[cref].clone();
+    let clause = f[cref].clone();
     let mut j: usize = 0;
     #[invariant(seen_is_clause, forall<idx: Int> 0 <= idx && idx < (@seen).len() ==>
         ((@seen)[idx] == (exists<i: Int> 0 <= i && i < @j && (@clause)[i].index_logic() == idx)))]
@@ -205,9 +205,9 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
     #[invariant(j_is_len, @j <= (@clause).len())] // This is needed to establish the loop invariant for the next loop
     #[invariant(elems_less, elems_less_than(@to_bump, @f.num_vars))]
     while j < clause.len() {
-        seen[clause.rest[j].index()] = true;
-        to_bump.push(clause.rest[j].index());
-        if trail.lit_to_level[clause.rest[j].index()] >= decisionlevel {
+        seen[clause[j].index()] = true;
+        to_bump.push(clause[j].index());
+        if trail.lit_to_level[clause[j].index()] >= decisionlevel {
             path_c += 1;
         }
         j += 1;
@@ -228,8 +228,8 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
             None => break,
         };
         let ante = match &trail.trail[i].reason {
-            Reason::Long(c) => &f.clauses[*c],
-            Reason::Unit(c) => &f.clauses[*c],
+            Reason::Long(c) => &f[*c],
+            Reason::Unit(c) => &f[*c],
             _ => break,
         };
         let idx = trail.trail[i].lit.index();
@@ -251,8 +251,8 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
         let mut s_idx: usize = 0;
         #[invariant(k_bound, @k <= (@clause).len())]
         #[invariant(s_idx_ok, @s_idx < (@clause).len())]
-        while k < clause.rest.len() {
-            if trail.lit_to_level[clause.rest[k].index()] == decisionlevel {
+        while k < clause.len() {
+            if trail.lit_to_level[clause[k].index()] == decisionlevel {
                 s_idx = k;
                 break;
             }
@@ -272,7 +272,7 @@ pub fn resolve_empty_clause(f: &Formula, trail: &Trail, cref: usize) -> bool {
     let decisionlevel = trail.decision_level();
     let mut seen = vec![false; f.num_vars];
     let mut i = trail.trail.len();
-    let clause = f.clauses[cref].clone();
+    let clause = f[cref].clone();
     let mut to_bump = Vec::new();
     let mut j: usize = 0;
     #[invariant(seen_is_clause, forall<idx: Int> 0 <= idx && idx < (@seen).len() ==>
@@ -281,7 +281,7 @@ pub fn resolve_empty_clause(f: &Formula, trail: &Trail, cref: usize) -> bool {
     #[invariant(j_is_len, @j <= (@clause).len())]
     // This is needed to establish the loop invariant for the next loop
     while j < clause.len() {
-        seen[clause.rest[j].index()] = true;
+        seen[clause[j].index()] = true;
         j += 1;
     }
     let mut clause = clause;
@@ -292,7 +292,7 @@ pub fn resolve_empty_clause(f: &Formula, trail: &Trail, cref: usize) -> bool {
     };
     let ante = match &trail.trail[i].reason {
         //Reason::Long(c) => &f.clauses[*c],
-        Reason::Unit(c) => &f.clauses[*c],
+        Reason::Unit(c) => &f[*c],
         _ => return false,
     };
     let mut path_c = 1;

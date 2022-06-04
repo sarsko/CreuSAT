@@ -87,16 +87,16 @@ impl Decisions {
         #[invariant(i_bound, @i <= (@f.clauses).len())]
         #[invariant(counts_len1, (@counts).len() == @f.num_vars)]
         while i < f.clauses.len() {
-            let curr_clause = &f.clauses[i];
+            let curr_clause = &f[i];
             let mut j: usize = 0;
             #[invariant(i_bound2, @i <= (@f.clauses).len())]
             #[invariant(j_bound, @j <= (@curr_clause).len())]
             #[invariant(counts_len, (@counts).len() == @f.num_vars)]
-            while j < curr_clause.rest.len() {
+            while j < curr_clause.len() {
                 // Okay this is obviously provable, a vector cannot be longer than usize, and we don't allow duplicates, so we will
                 // never overflow, even if every clause contains a literal,
-                if counts[curr_clause.rest[j].index()] < usize::MAX - 1 {
-                    counts[curr_clause.rest[j].index()] += 1;
+                if counts[curr_clause[j].index()] < usize::MAX - 1 {
+                    counts[curr_clause[j].index()] += 1;
                 }
                 j += 1;
             }
@@ -240,7 +240,7 @@ impl Decisions {
         let mut curr = self.search;
         #[invariant(inv, curr == usize::MAX || @curr < (@a).len())]
         while curr != INVALID {
-            if a.0[curr] >= 2 {
+            if a[curr] >= 2 {
                 self.search = self.linked_list[curr].next;
                 return Some(curr);
             }
@@ -250,8 +250,8 @@ impl Decisions {
         // greatly simplifies the proof.
         let mut i: usize = 0;
         #[invariant(prev, forall<j: Int> 0 <= j && j < @i ==> !unset((@a)[j]))]
-        while i < a.0.len() {
-            if a.0[i] >= 2 {
+        while i < a.len() {
+            if a[i] >= 2 {
                 return Some(i);
             }
             i += 1;

@@ -13,7 +13,7 @@ impl Model for Clause {
 
     #[logic]
     fn model(self) -> Self::ModelTy {
-        self.rest.model() //.push(self.first)//.push(self.second)
+        self.lits.model() //.push(self.first)//.push(self.second)
     }
 }
 

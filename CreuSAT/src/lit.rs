@@ -52,8 +52,8 @@ impl Lit {
     #[ensures(result == self.sat(*a))]
     pub fn lit_sat(self, a: &Assignments) -> bool {
         match self.is_positive() {
-            true => (a.0[self.index()] == 1),
-            false => (a.0[self.index()] == 0),
+            true => (a[self.index()] == 1),
+            false => (a[self.index()] == 0),
         }
     }
 
@@ -63,8 +63,8 @@ impl Lit {
     #[ensures(result == self.unsat(*a))]
     pub fn lit_unsat(self, a: &Assignments) -> bool {
         match self.is_positive() {
-            true => (a.0[self.index()] == 0),
-            false => (a.0[self.index()] == 1),
+            true => (a[self.index()] == 0),
+            false => (a[self.index()] == 1),
         }
     }
 
@@ -73,7 +73,7 @@ impl Lit {
     #[requires(self.invariant((@a).len()))]
     #[ensures(result == self.unset(*a))]
     pub fn lit_unset(self, a: &Assignments) -> bool {
-        a.0[self.index()] >= 2
+        a[self.index()] >= 2
     }
 
     #[inline(always)]
@@ -81,7 +81,7 @@ impl Lit {
     #[requires(self.invariant((@a).len()))]
     #[ensures(result == !self.unset(*a))]
     pub fn lit_set(self, a: &Assignments) -> bool {
-        a.0[self.index()] < 2
+        a[self.index()] < 2
     }
 
     // Gets the index of the literal in the representation used for the watchlist
@@ -106,7 +106,7 @@ impl Lit {
     #[ensures(result.index_logic() == @idx)]
     #[ensures(result.is_positive_logic() == (@(@assignments)[@idx] == 1))]
     pub fn phase_saved(idx: usize, assignments: &Assignments) -> Lit {
-        Lit { idx: idx, polarity: if assignments.0[idx] == 1 { true } else { false } }
+        Lit { idx: idx, polarity: if assignments[idx] == 1 { true } else { false } }
     }
 
     // This is only called in the parser

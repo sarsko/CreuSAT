@@ -6,6 +6,7 @@ use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 use crate::{assignments::*, clause::*, solver::*, trail::*, watches::*};
+use ::std::ops::{Index, IndexMut};
 
 #[cfg(feature = "contracts")]
 use crate::logic::{
@@ -16,9 +17,42 @@ use crate::logic::{
     logic_trail::*, //tmp?
 };
 
+// TODO: Unpub both fields
 pub struct Formula {
     pub clauses: Vec<Clause>,
     pub num_vars: usize,
+}
+
+impl Index<usize> for Formula {
+    type Output = Clause;
+    #[inline]
+    #[requires(@ix < (@self).0.len())]
+    #[ensures((@self).0[@ix] == *result)]
+    fn index(&self, ix: usize) -> &Clause {
+        #[cfg(not(feature = "contracts"))]
+        unsafe {
+            self.clauses.get_unchecked(ix)
+        }
+        #[cfg(feature = "contracts")]
+        &self.clauses[ix]
+    }
+}
+
+impl IndexMut<usize> for Formula {
+    #[inline]
+    #[requires(@ix < (@self).0.len())]
+    #[ensures((@*self).0[@ix] == *result)]
+    #[ensures((@^self).0[@ix] == ^result)]
+    #[ensures(forall<i : Int> 0 <= i && i != @ix && i < (@self).0.len() ==> (@self).0[i] == (@^self).0[i])]
+    #[ensures((@^self).0.len() == (@*self).0.len())]
+    fn index_mut(&mut self, ix: usize) -> &mut Clause {
+        #[cfg(not(feature = "contracts"))]
+        unsafe {
+            self.clauses.get_unchecked_mut(ix)
+        }
+        #[cfg(feature = "contracts")]
+        &mut self.clauses[ix]
+    }
 }
 
 impl Formula {
@@ -63,8 +97,8 @@ impl Formula {
         let clause = &self.clauses[idx];
         let mut i: usize = 0;
         #[invariant(previous_not_sat, forall<j: Int> 0 <= j && j < @i ==> !(@clause)[j].sat(*a))]
-        while i < clause.rest.len() {
-            if clause.rest[i].lit_sat(a) {
+        while i < clause.len() {
+            if clause[i].lit_sat(a) {
                 return true;
             }
             i += 1;
@@ -94,8 +128,8 @@ impl Formula {
         // add_watcher that the cref should be less than f.clauses.len(). We can't update the watches
         // after the clause is added, as the value gets moved by the push. Could of course index on last
         // element of f.clauses after the push, but I prefer this.
-        let first_lit = clause.rest[0];
-        let second_lit = clause.rest[1];
+        let first_lit = clause[0];
+        let second_lit = clause[1];
         self.clauses.push(clause);
         watches.add_watcher(first_lit, cref, self, second_lit);
         watches.add_watcher(second_lit, cref, self, first_lit);
@@ -181,8 +215,8 @@ impl Formula {
     #[ensures(self.num_vars == (^self).num_vars)]
     fn delete_clause(&mut self, cref: usize, watches: &mut Watches, t: &Trail) {
         let old_f = ghost! { self };
-        watches.unwatch(self, t, cref, self.clauses[cref].rest[0]);
-        watches.unwatch(self, t, cref, self.clauses[cref].rest[1]);
+        watches.unwatch(self, t, cref, self.clauses[cref][0]);
+        watches.unwatch(self, t, cref, self.clauses[cref][1]);
         self.clauses[cref].deleted = true;
         proof_assert!(forall<i: Int> 0 <= i && i < (@(@self.clauses)[@cref]).len() ==>
             (@(@self.clauses)[@cref])[i] == (@(@old_f.clauses)[@cref])[i]);
@@ -273,7 +307,7 @@ impl Formula {
                     let mut cnt = 0;
                     let mut j = 0;
                     while j < self.clauses[i].len() && cnt < 6 {
-                        if self.clauses[i].rest[j].lit_sat(&t.assignments) {
+                        if self.clauses[i][j].lit_sat(&t.assignments) {
                             cnt += 1;
                         }
                         j += 1;

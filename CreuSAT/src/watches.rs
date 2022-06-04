@@ -40,7 +40,7 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
     let watchidx = lit.to_watchidx();
     let end = watches.watches[watchidx].len() - 1;
     watches.watches[watchidx].swap(j, end);
-    let curr_lit = f.clauses[cref].rest[k];
+    let curr_lit = f[cref][k];
     proof_assert!(@watchidx < (@watches.watches).len());
     let old_w = ghost!(watches);
     proof_assert!(watcher_crefs_in_range(@(@watches.watches)[@watchidx], *f));
@@ -137,12 +137,12 @@ impl Watches {
         #[invariant(same_len, (@self.watches).len() == 2 * @f.num_vars)]
         #[invariant(proph, ^self == ^old_w.inner())]
         while i < f.clauses.len() {
-            let clause = &f.clauses[i];
-            if clause.rest.len() > 1 {
+            let clause = &f[i];
+            if clause.len() > 1 {
                 //self.add_watcher(clause.rest[0], i, f);
                 //self.add_watcher(clause.rest[1], i, f);
-                self.watches[clause.rest[0].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause.rest[1] });
-                self.watches[clause.rest[1].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause.rest[0] });
+                self.watches[clause[0].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause[1] });
+                self.watches[clause[1].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause[0] });
             }
             i += 1;
         }
