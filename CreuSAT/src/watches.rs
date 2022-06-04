@@ -43,22 +43,20 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
     let curr_lit = f.clauses[cref].rest[k];
     proof_assert!(@watchidx < (@watches.watches).len());
     let old_w = ghost!(watches);
-    proof_assert!(old_w.watches == watches.watches);
     proof_assert!(watcher_crefs_in_range(@(@watches.watches)[@watchidx], *f));
     match watches.watches[watchidx].pop() {
         Some(w) => {
-            proof_assert!(^old_w.inner() == ^watches);
             proof_assert!(lemma_pop_watch_maintains_watcher_invariant(@(@old_w.watches)[@watchidx], *f); true);
-            proof_assert!(watcher_crefs_in_range(pop(@(old_w.watches)[@watchidx]), *f));
             proof_assert!(@(@watches.watches)[@watchidx] == pop(@(@old_w.watches)[@watchidx]));
             proof_assert!(watcher_crefs_in_range(@(@watches.watches)[@watchidx], *f));
             proof_assert!(watches.invariant(*f));
             proof_assert!(curr_lit.to_neg_watchidx_logic() < (@watches.watches).len());
-
             proof_assert!(watcher_crefs_in_range(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f));
             proof_assert!(@w.cref < (@f.clauses).len());
             proof_assert!(lemma_push_maintains_watcher_invariant(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f, w); true);
+
             watches.watches[curr_lit.to_neg_watchidx()].push(w);
+
             proof_assert!(watcher_crefs_in_range(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f));
             proof_assert!(watches.invariant(*f));
         }
@@ -171,9 +169,9 @@ impl Watches {
                 match self.watches[watchidx].pop() {
                     Some(w) => {
                         proof_assert!(^old_w.inner() == ^self);
-                        proof_assert!(lemma_pop_watch_maintains_watcher_invariant(@(old_w.watches)[@watchidx], *f); true);
-                        proof_assert!(watcher_crefs_in_range(pop(@(old_w.watches)[@watchidx]), *f));
-                        proof_assert!(@(@self.watches)[@watchidx] == pop(@(old_w.watches)[@watchidx]));
+                        proof_assert!(lemma_pop_watch_maintains_watcher_invariant(@(@old_w.watches)[@watchidx], *f); true);
+                        proof_assert!(watcher_crefs_in_range(pop(@(@old_w.watches)[@watchidx]), *f));
+                        proof_assert!(@(@self.watches)[@watchidx] == pop(@(@old_w.watches)[@watchidx]));
                         proof_assert!(watcher_crefs_in_range(@(@self.watches)[@watchidx], *f));
                         proof_assert!(self.invariant(*f));
                     }
