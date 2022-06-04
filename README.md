@@ -15,8 +15,9 @@ is unsatisfiable (UNSAT), then we **know** (read: it is proven) that the formula
 
 It currently has the following features:
 - Clause analysis with clause learning
-- Unit propagation with two watched literals
-- The Variable Move To Front (VMTF) decision heuristic
+- Unit propagation
+- Two watched literals (2WL) with blocking literals and circular search
+- The variable move-to-front (VMTF) decision heuristic
 - Phase saving
 - Backtracking of the trail to asserting level
 - Exponential moving averages (EMA) based restarts
@@ -44,15 +45,16 @@ cargo run -- --file [PATH_TO_FILE]
 ```
 where the provided file must be a correctly formatted [DIMACS CNF](https://people.sc.fsu.edu/~jburkardt/data/cnf/cnf.html) file.
 
+Remember do add the `--release` as in `cargo test --release [TEST_TO_RUN]`, otherwise it will be built in debug mode, which is *slow*.
+
 ## How do I prove the solver?
 
-To prove it you'll need to have the following installed:
-1. [Rust](https://www.rust-lang.org/tools/install)
-2. [Why3](todo!) and some SMT-solvers. I recommend:
-   - Z3
-   - CVC4
-   - Alt-Ergo
-3. [Creusot](https://github.com/xldenis/creusot#installing)
+I would recommend following the instructions in the [Creusot](https://github.com/xldenis/creusot#installing) directory for instructions on how to get Why3 and Creusot up and running.
+
+To prove it you'll need to do the following:
+1. Install [Rust](https://www.rust-lang.org/tools/install)
+2. Install [Creusot](https://github.com/xldenis/creusot). Clone it, and then run `cargo install --path creusot`.
+3. Install Why3. I recommend following the guide in the [Creusot](https://github.com/xldenis/creusot#installing) repository.
 
 CreuSAT is using [Cargo Make](https://github.com/sagiegurari/cargo-make) to make building easier. It can be installed by running:
 ```
@@ -60,12 +62,23 @@ cargo install --force cargo-make
 ```
 After installing Cargo Make, simply run:
 ```
-cargo make prove
+cargo make prove-CreuSAT
 ```
 
 And hopefully the Why3 IDE will appear. If not, then most likely something is not installed or pathed correctly, or I have given the wrong instructions (sorry).
 
 If the Why3 IDE appears, then it should work to press <kbd>3</kbd> and wait a bit. If you are doing the proof from scratch, then you will need to wait a while.
+
+The following `cargo make` commands are supported:
+- `prove-CreuSAT`/`p` : Generate the MLCFG for `CreuSAT` and run the Why3 IDE. 
+- `prove-Robinson` : Generate the MLCFG for `Friday` and run the Why3 IDE. 
+- `prove-Friday` : Generate the MLCFG for `Friday` and run the Why3 IDE. 
+- `clean` : Cleans all generated CFG and Why3 session files.
+   - `clean-CreuSAT` : Clean just the `CreuSAT` files.
+   - `clean-Robinson` : Clean just the `Robinson` files.
+   - `clean-Friday` : Clean just the `Friday` files.
+- `StarExec` : Generate a `creusat.zip` file ready to be uploaded to the StarExec clusters
+- `StarExec-JigSAT` : Generate a `jigsat.zip` file ready to be uploaded to the StarExec clusters
 
 ## Creusot seems really cool! How can I learn it?
 
@@ -80,9 +93,11 @@ which are both easier to grok algorithmically and proof-wise.
 
 Overview of the repository: \
 [/CreuSAT](/CreuSAT/) - The source code for CreuSAT \
-[/Robinson](/Robinson/) - A fully verified DPLL-based solver. \
 [/Friday](/Friday/) - A fully verified and super naive SAT solver. \
-[/StarExec](/StarExec/) - Build instructions + output directory for builing CreuSAT for the StarExec cluster. \
+[/JigSAT](/JigSAT/) - An unverified solver based on CreuSAT. Used for experimenting. \
+[/Robinson](/Robinson/) - A fully verified DPLL-based solver. \
 [/cnfs](/cnfs/) - Some example cnf files which are not used in the tests. \
+[/mlcfgs](/mlcfgs/) - Output directory for generated mlcfg + Why3 session files. \
+[/prelude](/prelude/) - Copy of [prelude](https://github.com/xldenis/creusot/tree/master/prelude) from the Creusot directory. Included here to make `cargo make` happy. \
 [/tests](/tests/) - Directory for tests. \
 [/mlws](/mlws/) - Some WhyML files, among them two verified solvers.
