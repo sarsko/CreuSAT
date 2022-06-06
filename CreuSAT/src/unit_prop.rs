@@ -30,10 +30,10 @@ use crate::logic::{
 fn check_and_move_watch(
     f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
 ) -> bool {
-    let curr_lit = f.clauses[cref].rest[k];
+    let curr_lit = f[cref][k];
     if !curr_lit.lit_unsat(&trail.assignments) {
         //curr_lit.lit_unset(&trail.assignments) || curr_lit.lit_sat(&trail.assignments) {
-        if f.clauses[cref].rest[0].index() == lit.index() {
+        if f[cref][0].index() == lit.index() {
             // First
             swap(f, trail, watches, cref, k, 0);
             update_watch(f, trail, watches, cref, j, 0, lit);
@@ -67,7 +67,8 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
     let old_f = ghost! { f };
     proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
     proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments) && true);
-    f.clauses[cref].rest.swap(j, k);
+    //f[cref].lits.swap(j, k); // doesnt prove for some reason.
+    f.clauses[cref].lits.swap(j, k);
     proof_assert!((@(@f.clauses)[@cref]).exchange(@(@old_f.clauses)[@cref], @j, @k));
     proof_assert!(forall<i: Int> 0 <= i && i < (@trail.trail).len() ==>
     match (@trail.trail)[i].reason {
@@ -80,6 +81,7 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
     proof_assert!(crefs_in_range(@trail.trail, *f));
 }
 
+// This has to do f.clauses[cref] and not f[cref]
 #[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((trail).invariant(mut f))]
@@ -101,8 +103,8 @@ fn exists_new_watchable_lit(
 ) -> bool {
     let old_w = ghost! { watches };
     let old_f = ghost! { f };
-    let clause_len: usize = f.clauses[cref].rest.len();
-    let init_search = util::max(util::min(f.clauses[cref].search, clause_len), 2); // TODO: Lame check
+    let clause_len: usize = f.clauses[cref].len();
+    let init_search = util::max(util::min(f[cref].search, clause_len), 2); // TODO: Lame check
     let mut search = init_search;
     #[invariant(search, @search >= 2)]
     #[invariant(f_unchanged, f == *old_f)]
@@ -165,8 +167,8 @@ fn propagate_lit_with_regard_to_clause(
     f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize,
 ) -> Result<bool, usize> {
     let old_w = ghost! { watches };
-    let clause = &f.clauses[cref];
-    let first_lit = clause.rest[0];
+    let clause = &f[cref];
+    let first_lit = clause[0];
     if first_lit.lit_sat(&trail.assignments) {
         // We know blocker cannot be first, as then we would not be here
         proof_assert!(^watches == ^old_w.inner());
@@ -174,7 +176,7 @@ fn propagate_lit_with_regard_to_clause(
         watches.watches[lit.to_watchidx()][j].blocker = first_lit;
         return Ok(true);
     }
-    let second_lit = clause.rest[1];
+    let second_lit = clause[1];
     if second_lit.lit_sat(&trail.assignments) {
         // We know blocker cannot be second, as then we would not be here
         proof_assert!(^watches == ^old_w.inner());

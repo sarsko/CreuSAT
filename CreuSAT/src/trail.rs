@@ -69,7 +69,7 @@ impl Trail {
         match last {
             Some(step) => {
                 // TODO: Wrap in abstraction
-                self.assignments.0[step.lit.index()] += 2;
+                self.assignments[step.lit.index()] += 2;
 
                 proof_assert!(@self.trail == pop(@old_t.trail));
                 proof_assert!(^old_t.inner() == ^self);
@@ -280,7 +280,7 @@ impl Trail {
         self.decisions.push(trail_len);
         let dlevel = self.decisions.len(); // Not doing this results in a Why3 error. Todo: Yell at Xavier
         self.lit_to_level[idx] = dlevel;
-        self.assignments.0[idx] -= 2;
+        self.assignments[idx] -= 2;
         let lit = Lit::phase_saved(idx, &self.assignments);
 
         let step = Step { lit: lit, decision_level: dlevel, reason: Reason::Decision };
@@ -318,10 +318,10 @@ impl Trail {
         }
         // I have to do a proof here that it is unset after ->
         // will need another requires
-        if f.clauses[cref].rest[0].lit_set(&self.assignments) {
+        if f[cref][0].lit_set(&self.assignments) {
             return Err(()); // UGLY Runtime check
         }
-        self.enq_assignment(Step { lit: f.clauses[cref].rest[0], decision_level: 0, reason: Reason::Unit(cref) }, f);
+        self.enq_assignment(Step { lit: f[cref][0], decision_level: 0, reason: Reason::Unit(cref) }, f);
         Ok(())
     }
 
@@ -342,9 +342,9 @@ impl Trail {
         #[invariant(proph_d, ^old_d.inner() == ^d)]
         #[invariant(d_inv, d.invariant(@f.num_vars))]
         while i < f.clauses.len() {
-            let clause = &f.clauses[i];
-            if clause.rest.len() == 1 {
-                let lit = clause.rest[0];
+            let clause = &f[i];
+            if clause.len() == 1 {
+                let lit = clause[0];
                 if lit.lit_set(&self.assignments) {
                     if lit.lit_unsat(&self.assignments) {
                         // TODO: As soon as the bijection between trail and assignments is reestablished,

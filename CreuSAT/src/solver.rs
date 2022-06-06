@@ -39,11 +39,11 @@ pub enum ConflictResult {
 #[ensures(@result.0 < (@clause).len())]
 pub fn get_asserting_level(clause: &Clause, trail: &Trail, f: &Formula) -> (usize, usize) {
     let mut max_i: usize = 1;
-    let mut max_level = trail.lit_to_level[clause.rest[1].index()];
+    let mut max_level = trail.lit_to_level[clause[1].index()];
     let mut i: usize = 2;
     #[invariant(max_i_less, @max_i < (@clause).len())]
-    while i < clause.rest.len() {
-        let level = trail.lit_to_level[clause.rest[i].index()];
+    while i < clause.len() {
+        let level = trail.lit_to_level[clause[i].index()];
         if level > max_level {
             max_level = level;
             max_i = i;
@@ -130,14 +130,14 @@ impl Solver {
         // TODO: Remove by updating the post of get_asserting_level
         t.backtrack_safe(level, f, d);
 
-        let lit = f.clauses[cref].rest[0];
+        let lit = f[cref][0];
         let step = Step { lit: lit, decision_level: level, reason: Reason::Long(cref) };
 
         // TODO:
         // These two have to be ensured by analysis + backtrack
         //proof_assert!((@f.clauses)[@cref].unit(t.assignments));
         //proof_assert!(unset((@t.assignments)[@step.lit.idx]));
-        if f.clauses[cref].unit_and_unset(&t.assignments, f) {
+        if f[cref].unit_and_unset(&t.assignments, f) {
             t.enq_assignment(step, f);
         }
 
