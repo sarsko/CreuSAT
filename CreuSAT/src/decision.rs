@@ -4,6 +4,7 @@ use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 use crate::{assignments::*, formula::*, util::*};
+use ::std::ops::{Index, IndexMut};
 
 #[cfg(feature = "contracts")]
 use crate::logic::{logic::unset, logic_decision::*, logic_util::*};
@@ -13,6 +14,38 @@ pub struct Node {
     pub next: usize,
     pub prev: usize,
     pub ts: usize,
+}
+
+impl Index<usize> for Decisions {
+    type Output = Node;
+    #[inline]
+    #[requires(@ix < (@self.linked_list).len())]
+    #[ensures((@self.linked_list)[@ix] == *result)]
+    fn index(&self, ix: usize) -> &Node {
+        #[cfg(not(feature = "contracts"))]
+        unsafe {
+            self.linked_list.get_unchecked(ix)
+        }
+        #[cfg(feature = "contracts")]
+        &self.linked_list[ix]
+    }
+}
+
+impl IndexMut<usize> for Decisions {
+    #[inline]
+    #[requires(@ix < (@self).len())]
+    #[ensures((@*self.linked_list)[@ix] == *result)]
+    #[ensures((@(^self).linked_list)[@ix] == ^result)]
+    #[ensures(forall<i : Int> 0 <= i && i != @ix && i < (@self.linked_list).len() ==> (@self.linked_list)[i] == (@(^self).linked_list)[i])]
+    #[ensures((@(^self).linked_list).len() == (@*self.linked_list).len())]
+    fn index_mut(&mut self, ix: usize) -> &mut Node {
+        #[cfg(not(feature = "contracts"))]
+        unsafe {
+            self.linked_list.get_unchecked_mut(ix)
+        }
+        #[cfg(feature = "contracts")]
+        &mut self.linked_list[ix]
+    }
 }
 
 //const INVALID: usize = usize::MAX;
@@ -27,7 +60,7 @@ impl Default for Node {
 }
 
 pub struct Decisions {
-    pub linked_list: Vec<Node>,
+    linked_list: Vec<Node>,
     timestamp: usize,
     pub start: usize,
     pub search: usize,
@@ -165,26 +198,33 @@ impl Decisions {
         if tomove == self.start {
             return;
         }
-        let mut moving = &mut self.linked_list[tomove];
+        //let mut moving = &mut self.linked_list[tomove];
+        let mut moving = unsafe { self.linked_list.get_unchecked_mut(tomove) };
         let prev = moving.prev;
         let old_next = moving.next;
         moving.prev = INVALID;
         moving.next = self.start;
         moving.ts = self.timestamp;
-        if self.timestamp == usize::MAX {
-            self.rescore(_f);
-        } else {
-            self.timestamp += 1;
-        }
         proof_assert!(@self.start < (@_f.num_vars));
         self.linked_list[self.start].prev = tomove;
         self.start = tomove;
         if prev != INVALID {
             // lazy, should prove
-            self.linked_list[prev].next = old_next;
+            //self.linked_list[prev].next = old_next;
+            unsafe {
+                self.linked_list.get_unchecked_mut(prev).next = old_next;
+            }
         }
         if old_next != INVALID {
-            self.linked_list[old_next].prev = prev;
+            //self.linked_list[old_next].prev = prev;
+            unsafe {
+                self.linked_list.get_unchecked_mut(old_next).prev = prev;
+            }
+        }
+        if self.timestamp == usize::MAX {
+            self.rescore(_f);
+        } else {
+            self.timestamp += 1;
         }
         /*
         // Why does Satch do this? It should be impossible...?
@@ -217,6 +257,7 @@ impl Decisions {
         //insertion_sort(&mut counts_with_index);
         sort(&mut counts_with_index);
         //counts_with_index.sort_unstable_by_key(|k| k.0);
+        //counts_with_index.sort_unstable_by_key(|k| k.0);
         //counts_with_index.sort_by_key(|k| k.0);
         i = 0;
         #[invariant(proph, ^old_self.inner() == ^self)]
@@ -241,10 +282,10 @@ impl Decisions {
         #[invariant(inv, curr == usize::MAX || @curr < (@a).len())]
         while curr != INVALID {
             if a[curr] >= 2 {
-                self.search = self.linked_list[curr].next;
+                self.search = self[curr].next;
                 return Some(curr);
             }
-            curr = self.linked_list[curr].next;
+            curr = self[curr].next;
         }
         // Strictly speaking this is an unecessary runtime check, but it only gets run at most once and it
         // greatly simplifies the proof.

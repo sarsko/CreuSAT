@@ -125,7 +125,7 @@ impl Trail {
         let des = self.decisions[level];
         let mut i: usize = 0;
         let mut curr = d.search;
-        let mut timestamp = if curr != usize::MAX { d.linked_list[curr].ts } else { 0 }; // revisit this later
+        let mut timestamp = if curr != usize::MAX { d[curr].ts } else { 0 }; // revisit this later
         #[invariant(i_less2, @i <= (@old_t.trail).len())]
         #[invariant(i_less, i <= how_many)]
         #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
@@ -139,7 +139,7 @@ impl Trail {
         while i < how_many {
             let idx = self.backstep(f);
             proof_assert!(@idx < @f.num_vars);
-            let curr_timestamp = d.linked_list[idx].ts;
+            let curr_timestamp = d[idx].ts;
             if curr_timestamp > timestamp {
                 timestamp = curr_timestamp;
                 curr = idx;
