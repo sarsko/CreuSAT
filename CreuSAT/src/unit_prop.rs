@@ -67,7 +67,8 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
     let old_f = ghost! { f };
     proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
     proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments) && true);
-    f[cref].lits.swap(j, k);
+    //f[cref].lits.swap(j, k); // doesnt prove for some reason.
+    f.clauses[cref].lits.swap(j, k);
     proof_assert!((@(@f.clauses)[@cref]).exchange(@(@old_f.clauses)[@cref], @j, @k));
     proof_assert!(forall<i: Int> 0 <= i && i < (@trail.trail).len() ==>
     match (@trail.trail)[i].reason {
@@ -80,6 +81,7 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
     proof_assert!(crefs_in_range(@trail.trail, *f));
 }
 
+// This has to do f.clauses[cref] and not f[cref]
 #[cfg_attr(feature = "trust_unit", trusted)]
 #[maintains((mut f).invariant())]
 #[maintains((trail).invariant(mut f))]
@@ -101,7 +103,7 @@ fn exists_new_watchable_lit(
 ) -> bool {
     let old_w = ghost! { watches };
     let old_f = ghost! { f };
-    let clause_len: usize = f[cref].len();
+    let clause_len: usize = f.clauses[cref].len();
     let init_search = util::max(util::min(f[cref].search, clause_len), 2); // TODO: Lame check
     let mut search = init_search;
     #[invariant(search, @search >= 2)]
@@ -113,7 +115,7 @@ fn exists_new_watchable_lit(
     while search < clause_len {
         if check_and_move_watch(f, trail, watches, cref, j, search, lit) {
             let old_f2 = ghost! { f };
-            f[cref].search = search;
+            f.clauses[cref].search = search;
             proof_assert!(forall<j: Int> 0 <= j && j < (@f.clauses).len() ==> @(@f.clauses)[j] == @(@(old_f2.inner()).clauses)[j]);
             proof_assert!(old_f2.inner().equisat(*f));
             proof_assert!(crefs_in_range(@trail.trail, *f)); // I am here to help the trail invariant pass
@@ -132,7 +134,7 @@ fn exists_new_watchable_lit(
     while search < init_search {
         if check_and_move_watch(f, trail, watches, cref, j, search, lit) {
             let old_f2 = ghost! { f };
-            f[cref].search = search;
+            f.clauses[cref].search = search;
             proof_assert!(forall<j: Int> 0 <= j && j < (@f.clauses).len() ==> @(@f.clauses)[j] == @(@(old_f2.inner()).clauses)[j]);
             proof_assert!(old_f2.inner().equisat(*f));
             proof_assert!(crefs_in_range(@trail.trail, *f)); // I am here to help the trail invariant pass
