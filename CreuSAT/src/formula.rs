@@ -61,24 +61,22 @@ impl Formula {
         SatResult::Sat(assn) => { formula_sat_inner(@self, @assn) },
         SatResult::Unsat     => { self.not_satisfiable() },
         SatResult::Unknown   => { self.invariant() && 0 < @self.num_vars && @self.num_vars < @usize::MAX/2 },
-        SatResult::Err       => { true },
+        SatResult::Err(_)    => { true },
     })]
     pub fn check_formula_invariant(&self) -> SatResult {
         if self.num_vars >= usize::MAX / 2 {
-            return SatResult::Err;
+            return SatResult::Err("Number of variables over usize::MAX / 2".to_string());
         }
         if self.clauses.len() == 0 {
             return SatResult::Sat(Vec::new());
-        }
-        if self.num_vars == 0 {
-            return SatResult::Err; // We have no vars but more than 0 clauses -> error.
         }
         let mut i: usize = 0;
         #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@self.clauses)[j].invariant(@self.num_vars))]
         #[invariant(clause_len, forall<j: Int> 0 <= j && j < @i ==> (@(@self.clauses)[j]).len() > 0)]
         while i < self.clauses.len() {
             if !self.clauses[i].check_clause_invariant(self.num_vars) {
-                return SatResult::Err;
+                //panic!("Invariant violation in clause {:?}", self.clauses[i]);
+                return SatResult::Err("Clause invariant failed".to_string());
             }
             if self.clauses[i].len() == 0 {
                 return SatResult::Unsat;

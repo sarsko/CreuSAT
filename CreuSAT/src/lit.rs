@@ -8,6 +8,8 @@ use crate::assignments::*;
 #[cfg(feature = "contracts")]
 use crate::logic::logic_lit::*;
 
+//#[derive(Debug)]
+
 #[derive(Clone, Copy)]
 pub struct Lit {
     pub idx: usize,

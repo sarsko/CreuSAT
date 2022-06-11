@@ -18,7 +18,7 @@ pub enum SatResult {
     Sat(Vec<AssignedState>),
     Unsat,
     Unknown,
-    Err,
+    Err(String),
 }
 
 pub enum ConflictResult {
@@ -272,12 +272,12 @@ impl Solver {
                             &&   ((^trail).assignments).complete() }, // Do I really need this for anything?
         SatResult::Unsat    => { (^f).not_satisfiable() },
         SatResult::Unknown  => { true }
-        SatResult::Err      => { true }
+        SatResult::Err(_)   => { true }
     })]
     fn outer_loop(&mut self, f: &mut Formula, d: &mut Decisions, trail: &mut Trail, w: &mut Watches) -> SatResult {
         match self.unit_prop_loop(f, d, trail, w) {
             Some(false) => return SatResult::Unsat,
-            None => return SatResult::Err,
+            None => return SatResult::Err("Unit prop loop".to_string()),
             _ => {}
         }
         let slow = if self.slow < usize::MAX / 2 { (self.slow / 100) * 125 } else { self.slow };
@@ -301,7 +301,7 @@ impl Solver {
                 if f.is_sat(&trail.assignments) {
                     return SatResult::Sat(Vec::new());
                 } else {
-                    return SatResult::Err; // This should never happen
+                    return SatResult::Err("Complete and not sat".to_string()); // This should never happen
                 }
             }
         }
@@ -365,7 +365,7 @@ pub fn solver(formula: &mut Formula) -> SatResult {
     match trail.learn_units(formula, &mut decisions) {
         None => {}
         Some(true) => return SatResult::Unsat,
-        Some(false) => return SatResult::Err,
+        Some(false) => return SatResult::Err("Learn units".to_string()),
     }
     let mut solver = Solver::new(formula);
     solver.inner(formula, decisions, trail, watches)

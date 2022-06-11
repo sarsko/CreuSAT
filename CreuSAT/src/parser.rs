@@ -127,6 +127,7 @@ pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_li
     match solver(&mut formula) {
         SatResult::Sat(_) => true,
         SatResult::Unsat => false,
-        _ => panic!("Sarek should really make the parser non-binary"),
+        SatResult::Err(s) => panic!("{}", s),
+        SatResult::Unknown => panic!("Unknown"),
     }
 }

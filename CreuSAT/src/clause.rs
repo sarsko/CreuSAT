@@ -9,6 +9,7 @@ use ::std::ops::{Index, IndexMut};
 #[cfg(feature = "contracts")]
 use crate::logic::{logic_clause::*, logic_formula::*};
 
+//#[derive(Debug)]
 pub struct Clause {
     pub deleted: bool,
     pub lbd: u32,
