@@ -118,22 +118,16 @@ impl Formula {
     #[ensures(match result {
         SatResult::Sat(assn) => { self.eventually_sat_no_ass() && formula_sat_inner(@self, @assn) },
         SatResult::Unsat     => { self.contains_empty_clause() },
-        SatResult::Unknown   => { self.invariant() && 0 < @self.num_vars && @self.num_vars < @usize::MAX/2 },
+        SatResult::Unknown   => { self.invariant() },
         SatResult::Err       => { true },
     })]
     pub fn check_formula_invariant(&self) -> SatResult {
-        if self.num_vars >= usize::MAX / 2 {
-            return SatResult::Err;
-        }
         if self.clauses.len() == 0 {
             let a = Vec::new();
             // These just help the proof along.
             proof_assert!(self.sat_inner(@a));
             proof_assert!(self.eventually_sat_no_ass());
             return SatResult::Sat(a);
-        }
-        if self.num_vars == 0 {
-            return SatResult::Err; // We have no vars but more than 0 clauses -> error.
         }
         let mut i: usize = 0;
         #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@self.clauses)[j].invariant(@self.num_vars))]

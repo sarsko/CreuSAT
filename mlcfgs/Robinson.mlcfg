@@ -1287,6 +1287,124 @@ module Robinson_Assignments_Impl2_FindUnassigned
   }
   
 end
+module Robinson_Lit_Impl1_SatInner_Interface
+  use Type
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  predicate sat_inner (self : Type.robinson_lit_lit) (a : Seq.seq uint8)
+end
+module Robinson_Lit_Impl1_SatInner
+  use Type
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  use mach.int.UInt64
+  use mach.int.Int32
+  predicate sat_inner [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 42 4 57] (self : Type.robinson_lit_lit) (a : Seq.seq uint8)
+    
+   =
+    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 43 8 9] if Type.robinson_lit_lit_Lit_polarity self then
+      UInt8.to_int (Seq.get a (UInt64.to_int (Type.robinson_lit_lit_Lit_idx self))) = 1
+    else
+      UInt8.to_int (Seq.get a (UInt64.to_int (Type.robinson_lit_lit_Lit_idx self))) = 0
+    
+end
+module Robinson_Clause_Impl1_SatInner_Interface
+  use Type
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  predicate sat_inner (self : Type.robinson_clause_clause) (a : Seq.seq uint8)
+end
+module Robinson_Clause_Impl1_SatInner
+  use Type
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  use mach.int.Int32
+  clone Robinson_Lit_Impl1_SatInner_Interface as SatInner0
+  clone Robinson_Clause_Impl0_Model_Interface as Model0
+  predicate sat_inner [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 63 4 57] (self : Type.robinson_clause_clause) (a : Seq.seq uint8)
+    
+   =
+    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 64 8 9] exists i : (int) . 0 <= i && i < Seq.length (Model0.model self) && SatInner0.sat_inner (Seq.get (Model0.model self) i) a
+end
+module Robinson_Lit_Impl1_UnsetInner_Interface
+  use Type
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  predicate unset_inner (self : Type.robinson_lit_lit) (a : Seq.seq uint8)
+end
+module Robinson_Lit_Impl1_UnsetInner
+  use Type
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  use mach.int.UInt64
+  use mach.int.Int32
+  predicate unset_inner [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 62 4 59] (self : Type.robinson_lit_lit) (a : Seq.seq uint8)
+    
+   =
+    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 63 8 9] UInt8.to_int (Seq.get a (UInt64.to_int (Type.robinson_lit_lit_Lit_idx self))) >= 2
+end
+module Robinson_Clause_Impl1_UnitInner_Interface
+  use Type
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  predicate unit_inner (self : Type.robinson_clause_clause) (a : Seq.seq uint8)
+end
+module Robinson_Clause_Impl1_UnitInner
+  use Type
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  use mach.int.Int32
+  clone Robinson_Lit_Impl1_UnsetInner_Interface as UnsetInner0
+  clone Robinson_Clause_Impl0_Model_Interface as Model0
+  clone Robinson_Clause_Impl1_SatInner_Interface as SatInner0
+  clone Robinson_Clause_Impl1_VarsInRange_Interface as VarsInRange0
+  predicate unit_inner [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 36 4 58] (self : Type.robinson_clause_clause) (a : Seq.seq uint8)
+    
+   =
+    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 37 8 9] VarsInRange0.vars_in_range self (Seq.length a) && not SatInner0.sat_inner self a && (exists i : (int) . 0 <= i && i < Seq.length (Model0.model self) && UnsetInner0.unset_inner (Seq.get (Model0.model self) i) a && (forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) && j <> i -> not UnsetInner0.unset_inner (Seq.get (Model0.model self) j) a))
+end
+module Robinson_Clause_Impl1_Unit_Interface
+  use Type
+  predicate unit (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments)
+end
+module Robinson_Clause_Impl1_Unit
+  use Type
+  clone Robinson_Clause_Impl1_UnitInner_Interface as UnitInner0
+  clone Robinson_Assignments_Impl0_Model_Interface as Model0
+  predicate unit [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 45 4 45] (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments)
+    
+   =
+    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 46 8 41] UnitInner0.unit_inner self (Model0.model a)
+end
+module Robinson_Clause_Impl1_Sat_Interface
+  use Type
+  predicate sat (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments)
+end
+module Robinson_Clause_Impl1_Sat
+  use Type
+  clone Robinson_Clause_Impl1_SatInner_Interface as SatInner0
+  clone Robinson_Assignments_Impl0_Model_Interface as Model0
+  predicate sat [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 71 4 44] (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments)
+    
+   =
+    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 72 8 40] SatInner0.sat_inner self (Model0.model a)
+end
 module Robinson_Lit_Impl1_UnsatInner_Interface
   use Type
   use seq.Seq
@@ -1346,124 +1464,6 @@ module Robinson_Clause_Impl1_Unsat
     
    =
     [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 59 8 42] UnsatInner0.unsat_inner self (Model0.model a)
-end
-module Robinson_Lit_Impl1_SatInner_Interface
-  use Type
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use prelude.UInt8
-  predicate sat_inner (self : Type.robinson_lit_lit) (a : Seq.seq uint8)
-end
-module Robinson_Lit_Impl1_SatInner
-  use Type
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use prelude.UInt8
-  use mach.int.UInt64
-  use mach.int.Int32
-  predicate sat_inner [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 42 4 57] (self : Type.robinson_lit_lit) (a : Seq.seq uint8)
-    
-   =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 43 8 9] if Type.robinson_lit_lit_Lit_polarity self then
-      UInt8.to_int (Seq.get a (UInt64.to_int (Type.robinson_lit_lit_Lit_idx self))) = 1
-    else
-      UInt8.to_int (Seq.get a (UInt64.to_int (Type.robinson_lit_lit_Lit_idx self))) = 0
-    
-end
-module Robinson_Clause_Impl1_SatInner_Interface
-  use Type
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use prelude.UInt8
-  predicate sat_inner (self : Type.robinson_clause_clause) (a : Seq.seq uint8)
-end
-module Robinson_Clause_Impl1_SatInner
-  use Type
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use prelude.UInt8
-  use mach.int.Int32
-  clone Robinson_Lit_Impl1_SatInner_Interface as SatInner0
-  clone Robinson_Clause_Impl0_Model_Interface as Model0
-  predicate sat_inner [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 63 4 57] (self : Type.robinson_clause_clause) (a : Seq.seq uint8)
-    
-   =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 64 8 9] exists i : (int) . 0 <= i && i < Seq.length (Model0.model self) && SatInner0.sat_inner (Seq.get (Model0.model self) i) a
-end
-module Robinson_Clause_Impl1_Sat_Interface
-  use Type
-  predicate sat (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments)
-end
-module Robinson_Clause_Impl1_Sat
-  use Type
-  clone Robinson_Clause_Impl1_SatInner_Interface as SatInner0
-  clone Robinson_Assignments_Impl0_Model_Interface as Model0
-  predicate sat [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 71 4 44] (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments)
-    
-   =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 72 8 40] SatInner0.sat_inner self (Model0.model a)
-end
-module Robinson_Lit_Impl1_UnsetInner_Interface
-  use Type
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use prelude.UInt8
-  predicate unset_inner (self : Type.robinson_lit_lit) (a : Seq.seq uint8)
-end
-module Robinson_Lit_Impl1_UnsetInner
-  use Type
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use prelude.UInt8
-  use mach.int.UInt64
-  use mach.int.Int32
-  predicate unset_inner [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 62 4 59] (self : Type.robinson_lit_lit) (a : Seq.seq uint8)
-    
-   =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/lit.rs" 63 8 9] UInt8.to_int (Seq.get a (UInt64.to_int (Type.robinson_lit_lit_Lit_idx self))) >= 2
-end
-module Robinson_Clause_Impl1_UnitInner_Interface
-  use Type
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use prelude.UInt8
-  predicate unit_inner (self : Type.robinson_clause_clause) (a : Seq.seq uint8)
-end
-module Robinson_Clause_Impl1_UnitInner
-  use Type
-  use seq.Seq
-  use mach.int.Int
-  use prelude.Prelude
-  use prelude.UInt8
-  use mach.int.Int32
-  clone Robinson_Lit_Impl1_UnsetInner_Interface as UnsetInner0
-  clone Robinson_Clause_Impl0_Model_Interface as Model0
-  clone Robinson_Clause_Impl1_SatInner_Interface as SatInner0
-  clone Robinson_Clause_Impl1_VarsInRange_Interface as VarsInRange0
-  predicate unit_inner [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 36 4 58] (self : Type.robinson_clause_clause) (a : Seq.seq uint8)
-    
-   =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 37 8 9] VarsInRange0.vars_in_range self (Seq.length a) && not SatInner0.sat_inner self a && (exists i : (int) . 0 <= i && i < Seq.length (Model0.model self) && UnsetInner0.unset_inner (Seq.get (Model0.model self) i) a && (forall j : (int) . 0 <= j && j < Seq.length (Model0.model self) && j <> i -> not UnsetInner0.unset_inner (Seq.get (Model0.model self) j) a))
-end
-module Robinson_Clause_Impl1_Unit_Interface
-  use Type
-  predicate unit (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments)
-end
-module Robinson_Clause_Impl1_Unit
-  use Type
-  clone Robinson_Clause_Impl1_UnitInner_Interface as UnitInner0
-  clone Robinson_Assignments_Impl0_Model_Interface as Model0
-  predicate unit [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 45 4 45] (self : Type.robinson_clause_clause) (a : Type.robinson_assignments_assignments)
-    
-   =
-    [#"/home/sarek/master/sat-mirror/Robinson/src/clause.rs" 46 8 41] UnitInner0.unit_inner self (Model0.model a)
 end
 module Robinson_Formula_Impl1_SatInner_Interface
   use Type
@@ -2713,13 +2713,13 @@ module Robinson_Assignments_Impl2_UnitPropOnce_Interface
   use prelude.Prelude
   clone Robinson_Assignments_Impl1_Compatible_Interface as Compatible0
   clone Robinson_Formula_Impl1_EventuallySatComplete_Interface as EventuallySatComplete0
-  clone Robinson_Clause_Impl1_Unit_Interface as Unit0
-  clone Robinson_Clause_Impl1_Sat_Interface as Sat0
   clone Robinson_Clause_Impl1_Unsat_Interface as Unsat0
   clone Robinson_Assignments_Impl0_Model_Interface as Model2
   clone Robinson_Assignments_Impl0_ModelTy as ModelTy0
   clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model1 with type t = Type.robinson_assignments_assignments,
   type ModelTy0.modelTy = ModelTy0.modelTy
+  clone Robinson_Clause_Impl1_Sat_Interface as Sat0
+  clone Robinson_Clause_Impl1_Unit_Interface as Unit0
   clone Robinson_Assignments_Impl1_Complete_Interface as Complete0
   clone Robinson_Assignments_Impl1_Invariant_Interface as Invariant1
   clone Robinson_Formula_Impl1_Invariant_Interface as Invariant0
@@ -2729,11 +2729,13 @@ module Robinson_Assignments_Impl2_UnitPropOnce_Interface
     requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 137 4 51] 0 <= UInt64.to_int i && UInt64.to_int i < Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses f))}
     requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 136 4 30] Invariant0.invariant' f}
     requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 135 4 42] Invariant1.invariant' ( * self) f}
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 144 4 120] Complete0.complete ( * self) ->  * self =  ^ self && (result = Type.Robinson_Clause_ClauseState_Unsat || result = Type.Robinson_Clause_ClauseState_Sat) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 143 4 91] result = Type.Robinson_Clause_ClauseState_Unknown -> Model1.model self = Model2.model ( ^ self) && not Complete0.complete ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 142 4 101] result = Type.Robinson_Clause_ClauseState_Unsat -> Unsat0.unsat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) (UInt64.to_int i)) ( ^ self) && Model1.model self = Model2.model ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 141 4 99] result = Type.Robinson_Clause_ClauseState_Sat -> Sat0.sat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) (UInt64.to_int i)) ( ^ self) && Model1.model self = Model2.model ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 140 4 103] result = Type.Robinson_Clause_ClauseState_Unit -> Unit0.unit (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) (UInt64.to_int i)) ( * self) && not Complete0.complete ( * self) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 152 4 120] Complete0.complete ( * self) ->  * self =  ^ self && (result = Type.Robinson_Clause_ClauseState_Unsat || result = Type.Robinson_Clause_ClauseState_Sat) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 146 4 7] match (result) with
+      | Type.Robinson_Clause_ClauseState_Unit -> Unit0.unit (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) (UInt64.to_int i)) ( * self) && not Complete0.complete ( * self)
+      | Type.Robinson_Clause_ClauseState_Sat -> Sat0.sat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) (UInt64.to_int i)) ( ^ self) && Model1.model self = Model2.model ( ^ self)
+      | Type.Robinson_Clause_ClauseState_Unsat -> Unsat0.unsat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) (UInt64.to_int i)) ( ^ self) && Model1.model self = Model2.model ( ^ self)
+      | Type.Robinson_Clause_ClauseState_Unknown -> Model1.model self = Model2.model ( ^ self) && not Complete0.complete ( ^ self)
+      end }
     ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 139 4 84] EventuallySatComplete0.eventually_sat_complete f ( * self) = EventuallySatComplete0.eventually_sat_complete f ( ^ self) }
     ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 138 4 41] Compatible0.compatible ( * self) ( ^ self) }
     ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 135 4 42] Invariant1.invariant' ( ^ self) f }
@@ -2753,10 +2755,10 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   clone Robinson_Clause_Impl0_Model as Model4 with function Model0.model = Model5.model
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model4.model,
   predicate Invariant0.invariant' = Invariant3.invariant'
-  clone Robinson_Lit_Impl1_UnsetInner as UnsetInner0
   clone Robinson_Lit_Impl1_SatInner as SatInner1
   clone Robinson_Clause_Impl1_SatInner as SatInner0 with function Model0.model = Model4.model,
   predicate SatInner0.sat_inner = SatInner1.sat_inner
+  clone Robinson_Lit_Impl1_UnsetInner as UnsetInner0
   clone Robinson_Clause_Impl1_UnitInner as UnitInner0 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
   predicate SatInner0.sat_inner = SatInner0.sat_inner, function Model0.model = Model4.model,
   predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
@@ -2774,12 +2776,12 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = uint8, type a = Type.alloc_alloc_global, axiom .
   clone Robinson_Assignments_Impl0_Model as Model2 with function Model0.model = Model3.model
-  clone Robinson_Clause_Impl1_Unit as Unit0 with function Model0.model = Model2.model,
-  predicate UnitInner0.unit_inner = UnitInner0.unit_inner
-  clone Robinson_Clause_Impl1_Sat as Sat0 with function Model0.model = Model2.model,
-  predicate SatInner0.sat_inner = SatInner0.sat_inner
   clone Robinson_Clause_Impl1_Unsat as Unsat0 with function Model0.model = Model2.model,
   predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
+  clone Robinson_Clause_Impl1_Sat as Sat0 with function Model0.model = Model2.model,
+  predicate SatInner0.sat_inner = SatInner0.sat_inner
+  clone Robinson_Clause_Impl1_Unit as Unit0 with function Model0.model = Model2.model,
+  predicate UnitInner0.unit_inner = UnitInner0.unit_inner
   clone Robinson_Assignments_Impl1_Invariant as Invariant1 with function Model0.model = Model2.model
   clone Robinson_Assignments_Impl0_ModelTy as ModelTy0
   clone CreusotContracts_Logic_Model_Impl1_Model as Model1 with type t = Type.robinson_assignments_assignments,
@@ -2859,15 +2861,17 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   predicate Invariant1.invariant' = Invariant0.invariant', function Model0.model = Model6.model,
   predicate Invariant2.invariant' = Invariant2.invariant', predicate Complete0.complete = Complete0.complete,
   predicate Unit0.unit = Unit0.unit, predicate Unsat0.unsat = Unsat0.unsat, predicate Sat0.sat = Sat0.sat
-  let rec cfg unit_prop_once [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 145 4 74] (self : borrowed (Type.robinson_assignments_assignments)) (i : usize) (f : Type.robinson_formula_formula) : Type.robinson_clause_clausestate
+  let rec cfg unit_prop_once [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 153 4 74] (self : borrowed (Type.robinson_assignments_assignments)) (i : usize) (f : Type.robinson_formula_formula) : Type.robinson_clause_clausestate
     requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 137 4 51] 0 <= UInt64.to_int i && UInt64.to_int i < Seq.length (Model0.model (Type.robinson_formula_formula_Formula_clauses f))}
     requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 136 4 30] Invariant0.invariant' f}
     requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 135 4 42] Invariant1.invariant' ( * self) f}
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 144 4 120] Complete0.complete ( * self) ->  * self =  ^ self && (result = Type.Robinson_Clause_ClauseState_Unsat || result = Type.Robinson_Clause_ClauseState_Sat) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 143 4 91] result = Type.Robinson_Clause_ClauseState_Unknown -> Model1.model self = Model2.model ( ^ self) && not Complete0.complete ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 142 4 101] result = Type.Robinson_Clause_ClauseState_Unsat -> Unsat0.unsat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) (UInt64.to_int i)) ( ^ self) && Model1.model self = Model2.model ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 141 4 99] result = Type.Robinson_Clause_ClauseState_Sat -> Sat0.sat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) (UInt64.to_int i)) ( ^ self) && Model1.model self = Model2.model ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 140 4 103] result = Type.Robinson_Clause_ClauseState_Unit -> Unit0.unit (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) (UInt64.to_int i)) ( * self) && not Complete0.complete ( * self) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 152 4 120] Complete0.complete ( * self) ->  * self =  ^ self && (result = Type.Robinson_Clause_ClauseState_Unsat || result = Type.Robinson_Clause_ClauseState_Sat) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 146 4 7] match (result) with
+      | Type.Robinson_Clause_ClauseState_Unit -> Unit0.unit (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) (UInt64.to_int i)) ( * self) && not Complete0.complete ( * self)
+      | Type.Robinson_Clause_ClauseState_Sat -> Sat0.sat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) (UInt64.to_int i)) ( ^ self) && Model1.model self = Model2.model ( ^ self)
+      | Type.Robinson_Clause_ClauseState_Unsat -> Unsat0.unsat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f)) (UInt64.to_int i)) ( ^ self) && Model1.model self = Model2.model ( ^ self)
+      | Type.Robinson_Clause_ClauseState_Unknown -> Model1.model self = Model2.model ( ^ self) && not Complete0.complete ( ^ self)
+      end }
     ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 139 4 84] EventuallySatComplete0.eventually_sat_complete f ( * self) = EventuallySatComplete0.eventually_sat_complete f ( ^ self) }
     ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 138 4 41] Compatible0.compatible ( * self) ( ^ self) }
     ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 135 4 42] Invariant1.invariant' ( ^ self) f }
@@ -2919,20 +2923,20 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   BB0 {
     _6 <- Type.robinson_formula_formula_Formula_clauses f_3;
     _7 <- i_2;
-    _5 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 146 22 34] Index0.index _6 _7);
+    _5 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 154 22 34] Index0.index _6 _7);
     goto BB1
   }
   BB1 {
     clause_4 <- _5;
     _9 <- ();
-    _old_a_8 <- ghost ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 147 21 33] self_1);
+    _old_a_8 <- ghost ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 155 21 33] self_1);
     goto BB2
   }
   BB2 {
     _11 <- clause_4;
     _12 <-  * self_1;
     _13 <- f_3;
-    _10 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 148 14 43] CheckIfUnit0.check_if_unit _11 _12 _13);
+    _10 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 156 14 43] CheckIfUnit0.check_if_unit _11 _12 _13);
     goto BB3
   }
   BB3 {
@@ -2951,13 +2955,13 @@ module Robinson_Assignments_Impl2_UnitPropOnce
     _17 <- clause_4;
     _18 <-  * self_1;
     _19 <- f_3;
-    lit_16 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 154 26 50] GetUnit0.get_unit _17 _18 _19);
+    lit_16 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 162 26 50] GetUnit0.get_unit _17 _18 _19);
     goto BB6
   }
   BB6 {
-    assert { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 155 16 152] let _ = LemmaUnitWrongPolarityUnsatFormula0.lemma_unit_wrong_polarity_unsat_formula clause_4 f_3 (Model1.model self_1) (IndexLogic0.index_logic lit_16) (BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity lit_16)) in true };
+    assert { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 163 16 152] let _ = LemmaUnitWrongPolarityUnsatFormula0.lemma_unit_wrong_polarity_unsat_formula clause_4 f_3 (Model1.model self_1) (IndexLogic0.index_logic lit_16) (BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity lit_16)) in true };
     _20 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 156 16 121] let _ = LemmaUnitForces0.lemma_unit_forces f_3 (Model1.model self_1) (IndexLogic0.index_logic lit_16) (BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity lit_16)) in true };
+    assert { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 164 16 121] let _ = LemmaUnitForces0.lemma_unit_forces f_3 (Model1.model self_1) (IndexLogic0.index_logic lit_16) (BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity lit_16)) in true };
     _21 <- ();
     _23 <- Type.robinson_lit_lit_Lit_polarity lit_16;
     switch (_23)
@@ -2970,11 +2974,11 @@ module Robinson_Assignments_Impl2_UnitPropOnce
     self_1 <- { self_1 with current = (let Type.Robinson_Assignments_Assignments a b =  * self_1 in Type.Robinson_Assignments_Assignments ( ^ _25) b) };
     assume { Resolve0.resolve self_1 };
     _27 <- lit_16;
-    _26 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 158 27 38] Index1.index _27);
+    _26 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 166 27 38] Index1.index _27);
     goto BB8
   }
   BB8 {
-    _24 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 158 20 39] IndexMut0.index_mut _25 _26);
+    _24 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 166 20 39] IndexMut0.index_mut _25 _26);
     goto BB9
   }
   BB9 {
@@ -2988,11 +2992,11 @@ module Robinson_Assignments_Impl2_UnitPropOnce
     self_1 <- { self_1 with current = (let Type.Robinson_Assignments_Assignments a b =  * self_1 in Type.Robinson_Assignments_Assignments ( ^ _29) b) };
     assume { Resolve0.resolve self_1 };
     _31 <- lit_16;
-    _30 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 160 27 38] Index1.index _31);
+    _30 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 168 27 38] Index1.index _31);
     goto BB11
   }
   BB11 {
-    _28 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 160 20 39] IndexMut0.index_mut _29 _30);
+    _28 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 168 20 39] IndexMut0.index_mut _29 _30);
     goto BB12
   }
   BB12 {
@@ -3002,11 +3006,11 @@ module Robinson_Assignments_Impl2_UnitPropOnce
     goto BB13
   }
   BB13 {
-    assert { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 162 16 142] let _ = LemmaExtensionSatBaseSat0.lemma_extension_sat_base_sat f_3 (Model1.model _old_a_8) (IndexLogic0.index_logic lit_16) (BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity lit_16)) in true };
+    assert { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 170 16 142] let _ = LemmaExtensionSatBaseSat0.lemma_extension_sat_base_sat f_3 (Model1.model _old_a_8) (IndexLogic0.index_logic lit_16) (BoolToAssignedstate0.bool_to_assignedstate (Type.robinson_lit_lit_Lit_polarity lit_16)) in true };
     _32 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 163 16 110] let _ = LemmaExtensionsUnsatBaseUnsat0.lemma_extensions_unsat_base_unsat (Model1.model _old_a_8) (IndexLogic0.index_logic lit_16) f_3 in true };
+    assert { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 171 16 110] let _ = LemmaExtensionsUnsatBaseUnsat0.lemma_extensions_unsat_base_unsat (Model1.model _old_a_8) (IndexLogic0.index_logic lit_16) f_3 in true };
     _33 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 164 16 55]  ^ self_1 =  ^ _old_a_8 };
+    assert { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 172 16 55]  ^ self_1 =  ^ _old_a_8 };
     _34 <- ();
     _0 <- Type.Robinson_Clause_ClauseState_Unit;
     goto BB14
@@ -3066,18 +3070,18 @@ module Robinson_Assignments_Impl2_UnitPropagate_Interface
   clone Robinson_Formula_Impl1_Invariant_Interface as Invariant1
   clone Robinson_Assignments_Impl1_Invariant_Interface as Invariant0
   val unit_propagate [@cfg:stackify] (self : borrowed (Type.robinson_assignments_assignments)) (f : Type.robinson_formula_formula) : Type.robinson_clause_clausestate
-    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 173 4 35] Invariant0.invariant' ( * self) f}
-    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 172 4 30] Invariant1.invariant' f}
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 183 4 106] Complete0.complete ( * self) ->  * self =  ^ self && (result = Type.Robinson_Clause_ClauseState_Unsat || Sat0.sat f ( * self)) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 177 4 7] match (result) with
+    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 181 4 35] Invariant0.invariant' ( * self) f}
+    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 180 4 30] Invariant1.invariant' f}
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 191 4 106] Complete0.complete ( * self) ->  * self =  ^ self && (result = Type.Robinson_Clause_ClauseState_Unsat || Sat0.sat f ( * self)) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 185 4 7] match (result) with
       | Type.Robinson_Clause_ClauseState_Sat -> Sat0.sat f ( ^ self)
       | Type.Robinson_Clause_ClauseState_Unsat -> Unsat0.unsat f ( ^ self)
       | Type.Robinson_Clause_ClauseState_Unknown -> not Complete0.complete ( ^ self)
       | Type.Robinson_Clause_ClauseState_Unit -> not Complete0.complete ( * self)
       end }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 176 4 41] Compatible0.compatible ( * self) ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 175 4 84] EventuallySatComplete0.eventually_sat_complete f ( ^ self) = EventuallySatComplete0.eventually_sat_complete f ( * self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 174 4 37] Invariant0.invariant' ( ^ self) f }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 184 4 41] Compatible0.compatible ( * self) ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 183 4 84] EventuallySatComplete0.eventually_sat_complete f ( ^ self) = EventuallySatComplete0.eventually_sat_complete f ( * self) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 182 4 37] Invariant0.invariant' ( ^ self) f }
     
 end
 module Robinson_Assignments_Impl2_UnitPropagate
@@ -3154,24 +3158,23 @@ module Robinson_Assignments_Impl2_UnitPropagate
   type a = Type.alloc_alloc_global, function Model0.model = Model0.model
   clone Robinson_Assignments_Impl2_UnitPropOnce_Interface as UnitPropOnce0 with function Model0.model = Model0.model,
   predicate Invariant0.invariant' = Invariant1.invariant', predicate Invariant1.invariant' = Invariant0.invariant',
-  predicate Complete0.complete = Complete0.complete, function Model1.model = Model5.model,
-  function Model2.model = Model1.model, predicate Unsat0.unsat = Unsat1.unsat, predicate Sat0.sat = Sat1.sat,
-  predicate Unit0.unit = Unit0.unit,
+  predicate Complete0.complete = Complete0.complete, predicate Unit0.unit = Unit0.unit, predicate Sat0.sat = Sat1.sat,
+  function Model1.model = Model5.model, function Model2.model = Model1.model, predicate Unsat0.unsat = Unsat1.unsat,
   predicate EventuallySatComplete0.eventually_sat_complete = EventuallySatComplete0.eventually_sat_complete,
   predicate Compatible0.compatible = Compatible0.compatible
-  let rec cfg unit_propagate [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 184 4 64] (self : borrowed (Type.robinson_assignments_assignments)) (f : Type.robinson_formula_formula) : Type.robinson_clause_clausestate
-    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 173 4 35] Invariant0.invariant' ( * self) f}
-    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 172 4 30] Invariant1.invariant' f}
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 183 4 106] Complete0.complete ( * self) ->  * self =  ^ self && (result = Type.Robinson_Clause_ClauseState_Unsat || Sat0.sat f ( * self)) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 177 4 7] match (result) with
+  let rec cfg unit_propagate [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 192 4 64] (self : borrowed (Type.robinson_assignments_assignments)) (f : Type.robinson_formula_formula) : Type.robinson_clause_clausestate
+    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 181 4 35] Invariant0.invariant' ( * self) f}
+    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 180 4 30] Invariant1.invariant' f}
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 191 4 106] Complete0.complete ( * self) ->  * self =  ^ self && (result = Type.Robinson_Clause_ClauseState_Unsat || Sat0.sat f ( * self)) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 185 4 7] match (result) with
       | Type.Robinson_Clause_ClauseState_Sat -> Sat0.sat f ( ^ self)
       | Type.Robinson_Clause_ClauseState_Unsat -> Unsat0.unsat f ( ^ self)
       | Type.Robinson_Clause_ClauseState_Unknown -> not Complete0.complete ( ^ self)
       | Type.Robinson_Clause_ClauseState_Unit -> not Complete0.complete ( * self)
       end }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 176 4 41] Compatible0.compatible ( * self) ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 175 4 84] EventuallySatComplete0.eventually_sat_complete f ( ^ self) = EventuallySatComplete0.eventually_sat_complete f ( * self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 174 4 37] Invariant0.invariant' ( ^ self) f }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 184 4 41] Compatible0.compatible ( * self) ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 183 4 84] EventuallySatComplete0.eventually_sat_complete f ( ^ self) = EventuallySatComplete0.eventually_sat_complete f ( * self) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 182 4 37] Invariant0.invariant' ( ^ self) f }
     
    =
   var _0 : Type.robinson_clause_clausestate;
@@ -3208,7 +3211,7 @@ module Robinson_Assignments_Impl2_UnitPropagate
   }
   BB0 {
     _5 <- ();
-    _old_a_4 <- ghost ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 185 21 33] self_1);
+    _old_a_4 <- ghost ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 193 21 33] self_1);
     goto BB1
   }
   BB1 {
@@ -3217,22 +3220,22 @@ module Robinson_Assignments_Impl2_UnitPropagate
     goto BB2
   }
   BB2 {
-    invariant assignment_invariant { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 188 8 62] Invariant0.invariant' ( * self_1) f_2 };
-    invariant proph { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 189 8 53]  ^ self_1 =  ^ _old_a_4 };
-    invariant maintains_compat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 190 8 64] Compatible0.compatible ( * _old_a_4) ( * self_1) };
-    invariant maintains_sat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 191 8 115] EventuallySatComplete0.eventually_sat_complete f_2 ( * _old_a_4) = EventuallySatComplete0.eventually_sat_complete f_2 ( * self_1) };
-    invariant out_not_unsat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 192 8 65] not out_7 = Type.Robinson_Clause_ClauseState_Unsat };
-    invariant inv { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 193 8 10] Complete0.complete ( * _old_a_4) ->  * _old_a_4 =  * self_1 && (forall j : (int) . 0 <= j && j < UInt64.to_int i_6 -> not Unknown0.unknown (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1) && not Unit0.unit (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1) && Sat1.sat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1)) };
-    invariant inv2 { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 197 8 10] out_7 = Type.Robinson_Clause_ClauseState_Sat -> (forall j : (int) . 0 <= j && j < UInt64.to_int i_6 -> not Unsat1.unsat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1) && not Unknown0.unknown (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1) && not Unit0.unit (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1) && Sat1.sat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1)) };
-    invariant inv3 { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 201 8 75] out_7 = Type.Robinson_Clause_ClauseState_Unit -> not Complete0.complete ( * _old_a_4) };
-    invariant inv4 { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 202 8 76] out_7 = Type.Robinson_Clause_ClauseState_Unknown -> not Complete0.complete ( * self_1) };
+    invariant assignment_invariant { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 196 8 62] Invariant0.invariant' ( * self_1) f_2 };
+    invariant proph { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 197 8 53]  ^ self_1 =  ^ _old_a_4 };
+    invariant maintains_compat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 198 8 64] Compatible0.compatible ( * _old_a_4) ( * self_1) };
+    invariant maintains_sat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 199 8 115] EventuallySatComplete0.eventually_sat_complete f_2 ( * _old_a_4) = EventuallySatComplete0.eventually_sat_complete f_2 ( * self_1) };
+    invariant out_not_unsat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 200 8 65] not out_7 = Type.Robinson_Clause_ClauseState_Unsat };
+    invariant inv { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 201 8 10] Complete0.complete ( * _old_a_4) ->  * _old_a_4 =  * self_1 && (forall j : (int) . 0 <= j && j < UInt64.to_int i_6 -> not Unknown0.unknown (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1) && not Unit0.unit (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1) && Sat1.sat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1)) };
+    invariant inv2 { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 205 8 10] out_7 = Type.Robinson_Clause_ClauseState_Sat -> (forall j : (int) . 0 <= j && j < UInt64.to_int i_6 -> not Unsat1.unsat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1) && not Unknown0.unknown (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1) && not Unit0.unit (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1) && Sat1.sat (Seq.get (Model0.model (Type.robinson_formula_formula_Formula_clauses f_2)) j) ( * self_1)) };
+    invariant inv3 { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 209 8 75] out_7 = Type.Robinson_Clause_ClauseState_Unit -> not Complete0.complete ( * _old_a_4) };
+    invariant inv4 { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 210 8 76] out_7 = Type.Robinson_Clause_ClauseState_Unknown -> not Complete0.complete ( * self_1) };
     _11 <- i_6;
     _13 <- Type.robinson_formula_formula_Formula_clauses f_2;
-    _12 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 203 18 33] Len0.len _13);
+    _12 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 211 18 33] Len0.len _13);
     goto BB3
   }
   BB3 {
-    _10 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 203 14 33] _11 < _12);
+    _10 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 211 14 33] _11 < _12);
     switch (_10)
       | False -> goto BB14
       | _ -> goto BB4
@@ -3243,7 +3246,7 @@ module Robinson_Assignments_Impl2_UnitPropagate
     self_1 <- { self_1 with current = ( ^ _16) };
     _17 <- i_6;
     _18 <- f_2;
-    _15 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 204 18 43] UnitPropOnce0.unit_prop_once _16 _17 _18);
+    _15 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 212 18 43] UnitPropOnce0.unit_prop_once _16 _17 _18);
     goto BB5
   }
   BB5 {
@@ -3290,7 +3293,7 @@ module Robinson_Assignments_Impl2_UnitPropagate
     goto BB13
   }
   BB13 {
-    i_6 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 219 12 18] i_6 + (1 : usize));
+    i_6 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 227 12 18] i_6 + (1 : usize));
     _9 <- ();
     goto BB2
   }
@@ -3316,14 +3319,14 @@ module Robinson_Assignments_Impl2_DoUnitPropagation_Interface
   clone Robinson_Formula_Impl1_Invariant_Interface as Invariant1
   clone Robinson_Assignments_Impl1_Invariant_Interface as Invariant0
   val do_unit_propagation [@cfg:stackify] (self : borrowed (Type.robinson_assignments_assignments)) (f : Type.robinson_formula_formula) : Type.core_option_option bool
-    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 226 4 42] Invariant0.invariant' ( * self) f}
-    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 225 4 30] Invariant1.invariant' f}
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 231 4 54] result = Type.Core_Option_Option_None -> not Complete0.complete ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 230 4 53] result = Type.Core_Option_Option_Some true -> Sat0.sat f ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 229 4 56] result = Type.Core_Option_Option_Some false -> Unsat0.unsat f ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 228 4 41] Compatible0.compatible ( * self) ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 227 4 84] EventuallySatComplete0.eventually_sat_complete f ( * self) = EventuallySatComplete0.eventually_sat_complete f ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 226 4 42] Invariant0.invariant' ( ^ self) f }
+    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 234 4 42] Invariant0.invariant' ( * self) f}
+    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 233 4 30] Invariant1.invariant' f}
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 239 4 54] result = Type.Core_Option_Option_None -> not Complete0.complete ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 238 4 53] result = Type.Core_Option_Option_Some true -> Sat0.sat f ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 237 4 56] result = Type.Core_Option_Option_Some false -> Unsat0.unsat f ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 236 4 41] Compatible0.compatible ( * self) ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 235 4 84] EventuallySatComplete0.eventually_sat_complete f ( * self) = EventuallySatComplete0.eventually_sat_complete f ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 234 4 42] Invariant0.invariant' ( ^ self) f }
     
 end
 module Robinson_Assignments_Impl2_DoUnitPropagation
@@ -3383,15 +3386,15 @@ module Robinson_Assignments_Impl2_DoUnitPropagation
   predicate Sat0.sat = Sat0.sat, predicate Unsat0.unsat = Unsat0.unsat,
   predicate Compatible0.compatible = Compatible0.compatible,
   predicate EventuallySatComplete0.eventually_sat_complete = EventuallySatComplete0.eventually_sat_complete
-  let rec cfg do_unit_propagation [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 232 4 70] (self : borrowed (Type.robinson_assignments_assignments)) (f : Type.robinson_formula_formula) : Type.core_option_option bool
-    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 226 4 42] Invariant0.invariant' ( * self) f}
-    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 225 4 30] Invariant1.invariant' f}
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 231 4 54] result = Type.Core_Option_Option_None -> not Complete0.complete ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 230 4 53] result = Type.Core_Option_Option_Some true -> Sat0.sat f ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 229 4 56] result = Type.Core_Option_Option_Some false -> Unsat0.unsat f ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 228 4 41] Compatible0.compatible ( * self) ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 227 4 84] EventuallySatComplete0.eventually_sat_complete f ( * self) = EventuallySatComplete0.eventually_sat_complete f ( ^ self) }
-    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 226 4 42] Invariant0.invariant' ( ^ self) f }
+  let rec cfg do_unit_propagation [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 240 4 70] (self : borrowed (Type.robinson_assignments_assignments)) (f : Type.robinson_formula_formula) : Type.core_option_option bool
+    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 234 4 42] Invariant0.invariant' ( * self) f}
+    requires {[#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 233 4 30] Invariant1.invariant' f}
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 239 4 54] result = Type.Core_Option_Option_None -> not Complete0.complete ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 238 4 53] result = Type.Core_Option_Option_Some true -> Sat0.sat f ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 237 4 56] result = Type.Core_Option_Option_Some false -> Unsat0.unsat f ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 236 4 41] Compatible0.compatible ( * self) ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 235 4 84] EventuallySatComplete0.eventually_sat_complete f ( * self) = EventuallySatComplete0.eventually_sat_complete f ( ^ self) }
+    ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 234 4 42] Invariant0.invariant' ( ^ self) f }
     
    =
   var _0 : Type.core_option_option bool;
@@ -3415,21 +3418,21 @@ module Robinson_Assignments_Impl2_DoUnitPropagation
   }
   BB0 {
     _4 <- ();
-    _old_a_3 <- ghost ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 233 21 33] self_1);
+    _old_a_3 <- ghost ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 241 21 33] self_1);
     goto BB1
   }
   BB1 {
     goto BB2
   }
   BB2 {
-    invariant assignments_invariant { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 234 8 63] Invariant0.invariant' ( * self_1) f_2 };
-    invariant proph { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 235 8 53]  ^ self_1 =  ^ _old_a_3 };
-    invariant maintains_compat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 236 8 64] Compatible0.compatible ( * _old_a_3) ( * self_1) };
-    invariant maintains_sat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 237 8 116] EventuallySatComplete0.eventually_sat_complete f_2 ( * _old_a_3) -> EventuallySatComplete0.eventually_sat_complete f_2 ( * self_1) };
+    invariant assignments_invariant { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 242 8 63] Invariant0.invariant' ( * self_1) f_2 };
+    invariant proph { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 243 8 53]  ^ self_1 =  ^ _old_a_3 };
+    invariant maintains_compat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 244 8 64] Compatible0.compatible ( * _old_a_3) ( * self_1) };
+    invariant maintains_sat { [#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 245 8 116] EventuallySatComplete0.eventually_sat_complete f_2 ( * _old_a_3) -> EventuallySatComplete0.eventually_sat_complete f_2 ( * self_1) };
     _8 <- borrow_mut ( * self_1);
     self_1 <- { self_1 with current = ( ^ _8) };
     _9 <- f_2;
-    _7 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 239 18 40] UnitPropagate0.unit_propagate _8 _9);
+    _7 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/assignments.rs" 247 18 40] UnitPropagate0.unit_propagate _8 _9);
     goto BB3
   }
   BB3 {
@@ -4829,10 +4832,8 @@ module Robinson_Formula_Impl0
 end
 module Robinson_Formula_Impl2_CheckFormulaInvariant_Interface
   use Type
-  use mach.int.Int
-  use mach.int.Int32
-  use mach.int.UInt64
   use prelude.Prelude
+  use mach.int.Int
   use prelude.UInt8
   clone Robinson_Formula_Impl1_Invariant_Interface as Invariant0
   clone Robinson_Formula_Impl1_ContainsEmptyClause_Interface as ContainsEmptyClause0
@@ -4847,17 +4848,17 @@ module Robinson_Formula_Impl2_CheckFormulaInvariant_Interface
     ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 118 4 7] match (result) with
       | Type.Robinson_Solver_SatResult_Sat assn -> EventuallySatNoAss0.eventually_sat_no_ass self && FormulaSatInner0.formula_sat_inner (Model0.model self) (Model1.model assn)
       | Type.Robinson_Solver_SatResult_Unsat -> ContainsEmptyClause0.contains_empty_clause self
-      | Type.Robinson_Solver_SatResult_Unknown -> Invariant0.invariant' self && 0 < UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars self) && UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars self) < div 18446744073709551615 2
+      | Type.Robinson_Solver_SatResult_Unknown -> Invariant0.invariant' self
       | Type.Robinson_Solver_SatResult_Err -> true
       end }
     
 end
 module Robinson_Formula_Impl2_CheckFormulaInvariant
   use Type
+  use prelude.Prelude
   use mach.int.Int
   use mach.int.Int32
   use mach.int.UInt64
-  use prelude.Prelude
   use seq.Seq
   use prelude.UInt8
   clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
@@ -4912,7 +4913,7 @@ module Robinson_Formula_Impl2_CheckFormulaInvariant
     ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 118 4 7] match (result) with
       | Type.Robinson_Solver_SatResult_Sat assn -> EventuallySatNoAss0.eventually_sat_no_ass self && FormulaSatInner0.formula_sat_inner (Model0.model self) (Model1.model assn)
       | Type.Robinson_Solver_SatResult_Unsat -> ContainsEmptyClause0.contains_empty_clause self
-      | Type.Robinson_Solver_SatResult_Unknown -> Invariant0.invariant' self && 0 < UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars self) && UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars self) < div 18446744073709551615 2
+      | Type.Robinson_Solver_SatResult_Unknown -> Invariant0.invariant' self
       | Type.Robinson_Solver_SatResult_Err -> true
       end }
     
@@ -4923,204 +4924,162 @@ module Robinson_Formula_Impl2_CheckFormulaInvariant
   var _3 : ();
   var _4 : bool;
   var _5 : usize;
-  var _6 : usize;
-  var _7 : bool;
-  var _8 : ();
+  var _6 : Type.alloc_vec_vec (Type.robinson_clause_clause) (Type.alloc_alloc_global);
+  var _7 : ();
+  var a_8 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
   var _9 : ();
-  var _10 : bool;
-  var _11 : usize;
-  var _12 : Type.alloc_vec_vec (Type.robinson_clause_clause) (Type.alloc_alloc_global);
+  var _10 : ();
+  var _11 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
+  var i_12 : usize;
   var _13 : ();
-  var a_14 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
-  var _15 : ();
-  var _16 : ();
-  var _17 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
-  var _18 : ();
-  var _19 : bool;
-  var _20 : usize;
-  var _21 : ();
-  var i_22 : usize;
-  var _23 : ();
-  var _24 : ();
-  var _25 : bool;
+  var _14 : ();
+  var _15 : bool;
+  var _16 : usize;
+  var _17 : usize;
+  var _18 : Type.alloc_vec_vec (Type.robinson_clause_clause) (Type.alloc_alloc_global);
+  var _19 : ();
+  var _20 : bool;
+  var _21 : bool;
+  var _22 : Type.robinson_clause_clause;
+  var _23 : Type.robinson_clause_clause;
+  var _24 : Type.alloc_vec_vec (Type.robinson_clause_clause) (Type.alloc_alloc_global);
+  var _25 : usize;
   var _26 : usize;
-  var _27 : usize;
-  var _28 : Type.alloc_vec_vec (Type.robinson_clause_clause) (Type.alloc_alloc_global);
-  var _29 : ();
-  var _30 : bool;
-  var _31 : bool;
+  var _27 : ();
+  var _28 : ();
+  var _29 : bool;
+  var _30 : usize;
+  var _31 : Type.robinson_clause_clause;
   var _32 : Type.robinson_clause_clause;
-  var _33 : Type.robinson_clause_clause;
-  var _34 : Type.alloc_vec_vec (Type.robinson_clause_clause) (Type.alloc_alloc_global);
-  var _35 : usize;
-  var _36 : usize;
+  var _33 : Type.alloc_vec_vec (Type.robinson_clause_clause) (Type.alloc_alloc_global);
+  var _34 : usize;
+  var _35 : ();
+  var _36 : ();
   var _37 : ();
   var _38 : ();
-  var _39 : bool;
-  var _40 : usize;
-  var _41 : Type.robinson_clause_clause;
-  var _42 : Type.robinson_clause_clause;
-  var _43 : Type.alloc_vec_vec (Type.robinson_clause_clause) (Type.alloc_alloc_global);
-  var _44 : usize;
-  var _45 : ();
-  var _46 : ();
-  var _47 : ();
-  var _48 : ();
   {
     self_1 <- self;
     goto BB0
   }
   BB0 {
-    _5 <- Type.robinson_formula_formula_Formula_num_vars self_1;
-    _7 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 125 28 42] (2 : usize) = (0 : usize));
-    assert { not _7 };
+    _6 <- Type.robinson_formula_formula_Formula_clauses self_1;
+    _5 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 125 11 29] Len0.len _6);
     goto BB1
   }
   BB1 {
-    _6 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 125 28 42] (18446744073709551615 : usize) / (2 : usize));
-    _4 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 125 11 42] _5 >= _6);
+    _4 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 125 11 34] _5 = (0 : usize));
     switch (_4)
-      | False -> goto BB3
+      | False -> goto BB6
       | _ -> goto BB2
       end
   }
   BB2 {
-    _0 <- Type.Robinson_Solver_SatResult_Err;
-    goto BB27
+    a_8 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 126 20 30] New0.new ());
+    goto BB3
   }
   BB3 {
-    _3 <- ();
-    _12 <- Type.robinson_formula_formula_Formula_clauses self_1;
-    _11 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 128 11 29] Len0.len _12);
+    assert { [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 128 12 45] SatInner0.sat_inner self_1 (Model1.model a_8) };
     goto BB4
   }
   BB4 {
-    _10 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 128 11 34] _11 = (0 : usize));
-    switch (_10)
-      | False -> goto BB9
-      | _ -> goto BB5
-      end
+    _9 <- ();
+    assert { [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 129 12 55] EventuallySatNoAss0.eventually_sat_no_ass self_1 };
+    _10 <- ();
+    assume { Resolve0.resolve _11 };
+    _11 <- a_8;
+    _0 <- Type.Robinson_Solver_SatResult_Sat _11;
+    goto BB5
   }
   BB5 {
-    a_14 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 129 20 30] New0.new ());
-    goto BB6
+    goto BB21
   }
   BB6 {
-    assert { [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 131 12 45] SatInner0.sat_inner self_1 (Model1.model a_14) };
+    _3 <- ();
+    i_12 <- (0 : usize);
     goto BB7
   }
   BB7 {
-    _15 <- ();
-    assert { [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 132 12 55] EventuallySatNoAss0.eventually_sat_no_ass self_1 };
-    _16 <- ();
-    assume { Resolve0.resolve _17 };
-    _17 <- a_14;
-    _0 <- Type.Robinson_Solver_SatResult_Sat _17;
+    invariant inv { [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 133 8 107] forall j : (int) . 0 <= j && j < UInt64.to_int i_12 -> Invariant1.invariant' (Seq.get (Model2.model (Type.robinson_formula_formula_Formula_clauses self_1)) j) (UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars self_1)) };
+    invariant inv { [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 134 8 94] forall j : (int) . 0 <= j && j < UInt64.to_int i_12 -> Seq.length (Model3.model (Seq.get (Model2.model (Type.robinson_formula_formula_Formula_clauses self_1)) j)) > 0 };
+    _16 <- i_12;
+    _18 <- Type.robinson_formula_formula_Formula_clauses self_1;
+    _17 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 135 18 36] Len0.len _18);
     goto BB8
   }
   BB8 {
-    goto BB26
+    _15 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 135 14 36] _16 < _17);
+    switch (_15)
+      | False -> goto BB18
+      | _ -> goto BB9
+      end
   }
   BB9 {
-    _9 <- ();
-    _20 <- Type.robinson_formula_formula_Formula_num_vars self_1;
-    _19 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 135 11 29] _20 = (0 : usize));
-    switch (_19)
-      | False -> goto BB11
-      | _ -> goto BB10
-      end
+    _24 <- Type.robinson_formula_formula_Formula_clauses self_1;
+    _25 <- i_12;
+    _23 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 136 16 31] Index0.index _24 _25);
+    goto BB10
   }
   BB10 {
-    _0 <- Type.Robinson_Solver_SatResult_Err;
-    goto BB27
+    _22 <- _23;
+    _26 <- Type.robinson_formula_formula_Formula_num_vars self_1;
+    _21 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 136 16 69] CheckClauseInvariant0.check_clause_invariant _22 _26);
+    goto BB11
   }
   BB11 {
-    _18 <- ();
-    i_22 <- (0 : usize);
-    goto BB12
-  }
-  BB12 {
-    invariant inv { [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 139 8 107] forall j : (int) . 0 <= j && j < UInt64.to_int i_22 -> Invariant1.invariant' (Seq.get (Model2.model (Type.robinson_formula_formula_Formula_clauses self_1)) j) (UInt64.to_int (Type.robinson_formula_formula_Formula_num_vars self_1)) };
-    invariant inv { [#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 140 8 94] forall j : (int) . 0 <= j && j < UInt64.to_int i_22 -> Seq.length (Model3.model (Seq.get (Model2.model (Type.robinson_formula_formula_Formula_clauses self_1)) j)) > 0 };
-    _26 <- i_22;
-    _28 <- Type.robinson_formula_formula_Formula_clauses self_1;
-    _27 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 141 18 36] Len0.len _28);
-    goto BB13
-  }
-  BB13 {
-    _25 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 141 14 36] _26 < _27);
-    switch (_25)
-      | False -> goto BB23
-      | _ -> goto BB14
+    _20 <- not _21;
+    switch (_20)
+      | False -> goto BB13
+      | _ -> goto BB12
       end
   }
+  BB12 {
+    _0 <- Type.Robinson_Solver_SatResult_Err;
+    goto BB19
+  }
+  BB13 {
+    _19 <- ();
+    _33 <- Type.robinson_formula_formula_Formula_clauses self_1;
+    _34 <- i_12;
+    _32 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 139 15 30] Index0.index _33 _34);
+    goto BB14
+  }
   BB14 {
-    _34 <- Type.robinson_formula_formula_Formula_clauses self_1;
-    _35 <- i_22;
-    _33 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 142 16 31] Index0.index _34 _35);
+    _31 <- _32;
+    _30 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 139 15 36] Len1.len _31);
     goto BB15
   }
   BB15 {
-    _32 <- _33;
-    _36 <- Type.robinson_formula_formula_Formula_num_vars self_1;
-    _31 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 142 16 69] CheckClauseInvariant0.check_clause_invariant _32 _36);
-    goto BB16
-  }
-  BB16 {
-    _30 <- not _31;
-    switch (_30)
-      | False -> goto BB18
-      | _ -> goto BB17
+    _29 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 139 15 41] _30 = (0 : usize));
+    switch (_29)
+      | False -> goto BB17
+      | _ -> goto BB16
       end
   }
-  BB17 {
-    _0 <- Type.Robinson_Solver_SatResult_Err;
-    goto BB24
-  }
-  BB18 {
-    _29 <- ();
-    _43 <- Type.robinson_formula_formula_Formula_clauses self_1;
-    _44 <- i_22;
-    _42 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 145 15 30] Index0.index _43 _44);
+  BB16 {
+    _0 <- Type.Robinson_Solver_SatResult_Unsat;
     goto BB19
   }
+  BB17 {
+    _28 <- ();
+    i_12 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 142 12 18] i_12 + (1 : usize));
+    _14 <- ();
+    goto BB7
+  }
+  BB18 {
+    _13 <- ();
+    _0 <- Type.Robinson_Solver_SatResult_Unknown;
+    goto BB20
+  }
   BB19 {
-    _41 <- _42;
-    _40 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 145 15 36] Len1.len _41);
     goto BB20
   }
   BB20 {
-    _39 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 145 15 41] _40 = (0 : usize));
-    switch (_39)
-      | False -> goto BB22
-      | _ -> goto BB21
-      end
+    goto BB22
   }
   BB21 {
-    _0 <- Type.Robinson_Solver_SatResult_Unsat;
-    goto BB24
+    goto BB22
   }
   BB22 {
-    _38 <- ();
-    i_22 <- ([#"/home/sarek/master/sat-mirror/Robinson/src/formula.rs" 148 12 18] i_22 + (1 : usize));
-    _24 <- ();
-    goto BB12
-  }
-  BB23 {
-    _23 <- ();
-    _0 <- Type.Robinson_Solver_SatResult_Unknown;
-    goto BB25
-  }
-  BB24 {
-    goto BB25
-  }
-  BB25 {
-    goto BB27
-  }
-  BB26 {
-    goto BB27
-  }
-  BB27 {
     return _0
   }
   
@@ -5514,12 +5473,11 @@ module Robinson_Solver_Solver_Interface
   use Type
   use prelude.Prelude
   clone Robinson_Formula_Impl1_EventuallySatCompleteNoAss_Interface as EventuallySatCompleteNoAss0
-  clone Robinson_Formula_Impl1_ContainsEmptyClause_Interface as ContainsEmptyClause0
   clone Robinson_Formula_Impl1_EventuallySatNoAss_Interface as EventuallySatNoAss0
   val solver [@cfg:stackify] (formula : borrowed (Type.robinson_formula_formula)) : Type.robinson_solver_satresult
     ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/solver.rs" 43 0 3] match (result) with
       | Type.Robinson_Solver_SatResult_Sat _assn -> EventuallySatNoAss0.eventually_sat_no_ass ( * formula)
-      | Type.Robinson_Solver_SatResult_Unsat -> ContainsEmptyClause0.contains_empty_clause ( * formula) || not EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass ( * formula)
+      | Type.Robinson_Solver_SatResult_Unsat -> not EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass ( * formula)
       | _ -> true
       end }
     
@@ -5527,14 +5485,14 @@ end
 module Robinson_Solver_Solver
   use Type
   use prelude.Prelude
-  clone Robinson_Lit_Impl1_SatInner as SatInner2
-  clone Robinson_Logic_Unset as Unset0
-  clone Robinson_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = Type.robinson_lit_lit,
   type a = Type.alloc_alloc_global, axiom .
   clone Robinson_Clause_Impl0_Model as Model1 with function Model0.model = Model2.model
+  clone Robinson_Lit_Impl1_SatInner as SatInner2
   clone Robinson_Clause_Impl1_SatInner as SatInner1 with function Model0.model = Model1.model,
   predicate SatInner0.sat_inner = SatInner2.sat_inner
+  clone Robinson_Logic_Unset as Unset0
+  clone Robinson_Assignments_CompleteInner as CompleteInner0 with predicate Unset0.unset = Unset0.unset
   clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = Type.robinson_clause_clause,
   type a = Type.alloc_alloc_global, axiom .
   clone Robinson_Formula_Impl1_SatInner as SatInner0 with function Model0.model = Model0.model,
@@ -5542,8 +5500,6 @@ module Robinson_Solver_Solver
   clone Robinson_Formula_Impl1_EventuallySatCompleteNoAss as EventuallySatCompleteNoAss0 with predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner,
   predicate SatInner0.sat_inner = SatInner0.sat_inner
   clone Robinson_Formula_Impl1_EventuallySatNoAss as EventuallySatNoAss0 with predicate SatInner0.sat_inner = SatInner0.sat_inner
-  clone Robinson_Formula_Impl1_ContainsEmptyClause as ContainsEmptyClause0 with function Model0.model = Model0.model,
-  function Model1.model = Model1.model
   use mach.int.Int
   use mach.int.Int64
   use prelude.UInt8
@@ -5558,9 +5514,6 @@ module Robinson_Solver_Solver
   clone Robinson_Assignments_Impl0_Model as Model5 with function Model0.model = Model4.model
   clone Robinson_Assignments_Impl1_Invariant as Invariant1 with function Model0.model = Model5.model
   clone Alloc_Vec_Impl0_New_Interface as New2 with type t = uint8, function Model0.model = Model4.model
-  clone Robinson_Assignments_CompatibleInner as CompatibleInner0 with predicate Unset0.unset = Unset0.unset
-  clone Robinson_Assignments_CompatibleCompleteInner as CompatibleCompleteInner0 with predicate CompatibleInner0.compatible_inner = CompatibleInner0.compatible_inner,
-  predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner
   clone Robinson_Clause_Impl1_NoDuplicateIndexes as NoDuplicateIndexes0 with function Model0.model = Model1.model,
   function IndexLogic0.index_logic = IndexLogic0.index_logic
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with function Model0.model = Model1.model,
@@ -5568,6 +5521,9 @@ module Robinson_Solver_Solver
   clone Robinson_Clause_Impl1_Invariant as Invariant3 with predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
   predicate NoDuplicateIndexes0.no_duplicate_indexes = NoDuplicateIndexes0.no_duplicate_indexes
   clone Robinson_Formula_FormulaSatInner as FormulaSatInner0 with predicate SatInner0.sat_inner = SatInner1.sat_inner
+  clone Robinson_Assignments_CompatibleInner as CompatibleInner0 with predicate Unset0.unset = Unset0.unset
+  clone Robinson_Assignments_CompatibleCompleteInner as CompatibleCompleteInner0 with predicate CompatibleInner0.compatible_inner = CompatibleInner0.compatible_inner,
+  predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner
   clone Robinson_Formula_Impl0_Model as Model6 with function Model0.model = Model0.model
   clone CreusotContracts_Logic_Model_Impl0_Model as Model3 with type t = Type.robinson_formula_formula,
   type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model6.model
@@ -5578,6 +5534,8 @@ module Robinson_Solver_Solver
   clone Robinson_Assignments_Impl2_New_Interface as New0 with predicate Invariant0.invariant' = Invariant0.invariant',
   function Model0.model = Model5.model, predicate Unset0.unset = Unset0.unset,
   predicate Invariant1.invariant' = Invariant1.invariant'
+  clone Robinson_Formula_Impl1_ContainsEmptyClause as ContainsEmptyClause0 with function Model0.model = Model0.model,
+  function Model1.model = Model1.model
   clone Robinson_Formula_Impl1_EventuallySatInner as EventuallySatInner0 with predicate CompatibleInner0.compatible_inner = CompatibleInner0.compatible_inner,
   predicate SatInner0.sat_inner = SatInner0.sat_inner
   clone Robinson_Formula_Impl1_EventuallySat as EventuallySat0 with function Model0.model = Model5.model,
@@ -5598,7 +5556,7 @@ module Robinson_Solver_Solver
   let rec cfg solver [@cfg:stackify] [#"/home/sarek/master/sat-mirror/Robinson/src/solver.rs" 50 0 49] (formula : borrowed (Type.robinson_formula_formula)) : Type.robinson_solver_satresult
     ensures { [#"/home/sarek/master/sat-mirror/Robinson/src/solver.rs" 43 0 3] match (result) with
       | Type.Robinson_Solver_SatResult_Sat _assn -> EventuallySatNoAss0.eventually_sat_no_ass ( * formula)
-      | Type.Robinson_Solver_SatResult_Unsat -> ContainsEmptyClause0.contains_empty_clause ( * formula) || not EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass ( * formula)
+      | Type.Robinson_Solver_SatResult_Unsat -> not EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass ( * formula)
       | _ -> true
       end }
     

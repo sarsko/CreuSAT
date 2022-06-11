@@ -137,10 +137,18 @@ impl Assignments {
     #[requires(0 <= @i && @i < (@f.clauses).len())]
     #[ensures((*self).compatible(^self))]
     #[ensures(f.eventually_sat_complete(*self) == f.eventually_sat_complete(^self))]
+    /*
     #[ensures((result == ClauseState::Unit)    ==> (@f.clauses)[@i].unit(*self) && !(self).complete())]
     #[ensures((result == ClauseState::Sat)     ==> (@f.clauses)[@i].sat(^self) && @self == @^self)]
     #[ensures((result == ClauseState::Unsat)   ==> (@f.clauses)[@i].unsat(^self) && @self == @^self)]
     #[ensures((result == ClauseState::Unknown) ==> @self == @^self && !(^self).complete())]
+    */
+    #[ensures(match result {
+        ClauseState::Unit => (@f.clauses)[@i].unit(*self) && !self.complete(),
+        ClauseState::Sat => (@f.clauses)[@i].sat(^self) && @self == @^self,
+        ClauseState::Unsat => (@f.clauses)[@i].unsat(^self) && @self == @^self,
+        ClauseState::Unknown => @self == @^self && !(^self).complete(),
+    })]
     #[ensures((self).complete() ==> *self == ^self && ((result == ClauseState::Unsat) || (result == ClauseState::Sat)))]
     pub fn unit_prop_once(&mut self, i: usize, f: &Formula) -> ClauseState {
         let clause = &f.clauses[i];
