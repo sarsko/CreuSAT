@@ -1,22 +1,22 @@
 use crate::{formula::*, lit::*, solver::Solver, trail::*};
-use std::{ops::{Index, IndexMut}, cmp::Ordering};
+use std::{
+    cmp::Ordering,
+    ops::{Index, IndexMut},
+};
 
 pub struct Clause {
     pub deleted: bool,
     pub lbd: u32,
     pub search: usize,
-    pub rest: Vec<Lit>,
+    pub lits: Vec<Lit>,
 }
-
 
 impl Index<usize> for Clause {
     type Output = Lit;
     #[inline]
     fn index(&self, i: usize) -> &Lit {
         //#[cfg(feature = "unsafe_access")]
-        unsafe {
-            self.rest.get_unchecked(i)
-        }
+        unsafe { self.lits.get_unchecked(i) }
         //#[cfg(not(feature = "unsafe_access"))]
         //&self.lits[i]
     }
@@ -25,24 +25,30 @@ impl IndexMut<usize> for Clause {
     #[inline]
     fn index_mut(&mut self, i: usize) -> &mut Lit {
         //#[cfg(feature = "unsafe_access")]
-        unsafe {
-            self.rest.get_unchecked_mut(i)
-        }
+        unsafe { self.lits.get_unchecked_mut(i) }
         //#[cfg(not(feature = "unsafe_access"))]
         //&mut self.lits[i]
     }
 }
 
 impl Clause {
+    pub fn swap(&mut self, i: usize, j: usize) {
+        self.lits.swap(i, j);
+    }
+
+    pub fn pop(&mut self) {
+        self.lits.pop();
+    }
+
     pub fn less_than(&self, other: &Clause) -> Ordering {
         if self.len() == 2 {
             if other.len() == 2 {
-                return Ordering::Equal;
+                Ordering::Equal
             } else {
-                return Ordering::Less;
+                Ordering::Less
             }
         } else if other.len() == 2 {
-            return Ordering::Greater;
+            Ordering::Greater
         } else if self.lbd < other.lbd {
             Ordering::Less
         } else if self.lbd > other.lbd {
@@ -67,7 +73,7 @@ impl Clause {
         if self.no_duplicates() {
             return true;
         }
-        return false;
+        false
     }
 
     pub fn no_duplicates(&self) -> bool {
@@ -84,28 +90,28 @@ impl Clause {
             }
             i += 1;
         }
-        return true;
+        true
     }
 
     #[inline(always)]
     pub fn len(&self) -> usize {
-        self.rest.len()
+        self.lits.len()
     }
 
     pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
-        Clause { deleted: false, lbd: 0, search: 2, rest: vec.clone() }
+        Clause { deleted: false, lbd: 0, search: 1, lits: vec.clone() }
     }
 
     #[inline(always)]
     fn move_to_end(&mut self, idx: usize, _f: &Formula) {
-        let end = self.rest.len() - 1;
-        self.rest.swap(idx, end);
+        let end = self.len() - 1;
+        self.swap(idx, end);
     }
 
     #[inline(always)]
     pub fn remove_from_clause(&mut self, idx: usize, _f: &Formula) {
         self.move_to_end(idx, _f);
-        self.rest.pop();
+        self.pop();
     }
 
     fn calc_lbd(&self, trail: &Trail, solver: &mut Solver) -> u32 {
@@ -123,11 +129,10 @@ impl Clause {
             }
             i += 1;
         }
-        return lbd;
+        lbd
     }
 
     pub fn calc_and_set_lbd(&mut self, trail: &Trail, solver: &mut Solver) {
         self.lbd = self.calc_lbd(trail, solver);
     }
-
 }

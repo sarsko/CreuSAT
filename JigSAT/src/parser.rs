@@ -36,16 +36,14 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
         for line in lines {
             line_cntr += 1;
             if let Ok(line) = line {
-                let split = line.split(" ").filter(|e| e != &"").collect::<Vec<_>>();
+                let split = line.split(' ').filter(|e| e != &"").collect::<Vec<_>>();
                 if split.len() > 0 {
-                    match split[0].chars().nth(0).unwrap() {
+                    match split[0].chars().next().unwrap() {
                         'c' => {}
                         'p' => match split[2].parse::<usize>() {
                             Ok(n) => {
                                 if num_lits_set {
-                                    return Err(
-                                        "Error in input file - multiple p lines".to_string()
-                                    );
+                                    return Err("Error in input file - multiple p lines".to_string());
                                 }
                                 num_lits_set = true;
                                 num_literals = n
@@ -66,21 +64,18 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                                             out_clauses.push(curr_clause);
                                             curr_clause = vec![];
                                         } else {
-                                            let n_abs = n.abs() as usize;
+                                            let n_abs = n.unsigned_abs() as usize;
                                             if n_abs > max_literal {
                                                 max_literal = n_abs;
                                             }
                                             if !seen.contains(&n) {
                                                 curr_clause.push(n);
                                                 seen.insert(n);
-                                            } 
+                                            }
                                         }
                                     }
                                     Err(_) => {
-                                        return Err(format!(
-                                            "Error in input file on line {}",
-                                            line_cntr.to_string()
-                                        ));
+                                        return Err(format!("Error in input file on line {}", line_cntr));
                                     }
                                 }
                             }
@@ -115,10 +110,10 @@ pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_li
         for lit in clause {
             assert!(*lit != 0);
             if *lit < 0 {
-                let new_lit = Lit2::new((lit.abs() - 1 ) as usize, false);
+                let new_lit = Lit2::new((lit.abs() - 1) as usize, false);
                 currclause.push(new_lit);
             } else {
-                let new_lit = Lit2::new((*lit - 1 ) as usize, true);
+                let new_lit = Lit2::new((*lit - 1) as usize, true);
                 currclause.push(new_lit);
             }
         }
@@ -129,7 +124,7 @@ pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_li
             formula.clauses.push(clause2);
         }
     }
-    match solver(&mut formula) {
+    match solver(formula) {
         SatResult::Sat(_) => true,
         SatResult::Unsat => false,
         _ => panic!("Sarek should really make the parser non-binary"),

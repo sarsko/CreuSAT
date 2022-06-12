@@ -24,6 +24,7 @@ pub struct Trail {
 }
 
 impl Trail {
+    #[inline]
     pub fn decision_level(&self) -> u32 {
         self.decisions.len() as u32
     }
@@ -42,10 +43,10 @@ impl Trail {
         let last = self.trail.pop();
         match last {
             Some(step) => {
-                self.assignments[step.lit.index()] += 2; 
+                self.assignments[step.lit.index()] += 2;
                 // Removing this would be hard to prove lol.
                 //self.lit_to_level[step.lit.index()] = u32::MAX;
-                return step.lit.index();
+                step.lit.index()
             }
             None => {
                 unreachable!();
@@ -63,10 +64,10 @@ impl Trail {
         let how_many = self.trail.len() - self.decisions[level as usize];
         let mut i: usize = 0;
         let mut curr = d.search;
-        let mut timestamp = d.linked_list[curr].ts;
+        let mut timestamp = unsafe { d.linked_list.get_unchecked(curr).ts };
         while i < how_many {
             let idx = self.backstep(f);
-            let curr_timestamp = d.linked_list[idx].ts;
+            let curr_timestamp = unsafe { d.linked_list.get_unchecked(idx).ts };
             if curr_timestamp > timestamp {
                 timestamp = curr_timestamp;
                 curr = idx;
@@ -78,13 +79,12 @@ impl Trail {
         while self.decision_level() > level {
             self.decisions.pop();
         }
-        self.curr_i = level as usize;
+        self.curr_i = self.trail.len();
     }
 
     pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
         self.lit_to_level[step.lit.index()] = self.decision_level();
-        let trail = &self.trail;
-        self.assignments.set_assignment(step.lit, _f, trail);
+        self.assignments.set_assignment(step.lit, _f, &self.trail);
         self.trail.push(step);
     }
 
@@ -95,17 +95,17 @@ impl Trail {
         self.lit_to_level[idx] = dlevel;
         self.assignments[idx] -= 2;
         let lit = Lit::phase_saved(idx, &self.assignments);
-        let step = Step { lit: lit, decision_level: dlevel, reason: Reason::Decision };
+        let step = Step { lit, decision_level: dlevel, reason: Reason::Decision };
         self.trail.push(step);
     }
 
-    pub fn learn_unit(&mut self, lit: Lit, f: &Formula, d: &mut Decisions) -> Result<(), ()> {
+    #[inline]
+    pub fn learn_unit(&mut self, lit: Lit, f: &Formula, d: &mut Decisions) {
         self.backtrack_safe(0, f, d);
-        self.enq_assignment(Step { lit: lit, decision_level: 0, reason: Reason::Unit }, f);
-        Ok(())
+        self.enq_assignment(Step { lit, decision_level: 0, reason: Reason::Unit }, f);
     }
 
-    pub fn learn_units(&mut self, f: &Formula, d: &mut Decisions) -> Option<usize> {
+    pub fn learn_units(&mut self, f: &mut Formula) -> Option<usize> {
         let mut i = 0;
         while i < f.len() {
             let clause = &f[i];
@@ -116,12 +116,13 @@ impl Trail {
                     if lit.lit_unsat(&self.assignments) {
                         return Some(i);
                     }
-                } else {
-                    self.learn_unit(lit, f, d);
                 }
+                self.enq_assignment(Step { lit, decision_level: 0, reason: Reason::Unit }, f);
+                f.remove_clause_in_preprocessing(i);
+            } else {
+                i += 1;
             }
-            i += 1;
         }
-        return None;
+        None
     }
 }

@@ -29,15 +29,13 @@ impl Lit {
     #[predicate]
     pub fn lit_in(self, c: Clause) -> bool {
         pearlite! {
-            exists<i: Int> 0 <= i && i < (@c).len() &&
-                (@c)[i] == self
+            exists<i: Int> 0 <= i && i < (@c).len() && (@c)[i] == self
         }
     }
+
     #[predicate]
     pub fn invariant(self, n: Int) -> bool {
-        pearlite! {
-            @self.idx < n
-        }
+        pearlite! { @self.idx < n }
     }
 
     #[predicate]
@@ -76,16 +74,12 @@ impl Lit {
 
     #[predicate]
     pub fn unset(self, a: Assignments) -> bool {
-        pearlite! {
-            self.unset_inner(@a)
-        }
+        pearlite! { self.unset_inner(@a) }
     }
 
     #[predicate]
     pub fn unsat(self, a: Assignments) -> bool {
-        pearlite! {
-            self.unsat_inner(@a)
-        }
+        pearlite! { self.unsat_inner(@a) }
     }
 }
 

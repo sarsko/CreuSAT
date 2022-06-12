@@ -1,6 +1,8 @@
 extern crate creusot_contracts;
-use creusot_contracts::std::*;
+use ::std::panic;
+
 use creusot_contracts::logic::Ghost;
+use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 use crate::{
@@ -25,36 +27,6 @@ pub enum ConflictResult {
     Ground,
     Continue,
 }
-// Satch:
-/*
-// fast_alpha = 0.03
-  {
-    struct averages *a = averages (solver);
-    update_fast_average (&a->fast_glue, glue);
-    update_slow_average (&a->slow_glue, glue);
-    update_slow_average (&a->conflict_level, conflict_level);
-    {
-      const uint64_t decisions = DECISIONS;
-      const uint64_t delta_decisions = decisions - a->saved_decisions;
-      a->saved_decisions = decisions;
-      update_slow_average (&a->decision_rate, delta_decisions);
-    }
-    {
-      double trail_filled = percent (SIZE_STACK (solver->trail),
-                     solver->statistics.remaining);
-      update_slow_average (&a->trail_filled, trail_filled);
-    }
-    update_betas (solver);
-  }
-
-static void
-update_fast_average (double *average, unsigned value)
-{
-  *average += fast_alpha * (value - *average);
-}
-*/
-
-//&& @level < (@trail.decisions).len() //added
 
 #[cfg_attr(feature = "trust_solver", trusted)]
 #[requires(f.invariant())]
@@ -67,11 +39,11 @@ update_fast_average (double *average, unsigned value)
 #[ensures(@result.0 < (@clause).len())]
 pub fn get_asserting_level(clause: &Clause, trail: &Trail, f: &Formula) -> (usize, usize) {
     let mut max_i: usize = 1;
-    let mut max_level = trail.lit_to_level[clause.rest[1].index()];
+    let mut max_level = trail.lit_to_level[clause[1].index()];
     let mut i: usize = 2;
     #[invariant(max_i_less, @max_i < (@clause).len())]
-    while i < clause.rest.len() {
-        let level = trail.lit_to_level[clause.rest[i].index()];
+    while i < clause.len() {
+        let level = trail.lit_to_level[clause[i].index()];
         if level > max_level {
             max_level = level;
             max_i = i;
@@ -130,53 +102,45 @@ impl Solver {
         }
     }
 
-    //#[cfg_attr(feature = "trust_solver", trusted)]
+    #[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut w).invariant(mut f))]
     #[maintains((mut d).invariant(@f.num_vars))]
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(clause.invariant(@f.num_vars))]
+    #[requires(equisat_extension_inner(clause, @f))]
     #[requires((@clause).len() > 1)]
     #[requires(@s_idx < (@clause).len())]
-    #[requires(vars_in_range_inner(@clause, @f.num_vars))]
-    #[requires(no_duplicate_indexes_inner(@clause))]
-    #[requires(equisat_extension_inner(clause, @f))]
     #[ensures(@f.num_vars == @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
     fn handle_long_clause(
         &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, s_idx: usize,
     ) {
-        let cref = f.add_and_swap_first(clause, w, t, s_idx);
-        let (idx, level) = get_asserting_level(&f.clauses[cref], t, f);
-        let mut i: usize = 0;
-        let mut lbd: usize = 0;
-        #[invariant(lbd_bound, @lbd <= @i)]
-        while i < f.clauses[cref].rest.len() {
-            let level = t.lit_to_level[f.clauses[cref].rest[i].index()];
-            if level < self.perm_diff.len() && // Lazy
-                self.perm_diff[level] != self.num_conflicts
-            {
-                self.perm_diff[level] = self.num_conflicts;
-                lbd += 1;
-            }
-            i += 1;
-        }
-        f.make_asserting_clause_and_watch(w, t, idx, cref);
+        clause.swap_lits_in_clause(f, s_idx, 0);
+        let (idx, level) = get_asserting_level(&clause, t, f);
+        clause.swap_lits_in_clause(f, idx, 1);
+
+        // TODO: Store lbd in clause
+        let lbd = clause.calc_lbd(f, self, t);
+        let cref = f.add_clause(clause, w, t);
         update_fast(&mut self.fast, lbd);
         update_slow(&mut self.slow, lbd);
-        d.increment_and_move(f, cref, &t.assignments);
-        // This should be removed by updating the post of get_asserting_level
+
+        // TODO: Remove by updating the post of get_asserting_level
         t.backtrack_safe(level, f, d);
-        let lit = f.clauses[cref].rest[0];
+
+        let lit = f[cref][0];
         let step = Step { lit: lit, decision_level: level, reason: Reason::Long(cref) };
+
         // TODO:
         // These two have to be ensured by analysis + backtrack
         //proof_assert!((@f.clauses)[@cref].unit(t.assignments));
         //proof_assert!(unset((@t.assignments)[@step.lit.idx]));
-        if f.clauses[cref].unit_and_unset(&t.assignments, f) {
+        if f[cref].unit_and_unset(&t.assignments, f) {
             t.enq_assignment(step, f);
         }
+
         self.increase_num_lemmas();
         self.increase_num_conflicts();
     }
@@ -199,7 +163,7 @@ impl Solver {
     fn handle_conflict(
         &mut self, f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches, d: &mut Decisions,
     ) -> Option<bool> {
-        let res = analyze_conflict(f, t, cref);
+        let res = analyze_conflict(f, t, cref, d);
         match res {
             Conflict::Ground => {
                 return Some(false);
@@ -219,14 +183,14 @@ impl Solver {
             Conflict::Learned(s_idx, mut clause) => {
                 self.handle_long_clause(f, t, w, d, clause, s_idx);
             }
-            Conflict::Panic => {
-                return Some(true);
+            Conflict::Restart(clause) => {
+                f.add_clause(clause, w, t);
+                t.backtrack_safe(0, f, d);
             }
         }
         None
     }
 
-    // OK
     #[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut w).invariant(mut f))]
@@ -250,7 +214,6 @@ impl Solver {
         }
     }
 
-    // OK
     #[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut t).invariant(mut f))]
@@ -265,20 +228,20 @@ impl Solver {
     #[ensures(@f.num_vars == @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
     fn unit_prop_loop(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
-        let old_f = Ghost::record(&f);
-        let old_t = Ghost::record(&t);
-        let old_w = Ghost::record(&w);
-        let old_d = Ghost::record(&d);
+        let old_f = ghost! { f };
+        let old_t = ghost! { t };
+        let old_w = ghost! { w };
+        let old_d = ghost! { d };
         #[invariant(maintains_f, f.invariant())]
         #[invariant(maintains_t, t.invariant(*f))]
         #[invariant(maintains_w, w.invariant(*f))]
         #[invariant(maintains_d, d.invariant(@f.num_vars))]
-        #[invariant(equi, (@old_f).equisat(*f))]
-        #[invariant(num_vars, @f.num_vars == @(@old_f).num_vars)]
-        #[invariant(prophf, ^f == ^@old_f)]
-        #[invariant(propht, ^t == ^@old_t)]
-        #[invariant(prophw, ^w == ^@old_w)]
-        #[invariant(prophd, ^d == ^@old_d)]
+        #[invariant(equi, old_f.inner().equisat(*f))]
+        #[invariant(num_vars, @f.num_vars == @old_f.num_vars)]
+        #[invariant(prophf, ^f == ^old_f.inner())]
+        #[invariant(propht, ^t == ^old_t.inner())]
+        #[invariant(prophw, ^w == ^old_w.inner())]
+        #[invariant(prophd, ^d == ^old_d.inner())]
         loop {
             match self.unit_prop_step(f, d, t, w) {
                 ConflictResult::Ok => {
@@ -295,7 +258,6 @@ impl Solver {
         }
     }
 
-    // OK
     #[cfg_attr(feature = "trust_solver", trusted)]
     #[maintains((mut f).invariant())]
     #[maintains((mut trail).invariant(mut f))]
@@ -328,7 +290,6 @@ impl Solver {
         }
         //proof_assert!(!a.complete() || !f.unsat(*a)); // Need to get from unit_prop_loop
         match d.get_next(&trail.assignments, f) {
-            //match trail.assignments.find_unassigned(d, f) {
             Some(next) => {
                 trail.enq_decision(next, f);
             }
@@ -337,9 +298,6 @@ impl Solver {
                 // Okay so this got broken from unit prop not returning full eval anymore.
                 // Seems like we either have to become ternary and do a check(which cannot fail)
                 // or do a rather long proof about the correctness of watched literals
-                //proof_assert!(a.complete());
-                //proof_assert!(!f.unsat(*a));
-                //proof_assert!(lemma_complete_and_not_unsat_implies_sat(*f, @a); true);
                 if f.is_sat(&trail.assignments) {
                     return SatResult::Sat(Vec::new());
                 } else {
@@ -367,14 +325,14 @@ impl Solver {
     fn inner(
         &mut self, formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut watches: Watches,
     ) -> SatResult {
-        let old_f = Ghost::record(&formula);
-        #[invariant(equi, (@old_f).equisat(*formula))]
-        #[invariant(num_vars, @formula.num_vars == @(@old_f).num_vars)]
+        let old_f = ghost! { formula };
+        #[invariant(equi, old_f.inner().equisat(*formula))]
+        #[invariant(num_vars, @formula.num_vars == @old_f.num_vars)]
         #[invariant(maintains_f, formula.invariant())]
         #[invariant(maintains_t, trail.invariant(*formula))]
         #[invariant(maintains_w, watches.invariant(*formula))]
         #[invariant(maintains_d, decisions.invariant(@formula.num_vars))]
-        #[invariant(prophf, ^formula == ^@old_f)]
+        #[invariant(proph_f, ^formula == ^old_f.inner())]
         loop {
             match self.outer_loop(formula, &mut decisions, &mut trail, &mut watches) {
                 SatResult::Unknown => {} // continue
@@ -405,15 +363,9 @@ pub fn solver(formula: &mut Formula) -> SatResult {
     let mut watches = Watches::new(formula);
     watches.init_watches(formula);
     match trail.learn_units(formula, &mut decisions) {
-        Some(cref) => {
-            if derive_empty_formula(formula, &trail, cref) {
-                return SatResult::Unsat;
-            } else {
-                // There is absolutely no way that this can happen, and it should pe provable
-                return SatResult::Err;
-            }
-        }
         None => {}
+        Some(true) => return SatResult::Unsat,
+        Some(false) => return SatResult::Err,
     }
     let mut solver = Solver::new(formula);
     solver.inner(formula, decisions, trail, watches)

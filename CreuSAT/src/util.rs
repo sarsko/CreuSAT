@@ -1,11 +1,10 @@
 extern crate creusot_contracts;
-use creusot_contracts::std::*;
 use creusot_contracts::logic::Ghost;
+use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 #[cfg(feature = "contracts")]
 use crate::logic::logic_util::*;
-
 
 // Selection sort with larger elements first. Based on the one in Creusot repo by me and Xavier
 #[cfg_attr(feature = "trust_util", trusted)]
@@ -13,9 +12,9 @@ use crate::logic::logic_util::*;
 #[ensures((@^v).permutation_of(@v))]
 pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
     let mut i: usize = 0;
-    let old_v = Ghost::record(&v);
-    #[invariant(proph_const, ^v == ^@old_v)]
-    #[invariant(permutation, (@v).permutation_of(@*@old_v))]
+    let old_v = ghost! { v };
+    #[invariant(proph_const, ^v == ^old_v.inner())]
+    #[invariant(permutation, (@v).permutation_of(@*old_v.inner()))]
     #[invariant(i_bound, @i <= (@v).len())]
     #[invariant(sorted, sorted_range_rev(@v, 0, @i))]
     #[invariant(partition, partition_rev(@v, @i))]
@@ -55,22 +54,6 @@ pub fn update_slow(slow: &mut usize, lbd: usize) {
         *slow += lbd_shl_five;
     }
 }
-/*
-#[cfg_attr(feature = "trust_util", trusted)]
-#[ensures(sorted_tuple_first(@^v))]
-#[ensures((@^v).permutation_of(@v))]
-pub fn insertion_sort(arr: &mut Vec<(usize, usize)>) {
-    let mut i = 1;
-    while i < arr.len() {
-        let mut j = i;
-        while j > 0 && arr[j].0 < arr[j-1].0 {
-            arr.swap(j, j-1);
-            j = j-1;
-        }
-        i += 1;
-    }
-}
-*/
 
 // Regular selection sort. Based on the one in Creusot repo by me and Xavier
 #[cfg_attr(feature = "trust_util", trusted)]
@@ -78,9 +61,9 @@ pub fn insertion_sort(arr: &mut Vec<(usize, usize)>) {
 #[ensures((@^v).permutation_of(@v))]
 pub fn sort(v: &mut Vec<(usize, usize)>) {
     let mut i: usize = 0;
-    let old_v = Ghost::record(&v);
-    #[invariant(proph_const, ^v == ^@old_v)]
-    #[invariant(permutation, (@v).permutation_of(@*@old_v))]
+    let old_v = ghost! { v };
+    #[invariant(proph_const, ^v == ^old_v.inner())]
+    #[invariant(permutation, (@v).permutation_of(@*old_v.inner()))]
     #[invariant(i_bound, @i <= (@v).len())]
     #[invariant(sorted, sorted_range_tuple_zeroth(@v, 0, @i))]
     #[invariant(partition, partition(@v, @i))]
@@ -98,5 +81,44 @@ pub fn sort(v: &mut Vec<(usize, usize)>) {
         }
         v.swap(i, max);
         i += 1;
+    }
+}
+
+#[logic]
+fn min_log(a: Int, b: Int) -> Int {
+    if a <= b {
+        a
+    } else {
+        b
+    }
+}
+
+#[ensures(@result == min_log(@a, @b))]
+#[ensures(@a <= @b ==> @result == @a)]
+#[ensures(@b < @a ==> @result == @b)]
+#[ensures(@result <= @b && @result <= @a)]
+pub fn min(a: usize, b: usize) -> usize {
+    if a <= b {
+        a
+    } else {
+        b
+    }
+}
+
+#[logic]
+fn max_log(a: Int, b: Int) -> Int {
+    if a >= b {
+        a
+    } else {
+        b
+    }
+}
+
+#[ensures(@result == max_log(@a, @b))]
+pub fn max(a: usize, b: usize) -> usize {
+    if a >= b {
+        a
+    } else {
+        b
     }
 }

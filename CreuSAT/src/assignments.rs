@@ -1,29 +1,50 @@
 extern crate creusot_contracts;
-use creusot_contracts::std::*;
 use creusot_contracts::logic::Ghost;
+use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 use crate::{formula::*, lit::*, trail::*};
+use ::std::ops::{Index, IndexMut};
 
 #[allow(unused_features)]
 #[cfg(feature = "contracts")]
-use crate::logic::{
-    logic::*,
-    logic_assignments::*,
-    logic_clause::*,
-    logic_trail::*, //{trail_invariant, long_are_post_unit_inner_new},
-};
+use crate::logic::{logic::*, logic_assignments::*, logic_clause::*, logic_trail::*};
 
 pub type AssignedState = u8;
-// A.1 is temporary
+
+// TODO: Remove pub
 pub struct Assignments(pub Vec<AssignedState>);
 
-#[cfg_attr(not(untrust_perm), trusted)]
-#[ensures(@l <= @result && @result  < @u)]
-fn rand_in_range(l: usize, u: usize) -> u8 {
-    use creusot_contracts::rand::Rng;
-    let n = rand::thread_rng().gen_range(l..u);
-    n as u8
+impl Index<usize> for Assignments {
+    type Output = AssignedState;
+    #[inline]
+    #[requires(@ix < (@self).len())]
+    #[ensures((@self)[@ix] == *result)]
+    fn index(&self, ix: usize) -> &AssignedState {
+        #[cfg(not(feature = "contracts"))]
+        unsafe {
+            self.0.get_unchecked(ix)
+        }
+        #[cfg(feature = "contracts")]
+        &self.0[ix]
+    }
+}
+
+impl IndexMut<usize> for Assignments {
+    #[inline]
+    #[requires(@ix < (@self).len())]
+    #[ensures((@*self)[@ix] == *result)]
+    #[ensures((@^self)[@ix] == ^result)]
+    #[ensures(forall<i : Int> 0 <= i && i != @ix && i < (@self).len() ==> (@self)[i] == (@^self)[i])]
+    #[ensures((@^self).len() == (@*self).len())]
+    fn index_mut(&mut self, ix: usize) -> &mut AssignedState {
+        #[cfg(not(feature = "contracts"))]
+        unsafe {
+            self.0.get_unchecked_mut(ix)
+        }
+        #[cfg(feature = "contracts")]
+        &mut self.0[ix]
+    }
 }
 
 impl Assignments {
@@ -35,7 +56,6 @@ impl Assignments {
         self.0.len()
     }
 
-    // OK
     #[inline(always)]
     #[cfg_attr(feature = "trust_assignments", trusted)]
     #[maintains((mut self).invariant(*_f))]
@@ -47,21 +67,17 @@ impl Assignments {
     #[ensures(long_are_post_unit_inner(@_t, *_f, @^self))]
     #[ensures(!unset((@^self)[lit.index_logic()]))]
     #[ensures((@^self).len() == (@self).len())]
-    #[ensures((forall<j : Int> 0 <= j && j < (@self).len() 
+    #[ensures((forall<j : Int> 0 <= j && j < (@self).len()
             && j != lit.index_logic() ==> (@*self)[j] == (@^self)[j]))]
     #[ensures(lit.sat(^self))]
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {
-        let old_self = Ghost::record(&self);
+        let old_self = ghost! { self };
         //self.0[lit.index()] = lit.is_positive() as u8;
-        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *@old_self, lit)); true);
         if lit.is_positive() {
             self.0[lit.index()] = 1;
         } else {
             self.0[lit.index()] = 0;
         }
-        proof_assert!((lemma_assign_maintains_long_are_post_unit(@_t, *_f, *@old_self, lit)); true);
-        proof_assert!(^@old_self == ^self);
-        proof_assert!(long_are_post_unit_inner(@_t, *_f, @self));
     }
 
     // OK

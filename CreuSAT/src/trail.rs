@@ -1,6 +1,6 @@
 extern crate creusot_contracts;
-use creusot_contracts::std::*;
 use creusot_contracts::logic::Ghost;
+use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 use crate::{assignments::*, decision::*, formula::*, lit::*};
@@ -57,42 +57,37 @@ impl Trail {
     #[inline(always)]
     #[requires(f.invariant())]
     #[requires(@f.num_vars > 0)]
-    #[requires(self.invariant_no_decision(*f))]
-    #[ensures((^self).invariant_no_decision(*f))] // added since last run
+    #[maintains((mut self).invariant_no_decision(*f))]
     #[requires(long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
     #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
     #[ensures(@result < @f.num_vars)]
     //#[ensures((@self.trail).len() == (@(^self).trail).len() + 1)] // added
     fn backstep(&mut self, f: &Formula) -> usize {
-        let old_t = Ghost::record(&self);
+        let old_t = ghost! { self };
         //proof_assert!(self == @old_t);
         let last = self.trail.pop();
         match last {
             Some(step) => {
                 // TODO: Wrap in abstraction
-                self.assignments.0[step.lit.index()] += 2; // TODO: Prove safety
-                /*
-                if self.assignments.0[step.lit.index()] < 2 {
-                } else {
-                    self.assignments.0[step.lit.index()] = 3; // TODO lol
-                }
-                */
-                proof_assert!(@self.trail == pop(@(@old_t).trail));
-                proof_assert!(^@old_t == ^self);
-                proof_assert!((lemma_backtrack_ok(*self, *f, step.lit)); true);
+                self.assignments[step.lit.index()] += 2;
+
+                proof_assert!(@self.trail == pop(@old_t.trail));
+                proof_assert!(^old_t.inner() == ^self);
+
                 self.lit_to_level[step.lit.index()] = usize::MAX;
+
                 proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
                 return step.lit.index();
             }
             None => {
                 // Could add a req on trail len and prove that this doesn't happen, but
                 // not sure if it really is needed.
-                proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
+                proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments)&& true);
             }
         }
         proof_assert!(self.assignments.invariant(*f));
-        proof_assert!(trail_invariant(@self.trail, *f));
-        proof_assert!(lit_to_level_invariant(@self.lit_to_level, *f));
+        // proof_assert!(trail_invariant(@self.trail, *f));
+        // proof_assert!(lit_to_level_invariant(@self.lit_to_level, *f));
         //proof_assert!(decisions_invariant(@self.decisions, @self.trail));
         proof_assert!(self.lit_not_in_less(*f));
         proof_assert!(self.lit_is_unique());
@@ -124,21 +119,21 @@ impl Trail {
     #[ensures(long_are_post_unit_inner((@(^self).trail), *f, (@(^self).assignments)))]
     // Backtracks to the start of level
     pub fn backtrack_to(&mut self, level: usize, f: &Formula, d: &mut Decisions) {
-        let old_t = Ghost::record(&self);
-        let old_d = Ghost::record(&d);
+        let old_t = ghost! { self };
+        let old_d = ghost! { d };
         let how_many = self.trail.len() - self.decisions[level];
         let des = self.decisions[level];
         let mut i: usize = 0;
         let mut curr = d.search;
         let mut timestamp = if curr != usize::MAX { d.linked_list[curr].ts } else { 0 }; // revisit this later
-        #[invariant(i_less2, @i <= (@(@old_t).trail).len())]
+        #[invariant(i_less2, @i <= (@old_t.trail).len())]
         #[invariant(i_less, i <= how_many)]
         #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
         #[invariant(inv, self.invariant_no_decision(*f))]
         #[invariant(d_inv, d.invariant(@f.num_vars))]
-        //#[invariant(len_is, (@self.trail).len() == (@(@old_t).trail).len() - @i)] // we don't care anymore
-        #[invariant(proph, ^@old_t == ^self)]
-        #[invariant(proph_d, ^@old_d == ^d)]
+        //#[invariant(len_is, (@self.trail).len() == (@old_t.trail).len() - @i)] // we don't care anymore
+        #[invariant(proph, ^old_t.inner() == ^self)]
+        #[invariant(proph_d, ^old_d.inner() == ^d)]
         #[invariant(curr_less, @curr < (@d.linked_list).len() || @curr == @usize::MAX)]
         // Hmm maybe change invariant
         while i < how_many {
@@ -155,16 +150,16 @@ impl Trail {
 
         #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
         #[invariant(inv, self.invariant_no_decision(*f))]
-        #[invariant(proph, ^@old_t == ^self)]
+        #[invariant(proph, ^old_t.inner() == ^self)]
         while self.decisions.len() > level {
-            let old_t2 = Ghost::record(&self);
+            let old_t2 = ghost! { self };
             proof_assert!(sorted(@self.decisions));
             proof_assert!((@self.decisions).len() > 0);
             proof_assert!(lemma_pop_maintains_sorted(@self.decisions); true);
             match self.decisions.pop() {
                 Some(_) => {
-                    proof_assert!(@self.decisions == pop(@(@old_t2).decisions));
-                    proof_assert!((^@old_t2) == ^self);
+                    proof_assert!(@self.decisions == pop(@old_t2.decisions));
+                    proof_assert!((^old_t2.inner()) == ^self);
                 }
                 None => {
                     unreachable!();
@@ -175,33 +170,33 @@ impl Trail {
         // This is a noop, and should be proven away.
         #[invariant(post_unit, long_are_post_unit_inner(@self.trail, *f, @self.assignments))]
         #[invariant(inv, self.invariant_no_decision(*f))]
-        #[invariant(proph, ^@old_t == ^self)]
+        #[invariant(proph, ^old_t.inner() == ^self)]
         while self.decisions.len() > 0 && self.decisions[self.decisions.len() - 1] > self.trail.len() {
-            let old_t3 = Ghost::record(&self);
+            let old_t3 = ghost! { self };
             proof_assert!(sorted(@self.decisions));
             proof_assert!((@self.decisions).len() > 0);
             proof_assert!(lemma_pop_maintains_sorted(@self.decisions); true);
             //proof_assert!((@self.decisions) == (@(@old_trail).decisions));
             match self.decisions.pop() {
                 Some(_) => {
-                    proof_assert!((@self.decisions) == pop(@(@old_t3).decisions));
-                    proof_assert!((^@old_t3) == ^self);
+                    proof_assert!((@self.decisions) == pop(@old_t3.decisions));
+                    proof_assert!((^old_t3.inner()) == ^self);
                 }
                 None => {
                     unreachable!();
                 }
             }
-            proof_assert!(lemma_pop_maintains_sorted(@(@old_t3).decisions); true);
+            proof_assert!(lemma_pop_maintains_sorted(@old_t3.decisions); true);
             proof_assert!(sorted(@self.decisions));
         }
         proof_assert!(
             (@self.decisions).len() == 0 ||
             @(@self.decisions)[(@self.decisions).len()-1] <= (@self.trail).len()
         );
-        proof_assert!(decisions_invariant(@self.decisions, @self.trail));
+        // proof_assert!(decisions_invariant(@self.decisions, @self.trail));
         proof_assert!(self.assignments.invariant(*f));
-        proof_assert!(trail_invariant(@self.trail, *f));
-        proof_assert!(lit_to_level_invariant(@self.lit_to_level, *f));
+        // proof_assert!(trail_invariant(@self.trail, *f));
+        // proof_assert!(lit_to_level_invariant(@self.lit_to_level, *f));
         proof_assert!(self.lit_not_in_less(*f));
         proof_assert!(self.lit_is_unique());
         proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
@@ -211,7 +206,7 @@ impl Trail {
         //self.curr_i = self.trail.len();
     }
 
-    // Could help it a bit in seeing that unit are sat
+    // TODO: Revisit
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(_f.invariant())]
@@ -219,14 +214,20 @@ impl Trail {
     #[requires(step.invariant(*_f))]
     #[requires(match step.reason {
         Reason::Long(cref) => {@cref < (@_f.clauses).len()
-                            && (@_f.clauses)[@cref].unit(self.assignments)
-                            && step.lit.lit_in((@_f.clauses)[@cref])}, // Changed
+                            && (@(@_f.clauses)[@cref])[0].unset(self.assignments)
+                            && (forall<i: Int> 1 <= i && i < (@((@_f.clauses))[@cref]).len() ==>
+                                (@(@_f.clauses)[@cref])[i].unsat(self.assignments))
+                            && (@(@_f.clauses)[@cref])[0] == step.lit
+                            },
+                            //&& step.lit.lit_in((@_f.clauses)[@cref])}, // Changed
+                            //&& (@_f.clauses)[@cref].unit(self.assignments)
+                            //&& step.lit.lit_in((@_f.clauses)[@cref])}, // Changed
         Reason::Unit(cref) => {@cref < (@_f.clauses).len()
                             && step.lit == (@(@_f.clauses)[@cref])[0]},
         _                  => true,
     })]
     #[requires(!step.lit.idx_in_trail(self.trail))]
-    #[requires(unset((@self.assignments)[step.lit.index_logic()]))]
+    #[requires(unset((@self.assignments)[step.lit.index_logic()]))] // Should not be needed anymore
     #[requires(long_are_post_unit_inner(@self.trail, *_f, @self.assignments))]
     #[ensures((forall<j : Int> 0 <= j && j < (@self.assignments).len() &&
         j != step.lit.index_logic() ==> (@self.assignments)[j] == (@(^self).assignments)[j]))]
@@ -244,7 +245,6 @@ impl Trail {
 
         self.assignments.set_assignment(step.lit, _f, trail);
 
-        proof_assert!(lit_not_in_less_inner(@self.trail, *_f));
         proof_assert!(step.invariant(*_f));
         proof_assert!(lemma_push_maintains_lit_not_in_less(*self, *_f, step); true);
         self.trail.push(step);
@@ -261,13 +261,13 @@ impl Trail {
         proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
     }
 
+    // TODO: Revisit
     // Checks out on mac with introduction of lemma. For some reason trail_entries_are_assigned
     // is now slowest. Should be solveable by another lemma
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[requires(_f.invariant())]
     #[maintains((mut self).invariant(*_f))]
     #[requires(@idx < @_f.num_vars)]
-    //#[requires(@(@self.assignments)[@idx] <= 3)] // This will trickle everywhere(add as invariant?)
     #[requires(unset((@self.assignments)[@idx]))]
     #[ensures((forall<j : Int> 0 <= j && j < (@self.assignments).len() &&
         j != @idx ==> (@self.assignments)[j] == (@(^self).assignments)[j]))]
@@ -280,7 +280,7 @@ impl Trail {
         self.decisions.push(trail_len);
         let dlevel = self.decisions.len(); // Not doing this results in a Why3 error. Todo: Yell at Xavier
         self.lit_to_level[idx] = dlevel;
-        self.assignments.0[idx] -= 2;
+        self.assignments[idx] -= 2;
         let lit = Lit::phase_saved(idx, &self.assignments);
 
         let step = Step { lit: lit, decision_level: dlevel, reason: Reason::Decision };
@@ -291,7 +291,7 @@ impl Trail {
         //proof_assert!(lemma_assign_maintains_long_are_post_unit2(@self.trail, *_f, self.assignments, idx); true);
         proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
         // This is just the trail invariant unwrapped
-        proof_assert!(trail_invariant(@self.trail, *_f));
+        // proof_assert!(trail_invariant(@self.trail, *_f));
 
         proof_assert!(self.lit_is_unique());
         proof_assert!(self.trail_entries_are_assigned());
@@ -318,10 +318,10 @@ impl Trail {
         }
         // I have to do a proof here that it is unset after ->
         // will need another requires
-        if f.clauses[cref].rest[0].lit_set(&self.assignments) {
+        if f[cref][0].lit_set(&self.assignments) {
             return Err(()); // UGLY Runtime check
         }
-        self.enq_assignment(Step { lit: f.clauses[cref].rest[0], decision_level: 0, reason: Reason::Unit(cref) }, f);
+        self.enq_assignment(Step { lit: f[cref][0], decision_level: 0, reason: Reason::Unit(cref) }, f);
         Ok(())
     }
 
@@ -330,28 +330,27 @@ impl Trail {
     #[maintains((mut d).invariant(@f.num_vars))]
     #[requires(f.invariant())]
     #[ensures(match result {
-        Some(cref) => @cref < (@f.clauses).len()
-                   && (@(@f.clauses)[@cref]).len() == 1
-                   && (@f.clauses)[@cref].unsat((^self).assignments)
-                   && (@(@f.clauses)[@cref])[0].unsat((^self).assignments),
+        Some(true) => f.not_satisfiable(),
         _ => true,
     })]
-    pub fn learn_units(&mut self, f: &Formula, d: &mut Decisions) -> Option<usize> {
+    pub fn learn_units(&mut self, f: &Formula, d: &mut Decisions) -> Option<bool> {
         let mut i = 0;
-        let old_d = Ghost::record(&d);
-        let old_self = Ghost::record(&self);
+        let old_d = ghost! { d };
+        let old_self = ghost! { self };
         #[invariant(self_inv, self.invariant(*f))]
-        #[invariant(proph, ^@old_self == ^self)]
-        #[invariant(proph_d, ^@old_d == ^d)]
+        #[invariant(proph, ^old_self.inner() == ^self)]
+        #[invariant(proph_d, ^old_d.inner() == ^d)]
         #[invariant(d_inv, d.invariant(@f.num_vars))]
         while i < f.clauses.len() {
-            let clause = &f.clauses[i];
-            if clause.rest.len() == 1 {
-                let lit = clause.rest[0];
-                // This check should be removed by an invariant that the formula only contains unique clauses
+            let clause = &f[i];
+            if clause.len() == 1 {
+                let lit = clause[0];
                 if lit.lit_set(&self.assignments) {
                     if lit.lit_unsat(&self.assignments) {
-                        return Some(i);
+                        // TODO: As soon as the bijection between trail and assignments is reestablished,
+                        // this should come quite easily.
+                        use crate::conflict_analysis::resolve_empty_clause;
+                        return Some(resolve_empty_clause(f, self, i));
                     }
                 } else {
                     self.learn_unit(i, f, d);

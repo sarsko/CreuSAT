@@ -1,4 +1,5 @@
 use crate::{assignments::*, formula::*, util::*};
+use std::ops::{Index, IndexMut};
 
 #[derive(Clone, Copy)]
 pub struct Node {
@@ -22,6 +23,26 @@ pub struct Decisions {
     pub search: usize,
 }
 
+impl Index<usize> for Decisions {
+    type Output = Node;
+    #[inline]
+    fn index(&self, i: usize) -> &Node {
+        //#[cfg(feature = "unsafe_access")]
+        unsafe { self.linked_list.get_unchecked(i) }
+        //#[cfg(not(feature = "unsafe_access"))]
+        //&self.linked_list[i]
+    }
+}
+
+impl IndexMut<usize> for Decisions {
+    #[inline]
+    fn index_mut(&mut self, i: usize) -> &mut Node {
+        //#[cfg(feature = "unsafe_access")]
+        unsafe { self.linked_list.get_unchecked_mut(i) }
+        //#[cfg(not(feature = "unsafe_access"))]
+        //&mut self.linked_list[i]
+    }
+}
 
 impl Decisions {
     pub fn make_linked_list(f: &Formula, lit_order: Vec<usize>) -> Decisions {
@@ -48,7 +69,7 @@ impl Decisions {
             linked_list[j].ts = f.num_vars - i;
             i += 1;
         }
-        Decisions { linked_list: linked_list, timestamp: f.num_vars + 1, start: head, search: head }
+        Decisions { linked_list, timestamp: f.num_vars + 1, start: head, search: head }
     }
 
     pub fn new(f: &Formula) -> Decisions {
@@ -81,7 +102,6 @@ impl Decisions {
 
     fn rescore(&mut self, _f: &Formula) {
         let mut curr_score = self.linked_list.len();
-        let mut i: usize = 0;
         let mut curr = self.start;
         while curr != INVALID {
             self.linked_list[curr].ts = curr_score;
@@ -99,22 +119,27 @@ impl Decisions {
         if tomove == self.start {
             return;
         }
-        let mut moving = &mut self.linked_list[tomove];
+        //let mut moving = &mut self.linked_list[tomove];
+        let mut moving = unsafe { self.linked_list.get_unchecked_mut(tomove) };
         let prev = moving.prev;
         let old_next = moving.next;
         moving.prev = INVALID;
         moving.next = self.start;
         moving.ts = self.timestamp;
+        self.linked_list[self.start].prev = tomove;
+        self.start = tomove;
+        unsafe {
+            self.linked_list.get_unchecked_mut(prev).next = old_next;
+        }
+        if old_next != INVALID {
+            unsafe {
+                self.linked_list.get_unchecked_mut(old_next).prev = prev;
+            }
+        }
         if self.timestamp == usize::MAX {
             self.rescore(_f);
         } else {
             self.timestamp += 1;
-        }
-        self.linked_list[self.start].prev = tomove;
-        self.start = tomove;
-        self.linked_list[prev].next = old_next;
-        if old_next != INVALID {
-            self.linked_list[old_next].prev = prev;
         }
         /*
         // Why does Satch do this? It should be impossible...?
@@ -130,7 +155,7 @@ impl Decisions {
         let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); clause.len()];
         let mut i: usize = 0;
         while i < clause.len() {
-            counts_with_index[i] = (self.linked_list[clause[i].index()].ts, clause[i].index());
+            counts_with_index[i] = (self[clause[i].index()].ts, clause[i].index());
             i += 1;
         }
         // TODO: Check actual speed. I believe selection sort is the slowest. Only need permut property.
@@ -138,7 +163,27 @@ impl Decisions {
         //sort(&mut counts_with_index);
         // Better sort seems yield a few percentages lol
         //counts_with_index.sort_unstable();
-        counts_with_index.sort_by_key(|k| k.0);
+        counts_with_index.sort_unstable_by_key(|k| k.0);
+        i = 0;
+        while i < counts_with_index.len() {
+            self.move_to_front(counts_with_index[i].1, f);
+            i += 1;
+        }
+    }
+
+    pub fn increment_and_move_new(&mut self, f: &Formula, v: Vec<usize>) {
+        let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); v.len()];
+        let mut i: usize = 0;
+        while i < v.len() {
+            counts_with_index[i] = (self.linked_list[v[i]].ts, v[i]);
+            i += 1;
+        }
+        // TODO: Check actual speed. I believe selection sort is the slowest. Only need permut property.
+        //insertion_sort(&mut counts_with_index);
+        //sort(&mut counts_with_index);
+        // Better sort seems yield a few percentages lol
+        //counts_with_index.sort_unstable();
+        counts_with_index.sort_unstable_by_key(|k| k.0);
         i = 0;
         while i < counts_with_index.len() {
             self.move_to_front(counts_with_index[i].1, f);
@@ -150,19 +195,18 @@ impl Decisions {
         let mut curr = self.search;
         while curr != INVALID {
             if a[curr] >= 2 {
-                self.search = self.linked_list[curr].next;
+                self.search = self[curr].next;
                 return Some(curr);
             }
-            curr = self.linked_list[curr].next;
+            curr = self[curr].next;
         }
         let mut i: usize = 0;
         while i < a.len() {
             if a[i] >= 2 {
                 panic!();
-                return Some(i);
             }
             i += 1;
         }
-        return None;
+        None
     }
 }

@@ -44,7 +44,7 @@ fn inner(f: &Formula, mut a: Assignments, d: &Decisions) -> bool {
     SatResult::Sat(_assn) => { formula.eventually_sat_no_ass()
                                //formula.sat_inner(@assn) // TODO on returning satisfying assignment
     },
-    SatResult::Unsat     => { formula.contains_empty_clause() || !formula.eventually_sat_complete_no_ass() },
+    SatResult::Unsat     => { !formula.eventually_sat_complete_no_ass() },
     _                    => { true },
 })]
 pub fn solver(formula: &mut Formula) -> SatResult {

@@ -1,7 +1,5 @@
 use crate::{assignments::*, clause::*, solver::*, trail::*, watches::*};
-use std::{
-    ops::{Index, IndexMut},
-};
+use std::ops::{Index, IndexMut};
 pub struct Formula {
     pub clauses: Vec<Clause>,
     pub num_vars: usize,
@@ -12,9 +10,7 @@ impl Index<usize> for Formula {
     #[inline]
     fn index(&self, i: usize) -> &Clause {
         //#[cfg(feature = "unsafe_access")]
-        unsafe {
-            self.clauses.get_unchecked(i)
-        }
+        unsafe { self.clauses.get_unchecked(i) }
         //#[cfg(not(feature = "unsafe_access"))]
         //&self.lits[i]
     }
@@ -24,9 +20,7 @@ impl IndexMut<usize> for Formula {
     #[inline]
     fn index_mut(&mut self, i: usize) -> &mut Clause {
         //#[cfg(feature = "unsafe_access")]
-        unsafe {
-            self.clauses.get_unchecked_mut(i)
-        }
+        unsafe { self.clauses.get_unchecked_mut(i) }
         //#[cfg(not(feature = "unsafe_access"))]
         //&mut self.lits[i]
     }
@@ -58,7 +52,7 @@ impl Formula {
             }
             i += 1;
         }
-        return SatResult::Unknown;
+        SatResult::Unknown
     }
 
     pub fn is_clause_sat(&self, idx: usize, a: &Assignments) -> bool {
@@ -70,11 +64,11 @@ impl Formula {
             }
             i += 1;
         }
-        return false;
+        false
     }
 
     pub fn swap_lits_in_clause(&mut self, trail: &Trail, watches: &Watches, cref: usize, j: usize, k: usize) {
-        self[cref].rest.swap(j, k);
+        self[cref].swap(j, k);
     }
 
     pub fn add_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
@@ -86,9 +80,14 @@ impl Formula {
         let first_lit = clause[0];
         let second_lit = clause[1];
         self.clauses.push(clause);
-        watches[first_lit.to_neg_watchidx()].push(Watcher { cref, blocker: second_lit});
-        watches[second_lit.to_neg_watchidx()].push(Watcher { cref, blocker: first_lit});
+        watches[first_lit.to_neg_watchidx()].push(Watcher { cref, blocker: second_lit });
+        watches[second_lit.to_neg_watchidx()].push(Watcher { cref, blocker: first_lit });
         cref
+    }
+
+    // This is only valid to run before solver is created and before watches are added.
+    pub fn remove_clause_in_preprocessing(&mut self, cref: usize) {
+        self.clauses.remove(cref);
     }
 
     fn delete_clause(&mut self, cref: usize, watches: &mut Watches, t: &Trail) {
@@ -119,17 +118,28 @@ impl Formula {
         // Ideally remove UNSAT lits
     }
 
+    #[inline]
     pub fn reduceDB(&mut self, watches: &mut Watches, t: &Trail, s: &mut Solver) {
-        s.max_len += self.len() + 300;
         let mut i = self.len() - 1;
         self.clauses[s.initial_len..].sort_unstable_by(|a, b| a.less_than(b));
+        s.max_len += self.len() + 300;
+        if self[(self.len() - s.initial_len) / 2].lbd <= 3 {
+            s.max_len += s.special_inc_reduce_db;
+        }
+        if self[self.len() - 1].lbd <= 5 {
+            s.max_len += s.special_inc_reduce_db;
+        }
         watches.unwatch_all_lemmas(self, s);
         let mut limit = (self.len() - s.initial_len) / 2;
         while i > s.initial_len && limit > 0 {
-            self.clauses.pop();
-            limit -= 1;
+            let clause = &self[i];
+            if clause.lbd > 2 && clause.len() > 2 {
+                //self.clauses.pop();
+                self.clauses.swap_remove(i);
+                limit -= 1;
+            }
             i -= 1;
-            /* 
+            /*
             let clause = &self[i];
             if clause.lbd > 2 && clause.len() > 2 {
             } else {
@@ -139,8 +149,8 @@ impl Formula {
         }
         i = s.initial_len;
         while i < self.len() {
-            watches[self[i][0].to_neg_watchidx()].push(Watcher { cref: i, blocker: self[i][1]});
-            watches[self[i][1].to_neg_watchidx()].push(Watcher { cref: i, blocker: self[i][0]});
+            watches[self[i][0].to_neg_watchidx()].push(Watcher { cref: i, blocker: self[i][1] });
+            watches[self[i][1].to_neg_watchidx()].push(Watcher { cref: i, blocker: self[i][0] });
             i += 1;
         }
     }

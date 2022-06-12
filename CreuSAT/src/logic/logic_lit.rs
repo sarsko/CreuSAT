@@ -4,6 +4,16 @@ use creusot_contracts::*;
 
 use crate::{assignments::*, clause::*, lit::*, trail::*};
 
+#[predicate]
+//#[ensures(result == self.lit_in_internal(@c))]
+#[why3::attr = "inline:trivial"]
+pub fn idx_in_logic(idx: Int, c: Seq<Lit>) -> bool {
+    pearlite! {
+        exists<i: Int> 0 <= i && i < c.len() &&
+            c[i].index_logic() == idx
+    }
+}
+
 // Logic
 impl Lit {
     #[logic]
@@ -43,44 +53,28 @@ impl Lit {
     #[predicate]
     pub fn lit_in_internal(self, c: Seq<Lit>) -> bool {
         pearlite! {
-            exists<i: Int> 0 <= i && i < c.len() &&
-                c[i] == self
+            exists<i: Int> 0 <= i && i < c.len() && c[i] == self
         }
     }
 
     #[predicate]
-    //#[ensures(result == self.lit_in_internal(@c))]
     pub fn lit_in(self, c: Clause) -> bool {
         pearlite! {
-            exists<i: Int> 0 <= i && i < (@c).len() &&
-                (@c)[i] == self
-            /*
-            exists<i: Int> 0 <= i && i < (@c).len() &&
-                (@c)[i].idx == self.idx &&
-                (@c)[i].is_positive() == self.is_positive()
-                */
+            exists<i: Int> 0 <= i && i < (@c).len() && (@c)[i] == self
         }
     }
 
     #[predicate]
-    //#[ensures(result == self.lit_in_internal(@c))]
     pub fn lit_idx_in(self, c: Clause) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < (@c).len() &&
                 (@c)[i].index_logic() == self.index_logic()
-            /*
-            exists<i: Int> 0 <= i && i < (@c).len() &&
-                (@c)[i].idx == self.idx &&
-                (@c)[i].is_positive() == self.is_positive()
-                */
         }
     }
 
     #[predicate]
     pub fn invariant(self, n: Int) -> bool {
-        pearlite! {
-            self.index_logic() < n
-        }
+        pearlite! { self.index_logic() < n }
     }
 
     #[predicate]
@@ -105,30 +99,22 @@ impl Lit {
 
     #[predicate]
     pub fn unset_inner(self, a: Seq<AssignedState>) -> bool {
-        pearlite! {
-            @(a)[self.index_logic()] >= 2
-        }
+        pearlite! { @(a)[self.index_logic()] >= 2 }
     }
 
     #[predicate]
     pub fn sat(self, a: Assignments) -> bool {
-        pearlite! {
-            self.sat_inner(@a)
-        }
+        pearlite! { self.sat_inner(@a) }
     }
 
     #[predicate]
     pub fn unset(self, a: Assignments) -> bool {
-        pearlite! {
-            self.unset_inner(@a)
-        }
+        pearlite! { self.unset_inner(@a) }
     }
 
     #[predicate]
     pub fn unsat(self, a: Assignments) -> bool {
-        pearlite! {
-            self.unsat_inner(@a)
-        }
+        pearlite! { self.unsat_inner(@a) }
     }
 
     #[predicate]

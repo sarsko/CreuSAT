@@ -1,11 +1,11 @@
 use crate::{formula::*, lit::*, trail::*, watches::*};
 
-
+#[inline]
 fn unit_prop_check_rest(
     f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
 ) -> Result<(), ()> {
     let curr_lit = f[cref][k];
-    if !curr_lit.lit_unsat(&trail.assignments){
+    if !curr_lit.lit_unsat(&trail.assignments) {
         if f[cref][0].index() == lit.index() {
             // First
             swap(f, trail, watches, cref, k, 0);
@@ -18,15 +18,15 @@ fn unit_prop_check_rest(
         }
         return Ok(()); // dont increase j
     }
-    return Err(());
+    Err(())
 }
 
 #[inline(always)]
 fn swap(f: &mut Formula, _trail: &Trail, _watches: &Watches, cref: usize, j: usize, k: usize) {
-    f[cref].rest.swap(j, k);
+    f[cref].swap(j, k);
 }
 
-
+#[inline]
 fn unit_prop_do_outer(
     f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize,
 ) -> Result<bool, usize> {
@@ -41,30 +41,24 @@ fn unit_prop_do_outer(
     let clause_len: usize = clause.len();
     let mut search = clause.search;
     while k < clause_len {
+        search += 1;
+        if search == clause_len {
+            search = 2;
+        }
         match unit_prop_check_rest(f, trail, watches, cref, j, search, lit) {
-            Err(_) => {
-            }
+            Err(_) => {}
             Ok(_) => {
                 f[cref].search = search;
                 return Ok(false);
             }
         }
         k += 1;
-        search += 1;
-        if search == clause_len {
-            search = 2;
-        }
     }
     if other_lit.lit_unsat(&trail.assignments) {
         return Err(cref);
     }
     if f[cref][0].lit_unset(&trail.assignments) {
-        let step = Step {
-            //lit: other_lit,
-            lit: f[cref][0],
-            decision_level: trail.decision_level(),
-            reason: Reason::Long(cref),
-        };
+        let step = Step { lit: f[cref][0], decision_level: trail.decision_level(), reason: Reason::Long(cref) };
 
         trail.enq_assignment(step, f);
         return Ok(true);
@@ -73,16 +67,17 @@ fn unit_prop_do_outer(
 
         trail.enq_assignment(step, f);
         // slowdown in swapping
-        f[cref].rest.swap(0,1);
+        f[cref].swap(0, 1);
         return Ok(true);
     }
 }
 
+#[inline]
 fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, lit: Lit) -> Result<(), usize> {
     let mut j = 0;
     let watchidx = lit.to_watchidx();
-    while j < watches.watches[watchidx].len() {
-        let curr_watch = &watches.watches[watchidx][j];
+    while j < watches[watchidx].len() {
+        let curr_watch = &watches[watchidx][j];
         if curr_watch.blocker.lit_sat(&trail.assignments) {
             j += 1;
         } else {
@@ -101,6 +96,7 @@ fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Wat
     Ok(())
 }
 
+#[inline]
 pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
     let mut i = trail.curr_i;
     while i < trail.trail.len() {

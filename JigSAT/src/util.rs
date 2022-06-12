@@ -1,4 +1,3 @@
-
 pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
     let mut i: usize = 0;
     while i < v.len() {
@@ -15,6 +14,7 @@ pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
     }
 }
 
+#[inline]
 pub fn update_fast(fast: &mut usize, lbd: usize) {
     *fast -= *fast / 32;
     let lbd_shl_fifteen = if lbd < usize::MAX / 32768 { lbd * 32768 } else { lbd };
@@ -23,6 +23,7 @@ pub fn update_fast(fast: &mut usize, lbd: usize) {
     }
 }
 
+#[inline]
 pub fn update_slow(slow: &mut usize, lbd: usize) {
     *slow -= *slow / 32768;
     let lbd_shl_five = if lbd < usize::MAX / 32 { lbd * 32 } else { lbd };
