@@ -23,11 +23,7 @@ It currently has the following features:
 - Exponential moving averages (EMA) based restarts
 - Clause deletion (without garbage collection)
 
-## Cool. Is it any good?
-
-!TODO
-
-## Pretty impressive. How do I run it?
+## How do I run it?
 
 Firstly you'll need to [get Rust](https://www.rust-lang.org/tools/install)
 
@@ -82,11 +78,10 @@ The following `cargo make` commands are supported:
 
 ## Creusot seems really cool! How can I learn it?
 
-!TODO
+There are a bunch of tests in the Creusot directory which I recommend looking at.
 
-You could also check out [Friday](/Friday/) and [Robinson](/Robinson/) for a couple of solvers
+You could also check out [Friday](/Friday/) and [Robinson](/Robinson/) for a couple of verified solvers
 which are both easier to grok algorithmically and proof-wise.
-
 
 
 ## Overview of the repository
