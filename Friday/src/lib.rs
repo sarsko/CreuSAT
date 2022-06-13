@@ -1,8 +1,6 @@
 #![feature(type_ascription)]
 #![cfg_attr(not(feature = "contracts"), feature(stmt_expr_attributes, proc_macro_hygiene))]
-#![allow(unused_imports)]
-#![allow(dead_code)]
-#![recursion_limit = "256"]
+
 extern crate creusot_contracts;
 
 use creusot_contracts::std::*;
@@ -29,12 +27,46 @@ pub struct Formula {
     num_vars: usize,
 }
 
+impl Formula {
+    #[predicate]
+    fn invariant(self) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+                (@self.clauses)[i].vars_in_range(@self.num_vars)
+        }
+    }
+
+    #[predicate]
+    fn sat(self, a: Assignments) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+                (@self.clauses)[i].sat(a)
+        }
+    }
+}
+
 impl Clause {
     #[predicate]
     fn vars_in_range(self, n: Int) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < (@self.0).len() ==>
                 (@self.0)[i].var_in_range(n)
+        }
+    }
+}
+
+impl Lit {
+    #[predicate]
+    fn var_in_range(self, n: Int) -> bool {
+        pearlite! {
+            @self.var < n
+        }
+    }
+
+    #[predicate]
+    fn sat(self, a: Assignments) -> bool {
+        pearlite! {
+            (@a.0)[@self.var] == self.value
         }
     }
 }
@@ -50,44 +82,12 @@ impl Assignments {
     }
 }
 
-impl Formula {
-    #[predicate]
-    fn invariant(self) -> bool {
-        pearlite! {
-            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
-                (@self.clauses)[i].vars_in_range(@self.num_vars)
-        }
-    }
-    #[predicate]
-    fn sat(self, a: Assignments) -> bool {
-        pearlite! {
-            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
-                (@self.clauses)[i].sat(a)
-        }
-    }
-}
-
-impl Lit {
-    #[predicate]
-    fn sat(self, a: Assignments) -> bool {
-        pearlite! {
-            (@a.0)[@self.var] == self.value
-        }
-    }
-    #[predicate]
-    fn var_in_range(self, n: Int) -> bool {
-        pearlite! {
-            @self.var < n
-        }
-    }
-}
-
 impl Pasn {
     #[predicate]
     fn invariant(self, n: Int) -> bool {
         pearlite! {
-            @self.ix <= (@self.assign.0).len() &&
-                (@self.assign.0).len() == n
+            @self.ix <= (@self.assign.0).len()
+            && (@self.assign.0).len() == n
         }
     }
 }
@@ -182,5 +182,5 @@ fn solve(f: &Formula, pa: Pasn) -> bool {
 #[ensures(!result ==> forall<a: Assignments> (@a.0).len() == @f.num_vars ==> !f.sat(a))]
 #[ensures( result ==> exists<a: Assignments> f.sat(a))]
 pub fn solver(f: &Formula) -> bool {
-    solve(f, Pasn { assign: Assignments(vec::from_elem(false, f.num_vars)), ix: 0 })
+    solve(f, Pasn { assign: Assignments(vec![false; f.num_vars]), ix: 0 })
 }
