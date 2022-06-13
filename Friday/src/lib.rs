@@ -98,9 +98,7 @@ impl Clone for Assignments {
     fn clone(&self) -> Self {
         Assignments(self.0.clone())
     }
-
 }
-
 
 impl Clone for Pasn {
     #[trusted]
@@ -126,7 +124,7 @@ impl Clause {
     fn eval(&self, a: &Assignments) -> bool {
         let mut i: usize = 0;
         let clause_len = self.0.len();
-        #[invariant(prev_not_sat, 
+        #[invariant(prev_not_sat,
             forall<j: Int> 0 <= j && j < @i ==> !(@self.0)[j].sat(*a))]
         #[invariant(loop_invariant, @i <= @clause_len)]
         while i < clause_len {
@@ -145,10 +143,12 @@ impl Formula {
     #[ensures(result == self.sat(*a))]
     fn eval(&self, a: &Assignments) -> bool {
         let mut i: usize = 0;
-        #[invariant(prev_sat, 
+        #[invariant(prev_sat,
             forall<j: Int> 0 <= j && j < @i ==> (@self.clauses)[j].sat(*a))]
         while i < self.clauses.len() {
-            if !self.clauses[i].eval(a) { return false; }
+            if !self.clauses[i].eval(a) {
+                return false;
+            }
             i += 1;
         }
         true
@@ -172,7 +172,9 @@ fn set_next(pa: &Pasn, b: bool) -> Pasn {
 #[requires(f.invariant())]
 #[ensures(!result == forall<a: Assignments> a.compatible(pa) ==> !f.sat(a))]
 fn solve(f: &Formula, pa: Pasn) -> bool {
-    if pa.ix == pa.assign.0.len() { return f.eval(&pa.assign); } 
+    if pa.ix == pa.assign.0.len() {
+        return f.eval(&pa.assign);
+    }
     solve(f, set_next(&pa, true)) || solve(f, set_next(&pa, false))
 }
 
