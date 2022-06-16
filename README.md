@@ -66,9 +66,9 @@ And hopefully the Why3 IDE will appear. If not, then most likely something is no
 If the Why3 IDE appears, then it should work to press <kbd>3</kbd> and wait a bit. If you are doing the proof from scratch, then you will need to wait a while.
 
 The following `cargo make` commands are supported:
-- `prove-CreuSAT`/`p` : Generate the MLCFG for `CreuSAT` and run the Why3 IDE. 
-- `prove-Robinson` : Generate the MLCFG for `Friday` and run the Why3 IDE. 
-- `prove-Friday` : Generate the MLCFG for `Friday` and run the Why3 IDE. 
+- `prove-CreuSAT`/`p` : Generate the MLCFG for `CreuSAT` and run the Why3 IDE.
+- `prove-Robinson` : Generate the MLCFG for `Friday` and run the Why3 IDE.
+- `prove-Friday` : Generate the MLCFG for `Friday` and run the Why3 IDE.
 - `clean` : Cleans all generated CFG and Why3 session files.
    - `clean-CreuSAT` : Clean just the `CreuSAT` files.
    - `clean-Robinson` : Clean just the `Robinson` files.
@@ -91,7 +91,6 @@ Overview of the repository: \
 [/Friday](/Friday/) - A fully verified and super naive SAT solver. \
 [/JigSAT](/JigSAT/) - An unverified solver based on CreuSAT. Used for experimenting. \
 [/Robinson](/Robinson/) - A fully verified DPLL-based solver. \
-[/cnfs](/cnfs/) - Some example cnf files which are not used in the tests. \
 [/mlcfgs](/mlcfgs/) - Output directory for generated mlcfg + Why3 session files. \
 [/prelude](/prelude/) - Copy of [prelude](https://github.com/xldenis/creusot/tree/master/prelude) from the Creusot directory. Included here to make `cargo make` happy. \
 [/tests](/tests/) - Directory for tests. \
