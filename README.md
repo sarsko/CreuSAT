@@ -94,4 +94,3 @@ Overview of the repository: \
 [/mlcfgs](/mlcfgs/) - Output directory for generated mlcfg + Why3 session files. \
 [/prelude](/prelude/) - Copy of [prelude](https://github.com/xldenis/creusot/tree/master/prelude) from the Creusot directory. Included here to make `cargo make` happy. \
 [/tests](/tests/) - Directory for tests. \
-[/mlws](/mlws/) - Some WhyML files, among them two verified solvers.
