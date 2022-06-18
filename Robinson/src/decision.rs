@@ -22,6 +22,7 @@ impl Decisions {
 }
 
 impl Decisions {
+    #[cfg_attr(feature = "trust_decision", trusted)]
     #[requires(f.invariant())]
     #[ensures(result.invariant(@f.num_vars))]
     pub fn new(f: &Formula) -> Decisions {

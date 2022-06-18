@@ -95,7 +95,7 @@ impl Clause {
 
     #[predicate]
     pub fn invariant(self, n: Int) -> bool {
-        self.vars_in_range(n) && self.no_duplicate_indexes()
+        self.vars_in_range(n) //&& self.no_duplicate_indexes()
     }
 }
 
@@ -176,20 +176,25 @@ impl Clause {
     }
 
     #[cfg_attr(feature = "trust_clause", trusted)]
-    #[ensures(result == self.invariant(@n))]
-    pub fn check_clause_invariant(&self, n: usize) -> bool {
+    #[requires(self.vars_in_range(@usize::MAX))]
+    #[ensures(self.invariant(@result))]
+    pub fn check_clause_invariant(&self, n: usize) -> usize {
         let mut i: usize = 0;
-        #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@self)[j].invariant(@n))]
+        let mut new_n = n;
+        #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@self)[j].invariant(@new_n))]
+        #[invariant(new_n_inv, @new_n >= @n)]
         while i < self.len() {
-            if !self.rest[i].check_lit_invariant(n) {
-                return false;
+            if !self.rest[i].check_lit_invariant(new_n) {
+                new_n = self.rest[i].idx + 1;
             }
             i += 1;
         }
+        /*
         if self.no_duplicates() {
             return true;
         }
-        return false;
+        */
+        new_n
     }
 
     #[cfg_attr(feature = "trust_clause", trusted)]

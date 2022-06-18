@@ -114,14 +114,17 @@ impl Formula {
 }
 
 impl Formula {
+
     #[cfg_attr(feature = "trust_formula", trusted)]
+    #[requires(forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+            (@self.clauses)[i].vars_in_range(@usize::MAX))]
     #[ensures(match result {
-        SatResult::Sat(assn) => { self.eventually_sat_no_ass() && formula_sat_inner(@self, @assn) },
-        SatResult::Unsat     => { self.contains_empty_clause() },
-        SatResult::Unknown   => { self.invariant() },
-        SatResult::Err       => { true },
+        SatResult::Sat(assn) => { (^self).eventually_sat_no_ass() && formula_sat_inner(@self, @assn) },
+        SatResult::Unsat     => { (^self).contains_empty_clause() && !self.eventually_sat_complete_no_ass() },
+        SatResult::Unknown   => { (^self).invariant() },
     })]
-    pub fn check_formula_invariant(&self) -> SatResult {
+    #[ensures(self.clauses == (^self).clauses)]
+    pub fn check_and_establish_formula_invariant(&mut self) -> SatResult {
         if self.clauses.len() == 0 {
             let a = Vec::new();
             // These just help the proof along.
@@ -129,15 +132,20 @@ impl Formula {
             proof_assert!(self.eventually_sat_no_ass());
             return SatResult::Sat(a);
         }
+        let old_self = ghost!(self);
         let mut i: usize = 0;
         #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@self.clauses)[j].invariant(@self.num_vars))]
         #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@(@self.clauses)[j]).len() > 0)]
+        #[invariant(unch, (@self).0 == (@old_self.inner()).0)]
+        #[invariant(unch, self.clauses == old_self.clauses)]
+        #[invariant(proph, ^self == ^old_self.inner())]
         while i < self.clauses.len() {
-            if !self.clauses[i].check_clause_invariant(self.num_vars) {
-                return SatResult::Err;
-            }
             if self.clauses[i].len() == 0 {
                 return SatResult::Unsat;
+            }
+            let new_n = self.clauses[i].check_clause_invariant(self.num_vars);
+            if new_n > self.num_vars {
+                self.num_vars = new_n;
             }
             i += 1;
         }

@@ -120,9 +120,10 @@ impl Lit {
     }
 
     #[inline(always)]
-    #[cfg_attr(feature = "trust_lit", trusted)]
+    //#[cfg_attr(feature = "trust_lit", trusted)]
     #[ensures(result == self.invariant(@n))]
+    #[ensures(result == (@self.idx < @n))]
     pub fn check_lit_invariant(&self, n: usize) -> bool {
-        return self.idx < n;
+        self.idx < n
     }
 }
