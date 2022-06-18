@@ -114,7 +114,6 @@ impl Formula {
 }
 
 impl Formula {
-
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[requires(forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
             (@self.clauses)[i].vars_in_range(@usize::MAX))]
