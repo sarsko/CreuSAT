@@ -12,7 +12,6 @@ pub enum SatResult {
 
 pub enum ConflictResult {
     Ok,
-    Err,
     Ground,
     Continue,
 }
@@ -105,11 +104,11 @@ impl Solver {
     #[inline]
     fn handle_conflict(
         &mut self, f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches, d: &mut Decisions,
-    ) -> Option<bool> {
+    ) -> bool {
         let res = analyze_conflict(f, t, cref, d);
         match res {
             Conflict::Ground => {
-                return Some(false);
+                return false;
             }
             Conflict::Unit(lit) => {
                 t.learn_unit(lit, f, d);
@@ -120,7 +119,7 @@ impl Solver {
                 self.handle_long_clause(f, t, w, d, clause, level);
             }
         }
-        None
+        return true;
     }
 
     #[inline]
@@ -128,9 +127,8 @@ impl Solver {
         match unit_propagate(f, t, w) {
             Ok(_) => ConflictResult::Ok,
             Err(cref) => match self.handle_conflict(f, t, cref, w, d) {
-                Some(false) => ConflictResult::Ground,
-                Some(true) => ConflictResult::Err,
-                None => ConflictResult::Continue,
+                false => ConflictResult::Ground,
+                true => ConflictResult::Continue,
             },
         }
     }
@@ -144,9 +142,6 @@ impl Solver {
                 }
                 ConflictResult::Ground => {
                     return Some(false);
-                }
-                ConflictResult::Err => {
-                    return None;
                 }
                 ConflictResult::Continue => {}
             }
