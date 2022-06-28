@@ -1,3 +1,5 @@
+use core::panic;
+
 use crate::{clause::*, decision::*, formula::*, lit::*, trail::*};
 
 //#[derive(Debug)]
@@ -66,7 +68,35 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
             other => panic!("{:?}", other),
         }
     }
-    d.increment_and_move_new(f, to_bump);
+    d.increment_and_move(f, to_bump);
+    // Simplify conflict clause
+    // Local minim:
+    let mut i = 1;
+    let mut j = 1;
+    while i < out_learnt.len() {
+        let ante_ref = trail.lit_to_reason[out_learnt[i].index()];
+        if ante_ref == UNSET_REASON  {
+            out_learnt[j] = out_learnt[i];
+            j += 1;
+        } else {
+            let ante = &f.clauses[ante_ref];
+            let mut k = if ante.len() == 2 { 0 } else { 1 };
+            while k < ante.len() {
+                let idx = ante[k].index();
+                if !seen[idx] && trail.lit_to_level[idx] > 0 {
+                    out_learnt[j] = out_learnt[i];
+                    j += 1;
+                    break;
+                }
+                k += 1;
+            }
+        }
+        i += 1;
+    }
+    while j < i {
+        out_learnt.pop();
+        j += 1;
+    }
     if out_learnt.len() == 1 {
         Conflict::Unit(out_learnt[0])
     } else {

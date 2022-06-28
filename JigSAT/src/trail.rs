@@ -15,9 +15,13 @@ pub struct Step {
     pub reason: Reason,
 }
 
+pub const UNSET_LEVEL: u32 = u32::MAX;
+pub const UNSET_REASON: usize = usize::MAX;
+
 pub struct Trail {
     pub assignments: Assignments,
     pub lit_to_level: Vec<u32>, // u32::MAX if unassigned
+    pub lit_to_reason: Vec<usize>, // usize::MAX if unassigned
     pub trail: Vec<Step>,
     pub curr_i: usize,
     pub decisions: Vec<usize>,
@@ -32,7 +36,8 @@ impl Trail {
     pub fn new(f: &Formula, a: Assignments) -> Trail {
         Trail {
             assignments: a,
-            lit_to_level: vec![u32::MAX; f.num_vars],
+            lit_to_level: vec![UNSET_LEVEL; f.num_vars],
+            lit_to_reason: vec![UNSET_REASON; f.num_vars],
             trail: Vec::new(),
             curr_i: 0,
             decisions: Vec::new(),
@@ -46,6 +51,7 @@ impl Trail {
                 self.assignments[step.lit.index()] += 2;
                 // Removing this would be hard to prove lol.
                 //self.lit_to_level[step.lit.index()] = u32::MAX;
+                self.lit_to_reason[step.lit.index()] = UNSET_REASON;
                 step.lit.index()
             }
             None => {
@@ -83,6 +89,13 @@ impl Trail {
     }
 
     pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
+        // This should be refactored to not have to be a match (ie splitting up enq_assignment)
+        match step.reason {
+            Reason::Long(cref) => {
+                self.lit_to_reason[step.lit.index()] = cref;
+            }
+            _ => {}
+        }
         self.lit_to_level[step.lit.index()] = self.decision_level();
         self.assignments.set_assignment(step.lit, _f, &self.trail);
         self.trail.push(step);

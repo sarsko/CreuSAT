@@ -3,6 +3,7 @@ use crate::{
     watches::*,
 };
 
+
 pub enum SatResult {
     Sat(Vec<AssignedState>),
     Unsat,
