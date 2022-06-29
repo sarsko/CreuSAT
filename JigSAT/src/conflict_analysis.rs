@@ -1,6 +1,6 @@
 use core::panic;
 
-use crate::{clause::*, decision::*, formula::*, lit::*, trail::*};
+use crate::{clause::*, decision::*, formula::*, lit::*, trail::*, minimize::*, solver::Solver};
 
 //#[derive(Debug)]
 pub enum Conflict {
@@ -9,7 +9,7 @@ pub enum Conflict {
     Learned(u32, Clause),
 }
 
-pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisions) -> Conflict {
+pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisions, s: &mut Solver) -> Conflict {
     let decisionlevel = trail.decision_level();
     if decisionlevel == 0 {
         return Conflict::Ground;
@@ -70,12 +70,30 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
     }
     d.increment_and_move(f, to_bump);
     // Simplify conflict clause
+    // Recursive minim:
+    let mut abstract_levels = 0;
+    let mut i = 1;
+    while i < out_learnt.len() {
+        abstract_levels |= out_learnt[i].abstract_level(&trail.lit_to_level);
+        i += 1;
+    }
+    i = 1;
+    let mut j = 1;
+    while i < out_learnt.len() {
+        let ante_ref = trail.lit_to_reason[out_learnt[i].index()];
+        if ante_ref == UNSET_REASON || !lit_redundant(s, trail, f, out_learnt[i], abstract_levels, &mut seen) {
+            out_learnt[j] = out_learnt[i];
+            j += 1;
+        }
+        i += 1;
+    }
+    /*
     // Local minim:
     let mut i = 1;
     let mut j = 1;
     while i < out_learnt.len() {
         let ante_ref = trail.lit_to_reason[out_learnt[i].index()];
-        if ante_ref == UNSET_REASON  {
+        if ante_ref == UNSET_REASON {
             out_learnt[j] = out_learnt[i];
             j += 1;
         } else {
@@ -93,6 +111,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
         }
         i += 1;
     }
+    */
     while j < i {
         out_learnt.pop();
         j += 1;

@@ -1,8 +1,7 @@
 use crate::{
     assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, trail::*, unit_prop::*, util::*,
-    watches::*,
+    watches::*, lit::*,
 };
-
 
 pub enum SatResult {
     Sat(Vec<AssignedState>),
@@ -57,6 +56,9 @@ pub struct Solver {
     pub fast: usize,
     pub slow: usize,
     pub perm_diff: Vec<usize>,
+    pub analyze_stack: Vec<Lit>,
+    pub analyze_toclear: Vec<Lit>,
+    pub seen: Vec<bool>,
 }
 /*
 // MicroSat
@@ -76,6 +78,9 @@ impl Solver {
             fast: 16777216, // 1 << 24
             slow: 16777216, // 1 << 24
             perm_diff: vec![0; f.num_vars],
+            analyze_stack: Vec::new(),
+            analyze_toclear: Vec::new(),
+            seen: vec![false; f.num_vars],
         }
     }
 
@@ -107,7 +112,7 @@ impl Solver {
     fn handle_conflict(
         &mut self, f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches, d: &mut Decisions,
     ) -> Option<bool> {
-        let res = analyze_conflict(f, t, cref, d);
+        let res = analyze_conflict(f, t, cref, d, self);
         match res {
             Conflict::Ground => {
                 return Some(false);

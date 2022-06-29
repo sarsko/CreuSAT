@@ -20,7 +20,7 @@ pub const UNSET_REASON: usize = usize::MAX;
 
 pub struct Trail {
     pub assignments: Assignments,
-    pub lit_to_level: Vec<u32>, // u32::MAX if unassigned
+    pub lit_to_level: Vec<u32>,    // u32::MAX if unassigned
     pub lit_to_reason: Vec<usize>, // usize::MAX if unassigned
     pub trail: Vec<Step>,
     pub curr_i: usize,

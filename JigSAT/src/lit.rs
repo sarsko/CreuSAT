@@ -44,6 +44,11 @@ impl Lit {
     }
 
     #[inline(always)]
+    pub fn get_curr_assigned_state(self, a: &Assignments) -> AssignedState {
+        a[self.index()]
+    }
+
+    #[inline(always)]
     pub fn to_watchidx(self) -> usize {
         self.code as usize
     }
@@ -66,6 +71,12 @@ impl Lit {
     pub fn select_other(self, a: Self, b: Self) -> Self {
         Self { code: self.code ^ a.code ^ b.code }
     }
+
+    #[inline]
+    pub fn abstract_level(self, t: &Vec<u32>) -> u32 {
+        1 << (t[self.index()] & 31)
+    }
+
 }
 
 impl ops::Not for Lit {
