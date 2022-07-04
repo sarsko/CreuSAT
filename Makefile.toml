@@ -118,6 +118,12 @@ script = '''
 RUSTFLAGS='-C relocation-model=static' cargo build --release --target x86_64-unknown-linux-musl
 '''
 
+[tasks.build-musl-mac]
+workspace = false
+script = '''
+RUSTFLAGS='-C relocation-model=static' cargo zigbuild --release --target x86_64-unknown-linux-musl
+'''
+
 [tasks.move-musl]
 workspace = false
 script = '''
@@ -130,10 +136,16 @@ script = '''
 cd CreuSAT/StarExec && zip -r creusat.zip bin
 '''
 
-[tasks.build-musl-JigSAT]
+[tasks.build-musl-JigSAT-linux]
 workspace = false
 script = '''
 RUSTFLAGS='-C relocation-model=static' cargo build --release --target x86_64-unknown-linux-musl
+'''
+
+[tasks.build-musl-JigSAT-mac]
+workspace = false
+script = '''
+RUSTFLAGS='-C relocation-model=static' cargo zigbuild --release --target x86_64-unknown-linux-musl
 '''
 
 [tasks.move-musl-JigSAT]
@@ -148,7 +160,7 @@ script = '''
 cd JigSAT/StarExec && zip -r jigsat.zip bin
 '''
 
-[tasks.StarExec]
+[tasks.StarExec-linux]
 workspace = false
 dependencies = [
     "build-musl",
@@ -156,13 +168,39 @@ dependencies = [
     "make-zip",
 ]
 
-[tasks.StarExec-JigSAT]
+[tasks.StarExec-mac]
 workspace = false
 dependencies = [
-    "build-musl-JigSAT",
+    "build-musl-mac",
+    "move-musl",
+    "make-zip",
+]
+
+[tasks.StarExec]
+linux_alias = "StarExec-linux"
+windows_alias = "StarExec-mac"
+mac_alias = "StarExec-mac"
+
+[tasks.StarExec-JigSAT-linux]
+workspace = false
+dependencies = [
+    "build-musl-JigSAT-linux",
     "move-musl-JigSAT",
     "make-zip-JigSAT",
 ]
+
+[tasks.StarExec-JigSAT-mac]
+workspace = false
+dependencies = [
+    "build-musl-JigSAT-mac",
+    "move-musl-JigSAT",
+    "make-zip-JigSAT",
+]
+
+[tasks.StarExec-JigSAT]
+linux_alias = "StarExec-JigSAT-linux"
+windows_alias = "StarExec-JigSAT-mac"
+mac_alias = "StarExec-JigSAT-mac"
 
 [tasks.clean-Friday]
 workspace = false

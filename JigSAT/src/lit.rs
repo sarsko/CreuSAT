@@ -76,7 +76,6 @@ impl Lit {
     pub fn abstract_level(self, t: &Vec<u32>) -> u32 {
         1 << (t[self.index()] & 31)
     }
-
 }
 
 impl ops::Not for Lit {

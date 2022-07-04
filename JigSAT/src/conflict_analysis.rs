@@ -1,6 +1,6 @@
 use core::panic;
 
-use crate::{clause::*, decision::*, formula::*, lit::*, trail::*, minimize::*, solver::Solver};
+use crate::{clause::*, decision::*, formula::*, lit::*, minimize::*, solver::Solver, trail::*};
 
 //#[derive(Debug)]
 pub enum Conflict {
@@ -14,9 +14,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
     if decisionlevel == 0 {
         return Conflict::Ground;
     }
-    // `seen` should be persistent across calls to `analyze_conflict`.
-    // Solved by somehow keeping it in `solver`, either as a buffer or by making
-    // conflict analysis a struct which is instatiated once and then kept.
+    // I tried moving seen to solver, but it wasn't really any faster (+ it is nice to not have to carry the invariant that seen is all false)
     let mut to_bump = Vec::new();
     let mut seen = vec![false; f.num_vars];
     let mut out_learnt: Vec<Lit> = vec![Lit::new(0, true); 1]; // I really don't like this way of reserving space.
@@ -112,10 +110,13 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
         i += 1;
     }
     */
+    /*
     while j < i {
         out_learnt.pop();
         j += 1;
     }
+    */
+    out_learnt.truncate(j);
     if out_learnt.len() == 1 {
         Conflict::Unit(out_learnt[0])
     } else {

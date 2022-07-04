@@ -1,6 +1,6 @@
 use crate::{
-    assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, trail::*, unit_prop::*, util::*,
-    watches::*, lit::*,
+    assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, lit::*, trail::*, unit_prop::*, util::*,
+    watches::*,
 };
 
 pub enum SatResult {

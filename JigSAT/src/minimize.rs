@@ -1,15 +1,20 @@
-use crate::{solver::Solver, lit::Lit, formula::Formula, trail::{Trail, UNSET_REASON}};
+use crate::{
+    formula::Formula,
+    lit::Lit,
+    solver::Solver,
+    trail::{Trail, UNSET_REASON},
+};
 
-
-pub fn lit_redundant(solver: &mut Solver, trail: &Trail, formula: &Formula, lit: Lit, abstract_levels: u32, seen: &mut Vec<bool>) -> bool {
+pub fn lit_redundant(
+    solver: &mut Solver, trail: &Trail, formula: &Formula, lit: Lit, abstract_levels: u32, seen: &mut Vec<bool>,
+) -> bool {
     solver.analyze_stack.clear();
     solver.analyze_stack.push(lit);
     let top = solver.analyze_toclear.len();
     while solver.analyze_stack.len() > 0 {
         //assert(reason(var(analyze_stack.last())) != CRef_Undef);
-        let ante_ref = trail.lit_to_reason[solver.analyze_stack.last().unwrap().index()];
+        let ante_ref = trail.lit_to_reason[solver.analyze_stack.pop().unwrap().index()];
         let c = &formula.clauses[ante_ref];
-        solver.analyze_stack.pop();
         /*
         // This should not be possible. I guess Glucose has a relaxed invariant for binary clauses.
         if c.len() == 2 && c[0].lit_unsat(assignments) {
@@ -23,7 +28,9 @@ pub fn lit_redundant(solver: &mut Solver, trail: &Trail, formula: &Formula, lit:
         while i < c.len() {
             let p2 = c[i];
             if !seen[p2.index()] && trail.lit_to_level[p2.index()] > 0 {
-                if trail.lit_to_reason[p2.index()] != UNSET_REASON && p2.abstract_level(&trail.lit_to_level) & abstract_levels != 0 {
+                if trail.lit_to_reason[p2.index()] != UNSET_REASON
+                    && p2.abstract_level(&trail.lit_to_level) & abstract_levels != 0
+                {
                     seen[p2.index()] = true;
                     solver.analyze_stack.push(p2);
                     solver.analyze_toclear.push(p2);
