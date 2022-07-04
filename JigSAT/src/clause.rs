@@ -4,6 +4,7 @@ use std::{
     ops::{Index, IndexMut},
 };
 
+#[derive(Debug, Eq, PartialEq)]
 pub struct Clause {
     pub deleted: bool,
     pub lbd: u32,

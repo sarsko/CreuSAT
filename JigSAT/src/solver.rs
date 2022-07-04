@@ -1,6 +1,6 @@
 use crate::{
     assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, trail::*, unit_prop::*, util::*,
-    watches::*,
+    watches::*, solver_stats::{Stats},
 };
 
 pub enum SatResult {
@@ -55,6 +55,8 @@ pub struct Solver {
     pub fast: usize,
     pub slow: usize,
     pub perm_diff: Vec<usize>,
+    stats: Stats,
+    adapt_strategies: bool,
 }
 /*
 // MicroSat
@@ -74,6 +76,8 @@ impl Solver {
             fast: 16777216, // 1 << 24
             slow: 16777216, // 1 << 24
             perm_diff: vec![0; f.num_vars],
+            stats: Stats::default(),
+            adapt_strategies: true,
         }
     }
 
@@ -88,13 +92,17 @@ impl Solver {
     fn handle_long_clause(
         &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions, mut clause: Clause, level: u32,
     ) {
-        self.increase_num_conflicts();
         clause.calc_and_set_lbd(t, self);
         let lbd = clause.lbd;
+        if lbd == 2 {
+            self.stats.nb_glues += 1;
+        }
+        if clause.len() == 2 {
+            self.stats.nb_bin += 1;
+        }
         let cref = f.add_clause(clause, w, t);
         update_fast(&mut self.fast, lbd as usize);
         update_slow(&mut self.slow, lbd as usize);
-        //d.increment_and_move(f, cref, &t.assignments);
         t.backtrack_to(level, f, d);
         let lit = f[cref][0];
         let step = Step { lit, decision_level: level, reason: Reason::Long(cref) };
@@ -102,30 +110,103 @@ impl Solver {
     }
 
     #[inline]
+    fn handle_no_conflict(
+        &mut self, f: &mut Formula, t: &mut Trail, w: &mut Watches, d: &mut Decisions,
+    ) -> bool {
+        // Might be an idea to do this elsewhere.
+        // No conflict -> do stuff:
+        /*
+        if self.restart.trigger_restart() {
+            self.progress_estimate = self.progess_estimate();
+            trail.backtrack_safe(0, f, d);
+            return false; // This will lead to a decision, might as well be return true ?
+        }
+        */
+        /*
+        if((searchMode == stable || searchMode == onlyStable) && targetPhase->rephasing()) {
+            lbool tmp = targetPhase->rephase();
+            if(tmp != l_Undef) {
+                verbose.log(NORMAL, "c solved by local search engine\n");
+                return tmp;
+            }
+        }
+        */
+
+        /*
+        if(decisionLevel() == 0 && !simplify())   // Simplify the set of problem clauses:
+            return l_False;
+        */
+
+        // if(clauseManager->triggerReduce()) clauseManager->reduce();
+        true
+    }
+
+    #[inline]
     fn handle_conflict(
         &mut self, f: &mut Formula, t: &mut Trail, cref: usize, w: &mut Watches, d: &mut Decisions,
     ) -> bool {
+        self.increase_num_conflicts();
         let res = analyze_conflict(f, t, cref, d);
+        if res == Conflict::Ground {
+            return false;
+        }
+
+        // if(!aDecisionWasMade) stats[noDecisionConflict]++;
+        // aDecisionWasMade = false;
+
+
+        // learnt_clause.clear();
+        // analyze(confl, learnt_clause, backtrack_level);
+        // lbd = computeLBD(learnt_clause);
+
+        /*
+        // Glucose bumps all vars which are involved in clause analysis and also
+        // bumps all the clauses of the last decision level which have an lbd less
+        // than the learnt clause afterwards (if mode is Focus (aka not Stable)).
+        // I guess this is better, so TODO on checking the performance difference.
+        // UPDATEVARACTIVITY trick (see competition'09 companion paper)
+        if((searchMode == SearchMode::focus || searchMode == SearchMode::onlyFocus) && lastDecisionLevel.size() > 0) {
+            for(Lit l : lastDecisionLevel)
+                if(ca[reason(var(l))].lbd() < lbd) varBumpActivity(var(l));
+        }
+        */
+
+        // glucoseRestart->update(trail.size(), lbd);
+        // restart->blockRestart();
+
+        // if(searchMode == stable || searchMode == onlyStable) targetPhase->updateBestPhase();
+
+        // cancelUntil(backtrack_level);
         match res {
-            Conflict::Ground => {
-                return false;
-            }
             Conflict::Unit(lit) => {
                 t.learn_unit(lit, f, d);
-                f.reduceDB(w, t, self);
-                f.simplify_formula(w, t);
-            }
+                self.stats.nb_un += 1;
+                //f.reduceDB(w, t, self);
+                //f.simplify_formula(w, t);
+            },
             Conflict::Learned(level, clause) => {
                 self.handle_long_clause(f, t, w, d, clause, level);
-            }
+            },
+            _ => {},
         }
-        return true;
+
+        /*
+        if self.adapt_strategies && self.num_conflicts == 100000 && self.adapt_solver() {
+            t.backtrack_safe(0, f, d);
+            // Can I just return true?
+            //return l_Undef;
+        }
+        */
+        true
     }
 
     #[inline]
     fn unit_prop_step(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> ConflictResult {
         match unit_propagate(f, t, w) {
-            Ok(_) => ConflictResult::Ok,
+            Ok(_) => match self.handle_no_conflict(f, t, w, d) {
+                true => ConflictResult::Ok, // Time to do a decision
+                false => ConflictResult::Continue, // Call propagate again
+            },
             Err(cref) => match self.handle_conflict(f, t, cref, w, d) {
                 false => ConflictResult::Ground,
                 true => ConflictResult::Continue,
@@ -156,6 +237,7 @@ impl Solver {
             None => return SatResult::Err,
             _ => {}
         }
+        /*
         if f.len() > old_len {
             let slow = (self.slow / 100) * 125;
             if self.fast > slow {
@@ -166,6 +248,7 @@ impl Solver {
                 }
             }
         }
+        */
         match d.get_next(&trail.assignments, f) {
             Some(next) => {
                 trail.enq_decision(next, f);
@@ -192,6 +275,31 @@ impl Solver {
                 }
             }
         }
+    }
+
+    fn adapt_solver(&mut self) -> bool {
+        self.adapt_strategies = false;
+        /*
+        let decisions_per_conflict = self.num_decisions as f64 / self.num_conflicts as f64;
+
+        if decisions_per_conflict <= 1.2 {
+            self.restart                = Restart::GlucoseRestart;
+            self.search_mode            = SearchMode::OnlyFocus;
+            //TiersClauseManager *manager = dynamic_cast<TiersClauseManager *>(clauseManager);
+            // Core upper bound ?
+            //manager->coreUB             = 5;
+            return true;
+        }
+
+        if self.stats.no_decision_conflict < 30_000 {
+            self.restart                = Restart::LubyRestart;
+            self.search_mode            = SearchMode::OnlyFocus;
+            // How to model this with VMTF?
+            self.var_decay = 0.999;
+            return true;
+        }
+        */
+        false
     }
 }
 

@@ -1,6 +1,7 @@
 use crate::{clause::*, decision::*, formula::*, lit::*, trail::*};
 
-//#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
+
 pub enum Conflict {
     Ground,
     Unit(Lit),

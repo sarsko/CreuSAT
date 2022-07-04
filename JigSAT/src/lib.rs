@@ -13,3 +13,4 @@ mod trail;
 mod unit_prop;
 mod util;
 mod watches;
+mod solver_stats;
