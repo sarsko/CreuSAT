@@ -55,8 +55,10 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
             proof_assert!(@w.cref < (@f.clauses).len());
             proof_assert!(lemma_push_maintains_watcher_invariant(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f, w); true);
 
-            watches.watches[curr_lit.to_neg_watchidx()].push(w);
+            let watch_lit = curr_lit.to_neg_watchidx();
+            watches.watches[watch_lit].push(w);
 
+            proof_assert!(watch_valid((@(@watches.watches)[@watch_lit]), *f));
             proof_assert!(watcher_crefs_in_range(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f));
             proof_assert!(watches.invariant(*f));
         }
