@@ -17,6 +17,13 @@ impl Model for Formula {
     }
 }
 
+impl Formula {
+    #[logic]
+    pub fn real_model(self) -> Seq<Seq<Lit>> {
+        Seq::EMPTY
+    }
+}
+
 #[predicate]
 pub fn formula_invariant(f: (Seq<Clause>, Int)) -> bool {
     pearlite! {

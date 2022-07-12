@@ -7,33 +7,44 @@ use crate::logic::{logic_assignments::*, logic_clause::*, logic_formula::*, logi
 
 #[cfg(feature = "contracts")]
 mod inner {
-    struct Model(Mapping<Int, bool>);
+    use creusot_contracts::{*, Model};
+    use crate::lit::Lit;
+    use crate::formula::Formula;
+    struct M(Mapping<Int, bool>);
 
-    impl Model {
+    impl M {
         #[predicate]
         fn satisfies_clause(self, cl: Seq<Lit>) -> bool {
             pearlite! {
-                forall<i : _> 0 <= i && i < cl.len() ==> self.get(@cl[i].idx) == cl[i].polarity
+                forall<i : Int> 0 <= i && i < cl.len() ==> self.0.get(@cl[i].idx) == cl[i].polarity
             }
         }
 
         #[predicate]
         fn satisfies(self, fml: Seq<Seq<Lit>>) -> bool {
             pearlite! {
-                forall<c : _> 0 <= i && i < fml.len() ==> self.satisfies_clause(fml[c])
+                forall<c : _> 0 <= c && c < fml.len() ==> self.satisfies_clause(fml[c])
             }
         }
+
     }
 
     impl Formula {
         #[predicate]
-        fn unsat(self) -> bool {
-            pearlite! { forall<m : Model> m.satisfies(@self) ==> false }
+        fn unsat2(self) -> bool {
+            pearlite! { forall<m : M> m.satisfies(self.real_model()) ==> false }
         }
 
         #[predicate]
-        fn sat(self) -> bool {
-            pearlite! { exists<m : Model> m.satisfies(@self) }
+        fn sat2(self) -> bool {
+            pearlite! { exists<m : M> m.satisfies(self.real_model()) }
+        }
+
+        #[predicate]
+        fn equisat2(self, f: Self) -> bool {
+            pearlite! {
+                forall<m : M> m.satisfies(self.real_model()) ==> m.satisfies(f.real_model()) && m.satisfies(f.real_model()) ==> m.satisfies(self.real_model())
+            }
         }
     }
 }
