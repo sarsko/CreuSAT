@@ -18,8 +18,8 @@ impl fmt::Debug for Lit {
 }
 impl fmt::Display for Lit {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let neg_or_empty = if self.is_positive() {""} else {"¬"};
-        write!(f, "{}   {}",neg_or_empty, self.index())
+        let neg_or_empty = if self.is_positive() { "" } else { "¬" };
+        write!(f, "{}   {}", neg_or_empty, self.index())
     }
 }
 

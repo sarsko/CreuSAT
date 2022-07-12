@@ -1,6 +1,6 @@
 use crate::{
-    assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, lit::*, trail::*, unit_prop::*, util::*,
-    watches::*, preprocess::*,
+    assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, lit::*, preprocess::*, trail::*,
+    unit_prop::*, util::*, watches::*,
 };
 
 use log::debug;

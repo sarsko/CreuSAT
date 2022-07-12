@@ -46,7 +46,7 @@ impl fmt::Display for Clause {
                 to_display.push_str(" ∧ ");
             }
             first = false;
-            to_display.push_str( &l.to_string());
+            to_display.push_str(&l.to_string());
         }
         to_display.push_str(")");
 
@@ -72,14 +72,7 @@ impl Clause {
     // Does not set lbd !
     // Inits search to 1 and mark to 0. Sets abstraction.
     pub(crate) fn new(lits: Vec<Lit>) -> Clause {
-        Clause {
-            deleted: false,
-            lbd: 0,
-            search: 1,
-            mark: 0,
-            abstraction: calc_abstraction(&lits),
-            lits,
-        }
+        Clause { deleted: false, lbd: 0, search: 1, mark: 0, abstraction: calc_abstraction(&lits), lits }
     }
 
     pub fn swap(&mut self, i: usize, j: usize) {
@@ -263,4 +256,3 @@ impl Clause {
         self.calc_and_set_abstraction();
     }
 }
-

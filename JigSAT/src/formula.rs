@@ -1,7 +1,7 @@
 use crate::{assignments::*, clause::*, solver::*, trail::*, watches::*};
 
-use std::ops::{Index, IndexMut};
 use log::debug;
+use std::ops::{Index, IndexMut};
 pub struct Formula {
     pub clauses: Vec<Clause>,
     pub num_vars: usize,
@@ -184,5 +184,3 @@ impl Formula {
         }
     }
 }
-
-

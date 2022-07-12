@@ -9,7 +9,7 @@ use log::debug;
 use std::collections::VecDeque;
 //use std::collections::BinaryHeap;
 
-use crate::{formula::*, trail::*, lit::*, clause::*};
+use crate::{clause::*, formula::*, lit::*, trail::*};
 
 #[derive(PartialEq)]
 pub(crate) enum SubsumptionRes {
@@ -20,7 +20,8 @@ pub(crate) enum SubsumptionRes {
 
 pub(crate) struct Preprocess {
     touched: Vec<bool>,
-    occurs: Vec<Vec<usize>>, /* From watch_index to a vec of crefs where the variable occurs */ // OccLists<Var, vec<Cref>, ClauseDeleted>,
+    occurs: Vec<Vec<usize>>, /* From watch_index to a vec of crefs where the variable occurs */
+    // OccLists<Var, vec<Cref>, ClauseDeleted>,
     n_occ: Vec<usize>, //
     // elim_heap: Heap, // A heap to remove the minimal element efficiently. We could either use a heap, or be lazy and use a vector.
     elim_heap: Vec<(usize, usize)>, // Vars and their number of occurrences. is sorted decending on k.1
@@ -56,7 +57,7 @@ impl Preprocess {
             clause_lim: 20,
             subsumption_lim: 1000,
             merges: 0,
-            eliminated_vars: 0
+            eliminated_vars: 0,
         }
     }
 
@@ -64,7 +65,7 @@ impl Preprocess {
     fn populate_elim(&mut self) {
         let mut j = 0;
         for i in (0..self.n_occ.len()).step_by(2) {
-            self.elim_heap.push((j, self.n_occ[i] * self.n_occ[i+1]));
+            self.elim_heap.push((j, self.n_occ[i] * self.n_occ[i + 1]));
             j += 1;
         }
         self.elim_heap.sort_by_key(|k| k.1);
@@ -129,7 +130,7 @@ impl Preprocess {
                 let cs = &mut self.occurs[i];
                 let mut j = 0;
                 //for j in 0..cs.len() {
-                    //if formula[cs[j]].get_mark() == 0 && !formula[cs[j]].deleted {
+                //if formula[cs[j]].get_mark() == 0 && !formula[cs[j]].deleted {
                 while j < cs.len() {
                     if !formula[cs[j]].deleted {
                         cs.swap_remove(j);
@@ -155,7 +156,7 @@ impl Preprocess {
     // Corresponds to SimpSolver::eliminate in Glucose
     // Glucose passes turn_off_elim as true, which means that it always cleans up fully afterwards
     // We just pass Preprocess as `mut self`, to have it drop at function exit
-    pub (crate) fn preprocess(mut self, formula: &mut Formula, trail: &mut Trail) -> bool {
+    pub(crate) fn preprocess(mut self, formula: &mut Formula, trail: &mut Trail) -> bool {
         self.init(formula);
 
         // This should be uncommented.
@@ -172,13 +173,14 @@ impl Preprocess {
         while self.n_touched > 0 || self.bwdsub_assigns < trail.trail.len() || self.elim_heap.len() > 0 {
             self.gather_touched_clauses(formula);
 
-            if (self.subsumption_queue.len() > 0 || self.bwdsub_assigns < trail.trail.len()) && !self.backward_subsumption_check(formula, trail) {
+            if (self.subsumption_queue.len() > 0 || self.bwdsub_assigns < trail.trail.len())
+                && !self.backward_subsumption_check(formula, trail)
+            {
                 return false;
             }
 
             while !self.elim_heap.is_empty() {
-
-                let (elim,_) = self.elim_heap.pop().unwrap();
+                let (elim, _) = self.elim_heap.pop().unwrap();
 
                 if self.eliminated[elim] || trail.assignments.is_assigned(elim) {
                     continue;
@@ -191,7 +193,6 @@ impl Preprocess {
                 if !self.eliminate_var(elim, formula, trail) {
                     return false;
                 }
-
             }
         }
         true
@@ -264,15 +265,20 @@ impl Preprocess {
                 // How can c become marked since the previous check?
                 if formula[cr].is_marked() {
                     break;
-                } else if !formula[self.occurs[best][j]].is_marked() && self.occurs[best][j] != cr && formula[self.occurs[best][j]].len() < self.subsumption_lim {
+                } else if !formula[self.occurs[best][j]].is_marked()
+                    && self.occurs[best][j] != cr
+                    && formula[self.occurs[best][j]].len() < self.subsumption_lim
+                {
                     match formula[cr].subsumes(&formula[self.occurs[best][j]]) {
-                        SubsumptionRes::NoSubsumption => { j += 1; },
+                        SubsumptionRes::NoSubsumption => {
+                            j += 1;
+                        }
                         SubsumptionRes::Subsumed => {
                             //println!("Subsumed");
                             //subsumed += 1;
                             self.remove_clause_in_preprocessing(formula, self.occurs[best][j]);
                             j += 1;
-                        },
+                        }
                         SubsumptionRes::RemoveLit(l) => {
                             //println!("Removed");
                             //deleted_literals += 1;
@@ -287,7 +293,7 @@ impl Preprocess {
                             } else {
                                 j += 1;
                             }
-                        },
+                        }
                     }
                 } else {
                     j += 1;
@@ -363,14 +369,15 @@ impl Preprocess {
             }
         }
 
-
         let mut cnt = 0;
         let mut clause_size = 0;
 
         for i in 0..pos.len() {
             for j in 0..neg.len() {
                 cnt += 1;
-                if self.merge(&formula[pos[i]],&formula[neg[j]], v, &mut clause_size) && (cnt > self.occurs[v].len() + self.grow || clause_size > self.clause_lim) {
+                if self.merge(&formula[pos[i]], &formula[neg[j]], v, &mut clause_size)
+                    && (cnt > self.occurs[v].len() + self.grow || clause_size > self.clause_lim)
+                {
                     return true;
                 }
             }
@@ -491,7 +498,6 @@ impl Preprocess {
 
         return true;
     }
-
 
     fn remove_clauses(&mut self, formula: &mut Formula, v: usize) {
         debug!("Removing {}", v);
