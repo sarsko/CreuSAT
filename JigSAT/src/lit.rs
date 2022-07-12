@@ -13,14 +13,13 @@ use std::fmt;
 
 impl fmt::Debug for Lit {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        //fmt::Display::fmt("{}", self.index(), f)
-        let neg_or_empty = if self.is_positive() {""} else {"¬"};
-        write!(f, "{}{}",neg_or_empty, self.index())
+        write!(f, "{}", self)
     }
 }
 impl fmt::Display for Lit {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}", self)
+        let neg_or_empty = if self.is_positive() {""} else {"¬"};
+        write!(f, "{}   {}",neg_or_empty, self.index())
     }
 }
 

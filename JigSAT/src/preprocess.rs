@@ -5,6 +5,7 @@
 // it is merely a helper struct. The reason for this is that I do
 // not want the SimpSolver to be callable directly
 
+use log::debug;
 use std::collections::VecDeque;
 //use std::collections::BinaryHeap;
 
@@ -97,10 +98,10 @@ impl Preprocess {
 
 impl Preprocess {
     fn add_clause(&mut self, formula: &mut Formula, lits: Vec<Lit>) -> bool {
-        dbg!("Adding: {:?}", &lits);
+        debug!("Adding: {:?}", &lits);
         let clause = Clause::new(lits);
         let cref = formula.add_unwatched_clause(clause);
-        dbg!("Added: {}", cref);
+        debug!("Added: {}", cref);
         self.subsumption_queue.push_back(cref);
         for l in &formula[cref].lits {
             self.occurs[l.index()].push(cref);
@@ -169,9 +170,7 @@ impl Preprocess {
         }
 
         while self.n_touched > 0 || self.bwdsub_assigns < trail.trail.len() || self.elim_heap.len() > 0 {
-            println!("Gathering");
             self.gather_touched_clauses(formula);
-            println!("Gathering done");
 
             if (self.subsumption_queue.len() > 0 || self.bwdsub_assigns < trail.trail.len()) && !self.backward_subsumption_check(formula, trail) {
                 return false;
@@ -203,12 +202,12 @@ impl Preprocess {
             unreachable!("Already deleted");
             return;
         }
-        dbg!("Removing cref: {}, {:?}", cref, &formula[cref].lits);
+        debug!("Removing cref: {}, {:?}", cref, &formula[cref].lits);
         for l in &formula[cref].lits {
             self.n_occ[l.to_watchidx()] -= 1;
             if let Some(index) = self.occurs[l.index()].iter().position(|value| *value == cref) {
-                println!("Removed clause {} due to {}", formula[cref], l);
-                println!("Cref: {} index: {}, cref at index: {}", cref, index, self.occurs[l.index()][index]);
+                debug!("Removed clause {} due to {}", &formula[cref], l);
+                debug!("Cref: {} index: {}, cref at index: {}", cref, index, self.occurs[l.index()][index]);
                 self.occurs[l.index()].swap_remove(index);
             } else {
                 // Can happen if var is removed.
@@ -226,7 +225,7 @@ impl Preprocess {
         while self.subsumption_queue.len() > 0 || self.bwdsub_assigns < trail.trail.len() {
             // Check top-level assignments by creating a dummy clause and placing it in the queue:
             if self.subsumption_queue.len() == 0 && self.bwdsub_assigns < trail.trail.len() {
-                dbg!("sub_q.len() == 0 and bwdsub_assigns < trail.len()");
+                debug!("sub_q.len() == 0 and bwdsub_assigns < trail.len()");
                 //panic!();
                 return false;
                 // I dunno what is supposed to happen here.
@@ -377,7 +376,7 @@ impl Preprocess {
             }
         }
 
-        dbg!("Eliminated: {}", v);
+        debug!("Eliminated: {}", v);
         // Delete and store old clauses:
         self.eliminated[v] = true;
         // TODO: Actually reduce the var count
@@ -410,7 +409,7 @@ impl Preprocess {
                     continue;
                 }
                 if self.merge_and_get(&formula[*p], &formula[*n], v, &mut resolvent) {
-                    dbg!("Resolved {} and {} to get {:?}", &resolvent, &formula[*p], &formula[*n]);
+                    debug!("Resolved {} and {} to get {:?}", &formula[*p], &formula[*n], &resolvent);
 
                     if !self.add_clause(formula, resolvent) {
                         return false;
@@ -495,7 +494,7 @@ impl Preprocess {
 
 
     fn remove_clauses(&mut self, formula: &mut Formula, v: usize) {
-        dbg!("Removing {}", v);
+        debug!("Removing {}", v);
         // Mark all the clauses as deleted.
         formula.remove_clauses(&mut self.occurs[v]);
 
@@ -504,10 +503,10 @@ impl Preprocess {
             for l in &formula[cref].lits {
                 self.n_occ[l.to_watchidx()] -= 1;
                 if let Some(index) = self.occurs[l.index()].iter().position(|value| *value == cref) {
-                    dbg!("Found {}", l);
+                    debug!("Found {}", l);
                     self.occurs[l.index()].swap_remove(index);
                 } else {
-                    dbg!("Not found {}", l);
+                    debug!("Not found {}", l);
                     //panic!();
                 }
             }

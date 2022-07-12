@@ -1,5 +1,7 @@
 use crate::{assignments::*, clause::*, solver::*, trail::*, watches::*};
+
 use std::ops::{Index, IndexMut};
+use log::debug;
 pub struct Formula {
     pub clauses: Vec<Clause>,
     pub num_vars: usize,
@@ -174,7 +176,7 @@ impl Formula {
     }
 
     pub(crate) fn remove_clauses(&mut self, crefs: &mut Vec<usize>) {
-        println!("Marking {:?} as deleted", crefs);
+        debug!("Marking {:?} as deleted", crefs);
         crefs.sort();
         crefs.reverse();
         for cref in crefs {

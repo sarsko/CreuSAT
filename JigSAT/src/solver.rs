@@ -3,6 +3,8 @@ use crate::{
     watches::*, preprocess::*,
 };
 
+use log::debug;
+
 pub enum SatResult {
     Sat(Vec<AssignedState>),
     Unsat,
@@ -182,7 +184,7 @@ impl Solver {
                 trail.enq_decision(next, f);
             }
             None => {
-                dbg!("SAT: no more decisions");
+                debug!("SAT: no more decisions");
                 return SatResult::Sat(Vec::new());
             }
         }
@@ -215,12 +217,12 @@ pub fn solver(mut formula: Formula) -> SatResult {
     let preprocess = Preprocess::new();
     let mut trail = Trail::new(&formula, Assignments::new(&formula));
     preprocess.preprocess(&mut formula, &mut trail);
-    dbg!("done with preproc");
-    dbg!("{:?}", &trail.trail);
+    debug!("done with preproc");
+    debug!("{:?}", &trail.trail);
     formula.remove_deleted();
     match trail.learn_units(&mut formula) {
         Some(_) => {
-            dbg!("UNSAT due to learn_units");
+            debug!("UNSAT due to learn_units");
             return SatResult::Unsat;
         }
         None => {}

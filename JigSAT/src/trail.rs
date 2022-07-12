@@ -1,5 +1,7 @@
 use crate::{assignments::*, decision::*, formula::*, lit::*};
 
+use log::debug;
+
 #[derive(Debug)]
 pub enum Reason {
     //Undefined,
@@ -143,7 +145,7 @@ impl Trail {
 impl Trail {
     #[inline]
     pub fn learn_unit_in_preprocessing(&mut self, lit: Lit, f: &Formula) {
-        dbg!("Learned unit in preproc");
+        debug!("Learned unit: {} in preproc", lit);
         self.enq_assignment(Step { lit, decision_level: 0, reason: Reason::Unit }, f);
     }
 }

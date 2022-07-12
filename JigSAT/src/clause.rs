@@ -1,7 +1,7 @@
 use crate::{formula::*, lit::*, solver::Solver, trail::*};
 use std::{
     cmp::Ordering,
-    ops::{Index, IndexMut}, fmt::write,
+    ops::{Index, IndexMut},
 };
 
 use crate::preprocess::SubsumptionRes;
@@ -193,9 +193,8 @@ impl Clause {
 
 // Only used in preprocessing
 impl Clause {
-    // We don't compute this atm. Dunno if that is gonna mess things up.
     fn incompatible_abstract_levels(&self, other: &Clause) -> bool {
-        //dbg!("Incompat abstract");
+        //debug!("Incompat abstract");
         self.abstraction & !other.abstraction != 0
     }
 
@@ -221,10 +220,8 @@ impl Clause {
 
         let mut ret = SubsumptionRes::Subsumed;
 
-        //for(unsigned i = 0; i < header.size; i++) {
         'outer: for s in &self.lits {
             // search for c[i] or ~c[i]
-            //for(unsigned j = 0; j < other.header.size; j++)
             for o in &other.lits {
                 if s == o {
                     continue 'outer;
