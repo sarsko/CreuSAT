@@ -3,10 +3,10 @@ use std::io::Write;
 use std::time::Instant;
 use termcolor::*;
 
-//extern crate JigSAT;
-//use JigSAT::parser::{parse_cnf, preproc_and_solve};
-extern crate CreuSAT;
-use CreuSAT::parser::{parse_cnf, preproc_and_solve};
+extern crate JigSAT;
+use JigSAT::parser::{parse_cnf, preproc_and_solve};
+//extern crate CreuSAT;
+//use CreuSAT::parser::{parse_cnf, preproc_and_solve};
 
 #[test]
 fn test_all_sat() {
@@ -50,6 +50,7 @@ fn test_all_path(paths_in: &str, expected: bool, verbosity: usize) {
         match res {
             Ok((mut clauses, num_literals)) => {
                 let result = preproc_and_solve(&mut clauses, num_literals);
+                dbg!("{:?}", path);
                 assert!(result == expected);
             }
             Err(e) => {
@@ -91,22 +92,22 @@ fn test_all_uuf125() {
 
 #[test]
 fn test_all_uf150() {
-    test_all_path("satlib/UF150.645.100", true, 1);
+    test_all_path("satlib/UF150.645.100", true, 20);
 }
 
 #[test]
 fn test_all_uuf150() {
-    test_all_path("satlib/UUF150.645.100", false, 1);
+    test_all_path("satlib/UUF150.645.100", false, 20);
 }
 
 #[test]
 fn test_all_uf175() {
-    test_all_path("satlib/UF175.753.100", true, 1);
+    test_all_path("satlib/UF175.753.100", true, 20);
 }
 
 #[test]
 fn test_all_uuf175() {
-    test_all_path("satlib/UUF175.753.100", false, 1);
+    test_all_path("satlib/UUF175.753.100", false, 20);
 }
 
 #[test]

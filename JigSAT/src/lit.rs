@@ -2,9 +2,26 @@ use ::std::ops;
 
 use crate::assignments::*;
 
-#[derive(Clone, Copy, Eq, PartialEq, Debug)]
+#[derive(Clone, Copy, Eq, PartialEq)]
 pub struct Lit {
     code: u32,
+}
+
+pub type Var = u32;
+
+use std::fmt;
+
+impl fmt::Debug for Lit {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        //fmt::Display::fmt("{}", self.index(), f)
+        let neg_or_empty = if self.is_positive() {""} else {"¬"};
+        write!(f, "{}{}",neg_or_empty, self.index())
+    }
+}
+impl fmt::Display for Lit {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
 }
 
 impl Lit {
@@ -12,6 +29,13 @@ impl Lit {
     pub fn index(self) -> usize {
         (self.code >> 1) as usize
     }
+
+    /*
+    #[inline(always)]
+    pub fn var(self) -> Var {
+        self.code >> 1
+    }
+    */
 
     #[inline(always)]
     pub fn is_positive(self) -> bool {
@@ -73,8 +97,18 @@ impl Lit {
     }
 
     #[inline]
-    pub fn abstract_level(self, t: &Vec<u32>) -> u32 {
+    pub(crate) fn abstract_level(self, t: &Vec<u32>) -> u32 {
         1 << (t[self.index()] & 31)
+    }
+
+    #[inline]
+    pub(crate) fn lit_in_clause(self, c: &[Lit]) -> bool {
+        for l in c {
+            if *l == self {
+                return true;
+            }
+        }
+        false
     }
 }
 

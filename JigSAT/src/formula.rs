@@ -85,9 +85,27 @@ impl Formula {
         cref
     }
 
+    pub(crate) fn add_unwatched_clause(&mut self, clause: Clause) -> usize {
+        let cref = self.len();
+        self.clauses.push(clause);
+        cref
+    }
+
     // This is only valid to run before solver is created and before watches are added.
-    pub fn remove_clause_in_preprocessing(&mut self, cref: usize) {
-        self.clauses.remove(cref);
+    pub(crate) fn remove_clause_in_preprocessing(&mut self, cref: usize) {
+        self.clauses[cref].deleted = true;
+        //self.clauses.remove(cref);
+    }
+
+    pub(crate) fn remove_deleted(&mut self) {
+        let mut i = 0;
+        while i < self.len() {
+            if self[i].deleted {
+                self.clauses.swap_remove(i);
+            } else {
+                i += 1;
+            }
+        }
     }
 
     fn delete_clause(&mut self, cref: usize, watches: &mut Watches, t: &Trail) {
@@ -154,4 +172,15 @@ impl Formula {
             i += 1;
         }
     }
+
+    pub(crate) fn remove_clauses(&mut self, crefs: &mut Vec<usize>) {
+        println!("Marking {:?} as deleted", crefs);
+        crefs.sort();
+        crefs.reverse();
+        for cref in crefs {
+            self.remove_clause_in_preprocessing(*cref);
+        }
+    }
 }
+
+

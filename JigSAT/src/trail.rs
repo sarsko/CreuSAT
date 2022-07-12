@@ -139,3 +139,11 @@ impl Trail {
         None
     }
 }
+
+impl Trail {
+    #[inline]
+    pub fn learn_unit_in_preprocessing(&mut self, lit: Lit, f: &Formula) {
+        dbg!("Learned unit in preproc");
+        self.enq_assignment(Step { lit, decision_level: 0, reason: Reason::Unit }, f);
+    }
+}

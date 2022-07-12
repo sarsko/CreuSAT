@@ -1,6 +1,6 @@
 use crate::{
     assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, lit::*, trail::*, unit_prop::*, util::*,
-    watches::*,
+    watches::*, preprocess::*,
 };
 
 pub enum SatResult {
@@ -58,7 +58,7 @@ pub struct Solver {
     pub perm_diff: Vec<usize>,
     pub analyze_stack: Vec<Lit>,
     pub analyze_toclear: Vec<Lit>,
-    pub seen: Vec<bool>,
+    //pub seen: Vec<bool>,
 }
 /*
 // MicroSat
@@ -80,7 +80,7 @@ impl Solver {
             perm_diff: vec![0; f.num_vars],
             analyze_stack: Vec::new(),
             analyze_toclear: Vec::new(),
-            seen: vec![false; f.num_vars],
+            //seen: vec![false; f.num_vars],
         }
     }
 
@@ -182,6 +182,7 @@ impl Solver {
                 trail.enq_decision(next, f);
             }
             None => {
+                dbg!("SAT: no more decisions");
                 return SatResult::Sat(Vec::new());
             }
         }
@@ -211,9 +212,15 @@ pub fn solver(mut formula: Formula) -> SatResult {
         SatResult::Unknown => {}
         o => return o,
     }
+    let preprocess = Preprocess::new();
     let mut trail = Trail::new(&formula, Assignments::new(&formula));
+    preprocess.preprocess(&mut formula, &mut trail);
+    dbg!("done with preproc");
+    dbg!("{:?}", &trail.trail);
+    formula.remove_deleted();
     match trail.learn_units(&mut formula) {
         Some(_) => {
+            dbg!("UNSAT due to learn_units");
             return SatResult::Unsat;
         }
         None => {}

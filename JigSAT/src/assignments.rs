@@ -40,4 +40,9 @@ impl Assignments {
     pub fn new(f: &Formula) -> Self {
         Assignments(vec![2; f.num_vars])
     }
+
+    #[inline]
+    pub(crate) fn is_assigned(&self, idx: usize) -> bool {
+        self[idx] < 2
+    }
 }

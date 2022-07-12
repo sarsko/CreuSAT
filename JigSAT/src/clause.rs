@@ -1,13 +1,17 @@
 use crate::{formula::*, lit::*, solver::Solver, trail::*};
 use std::{
     cmp::Ordering,
-    ops::{Index, IndexMut},
+    ops::{Index, IndexMut}, fmt::write,
 };
+
+use crate::preprocess::SubsumptionRes;
 
 pub struct Clause {
     pub deleted: bool,
     pub lbd: u32,
     pub search: usize,
+    pub mark: u8, // This is an artifact of Glucose/MiniSat, and should be enumed
+    abstraction: usize,
     pub lits: Vec<Lit>,
 }
 
@@ -31,7 +35,53 @@ impl IndexMut<usize> for Clause {
     }
 }
 
+use std::fmt;
+
+impl fmt::Display for Clause {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut to_display = String::from("(");
+        let mut first = true;
+        for l in &self.lits {
+            if !first {
+                to_display.push_str(" ∧ ");
+            }
+            first = false;
+            to_display.push_str( &l.to_string());
+        }
+        to_display.push_str(")");
+
+        write!(f, "{}", to_display)
+    }
+}
+
+impl fmt::Debug for Clause {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self)
+    }
+}
+
+fn calc_abstraction(lits: &[Lit]) -> usize {
+    let mut abstraction = 0;
+    for e in lits {
+        abstraction |= 1 << (e.index() & 31);
+    }
+    abstraction
+}
+
 impl Clause {
+    // Does not set lbd !
+    // Inits search to 1 and mark to 0. Sets abstraction.
+    pub(crate) fn new(lits: Vec<Lit>) -> Clause {
+        Clause {
+            deleted: false,
+            lbd: 0,
+            search: 1,
+            mark: 0,
+            abstraction: calc_abstraction(&lits),
+            lits,
+        }
+    }
+
     pub fn swap(&mut self, i: usize, j: usize) {
         self.lits.swap(i, j);
     }
@@ -99,7 +149,7 @@ impl Clause {
     }
 
     pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
-        Clause { deleted: false, lbd: 0, search: 1, lits: vec.clone() }
+        Clause { deleted: false, lbd: 0, search: 1, mark: 0, abstraction: calc_abstraction(vec), lits: vec.clone() }
     }
 
     #[inline(always)]
@@ -135,4 +185,85 @@ impl Clause {
     pub fn calc_and_set_lbd(&mut self, trail: &Trail, solver: &mut Solver) {
         self.lbd = self.calc_lbd(trail, solver);
     }
+
+    fn calc_and_set_abstraction(&mut self) {
+        self.abstraction = calc_abstraction(&self.lits);
+    }
 }
+
+// Only used in preprocessing
+impl Clause {
+    // We don't compute this atm. Dunno if that is gonna mess things up.
+    fn incompatible_abstract_levels(&self, other: &Clause) -> bool {
+        //dbg!("Incompat abstract");
+        self.abstraction & !other.abstraction != 0
+    }
+
+    pub(crate) fn subsumes(&self, other: &Clause) -> SubsumptionRes {
+        // if (other.size() < size() || (extra.abst & ~other.extra.abst) != 0)
+        // if (other.size() < size() || (!learnt() && !other.learnt() && (extra.abst & ~other.extra.abst) != 0))
+        /*
+        assert(!header.learnt);
+        assert(!other.header.learnt);
+        assert(header.has_extra);
+        assert(other.header.has_extra);
+        */
+        // What is happening here?
+        // If the abstraction level of this clause (which I assume is stored at the end of the lits) ANDed with the NOT
+        // of the abstraction level of the other clause are different, then return?
+        // Why in the world is the abstraction level stored as at the end instead of in the header?
+        // Also, why isnt the abstraction() call used?
+        // Aha, because for learns we use header.size and header.size + 1 to store act and touched, but for
+        // non-learnts (I'm assuming this means input clauses), we store abstraction in header.size.
+        if other.len() < self.len() || self.incompatible_abstract_levels(other) {
+            return SubsumptionRes::NoSubsumption;
+        }
+
+        let mut ret = SubsumptionRes::Subsumed;
+
+        //for(unsigned i = 0; i < header.size; i++) {
+        'outer: for s in &self.lits {
+            // search for c[i] or ~c[i]
+            //for(unsigned j = 0; j < other.header.size; j++)
+            for o in &other.lits {
+                if s == o {
+                    continue 'outer;
+                } else if ret == SubsumptionRes::Subsumed && *s == !*o {
+                    ret = SubsumptionRes::RemoveLit(*s);
+                    continue 'outer;
+                }
+            }
+            return SubsumptionRes::NoSubsumption;
+        }
+        return ret;
+    }
+
+    pub(crate) fn is_marked(&self) -> bool {
+        self.mark > 0
+    }
+
+    pub(crate) fn get_mark(&self) -> u8 {
+        self.mark
+    }
+
+    pub(crate) fn set_mark(&mut self, new_val: u8) {
+        self.mark = new_val;
+    }
+
+    // Requires that the lit is in the clause
+    // Requires that the clause is not watched
+    fn remove(&mut self, lit: Lit) {
+        for (i, l) in self.lits.iter().enumerate() {
+            if *l == lit {
+                self.lits.swap_remove(i);
+                return;
+            }
+        }
+    }
+
+    pub(crate) fn strengthen(&mut self, p: Lit) {
+        self.remove(p);
+        self.calc_and_set_abstraction();
+    }
+}
+
