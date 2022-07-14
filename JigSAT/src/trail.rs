@@ -1,4 +1,4 @@
-use crate::{assignments::*, decision::*, formula::*, lit::*};
+use crate::{assignments::*, decision::*, formula::*, lit::*, watches::*, solver::*};
 
 use log::debug;
 
@@ -31,11 +31,11 @@ pub struct Trail {
 
 impl Trail {
     #[inline]
-    pub fn decision_level(&self) -> u32 {
+    pub(crate) fn decision_level(&self) -> u32 {
         self.decisions.len() as u32
     }
 
-    pub fn new(f: &Formula, a: Assignments) -> Trail {
+    pub(crate) fn new(f: &Formula, a: Assignments) -> Trail {
         Trail {
             assignments: a,
             lit_to_level: vec![UNSET_LEVEL; f.num_vars],
@@ -62,27 +62,37 @@ impl Trail {
         }
     }
 
-    pub fn backtrack_safe(&mut self, level: u32, f: &Formula, d: &mut Decisions) {
+    pub(crate) fn restart(&mut self, f: &mut Formula, d: &mut impl Decisions, watches: &mut Watches, s: &Solver) {
+        self.backtrack_safe(0, f, d);
+        f.collect_garbage_on_empty_trail(watches, s);
+
+    }
+
+    pub(crate) fn backtrack_safe(&mut self, level: u32, f: &Formula, d: &mut impl Decisions) {
         if level < self.decision_level() {
             self.backtrack_to(level, f, d);
         }
     }
 
-    pub fn backtrack_to(&mut self, level: u32, f: &Formula, d: &mut Decisions) {
+    pub(crate) fn backtrack_to(&mut self, level: u32, f: &Formula, d: &mut impl Decisions) {
         let how_many = self.trail.len() - self.decisions[level as usize];
         let mut i: usize = 0;
-        let mut curr = d.search;
-        let mut timestamp = unsafe { d.linked_list.get_unchecked(curr).ts };
+        //let mut curr = d.search; //VMTF
+        //let mut timestamp = unsafe { d.linked_list.get_unchecked(curr).ts }; //VMTF
         while i < how_many {
             let idx = self.backstep(f);
+            d.insert(idx);
+            /*
+            // VMTF
             let curr_timestamp = unsafe { d.linked_list.get_unchecked(idx).ts };
             if curr_timestamp > timestamp {
                 timestamp = curr_timestamp;
                 curr = idx;
             }
+            */
             i += 1;
         }
-        d.search = curr;
+        //d.search = curr; //VMTF
 
         while self.decision_level() > level {
             self.decisions.pop();
@@ -90,7 +100,7 @@ impl Trail {
         self.curr_i = self.trail.len();
     }
 
-    pub fn enq_assignment(&mut self, step: Step, _f: &Formula) {
+    pub(crate) fn enq_assignment(&mut self, step: Step, _f: &Formula) {
         // This should be refactored to not have to be a match (ie splitting up enq_assignment)
         match step.reason {
             Reason::Long(cref) => {
@@ -103,7 +113,7 @@ impl Trail {
         self.trail.push(step);
     }
 
-    pub fn enq_decision(&mut self, idx: usize, _f: &Formula) {
+    pub(crate) fn enq_decision(&mut self, idx: usize, _f: &Formula) {
         let trail_len = self.trail.len();
         self.decisions.push(trail_len);
         let dlevel = self.decision_level();
@@ -115,12 +125,12 @@ impl Trail {
     }
 
     #[inline]
-    pub fn learn_unit(&mut self, lit: Lit, f: &Formula, d: &mut Decisions) {
-        self.backtrack_safe(0, f, d);
-        self.enq_assignment(Step { lit, decision_level: 0, reason: Reason::Unit }, f);
+    pub(crate) fn learn_unit(&mut self, lit: Lit, formula: &mut Formula, d: &mut impl Decisions, watches: &mut Watches, s: &Solver) {
+        self.restart(formula, d, watches, s);
+        self.enq_assignment(Step { lit, decision_level: 0, reason: Reason::Unit }, formula);
     }
 
-    pub fn learn_units(&mut self, f: &mut Formula) -> Option<usize> {
+    pub(crate) fn learn_units(&mut self, f: &mut Formula) -> Option<usize> {
         let mut i = 0;
         while i < f.len() {
             let clause = &f[i];
@@ -140,11 +150,16 @@ impl Trail {
         }
         None
     }
+
+    // Does a lesser check than Glucose
+    pub(crate) fn locked(&self, lit: Lit) -> bool {
+        lit.lit_sat(&self.assignments) && self.lit_to_reason[lit.index()] != UNSET_REASON
+    }
 }
 
 impl Trail {
     #[inline]
-    pub fn learn_unit_in_preprocessing(&mut self, lit: Lit, f: &Formula) {
+    pub(crate) fn learn_unit_in_preprocessing(&mut self, lit: Lit, f: &Formula) {
         debug!("Learned unit: {} in preproc", lit);
         self.enq_assignment(Step { lit, decision_level: 0, reason: Reason::Unit }, f);
     }

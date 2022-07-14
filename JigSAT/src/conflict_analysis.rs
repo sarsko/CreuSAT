@@ -1,21 +1,21 @@
 use core::panic;
 
-use crate::{clause::*, decision::*, formula::*, lit::*, minimize::*, solver::Solver, trail::*};
+use crate::{clause::*, decision::*, formula::*, lit::*, minimize::*, solver::{Solver, SearchMode}, trail::*};
 
-//#[derive(Debug)]
+#[derive(Debug)]
 pub enum Conflict {
     Ground,
     Unit(Lit),
     Learned(u32, Clause),
 }
 
-pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisions, s: &mut Solver) -> Conflict {
+pub(crate) fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, decisions: &mut impl Decisions, s: &mut Solver) -> Conflict {
     let decisionlevel = trail.decision_level();
     if decisionlevel == 0 {
         return Conflict::Ground;
     }
     // I tried moving seen to solver, but it wasn't really any faster (+ it is nice to not have to carry the invariant that seen is all false)
-    let mut to_bump = Vec::new();
+    let mut to_bump = Vec::new(); // VMTF and VSIDS
     let mut seen = vec![false; f.num_vars];
     let mut out_learnt: Vec<Lit> = vec![Lit::new(0, true); 1]; // I really don't like this way of reserving space.
     let mut path_c = 0;
@@ -35,10 +35,22 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
                 }
                 */
                 if level > 0 {
+                    decisions.bump_variable(lit.index());
+                    if s.search_mode == SearchMode::Stable || s.search_mode == SearchMode::OnlyStable {
+                        decisions.bump_reason_literals(lit.index(), trail, f);
+                    }
                     seen[lit.index()] = true;
-                    to_bump.push(lit.index());
+
+                    //to_bump.push(lit.index()); // VMTF
+
                     if level >= decisionlevel {
                         path_c += 1;
+
+                        // VSIDS:
+                        let reason_ref = trail.lit_to_reason[lit.index()];
+                        if reason_ref != UNSET_REASON && reason_ref >= s.initial_len {
+                            to_bump.push(lit.index());
+                        }
                     } else {
                         out_learnt.push(lit);
                     }
@@ -66,7 +78,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
             other => panic!("{:?}", other),
         }
     }
-    d.increment_and_move(f, to_bump);
+    //decisions.bump_vec_of_vars(f, to_bump); // VMTF. NO-OP for VSIDS
     // Simplify conflict clause
     // Recursive minim:
     let mut abstract_levels = 0;
@@ -132,6 +144,20 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
             i += 1;
         }
         out_learnt.swap(1, max_i);
-        Conflict::Learned(max_level, Clause::new(out_learnt))
+        let mut clause = Clause::new(out_learnt);
+        clause.calc_and_set_lbd(trail, s);
+        let lbd = clause.lbd;
+
+        // VSIDS:
+        // UPDATEVARACTIVITY trick (see competition'09 companion paper)
+        if s.search_mode == SearchMode::Focus || s.search_mode == SearchMode::OnlyFocus {
+            for var in to_bump.iter() {
+                if f[trail.lit_to_reason[*var]].lbd < lbd {
+                    decisions.bump_variable(*var);
+                }
+            }
+        }
+
+        Conflict::Learned(max_level, clause)
     }
 }

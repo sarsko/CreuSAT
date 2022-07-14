@@ -7,8 +7,6 @@ pub struct Lit {
     code: u32,
 }
 
-pub type Var = u32;
-
 use std::fmt;
 
 impl fmt::Debug for Lit {

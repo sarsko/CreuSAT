@@ -9,7 +9,7 @@ use log::debug;
 use std::collections::VecDeque;
 //use std::collections::BinaryHeap;
 
-use crate::{clause::*, formula::*, lit::*, trail::*};
+use crate::{clause::*, formula::*, lit::*, trail::*, solver_types::*};
 
 #[derive(PartialEq)]
 pub(crate) enum SubsumptionRes {
@@ -20,13 +20,13 @@ pub(crate) enum SubsumptionRes {
 
 pub(crate) struct Preprocess {
     touched: Vec<bool>,
-    occurs: Vec<Vec<usize>>, /* From watch_index to a vec of crefs where the variable occurs */
+    occurs: Vec<Vec<Cref>>, /* From watch_index to a vec of crefs where the variable occurs */
     // OccLists<Var, vec<Cref>, ClauseDeleted>,
     n_occ: Vec<usize>, //
     // elim_heap: Heap, // A heap to remove the minimal element efficiently. We could either use a heap, or be lazy and use a vector.
     elim_heap: Vec<(usize, usize)>, // Vars and their number of occurrences. is sorted decending on k.1
     //elim_heap: BinaryHeap<Var>,
-    subsumption_queue: VecDeque<usize>, // A vector of crefs to visit
+    subsumption_queue: VecDeque<Cref>, // A vector of crefs to visit
     eliminated: Vec<bool>,
 
     bwdsub_assigns: usize,
@@ -215,7 +215,7 @@ impl Preprocess {
                 unreachable!("{:?} not found in occurs: {:?}", l, self.occurs[l.index()]);
             }
         }
-        formula.remove_clause_in_preprocessing(cref);
+        formula.mark_clause_as_deleted(cref);
     }
 
     // Backward subsumption + backward subsumption resolution
@@ -325,7 +325,7 @@ impl Preprocess {
         if c.len() == 2 {
             c.strengthen(lit);
             let unit_lit = c[0];
-            formula.remove_clause_in_preprocessing(cref);
+            formula.mark_clause_as_deleted(cref);
             trail.learn_unit_in_preprocessing(unit_lit, &formula);
             // Okay maybe we have to do this.
             // return enqueue(c[0]) && propagate() == CRef_Undef
@@ -502,7 +502,7 @@ impl Preprocess {
     fn remove_clauses(&mut self, formula: &mut Formula, v: usize) {
         debug!("Removing {}", v);
         // Mark all the clauses as deleted.
-        formula.remove_clauses(&mut self.occurs[v]);
+        formula.mark_clauses_as_deleted(&mut self.occurs[v]);
 
         // Remove the other places where the clauses are referenced.
         while let Some(cref) = self.occurs[v].pop() {

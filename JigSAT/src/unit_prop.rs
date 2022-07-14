@@ -31,6 +31,7 @@ fn unit_prop_do_outer(
     f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize,
 ) -> Result<bool, usize> {
     let clause = &f[cref];
+
     let other_lit = (!lit).select_other(clause[0], clause[1]);
     if other_lit.lit_sat(&trail.assignments) {
         watches[lit.to_watchidx()][j].blocker = other_lit;
@@ -66,7 +67,6 @@ fn unit_prop_do_outer(
         let step = Step { lit: f[cref][1], decision_level: trail.decision_level(), reason: Reason::Long(cref) };
 
         trail.enq_assignment(step, f);
-        // slowdown in swapping
         f[cref].swap(0, 1);
         return Ok(true);
     }
@@ -97,7 +97,7 @@ fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Wat
 }
 
 #[inline]
-pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
+pub(crate) fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
     let mut i = trail.curr_i;
     while i < trail.trail.len() {
         let lit = trail.trail[i].lit;

@@ -15,3 +15,6 @@ mod trail;
 mod unit_prop;
 mod util;
 mod watches;
+mod modes;
+mod restart;
+mod solver_types;

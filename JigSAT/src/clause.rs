@@ -8,9 +8,10 @@ use crate::preprocess::SubsumptionRes;
 
 pub struct Clause {
     pub deleted: bool,
+    pub can_be_deleted: bool,
+    pub mark: u8, // This is an artifact of Glucose/MiniSat, and should be enumed
     pub lbd: u32,
     pub search: usize,
-    pub mark: u8, // This is an artifact of Glucose/MiniSat, and should be enumed
     abstraction: usize,
     pub lits: Vec<Lit>,
 }
@@ -72,18 +73,18 @@ impl Clause {
     // Does not set lbd !
     // Inits search to 1 and mark to 0. Sets abstraction.
     pub(crate) fn new(lits: Vec<Lit>) -> Clause {
-        Clause { deleted: false, lbd: 0, search: 1, mark: 0, abstraction: calc_abstraction(&lits), lits }
+        Clause { deleted: false, can_be_deleted: true, lbd: 0, search: 1, mark: 0, abstraction: calc_abstraction(&lits), lits }
     }
 
-    pub fn swap(&mut self, i: usize, j: usize) {
+    pub(crate) fn swap(&mut self, i: usize, j: usize) {
         self.lits.swap(i, j);
     }
 
-    pub fn pop(&mut self) {
+    pub(crate) fn pop(&mut self) {
         self.lits.pop();
     }
 
-    pub fn less_than(&self, other: &Clause) -> Ordering {
+    pub(crate) fn less_than(&self, other: &Clause) -> Ordering {
         if self.len() == 2 {
             if other.len() == 2 {
                 Ordering::Equal
@@ -105,7 +106,7 @@ impl Clause {
         }
     }
 
-    pub fn check_clause_invariant(&self, n: usize) -> bool {
+    pub(crate) fn check_clause_invariant(&self, n: usize) -> bool {
         let mut i: usize = 0;
         while i < self.len() {
             if !self[i].check_lit_invariant(n) {
@@ -119,7 +120,7 @@ impl Clause {
         false
     }
 
-    pub fn no_duplicates(&self) -> bool {
+    pub(crate) fn no_duplicates(&self) -> bool {
         let mut i: usize = 0;
         while i < self.len() {
             let lit1 = self[i];
@@ -137,12 +138,12 @@ impl Clause {
     }
 
     #[inline(always)]
-    pub fn len(&self) -> usize {
+    pub(crate) fn len(&self) -> usize {
         self.lits.len()
     }
 
-    pub fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
-        Clause { deleted: false, lbd: 0, search: 1, mark: 0, abstraction: calc_abstraction(vec), lits: vec.clone() }
+    pub(crate) fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
+        Clause { deleted: false, can_be_deleted: true, lbd: 0, search: 1, mark: 0, abstraction: calc_abstraction(vec), lits: vec.clone() }
     }
 
     #[inline(always)]
@@ -152,7 +153,7 @@ impl Clause {
     }
 
     #[inline(always)]
-    pub fn remove_from_clause(&mut self, idx: usize, _f: &Formula) {
+    pub(crate) fn remove_from_clause(&mut self, idx: usize, _f: &Formula) {
         self.move_to_end(idx, _f);
         self.pop();
     }
@@ -175,7 +176,7 @@ impl Clause {
         lbd
     }
 
-    pub fn calc_and_set_lbd(&mut self, trail: &Trail, solver: &mut Solver) {
+    pub(crate) fn calc_and_set_lbd(&mut self, trail: &Trail, solver: &mut Solver) {
         self.lbd = self.calc_lbd(trail, solver);
     }
 
