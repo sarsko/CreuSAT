@@ -1,6 +1,5 @@
 use crate::{assignments::*, formula::*, trail::*, util::*};
 use std::{
-    collections::BinaryHeap,
     ops::{Index, IndexMut},
 };
 
@@ -23,6 +22,8 @@ pub(crate) trait Decisions {
     fn set_var_decay(&mut self, new_val: f64);
 
     fn insert(&mut self, var: usize);
+
+    fn turn_off_decision_for_idx(&mut self, var: usize);
 }
 
 #[derive(Clone, Copy)]
@@ -213,6 +214,9 @@ impl Decisions for VMTF {
         None
     }
 
+    // TODO: Add decision toggling for VMTF.
+    fn turn_off_decision_for_idx(&mut self, var: usize) {}
+
     // No-op, but may add to see.
     fn bump_reason_literals(&mut self, var: usize, trail: &Trail, formula: &Formula) {}
 
@@ -384,11 +388,12 @@ pub(crate) struct VSIDS {
     order_heap: Heap,
     var_inc: f64,
     var_decay: f64,
+    pub(crate) decision: Vec<bool>,
 }
 
 impl Default for VSIDS {
     fn default() -> Self {
-        VSIDS { order_heap: Heap::default(), var_inc: 1.0, var_decay: 0.95 }
+        VSIDS { order_heap: Heap::default(), var_inc: 1.0, var_decay: 0.95, decision: Vec::new() }
     }
 }
 
@@ -408,13 +413,15 @@ impl Decisions for VSIDS {
         let mut vsids = VSIDS::default();
         vsids.order_heap = Heap::new(formula.num_vars);
         vsids.order_heap.build(formula.num_vars);
+        vsids.decision = vec![true; formula.num_vars];
         vsids
     }
 
     fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize> {
         while !self.empty() {
             let next = self.remove_min();
-            if a[next] >= 2 {
+            // Don't think the self.decision check really is needed.
+            if self.decision[next] && a[next] >= 2 {
                 return Some(next);
             }
         }
@@ -445,7 +452,7 @@ impl Decisions for VSIDS {
     }
 
     fn insert(&mut self, var: usize) {
-        if !self.order_heap.in_heap(var) {
+        if !self.order_heap.in_heap(var) && self.decision[var] {
             self.order_heap.insert(var);
         }
     }
@@ -459,6 +466,10 @@ impl Decisions for VSIDS {
         for l in formula.clauses[reason].lits.iter().skip(1) {
             self.bump_variable(l.index());
         }
+    }
+
+    fn turn_off_decision_for_idx(&mut self, var: usize) {
+        self.decision[var] = false;
     }
 
     // Deliberately a no-op

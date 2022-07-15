@@ -33,6 +33,7 @@ impl IndexMut<usize> for Watches {
     }
 }
 
+#[inline]
 pub(crate) fn update_watch(
     f: &Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
 ) {
@@ -84,6 +85,7 @@ impl Watches {
         }
     }
 
+    #[inline]
     pub(crate) fn unwatch(&mut self, f: &Formula, trail: &Trail, cref: usize, lit: Lit) {
         let watchidx = lit.to_neg_watchidx();
         let mut i: usize = 0;

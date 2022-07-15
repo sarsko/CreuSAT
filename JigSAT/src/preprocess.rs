@@ -9,7 +9,7 @@ use log::debug;
 use std::collections::VecDeque;
 //use std::collections::BinaryHeap;
 
-use crate::{clause::*, formula::*, lit::*, solver_types::*, trail::*};
+use crate::{clause::*, formula::*, lit::*, solver_types::*, trail::*, decision::*};
 
 #[derive(PartialEq)]
 pub(crate) enum SubsumptionRes {
@@ -156,7 +156,7 @@ impl Preprocess {
     // Corresponds to SimpSolver::eliminate in Glucose
     // Glucose passes turn_off_elim as true, which means that it always cleans up fully afterwards
     // We just pass Preprocess as `mut self`, to have it drop at function exit
-    pub(crate) fn preprocess(mut self, formula: &mut Formula, trail: &mut Trail) -> bool {
+    pub(crate) fn preprocess(mut self, formula: &mut Formula, trail: &mut Trail, decisions: &mut impl Decisions) -> bool {
         self.init(formula);
 
         // This should be uncommented.
@@ -193,6 +193,11 @@ impl Preprocess {
                 if !self.eliminate_var(elim, formula, trail) {
                     return false;
                 }
+            }
+        }
+        for (idx, val) in self.eliminated.iter().enumerate() {
+            if *val {
+                decisions.turn_off_decision_for_idx(idx);
             }
         }
         formula.remove_deleted();

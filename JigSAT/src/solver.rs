@@ -312,7 +312,8 @@ pub fn solver(mut formula: Formula) -> SatResult {
     */
     let mut trail = Trail::new(&formula, Assignments::new(&formula));
 
-    Preprocess::new().preprocess(&mut formula, &mut trail);
+    let mut decisions: VSIDS = Decisions::new(&formula);
+    Preprocess::new().preprocess(&mut formula, &mut trail, &mut decisions);
     debug!("done with preproc");
     debug!("{:?}", &trail.trail);
 
@@ -328,7 +329,6 @@ pub fn solver(mut formula: Formula) -> SatResult {
         return SatResult::Sat(Vec::new());
     }
 
-    let decisions: VSIDS = Decisions::new(&formula);
     let mut watches = Watches::new(&formula);
     watches.init_watches(&formula);
     let target_phase = TargetPhase::new(formula.num_vars);

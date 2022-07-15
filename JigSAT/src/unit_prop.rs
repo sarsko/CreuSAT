@@ -29,9 +29,9 @@ fn swap(f: &mut Formula, _trail: &Trail, _watches: &Watches, cref: usize, j: usi
 // The solver is included so that we can update ticks.
 #[inline]
 fn unit_prop_do_outer(
-    f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize, solver: &mut Solver,
+    formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize, solver: &mut Solver,
 ) -> Result<bool, usize> {
-    let clause = &f[cref];
+    let clause = &formula[cref];
 
     let other_lit = (!lit).select_other(clause[0], clause[1]);
     if other_lit.lit_sat(&trail.assignments) {
@@ -47,10 +47,10 @@ fn unit_prop_do_outer(
         if search == clause_len {
             search = 2;
         }
-        match unit_prop_check_rest(f, trail, watches, cref, j, search, lit) {
+        match unit_prop_check_rest(formula, trail, watches, cref, j, search, lit) {
             Err(_) => {}
             Ok(_) => {
-                f[cref].search = search;
+                formula[cref].search = search;
                 return Ok(false);
             }
         }
@@ -60,19 +60,19 @@ fn unit_prop_do_outer(
     if other_lit.lit_unsat(&trail.assignments) {
         return Err(cref);
     }
-    if f[cref][0].lit_unset(&trail.assignments) {
-        trail.enq_assignment(f[cref][0], f, cref);
+    if formula[cref][0].lit_unset(&trail.assignments) {
+        trail.enq_assignment(formula[cref][0], formula, cref);
         return Ok(true);
     } else {
-        trail.enq_assignment(f[cref][1], f, cref);
-        f[cref].swap(0, 1);
+        trail.enq_assignment(formula[cref][1], formula, cref);
+        formula[cref].swap(0, 1);
         return Ok(true);
     }
 }
 
 #[inline]
 fn unit_prop_current_level(
-    f: &mut Formula, trail: &mut Trail, watches: &mut Watches, lit: Lit, solver: &mut Solver,
+    formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, lit: Lit, solver: &mut Solver,
 ) -> Result<(), usize> {
     let mut j = 0;
     let watchidx = lit.to_watchidx();
@@ -82,7 +82,7 @@ fn unit_prop_current_level(
             j += 1;
         } else {
             let cref = curr_watch.cref;
-            match unit_prop_do_outer(f, trail, watches, cref, lit, j, solver) {
+            match unit_prop_do_outer(formula, trail, watches, cref, lit, j, solver) {
                 Ok(true) => {
                     j += 1;
                 }
@@ -98,12 +98,12 @@ fn unit_prop_current_level(
 
 #[inline]
 pub(crate) fn unit_propagate(
-    f: &mut Formula, trail: &mut Trail, watches: &mut Watches, solver: &mut Solver,
+    formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, solver: &mut Solver,
 ) -> Result<(), usize> {
     let mut i = trail.curr_i;
     while i < trail.trail.len() {
         let lit = trail.trail[i];
-        match unit_prop_current_level(f, trail, watches, lit, solver) {
+        match unit_prop_current_level(formula, trail, watches, lit, solver) {
             Ok(_) => {}
             Err(cref) => {
                 return Err(cref);
