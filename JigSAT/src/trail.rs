@@ -21,7 +21,7 @@ const UNIT: usize = usize::MAX;
 pub(crate) struct Step {
     pub lit: Lit,
     //decision_level: u32, // Turns out we never read this
-    pub reason: Cref,
+    //pub reason: Cref,
 }
 
 pub const UNSET_LEVEL: u32 = u32::MAX;
@@ -31,7 +31,7 @@ pub(crate) struct Trail {
     pub assignments: Assignments,
     pub lit_to_level: Vec<u32>,    // u32::MAX if unassigned
     pub lit_to_reason: Vec<usize>, // usize::MAX if unassigned
-    pub trail: Vec<Step>,
+    pub trail: Vec<Lit>,
     pub curr_i: usize,
     pub decisions: Vec<usize>,
 }
@@ -55,14 +55,14 @@ impl Trail {
 
     fn backstep(&mut self, formula: &Formula, target_phase: &mut TargetPhase) -> usize {
         match self.trail.pop() {
-            Some(step) => {
-                target_phase.set_polarity(step.lit.index(), step.lit.is_positive());
+            Some(lit) => {
+                target_phase.set_polarity(lit.index(), lit.is_positive());
 
-                self.assignments[step.lit.index()] = 2;
-                self.lit_to_reason[step.lit.index()] = UNSET_REASON;
+                self.assignments[lit.index()] = 2;
+                self.lit_to_reason[lit.index()] = UNSET_REASON;
                 //self.lit_to_level[step.lit.index()] = UNSET_LEVEL;
 
-                step.lit.index()
+                lit.index()
             }
             None => {
                 unreachable!();
@@ -117,15 +117,13 @@ impl Trail {
         self.curr_i = self.trail.len();
     }
 
-    pub(crate) fn enq_assignment(&mut self, step: Step, _f: &Formula) {
+    pub(crate) fn enq_assignment(&mut self, lit: Lit, _f: &Formula, reason: Cref) {
         // This should be refactored to not have to be a match (ie splitting up enq_assignment)
-        if step.reason < usize::MAX - 1 {
-            self.lit_to_reason[step.lit.index()] = step.reason;
-        }
+        self.lit_to_reason[lit.index()] = reason;
 
-        self.lit_to_level[step.lit.index()] = self.decision_level();
-        self.assignments.set_assignment(step.lit, _f, &self.trail);
-        self.trail.push(step);
+        self.lit_to_level[lit.index()] = self.decision_level();
+        self.assignments.set_assignment(lit, _f, &self.trail);
+        self.trail.push(lit);
     }
 
     pub(crate) fn enq_decision(&mut self, idx: usize, _f: &Formula, target_phase: &TargetPhase, mode_is_focus: bool) {
@@ -139,8 +137,7 @@ impl Trail {
         self.assignments[idx] = polarity as u8;
         let lit = Lit::new(idx, polarity);
 
-        let step = Step { lit /*, decision_level: dlevel*/, reason: DECISION };
-        self.trail.push(step);
+        self.trail.push(lit);
     }
 
     #[inline]
@@ -149,7 +146,7 @@ impl Trail {
         solver: &Solver, target_phase: &mut TargetPhase,
     ) {
         self.restart(formula, decisions, watches, solver, target_phase);
-        self.enq_assignment(Step { lit /*, decision_level: 0*/, reason: UNIT }, formula);
+        self.enq_assignment(lit, formula, UNIT);
     }
 
     pub(crate) fn learn_units(&mut self, formula: &mut Formula) -> Option<usize> {
@@ -164,7 +161,7 @@ impl Trail {
                         return Some(i);
                     }
                 }
-                self.enq_assignment(Step { lit /*, decision_level: 0*/, reason: UNIT }, formula);
+                self.enq_assignment(lit, formula, UNIT);
                 formula.remove_clause_in_preprocessing(i);
             } else {
                 i += 1;
@@ -184,6 +181,6 @@ impl Trail {
     #[inline]
     pub(crate) fn learn_unit_in_preprocessing(&mut self, lit: Lit, f: &Formula) {
         debug!("Learned unit: {} in preproc", lit);
-        self.enq_assignment(Step { lit /*, decision_level: 0*/, reason: UNIT }, f);
+        self.enq_assignment(lit, f, UNIT);
     }
 }

@@ -90,7 +90,7 @@ impl TargetPhase {
                 *e = 2;
             }
             for e in &trail.trail {
-                self.best_polarity[e.lit.index()] = e.lit.is_positive() as u8;
+                self.best_polarity[e.index()] = e.is_positive() as u8;
             }
             self.best_phase_len = len;
             if self.best_of_the_best_phase_len < self.best_phase_len {

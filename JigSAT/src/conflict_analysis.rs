@@ -71,19 +71,19 @@ pub(crate) fn analyze_conflict(
         let next = {
             loop {
                 i -= 1;
-                if seen[trail.trail[i].lit.index()] {
+                if seen[trail.trail[i].index()] {
                     break;
                 }
             }
             &trail.trail[i]
         };
-        seen[next.lit.index()] = false;
+        seen[next.index()] = false;
         path_c -= 1;
         if path_c == 0 {
-            out_learnt[0] = !next.lit;
+            out_learnt[0] = !*next;
             break;
         }
-        confl = next.reason;
+        confl = trail.lit_to_reason[next.index()];
     }
     // decisions.bump_vec_of_vars(f, to_bump); // VMTF. NO-OP for VSIDS
 

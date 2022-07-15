@@ -146,8 +146,7 @@ impl Solver {
         //d.increment_and_move(f, cref, &t.assignments);
         trail.backtrack_to(level, formula, decisions, target_phase);
         let lit = formula[cref][0];
-        let step = Step { lit, reason: cref };
-        trail.enq_assignment(step, formula);
+        trail.enq_assignment(lit, formula, cref);
     }
 
     #[inline]

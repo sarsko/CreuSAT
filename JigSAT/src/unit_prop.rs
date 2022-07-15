@@ -61,14 +61,10 @@ fn unit_prop_do_outer(
         return Err(cref);
     }
     if f[cref][0].lit_unset(&trail.assignments) {
-        let step = Step { lit: f[cref][0] /*, decision_level: trail.decision_level()*/, reason: cref };
-
-        trail.enq_assignment(step, f);
+        trail.enq_assignment(f[cref][0], f, cref);
         return Ok(true);
     } else {
-        let step = Step { lit: f[cref][1] /*, decision_level: trail.decision_level()*/, reason: cref };
-
-        trail.enq_assignment(step, f);
+        trail.enq_assignment(f[cref][1], f, cref);
         f[cref].swap(0, 1);
         return Ok(true);
     }
@@ -106,7 +102,7 @@ pub(crate) fn unit_propagate(
 ) -> Result<(), usize> {
     let mut i = trail.curr_i;
     while i < trail.trail.len() {
-        let lit = trail.trail[i].lit;
+        let lit = trail.trail[i];
         match unit_prop_current_level(f, trail, watches, lit, solver) {
             Ok(_) => {}
             Err(cref) => {

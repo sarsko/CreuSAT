@@ -32,7 +32,7 @@ impl Assignments {
     }
 
     #[inline]
-    pub(crate) fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &[Step]) {
+    pub(crate) fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &[Lit]) {
         self[lit.index()] = lit.is_positive() as u8;
     }
 
