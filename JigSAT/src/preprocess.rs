@@ -9,7 +9,7 @@ use log::debug;
 use std::collections::VecDeque;
 //use std::collections::BinaryHeap;
 
-use crate::{clause::*, formula::*, lit::*, trail::*, solver_types::*};
+use crate::{clause::*, formula::*, lit::*, solver_types::*, trail::*};
 
 #[derive(PartialEq)]
 pub(crate) enum SubsumptionRes {

@@ -1,4 +1,3 @@
-
 use crate::solver::*;
 
 pub(crate) enum RestartMode {
@@ -13,7 +12,6 @@ struct EMA {
     wait: usize,
     period: usize,
 }
-
 
 impl EMA {
     fn update(&mut self, next: f64) {
@@ -30,13 +28,7 @@ impl EMA {
         }
     }
     fn new(alpha: f64) -> Self {
-        EMA {
-            value: 1.0,
-            alpha,
-            beta: 1.0,
-            wait: 1,
-            period: 1,
-        }
+        EMA { value: 1.0, alpha, beta: 1.0, wait: 1, period: 1 }
     }
 }
 
@@ -51,7 +43,6 @@ pub(crate) struct Glucose {
     block: f64,
     num_restarts: usize,
     num_blocked: usize,
-
 }
 
 impl Default for Glucose {
@@ -92,7 +83,9 @@ impl Glucose {
     }
 
     pub(crate) fn block_restart(&mut self, curr_confl: usize) -> bool {
-        if self.last_trail_size as f64 > self.block as f64 * self.ema_trail_wide.value && curr_confl >= self.minimum_conflicts_for_blocking_restarts {
+        if self.last_trail_size as f64 > self.block as f64 * self.ema_trail_wide.value
+            && curr_confl >= self.minimum_conflicts_for_blocking_restarts
+        {
             self.minimum_conflicts = curr_confl + 50;
             self.num_blocked += 1;
             return true;
@@ -110,12 +103,7 @@ struct Luby {
 
 impl Default for Luby {
     fn default() -> Self {
-        Luby {
-            num_restarts: 0,
-            step: 100,
-            curr_restarts: 0,
-            limit: 100,
-        }
+        Luby { num_restarts: 0, step: 100, curr_restarts: 0, limit: 100 }
     }
 }
 
@@ -152,16 +140,12 @@ impl Luby {
 pub(crate) struct Restart {
     restart: RestartMode,
     luby: Luby,
-    pub(crate) glucose: Glucose
+    pub(crate) glucose: Glucose,
 }
 
 impl Restart {
     pub(crate) fn new() -> Restart {
-        Restart {
-            restart: RestartMode::Glucose,
-            luby: Luby::default(),
-            glucose: Glucose::default(),
-        }
+        Restart { restart: RestartMode::Glucose, luby: Luby::default(), glucose: Glucose::default() }
     }
 
     pub(crate) fn set_restart_mode(&mut self, mode: RestartMode) {
@@ -185,7 +169,7 @@ impl Restart {
     pub(crate) fn block_restart(&mut self, curr_confl: usize) -> bool {
         match self.restart {
             RestartMode::Glucose => self.glucose.block_restart(curr_confl),
-            RestartMode::Luby => { true },
+            RestartMode::Luby => true,
         }
     }
 }

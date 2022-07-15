@@ -1,4 +1,4 @@
-use crate::{formula::*, lit::*, trail::*, watches::*};
+use crate::{formula::*, lit::*, solver::*, trail::*, watches::*};
 
 #[inline]
 fn unit_prop_check_rest(
@@ -26,9 +26,10 @@ fn swap(f: &mut Formula, _trail: &Trail, _watches: &Watches, cref: usize, j: usi
     f[cref].swap(j, k);
 }
 
+// The solver is included so that we can update ticks.
 #[inline]
 fn unit_prop_do_outer(
-    f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize,
+    f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize, solver: &mut Solver,
 ) -> Result<bool, usize> {
     let clause = &f[cref];
 
@@ -55,6 +56,7 @@ fn unit_prop_do_outer(
         }
         k += 1;
     }
+    solver.ticks += 1;
     if other_lit.lit_unsat(&trail.assignments) {
         return Err(cref);
     }
@@ -73,7 +75,9 @@ fn unit_prop_do_outer(
 }
 
 #[inline]
-fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, lit: Lit) -> Result<(), usize> {
+fn unit_prop_current_level(
+    f: &mut Formula, trail: &mut Trail, watches: &mut Watches, lit: Lit, solver: &mut Solver,
+) -> Result<(), usize> {
     let mut j = 0;
     let watchidx = lit.to_watchidx();
     while j < watches[watchidx].len() {
@@ -82,7 +86,7 @@ fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Wat
             j += 1;
         } else {
             let cref = curr_watch.cref;
-            match unit_prop_do_outer(f, trail, watches, cref, lit, j) {
+            match unit_prop_do_outer(f, trail, watches, cref, lit, j, solver) {
                 Ok(true) => {
                     j += 1;
                 }
@@ -97,11 +101,13 @@ fn unit_prop_current_level(f: &mut Formula, trail: &mut Trail, watches: &mut Wat
 }
 
 #[inline]
-pub(crate) fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
+pub(crate) fn unit_propagate(
+    f: &mut Formula, trail: &mut Trail, watches: &mut Watches, solver: &mut Solver,
+) -> Result<(), usize> {
     let mut i = trail.curr_i;
     while i < trail.trail.len() {
         let lit = trail.trail[i].lit;
-        match unit_prop_current_level(f, trail, watches, lit) {
+        match unit_prop_current_level(f, trail, watches, lit, solver) {
             Ok(_) => {}
             Err(cref) => {
                 return Err(cref);

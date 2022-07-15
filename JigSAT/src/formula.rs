@@ -1,7 +1,7 @@
-use crate::{assignments::*, clause::*, solver::*, trail::*, watches::*, solver_types::*, lit::*};
+use crate::{assignments::*, clause::*, lit::*, solver::*, solver_types::*, trail::*, watches::*};
 
 use log::debug;
-use std::{ops::{Index, IndexMut}};
+use std::ops::{Index, IndexMut};
 pub struct Formula {
     pub clauses: Vec<Clause>,
     learnt_core: Vec<Cref>,
@@ -164,7 +164,7 @@ impl Formula {
         if self.learnt_core.len() == 0 {
             return;
         }
-        self.learnt_core.sort_unstable_by(|a , b | self.clauses[*a].less_than(&self.clauses[*b]));
+        self.learnt_core.sort_unstable_by(|a, b| self.clauses[*a].less_than(&self.clauses[*b]));
         //s.max_len += self.len() + 300;
         //self.num_reduced += 1;
         if self[self.learnt_core[self.learnt_core.len() / 2]].lbd <= 3 {
@@ -189,7 +189,6 @@ impl Formula {
                 clause.can_be_deleted = true;
                 i += 1;
             }
-
         }
 
         /*

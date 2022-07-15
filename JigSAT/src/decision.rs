@@ -1,9 +1,14 @@
-use crate::{assignments::*, formula::*, util::*, trail::*};
-use std::{ops::{Index, IndexMut}, collections::BinaryHeap};
+use crate::{assignments::*, formula::*, trail::*, util::*};
+use std::{
+    collections::BinaryHeap,
+    ops::{Index, IndexMut},
+};
 
 const INVALID: usize = usize::MAX;
 pub(crate) trait Decisions {
-    fn new(f: &Formula) -> Self where Self:Sized;
+    fn new(f: &Formula) -> Self
+    where
+        Self: Sized;
 
     fn bump_vec_of_vars(&mut self, f: &Formula, v: Vec<usize>);
 
@@ -26,7 +31,6 @@ pub struct Node {
     pub prev: usize,
     pub ts: usize,
 }
-
 
 impl Default for Node {
     fn default() -> Self {
@@ -89,7 +93,6 @@ impl VMTF {
         }
         VMTF { linked_list, timestamp: f.num_vars + 1, start: head, search: head }
     }
-
 
     fn rescore(&mut self, _f: &Formula) {
         let mut curr_score = self.linked_list.len();
@@ -253,11 +256,7 @@ impl IndexMut<usize> for Heap {
 
 impl Default for Heap {
     fn default() -> Self {
-        Heap {
-            activity: Vec::new(),
-            heap: Vec::new(),
-            indices: Vec::new(),
-        }
+        Heap { activity: Vec::new(), heap: Vec::new(), indices: Vec::new() }
     }
 }
 
@@ -365,7 +364,6 @@ impl Heap {
         }
         self[idx] = x;
         self.indices[x] = idx;
-
     }
 
     fn remove_min(&mut self) -> usize {
@@ -405,7 +403,6 @@ impl VSIDS {
     }
 }
 
-
 impl Decisions for VSIDS {
     fn new(formula: &Formula) -> Self {
         let mut vsids = VSIDS::default();
@@ -414,7 +411,7 @@ impl Decisions for VSIDS {
         vsids
     }
 
-   fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize> {
+    fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize> {
         while !self.empty() {
             let next = self.remove_min();
             if a[next] >= 2 {
@@ -467,7 +464,6 @@ impl Decisions for VSIDS {
     // Deliberately a no-op
     fn bump_vec_of_vars(&mut self, f: &Formula, v: Vec<usize>) {}
 }
-
 
 /*
 impl Decisions {

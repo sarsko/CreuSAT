@@ -73,7 +73,15 @@ impl Clause {
     // Does not set lbd !
     // Inits search to 1 and mark to 0. Sets abstraction.
     pub(crate) fn new(lits: Vec<Lit>) -> Clause {
-        Clause { deleted: false, can_be_deleted: true, lbd: 0, search: 1, mark: 0, abstraction: calc_abstraction(&lits), lits }
+        Clause {
+            deleted: false,
+            can_be_deleted: true,
+            lbd: 0,
+            search: 1,
+            mark: 0,
+            abstraction: calc_abstraction(&lits),
+            lits,
+        }
     }
 
     pub(crate) fn swap(&mut self, i: usize, j: usize) {
@@ -143,7 +151,15 @@ impl Clause {
     }
 
     pub(crate) fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
-        Clause { deleted: false, can_be_deleted: true, lbd: 0, search: 1, mark: 0, abstraction: calc_abstraction(vec), lits: vec.clone() }
+        Clause {
+            deleted: false,
+            can_be_deleted: true,
+            lbd: 0,
+            search: 1,
+            mark: 0,
+            abstraction: calc_abstraction(vec),
+            lits: vec.clone(),
+        }
     }
 
     #[inline(always)]

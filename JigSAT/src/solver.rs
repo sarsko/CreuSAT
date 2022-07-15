@@ -1,6 +1,18 @@
 use crate::{
-    assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, lit::*, preprocess::*, trail::*,
-    unit_prop::*, util::*, watches::*, restart::*, modes::*,
+    assignments::*,
+    clause::*,
+    conflict_analysis::*,
+    decision::*,
+    formula::*,
+    lit::*,
+    modes::*,
+    preprocess::*,
+    restart::*,
+    target_phase::{self, *},
+    trail::*,
+    unit_prop::*,
+    util::*,
+    watches::*,
 };
 
 use log::debug;
@@ -26,7 +38,6 @@ pub enum SearchMode {
     OnlyStable,
     OnlyFocus,
 }
-
 
 // Satch:
 /*
@@ -100,7 +111,7 @@ if (S->fast > (S->slow / 100) * 125) {                        // If fast average
 */
 
 impl Solver {
-    pub fn new(f: &Formula) -> Solver {
+    fn new(f: &Formula) -> Solver {
         Solver {
             //max_len: f.len() + 2000,
             num_conflicts: 0,
@@ -124,15 +135,9 @@ impl Solver {
     }
 
     #[inline]
-    fn increase_num_conflicts(&mut self) {
-        //if self.num_conflicts < usize::MAX {
-        self.num_conflicts += 1;
-        //}
-    }
-
-    #[inline]
     fn handle_long_clause(
-        &mut self, formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, decisions: &mut impl Decisions, mut clause: Clause, level: u32,
+        &mut self, formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, decisions: &mut impl Decisions,
+        clause: Clause, level: u32, target_phase: &mut TargetPhase,
     ) {
         let clause_len = clause.len();
         let lbd = clause.lbd;
@@ -151,7 +156,7 @@ impl Solver {
         }
 
         //d.increment_and_move(f, cref, &t.assignments);
-        trail.backtrack_to(level, formula, decisions);
+        trail.backtrack_to(level, formula, decisions, target_phase);
         let lit = formula[cref][0];
         let step = Step { lit, decision_level: level, reason: Reason::Long(cref) };
         trail.enq_assignment(step, formula);
@@ -159,7 +164,8 @@ impl Solver {
 
     #[inline]
     fn handle_conflict(
-        &mut self, formula: &mut Formula, trail: &mut Trail, cref: usize, watches: &mut Watches, decisions: &mut impl Decisions,
+        &mut self, formula: &mut Formula, trail: &mut Trail, cref: usize, watches: &mut Watches,
+        decisions: &mut impl Decisions, target_phase: &mut TargetPhase,
     ) -> bool {
         let res = analyze_conflict(formula, trail, cref, decisions, self);
         match res {
@@ -171,11 +177,11 @@ impl Solver {
                 self.restart.block_restart(self.num_conflicts);
                 self.stats.num_unary += 1;
 
-                trail.learn_unit(lit, formula, decisions, watches, self);
+                trail.learn_unit(lit, formula, decisions, watches, self, target_phase);
                 formula.reduceDB(watches, trail, self);
             }
             Conflict::Learned(level, clause) => {
-                self.handle_long_clause(formula, trail, watches, decisions, clause, level);
+                self.handle_long_clause(formula, trail, watches, decisions, clause, level, target_phase);
             }
         }
 
@@ -183,15 +189,18 @@ impl Solver {
         //claDecayActivity();
 
         if self.adapt_strategies && self.num_conflicts == 100000 && adapt_solver(self, decisions) {
-            trail.restart(formula, decisions, watches, self);
+            trail.restart(formula, decisions, watches, self, target_phase);
         }
 
         true
     }
 
     #[inline]
-    fn unit_prop_step(&mut self, f: &mut Formula, d: &mut impl Decisions, t: &mut Trail, w: &mut Watches) -> ConflictResult {
-        match unit_propagate(f, t, w) {
+    fn unit_prop_step(
+        &mut self, formula: &mut Formula, decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches,
+        target_phase: &mut TargetPhase,
+    ) -> ConflictResult {
+        match unit_propagate(formula, trail, watches, self) {
             Ok(_) => ConflictResult::Ok,
             Err(cref) => {
                 self.num_conflicts += 1;
@@ -201,18 +210,25 @@ impl Solver {
                 }
                 self.a_decision_was_made = false;
 
-                match self.handle_conflict(f, t, cref, w, d) {
+                if self.search_mode == SearchMode::Stable || self.search_mode == SearchMode::OnlyStable {
+                    target_phase.update_best_phase(trail);
+                }
+
+                match self.handle_conflict(formula, trail, cref, watches, decisions, target_phase) {
                     true => ConflictResult::Continue,
                     false => ConflictResult::Ground,
                 }
-            },
+            }
         }
     }
 
     #[inline]
-    fn unit_prop_loop(&mut self, f: &mut Formula, d: &mut impl Decisions, t: &mut Trail, w: &mut Watches) -> bool {
+    fn unit_prop_loop(
+        &mut self, formula: &mut Formula, decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches,
+        target_phase: &mut TargetPhase,
+    ) -> bool {
         loop {
-            match self.unit_prop_step(f, d, t, w) {
+            match self.unit_prop_step(formula, decisions, trail, watches, target_phase) {
                 ConflictResult::Ok => {
                     return true;
                 }
@@ -225,18 +241,25 @@ impl Solver {
     }
 
     #[inline]
-    fn outer_loop(&mut self, formula: &mut Formula, decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches) -> SatResult {
-        match self.unit_prop_loop(formula, decisions, trail, watches) {
+    fn outer_loop(
+        &mut self, formula: &mut Formula, decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches,
+        target_phase: &mut TargetPhase,
+    ) -> SatResult {
+        match self.unit_prop_loop(formula, decisions, trail, watches, target_phase) {
             true => {}
             false => return SatResult::Unsat,
         }
         if self.restart.trigger_restart(self.num_conflicts) {
-            trail.restart(formula, decisions, watches, self);
+            trail.restart(formula, decisions, watches, self, target_phase);
             return SatResult::Unknown;
         }
-        if self.search_mode == SearchMode::Stable || self.search_mode == SearchMode::OnlyStable && false {
-            // TODO: Add rephasing and local search
-            // return self.target_phase.rephase();
+        if (self.search_mode == SearchMode::Stable || self.search_mode == SearchMode::OnlyStable)
+            && target_phase.should_rephase(self.num_conflicts)
+        {
+            if target_phase.rephase(self.num_conflicts) {
+                println!("c Solved by local search engine");
+                return SatResult::Sat(Vec::new()); // TODO: Get satisfying assignment
+            }
         }
         if trail.decision_level() == 0 && !self.simplify(formula, decisions, trail, watches) {
             return SatResult::Unsat;
@@ -250,7 +273,7 @@ impl Solver {
             Some(next) => {
                 self.num_decisions += 1;
                 self.a_decision_was_made = true;
-                trail.enq_decision(next, formula);
+                trail.enq_decision(next, formula, target_phase, self.search_mode == SearchMode::Focus);
             }
             None => {
                 debug!("SAT: no more decisions");
@@ -258,10 +281,12 @@ impl Solver {
             }
         }
 
-        if (self.search_mode == SearchMode::Focus || self.search_mode == SearchMode::Stable) && self.ticks > self.next_phase_change {
+        if (self.search_mode == SearchMode::Focus || self.search_mode == SearchMode::Stable)
+            && self.ticks > self.next_phase_change
+        {
             self.next_phase_change = self.ticks + self.num_phase_changes * 15_000_000;
             self.num_phase_changes += 1;
-            change_mode(self, decisions);
+            change_mode(self, decisions, target_phase);
         }
 
         SatResult::Unknown
@@ -270,9 +295,10 @@ impl Solver {
     #[inline]
     fn inner(
         &mut self, mut formula: Formula, mut decisions: impl Decisions, mut trail: Trail, mut watches: Watches,
+        mut target_phase: TargetPhase,
     ) -> SatResult {
         loop {
-            match self.outer_loop(&mut formula, &mut decisions, &mut trail, &mut watches) {
+            match self.outer_loop(&mut formula, &mut decisions, &mut trail, &mut watches, &mut target_phase) {
                 SatResult::Unknown => {} // continue
                 SatResult::Sat(_) => {
                     return SatResult::Sat(trail.assignments.0);
@@ -284,7 +310,9 @@ impl Solver {
         }
     }
 
-    fn simplify(&mut self, formula: &mut Formula, decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches) -> bool {
+    fn simplify(
+        &mut self, formula: &mut Formula, decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches,
+    ) -> bool {
         // TODO: Add subsumption here.
         formula.simplify_formula(watches, trail);
         return true;
@@ -315,6 +343,7 @@ pub fn solver(mut formula: Formula) -> SatResult {
     let decisions: VSIDS = Decisions::new(&formula);
     let mut watches = Watches::new(&formula);
     watches.init_watches(&formula);
+    let target_phase = TargetPhase::new(formula.num_vars);
     let mut solver = Solver::new(&formula);
-    solver.inner(formula, decisions, trail, watches)
+    solver.inner(formula, decisions, trail, watches, target_phase)
 }

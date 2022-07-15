@@ -1,6 +1,11 @@
 // An attempt to separate out the modes and phases stuff
 
-use crate::{solver::*, restart::*, decision::*};
+use crate::{
+    decision::*,
+    restart::*,
+    solver::*,
+    target_phase::{self, TargetPhase},
+};
 
 pub(crate) fn adapt_solver(solver: &mut Solver, decisions: &mut impl Decisions) -> bool {
     solver.adapt_strategies = false;
@@ -23,19 +28,21 @@ pub(crate) fn adapt_solver(solver: &mut Solver, decisions: &mut impl Decisions) 
     false
 }
 
-pub(crate) fn change_mode(solver: &mut Solver, decisions: &mut impl Decisions) {
+pub(crate) fn change_mode(solver: &mut Solver, decisions: &mut impl Decisions, target_phase: &mut TargetPhase) {
     match solver.search_mode {
         SearchMode::Stable => {
+            println!("c Changing mode to Focus mode");
             solver.restart.swap_mode();
             decisions.set_var_decay(0.95);
             solver.search_mode = SearchMode::Focus;
-        },
+        }
         SearchMode::Focus => {
+            println!("c Changing mode to Stable mode");
             solver.restart.swap_mode();
             decisions.set_var_decay(0.75);
             solver.search_mode = SearchMode::Stable;
-            // TODO: reset target_phase
-        },
-        _ => {},
+            target_phase.reset();
+        }
+        _ => {}
     }
 }

@@ -1,6 +1,14 @@
 use core::panic;
 
-use crate::{clause::*, decision::*, formula::*, lit::*, minimize::*, solver::{Solver, SearchMode}, trail::*};
+use crate::{
+    clause::*,
+    decision::*,
+    formula::*,
+    lit::*,
+    minimize::*,
+    solver::{SearchMode, Solver},
+    trail::*,
+};
 
 #[derive(Debug)]
 pub enum Conflict {
@@ -9,7 +17,9 @@ pub enum Conflict {
     Learned(u32, Clause),
 }
 
-pub(crate) fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, decisions: &mut impl Decisions, s: &mut Solver) -> Conflict {
+pub(crate) fn analyze_conflict(
+    f: &Formula, trail: &Trail, cref: usize, decisions: &mut impl Decisions, s: &mut Solver,
+) -> Conflict {
     let decisionlevel = trail.decision_level();
     if decisionlevel == 0 {
         return Conflict::Ground;
