@@ -61,14 +61,6 @@ impl fmt::Debug for Clause {
     }
 }
 
-fn calc_abstraction(lits: &[Lit]) -> usize {
-    let mut abstraction = 0;
-    for e in lits {
-        abstraction |= 1 << (e.index() & 31);
-    }
-    abstraction
-}
-
 impl Clause {
     // Does not set lbd !
     // Inits search to 1 and mark to 0. Sets abstraction.
@@ -79,9 +71,17 @@ impl Clause {
             lbd: 0,
             search: 1,
             mark: 0,
-            abstraction: calc_abstraction(&lits),
+            abstraction: Self::calc_abstraction(&lits),
             lits,
         }
+    }
+
+    fn calc_abstraction(lits: &[Lit]) -> usize {
+        let mut abstraction = 0;
+        for e in lits {
+            abstraction |= 1 << (e.index() & 31);
+        }
+        abstraction
     }
 
     pub(crate) fn swap(&mut self, i: usize, j: usize) {
@@ -150,18 +150,6 @@ impl Clause {
         self.lits.len()
     }
 
-    pub(crate) fn clause_from_vec(vec: &Vec<Lit>) -> Clause {
-        Clause {
-            deleted: false,
-            can_be_deleted: true,
-            lbd: 0,
-            search: 1,
-            mark: 0,
-            abstraction: calc_abstraction(vec),
-            lits: vec.clone(),
-        }
-    }
-
     #[inline(always)]
     fn move_to_end(&mut self, idx: usize, _f: &Formula) {
         let end = self.len() - 1;
@@ -175,19 +163,19 @@ impl Clause {
     }
 
     fn calc_lbd(&self, trail: &Trail, solver: &mut Solver) -> u32 {
+        /*
         // We don't bother calculating for long clauses.
         if self.len() >= 2024 {
             return 2024;
         }
+        */
         let mut lbd: u32 = 0;
-        let mut i = 0;
-        while i < self.len() {
-            let level = trail.lit_to_level[self[i].index()];
+        for l in &self.lits {
+            let level = trail.lit_to_level[l.index()];
             if solver.perm_diff[level as usize] != solver.num_conflicts {
                 solver.perm_diff[level as usize] = solver.num_conflicts;
                 lbd += 1;
             }
-            i += 1;
         }
         lbd
     }
@@ -197,7 +185,7 @@ impl Clause {
     }
 
     fn calc_and_set_abstraction(&mut self) {
-        self.abstraction = calc_abstraction(&self.lits);
+        self.abstraction = Clause::calc_abstraction(&self.lits);
     }
 }
 

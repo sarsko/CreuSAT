@@ -61,12 +61,12 @@ fn unit_prop_do_outer(
         return Err(cref);
     }
     if f[cref][0].lit_unset(&trail.assignments) {
-        let step = Step { lit: f[cref][0], decision_level: trail.decision_level(), reason: Reason::Long(cref) };
+        let step = Step { lit: f[cref][0] /*, decision_level: trail.decision_level()*/, reason: cref };
 
         trail.enq_assignment(step, f);
         return Ok(true);
     } else {
-        let step = Step { lit: f[cref][1], decision_level: trail.decision_level(), reason: Reason::Long(cref) };
+        let step = Step { lit: f[cref][1] /*, decision_level: trail.decision_level()*/, reason: cref };
 
         trail.enq_assignment(step, f);
         f[cref].swap(0, 1);

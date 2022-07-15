@@ -26,7 +26,7 @@ pub(crate) trait Decisions {
 }
 
 #[derive(Clone, Copy)]
-pub struct Node {
+pub(crate) struct Node {
     pub next: usize,
     pub prev: usize,
     pub ts: usize,
@@ -38,7 +38,7 @@ impl Default for Node {
     }
 }
 
-pub struct VMTF {
+pub(crate) struct VMTF {
     pub linked_list: Vec<Node>,
     timestamp: usize,
     pub start: usize,

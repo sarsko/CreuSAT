@@ -1,18 +1,6 @@
 use crate::{
-    assignments::*,
-    clause::*,
-    conflict_analysis::*,
-    decision::*,
-    formula::*,
-    lit::*,
-    modes::*,
-    preprocess::*,
-    restart::*,
-    target_phase::{self, *},
-    trail::*,
-    unit_prop::*,
-    util::*,
-    watches::*,
+    assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, lit::*, modes::*, preprocess::*,
+    restart::*, target_phase::*, trail::*, unit_prop::*, util::*, watches::*,
 };
 
 use log::debug;
@@ -158,7 +146,7 @@ impl Solver {
         //d.increment_and_move(f, cref, &t.assignments);
         trail.backtrack_to(level, formula, decisions, target_phase);
         let lit = formula[cref][0];
-        let step = Step { lit, decision_level: level, reason: Reason::Long(cref) };
+        let step = Step { lit, reason: cref };
         trail.enq_assignment(step, formula);
     }
 
@@ -284,8 +272,6 @@ impl Solver {
         if (self.search_mode == SearchMode::Focus || self.search_mode == SearchMode::Stable)
             && self.ticks > self.next_phase_change
         {
-            self.next_phase_change = self.ticks + self.num_phase_changes * 15_000_000;
-            self.num_phase_changes += 1;
             change_mode(self, decisions, target_phase);
         }
 
@@ -293,8 +279,8 @@ impl Solver {
     }
 
     #[inline]
-    fn inner(
-        &mut self, mut formula: Formula, mut decisions: impl Decisions, mut trail: Trail, mut watches: Watches,
+    fn solve(
+        mut self, mut formula: Formula, mut decisions: impl Decisions, mut trail: Trail, mut watches: Watches,
         mut target_phase: TargetPhase,
     ) -> SatResult {
         loop {
@@ -324,12 +310,13 @@ pub fn solver(mut formula: Formula) -> SatResult {
         SatResult::Unknown => {}
         o => return o,
     }
-    let preprocess = Preprocess::new();
     let mut trail = Trail::new(&formula, Assignments::new(&formula));
+
+    let preprocess = Preprocess::new();
     preprocess.preprocess(&mut formula, &mut trail);
     debug!("done with preproc");
     debug!("{:?}", &trail.trail);
-    formula.remove_deleted();
+
     match trail.learn_units(&mut formula) {
         Some(_) => {
             debug!("UNSAT due to learn_units");
@@ -337,13 +324,16 @@ pub fn solver(mut formula: Formula) -> SatResult {
         }
         None => {}
     }
+    // Not sure if this is really needed.
     if formula.len() == 0 {
         return SatResult::Sat(Vec::new());
     }
+
     let decisions: VSIDS = Decisions::new(&formula);
     let mut watches = Watches::new(&formula);
     watches.init_watches(&formula);
     let target_phase = TargetPhase::new(formula.num_vars);
-    let mut solver = Solver::new(&formula);
-    solver.inner(formula, decisions, trail, watches, target_phase)
+    let solver = Solver::new(&formula);
+
+    solver.solve(formula, decisions, trail, watches, target_phase)
 }

@@ -1,5 +1,3 @@
-use crate::solver::*;
-
 pub(crate) enum RestartMode {
     Glucose,
     Luby,
@@ -120,7 +118,6 @@ fn luby(y: f64, mut x: usize) -> usize {
         seq -= 1;
         x = x % size;
     }
-    //f64::powf(y, seq)
     y.powf(seq as f64) as usize
 }
 
@@ -129,9 +126,11 @@ impl Luby {
         if curr_confl <= self.limit {
             return false;
         }
+
         self.limit = curr_confl + luby(2.0, self.curr_restarts) * self.step;
         self.curr_restarts += 1;
         self.num_restarts += 1;
+
         true
     }
 }

@@ -9,6 +9,7 @@ pub struct Formula {
     cur_restart: usize,
     num_clauses_before_reduce: usize,
     special_inc_reduce_db: usize,
+    num_deleted_clauses: usize,
 }
 
 impl Index<usize> for Formula {
@@ -41,6 +42,7 @@ impl Formula {
             cur_restart: 1,
             num_clauses_before_reduce: 2000,
             special_inc_reduce_db: 1000,
+            num_deleted_clauses: 0,
         }
     }
 
@@ -115,8 +117,10 @@ impl Formula {
         self.clauses.swap_remove(cref);
     }
 
+    #[inline(always)]
     pub(crate) fn mark_clause_as_deleted(&mut self, cref: usize) {
         self.clauses[cref].deleted = true;
+        self.num_deleted_clauses += 1;
         //self.clauses.remove(cref);
     }
 
@@ -129,12 +133,14 @@ impl Formula {
                 i += 1;
             }
         }
+        self.num_deleted_clauses = 0;
     }
 
+    #[inline(always)]
     fn unwatch_and_mark_as_deleted(&mut self, cref: usize, watches: &mut Watches, t: &Trail) {
         watches.unwatch(self, t, cref, self[cref][0]);
         watches.unwatch(self, t, cref, self[cref][1]);
-        self[cref].deleted = true;
+        self.mark_clause_as_deleted(cref);
     }
 
     pub(crate) fn delete_clauses(&mut self, watches: &mut Watches, t: &Trail) {
@@ -207,9 +213,14 @@ impl Formula {
     }
 
     pub(crate) fn collect_garbage_on_empty_trail(&mut self, watches: &mut Watches, s: &Solver) {
+        // If the ratio of deleted clauses to learnt clauses is less than the tresh (0.20), don't do GC
+        if (self.num_deleted_clauses as f64 / self.learnt_core.len() as f64) < 0.20 {
+            return;
+        }
+
         watches.unwatch_all_lemmas(self, s);
 
-        self.learnt_core = Vec::new();
+        self.learnt_core.clear();
         let mut i = s.initial_len;
         while i < self.len() {
             if self[i].deleted {
@@ -226,11 +237,6 @@ impl Formula {
             watches[self[i][1].to_neg_watchidx()].push(Watcher { cref: i, blocker: self[i][0] });
             i += 1;
         }
-    }
-
-    fn time_for_garbage_collection(&self) -> bool {
-        //self.learnt_core.len() >
-        true
     }
 
     pub(crate) fn mark_clauses_as_deleted(&mut self, crefs: &mut Vec<Cref>) {

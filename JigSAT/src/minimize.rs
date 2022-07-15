@@ -1,4 +1,5 @@
 use crate::{
+    clause::Clause,
     formula::Formula,
     lit::Lit,
     solver::Solver,
@@ -48,4 +49,57 @@ pub(crate) fn lit_redundant(
         }
     }
     return true;
+}
+
+#[allow(unused)]
+#[inline(always)]
+pub(crate) fn recursive_minimization(
+    out_learnt: &mut Vec<Lit>, trail: &Trail, formula: &Formula, solver: &mut Solver, mut seen: Vec<bool>,
+) {
+    let mut abstract_levels = 0;
+    let mut i = 1;
+    while i < out_learnt.len() {
+        abstract_levels |= out_learnt[i].abstract_level(&trail.lit_to_level);
+        i += 1;
+    }
+    i = 1;
+    let mut j = 1;
+    while i < out_learnt.len() {
+        let ante_ref = trail.lit_to_reason[out_learnt[i].index()];
+        if ante_ref == UNSET_REASON || !lit_redundant(solver, trail, formula, out_learnt[i], abstract_levels, &mut seen)
+        {
+            out_learnt[j] = out_learnt[i];
+            j += 1;
+        }
+        i += 1;
+    }
+    out_learnt.truncate(j);
+}
+
+#[allow(unused)]
+#[inline(always)]
+pub(crate) fn local_minimization(out_learnt: &mut Vec<Lit>, trail: &Trail, formula: &Formula, seen: Vec<bool>) {
+    let mut i = 1;
+    let mut j = 1;
+    while i < out_learnt.len() {
+        let ante_ref = trail.lit_to_reason[out_learnt[i].index()];
+        if ante_ref == UNSET_REASON {
+            out_learnt[j] = out_learnt[i];
+            j += 1;
+        } else {
+            let ante = &formula.clauses[ante_ref];
+            let mut k = if ante.len() == 2 { 0 } else { 1 };
+            while k < ante.len() {
+                let idx = ante[k].index();
+                if !seen[idx] && trail.lit_to_level[idx] > 0 {
+                    out_learnt[j] = out_learnt[i];
+                    j += 1;
+                    break;
+                }
+                k += 1;
+            }
+        }
+        i += 1;
+    }
+    out_learnt.truncate(j);
 }

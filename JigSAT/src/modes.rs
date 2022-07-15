@@ -28,7 +28,10 @@ pub(crate) fn adapt_solver(solver: &mut Solver, decisions: &mut impl Decisions) 
     false
 }
 
+#[inline]
 pub(crate) fn change_mode(solver: &mut Solver, decisions: &mut impl Decisions, target_phase: &mut TargetPhase) {
+    solver.next_phase_change = solver.ticks + solver.num_phase_changes * 15_000_000;
+    solver.num_phase_changes += 1;
     match solver.search_mode {
         SearchMode::Stable => {
             println!("c Changing mode to Focus mode");

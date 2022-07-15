@@ -195,6 +195,7 @@ impl Preprocess {
                 }
             }
         }
+        formula.remove_deleted();
         true
     }
 

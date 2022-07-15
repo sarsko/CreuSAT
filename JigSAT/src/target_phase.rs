@@ -26,8 +26,8 @@ pub(crate) struct TargetPhase {
     cycle: Vec<Phase>,
     best_polarity: Vec<u8>, // 0: false, 1: true, 2: unassign
 
-    pub(crate) max_vars_for_walker: usize,
-    //pub(crate) local_search_solver: CCANR,
+                            //pub(crate) max_vars_for_walker: usize,
+                            //pub(crate) local_search_solver: CCANR,
 }
 
 const B: Phase = Phase::Best;
@@ -50,8 +50,7 @@ impl Default for TargetPhase {
             num_rephases: 0,
             cycle: vec![B, O, B, I, B, R, B, F], // No walk atm
             best_polarity: Vec::new(),
-
-            max_vars_for_walker: 70000,
+            //max_vars_for_walker: 70000,
             //pub(crate) local_search_solver: CCANR,
         }
     }
@@ -65,6 +64,12 @@ impl TargetPhase {
         target_phase.target_polarity = vec![0; num_vars];
         target_phase.best_polarity = vec![0; num_vars];
         target_phase.min_len = num_vars;
+
+        // TODO: Implement walk and uncomment this
+        if num_vars < 70_000 && false {
+            target_phase.cycle = vec![B, W, B, O, B, I, B, W, B, R, B, F];
+        }
+
         target_phase
     }
 
