@@ -9,7 +9,7 @@ use log::debug;
 use std::collections::VecDeque;
 //use std::collections::BinaryHeap;
 
-use crate::{clause::*, formula::*, lit::*, solver_types::*, trail::*, decision::*};
+use crate::{clause::*, formula::*, lit::*, solver_types::*, trail::*, decision::*, watches::*, unit_prop::unit_propagate};
 
 #[derive(PartialEq)]
 pub(crate) enum SubsumptionRes {
@@ -156,7 +156,7 @@ impl Preprocess {
     // Corresponds to SimpSolver::eliminate in Glucose
     // Glucose passes turn_off_elim as true, which means that it always cleans up fully afterwards
     // We just pass Preprocess as `mut self`, to have it drop at function exit
-    pub(crate) fn preprocess(mut self, formula: &mut Formula, trail: &mut Trail, decisions: &mut impl Decisions) -> bool {
+    pub(crate) fn preprocess(mut self, formula: &mut Formula, trail: &mut Trail, decisions: &mut impl Decisions, watches: &mut Watches) -> bool {
         self.init(formula);
 
         // This should be uncommented.
@@ -173,10 +173,12 @@ impl Preprocess {
         while self.n_touched > 0 || self.bwdsub_assigns < trail.trail.len() || self.elim_heap.len() > 0 {
             self.gather_touched_clauses(formula);
 
-            if (self.subsumption_queue.len() > 0 || self.bwdsub_assigns < trail.trail.len())
-                && !self.backward_subsumption_check(formula, trail)
-            {
-                return false;
+            if self.subsumption_queue.len() > 0 || self.bwdsub_assigns < trail.trail.len() {
+                match self.backward_subsumption_check(formula, trail, watches) {
+                    Some(false) => return false,
+                    Some(true)  => {},
+                    None        => break,
+                }
             }
 
             while !self.elim_heap.is_empty() {
@@ -190,8 +192,10 @@ impl Preprocess {
 
                 // We always do elim (and therefore dont have to check if has become set by assym)
                 // !frozen[elim] &&  // We dont support frozen vars (only for assumptions -> we are not incremental)
-                if !self.eliminate_var(elim, formula, trail) {
-                    return false;
+                match self.eliminate_var(elim, formula, trail, watches) {
+                    Some(false) => return false,
+                    Some(true)  => {},
+                    None        => break,
                 }
             }
         }
@@ -201,6 +205,10 @@ impl Preprocess {
             }
         }
         formula.remove_deleted();
+
+        *watches = Watches::new(&formula);
+        watches.init_watches(&formula);
+
         true
     }
 
@@ -226,15 +234,15 @@ impl Preprocess {
 
     // Backward subsumption + backward subsumption resolution
     //bool SimpSolver::backwardSubsumptionCheck(bool v) {
-    fn backward_subsumption_check(&mut self, formula: &mut Formula, trail: &mut Trail) -> bool {
+    fn backward_subsumption_check(&mut self, formula: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> Option<bool> {
         //assert(decisionLevel() == 0);
 
         while self.subsumption_queue.len() > 0 || self.bwdsub_assigns < trail.trail.len() {
             // Check top-level assignments by creating a dummy clause and placing it in the queue:
             if self.subsumption_queue.len() == 0 && self.bwdsub_assigns < trail.trail.len() {
-                debug!("sub_q.len() == 0 and bwdsub_assigns < trail.len()");
+                println!("c sub_q.len() == 0 and bwdsub_assigns < trail.len()");
                 //panic!();
-                return false;
+                return None;
                 // I dunno what is supposed to happen here.
                 // If we are not done somehow, then add a dummy clause consisting of the lit
                 // on the current index of the trail, and then enqueue that. Why?
@@ -289,13 +297,13 @@ impl Preprocess {
                             //println!("Removed");
                             //deleted_literals += 1;
 
-                            if !self.strengthen_clause(self.occurs[best][j], !l, formula, trail) {
-                                return false;
+                            if !self.strengthen_clause(self.occurs[best][j], !l, formula, trail, watches) {
+                                return Some(false);
                             }
 
                             // Did current candidate get deleted from cs? Then check candidate at index j again:
                             if l.index() == best {
-                                //println!("Best");
+                                //println!("c Best");
                             } else {
                                 j += 1;
                             }
@@ -307,12 +315,12 @@ impl Preprocess {
             }
         }
 
-        return true;
+        Some(true)
     }
 
     // What happens if we ever try to strengthen a unit?
     // I would not be surprised if we are unsound, and have to init watches + do unit prop both beforehand and during preprocessing.
-    fn strengthen_clause(&mut self, cref: usize, lit: Lit, formula: &mut Formula, trail: &mut Trail) -> bool {
+    fn strengthen_clause(&mut self, cref: usize, lit: Lit, formula: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> bool {
         let c = &mut formula[cref];
         //assert(decisionLevel() == 0);
 
@@ -333,9 +341,13 @@ impl Preprocess {
             let unit_lit = c[0];
             formula.mark_clause_as_deleted(cref);
             trail.learn_unit_in_preprocessing(unit_lit, &formula);
-            // Okay maybe we have to do this.
+            let mut mock = 0;
+            return match unit_propagate(formula, trail, watches, &mut mock) {
+                Err(_) => false,
+                _ => true
+            };
+
             // return enqueue(c[0]) && propagate() == CRef_Undef
-            return true;
         } else {
             //self.subsumption_queue.push_back(cref);
             // No need to detach + attach: we are not watched, and do not use a clause arena.
@@ -354,7 +366,7 @@ impl Preprocess {
     }
 
     // v is the index of the var to be removed
-    fn eliminate_var(&mut self, v: usize, formula: &mut Formula, trail: &mut Trail) -> bool {
+    fn eliminate_var(&mut self, v: usize, formula: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> Option<bool> {
         /*
         assert(!frozen[v]);
         assert(!isEliminated(v));
@@ -384,7 +396,7 @@ impl Preprocess {
                 if self.merge(&formula[pos[i]], &formula[neg[j]], v, &mut clause_size)
                     && (cnt > self.occurs[v].len() + self.grow || clause_size > self.clause_lim)
                 {
-                    return true;
+                    return Some(true);
                 }
             }
         }
@@ -425,7 +437,7 @@ impl Preprocess {
                     debug!("Resolved {} and {} to get {:?}", &formula[*p], &formula[*n], &resolvent);
 
                     if !self.add_clause(formula, resolvent) {
-                        return false;
+                        return Some(false);
                     }
                 }
             }
@@ -443,7 +455,7 @@ impl Preprocess {
         //if(watches[mkLit(v)].size() == 0) watches[mkLit(v)].clear(true);
         //if(watches[~mkLit(v)].size() == 0) watches[~mkLit(v)].clear(true);
 
-        return self.backward_subsumption_check(formula, trail);
+        return self.backward_subsumption_check(formula, trail, watches);
     }
 
     // v is the index of the literal which we are trying to eliminate

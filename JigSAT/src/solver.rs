@@ -185,7 +185,7 @@ impl Solver {
         &mut self, formula: &mut Formula, decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches,
         target_phase: &mut TargetPhase,
     ) -> ConflictResult {
-        match unit_propagate(formula, trail, watches, self) {
+        match unit_propagate(formula, trail, watches, &mut self.ticks) {
             Ok(_) => ConflictResult::Ok,
             Err(cref) => {
                 self.num_conflicts += 1;
@@ -303,34 +303,28 @@ impl Solver {
 }
 
 pub fn solver(mut formula: Formula) -> SatResult {
-    /*
-    // TODO: Rewrite the way the formula is built
-    match formula.check_formula_invariant() {
-        SatResult::Unknown => {}
-        o => return o,
-    }
-    */
     let mut trail = Trail::new(&formula, Assignments::new(&formula));
-
-    let mut decisions: VSIDS = Decisions::new(&formula);
-    Preprocess::new().preprocess(&mut formula, &mut trail, &mut decisions);
-    debug!("done with preproc");
-    debug!("{:?}", &trail.trail);
 
     match trail.learn_units(&mut formula) {
         Some(_) => {
-            debug!("UNSAT due to learn_units");
+            println!("c UNSAT due to learn_units");
             return SatResult::Unsat;
         }
         None => {}
     }
-    // Not sure if this is really needed.
-    if formula.len() == 0 {
-        return SatResult::Sat(Vec::new());
-    }
 
     let mut watches = Watches::new(&formula);
     watches.init_watches(&formula);
+
+    let mut decisions: VSIDS = Decisions::new(&formula);
+
+    if !Preprocess::new().preprocess(&mut formula, &mut trail, &mut decisions, &mut watches) {
+        println!("c UNSAT by preprocess");
+        return SatResult::Unsat;
+    }
+    debug!("done with preproc");
+    debug!("{:?}", &trail.trail);
+
     let target_phase = TargetPhase::new(formula.num_vars);
     let solver = Solver::new(&formula);
 

@@ -29,7 +29,7 @@ fn swap(f: &mut Formula, _trail: &Trail, _watches: &Watches, cref: usize, j: usi
 // The solver is included so that we can update ticks.
 #[inline]
 fn unit_prop_do_outer(
-    formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize, solver: &mut Solver,
+    formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize, ticks: &mut usize,
 ) -> Result<bool, usize> {
     let clause = &formula[cref];
 
@@ -56,7 +56,7 @@ fn unit_prop_do_outer(
         }
         k += 1;
     }
-    solver.ticks += 1;
+    *ticks += 1;
     if other_lit.lit_unsat(&trail.assignments) {
         return Err(cref);
     }
@@ -72,7 +72,7 @@ fn unit_prop_do_outer(
 
 #[inline]
 fn unit_prop_current_level(
-    formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, lit: Lit, solver: &mut Solver,
+    formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, lit: Lit, ticks: &mut usize,
 ) -> Result<(), usize> {
     let mut j = 0;
     let watchidx = lit.to_watchidx();
@@ -82,7 +82,7 @@ fn unit_prop_current_level(
             j += 1;
         } else {
             let cref = curr_watch.cref;
-            match unit_prop_do_outer(formula, trail, watches, cref, lit, j, solver) {
+            match unit_prop_do_outer(formula, trail, watches, cref, lit, j, ticks) {
                 Ok(true) => {
                     j += 1;
                 }
@@ -98,14 +98,15 @@ fn unit_prop_current_level(
 
 #[inline]
 pub(crate) fn unit_propagate(
-    formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, solver: &mut Solver,
+    formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, ticks: &mut usize,
 ) -> Result<(), usize> {
     let mut i = trail.curr_i;
     while i < trail.trail.len() {
         let lit = trail.trail[i];
-        match unit_prop_current_level(formula, trail, watches, lit, solver) {
+        match unit_prop_current_level(formula, trail, watches, lit, ticks) {
             Ok(_) => {}
             Err(cref) => {
+                println!("c err");
                 return Err(cref);
             }
         }

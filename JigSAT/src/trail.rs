@@ -164,8 +164,8 @@ impl Trail {
 
 impl Trail {
     #[inline]
-    pub(crate) fn learn_unit_in_preprocessing(&mut self, lit: Lit, f: &Formula) {
+    pub(crate) fn learn_unit_in_preprocessing(&mut self, lit: Lit, formula: &Formula) {
         debug!("Learned unit: {} in preproc", lit);
-        self.enq_assignment(lit, f, UNIT);
+        self.enq_assignment(lit, formula, UNIT);
     }
 }

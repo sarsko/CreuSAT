@@ -272,6 +272,10 @@ impl Heap {
     // Requires a new to have been created with n or larger before
     // TODO: Add support for turning off decision variables (eliminating variables entirely)
     pub(crate) fn build(&mut self, n: usize) {
+        if n == 0 {
+            return;
+        }
+
         for e in &self.heap {
             self.indices[*e] = INVALID;
         }
@@ -280,6 +284,10 @@ impl Heap {
         for i in 0..n {
             self.indices[i] = i;
             self.heap.push(i);
+        }
+
+        if n == 1 {
+            return;
         }
 
         let mut i = self.len() / 2 - 1;

@@ -32,6 +32,8 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
     let mut curr_clause = vec![];
     let mut line_cntr = 0;
     let mut max_literal: usize = 0;
+    let mut seen = HashSet::new();
+    let mut tautology = false;
     if let Ok(lines) = read_lines(infile) {
         for line in lines {
             line_cntr += 1;
@@ -39,8 +41,8 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                 let split = line.split(' ').filter(|e| e != &"").collect::<Vec<_>>();
                 if split.len() > 0 {
                     match split[0].chars().next().unwrap() {
-                        'c' => {}
-                        'p' => match split[2].parse::<usize>() {
+                        'c' => {},
+                        'p' => {/*match split[2].parse::<usize>() {
                             Ok(n) => {
                                 if num_lits_set {
                                     return Err("Error in input file - multiple p lines".to_string());
@@ -51,18 +53,24 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                             Err(_) => {
                                 return Err("Error in input file".to_string());
                             }
+                            */
                         },
                         '%' => {
                             break;
                         } // The Satlib files follow this convention
                         _ => {
-                            let mut seen = HashSet::new();
                             for e in split {
                                 match e.parse::<i32>() {
                                     Ok(n) => {
                                         if n == 0 {
-                                            out_clauses.push(curr_clause);
+                                            if !tautology {
+                                                out_clauses.push(curr_clause);
+                                            }
+                                            tautology = false;
+                                            seen = HashSet::new();
                                             curr_clause = vec![];
+                                        } else if seen.contains(&-n) {
+                                            tautology = true;
                                         } else {
                                             let n_abs = n.unsigned_abs() as usize;
                                             if n_abs > max_literal {
