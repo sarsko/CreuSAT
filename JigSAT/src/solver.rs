@@ -12,14 +12,14 @@ pub enum SatResult {
     Err,
 }
 
-pub enum ConflictResult {
+pub(crate) enum ConflictResult {
     Ok,
     Ground,
     Continue,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum SearchMode {
+pub(crate) enum SearchMode {
     //Target,
     Stable,
     Focus,
@@ -59,7 +59,7 @@ update_fast_average (double *average, unsigned value)
 //&& @level < (@trail.decisions).len() //added
 
 #[derive(Debug, Default)]
-pub struct Stats {
+pub(crate) struct Stats {
     pub(crate) num_glues: usize,
     pub(crate) num_binary: usize,
     pub(crate) num_unary: usize,
@@ -130,8 +130,6 @@ impl Solver {
         let clause_len = clause.len();
         let lbd = clause.lbd;
         let cref = formula.learn_clause(clause, watches, trail);
-
-        //if self.search_mode == SearchMode::Focus || self.search_mode == SearchMode::OnlyFocus
 
         self.restart.glucose.update(trail.trail.len(), lbd as usize);
         self.restart.block_restart(self.num_conflicts);
@@ -305,14 +303,16 @@ impl Solver {
 }
 
 pub fn solver(mut formula: Formula) -> SatResult {
+    /*
+    // TODO: Rewrite the way the formula is built
     match formula.check_formula_invariant() {
         SatResult::Unknown => {}
         o => return o,
     }
+    */
     let mut trail = Trail::new(&formula, Assignments::new(&formula));
 
-    let preprocess = Preprocess::new();
-    preprocess.preprocess(&mut formula, &mut trail);
+    Preprocess::new().preprocess(&mut formula, &mut trail);
     debug!("done with preproc");
     debug!("{:?}", &trail.trail);
 

@@ -12,17 +12,8 @@ pub enum Reason {
 }
 */
 
-//const Decision
-
-const DECISION: usize = usize::MAX;
+//const DECISION: usize = usize::MAX;
 const UNIT: usize = usize::MAX;
-
-#[derive(Debug)]
-pub(crate) struct Step {
-    pub lit: Lit,
-    //decision_level: u32, // Turns out we never read this
-    //pub reason: Cref,
-}
 
 pub const UNSET_LEVEL: u32 = u32::MAX;
 pub const UNSET_REASON: usize = usize::MAX;
@@ -168,12 +159,6 @@ impl Trail {
             }
         }
         None
-    }
-
-    // Does a more restrictive check than Glucose
-    // TODO: Add the last part of the check.
-    pub(crate) fn locked(&self, lit: Lit) -> bool {
-        lit.lit_sat(&self.assignments) && self.lit_to_reason[lit.index()] != UNSET_REASON
     }
 }
 

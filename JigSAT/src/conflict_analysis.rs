@@ -1,5 +1,3 @@
-use core::panic;
-
 use crate::{
     clause::*,
     decision::*,
@@ -11,12 +9,13 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub enum Conflict {
+pub(crate) enum Conflict {
     Ground,
     Unit(Lit),
     Learned(u32, Clause),
 }
 
+#[inline]
 pub(crate) fn analyze_conflict(
     formula: &Formula, trail: &Trail, cref: usize, decisions: &mut impl Decisions, solver: &mut Solver,
 ) -> Conflict {

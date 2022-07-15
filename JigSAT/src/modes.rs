@@ -7,6 +7,7 @@ use crate::{
     target_phase::{self, TargetPhase},
 };
 
+//#[inline(always)]
 pub(crate) fn adapt_solver(solver: &mut Solver, decisions: &mut impl Decisions) -> bool {
     solver.adapt_strategies = false;
     let dec_to_confl_ratio = (solver.num_decisions as f64) / (solver.num_conflicts as f64);
@@ -28,7 +29,7 @@ pub(crate) fn adapt_solver(solver: &mut Solver, decisions: &mut impl Decisions) 
     false
 }
 
-#[inline]
+//#[inline(always)]
 pub(crate) fn change_mode(solver: &mut Solver, decisions: &mut impl Decisions, target_phase: &mut TargetPhase) {
     solver.next_phase_change = solver.ticks + solver.num_phase_changes * 15_000_000;
     solver.num_phase_changes += 1;

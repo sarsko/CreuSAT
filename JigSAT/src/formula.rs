@@ -186,8 +186,7 @@ impl Formula {
         while i < self.learnt_core.len() && limit > 0 {
             let cref = self.learnt_core[i];
             let clause = &mut self[cref];
-            if clause.lbd > 2 && clause.len() > 2 && clause.can_be_deleted && !trail.locked(clause[0]) {
-                //self.clauses.pop();
+            if clause.lbd > 2 && clause.len() > 2 && clause.can_be_deleted { //&& !trail.locked(clause[0]) {
                 self.unwatch_and_mark_as_deleted(cref, watches, trail);
                 self.learnt_core.swap_remove(i);
                 limit -= 1;
