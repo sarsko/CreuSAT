@@ -16,7 +16,7 @@ mod inner {
         #[predicate]
         fn satisfies_clause(self, cl: Seq<Lit>) -> bool {
             pearlite! {
-                forall<i : Int> 0 <= i && i < cl.len() ==> self.0.get(@cl[i].idx) == cl[i].polarity
+                exists<i : Int> 0 <= i && i < cl.len() && self.0.get(@cl[i].idx) == cl[i].polarity
             }
         }
 
