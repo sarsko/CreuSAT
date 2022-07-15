@@ -10,7 +10,8 @@ mod inner {
     use creusot_contracts::{*, Model};
     use crate::lit::Lit;
     use crate::formula::Formula;
-    struct M(Mapping<Int, bool>);
+    use crate::assignments::Assignments;
+    pub struct M(Mapping<Int, bool>);
 
     impl M {
         #[predicate]
@@ -21,30 +22,36 @@ mod inner {
         }
 
         #[predicate]
-        fn satisfies(self, fml: Seq<Seq<Lit>>) -> bool {
+        pub fn satisfies(self, fml: Seq<Seq<Lit>>) -> bool {
             pearlite! {
                 forall<c : _> 0 <= c && c < fml.len() ==> self.satisfies_clause(fml[c])
             }
         }
-
     }
 
     impl Formula {
         #[predicate]
-        fn unsat2(self) -> bool {
+        pub fn unsat(self) -> bool {
             pearlite! { forall<m : M> m.satisfies(self.real_model()) ==> false }
         }
 
         #[predicate]
-        fn sat2(self) -> bool {
+        pub fn sat(self) -> bool {
             pearlite! { exists<m : M> m.satisfies(self.real_model()) }
         }
 
         #[predicate]
-        fn equisat2(self, f: Self) -> bool {
+        pub fn equisat(self, f: Self) -> bool {
             pearlite! {
                 forall<m : M> m.satisfies(self.real_model()) ==> m.satisfies(f.real_model()) && m.satisfies(f.real_model()) ==> m.satisfies(self.real_model())
             }
+        }
+    }
+
+    impl Assignments {
+        #[logic]
+        pub fn real_model(self) -> M {
+            M(Mapping::cst(false))
         }
     }
 }

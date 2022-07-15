@@ -191,7 +191,7 @@ impl Formula {
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
-    #[ensures(result == self.sat(*a))]
+    #[ensures(result == a.real_model().satisfies(self.real_model()))]
     pub fn is_sat(&self, a: &Assignments) -> bool {
         let mut i: usize = 0;
         #[invariant(prev, forall<k: Int> 0 <= k && k < @i ==> (@self.clauses)[k].sat(*a))]

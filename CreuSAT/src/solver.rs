@@ -268,7 +268,8 @@ impl Solver {
     #[ensures(@f.num_vars == @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
     #[ensures(match result {
-        SatResult::Sat(_)   => { (^f).sat((^trail).assignments)
+        SatResult::Sat(_)   => {
+            (^trail).assignments.real_model().satisfies((^f).real_model())
                             &&   ((^trail).assignments).complete() }, // Do I really need this for anything?
         SatResult::Unsat    => { (^f).not_satisfiable() },
         SatResult::Unknown  => { true }
