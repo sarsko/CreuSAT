@@ -17,6 +17,13 @@ impl Model for Formula {
     }
 }
 
+impl Formula {
+    #[logic]
+    pub fn real_model(self) -> Seq<Seq<Lit>> {
+        Seq::EMPTY
+    }
+}
+
 #[predicate]
 pub fn formula_invariant(f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
@@ -75,10 +82,10 @@ impl Formula {
             exists<a2 : Seq<AssignedState>> a2.len() == @self.num_vars && complete_inner(a2) && self.sat_inner(a2)
         }
     }
-    #[predicate]
-    pub fn equisat(self, o: Formula) -> bool {
-        self.eventually_sat_complete_no_ass() == o.eventually_sat_complete_no_ass()
-    }
+    // #[predicate]
+    // pub fn equisat(self, o: Formula) -> bool {
+    //     self.eventually_sat_complete_no_ass() == o.eventually_sat_complete_no_ass()
+    // }
 
     #[predicate]
     pub fn compatible(self, o: Formula) -> bool {
@@ -146,10 +153,10 @@ impl Formula {
         }
     }
 
-    #[predicate]
-    pub fn sat(self, a: Assignments) -> bool {
-        pearlite! { formula_sat_inner(@self, @a) }
-    }
+    // #[predicate]
+    // pub fn sat(self, a: Assignments) -> bool {
+    //     pearlite! { formula_sat_inner(@self, @a) }
+    // }
 
     #[predicate]
     fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
@@ -159,10 +166,10 @@ impl Formula {
         }
     }
 
-    #[predicate]
-    pub fn unsat(self, a: Assignments) -> bool {
-        pearlite! { self.unsat_inner(@a) }
-    }
+    // #[predicate]
+    // pub fn unsat(self, a: Assignments) -> bool {
+    //     pearlite! { self.unsat_inner(@a) }
+    // }
 
     #[predicate]
     pub fn not_satisfiable(self) -> bool {

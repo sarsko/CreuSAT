@@ -159,7 +159,9 @@ fn exists_new_watchable_lit(
 #[ensures(match result {
     Ok(true) => true,
     Ok(false) => (@(^trail).trail).len() == (@trail.trail).len(),
-    Err(n) => @n < (@(^f).clauses).len() && (^f).unsat((^trail).assignments) && (@(^f).clauses)[@n].unsat((^trail).assignments),
+    Err(n) => @n < (@(^f).clauses).len() &&
+        // (^f).unsat((^trail).assignments) &&
+        (@(^f).clauses)[@n].unsat((^trail).assignments),
 })]
 #[ensures(@f.num_vars == @(^f).num_vars)]
 #[ensures(f.equisat(^f))]
@@ -234,7 +236,9 @@ fn propagate_lit_with_regard_to_clause(
 #[requires(lit.index_logic() < @f.num_vars)]
 #[ensures(match result {
     Ok(()) => true,// !(^f).unsat(^a),
-    Err(n) => @n < (@(^f).clauses).len() && (^f).unsat((^trail).assignments) && (@(^f).clauses)[@n].unsat((^trail).assignments),
+    Err(n) => @n < (@(^f).clauses).len() &&
+        // (^f).unsat((^trail).assignments) &&
+        (@(^f).clauses)[@n].unsat((^trail).assignments),
 })]
 #[ensures(@f.num_vars == @(^f).num_vars)]
 #[ensures(f.equisat(^f))]
@@ -283,7 +287,9 @@ fn propagate_literal(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, 
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[ensures(match result {
     Ok(()) => true, // !(^f).unsat(^a),
-    Err(n) => @n < (@(^f).clauses).len() && (^f).unsat((^trail).assignments) && (@(^f).clauses)[@n].unsat((^trail).assignments),
+    Err(n) => @n < (@(^f).clauses).len() &&
+    // (^f).unsat((^trail).assignments) &&
+    (@(^f).clauses)[@n].unsat((^trail).assignments),
 })]
 #[ensures(@f.num_vars == @(^f).num_vars)]
 #[ensures(f.equisat(^f))]
