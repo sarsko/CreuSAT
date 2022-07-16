@@ -41,20 +41,20 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                 let split = line.split(' ').filter(|e| e != &"").collect::<Vec<_>>();
                 if split.len() > 0 {
                     match split[0].chars().next().unwrap() {
-                        'c' => {},
-                        'p' => {/*match split[2].parse::<usize>() {
-                            Ok(n) => {
-                                if num_lits_set {
-                                    return Err("Error in input file - multiple p lines".to_string());
-                                }
-                                num_lits_set = true;
-                                num_literals = n
-                            }
-                            Err(_) => {
-                                return Err("Error in input file".to_string());
-                            }
-                            */
-                        },
+                        'c' => {}
+                        'p' => { /*match split[2].parse::<usize>() {
+                             Ok(n) => {
+                                 if num_lits_set {
+                                     return Err("Error in input file - multiple p lines".to_string());
+                                 }
+                                 num_lits_set = true;
+                                 num_literals = n
+                             }
+                             Err(_) => {
+                                 return Err("Error in input file".to_string());
+                             }
+                             */
+                        }
                         '%' => {
                             break;
                         } // The Satlib files follow this convention

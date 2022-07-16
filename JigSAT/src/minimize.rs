@@ -5,7 +5,6 @@ use crate::{
     trail::{Trail, UNSET_REASON},
 };
 
-
 #[inline(always)]
 pub(crate) fn lit_redundant(
     solver: &mut Solver, trail: &Trail, formula: &Formula, lit: Lit, abstract_levels: u32, seen: &mut Vec<bool>,

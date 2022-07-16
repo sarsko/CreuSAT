@@ -9,7 +9,9 @@ use log::debug;
 use std::collections::VecDeque;
 //use std::collections::BinaryHeap;
 
-use crate::{clause::*, formula::*, lit::*, solver_types::*, trail::*, decision::*, watches::*, unit_prop::unit_propagate};
+use crate::{
+    clause::*, decision::*, formula::*, lit::*, solver_types::*, trail::*, unit_prop::unit_propagate, watches::*,
+};
 
 #[derive(PartialEq)]
 pub(crate) enum SubsumptionRes {
@@ -156,7 +158,9 @@ impl Preprocess {
     // Corresponds to SimpSolver::eliminate in Glucose
     // Glucose passes turn_off_elim as true, which means that it always cleans up fully afterwards
     // We just pass Preprocess as `mut self`, to have it drop at function exit
-    pub(crate) fn preprocess(mut self, formula: &mut Formula, trail: &mut Trail, decisions: &mut impl Decisions, watches: &mut Watches) -> bool {
+    pub(crate) fn preprocess(
+        mut self, formula: &mut Formula, trail: &mut Trail, decisions: &mut impl Decisions, watches: &mut Watches,
+    ) -> bool {
         self.init(formula);
 
         // This should be uncommented.
@@ -176,8 +180,8 @@ impl Preprocess {
             if self.subsumption_queue.len() > 0 || self.bwdsub_assigns < trail.trail.len() {
                 match self.backward_subsumption_check(formula, trail, watches) {
                     Some(false) => return false,
-                    Some(true)  => {},
-                    None        => break,
+                    Some(true) => {}
+                    None => break,
                 }
             }
 
@@ -194,8 +198,8 @@ impl Preprocess {
                 // !frozen[elim] &&  // We dont support frozen vars (only for assumptions -> we are not incremental)
                 match self.eliminate_var(elim, formula, trail, watches) {
                     Some(false) => return false,
-                    Some(true)  => {},
-                    None        => break,
+                    Some(true) => {}
+                    None => break,
                 }
             }
         }
@@ -234,7 +238,9 @@ impl Preprocess {
 
     // Backward subsumption + backward subsumption resolution
     //bool SimpSolver::backwardSubsumptionCheck(bool v) {
-    fn backward_subsumption_check(&mut self, formula: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> Option<bool> {
+    fn backward_subsumption_check(
+        &mut self, formula: &mut Formula, trail: &mut Trail, watches: &mut Watches,
+    ) -> Option<bool> {
         //assert(decisionLevel() == 0);
 
         while self.subsumption_queue.len() > 0 || self.bwdsub_assigns < trail.trail.len() {
@@ -320,7 +326,9 @@ impl Preprocess {
 
     // What happens if we ever try to strengthen a unit?
     // I would not be surprised if we are unsound, and have to init watches + do unit prop both beforehand and during preprocessing.
-    fn strengthen_clause(&mut self, cref: usize, lit: Lit, formula: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> bool {
+    fn strengthen_clause(
+        &mut self, cref: usize, lit: Lit, formula: &mut Formula, trail: &mut Trail, watches: &mut Watches,
+    ) -> bool {
         let c = &mut formula[cref];
         //assert(decisionLevel() == 0);
 
@@ -344,7 +352,7 @@ impl Preprocess {
             let mut mock = 0;
             return match unit_propagate(formula, trail, watches, &mut mock) {
                 Err(_) => false,
-                _ => true
+                _ => true,
             };
 
             // return enqueue(c[0]) && propagate() == CRef_Undef
@@ -366,7 +374,9 @@ impl Preprocess {
     }
 
     // v is the index of the var to be removed
-    fn eliminate_var(&mut self, v: usize, formula: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> Option<bool> {
+    fn eliminate_var(
+        &mut self, v: usize, formula: &mut Formula, trail: &mut Trail, watches: &mut Watches,
+    ) -> Option<bool> {
         /*
         assert(!frozen[v]);
         assert(!isEliminated(v));

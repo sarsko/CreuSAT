@@ -1,7 +1,5 @@
 use crate::{assignments::*, formula::*, trail::*, util::*};
-use std::{
-    ops::{Index, IndexMut},
-};
+use std::ops::{Index, IndexMut};
 
 const INVALID: usize = usize::MAX;
 pub(crate) trait Decisions {
