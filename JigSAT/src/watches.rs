@@ -3,12 +3,12 @@ use std::ops::{Index, IndexMut};
 
 // Lets try this scheme and see how well it fares
 // Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
-pub struct Watcher {
+pub(crate) struct Watcher {
     pub cref: usize,
     pub blocker: Lit,
 }
 
-pub struct Watches {
+pub(crate) struct Watches {
     watches: Vec<Vec<Watcher>>,
 }
 
@@ -33,7 +33,10 @@ impl IndexMut<usize> for Watches {
     }
 }
 
-pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit) {
+#[inline]
+pub(crate) fn update_watch(
+    f: &Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
+) {
     let watchidx = lit.to_watchidx();
     let end = watches.watches[watchidx].len() - 1;
     watches.watches[watchidx].swap(j, end);
@@ -54,7 +57,7 @@ impl Watches {
         self.watches.len()
     }
 
-    pub fn new(f: &Formula) -> Watches {
+    pub(crate) fn new(f: &Formula) -> Watches {
         let mut i: usize = 0;
         let mut watches = Vec::new();
         while i < f.num_vars {
@@ -65,12 +68,12 @@ impl Watches {
         Watches { watches }
     }
 
-    pub fn move_to_end(&mut self, old_idx: usize, old_pos: usize, new_lit: Lit, _f: &Formula) {
+    pub(crate) fn move_to_end(&mut self, old_idx: usize, old_pos: usize, new_lit: Lit, _f: &Formula) {
         let end = self.watches[old_idx].len() - 1;
         self[old_idx].swap(old_pos, end);
     }
 
-    pub fn init_watches(&mut self, f: &Formula) {
+    pub(crate) fn init_watches(&mut self, f: &Formula) {
         let mut i = 0;
         while i < f.len() {
             let clause = &f[i];
@@ -82,7 +85,8 @@ impl Watches {
         }
     }
 
-    pub fn unwatch(&mut self, f: &Formula, trail: &Trail, cref: usize, lit: Lit) {
+    #[inline]
+    pub(crate) fn unwatch(&mut self, f: &Formula, trail: &Trail, cref: usize, lit: Lit) {
         let watchidx = lit.to_neg_watchidx();
         let mut i: usize = 0;
         while i < self[watchidx].len() {
@@ -109,7 +113,7 @@ impl Watches {
     }
 
     #[inline]
-    pub fn unwatch_all_lemmas(&mut self, f: &Formula, s: &Solver) {
+    pub(crate) fn unwatch_all_lemmas(&mut self, f: &Formula, s: &Solver) {
         let mut i: usize = 0;
         while i < self.len() {
             let mut j = 0;

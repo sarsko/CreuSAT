@@ -27,17 +27,22 @@ impl IndexMut<usize> for Assignments {
 
 impl Assignments {
     #[inline]
-    pub fn len(&self) -> usize {
+    pub(crate) fn len(&self) -> usize {
         self.0.len()
     }
 
     #[inline]
-    pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &[Step]) {
+    pub(crate) fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &[Lit]) {
         self[lit.index()] = lit.is_positive() as u8;
     }
 
     #[inline]
-    pub fn new(f: &Formula) -> Self {
+    pub(crate) fn new(f: &Formula) -> Self {
         Assignments(vec![2; f.num_vars])
+    }
+
+    #[inline]
+    pub(crate) fn is_assigned(&self, idx: usize) -> bool {
+        self[idx] < 2
     }
 }

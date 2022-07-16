@@ -2,9 +2,23 @@ use ::std::ops;
 
 use crate::assignments::*;
 
-#[derive(Clone, Copy, Eq, PartialEq, Debug)]
+#[derive(Clone, Copy, Eq, PartialEq, PartialOrd, Ord)]
 pub struct Lit {
     code: u32,
+}
+
+use std::fmt;
+
+impl fmt::Debug for Lit {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self)
+    }
+}
+impl fmt::Display for Lit {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let neg_or_empty = if self.is_positive() { "" } else { "¬" };
+        write!(f, "{}   {}", neg_or_empty, self.index())
+    }
 }
 
 impl Lit {
@@ -12,6 +26,13 @@ impl Lit {
     pub fn index(self) -> usize {
         (self.code >> 1) as usize
     }
+
+    /*
+    #[inline(always)]
+    pub fn var(self) -> Var {
+        self.code >> 1
+    }
+    */
 
     #[inline(always)]
     pub fn is_positive(self) -> bool {
@@ -44,17 +65,17 @@ impl Lit {
     }
 
     #[inline(always)]
+    pub fn get_curr_assigned_state(self, a: &Assignments) -> AssignedState {
+        a[self.index()]
+    }
+
+    #[inline(always)]
     pub fn to_watchidx(self) -> usize {
         self.code as usize
     }
     #[inline(always)]
     pub fn to_neg_watchidx(self) -> usize {
         (!self).code as usize
-    }
-
-    #[inline(always)]
-    pub fn phase_saved(idx: usize, assignments: &Assignments) -> Lit {
-        Lit { code: (idx << 1) as u32 | ((assignments[idx] == 1) as u32) }
     }
 
     // This is only called in the parser
@@ -65,6 +86,21 @@ impl Lit {
     #[inline]
     pub fn select_other(self, a: Self, b: Self) -> Self {
         Self { code: self.code ^ a.code ^ b.code }
+    }
+
+    #[inline]
+    pub(crate) fn abstract_level(self, t: &Vec<u32>) -> u32 {
+        1 << (t[self.index()] & 31)
+    }
+
+    #[inline]
+    pub(crate) fn lit_in_clause(self, c: &[Lit]) -> bool {
+        for l in c {
+            if *l == self {
+                return true;
+            }
+        }
+        false
     }
 }
 

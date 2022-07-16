@@ -27,6 +27,22 @@ pub struct Formula {
     num_vars: usize,
 }
 
+impl Clone for Assignments {
+    #[trusted]
+    #[ensures(*self == result)]
+    fn clone(&self) -> Self {
+        Assignments(self.0.clone())
+    }
+}
+
+impl Clone for Pasn {
+    #[trusted]
+    #[ensures(*self == result)]
+    fn clone(&self) -> Self {
+        Pasn { assign: self.assign.clone(), ix: self.ix }
+    }
+}
+
 impl Formula {
     #[predicate]
     fn invariant(self) -> bool {
@@ -92,22 +108,6 @@ impl Pasn {
     }
 }
 
-impl Clone for Assignments {
-    #[trusted]
-    #[ensures(*self == result)]
-    fn clone(&self) -> Self {
-        Assignments(self.0.clone())
-    }
-}
-
-impl Clone for Pasn {
-    #[trusted]
-    #[ensures(*self == result)]
-    fn clone(&self) -> Self {
-        Pasn { assign: self.assign.clone(), ix: self.ix }
-    }
-}
-
 impl Clause {
     #[predicate]
     fn sat(self, a: Assignments) -> bool {
@@ -170,7 +170,7 @@ fn set_next(pa: &Pasn, b: bool) -> Pasn {
 #[variant(@f.num_vars - @pa.ix)]
 #[requires(pa.invariant(@f.num_vars))]
 #[requires(f.invariant())]
-#[ensures(!result == forall<a: Assignments> a.compatible(pa) ==> !f.sat(a))]
+#[ensures(!result == (forall<a: Assignments> a.compatible(pa) ==> !f.sat(a)))]
 fn solve(f: &Formula, pa: Pasn) -> bool {
     if pa.ix == pa.assign.0.len() {
         return f.eval(&pa.assign);
@@ -179,7 +179,8 @@ fn solve(f: &Formula, pa: Pasn) -> bool {
 }
 
 #[requires(f.invariant())]
-#[ensures(!result ==> forall<a: Assignments> (@a.0).len() == @f.num_vars ==> !f.sat(a))]
+#[ensures(!result ==> forall<a: Assignments> (@a.0).len() == @f.num_vars
+                  ==> !f.sat(a))]
 #[ensures( result ==> exists<a: Assignments> f.sat(a))]
 pub fn solver(f: &Formula) -> bool {
     solve(f, Pasn { assign: Assignments(vec![false; f.num_vars]), ix: 0 })
