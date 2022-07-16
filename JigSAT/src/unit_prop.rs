@@ -106,7 +106,6 @@ pub(crate) fn unit_propagate(
         match unit_prop_current_level(formula, trail, watches, lit, ticks) {
             Ok(_) => {}
             Err(cref) => {
-                println!("c err");
                 return Err(cref);
             }
         }
