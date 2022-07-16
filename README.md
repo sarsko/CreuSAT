@@ -3,7 +3,7 @@
 ## What is this?
 
 A [SAT solver](https://en.wikipedia.org/wiki/SAT_solver) which is written in Rust.
-It is formally verified using [Creusot](https://github.com/xldenis/creusot)
+It is formally verified using [Creusot](https://github.com/xldenis/creusot).
 
 ## What does that mean?
 
@@ -14,18 +14,18 @@ is unsatisfiable (UNSAT), then we **know** (read: it is proven) that the formula
 ## Ah, nice. What features does it have?
 
 It currently has the following features:
-- Clause analysis with clause learning
-- Unit propagation
-- Two watched literals (2WL) with blocking literals and circular search
-- The variable move-to-front (VMTF) decision heuristic
-- Phase saving
-- Backtracking of the trail to asserting level
-- Exponential moving averages (EMA) based restarts
-- Clause deletion (without garbage collection)
+- Clause analysis with clause learning.
+- Unit propagation.
+- Two watched literals (2WL) with blocking literals and circular search.
+- The variable move-to-front (VMTF) decision heuristic.
+- Phase saving.
+- Backtracking of the trail to asserting level.
+- Exponential moving averages (EMA) based restarts.
+- Clause deletion (without garbage collection).
 
 ## How do I run it?
 
-Firstly you'll need to [get Rust](https://www.rust-lang.org/tools/install)
+Firstly you'll need to [get Rust](https://www.rust-lang.org/tools/install).
 
 Then afterwards, the solver can be built with:
 ```
@@ -48,7 +48,7 @@ Remember do add the `--release` as in `cargo test --release [TEST_TO_RUN]`, othe
 I would recommend following the instructions in the [Creusot](https://github.com/xldenis/creusot#installing) directory for instructions on how to get Why3 and Creusot up and running.
 
 To prove it you'll need to do the following:
-1. Install [Rust](https://www.rust-lang.org/tools/install)
+1. Install [Rust](https://www.rust-lang.org/tools/install).
 2. Install [Creusot](https://github.com/xldenis/creusot). Clone it, and then run `cargo install --path creusot`.
 3. Install Why3. I recommend following the guide in the [Creusot](https://github.com/xldenis/creusot#installing) repository.
 
@@ -67,14 +67,14 @@ If the Why3 IDE appears, then it should work to press <kbd>3</kbd> and wait a bi
 
 The following `cargo make` commands are supported:
 - `prove-CreuSAT`/`p` : Generate the MLCFG for `CreuSAT` and run the Why3 IDE.
-- `prove-Robinson` : Generate the MLCFG for `Friday` and run the Why3 IDE.
+- `prove-Robinson` : Generate the MLCFG for `Robinson` and run the Why3 IDE.
 - `prove-Friday` : Generate the MLCFG for `Friday` and run the Why3 IDE.
 - `clean` : Cleans all generated CFG and Why3 session files.
    - `clean-CreuSAT` : Clean just the `CreuSAT` files.
    - `clean-Robinson` : Clean just the `Robinson` files.
    - `clean-Friday` : Clean just the `Friday` files.
-- `StarExec` : Generate a `creusat.zip` file ready to be uploaded to the StarExec clusters
-- `StarExec-JigSAT` : Generate a `jigsat.zip` file ready to be uploaded to the StarExec clusters
+- `StarExec` : Generate a `creusat.zip` file ready to be uploaded to the StarExec clusters.
+- `StarExec-JigSAT` : Generate a `jigsat.zip` file ready to be uploaded to the StarExec clusters.
 
 ## Creusot seems really cool! How can I learn it?
 
@@ -87,7 +87,7 @@ which are both easier to grok algorithmically and proof-wise.
 ## Overview of the repository
 
 Overview of the repository: \
-[/CreuSAT](/CreuSAT/) - The source code for CreuSAT \
+[/CreuSAT](/CreuSAT/) - The source code for CreuSAT. \
 [/Friday](/Friday/) - A fully verified and super naive SAT solver. \
 [/JigSAT](/JigSAT/) - An unverified solver based on CreuSAT. Used for experimenting. \
 [/Robinson](/Robinson/) - A fully verified DPLL-based solver. \
