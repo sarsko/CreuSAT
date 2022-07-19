@@ -75,9 +75,9 @@ impl Preprocess {
     }
 
     fn populate_occurs_and_n_occ(&mut self, formula: &Formula) {
-        self.occurs = vec![Vec::new(); formula.num_vars * 2];
-        self.n_occ = vec![0; formula.num_vars * 2];
-        for (i, c) in formula.clauses.iter().enumerate() {
+        self.occurs = vec![Vec::new(); formula.num_vars() * 2];
+        self.n_occ = vec![0; formula.num_vars() * 2];
+        for (i, c) in formula.iter().enumerate() {
             for l in &c.lits {
                 self.occurs[l.index()].push(i);
                 self.n_occ[l.to_watchidx()] += 1;
@@ -91,11 +91,11 @@ impl Preprocess {
     }
 
     fn init(&mut self, formula: &Formula) {
-        self.touched = vec![false; formula.num_vars];
+        self.touched = vec![false; formula.num_vars()];
         self.populate_occurs_and_n_occ(formula);
         self.populate_elim();
         self.populate_subsumption_queue(formula);
-        self.eliminated = vec![false; formula.num_vars];
+        self.eliminated = vec![false; formula.num_vars()];
     }
 }
 
@@ -217,7 +217,7 @@ impl Preprocess {
     }
 
     fn remove_clause_in_preprocessing(&mut self, formula: &mut Formula, cref: usize) {
-        if formula.clauses[cref].deleted {
+        if formula[cref].deleted {
             unreachable!("Already deleted");
             return;
         }

@@ -129,7 +129,7 @@ pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_li
             return false;
         } else {
             let clause2: Clause2 = Clause2::new(currclause);
-            formula.clauses.push(clause2);
+            formula.add_unwatched_clause(clause2);
         }
     }
     match solver(formula) {

@@ -3,9 +3,9 @@ use crate::{assignments::*, clause::*, lit::*, solver::*, solver_types::*, trail
 use log::debug;
 use std::ops::{Index, IndexMut};
 pub struct Formula {
-    pub clauses: Vec<Clause>,
+    clauses: Vec<Clause>,
     learnt_core: Vec<Cref>,
-    pub num_vars: usize,
+    num_vars: usize,
     cur_restart: usize,
     num_clauses_before_reduce: usize,
     special_inc_reduce_db: usize,
@@ -46,9 +46,18 @@ impl Formula {
         }
     }
 
-    #[inline]
+    #[inline(always)]
     pub(crate) fn len(&self) -> usize {
         self.clauses.len()
+    }
+
+    pub(crate) fn iter(&self) -> impl Iterator<Item = &Clause> + '_ {
+        self.clauses.iter()
+    }
+
+    #[inline(always)]
+    pub(crate) fn num_vars(&self) -> usize {
+        self.num_vars
     }
 
     pub(crate) fn check_formula_invariant(&self) -> SatResult {
@@ -255,4 +264,42 @@ impl Formula {
         }
         false
     }
+}
+
+pub(crate) trait ClauseDB {
+    fn new(num_vars: usize) -> Self;
+
+    fn len(&self) -> usize;
+
+    fn index(&self, i: usize) -> &Clause;
+
+    fn index_mut(&mut self, i: usize) -> &mut Clause;
+
+    fn check_invariant(&self) -> SatResult;
+
+    fn learn_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> Cref;
+
+    fn add_unwatched_clause(&mut self, clause: Clause) -> usize;
+
+    fn remove_clause_in_preprocessing(&mut self, cref: usize);
+
+    fn mark_clause_as_deleted(&mut self, cref: usize);
+
+    fn remove_deleted(&mut self);
+
+    fn delete_clauses(&mut self, watches: &mut Watches, t: &Trail);
+
+    fn simplify_db_on_empty_trail(&mut self, watches: &mut Watches, t: &Trail);
+
+    fn reduce_db(&mut self, watches: &mut Watches, trail: &Trail, s: &mut Solver);
+
+    fn collect_garbage_on_empty_trail(&mut self, watches: &mut Watches, s: &Solver);
+
+    fn mark_clauses_as_deleted(&mut self, crefs: &mut Vec<Cref>);
+
+    fn trigger_reduce(&mut self, num_conflicts: usize, initial_len: usize) -> bool;
+
+    //fn iter(&self) -> impl Iterator<Item=&Clause> + '_;
+
+    fn num_vars(&self) -> usize;
 }

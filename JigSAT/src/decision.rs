@@ -67,30 +67,30 @@ impl IndexMut<usize> for VMTF {
 
 impl VMTF {
     fn make_linked_list(f: &Formula, lit_order: Vec<usize>) -> VMTF {
-        let mut linked_list: Vec<Node> = vec![Default::default(); f.num_vars];
+        let mut linked_list: Vec<Node> = vec![Default::default(); f.num_vars()];
         let mut i: usize = 0;
         let mut head: usize = 0;
-        while i < f.num_vars {
+        while i < f.num_vars() {
             let j = lit_order[i];
             if i == 0 {
-                if f.num_vars > 1 {
+                if f.num_vars() > 1 {
                     linked_list[j].next = lit_order[1];
                 } else {
                     linked_list[j].next = INVALID;
                 }
                 linked_list[j].prev = INVALID;
                 head = j;
-            } else if i == f.num_vars - 1 {
+            } else if i == f.num_vars() - 1 {
                 linked_list[j].next = INVALID;
                 linked_list[j].prev = lit_order[i - 1];
             } else {
                 linked_list[j].next = lit_order[i + 1];
                 linked_list[j].prev = lit_order[i - 1];
             }
-            linked_list[j].ts = f.num_vars - i;
+            linked_list[j].ts = f.num_vars() - i;
             i += 1;
         }
-        VMTF { linked_list, timestamp: f.num_vars + 1, start: head, search: head }
+        VMTF { linked_list, timestamp: f.num_vars() + 1, start: head, search: head }
     }
 
     fn rescore(&mut self, _f: &Formula) {
@@ -146,9 +146,9 @@ impl VMTF {
 
 impl Decisions for VMTF {
     fn new(f: &Formula) -> VMTF {
-        let mut lit_order: Vec<usize> = vec![0; f.num_vars];
-        let mut counts: Vec<usize> = vec![0; f.num_vars];
-        let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); f.num_vars];
+        let mut lit_order: Vec<usize> = vec![0; f.num_vars()];
+        let mut counts: Vec<usize> = vec![0; f.num_vars()];
+        let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); f.num_vars()];
         let mut i: usize = 0;
         while i < f.len() {
             let curr_clause = &f[i];
@@ -160,13 +160,13 @@ impl Decisions for VMTF {
             i += 1;
         }
         i = 0;
-        while i < f.num_vars {
+        while i < f.num_vars() {
             counts_with_index[i] = (counts[i], i);
             i += 1;
         }
         sort_reverse(&mut counts_with_index);
         i = 0;
-        while i < f.num_vars {
+        while i < f.num_vars() {
             lit_order[i] = counts_with_index[i].1;
             i += 1;
         }
@@ -417,9 +417,9 @@ impl VSIDS {
 impl Decisions for VSIDS {
     fn new(formula: &Formula) -> Self {
         let mut vsids = VSIDS::default();
-        vsids.order_heap = Heap::new(formula.num_vars);
-        vsids.order_heap.build(formula.num_vars);
-        vsids.decision = vec![true; formula.num_vars];
+        vsids.order_heap = Heap::new(formula.num_vars());
+        vsids.order_heap.build(formula.num_vars());
+        vsids.decision = vec![true; formula.num_vars()];
         vsids
     }
 
@@ -469,7 +469,7 @@ impl Decisions for VSIDS {
             return;
         }
         let clause = &formula[reason];
-        for l in formula.clauses[reason].lits.iter().skip(1) {
+        for l in formula[reason].lits.iter().skip(1) {
             self.bump_variable(l.index());
         }
     }

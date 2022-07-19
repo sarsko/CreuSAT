@@ -25,7 +25,7 @@ pub(crate) fn analyze_conflict(
     }
     // I tried moving seen to solver, but it wasn't really any faster (+ it is nice to not have to carry the invariant that seen is all false)
     let mut to_bump = Vec::new(); // VMTF and VSIDS
-    let mut seen = vec![false; formula.num_vars];
+    let mut seen = vec![false; formula.num_vars()];
     let mut out_learnt: Vec<Lit> = vec![Lit::new(0, true); 1]; // I really don't like this way of reserving space.
     let mut path_c = 0;
     let mut confl = cref;

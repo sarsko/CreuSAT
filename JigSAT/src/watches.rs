@@ -60,7 +60,7 @@ impl Watches {
     pub(crate) fn new(f: &Formula) -> Watches {
         let mut i: usize = 0;
         let mut watches = Vec::new();
-        while i < f.num_vars {
+        while i < f.num_vars() {
             watches.push(Vec::new());
             watches.push(Vec::new());
             i += 1;

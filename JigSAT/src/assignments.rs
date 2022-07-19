@@ -38,7 +38,7 @@ impl Assignments {
 
     #[inline]
     pub(crate) fn new(f: &Formula) -> Self {
-        Assignments(vec![2; f.num_vars])
+        Assignments(vec![2; f.num_vars()])
     }
 
     #[inline]

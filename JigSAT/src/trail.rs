@@ -36,8 +36,8 @@ impl Trail {
     pub(crate) fn new(f: &Formula, a: Assignments) -> Trail {
         Trail {
             assignments: a,
-            lit_to_level: vec![UNSET_LEVEL; f.num_vars],
-            lit_to_reason: vec![UNSET_REASON; f.num_vars],
+            lit_to_level: vec![UNSET_LEVEL; f.num_vars()],
+            lit_to_reason: vec![UNSET_REASON; f.num_vars()],
             trail: Vec::new(),
             curr_i: 0,
             decisions: Vec::new(),
