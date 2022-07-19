@@ -128,7 +128,7 @@ impl Solver {
         clause: Clause, level: u32, target_phase: &mut TargetPhase,
     ) {
         let clause_len = clause.len();
-        let lbd = clause.lbd;
+        let lbd = clause.get_lbd();
         let cref = formula.learn_clause(clause, watches, trail);
 
         self.restart.glucose.update(trail.trail.len(), lbd as usize);

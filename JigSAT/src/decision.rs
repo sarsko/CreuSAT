@@ -1,4 +1,4 @@
-use crate::{assignments::*, formula::*, trail::*, util::*};
+use crate::{assignments::*, formula::*, trail::*, util::*, clause::ClauseTrait};
 use std::ops::{Index, IndexMut};
 
 const INVALID: usize = usize::MAX;
@@ -469,7 +469,7 @@ impl Decisions for VSIDS {
             return;
         }
         let clause = &formula[reason];
-        for l in formula[reason].lits.iter().skip(1) {
+        for l in formula[reason].get_literals().iter().skip(1) {
             self.bump_variable(l.index());
         }
     }
