@@ -1,8 +1,4 @@
-use crate::{formula::*, lit::*, solver::Solver, trail::*};
-use std::{
-    cmp::Ordering,
-    ops::{Index, IndexMut},
-};
+use crate::{lit::*, solver::Solver, trail::*};
 
 use crate::preprocess::SubsumptionRes;
 
@@ -17,6 +13,9 @@ pub struct Clause {
     lits: Vec<Lit>,
 }
 */
+
+// HEADER:
+// deleted: 1, can_be_deleted: 1, mark:
 
 pub struct Clause {
     //lits: &'a [Lit],
@@ -84,10 +83,12 @@ impl Clause {
     }
     */
 
-    pub fn create_header(lits: &[Lit]) -> [Lit; 2] {
+    #[inline]
+    pub(crate) fn create_header(lits: &[Lit], lbd: u32) -> [Lit; 2] {
         let mut header = ZERO_LIT;
-        header.set_deleted(false);
-        header.set_can_be_deleted(true);
+        //header.set_deleted(false);
+        header.set_can_be_deleted();
+        header.set_fresh_lbd(lbd);
         //header.set_lbd(
         //header.set_search(
         let size = Lit::raw(lits.len() as u32);
@@ -134,27 +135,6 @@ impl Clause {
     */
 
     /*
-    pub(crate) fn less_than(&self, other: &Clause) -> Ordering {
-        if self.len() == 2 {
-            if other.len() == 2 {
-                Ordering::Equal
-            } else {
-                Ordering::Less
-            }
-        } else if other.len() == 2 {
-            Ordering::Greater
-        } else if self.get_lbd() < other.get_lbd() {
-            Ordering::Less
-        } else if self.get_lbd() > other.get_lbd() {
-            Ordering::Greater
-        } else if self.len() < other.len() {
-            Ordering::Less
-        } else if self.len() > other.len() {
-            Ordering::Greater
-        } else {
-            Ordering::Equal
-        }
-    }
 
     pub(crate) fn check_clause_invariant(&self, n: usize) -> bool {
         let mut i: usize = 0;
@@ -213,8 +193,7 @@ impl Clause {
     }
     */
 
-    /*
-    fn calc_lbd(&self, trail: &Trail, solver: &mut Solver) -> u32 {
+    pub(crate) fn calc_lbd(lits: &[Lit], trail: &Trail, solver: &mut Solver) -> u32 {
         /*
         // We don't bother calculating for long clauses.
         if self.len() >= 2024 {
@@ -222,7 +201,7 @@ impl Clause {
         }
         */
         let mut lbd: u32 = 0;
-        for l in self.get_literals() {
+        for l in lits {
             let level = trail.lit_to_level[l.index()];
             if solver.perm_diff[level as usize] != solver.num_conflicts {
                 solver.perm_diff[level as usize] = solver.num_conflicts;
@@ -231,7 +210,6 @@ impl Clause {
         }
         lbd
     }
-    */
 
     /*
     pub(crate) fn calc_and_set_lbd(&mut self, trail: &Trail, solver: &mut Solver) {

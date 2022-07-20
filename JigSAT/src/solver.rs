@@ -90,12 +90,6 @@ pub(crate) struct Solver {
     pub(crate) adapt_strategies: bool,
     //pub seen: Vec<bool>,
 }
-/*
-// MicroSat
-if (S->fast > (S->slow / 100) * 125) {                        // If fast average is substantially larger than slow average
-    S->res = 0; S->fast = (S->slow / 100) * 125; restart (S);   // Restart and update the averages
-        if (S->nLemmas > S->maxLemmas) reduceDB (S, 6); } }
-*/
 
 impl Solver {
     fn new(f: &ClauseArena) -> Solver {
@@ -122,41 +116,11 @@ impl Solver {
     }
 
     #[inline]
-    fn handle_long_clause(
-        &mut self, formula: &mut ClauseArena, trail: &mut Trail, watches: &mut Watches, decisions: &mut impl Decisions,
-        clause: Vec<Lit>, level: u32, target_phase: &mut TargetPhase,
-    ) {
-        let first_lit = clause[0];
-        let clause_len = clause.len();
-        //let lbd = clause.get_lbd();
-        let cref = formula.learn_clause(clause, watches, trail);
-
-        //self.restart.glucose.update(trail.trail.len(), lbd as usize);
-        //self.restart.block_restart(self.num_conflicts);
-
-        /*
-        if lbd == 2 {
-            self.stats.num_glues += 1;
-        }
-        if clause_len == 2 {
-            self.stats.num_binary += 1;
-        }
-        */
-
-        //d.increment_and_move(f, cref, &t.assignments);
-        trail.backtrack_to(level, formula, decisions, target_phase);
-        let lit = formula.get_first_literal(cref);
-        assert!(lit == first_lit);
-        assert!(formula.get_literals(cref).len() == clause_len);
-        trail.enq_assignment(lit, formula, cref);
-    }
-
-    #[inline]
     fn handle_conflict(
         &mut self, formula: &mut ClauseArena, trail: &mut Trail, cref: usize, watches: &mut Watches,
         decisions: &mut impl Decisions, target_phase: &mut TargetPhase,
     ) -> bool {
-        let res = analyze_conflict(formula, trail, cref, decisions, self);
+        let res = analyze_conflict(formula, trail, cref, decisions, self, watches, target_phase);
         match res {
             Conflict::Ground => {
                 return false;
@@ -167,11 +131,12 @@ impl Solver {
                 self.stats.num_unary += 1;
 
                 trail.learn_unit(lit, formula, decisions, watches, self, target_phase);
-                //formula.reduce_db(watches, trail, self);
+                if formula.trigger_reduce(self.num_conflicts, self.initial_len) {
+                    formula.reduce_db(watches, trail, self);
+                    formula.collect_garbage_on_empty_trail(watches, self);
+                }
             }
-            Conflict::Learned(level, clause) => {
-                self.handle_long_clause(formula, trail, watches, decisions, clause, level, target_phase);
-            }
+            Conflict::Learned => {} // Handled inside analyze_conflict
         }
 
         decisions.decay_var_inc();
@@ -254,11 +219,9 @@ impl Solver {
             return SatResult::Unsat;
         }
 
-        /*
         if formula.trigger_reduce(self.num_conflicts, self.initial_len) {
             formula.reduce_db(watches, trail, self);
         }
-        */
 
         match decisions.get_next(&trail.assignments, formula) {
             Some(next) => {

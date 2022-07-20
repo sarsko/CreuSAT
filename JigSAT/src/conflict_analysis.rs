@@ -1,22 +1,26 @@
 use crate::{
+    clause::*,
     clause_database::*,
     decision::*,
     lit::*,
     minimize::*,
     solver::{SearchMode, Solver},
+    target_phase::*,
     trail::*,
+    watches::*,
 };
 
 #[derive(Debug)]
 pub(crate) enum Conflict {
     Ground,
     Unit(Lit),
-    Learned(u32, Vec<Lit>),
+    Learned,
 }
 
 #[inline]
 pub(crate) fn analyze_conflict(
-    formula: &ClauseArena, trail: &Trail, cref: usize, decisions: &mut impl Decisions, solver: &mut Solver,
+    formula: &mut ClauseArena, trail: &mut Trail, cref: usize, decisions: &mut impl Decisions, solver: &mut Solver,
+    watches: &mut Watches, target_phase: &mut TargetPhase,
 ) -> Conflict {
     let decisionlevel = trail.decision_level();
     if decisionlevel == 0 {
@@ -25,7 +29,7 @@ pub(crate) fn analyze_conflict(
     // I tried moving seen to solver, but it wasn't really any faster (+ it is nice to not have to carry the invariant that seen is all false)
     let mut to_bump = Vec::new(); // VMTF and VSIDS
     let mut seen = vec![false; formula.num_vars()];
-    let mut out_learnt: Vec<Lit> = vec![Lit::new(0, true); 1]; // I really don't like this way of reserving space.
+    let mut out_learnt: Vec<Lit> = vec![Lit::raw(0); 1]; // I really don't like this way of reserving space.
     let mut path_c = 0;
     let mut confl = cref;
     let mut i = trail.trail.len();
@@ -68,12 +72,8 @@ pub(crate) fn analyze_conflict(
         }
         let next = {
             loop {
-                if i == 0 {
-                    panic!("Ya messed up the trail");
-                }
                 i -= 1;
-                let idx = trail.trail[i].index();
-                if seen[idx] {
+                if seen[trail.trail[i].index()] {
                     break;
                 }
             }
@@ -89,7 +89,7 @@ pub(crate) fn analyze_conflict(
     }
     // decisions.bump_vec_of_vars(f, to_bump); // VMTF. NO-OP for VSIDS
 
-    //recursive_minimization(&mut out_learnt, trail, formula, solver, seen);
+    recursive_minimization(&mut out_learnt, trail, formula, solver, seen);
 
     if out_learnt.len() == 1 {
         Conflict::Unit(out_learnt[0])
@@ -106,11 +106,13 @@ pub(crate) fn analyze_conflict(
             i += 1;
         }
         out_learnt.swap(1, max_i);
-        //let mut clause = Clause::new(out_learnt);
-        //clause.calc_and_set_lbd(trail, solver);
-        //let lbd = clause.get_lbd();
 
-        /*
+        // HANLDE LONG CLAUSE INLINED
+
+        let first_lit = out_learnt[0];
+        let clause_len = out_learnt.len();
+        let lbd = Clause::calc_lbd(&out_learnt, trail, solver);
+
         // VSIDS:
         // UPDATEVARACTIVITY trick (see competition'09 companion paper)
         if solver.search_mode == SearchMode::Focus || solver.search_mode == SearchMode::OnlyFocus {
@@ -120,8 +122,23 @@ pub(crate) fn analyze_conflict(
                 }
             }
         }
-        */
 
-        Conflict::Learned(max_level, out_learnt)
+        let cref = formula.learn_clause(out_learnt, watches, trail, lbd);
+
+        solver.restart.glucose.update(trail.trail.len(), lbd as usize);
+        solver.restart.block_restart(solver.num_conflicts);
+
+        if lbd == 2 {
+            solver.stats.num_glues += 1;
+        }
+        if clause_len == 2 {
+            solver.stats.num_binary += 1;
+        }
+
+        //d.increment_and_move(f, cref, &t.assignments);
+        trail.backtrack_to(max_level, formula, decisions, target_phase);
+        trail.enq_assignment(first_lit, formula, cref);
+
+        Conflict::Learned
     }
 }

@@ -115,17 +115,64 @@ impl ops::Not for Lit {
     }
 }
 
+/*
+HEADER:
+deleted: 1
+can_be_deleted: 1
+mark: 2
+lbd: 28 // This is more than needed, and may be reduced in the future
+*/
+
+//const DELETED_ON: u32  = 0b11111111111111111111111111111111u32;
+const DELETED_ON: u32 = 0b1000_0000_0000_0000_0000_0000_0000_0000u32;
+const DELETED_OFF: u32 = !DELETED_ON; // 0b01111111111111111111111111111111u32;
+
+const CAN_BE_DELETED_ON: u32 = 0b01000000000000000000000000000000u32;
+const CAN_BE_DELETED_OFF: u32 = !CAN_BE_DELETED_ON;
+
+const LBD_BITS: u32 = 0b00001111111111111111111111111111u32;
+
 // HEADER STUFF
 impl Lit {
     pub(crate) fn raw(code: u32) -> Self {
         Self { code }
     }
 
-    pub(crate) fn set_can_be_deleted(&mut self, new_val: bool) {}
+    pub(crate) fn set_deleted(&mut self) {
+        self.code |= DELETED_ON;
+    }
 
-    pub(crate) fn set_deleted(&mut self, new_val: bool) {}
+    pub(crate) fn unset_deleted(&mut self) {
+        self.code &= DELETED_OFF;
+    }
 
-    pub(crate) fn set_lbd(&mut self, new_val: u32) {}
+    pub(crate) fn to_be_deleted(&self) -> bool {
+        self.code >= DELETED_ON
+    }
+
+    pub(crate) fn set_can_be_deleted(&mut self) {
+        self.code |= CAN_BE_DELETED_ON;
+    }
+
+    pub(crate) fn unset_can_be_deleted(&mut self) {
+        self.code &= DELETED_OFF
+    }
+
+    pub(crate) fn can_be_deleted(&self) -> bool {
+        self.code | CAN_BE_DELETED_ON == self.code
+    }
+
+    // REQUIRES self to be zeroes in the LBD range
+    pub(crate) fn set_fresh_lbd(&mut self, new_val: u32) {
+        // Wipes upper bits and sets code
+        self.code |= new_val & LBD_BITS
+    }
+
+    // REQUIRES self to be a header lit
+    pub(crate) fn get_lbd(&self) -> u32 {
+        // Wipes upper bits and sets code
+        self.code & LBD_BITS
+    }
 
     // Requires that this is an header lit
     // Ugly name to prevent misuse.

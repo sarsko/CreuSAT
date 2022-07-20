@@ -68,7 +68,7 @@ impl Trail {
         target_phase: &mut TargetPhase,
     ) {
         self.backtrack_safe(0, formula, decisions, target_phase);
-        //formula.collect_garbage_on_empty_trail(watches, solver);
+        formula.collect_garbage_on_empty_trail(watches, solver);
     }
 
     pub(crate) fn backtrack_safe(

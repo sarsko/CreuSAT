@@ -5,7 +5,6 @@ use crate::{
     trail::{Trail, UNSET_REASON},
 };
 
-/*
 #[inline(always)]
 pub(crate) fn lit_redundant(
     solver: &mut Solver, trail: &Trail, formula: &ClauseArena, lit: Lit, abstract_levels: u32, seen: &mut Vec<bool>,
@@ -16,7 +15,7 @@ pub(crate) fn lit_redundant(
     while solver.analyze_stack.len() > 0 {
         //assert(reason(var(analyze_stack.last())) != CRef_Undef);
         let ante_ref = trail.lit_to_reason[solver.analyze_stack.pop().unwrap().index()];
-        let c = &formula[ante_ref];
+        let c = formula.get_literals(ante_ref);
         /*
         // This should not be possible. I guess Glucose has a relaxed invariant for binary clauses.
         if c.len() == 2 && c[0].lit_unsat(assignments) {
@@ -104,4 +103,3 @@ pub(crate) fn local_minimization(out_learnt: &mut Vec<Lit>, trail: &Trail, formu
     }
     out_learnt.truncate(j);
 }
-*/
