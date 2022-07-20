@@ -1,4 +1,4 @@
-use crate::{formula::*, lit::*, solver::*, trail::*, watches::*, clause::ClauseTrait};
+use crate::{formula::*, lit::*, solver::*, trail::*, watches::*};
 
 #[inline]
 fn unit_prop_check_rest(
@@ -41,7 +41,7 @@ fn unit_prop_do_outer(
     // At this point we know that none of the watched literals are sat
     let mut k: usize = 2;
     let clause_len: usize = clause.len();
-    let mut search = clause.get_search_index();
+    let mut search = clause.search;
     while k < clause_len {
         search += 1;
         if search == clause_len {
@@ -50,7 +50,7 @@ fn unit_prop_do_outer(
         match unit_prop_check_rest(formula, trail, watches, cref, j, search, lit) {
             Err(_) => {}
             Ok(_) => {
-                formula[cref].set_search_index(search);
+                formula[cref].search = search;
                 return Ok(false);
             }
         }

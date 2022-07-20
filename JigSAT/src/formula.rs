@@ -128,7 +128,7 @@ impl Formula {
 
     #[inline(always)]
     pub(crate) fn mark_clause_as_deleted(&mut self, cref: usize) {
-        self.clauses[cref].set_deleted(true);
+        self.clauses[cref].deleted = true;
         self.num_deleted_clauses += 1;
         //self.clauses.remove(cref);
     }
@@ -136,7 +136,7 @@ impl Formula {
     pub(crate) fn remove_deleted(&mut self) {
         let mut i = 0;
         while i < self.len() {
-            if self[i].is_deleted() {
+            if self[i].deleted {
                 self.clauses.swap_remove(i);
             } else {
                 i += 1;
@@ -156,7 +156,7 @@ impl Formula {
         // unwatch trivially SAT
         let mut i = 0;
         while i < self.len() {
-            if !self[i].is_deleted() {
+            if !self[i].deleted {
                 if self[i].len() > 1 && self.is_clause_sat(i, &t.assignments) {
                     self.unwatch_and_mark_as_deleted(i, watches, t);
                 }
@@ -182,10 +182,10 @@ impl Formula {
         self.learnt_core.sort_unstable_by(|a, b| self.clauses[*a].less_than(&self.clauses[*b]));
         //s.max_len += self.len() + 300;
         //self.num_reduced += 1;
-        if self[self.learnt_core[self.learnt_core.len() / 2]].get_lbd() <= 3 {
+        if self[self.learnt_core[self.learnt_core.len() / 2]].lbd <= 3 {
             self.num_clauses_before_reduce += self.special_inc_reduce_db;
         }
-        if self[self.learnt_core[self.learnt_core.len() - 1]].get_lbd() <= 5 {
+        if self[self.learnt_core[self.learnt_core.len() - 1]].lbd <= 5 {
             self.num_clauses_before_reduce += self.special_inc_reduce_db;
         }
         //watches.unwatch_all_lemmas(self, s);
@@ -195,13 +195,13 @@ impl Formula {
         while i < self.learnt_core.len() && limit > 0 {
             let cref = self.learnt_core[i];
             let clause = &mut self[cref];
-            if clause.get_lbd() > 2 && clause.len() > 2 && clause.can_be_deleted() {
+            if clause.lbd > 2 && clause.len() > 2 && clause.can_be_deleted {
                 //&& !trail.locked(clause[0]) {
                 self.unwatch_and_mark_as_deleted(cref, watches, trail);
                 self.learnt_core.swap_remove(i);
                 limit -= 1;
             } else {
-                clause.set_deleted(true);
+                clause.can_be_deleted = true;
                 i += 1;
             }
         }
@@ -232,7 +232,7 @@ impl Formula {
         self.learnt_core.clear();
         let mut i = s.initial_len;
         while i < self.len() {
-            if self[i].can_be_deleted() {
+            if self[i].deleted {
                 self.clauses.swap_remove(i);
             } else {
                 self.learnt_core.push(i);

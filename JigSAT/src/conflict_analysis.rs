@@ -105,13 +105,13 @@ pub(crate) fn analyze_conflict(
         out_learnt.swap(1, max_i);
         let mut clause = Clause::new(out_learnt);
         clause.calc_and_set_lbd(trail, solver);
-        let lbd = clause.get_lbd();
+        let lbd = clause.lbd;
 
         // VSIDS:
         // UPDATEVARACTIVITY trick (see competition'09 companion paper)
         if solver.search_mode == SearchMode::Focus || solver.search_mode == SearchMode::OnlyFocus {
             for var in to_bump.iter() {
-                if formula[trail.lit_to_reason[*var]].get_lbd() < lbd {
+                if formula[trail.lit_to_reason[*var]].lbd < lbd {
                     decisions.bump_variable(*var);
                 }
             }

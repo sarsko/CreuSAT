@@ -7,13 +7,13 @@ use std::{
 use crate::preprocess::SubsumptionRes;
 
 pub struct Clause {
-    deleted: bool,
-    can_be_deleted: bool,
-    mark: u8, // This is an artifact of Glucose/MiniSat, and should be enumed
-    lbd: u32,
-    search: usize,
+    pub deleted: bool,
+    pub can_be_deleted: bool,
+    pub mark: u8, // This is an artifact of Glucose/MiniSat, and should be enumed
+    pub lbd: u32,
+    pub search: usize,
     abstraction: usize,
-    lits: Vec<Lit>,
+    pub lits: Vec<Lit>,
 }
 
 impl Index<usize> for Clause {
@@ -91,16 +91,6 @@ impl Clause {
     pub(crate) fn pop(&mut self) {
         self.lits.pop();
     }
-
-    /*
-    deleted: bool,
-    can_be_deleted: bool,
-    mark: u8, // This is an artifact of Glucose/MiniSat, and should be enumed
-    lbd: u32,
-    search: usize,
-    abstraction: usize,
-    lits: Vec<Lit>,
-    */
 
     pub(crate) fn less_than(&self, other: &Clause) -> Ordering {
         if self.len() == 2 {
@@ -270,62 +260,4 @@ impl Clause {
         self.remove(p);
         self.calc_and_set_abstraction();
     }
-}
-
-impl ClauseTrait for Clause {
-    fn is_deleted(&self) -> bool {
-        self.deleted
-    }
-
-    fn can_be_deleted(&self) -> bool {
-        self.can_be_deleted
-    }
-
-    fn get_mark(&self) -> u8 {
-        self.mark
-    }
-
-    fn get_lbd(&self) -> u32 {
-        self.lbd
-    }
-
-    fn get_search_index(&self) -> usize {
-        self.search
-    }
-
-    fn set_search_index(&mut self, new_idx: usize) {
-        self.search = new_idx;
-    }
-
-    fn get_abstraction(&self) -> usize {
-        self.abstraction
-    }
-
-    fn get_literals(&self) -> &[Lit] {
-        &self.lits
-    }
-
-    fn set_deleted(&mut self, new_val: bool) {
-        self.deleted = new_val;
-    }
-}
-
-pub(crate) trait ClauseTrait {
-    fn is_deleted(&self) -> bool;
-
-    fn can_be_deleted(&self) -> bool;
-
-    fn set_deleted(&mut self, new_val: bool);
-
-    fn get_mark(&self) -> u8; // TODO: enum
-
-    fn get_lbd(&self) -> u32;
-
-    fn get_search_index(&self) -> usize;
-
-    fn set_search_index(&mut self, new_idx: usize);
-
-    fn get_abstraction(&self) -> usize;
-
-    fn get_literals(&self) -> &[Lit];
 }

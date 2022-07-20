@@ -78,7 +78,7 @@ impl Preprocess {
         self.occurs = vec![Vec::new(); formula.num_vars() * 2];
         self.n_occ = vec![0; formula.num_vars() * 2];
         for (i, c) in formula.iter().enumerate() {
-            for l in c.get_literals() {
+            for l in &c.lits {
                 self.occurs[l.index()].push(i);
                 self.n_occ[l.to_watchidx()] += 1;
             }
@@ -106,7 +106,7 @@ impl Preprocess {
         let cref = formula.add_unwatched_clause(clause);
         debug!("Added: {}", cref);
         self.subsumption_queue.push_back(cref);
-        for l in formula[cref].get_literals() {
+        for l in &formula[cref].lits {
             self.occurs[l.index()].push(cref);
             self.n_occ[l.to_watchidx()] += 1;
             self.touched[l.index()] = true;
@@ -134,7 +134,7 @@ impl Preprocess {
                 //for j in 0..cs.len() {
                 //if formula[cs[j]].get_mark() == 0 && !formula[cs[j]].deleted {
                 while j < cs.len() {
-                    if !formula[cs[j]].is_deleted() {
+                    if !formula[cs[j]].deleted {
                         cs.swap_remove(j);
                     } else if formula[cs[j]].get_mark() == 0 {
                         self.subsumption_queue.push_back(cs[j]);
@@ -217,12 +217,12 @@ impl Preprocess {
     }
 
     fn remove_clause_in_preprocessing(&mut self, formula: &mut Formula, cref: usize) {
-        if formula[cref].is_deleted() {
+        if formula[cref].deleted {
             unreachable!("Already deleted");
             return;
         }
-        debug!("Removing cref: {}, {:?}", cref, formula[cref].get_literals());
-        for l in formula[cref].get_literals() {
+        debug!("Removing cref: {}, {:?}", cref, &formula[cref].lits);
+        for l in &formula[cref].lits {
             self.n_occ[l.to_watchidx()] -= 1;
             if let Some(index) = self.occurs[l.index()].iter().position(|value| *value == cref) {
                 debug!("Removed clause {} due to {}", &formula[cref], l);
@@ -265,7 +265,7 @@ impl Preprocess {
             //let c = &formula[cr];
 
             // When is the clause marked?
-            if formula[cr].is_marked() || formula[cr].is_deleted() {
+            if formula[cr].is_marked() || formula[cr].deleted {
                 continue;
             }
 
@@ -388,9 +388,9 @@ impl Preprocess {
         let mut pos = Vec::new();
         let mut neg = Vec::new();
         for e in &self.occurs[v] {
-            if Lit::new(v, true).lit_in_clause(&formula[*e].get_literals()) {
+            if Lit::new(v, true).lit_in_clause(&formula[*e].lits) {
                 pos.push(*e);
-            } else if Lit::new(v, false).lit_in_clause(&formula[*e].get_literals()) {
+            } else if Lit::new(v, false).lit_in_clause(&formula[*e].lits) {
                 neg.push(*e);
             } else {
                 panic!("Haha");
@@ -439,7 +439,7 @@ impl Preprocess {
         for p in &pos {
             for n in &neg {
                 let mut resolvent = Vec::new();
-                if formula[*p].is_deleted() || formula[*n].is_deleted() {
+                if formula[*p].deleted || formula[*n].deleted {
                     panic!("Deleted clauses used in the DP procedure");
                     continue;
                 }
@@ -478,9 +478,9 @@ impl Preprocess {
 
         *size = ps.len() - 1;
 
-        'outer: for q in qs.get_literals() {
+        'outer: for q in &qs.lits {
             if q.index() != v {
-                for p in ps.get_literals() {
+                for p in &ps.lits {
                     if p.index() != q.index() {
                         if *p == !*q {
                             return false;
@@ -503,9 +503,9 @@ impl Preprocess {
 
         let (ps, qs) = if _ps.len() < _qs.len() { (_qs, _ps) } else { (_ps, _qs) };
 
-        'outer: for q in qs.get_literals() {
+        'outer: for q in &qs.lits {
             if q.index() != v {
-                for p in ps.get_literals() {
+                for p in &ps.lits {
                     if p.index() == q.index() {
                         if *p == !*q {
                             return false;
@@ -518,7 +518,7 @@ impl Preprocess {
             }
         }
 
-        for p in ps.get_literals() {
+        for p in &ps.lits {
             if p.index() != v {
                 out_clause.push(*p);
             }
@@ -534,7 +534,7 @@ impl Preprocess {
 
         // Remove the other places where the clauses are referenced.
         while let Some(cref) = self.occurs[v].pop() {
-            for l in formula[cref].get_literals() {
+            for l in &formula[cref].lits {
                 self.n_occ[l.to_watchidx()] -= 1;
                 if let Some(index) = self.occurs[l.index()].iter().position(|value| *value == cref) {
                     debug!("Found {}", l);
