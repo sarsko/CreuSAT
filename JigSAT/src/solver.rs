@@ -318,12 +318,14 @@ pub fn solver(mut formula: Formula) -> SatResult {
 
     let mut decisions: VSIDS = Decisions::new(&formula);
 
+    /*
     if !Preprocess::new().preprocess(&mut formula, &mut trail, &mut decisions, &mut watches) {
         println!("c UNSAT by preprocess");
         return SatResult::Unsat;
     }
     debug!("done with preproc");
     debug!("{:?}", &trail.trail);
+    */
 
     let target_phase = TargetPhase::new(formula.num_vars());
     let solver = Solver::new(&formula);

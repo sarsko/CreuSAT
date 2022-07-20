@@ -1,4 +1,4 @@
-use crate::{assignments::*, formula::*, trail::*, util::*, clause::ClauseTrait};
+use crate::{assignments::*, formula::*, trail::*, util::*, clause::*};
 use std::ops::{Index, IndexMut};
 
 const INVALID: usize = usize::MAX;

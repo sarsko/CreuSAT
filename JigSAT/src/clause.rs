@@ -84,10 +84,12 @@ impl Clause {
         abstraction
     }
 
+    #[inline(always)]
     pub(crate) fn swap(&mut self, i: usize, j: usize) {
         self.lits.swap(i, j);
     }
 
+    #[inline(always)]
     pub(crate) fn pop(&mut self) {
         self.lits.pop();
     }
@@ -172,6 +174,7 @@ impl Clause {
         self.pop();
     }
 
+    #[inline(always)]
     fn calc_lbd(&self, trail: &Trail, solver: &mut Solver) -> u32 {
         /*
         // We don't bother calculating for long clauses.
@@ -190,10 +193,12 @@ impl Clause {
         lbd
     }
 
+    #[inline(always)]
     pub(crate) fn calc_and_set_lbd(&mut self, trail: &Trail, solver: &mut Solver) {
         self.lbd = self.calc_lbd(trail, solver);
     }
 
+    #[inline(always)]
     fn calc_and_set_abstraction(&mut self) {
         self.abstraction = Clause::calc_abstraction(&self.lits);
     }
@@ -243,14 +248,12 @@ impl Clause {
         return ret;
     }
 
+    #[inline(always)]
     pub(crate) fn is_marked(&self) -> bool {
         self.mark > 0
     }
 
-    pub(crate) fn get_mark(&self) -> u8 {
-        self.mark
-    }
-
+    #[inline(always)]
     pub(crate) fn set_mark(&mut self, new_val: u8) {
         self.mark = new_val;
     }
@@ -272,60 +275,49 @@ impl Clause {
     }
 }
 
-impl ClauseTrait for Clause {
-    fn is_deleted(&self) -> bool {
+impl Clause {
+    #[inline(always)]
+    pub(crate) fn is_deleted(&self) -> bool {
         self.deleted
     }
 
-    fn can_be_deleted(&self) -> bool {
+    #[inline(always)]
+    pub(crate) fn can_be_deleted(&self) -> bool {
         self.can_be_deleted
     }
 
-    fn get_mark(&self) -> u8 {
+    #[inline(always)]
+    pub(crate) fn get_mark(&self) -> u8 {
         self.mark
     }
 
-    fn get_lbd(&self) -> u32 {
+    #[inline(always)]
+    pub(crate) fn get_lbd(&self) -> u32 {
         self.lbd
     }
 
-    fn get_search_index(&self) -> usize {
+    #[inline(always)]
+    pub(crate) fn get_search_index(&self) -> usize {
         self.search
     }
 
-    fn set_search_index(&mut self, new_idx: usize) {
+    #[inline(always)]
+    pub(crate) fn set_search_index(&mut self, new_idx: usize) {
         self.search = new_idx;
     }
 
-    fn get_abstraction(&self) -> usize {
+    #[inline(always)]
+    pub(crate) fn get_abstraction(&self) -> usize {
         self.abstraction
     }
 
-    fn get_literals(&self) -> &[Lit] {
+    #[inline(always)]
+    pub(crate) fn get_literals(&self) -> &[Lit] {
         &self.lits
     }
 
-    fn set_deleted(&mut self, new_val: bool) {
+    #[inline(always)]
+    pub(crate) fn set_deleted(&mut self, new_val: bool) {
         self.deleted = new_val;
     }
-}
-
-pub(crate) trait ClauseTrait {
-    fn is_deleted(&self) -> bool;
-
-    fn can_be_deleted(&self) -> bool;
-
-    fn set_deleted(&mut self, new_val: bool);
-
-    fn get_mark(&self) -> u8; // TODO: enum
-
-    fn get_lbd(&self) -> u32;
-
-    fn get_search_index(&self) -> usize;
-
-    fn set_search_index(&mut self, new_idx: usize);
-
-    fn get_abstraction(&self) -> usize;
-
-    fn get_literals(&self) -> &[Lit];
 }

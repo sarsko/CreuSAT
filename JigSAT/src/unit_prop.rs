@@ -1,4 +1,4 @@
-use crate::{formula::*, lit::*, solver::*, trail::*, watches::*, clause::ClauseTrait};
+use crate::{formula::*, lit::*, solver::*, trail::*, watches::*, clause::*};
 
 #[inline]
 fn unit_prop_check_rest(
