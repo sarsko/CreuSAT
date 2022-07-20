@@ -107,7 +107,7 @@ impl Solver {
             initial_len: f.len(),
             //inc_reduce_db: 300,
             //special_inc_reduce_db: 1000,
-            perm_diff: vec![0; f.num_vars()],
+            perm_diff: vec![0; f.num_vars],
             analyze_stack: Vec::new(),
             analyze_toclear: Vec::new(),
             //seen: vec![false; f.num_vars],
@@ -173,7 +173,7 @@ impl Solver {
         decisions.decay_var_inc();
         //claDecayActivity();
 
-        if self.adapt_strategies && self.num_conflicts == 100_000 && adapt_solver(self, decisions) {
+        if self.adapt_strategies && self.num_conflicts == 100000 && adapt_solver(self, decisions) {
             trail.restart(formula, decisions, watches, self, target_phase);
         }
 
@@ -325,7 +325,7 @@ pub fn solver(mut formula: Formula) -> SatResult {
     debug!("done with preproc");
     debug!("{:?}", &trail.trail);
 
-    let target_phase = TargetPhase::new(formula.num_vars());
+    let target_phase = TargetPhase::new(formula.num_vars);
     let solver = Solver::new(&formula);
 
     solver.solve(formula, decisions, trail, watches, target_phase)

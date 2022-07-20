@@ -15,7 +15,7 @@ pub(crate) fn lit_redundant(
     while solver.analyze_stack.len() > 0 {
         //assert(reason(var(analyze_stack.last())) != CRef_Undef);
         let ante_ref = trail.lit_to_reason[solver.analyze_stack.pop().unwrap().index()];
-        let c = &formula[ante_ref];
+        let c = &formula.clauses[ante_ref];
         /*
         // This should not be possible. I guess Glucose has a relaxed invariant for binary clauses.
         if c.len() == 2 && c[0].lit_unsat(assignments) {
@@ -87,7 +87,7 @@ pub(crate) fn local_minimization(out_learnt: &mut Vec<Lit>, trail: &Trail, formu
             out_learnt[j] = out_learnt[i];
             j += 1;
         } else {
-            let ante = &formula[ante_ref];
+            let ante = &formula.clauses[ante_ref];
             let mut k = if ante.len() == 2 { 0 } else { 1 };
             while k < ante.len() {
                 let idx = ante[k].index();
