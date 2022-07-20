@@ -7,6 +7,8 @@ pub struct Lit {
     code: u32,
 }
 
+pub(crate) const ZERO_LIT: Lit = Lit { code: 0 };
+
 use std::fmt;
 
 impl fmt::Debug for Lit {
@@ -110,5 +112,24 @@ impl ops::Not for Lit {
     #[inline]
     fn not(self) -> Lit {
         Lit { code: self.code ^ 1 }
+    }
+}
+
+// HEADER STUFF
+impl Lit {
+    pub(crate) fn raw(code: u32) -> Self {
+        Self { code }
+    }
+
+    pub(crate) fn set_can_be_deleted(&mut self, new_val: bool) {}
+
+    pub(crate) fn set_deleted(&mut self, new_val: bool) {}
+
+    pub(crate) fn set_lbd(&mut self, new_val: u32) {}
+
+    // Requires that this is an header lit
+    // Ugly name to prevent misuse.
+    pub(crate) fn get_len_from_header_lit(&self) -> u32 {
+        self.code
     }
 }

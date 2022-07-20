@@ -9,9 +9,7 @@ use log::debug;
 use std::collections::VecDeque;
 //use std::collections::BinaryHeap;
 
-use crate::{
-    clause::*, decision::*, formula::*, lit::*, solver_types::*, trail::*, unit_prop::unit_propagate, watches::*,
-};
+use crate::{decision::*, formula::*, lit::*, solver_types::*, trail::*, unit_prop::unit_propagate, watches::*};
 
 #[derive(PartialEq)]
 pub(crate) enum SubsumptionRes {
@@ -19,6 +17,7 @@ pub(crate) enum SubsumptionRes {
     Subsumed,
     RemoveLit(Lit),
 }
+/*
 
 pub(crate) struct Preprocess {
     touched: Vec<bool>,
@@ -74,23 +73,29 @@ impl Preprocess {
         self.elim_heap.reverse();
     }
 
-    fn populate_occurs_and_n_occ(&mut self, formula: &Formula) {
+    fn populate_occurs_and_n_occ(&mut self, formula: &ClauseArena) {
         self.occurs = vec![Vec::new(); formula.num_vars() * 2];
         self.n_occ = vec![0; formula.num_vars() * 2];
-        for (i, c) in formula.iter().enumerate() {
+        //for (i, c) in formula.iter().enumerate() {
+        let mut i = 0;
+        let mut j = 0;
+        while j < formula.len() {
+            let c = &formula[j];
             for l in c.get_literals() {
                 self.occurs[l.index()].push(i);
                 self.n_occ[l.to_watchidx()] += 1;
             }
+            i += 1;
+            j += 1;
         }
     }
 
-    fn populate_subsumption_queue(&mut self, formula: &Formula) {
+    fn populate_subsumption_queue(&mut self, formula: &ClauseArena) {
         // Populated as part of gather_touched_clauses
         // unimplemented!()
     }
 
-    fn init(&mut self, formula: &Formula) {
+    fn init(&mut self, formula: &ClauseArena) {
         self.touched = vec![false; formula.num_vars()];
         self.populate_occurs_and_n_occ(formula);
         self.populate_elim();
@@ -100,7 +105,7 @@ impl Preprocess {
 }
 
 impl Preprocess {
-    fn add_clause(&mut self, formula: &mut Formula, lits: Vec<Lit>) -> bool {
+    fn add_clause(&mut self, formula: &mut ClauseArena, lits: Vec<Lit>) -> bool {
         debug!("Adding: {:?}", &lits);
         let clause = Clause::new(lits);
         let cref = formula.add_unwatched_clause(clause);
@@ -116,7 +121,7 @@ impl Preprocess {
         true // We should check for trivially UNSAT
     }
 
-    fn gather_touched_clauses(&mut self, formula: &mut Formula) {
+    fn gather_touched_clauses(&mut self, formula: &mut ClauseArena) {
         if self.n_touched == 0 {
             return;
         }
@@ -159,7 +164,7 @@ impl Preprocess {
     // Glucose passes turn_off_elim as true, which means that it always cleans up fully afterwards
     // We just pass Preprocess as `mut self`, to have it drop at function exit
     pub(crate) fn preprocess(
-        mut self, formula: &mut Formula, trail: &mut Trail, decisions: &mut impl Decisions, watches: &mut Watches,
+        mut self, formula: &mut ClauseArena, trail: &mut Trail, decisions: &mut impl Decisions, watches: &mut Watches,
     ) -> bool {
         self.init(formula);
 
@@ -210,13 +215,13 @@ impl Preprocess {
         }
         formula.remove_deleted();
 
-        *watches = Watches::new(&formula);
-        watches.init_watches(&formula);
+        *watches = Watches::new(formula);
+        watches.init_watches(formula);
 
         true
     }
 
-    fn remove_clause_in_preprocessing(&mut self, formula: &mut Formula, cref: usize) {
+    fn remove_clause_in_preprocessing(&mut self, formula: &mut ClauseArena, cref: usize) {
         if formula[cref].is_deleted() {
             unreachable!("Already deleted");
             return;
@@ -239,7 +244,7 @@ impl Preprocess {
     // Backward subsumption + backward subsumption resolution
     //bool SimpSolver::backwardSubsumptionCheck(bool v) {
     fn backward_subsumption_check(
-        &mut self, formula: &mut Formula, trail: &mut Trail, watches: &mut Watches,
+        &mut self, formula: &mut ClauseArena, trail: &mut Trail, watches: &mut Watches,
     ) -> Option<bool> {
         //assert(decisionLevel() == 0);
 
@@ -327,7 +332,7 @@ impl Preprocess {
     // What happens if we ever try to strengthen a unit?
     // I would not be surprised if we are unsound, and have to init watches + do unit prop both beforehand and during preprocessing.
     fn strengthen_clause(
-        &mut self, cref: usize, lit: Lit, formula: &mut Formula, trail: &mut Trail, watches: &mut Watches,
+        &mut self, cref: usize, lit: Lit, formula: &mut ClauseArena, trail: &mut Trail, watches: &mut Watches,
     ) -> bool {
         let c = &mut formula[cref];
         //assert(decisionLevel() == 0);
@@ -348,7 +353,7 @@ impl Preprocess {
             c.strengthen(lit);
             let unit_lit = c[0];
             formula.mark_clause_as_deleted(cref);
-            trail.learn_unit_in_preprocessing(unit_lit, &formula);
+            trail.learn_unit_in_preprocessing(unit_lit, formula);
             let mut mock = 0;
             return match unit_propagate(formula, trail, watches, &mut mock) {
                 Err(_) => false,
@@ -375,7 +380,7 @@ impl Preprocess {
 
     // v is the index of the var to be removed
     fn eliminate_var(
-        &mut self, v: usize, formula: &mut Formula, trail: &mut Trail, watches: &mut Watches,
+        &mut self, v: usize, formula: &mut ClauseArena, trail: &mut Trail, watches: &mut Watches,
     ) -> Option<bool> {
         /*
         assert(!frozen[v]);
@@ -527,7 +532,7 @@ impl Preprocess {
         return true;
     }
 
-    fn remove_clauses(&mut self, formula: &mut Formula, v: usize) {
+    fn remove_clauses(&mut self, formula: &mut ClauseArena, v: usize) {
         debug!("Removing {}", v);
         // Mark all the clauses as deleted.
         formula.mark_clauses_as_deleted(&mut self.occurs[v]);
@@ -547,3 +552,4 @@ impl Preprocess {
         }
     }
 }
+*/

@@ -2,10 +2,10 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
-use crate::clause::Clause as Clause2;
-use crate::formula::*;
+use crate::clause_database::*;
 use crate::lit::Lit as Lit2;
 use crate::solver::*;
+use crate::solver_types::SatResult;
 
 pub type Literal = i32;
 pub type Clause = Vec<Literal>;
@@ -112,7 +112,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
 // TODO, fix it so that 0 and 1 len clauses are supported
 /// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
 pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_literals: usize) -> bool {
-    let mut formula = Formula::new(num_literals);
+    let mut formula = ClauseArena::new();
     for clause in clauses {
         let mut currclause: Vec<Lit2> = vec![];
         for lit in clause {
@@ -128,8 +128,8 @@ pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_li
         if currclause.len() == 0 {
             return false;
         } else {
-            let clause2: Clause2 = Clause2::new(currclause);
-            formula.add_unwatched_clause(clause2);
+            //let clause2: Clause2 = Clause2::new(currclause);
+            formula.add_unwatched_clause(currclause);
         }
     }
     match solver(formula) {

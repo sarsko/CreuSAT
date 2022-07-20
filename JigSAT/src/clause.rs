@@ -6,6 +6,7 @@ use std::{
 
 use crate::preprocess::SubsumptionRes;
 
+/*
 pub struct Clause {
     deleted: bool,
     can_be_deleted: bool,
@@ -15,8 +16,14 @@ pub struct Clause {
     abstraction: usize,
     lits: Vec<Lit>,
 }
+*/
 
-impl Index<usize> for Clause {
+pub struct Clause {
+    //lits: &'a [Lit],
+}
+
+/*
+impl Index<usize> for Clause<'_> {
     type Output = Lit;
     #[inline]
     fn index(&self, i: usize) -> &Lit {
@@ -26,7 +33,7 @@ impl Index<usize> for Clause {
         //&self.lits[i]
     }
 }
-impl IndexMut<usize> for Clause {
+impl IndexMut<usize> for Clause<'_> {
     #[inline]
     fn index_mut(&mut self, i: usize) -> &mut Lit {
         //#[cfg(feature = "unsafe_access")]
@@ -35,14 +42,16 @@ impl IndexMut<usize> for Clause {
         //&mut self.lits[i]
     }
 }
+*/
 
+/*
 use std::fmt;
 
-impl fmt::Display for Clause {
+impl fmt::Display for Clause<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut to_display = String::from("(");
         let mut first = true;
-        for l in &self.lits {
+        for l in self.get_literals() {
             if !first {
                 to_display.push_str(" ∧ ");
             }
@@ -55,25 +64,43 @@ impl fmt::Display for Clause {
     }
 }
 
-impl fmt::Debug for Clause {
+impl fmt::Debug for Clause<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self)
     }
 }
+*/
 
 impl Clause {
     // Does not set lbd !
     // Inits search to 1 and mark to 0. Sets abstraction.
-    pub(crate) fn new(lits: Vec<Lit>) -> Clause {
+    /*
+    pub(crate) fn new(lits: Vec<Lit>) -> Clause<'_> {
+        let mut header = Vec::from(Self::create_header(&lits));
+        header.extend(lits);
         Clause {
-            deleted: false,
-            can_be_deleted: true,
-            lbd: 0,
-            search: 1,
-            mark: 0,
-            abstraction: Self::calc_abstraction(&lits),
-            lits,
+            lits: header,
         }
+    }
+    */
+
+    pub fn create_header(lits: &[Lit]) -> [Lit; 2] {
+        let mut header = ZERO_LIT;
+        header.set_deleted(false);
+        header.set_can_be_deleted(true);
+        //header.set_lbd(
+        //header.set_search(
+        let size = Lit::raw(lits.len() as u32);
+        assert!(size.get_len_from_header_lit() as usize == lits.len());
+        [header, size]
+        /*
+        deleted: false,
+        can_be_deleted: true,
+        lbd: 0,
+        search: 1,
+        mark: 0,
+        abstraction: Self::calc_abstraction(&lits),
+        */
     }
 
     fn calc_abstraction(lits: &[Lit]) -> usize {
@@ -84,13 +111,17 @@ impl Clause {
         abstraction
     }
 
+    /*
     pub(crate) fn swap(&mut self, i: usize, j: usize) {
         self.lits.swap(i, j);
     }
+    */
 
+    /*
     pub(crate) fn pop(&mut self) {
         self.lits.pop();
     }
+    */
 
     /*
     deleted: bool,
@@ -102,6 +133,7 @@ impl Clause {
     lits: Vec<Lit>,
     */
 
+    /*
     pub(crate) fn less_than(&self, other: &Clause) -> Ordering {
         if self.len() == 2 {
             if other.len() == 2 {
@@ -111,9 +143,9 @@ impl Clause {
             }
         } else if other.len() == 2 {
             Ordering::Greater
-        } else if self.lbd < other.lbd {
+        } else if self.get_lbd() < other.get_lbd() {
             Ordering::Less
-        } else if self.lbd > other.lbd {
+        } else if self.get_lbd() > other.get_lbd() {
             Ordering::Greater
         } else if self.len() < other.len() {
             Ordering::Less
@@ -137,7 +169,9 @@ impl Clause {
         }
         false
     }
+    */
 
+    /*
     pub(crate) fn no_duplicates(&self) -> bool {
         let mut i: usize = 0;
         while i < self.len() {
@@ -154,24 +188,32 @@ impl Clause {
         }
         true
     }
+    */
 
+    /*
     #[inline(always)]
     pub(crate) fn len(&self) -> usize {
         self.lits.len()
     }
+    */
 
+    /*
     #[inline(always)]
     fn move_to_end(&mut self, idx: usize, _f: &Formula) {
         let end = self.len() - 1;
         self.swap(idx, end);
     }
+    */
 
+    /*
     #[inline(always)]
     pub(crate) fn remove_from_clause(&mut self, idx: usize, _f: &Formula) {
         self.move_to_end(idx, _f);
         self.pop();
     }
+    */
 
+    /*
     fn calc_lbd(&self, trail: &Trail, solver: &mut Solver) -> u32 {
         /*
         // We don't bother calculating for long clauses.
@@ -180,7 +222,7 @@ impl Clause {
         }
         */
         let mut lbd: u32 = 0;
-        for l in &self.lits {
+        for l in self.get_literals() {
             let level = trail.lit_to_level[l.index()];
             if solver.perm_diff[level as usize] != solver.num_conflicts {
                 solver.perm_diff[level as usize] = solver.num_conflicts;
@@ -189,21 +231,34 @@ impl Clause {
         }
         lbd
     }
+    */
 
+    /*
     pub(crate) fn calc_and_set_lbd(&mut self, trail: &Trail, solver: &mut Solver) {
-        self.lbd = self.calc_lbd(trail, solver);
+        let lbd = self.calc_lbd(trail, solver);
+        self.get_header().set_lbd(lbd);
     }
+    */
+
+    /*
+    fn get_header(&mut self) -> &mut Lit {
+        &mut self.lits[0]
+    }
+    */
 
     fn calc_and_set_abstraction(&mut self) {
-        self.abstraction = Clause::calc_abstraction(&self.lits);
+        unimplemented!()
+        //self.abstraction = Clause::calc_abstraction(&self.lits);
     }
 }
 
 // Only used in preprocessing
+/*
 impl Clause {
     fn incompatible_abstract_levels(&self, other: &Clause) -> bool {
         //debug!("Incompat abstract");
-        self.abstraction & !other.abstraction != 0
+        unimplemented!()
+        //self.abstraction & !other.abstraction != 0
     }
 
     pub(crate) fn subsumes(&self, other: &Clause) -> SubsumptionRes {
@@ -228,9 +283,9 @@ impl Clause {
 
         let mut ret = SubsumptionRes::Subsumed;
 
-        'outer: for s in &self.lits {
+        'outer: for s in self.get_literals() {
             // search for c[i] or ~c[i]
-            for o in &other.lits {
+            for o in self.get_literals() {
                 if s == o {
                     continue 'outer;
                 } else if ret == SubsumptionRes::Subsumed && *s == !*o {
@@ -244,26 +299,31 @@ impl Clause {
     }
 
     pub(crate) fn is_marked(&self) -> bool {
-        self.mark > 0
+        unimplemented!()
+        //self.get_mark() > 0
     }
 
     pub(crate) fn get_mark(&self) -> u8 {
-        self.mark
+        unimplemented!()
+        //self.mark
     }
 
     pub(crate) fn set_mark(&mut self, new_val: u8) {
-        self.mark = new_val;
+        unimplemented!()
+        //self.mark = new_val;
     }
 
     // Requires that the lit is in the clause
     // Requires that the clause is not watched
     fn remove(&mut self, lit: Lit) {
-        for (i, l) in self.lits.iter().enumerate() {
+        /*
+        for (i, l) in self.get_literals().iter().enumerate() {
             if *l == lit {
                 self.lits.swap_remove(i);
                 return;
             }
         }
+        */
     }
 
     pub(crate) fn strengthen(&mut self, p: Lit) {
@@ -272,41 +332,49 @@ impl Clause {
     }
 }
 
-impl ClauseTrait for Clause {
+impl ClauseTrait for Clause<'_> {
     fn is_deleted(&self) -> bool {
-        self.deleted
+        unimplemented!()
+        //self.deleted
     }
 
     fn can_be_deleted(&self) -> bool {
-        self.can_be_deleted
+        unimplemented!()
+        //self.can_be_deleted
     }
 
     fn get_mark(&self) -> u8 {
-        self.mark
+        unimplemented!()
+        //self.mark
     }
 
     fn get_lbd(&self) -> u32 {
-        self.lbd
+        unimplemented!()
+        //self.lbd
     }
 
     fn get_search_index(&self) -> usize {
-        self.search
+        unimplemented!()
+        //self.search
     }
 
     fn set_search_index(&mut self, new_idx: usize) {
-        self.search = new_idx;
+        unimplemented!()
+        //self.search = new_idx;
     }
 
     fn get_abstraction(&self) -> usize {
-        self.abstraction
+        unimplemented!()
+        //self.abstraction
     }
 
     fn get_literals(&self) -> &[Lit] {
-        &self.lits
+        &self.lits[1..]
     }
 
     fn set_deleted(&mut self, new_val: bool) {
-        self.deleted = new_val;
+        unimplemented!()
+        //self.deleted = new_val;
     }
 }
 
@@ -329,3 +397,4 @@ pub(crate) trait ClauseTrait {
 
     fn get_literals(&self) -> &[Lit];
 }
+*/

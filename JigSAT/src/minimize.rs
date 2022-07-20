@@ -1,13 +1,14 @@
 use crate::{
-    formula::Formula,
+    clause_database::ClauseArena,
     lit::Lit,
     solver::Solver,
     trail::{Trail, UNSET_REASON},
 };
 
+/*
 #[inline(always)]
 pub(crate) fn lit_redundant(
-    solver: &mut Solver, trail: &Trail, formula: &Formula, lit: Lit, abstract_levels: u32, seen: &mut Vec<bool>,
+    solver: &mut Solver, trail: &Trail, formula: &ClauseArena, lit: Lit, abstract_levels: u32, seen: &mut Vec<bool>,
 ) -> bool {
     solver.analyze_stack.clear();
     solver.analyze_stack.push(lit);
@@ -54,7 +55,7 @@ pub(crate) fn lit_redundant(
 #[allow(unused)]
 #[inline(always)]
 pub(crate) fn recursive_minimization(
-    out_learnt: &mut Vec<Lit>, trail: &Trail, formula: &Formula, solver: &mut Solver, mut seen: Vec<bool>,
+    out_learnt: &mut Vec<Lit>, trail: &Trail, formula: &ClauseArena, solver: &mut Solver, mut seen: Vec<bool>,
 ) {
     let mut abstract_levels = 0;
     let mut i = 1;
@@ -78,7 +79,7 @@ pub(crate) fn recursive_minimization(
 
 #[allow(unused)]
 #[inline(always)]
-pub(crate) fn local_minimization(out_learnt: &mut Vec<Lit>, trail: &Trail, formula: &Formula, seen: Vec<bool>) {
+pub(crate) fn local_minimization(out_learnt: &mut Vec<Lit>, trail: &Trail, formula: &ClauseArena, seen: Vec<bool>) {
     let mut i = 1;
     let mut j = 1;
     while i < out_learnt.len() {
@@ -87,7 +88,7 @@ pub(crate) fn local_minimization(out_learnt: &mut Vec<Lit>, trail: &Trail, formu
             out_learnt[j] = out_learnt[i];
             j += 1;
         } else {
-            let ante = &formula[ante_ref];
+            let ante = formula.get_literals(ante_ref);
             let mut k = if ante.len() == 2 { 0 } else { 1 };
             while k < ante.len() {
                 let idx = ante[k].index();
@@ -103,3 +104,4 @@ pub(crate) fn local_minimization(out_learnt: &mut Vec<Lit>, trail: &Trail, formu
     }
     out_learnt.truncate(j);
 }
+*/

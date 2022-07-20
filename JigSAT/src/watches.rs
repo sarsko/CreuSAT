@@ -1,4 +1,4 @@
-use crate::{formula::*, lit::*, solver::*, trail::*};
+use crate::{clause_database::*, lit::*, solver::*, trail::*};
 use std::ops::{Index, IndexMut};
 
 // Lets try this scheme and see how well it fares
@@ -35,12 +35,12 @@ impl IndexMut<usize> for Watches {
 
 #[inline]
 pub(crate) fn update_watch(
-    f: &Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
+    f: &ClauseArena, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
 ) {
     let watchidx = lit.to_watchidx();
     let end = watches.watches[watchidx].len() - 1;
     watches.watches[watchidx].swap(j, end);
-    let curr_lit = f[cref][k];
+    let curr_lit = f.get_literals(cref)[k];
     match watches.watches[watchidx].pop() {
         Some(w) => {
             watches.watches[curr_lit.to_neg_watchidx()].push(w);
@@ -57,7 +57,7 @@ impl Watches {
         self.watches.len()
     }
 
-    pub(crate) fn new(f: &Formula) -> Watches {
+    pub(crate) fn new(f: &ClauseArena) -> Watches {
         let mut i: usize = 0;
         let mut watches = Vec::new();
         while i < f.num_vars() {
@@ -68,25 +68,26 @@ impl Watches {
         Watches { watches }
     }
 
-    pub(crate) fn move_to_end(&mut self, old_idx: usize, old_pos: usize, new_lit: Lit, _f: &Formula) {
+    pub(crate) fn move_to_end(&mut self, old_idx: usize, old_pos: usize, new_lit: Lit, _f: &ClauseArena) {
         let end = self.watches[old_idx].len() - 1;
         self[old_idx].swap(old_pos, end);
     }
 
-    pub(crate) fn init_watches(&mut self, f: &Formula) {
+    pub(crate) fn init_watches(&mut self, f: &ClauseArena) {
+        // TODO: ABSTRACT THIS AWAY WITH AN ITERATOR
         let mut i = 0;
         while i < f.len() {
-            let clause = &f[i];
+            let clause = f.get_literals(i);
             if clause.len() > 1 {
                 self[clause[0].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause[1] });
                 self[clause[1].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause[0] });
             }
-            i += 1;
+            i += clause.len() + 2; // TODO: SUPER ERROR PRONE
         }
     }
 
     #[inline]
-    pub(crate) fn unwatch(&mut self, f: &Formula, trail: &Trail, cref: usize, lit: Lit) {
+    pub(crate) fn unwatch(&mut self, f: &ClauseArena, trail: &Trail, cref: usize, lit: Lit) {
         let watchidx = lit.to_neg_watchidx();
         let mut i: usize = 0;
         while i < self[watchidx].len() {
@@ -113,7 +114,8 @@ impl Watches {
     }
 
     #[inline]
-    pub(crate) fn unwatch_all_lemmas(&mut self, f: &Formula, s: &Solver) {
+    pub(crate) fn unwatch_all_lemmas(&mut self, f: &ClauseArena, s: &Solver) {
+        unimplemented!();
         let mut i: usize = 0;
         while i < self.len() {
             let mut j = 0;

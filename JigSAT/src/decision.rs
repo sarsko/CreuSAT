@@ -1,17 +1,17 @@
-use crate::{assignments::*, formula::*, trail::*, util::*, clause::ClauseTrait};
+use crate::{assignments::*, clause_database::*, trail::*};
 use std::ops::{Index, IndexMut};
 
 const INVALID: usize = usize::MAX;
 pub(crate) trait Decisions {
-    fn new(f: &Formula) -> Self
+    fn new(f: &ClauseArena) -> Self
     where
         Self: Sized;
 
-    fn bump_vec_of_vars(&mut self, f: &Formula, v: Vec<usize>);
+    fn bump_vec_of_vars(&mut self, f: &ClauseArena, v: Vec<usize>);
 
-    fn bump_reason_literals(&mut self, var: usize, trail: &Trail, formula: &Formula);
+    fn bump_reason_literals(&mut self, var: usize, trail: &Trail, formula: &ClauseArena);
 
-    fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize>;
+    fn get_next(&mut self, a: &Assignments, _f: &ClauseArena) -> Option<usize>;
 
     fn bump_variable(&mut self, var: usize);
 
@@ -66,7 +66,7 @@ impl IndexMut<usize> for VMTF {
 }
 
 impl VMTF {
-    fn make_linked_list(f: &Formula, lit_order: Vec<usize>) -> VMTF {
+    fn make_linked_list(f: &ClauseArena, lit_order: Vec<usize>) -> VMTF {
         let mut linked_list: Vec<Node> = vec![Default::default(); f.num_vars()];
         let mut i: usize = 0;
         let mut head: usize = 0;
@@ -93,7 +93,7 @@ impl VMTF {
         VMTF { linked_list, timestamp: f.num_vars() + 1, start: head, search: head }
     }
 
-    fn rescore(&mut self, _f: &Formula) {
+    fn rescore(&mut self, _f: &ClauseArena) {
         let mut curr_score = self.linked_list.len();
         let mut curr = self.start;
         while curr != INVALID {
@@ -108,7 +108,7 @@ impl VMTF {
         self.timestamp = self.linked_list.len() + 1;
     }
 
-    fn move_to_front(&mut self, tomove: usize, _f: &Formula) {
+    fn move_to_front(&mut self, tomove: usize, _f: &ClauseArena) {
         if tomove == self.start {
             return;
         }
@@ -144,8 +144,9 @@ impl VMTF {
     }
 }
 
+/*
 impl Decisions for VMTF {
-    fn new(f: &Formula) -> VMTF {
+    fn new(f: &ClauseArena) -> VMTF {
         let mut lit_order: Vec<usize> = vec![0; f.num_vars()];
         let mut counts: Vec<usize> = vec![0; f.num_vars()];
         let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); f.num_vars()];
@@ -173,7 +174,7 @@ impl Decisions for VMTF {
         Self::make_linked_list(f, lit_order)
     }
 
-    fn bump_vec_of_vars(&mut self, f: &Formula, v: Vec<usize>) {
+    fn bump_vec_of_vars(&mut self, f: &ClauseArena, v: Vec<usize>) {
         let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); v.len()];
         let mut i: usize = 0;
         while i < v.len() {
@@ -193,7 +194,7 @@ impl Decisions for VMTF {
         }
     }
 
-    fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize> {
+    fn get_next(&mut self, a: &Assignments, _f: &ClauseArena) -> Option<usize> {
         let mut curr = self.search;
         while curr != INVALID {
             if a[curr] >= 2 {
@@ -216,7 +217,7 @@ impl Decisions for VMTF {
     fn turn_off_decision_for_idx(&mut self, var: usize) {}
 
     // No-op, but may add to see.
-    fn bump_reason_literals(&mut self, var: usize, trail: &Trail, formula: &Formula) {}
+    fn bump_reason_literals(&mut self, var: usize, trail: &Trail, formula: &ClauseArena) {}
 
     // This is a no-op, as VMTF only support bumping of vecs of vars.
     fn bump_variable(&mut self, var: usize) {}
@@ -228,6 +229,8 @@ impl Decisions for VMTF {
 
     fn insert(&mut self, var: usize) {}
 }
+
+*/
 
 struct Heap {
     activity: Vec<f64>,
@@ -415,7 +418,7 @@ impl VSIDS {
 }
 
 impl Decisions for VSIDS {
-    fn new(formula: &Formula) -> Self {
+    fn new(formula: &ClauseArena) -> Self {
         let mut vsids = VSIDS::default();
         vsids.order_heap = Heap::new(formula.num_vars());
         vsids.order_heap.build(formula.num_vars());
@@ -423,7 +426,7 @@ impl Decisions for VSIDS {
         vsids
     }
 
-    fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize> {
+    fn get_next(&mut self, a: &Assignments, _f: &ClauseArena) -> Option<usize> {
         while !self.empty() {
             let next = self.remove_min();
             // Don't think the self.decision check really is needed.
@@ -463,13 +466,14 @@ impl Decisions for VSIDS {
         }
     }
 
-    fn bump_reason_literals(&mut self, var: usize, trail: &Trail, formula: &Formula) {
+    fn bump_reason_literals(&mut self, var: usize, trail: &Trail, formula: &ClauseArena) {
         let reason = trail.lit_to_reason[var];
         if reason == INVALID {
             return;
         }
-        let clause = &formula[reason];
-        for l in formula[reason].get_literals().iter().skip(1) {
+        //let clause = &formula[reason];
+        //for l in formula[reason].get_literals().iter().skip(1) {
+        for l in formula.get_literals(reason).iter().skip(1) {
             self.bump_variable(l.index());
         }
     }
@@ -479,16 +483,16 @@ impl Decisions for VSIDS {
     }
 
     // Deliberately a no-op
-    fn bump_vec_of_vars(&mut self, f: &Formula, v: Vec<usize>) {}
+    fn bump_vec_of_vars(&mut self, f: &ClauseArena, v: Vec<usize>) {}
 }
 
 /*
 impl Decisions {
-    pub(crate) fn new(formula: &Formula) -> Self {
+    pub(crate) fn new(formula: &ClauseArena) -> Self {
         Decisions { vsids: VSIDS::new(formula) }
     }
 
-    pub(crate) fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize> {
+    pub(crate) fn get_next(&mut self, a: &Assignments, _f: &ClauseArena) -> Option<usize> {
         while !self.vsids.empty() {
             let next = self.vsids.remove_min();
             if a[next] >= 2 {

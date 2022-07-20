@@ -1,7 +1,6 @@
 use crate::{
-    clause::*,
+    clause_database::*,
     decision::*,
-    formula::*,
     lit::*,
     minimize::*,
     solver::{SearchMode, Solver},
@@ -12,12 +11,12 @@ use crate::{
 pub(crate) enum Conflict {
     Ground,
     Unit(Lit),
-    Learned(u32, Clause),
+    Learned(u32, Vec<Lit>),
 }
 
 #[inline]
 pub(crate) fn analyze_conflict(
-    formula: &Formula, trail: &Trail, cref: usize, decisions: &mut impl Decisions, solver: &mut Solver,
+    formula: &ClauseArena, trail: &Trail, cref: usize, decisions: &mut impl Decisions, solver: &mut Solver,
 ) -> Conflict {
     let decisionlevel = trail.decision_level();
     if decisionlevel == 0 {
@@ -31,7 +30,7 @@ pub(crate) fn analyze_conflict(
     let mut confl = cref;
     let mut i = trail.trail.len();
     loop {
-        let clause = &formula[confl];
+        let clause = formula.get_literals(confl);
         let mut k = if confl == cref { 0 } else { 1 };
         while k < clause.len() {
             let lit = clause[k];
@@ -69,8 +68,12 @@ pub(crate) fn analyze_conflict(
         }
         let next = {
             loop {
+                if i == 0 {
+                    panic!("Ya messed up the trail");
+                }
                 i -= 1;
-                if seen[trail.trail[i].index()] {
+                let idx = trail.trail[i].index();
+                if seen[idx] {
                     break;
                 }
             }
@@ -86,7 +89,7 @@ pub(crate) fn analyze_conflict(
     }
     // decisions.bump_vec_of_vars(f, to_bump); // VMTF. NO-OP for VSIDS
 
-    recursive_minimization(&mut out_learnt, trail, formula, solver, seen);
+    //recursive_minimization(&mut out_learnt, trail, formula, solver, seen);
 
     if out_learnt.len() == 1 {
         Conflict::Unit(out_learnt[0])
@@ -103,20 +106,22 @@ pub(crate) fn analyze_conflict(
             i += 1;
         }
         out_learnt.swap(1, max_i);
-        let mut clause = Clause::new(out_learnt);
-        clause.calc_and_set_lbd(trail, solver);
-        let lbd = clause.get_lbd();
+        //let mut clause = Clause::new(out_learnt);
+        //clause.calc_and_set_lbd(trail, solver);
+        //let lbd = clause.get_lbd();
 
+        /*
         // VSIDS:
         // UPDATEVARACTIVITY trick (see competition'09 companion paper)
         if solver.search_mode == SearchMode::Focus || solver.search_mode == SearchMode::OnlyFocus {
             for var in to_bump.iter() {
-                if formula[trail.lit_to_reason[*var]].get_lbd() < lbd {
+                if formula.get_lbd(trail.lit_to_reason[*var]) < lbd {
                     decisions.bump_variable(*var);
                 }
             }
         }
+        */
 
-        Conflict::Learned(max_level, clause)
+        Conflict::Learned(max_level, out_learnt)
     }
 }

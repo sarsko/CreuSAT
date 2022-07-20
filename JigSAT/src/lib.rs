@@ -1,8 +1,10 @@
 #![feature(type_ascription)]
 #![allow(non_snake_case)]
+#![feature(generic_associated_types)]
 
 mod assignments;
 mod clause;
+mod clause_database;
 mod conflict_analysis;
 mod decision;
 mod formula;

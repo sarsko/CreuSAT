@@ -1,4 +1,4 @@
-use crate::{formula::*, lit::*, trail::*};
+use crate::{clause_database::*, lit::*, trail::*};
 use std::ops::{Index, IndexMut};
 
 pub type AssignedState = u8;
@@ -32,12 +32,12 @@ impl Assignments {
     }
 
     #[inline]
-    pub(crate) fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &[Lit]) {
+    pub(crate) fn set_assignment(&mut self, lit: Lit, _f: &ClauseArena, _t: &[Lit]) {
         self[lit.index()] = lit.is_positive() as u8;
     }
 
     #[inline]
-    pub(crate) fn new(f: &Formula) -> Self {
+    pub(crate) fn new(f: &ClauseArena) -> Self {
         Assignments(vec![2; f.num_vars()])
     }
 
