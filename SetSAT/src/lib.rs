@@ -13,5 +13,5 @@ use creusot_contracts::std::*;
 use creusot_contracts::*;
 
 mod logic;
-pub mod solver;
 pub mod parser;
+pub mod solver;

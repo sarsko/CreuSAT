@@ -8,7 +8,7 @@ use creusot_contracts::*;
 
 //#[allow(unused_features)]
 #[cfg(feature = "contracts")]
-use crate::logic::{logic::*};
+use crate::logic::logic::*;
 
 #[cfg(feature = "contracts")]
 impl creusot_contracts::Model for Clause {
@@ -54,15 +54,15 @@ enum UnsatOrContinue {
 }
 
 pub(crate) enum LitEvalRes {
-   Sat,
-   Unsat,
-   Unset,
+    Sat,
+    Unsat,
+    Unset,
 }
 
 pub(crate) enum ClauseEvalRes {
-   Unit,
-   Unsat,
-   Other,
+    Unit,
+    Unsat,
+    Other,
 }
 
 #[derive(Copy, Clone)]
@@ -70,7 +70,6 @@ pub struct Lit {
     idx: usize,
     polarity: bool,
 }
-
 
 impl Lit {
     #[requires((@self).idx_less_than((@trail.assignments).len()))]
@@ -138,13 +137,11 @@ impl Clause {
             proof_assert!((@lit).idx_less_than((@trail.assignments).len()));
             match lit.eval(trail) {
                 LitEvalRes::Sat => return ClauseEvalRes::Other,
-                LitEvalRes::Unsat => {},
-                LitEvalRes::Unset => {
-                    match potential_unit_idx {
-                        Some(_) => return ClauseEvalRes::Other,
-                        None    => potential_unit_idx = Some(i),
-                    }
-                }
+                LitEvalRes::Unsat => {}
+                LitEvalRes::Unset => match potential_unit_idx {
+                    Some(_) => return ClauseEvalRes::Other,
+                    None => potential_unit_idx = Some(i),
+                },
             }
             i += 1;
         }
@@ -152,17 +149,15 @@ impl Clause {
             Some(i) => {
                 self.lits.swap(i, 0);
                 ClauseEvalRes::Unit
-            },
-            None           => ClauseEvalRes::Unsat,
+            }
+            None => ClauseEvalRes::Unsat,
         }
     }
 
     pub(crate) fn len(&self) -> usize {
         self.lits.len()
     }
-
 }
-
 
 pub struct ClauseDB {
     clauses: Vec<Clause>,
@@ -268,15 +263,14 @@ fn propagate_literal(idx: usize, clause_db: &ClauseDB, trail: &mut Trail) {
     let lit = clause_db.clauses[idx].lits[0];
 
     match lit.polarity {
-       true  => trail.assignments[lit.idx] = 1,
-       false => trail.assignments[lit.idx] = 0,
+        true => trail.assignments[lit.idx] = 1,
+        false => trail.assignments[lit.idx] = 0,
     }
 
     trail.trail.push(lit);
     trail.lit_to_level[lit.index()] = trail.decision_level();
     trail.lit_to_reason[lit.index()] = idx;
 }
-
 
 fn analyze_and_learn(cref: Cref, clause_db: &mut ClauseDB, trail: &mut Trail) -> UnsatOrContinue {
     let decisionlevel = trail.decision_level();
@@ -335,12 +329,11 @@ fn analyze_and_learn(cref: Cref, clause_db: &mut ClauseDB, trail: &mut Trail) ->
         trail.lit_to_level[lit.index()] = 0;
 
         match lit.polarity {
-            true  => trail.assignments[lit.index()] = 1,
+            true => trail.assignments[lit.index()] = 1,
             false => trail.assignments[lit.index()] = 0,
         }
 
         trail.trail.push(lit);
-
     } else {
         /*
         let mut max_i: usize = 1;
@@ -361,7 +354,6 @@ fn analyze_and_learn(cref: Cref, clause_db: &mut ClauseDB, trail: &mut Trail) ->
         clause_db.clauses.push(clause);
 
         trail.restart(); // No backtracking to asserting level
-
     }
     UnsatOrContinue::Continue
 }
@@ -380,17 +372,17 @@ fn unit_prop_loop(clause_db: &mut ClauseDB, trail: &mut Trail) -> UnsatOrContinu
         let clause = &mut clause_db.clauses[i];
         match clause.is_unit_or_unsat(trail) {
             ClauseEvalRes::Unit => {
-                propagate_literal(i, clause_db, trail); i = 0 },
-            ClauseEvalRes::Unsat          => {
-
-                match analyze_and_learn(i, clause_db, trail) {
-                    UnsatOrContinue::Unsat => return UnsatOrContinue::Unsat,
-                    UnsatOrContinue::Continue => i = 0,
-                }
+                propagate_literal(i, clause_db, trail);
+                i = 0
+            }
+            ClauseEvalRes::Unsat => match analyze_and_learn(i, clause_db, trail) {
+                UnsatOrContinue::Unsat => return UnsatOrContinue::Unsat,
+                UnsatOrContinue::Continue => i = 0,
             },
-            ClauseEvalRes::Other          => { i += 1; },
+            ClauseEvalRes::Other => {
+                i += 1;
+            }
         }
-
     }
 
     UnsatOrContinue::Continue
@@ -406,11 +398,11 @@ pub fn solve(mut clause_db: ClauseDB) -> SatResult {
     //#[invariant(idxes_in_range, (@clause_db).idxes_less_than((@trail.assignments).len()))]
     loop {
         match unit_prop_loop(&mut clause_db, &mut trail) {
-            UnsatOrContinue::Unsat    => return SatResult::Unsat,
-            UnsatOrContinue::Continue => {},
+            UnsatOrContinue::Unsat => return SatResult::Unsat,
+            UnsatOrContinue::Continue => {}
         }
         match Decisions::make_decision(&trail.assignments) {
-            None             => return SatResult::Sat,
+            None => return SatResult::Sat,
             Some(idx) => {
                 trail.decisions.push(trail.trail.len());
                 trail.lit_to_level[idx] = trail.decision_level();

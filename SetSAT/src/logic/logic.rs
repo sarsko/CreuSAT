@@ -2,7 +2,6 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-
 pub(crate) type AssignedState = u8;
 
 #[logic]
@@ -37,12 +36,9 @@ pub fn bool_to_assignedstate(b: bool) -> AssignedState {
     }
 }
 
-
 // Mapping from index to assignment
 #[cfg(feature = "contracts")]
-pub struct AssignmentsLogic (
-    Seq<AssignedState>,
-);
+pub struct AssignmentsLogic(Seq<AssignedState>);
 
 #[cfg(feature = "contracts")]
 pub struct LitLogic {
@@ -58,9 +54,7 @@ pub struct ClauseLogic {
 
 use crate::solver::Clause;
 #[cfg(feature = "contracts")]
-pub struct FormulaLogic (
-    pub Set<Clause>,
-);
+pub struct FormulaLogic(pub Set<Clause>);
 
 #[cfg(feature = "contracts")]
 impl LitLogic {

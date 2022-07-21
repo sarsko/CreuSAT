@@ -5,7 +5,10 @@ fn main() {}
 
 #[cfg(not(feature = "contracts"))]
 fn main() {
-    use SetSAT::{parser::parse_cnf, solver::{solve, SatResult}};
+    use SetSAT::{
+        parser::parse_cnf,
+        solver::{solve, SatResult},
+    };
     let matches = App::new("\nSetSAT")
         .author(crate_authors!("\n"))
         .about("A minimal CDCL SAT solver.")
