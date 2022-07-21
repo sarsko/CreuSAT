@@ -112,6 +112,37 @@ args = [
     "${@}"
 ]
 
+[tasks.creusot-SetSAT]
+workspace = false
+command = "cargo"
+args = ["creusot", "--", "-p", "SetSAT", "--features=contracts", "--features", "${@}"]
+
+[tasks.move-SetSAT]
+workspace = false
+script = '''
+[ ! -f ./target/debug/SetSAT-rlib.mlcfg ] || cp ./target/debug/SetSAT-rlib.mlcfg ./mlcfgs/SetSAT${@}.mlcfg
+'''
+
+[tasks.gen-cfg-SetSAT]
+workspace = false
+dependencies = [
+    "creusot-SetSAT",
+    "move-SetSAT",
+]
+
+[tasks.ide-SetSAT]
+workspace = false
+script = '''
+./ide ./mlcfgs/SetSAT${@}.mlcfg
+'''
+
+[tasks.prove-SetSAT]
+workspace = false
+dependencies = [
+    "gen-cfg-SetSAT",
+    "ide-SetSAT",
+]
+
 [tasks.build-musl]
 workspace = false
 script = '''
@@ -219,6 +250,12 @@ rm -rf mlcfgs/Robinson*
 workspace = false
 script = '''
 rm -rf mlcfgs/CreuSAT*
+'''
+
+[tasks.clean-SetSAT]
+workspace = false
+script = '''
+rm -rf mlcfgs/SetSAT*
 '''
 
 [tasks.clean-proofs]

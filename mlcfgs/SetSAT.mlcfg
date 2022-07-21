@@ -1,0 +1,2000 @@
+module Type
+  use Ref
+  use mach.int.Int
+  use prelude.Int8
+  use prelude.Int16
+  use mach.int.Int32
+  use mach.int.Int64
+  use prelude.UInt8
+  use prelude.UInt16
+  use mach.int.UInt32
+  use mach.int.UInt64
+  use string.Char
+  use floating_point.Single
+  use floating_point.Double
+  use seq.Seq
+  use set.Set
+  use set.Fset
+  use map.Map
+  use prelude.Prelude
+  type core_ptr_nonnull_nonnull 't =
+    | Core_Ptr_NonNull_NonNull opaque_ptr
+    
+  type core_marker_phantomdata 't =
+    | Core_Marker_PhantomData
+    
+  type core_ptr_unique_unique 't =
+    | Core_Ptr_Unique_Unique (core_ptr_nonnull_nonnull 't) (core_marker_phantomdata 't)
+    
+  type alloc_rawvec_rawvec 't 'a =
+    | Alloc_RawVec_RawVec (core_ptr_unique_unique 't) usize 'a
+    
+  type alloc_vec_vec 't 'a =
+    | Alloc_Vec_Vec (alloc_rawvec_rawvec 't 'a) usize
+    
+  type alloc_alloc_global  =
+    | Alloc_Alloc_Global
+    
+  type setsat_solver_lit  =
+    | SetSat_Solver_Lit usize bool
+    
+  let function setsat_solver_lit_Lit_idx (self : setsat_solver_lit) : usize = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | SetSat_Solver_Lit a _ -> a
+      end
+  let function setsat_solver_lit_Lit_polarity (self : setsat_solver_lit) : bool = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | SetSat_Solver_Lit _ a -> a
+      end
+  type setsat_solver_trail  =
+    | SetSat_Solver_Trail (alloc_vec_vec uint8 (alloc_alloc_global)) (alloc_vec_vec (setsat_solver_lit) (alloc_alloc_global)) (alloc_vec_vec usize (alloc_alloc_global)) (alloc_vec_vec usize (alloc_alloc_global)) (alloc_vec_vec usize (alloc_alloc_global))
+    
+  let function setsat_solver_trail_Trail_decisions (self : setsat_solver_trail) : alloc_vec_vec usize (alloc_alloc_global)
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | SetSat_Solver_Trail _ _ _ _ a -> a
+      end
+  let function setsat_solver_trail_Trail_assignments (self : setsat_solver_trail) : alloc_vec_vec uint8 (alloc_alloc_global)
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | SetSat_Solver_Trail a _ _ _ _ -> a
+      end
+  type setsat_solver_clause  =
+    | SetSat_Solver_Clause (alloc_vec_vec (setsat_solver_lit) (alloc_alloc_global))
+    
+  let function setsat_solver_clause_Clause_lits (self : setsat_solver_clause) : alloc_vec_vec (setsat_solver_lit) (alloc_alloc_global)
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | SetSat_Solver_Clause a -> a
+      end
+  type setsat_solver_clausedb  =
+    | SetSat_Solver_ClauseDb (alloc_vec_vec (setsat_solver_clause) (alloc_alloc_global)) usize
+    
+  let function setsat_solver_clausedb_ClauseDB_num_vars (self : setsat_solver_clausedb) : usize
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | SetSat_Solver_ClauseDb _ a -> a
+      end
+  let function setsat_solver_clausedb_ClauseDB_clauses (self : setsat_solver_clausedb) : alloc_vec_vec (setsat_solver_clause) (alloc_alloc_global)
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | SetSat_Solver_ClauseDb a _ -> a
+      end
+  type setsat_solver_unsatorcontinue  =
+    | SetSat_Solver_UnsatOrContinue_Unsat
+    | SetSat_Solver_UnsatOrContinue_Continue
+    
+  type setsat_solver_satresult  =
+    | SetSat_Solver_SatResult_Sat
+    | SetSat_Solver_SatResult_Unsat
+    | SetSat_Solver_SatResult_Unknown
+    
+  type setsat_logic_logic_formulalogic  =
+    | SetSat_Logic_Logic_FormulaLogic (Set.set (setsat_solver_clause))
+    
+  let function setsat_logic_logic_formulalogic_FormulaLogic_0 (self : setsat_logic_logic_formulalogic) : Set.set (setsat_solver_clause)
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | SetSat_Logic_Logic_FormulaLogic a -> a
+      end
+  type setsat_logic_logic_clauselogic  =
+    | SetSat_Logic_Logic_ClauseLogic (Set.set (setsat_solver_lit))
+    
+  let function setsat_logic_logic_clauselogic_ClauseLogic_lits (self : setsat_logic_logic_clauselogic) : Set.set (setsat_solver_lit)
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | SetSat_Logic_Logic_ClauseLogic a -> a
+      end
+  type setsat_logic_logic_litlogic  =
+    | SetSat_Logic_Logic_LitLogic int bool
+    
+  let function setsat_logic_logic_litlogic_LitLogic_idx (self : setsat_logic_logic_litlogic) : int
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | SetSat_Logic_Logic_LitLogic a _ -> a
+      end
+  let function setsat_logic_logic_litlogic_LitLogic_polarity (self : setsat_logic_logic_litlogic) : bool
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | SetSat_Logic_Logic_LitLogic _ a -> a
+      end
+  type setsat_solver_clauseevalres  =
+    | SetSat_Solver_ClauseEvalRes_Unit (setsat_solver_lit)
+    | SetSat_Solver_ClauseEvalRes_Unsat
+    | SetSat_Solver_ClauseEvalRes_Other
+    
+  let function setsat_solver_clauseevalres_Unit_0 (self : setsat_solver_clauseevalres) : setsat_solver_lit
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | SetSat_Solver_ClauseEvalRes_Unit a -> a
+      | SetSat_Solver_ClauseEvalRes_Unsat -> any setsat_solver_lit
+      | SetSat_Solver_ClauseEvalRes_Other -> any setsat_solver_lit
+      end
+  type core_option_option 't =
+    | Core_Option_Option_None
+    | Core_Option_Option_Some 't
+    
+  let function core_option_option_Some_0 (self : core_option_option 't) : 't = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | Core_Option_Option_None -> any 't
+      | Core_Option_Option_Some a -> a
+      end
+  type setsat_solver_litevalres  =
+    | SetSat_Solver_LitEvalRes_Sat
+    | SetSat_Solver_LitEvalRes_Unsat
+    | SetSat_Solver_LitEvalRes_Unset
+    
+  type setsat_logic_logic_assignmentslogic  =
+    | SetSat_Logic_Logic_AssignmentsLogic (Seq.seq uint8)
+    
+  let function setsat_logic_logic_assignmentslogic_AssignmentsLogic_0 (self : setsat_logic_logic_assignmentslogic) : Seq.seq uint8
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | SetSat_Logic_Logic_AssignmentsLogic a -> a
+      end
+end
+module CreusotContracts_Std1_Vec_Impl0_Model_Interface
+  type t
+  type a
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use Type
+  function model (self : Type.alloc_vec_vec t a) : Seq.seq t
+end
+module CreusotContracts_Std1_Vec_Impl0_Model
+  type t
+  type a
+  use seq.Seq
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use Type
+  function model (self : Type.alloc_vec_vec t a) : Seq.seq t
+  axiom model_spec : forall self : Type.alloc_vec_vec t a . Seq.length (model self) <= 18446744073709551615
+end
+module Alloc_Vec_FromElem_Interface
+  type t
+  use seq.Seq
+  use mach.int.UInt64
+  use mach.int.Int
+  use mach.int.Int32
+  use prelude.Prelude
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t, type a = Type.alloc_alloc_global,
+  axiom .
+  val from_elem [@cfg:stackify] (elem : t) (n : usize) : Type.alloc_vec_vec t (Type.alloc_alloc_global)
+    ensures { Seq.length (Model0.model result) = UInt64.to_int n }
+    ensures { forall i : (int) . 0 <= i /\ i < UInt64.to_int n -> Seq.get (Model0.model result) i = elem }
+    
+end
+module Alloc_Vec_FromElem
+  type t
+  use seq.Seq
+  use mach.int.UInt64
+  use mach.int.Int
+  use mach.int.Int32
+  use prelude.Prelude
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t, type a = Type.alloc_alloc_global,
+  axiom .
+  val from_elem [@cfg:stackify] (elem : t) (n : usize) : Type.alloc_vec_vec t (Type.alloc_alloc_global)
+    ensures { Seq.length (Model0.model result) = UInt64.to_int n }
+    ensures { forall i : (int) . 0 <= i /\ i < UInt64.to_int n -> Seq.get (Model0.model result) i = elem }
+    
+end
+module Alloc_Vec_Impl0_New_Interface
+  type t
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.Int32
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t, type a = Type.alloc_alloc_global,
+  axiom .
+  val new [@cfg:stackify] (_ : ()) : Type.alloc_vec_vec t (Type.alloc_alloc_global)
+    ensures { Seq.length (Model0.model result) = 0 }
+    
+end
+module Alloc_Vec_Impl0_New
+  type t
+  use seq.Seq
+  use mach.int.Int
+  use mach.int.Int32
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t, type a = Type.alloc_alloc_global,
+  axiom .
+  val new [@cfg:stackify] (_ : ()) : Type.alloc_vec_vec t (Type.alloc_alloc_global)
+    ensures { Seq.length (Model0.model result) = 0 }
+    
+end
+module CreusotContracts_Std1_Vec_Impl0
+  type t
+  type a
+end
+module SetSat_Solver_Impl5_New_Interface
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use Type
+  val new [@cfg:stackify] (num_vars : usize) : Type.setsat_solver_trail
+end
+module SetSat_Solver_Impl5_New
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use Type
+  use prelude.UInt8
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model2 with type t = usize, type a = Type.alloc_alloc_global, axiom .
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = Type.setsat_solver_lit,
+  type a = Type.alloc_alloc_global, axiom .
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = uint8, type a = Type.alloc_alloc_global, axiom .
+  clone Alloc_Vec_Impl0_New_Interface as New1 with type t = usize, function Model0.model = Model2.model
+  clone Alloc_Vec_FromElem_Interface as FromElem1 with type t = usize, function Model0.model = Model2.model
+  clone Alloc_Vec_Impl0_New_Interface as New0 with type t = Type.setsat_solver_lit, function Model0.model = Model1.model
+  clone Alloc_Vec_FromElem_Interface as FromElem0 with type t = uint8, function Model0.model = Model0.model
+  let rec cfg new [@cfg:stackify] [#"../SetSAT/src/solver.rs" 145 4 145 46] (num_vars : usize) : Type.setsat_solver_trail
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Type.setsat_solver_trail;
+  var num_vars_1 : usize;
+  var _2 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
+  var _3 : usize;
+  var _4 : Type.alloc_vec_vec (Type.setsat_solver_lit) (Type.alloc_alloc_global);
+  var _5 : Type.alloc_vec_vec usize (Type.alloc_alloc_global);
+  var _6 : usize;
+  var _7 : Type.alloc_vec_vec usize (Type.alloc_alloc_global);
+  var _8 : usize;
+  var _9 : Type.alloc_vec_vec usize (Type.alloc_alloc_global);
+  {
+    num_vars_1 <- num_vars;
+    goto BB0
+  }
+  BB0 {
+    _3 <- num_vars_1;
+    _2 <- ([#"../SetSAT/src/solver.rs" 147 25 147 44] FromElem0.from_elem (2 : uint8) _3);
+    goto BB1
+  }
+  BB1 {
+    _4 <- ([#"../SetSAT/src/solver.rs" 148 19 148 29] New0.new ());
+    goto BB2
+  }
+  BB2 {
+    _6 <- num_vars_1;
+    _5 <- ([#"../SetSAT/src/solver.rs" 149 27 149 53] FromElem1.from_elem (18446744073709551615 : usize) _6);
+    goto BB3
+  }
+  BB3 {
+    _8 <- num_vars_1;
+    _7 <- ([#"../SetSAT/src/solver.rs" 150 26 150 52] FromElem1.from_elem (18446744073709551615 : usize) _8);
+    goto BB4
+  }
+  BB4 {
+    _9 <- ([#"../SetSAT/src/solver.rs" 151 23 151 33] New1.new ());
+    goto BB5
+  }
+  BB5 {
+    _0 <- Type.SetSat_Solver_Trail _2 _4 _5 _7 _9;
+    goto BB6
+  }
+  BB6 {
+    goto BB7
+  }
+  BB7 {
+    goto BB8
+  }
+  BB8 {
+    goto BB9
+  }
+  BB9 {
+    goto BB10
+  }
+  BB10 {
+    return _0
+  }
+  
+end
+module CreusotContracts_Logic_Resolve_Impl1_Resolve_Interface
+  type t
+  use prelude.Prelude
+  predicate resolve (self : borrowed t)
+end
+module CreusotContracts_Logic_Resolve_Impl1_Resolve
+  type t
+  use prelude.Prelude
+  predicate resolve (self : borrowed t) =
+     ^ self =  * self
+end
+module Alloc_Vec_Impl1_Len_Interface
+  type t
+  type a
+  use mach.int.UInt64
+  use seq.Seq
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t, type a = a, axiom .
+  val len [@cfg:stackify] (self : Type.alloc_vec_vec t a) : usize
+    ensures { UInt64.to_int result = Seq.length (Model0.model self) }
+    
+end
+module Alloc_Vec_Impl1_Len
+  type t
+  type a
+  use mach.int.UInt64
+  use seq.Seq
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t, type a = a, axiom .
+  val len [@cfg:stackify] (self : Type.alloc_vec_vec t a) : usize
+    ensures { UInt64.to_int result = Seq.length (Model0.model self) }
+    
+end
+module SetSat_Solver_Impl5_DecisionLevel_Interface
+  use mach.int.UInt64
+  use seq.Seq
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = usize, type a = Type.alloc_alloc_global,
+  axiom .
+  val decision_level [@cfg:stackify] (self : Type.setsat_solver_trail) : usize
+    ensures { [#"../SetSAT/src/solver.rs" 156 14 156 48] UInt64.to_int result = Seq.length (Model0.model (Type.setsat_solver_trail_Trail_decisions self)) }
+    
+end
+module SetSat_Solver_Impl5_DecisionLevel
+  use mach.int.UInt64
+  use seq.Seq
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = usize, type a = Type.alloc_alloc_global, axiom .
+  clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = usize, type a = Type.alloc_alloc_global,
+  function Model0.model = Model0.model
+  let rec cfg decision_level [@cfg:stackify] [#"../SetSAT/src/solver.rs" 157 4 157 48] (self : Type.setsat_solver_trail) : usize
+    ensures { [#"../SetSAT/src/solver.rs" 156 14 156 48] UInt64.to_int result = Seq.length (Model0.model (Type.setsat_solver_trail_Trail_decisions self)) }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : usize;
+  var self_1 : Type.setsat_solver_trail;
+  var _2 : Type.alloc_vec_vec usize (Type.alloc_alloc_global);
+  {
+    self_1 <- self;
+    goto BB0
+  }
+  BB0 {
+    _2 <- Type.setsat_solver_trail_Trail_decisions self_1;
+    _0 <- ([#"../SetSAT/src/solver.rs" 158 8 158 28] Len0.len _2);
+    goto BB1
+  }
+  BB1 {
+    return _0
+  }
+  
+end
+module CreusotContracts_Logic_Resolve_Impl1
+  type t
+end
+module SetSat_Solver_AnalyzeAndLearn_Interface
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use Type
+  val analyze_and_learn [@cfg:stackify] (cref : usize) (clause_db : borrowed (Type.setsat_solver_clausedb)) (trail : borrowed (Type.setsat_solver_trail)) : Type.setsat_solver_unsatorcontinue
+    
+end
+module SetSat_Solver_AnalyzeAndLearn
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use Type
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model0 with type t = usize, type a = Type.alloc_alloc_global, axiom .
+  clone SetSat_Solver_Impl5_DecisionLevel_Interface as DecisionLevel0 with function Model0.model = Model0.model
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve1 with type t = Type.setsat_solver_trail
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = Type.setsat_solver_clausedb
+  let rec cfg analyze_and_learn [@cfg:stackify] [#"../SetSAT/src/solver.rs" 204 0 204 96] (cref : usize) (clause_db : borrowed (Type.setsat_solver_clausedb)) (trail : borrowed (Type.setsat_solver_trail)) : Type.setsat_solver_unsatorcontinue
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Type.setsat_solver_unsatorcontinue;
+  var cref_1 : usize;
+  var clause_db_2 : borrowed (Type.setsat_solver_clausedb);
+  var trail_3 : borrowed (Type.setsat_solver_trail);
+  var _4 : ();
+  var _5 : bool;
+  var _6 : usize;
+  var _7 : Type.setsat_solver_trail;
+  var _8 : ();
+  {
+    cref_1 <- cref;
+    clause_db_2 <- clause_db;
+    trail_3 <- trail;
+    goto BB0
+  }
+  BB0 {
+    assume { Resolve0.resolve clause_db_2 };
+    _7 <-  * trail_3;
+    assume { Resolve1.resolve trail_3 };
+    _6 <- ([#"../SetSAT/src/solver.rs" 205 7 205 29] DecisionLevel0.decision_level _7);
+    goto BB1
+  }
+  BB1 {
+    _5 <- ([#"../SetSAT/src/solver.rs" 205 7 205 34] _6 = (0 : usize));
+    switch (_5)
+      | False -> goto BB3
+      | _ -> goto BB2
+      end
+  }
+  BB2 {
+    _0 <- Type.SetSat_Solver_UnsatOrContinue_Unsat;
+    goto BB4
+  }
+  BB3 {
+    _4 <- ();
+    _0 <- Type.SetSat_Solver_UnsatOrContinue_Continue;
+    goto BB4
+  }
+  BB4 {
+    return _0
+  }
+  
+end
+module CreusotContracts_Logic_Model_Model_ModelTy
+  type self
+  type modelTy
+end
+module CreusotContracts_Logic_Model_Model_Model_Interface
+  type self
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = self
+  function model (self : self) : ModelTy0.modelTy
+end
+module CreusotContracts_Logic_Model_Model_Model
+  type self
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = self
+  function model (self : self) : ModelTy0.modelTy
+end
+module CreusotContracts_Logic_Model_Impl1_Model_Interface
+  type t
+  use prelude.Prelude
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
+  function model (self : borrowed t) : ModelTy0.modelTy
+end
+module CreusotContracts_Logic_Model_Impl1_Model
+  type t
+  use prelude.Prelude
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
+  clone CreusotContracts_Logic_Model_Model_Model_Interface as Model0 with type self = t,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  function model (self : borrowed t) : ModelTy0.modelTy =
+    Model0.model ( * self)
+end
+module CreusotContracts_Logic_Set_Impl0_Contains_Interface
+  type t
+  use set.Set
+  predicate contains [@inline:trivial] (self : Set.set t) (e : t)
+end
+module CreusotContracts_Logic_Set_Impl0_Contains
+  type t
+  use set.Set
+  predicate contains [@inline:trivial] (self : Set.set t) (e : t) =
+    Set.mem e self
+end
+module SetSat_Solver_Impl2_Model_Interface
+  use Type
+  function model (self : Type.setsat_solver_clause) : Type.setsat_logic_logic_clauselogic
+end
+module SetSat_Solver_Impl2_Model
+  use Type
+  function model [#"../SetSAT/src/solver.rs" 77 4 77 35] (self : Type.setsat_solver_clause) : Type.setsat_logic_logic_clauselogic
+    
+end
+module SetSat_Solver_Impl0_Model_Interface
+  use Type
+  function model (self : Type.setsat_solver_lit) : Type.setsat_logic_logic_litlogic
+end
+module SetSat_Solver_Impl0_Model
+  use Type
+  use mach.int.UInt64
+  function model [#"../SetSAT/src/solver.rs" 35 4 35 35] (self : Type.setsat_solver_lit) : Type.setsat_logic_logic_litlogic
+    
+   =
+    [#"../SetSAT/src/solver.rs" 36 20 36 72] Type.SetSat_Logic_Logic_LitLogic (UInt64.to_int (Type.setsat_solver_lit_Lit_idx self)) (Type.setsat_solver_lit_Lit_polarity self)
+end
+module SetSat_Logic_Logic_Impl0_IdxLessThan_Interface
+  use Type
+  use mach.int.Int
+  predicate idx_less_than (self : Type.setsat_logic_logic_litlogic) (upper_bound : int)
+end
+module SetSat_Logic_Logic_Impl0_IdxLessThan
+  use Type
+  use mach.int.Int
+  use mach.int.Int32
+  predicate idx_less_than [#"../SetSAT/src/logic/logic.rs" 73 4 73 63] (self : Type.setsat_logic_logic_litlogic) (upper_bound : int)
+    
+   =
+    [#"../SetSAT/src/logic/logic.rs" 74 8 74 47] 0 <= Type.setsat_logic_logic_litlogic_LitLogic_idx self /\ Type.setsat_logic_logic_litlogic_LitLogic_idx self < upper_bound
+end
+module SetSat_Logic_Logic_Impl1_IdxesLessThan_Interface
+  use Type
+  use mach.int.Int
+  predicate idxes_less_than (self : Type.setsat_logic_logic_clauselogic) (upper_bound : int)
+end
+module SetSat_Logic_Logic_Impl1_IdxesLessThan
+  use Type
+  use mach.int.Int
+  clone SetSat_Logic_Logic_Impl0_IdxLessThan_Interface as IdxLessThan0
+  clone SetSat_Solver_Impl0_Model_Interface as Model0
+  clone CreusotContracts_Logic_Set_Impl0_Contains_Interface as Contains0 with type t = Type.setsat_solver_lit
+  predicate idxes_less_than [#"../SetSAT/src/logic/logic.rs" 81 4 81 65] (self : Type.setsat_logic_logic_clauselogic) (upper_bound : int)
+    
+   =
+    [#"../SetSAT/src/logic/logic.rs" 82 8 82 92] forall l : (Type.setsat_solver_lit) . Contains0.contains (Type.setsat_logic_logic_clauselogic_ClauseLogic_lits self) l -> IdxLessThan0.idx_less_than (Model0.model l) upper_bound
+end
+module SetSat_Logic_Logic_Impl2_IdxesLessThan_Interface
+  use Type
+  use mach.int.Int
+  predicate idxes_less_than (self : Type.setsat_logic_logic_formulalogic) (upper_bound : int)
+end
+module SetSat_Logic_Logic_Impl2_IdxesLessThan
+  use Type
+  use mach.int.Int
+  clone SetSat_Logic_Logic_Impl1_IdxesLessThan_Interface as IdxesLessThan0
+  clone SetSat_Solver_Impl2_Model_Interface as Model0
+  clone CreusotContracts_Logic_Set_Impl0_Contains_Interface as Contains0 with type t = Type.setsat_solver_clause
+  predicate idxes_less_than [#"../SetSAT/src/logic/logic.rs" 94 4 94 65] (self : Type.setsat_logic_logic_formulalogic) (upper_bound : int)
+    
+   =
+    [#"../SetSAT/src/logic/logic.rs" 95 8 95 91] forall c : (Type.setsat_solver_clause) . Contains0.contains (Type.setsat_logic_logic_formulalogic_FormulaLogic_0 self) c -> IdxesLessThan0.idxes_less_than (Model0.model c) upper_bound
+end
+module SetSat_Solver_Impl3_Model_Interface
+  use Type
+  function model (self : Type.setsat_solver_clausedb) : Type.setsat_logic_logic_formulalogic
+end
+module SetSat_Solver_Impl3_Model
+  use Type
+  function model [#"../SetSAT/src/solver.rs" 88 4 88 35] (self : Type.setsat_solver_clausedb) : Type.setsat_logic_logic_formulalogic
+    
+end
+module SetSat_Solver_Impl3_ModelTy
+  use Type
+  type modelTy  =
+    Type.setsat_logic_logic_formulalogic
+end
+module CreusotContracts_Logic_Model_Impl1
+  type t
+end
+module SetSat_Solver_Impl3
+  use Type
+  clone SetSat_Solver_Impl3_ModelTy as ModelTy0
+  clone SetSat_Solver_Impl3_Model as Model0
+  clone CreusotContracts_Logic_Model_Model_Model_Interface as Model1 with type self = Type.setsat_solver_clausedb,
+  function model = Model0.model, type ModelTy0.modelTy = ModelTy0.modelTy
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = Type.setsat_solver_clausedb,
+  type modelTy = ModelTy0.modelTy
+end
+module SetSat_Solver_Impl2_ModelTy
+  use Type
+  type modelTy  =
+    Type.setsat_logic_logic_clauselogic
+end
+module SetSat_Solver_Impl2
+  use Type
+  clone SetSat_Solver_Impl2_ModelTy as ModelTy0
+  clone SetSat_Solver_Impl2_Model as Model0
+  clone CreusotContracts_Logic_Model_Model_Model_Interface as Model1 with type self = Type.setsat_solver_clause,
+  function model = Model0.model, type ModelTy0.modelTy = ModelTy0.modelTy
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = Type.setsat_solver_clause,
+  type modelTy = ModelTy0.modelTy
+end
+module SetSat_Solver_Impl0_ModelTy
+  use Type
+  type modelTy  =
+    Type.setsat_logic_logic_litlogic
+end
+module SetSat_Solver_Impl0
+  use Type
+  clone SetSat_Solver_Impl0_ModelTy as ModelTy0
+  clone SetSat_Solver_Impl0_Model as Model0
+  clone CreusotContracts_Logic_Model_Model_Model_Interface as Model1 with type self = Type.setsat_solver_lit,
+  function model = Model0.model, type ModelTy0.modelTy = ModelTy0.modelTy
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy1 with type self = Type.setsat_solver_lit,
+  type modelTy = ModelTy0.modelTy
+end
+module CreusotContracts_Std1_Slice_SliceIndexSpec_InBounds_Interface
+  type self
+  type t
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
+  predicate in_bounds (self : self) (seq : ModelTy0.modelTy)
+end
+module CreusotContracts_Std1_Slice_SliceIndexSpec_InBounds
+  type self
+  type t
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
+  predicate in_bounds (self : self) (seq : ModelTy0.modelTy)
+end
+module Core_Slice_Index_SliceIndex_Output
+  type self
+  type t
+  type output
+end
+module CreusotContracts_Std1_Slice_SliceIndexSpec_HasValue_Interface
+  type self
+  type t
+  clone Core_Slice_Index_SliceIndex_Output as Output0 with type self = self, type t = t
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
+  predicate has_value (self : self) (seq : ModelTy0.modelTy) (out : Output0.output)
+end
+module CreusotContracts_Std1_Slice_SliceIndexSpec_HasValue
+  type self
+  type t
+  clone Core_Slice_Index_SliceIndex_Output as Output0 with type self = self, type t = t
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
+  predicate has_value (self : self) (seq : ModelTy0.modelTy) (out : Output0.output)
+end
+module CreusotContracts_Std1_Slice_Impl0_ModelTy
+  type t
+  use seq.Seq
+  type modelTy  =
+    Seq.seq t
+end
+module Alloc_Vec_Impl16_Index_Interface
+  type t
+  type i
+  type a
+  use prelude.Prelude
+  use Type
+  use seq.Seq
+  clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy0 with type t = t
+  clone Core_Slice_Index_SliceIndex_Output as Output0 with type self = i, type t = seq t
+  clone CreusotContracts_Std1_Slice_SliceIndexSpec_HasValue_Interface as HasValue0 with type self = i, type t = seq t,
+  type ModelTy0.modelTy = ModelTy0.modelTy, type Output0.output = Output0.output
+  clone CreusotContracts_Std1_Slice_SliceIndexSpec_InBounds_Interface as InBounds0 with type self = i, type t = seq t,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t, type a = a, axiom .
+  val index [@cfg:stackify] (self : Type.alloc_vec_vec t a) (index : i) : Output0.output
+    requires {InBounds0.in_bounds index (Model0.model self)}
+    ensures { HasValue0.has_value index (Model0.model self) result }
+    
+end
+module Alloc_Vec_Impl16_Index
+  type t
+  type i
+  type a
+  use prelude.Prelude
+  use Type
+  use seq.Seq
+  clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy0 with type t = t
+  clone Core_Slice_Index_SliceIndex_Output as Output0 with type self = i, type t = seq t
+  clone CreusotContracts_Std1_Slice_SliceIndexSpec_HasValue_Interface as HasValue0 with type self = i, type t = seq t,
+  type ModelTy0.modelTy = ModelTy0.modelTy, type Output0.output = Output0.output
+  clone CreusotContracts_Std1_Slice_SliceIndexSpec_InBounds_Interface as InBounds0 with type self = i, type t = seq t,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t, type a = a, axiom .
+  val index [@cfg:stackify] (self : Type.alloc_vec_vec t a) (index : i) : Output0.output
+    requires {InBounds0.in_bounds index (Model0.model self)}
+    ensures { HasValue0.has_value index (Model0.model self) result }
+    
+end
+module CreusotContracts_Logic_Model_Impl0_Model_Interface
+  type t
+  use prelude.Prelude
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
+  function model (self : t) : ModelTy0.modelTy
+end
+module CreusotContracts_Logic_Model_Impl0_Model
+  type t
+  use prelude.Prelude
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
+  clone CreusotContracts_Logic_Model_Model_Model_Interface as Model0 with type self = t,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  function model (self : t) : ModelTy0.modelTy =
+    Model0.model self
+end
+module CreusotContracts_Logic_Model_Impl0
+  type t
+end
+module Alloc_Vec_Impl16
+  type t
+  type i
+  type a
+end
+module CreusotContracts_Std1_Slice_Impl3_InBounds_Interface
+  type t
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use seq.Seq
+  predicate in_bounds [@inline:trivial] (self : usize) (seq : Seq.seq t)
+end
+module CreusotContracts_Std1_Slice_Impl3_InBounds
+  type t
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use seq.Seq
+  predicate in_bounds [@inline:trivial] (self : usize) (seq : Seq.seq t) =
+    UInt64.to_int self < Seq.length seq
+end
+module CreusotContracts_Std1_Slice_Impl3
+  type t
+end
+module CreusotContracts_Std1_Slice_Impl3_HasValue_Interface
+  type t
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use seq.Seq
+  predicate has_value [@inline:trivial] (self : usize) (seq : Seq.seq t) (out : t)
+end
+module CreusotContracts_Std1_Slice_Impl3_HasValue
+  type t
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use seq.Seq
+  predicate has_value [@inline:trivial] (self : usize) (seq : Seq.seq t) (out : t) =
+    Seq.get seq (UInt64.to_int self) = out
+end
+module Core_Slice_Index_Impl2_Output
+  type t
+  type output  =
+    t
+end
+module Core_Slice_Index_Impl2
+  type t
+end
+module CreusotContracts_Std1_Slice_Impl0
+  type t
+end
+module SetSat_Solver_Impl1_Eval_Interface
+  use seq.Seq
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  use prelude.UInt8
+  clone SetSat_Solver_Impl0_ModelTy as ModelTy0
+  clone SetSat_Logic_Logic_Impl0_IdxLessThan_Interface as IdxLessThan0
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = uint8, type a = Type.alloc_alloc_global,
+  axiom .
+  clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model0 with type t = Type.setsat_solver_lit,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  val eval [@cfg:stackify] (self : Type.setsat_solver_lit) (trail : Type.setsat_solver_trail) : Type.setsat_solver_litevalres
+    requires {[#"../SetSAT/src/solver.rs" 47 15 47 64] IdxLessThan0.idx_less_than (Model0.model self) (Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments trail)))}
+    
+end
+module SetSat_Solver_Impl1_Eval
+  use seq.Seq
+  use prelude.Prelude
+  use Type
+  use mach.int.Int
+  use prelude.UInt8
+  clone SetSat_Solver_Impl0_Model as Model2
+  clone SetSat_Solver_Impl0_ModelTy as ModelTy0
+  clone SetSat_Logic_Logic_Impl0_IdxLessThan as IdxLessThan0
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = uint8, type a = Type.alloc_alloc_global, axiom .
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.setsat_solver_lit,
+  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model2.model
+  use mach.int.UInt64
+  clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy1 with type t = uint8
+  clone Core_Slice_Index_Impl2_Output as Output0 with type t = uint8
+  clone CreusotContracts_Std1_Slice_Impl3_HasValue as HasValue0 with type t = uint8
+  clone CreusotContracts_Std1_Slice_Impl3_InBounds as InBounds0 with type t = uint8
+  clone Alloc_Vec_Impl16_Index_Interface as Index0 with type t = uint8, type i = usize,
+  type a = Type.alloc_alloc_global, function Model0.model = Model1.model,
+  predicate InBounds0.in_bounds = InBounds0.in_bounds, predicate HasValue0.has_value = HasValue0.has_value,
+  type Output0.output = Output0.output
+  let rec cfg eval [@cfg:stackify] [#"../SetSAT/src/solver.rs" 48 4 48 58] (self : Type.setsat_solver_lit) (trail : Type.setsat_solver_trail) : Type.setsat_solver_litevalres
+    requires {[#"../SetSAT/src/solver.rs" 47 15 47 64] IdxLessThan0.idx_less_than (Model0.model self) (Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments trail)))}
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Type.setsat_solver_litevalres;
+  var self_1 : Type.setsat_solver_lit;
+  var trail_2 : Type.setsat_solver_trail;
+  var assn_3 : uint8;
+  var _4 : uint8;
+  var _5 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
+  var _6 : usize;
+  var _7 : ();
+  var _8 : bool;
+  var _9 : uint8;
+  var _10 : ();
+  var _11 : ();
+  var _12 : bool;
+  var _13 : bool;
+  var _14 : bool;
+  var _15 : uint8;
+  var _16 : bool;
+  var _17 : bool;
+  var _18 : bool;
+  var _19 : uint8;
+  var _20 : bool;
+  var _21 : bool;
+  var _22 : ();
+  {
+    self_1 <- self;
+    trail_2 <- trail;
+    goto BB0
+  }
+  BB0 {
+    _5 <- Type.setsat_solver_trail_Trail_assignments trail_2;
+    _6 <- Type.setsat_solver_lit_Lit_idx self_1;
+    _4 <- ([#"../SetSAT/src/solver.rs" 49 19 49 46] Index0.index _5 _6);
+    goto BB1
+  }
+  BB1 {
+    assn_3 <- _4;
+    _9 <- assn_3;
+    _8 <- ([#"../SetSAT/src/solver.rs" 50 11 50 20] _9 >= (2 : uint8));
+    switch (_8)
+      | False -> goto BB3
+      | _ -> goto BB2
+      end
+  }
+  BB2 {
+    _0 <- Type.SetSat_Solver_LitEvalRes_Unset;
+    goto BB15
+  }
+  BB3 {
+    _7 <- ();
+    _15 <- assn_3;
+    _14 <- ([#"../SetSAT/src/solver.rs" 53 11 53 20] _15 = (1 : uint8));
+    switch (_14)
+      | False -> goto BB7
+      | _ -> goto BB8
+      end
+  }
+  BB4 {
+    _12 <- true;
+    goto BB6
+  }
+  BB5 {
+    _19 <- assn_3;
+    _18 <- ([#"../SetSAT/src/solver.rs" 53 41 53 50] _19 = (0 : uint8));
+    switch (_18)
+      | False -> goto BB10
+      | _ -> goto BB11
+      end
+  }
+  BB6 {
+    switch (_12)
+      | False -> goto BB14
+      | _ -> goto BB13
+      end
+  }
+  BB7 {
+    _13 <- false;
+    goto BB9
+  }
+  BB8 {
+    _16 <- Type.setsat_solver_lit_Lit_polarity self_1;
+    _13 <- _16;
+    _16 <- any bool;
+    goto BB9
+  }
+  BB9 {
+    switch (_13)
+      | False -> goto BB5
+      | _ -> goto BB4
+      end
+  }
+  BB10 {
+    _17 <- false;
+    goto BB12
+  }
+  BB11 {
+    _21 <- Type.setsat_solver_lit_Lit_polarity self_1;
+    _20 <- not _21;
+    _17 <- _20;
+    _20 <- any bool;
+    goto BB12
+  }
+  BB12 {
+    _12 <- _17;
+    _17 <- any bool;
+    goto BB6
+  }
+  BB13 {
+    _0 <- Type.SetSat_Solver_LitEvalRes_Sat;
+    goto BB15
+  }
+  BB14 {
+    _11 <- ();
+    _0 <- Type.SetSat_Solver_LitEvalRes_Unsat;
+    goto BB16
+  }
+  BB15 {
+    goto BB16
+  }
+  BB16 {
+    return _0
+  }
+  
+end
+module SetSat_Solver_Impl4_IsUnitOrUnsat_Interface
+  use seq.Seq
+  use Type
+  use prelude.Prelude
+  use mach.int.Int
+  use prelude.UInt8
+  clone SetSat_Solver_Impl2_ModelTy as ModelTy0
+  clone SetSat_Logic_Logic_Impl0_IdxLessThan_Interface as IdxLessThan0
+  clone SetSat_Solver_Impl0_Model_Interface as Model2
+  clone SetSat_Logic_Logic_Impl1_IdxesLessThan_Interface as IdxesLessThan0
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = uint8, type a = Type.alloc_alloc_global,
+  axiom .
+  clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model0 with type t = Type.setsat_solver_clause,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  val is_unit_or_unsat [@cfg:stackify] (self : Type.setsat_solver_clause) (trail : Type.setsat_solver_trail) : Type.setsat_solver_clauseevalres
+    requires {[#"../SetSAT/src/solver.rs" 94 15 94 66] IdxesLessThan0.idxes_less_than (Model0.model self) (Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments trail)))}
+    ensures { [#"../SetSAT/src/solver.rs" 95 14 99 5] match (result) with
+      | Type.SetSat_Solver_ClauseEvalRes_Other -> true
+      | Type.SetSat_Solver_ClauseEvalRes_Unsat -> true
+      | Type.SetSat_Solver_ClauseEvalRes_Unit lit -> IdxLessThan0.idx_less_than (Model2.model lit) (Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments trail)))
+      end }
+    
+end
+module SetSat_Solver_Impl4_IsUnitOrUnsat
+  use seq.Seq
+  use Type
+  use prelude.Prelude
+  use mach.int.Int
+  use prelude.UInt8
+  clone CreusotContracts_Logic_Set_Impl0_Contains as Contains0 with type t = Type.setsat_solver_lit
+  clone SetSat_Solver_Impl2_Model as Model3
+  clone SetSat_Solver_Impl2_ModelTy as ModelTy0
+  clone SetSat_Logic_Logic_Impl0_IdxLessThan as IdxLessThan0
+  clone SetSat_Solver_Impl0_Model as Model2
+  clone SetSat_Logic_Logic_Impl1_IdxesLessThan as IdxesLessThan0 with predicate Contains0.contains = Contains0.contains,
+  function Model0.model = Model2.model, predicate IdxLessThan0.idx_less_than = IdxLessThan0.idx_less_than
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = uint8, type a = Type.alloc_alloc_global, axiom .
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.setsat_solver_clause,
+  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model3.model
+  use mach.int.UInt64
+  use mach.int.Int64
+  clone SetSat_Solver_Impl0_ModelTy as ModelTy2
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model5 with type t = Type.setsat_solver_lit,
+  type ModelTy0.modelTy = ModelTy2.modelTy, function Model0.model = Model2.model
+  clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy1 with type t = Type.setsat_solver_lit
+  clone Core_Slice_Index_Impl2_Output as Output0 with type t = Type.setsat_solver_lit
+  clone CreusotContracts_Std1_Slice_Impl3_HasValue as HasValue0 with type t = Type.setsat_solver_lit
+  clone CreusotContracts_Std1_Slice_Impl3_InBounds as InBounds0 with type t = Type.setsat_solver_lit
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model4 with type t = Type.setsat_solver_lit,
+  type a = Type.alloc_alloc_global, axiom .
+  clone SetSat_Solver_Impl1_Eval_Interface as Eval0 with function Model0.model = Model5.model,
+  function Model1.model = Model1.model, predicate IdxLessThan0.idx_less_than = IdxLessThan0.idx_less_than
+  clone Alloc_Vec_Impl16_Index_Interface as Index0 with type t = Type.setsat_solver_lit, type i = usize,
+  type a = Type.alloc_alloc_global, function Model0.model = Model4.model,
+  predicate InBounds0.in_bounds = InBounds0.in_bounds, predicate HasValue0.has_value = HasValue0.has_value,
+  type Output0.output = Output0.output
+  clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.setsat_solver_lit, type a = Type.alloc_alloc_global,
+  function Model0.model = Model4.model
+  let rec cfg is_unit_or_unsat [@cfg:stackify] [#"../SetSAT/src/solver.rs" 100 4 100 73] (self : Type.setsat_solver_clause) (trail : Type.setsat_solver_trail) : Type.setsat_solver_clauseevalres
+    requires {[#"../SetSAT/src/solver.rs" 94 15 94 66] IdxesLessThan0.idxes_less_than (Model0.model self) (Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments trail)))}
+    ensures { [#"../SetSAT/src/solver.rs" 95 14 99 5] match (result) with
+      | Type.SetSat_Solver_ClauseEvalRes_Other -> true
+      | Type.SetSat_Solver_ClauseEvalRes_Unsat -> true
+      | Type.SetSat_Solver_ClauseEvalRes_Unit lit -> IdxLessThan0.idx_less_than (Model2.model lit) (Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments trail)))
+      end }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Type.setsat_solver_clauseevalres;
+  var self_1 : Type.setsat_solver_clause;
+  var trail_2 : Type.setsat_solver_trail;
+  var potential_unit_lit_3 : Type.core_option_option (Type.setsat_solver_lit);
+  var i_4 : usize;
+  var _5 : ();
+  var _6 : ();
+  var _7 : bool;
+  var _8 : usize;
+  var _9 : usize;
+  var _10 : Type.alloc_vec_vec (Type.setsat_solver_lit) (Type.alloc_alloc_global);
+  var lit_11 : Type.setsat_solver_lit;
+  var _12 : Type.setsat_solver_lit;
+  var _13 : Type.alloc_vec_vec (Type.setsat_solver_lit) (Type.alloc_alloc_global);
+  var _14 : usize;
+  var _15 : ();
+  var _16 : Type.setsat_solver_litevalres;
+  var _17 : Type.setsat_solver_lit;
+  var _18 : Type.setsat_solver_trail;
+  var _19 : isize;
+  var _20 : ();
+  var _21 : isize;
+  var _22 : ();
+  var _23 : Type.core_option_option (Type.setsat_solver_lit);
+  var _24 : Type.setsat_solver_lit;
+  var _25 : ();
+  var _26 : ();
+  var _27 : ();
+  var _28 : isize;
+  var lit_29 : Type.setsat_solver_lit;
+  var _30 : Type.setsat_solver_lit;
+  {
+    self_1 <- self;
+    trail_2 <- trail;
+    goto BB0
+  }
+  BB0 {
+    potential_unit_lit_3 <- Type.Core_Option_Option_None;
+    i_4 <- (0 : usize);
+    goto BB1
+  }
+  BB1 {
+    invariant pot_unit_in_range { [#"../SetSAT/src/solver.rs" 103 39 106 9] match (potential_unit_lit_3) with
+      | Type.Core_Option_Option_None -> true
+      | Type.Core_Option_Option_Some lit -> IdxLessThan0.idx_less_than (Model2.model lit) (Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments trail_2)))
+      end };
+    _8 <- i_4;
+    _10 <- Type.setsat_solver_clause_Clause_lits self_1;
+    _9 <- ([#"../SetSAT/src/solver.rs" 108 18 108 33] Len0.len _10);
+    goto BB2
+  }
+  BB2 {
+    _7 <- ([#"../SetSAT/src/solver.rs" 108 14 108 33] _8 < _9);
+    switch (_7)
+      | False -> goto BB14
+      | _ -> goto BB3
+      end
+  }
+  BB3 {
+    _13 <- Type.setsat_solver_clause_Clause_lits self_1;
+    _14 <- i_4;
+    _12 <- ([#"../SetSAT/src/solver.rs" 109 22 109 34] Index0.index _13 _14);
+    goto BB4
+  }
+  BB4 {
+    lit_11 <- _12;
+    assert { [#"../SetSAT/src/solver.rs" 110 26 110 74] IdxLessThan0.idx_less_than (Model2.model lit_11) (Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments trail_2))) };
+    _15 <- ();
+    _17 <- lit_11;
+    _18 <- trail_2;
+    _16 <- ([#"../SetSAT/src/solver.rs" 111 18 111 33] Eval0.eval _17 _18);
+    goto BB5
+  }
+  BB5 {
+    switch (_16)
+      | Type.SetSat_Solver_LitEvalRes_Sat -> goto BB8
+      | Type.SetSat_Solver_LitEvalRes_Unsat -> goto BB9
+      | Type.SetSat_Solver_LitEvalRes_Unset -> goto BB6
+      end
+  }
+  BB6 {
+    switch (potential_unit_lit_3)
+      | Type.Core_Option_Option_None -> goto BB10
+      | Type.Core_Option_Option_Some _ -> goto BB12
+      end
+  }
+  BB7 {
+    absurd
+  }
+  BB8 {
+    _0 <- Type.SetSat_Solver_ClauseEvalRes_Other;
+    goto BB19
+  }
+  BB9 {
+    _6 <- ();
+    goto BB13
+  }
+  BB10 {
+    _24 <- lit_11;
+    _23 <- Type.Core_Option_Option_Some _24;
+    potential_unit_lit_3 <- _23;
+    _23 <- any Type.core_option_option (Type.setsat_solver_lit);
+    _6 <- ();
+    goto BB13
+  }
+  BB11 {
+    absurd
+  }
+  BB12 {
+    _0 <- Type.SetSat_Solver_ClauseEvalRes_Other;
+    goto BB19
+  }
+  BB13 {
+    goto BB1
+  }
+  BB14 {
+    _5 <- ();
+    switch (potential_unit_lit_3)
+      | Type.Core_Option_Option_None -> goto BB15
+      | Type.Core_Option_Option_Some _ -> goto BB17
+      end
+  }
+  BB15 {
+    _0 <- Type.SetSat_Solver_ClauseEvalRes_Unsat;
+    goto BB18
+  }
+  BB16 {
+    absurd
+  }
+  BB17 {
+    lit_29 <- Type.core_option_option_Some_0 potential_unit_lit_3;
+    _30 <- lit_29;
+    _0 <- Type.SetSat_Solver_ClauseEvalRes_Unit _30;
+    goto BB18
+  }
+  BB18 {
+    goto BB20
+  }
+  BB19 {
+    goto BB20
+  }
+  BB20 {
+    return _0
+  }
+  
+end
+module CreusotContracts_Std1_Slice_SliceIndexSpec_ResolveElswhere_Interface
+  type self
+  type t
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
+  predicate resolve_elswhere (self : self) (old' : ModelTy0.modelTy) (fin : ModelTy0.modelTy)
+end
+module CreusotContracts_Std1_Slice_SliceIndexSpec_ResolveElswhere
+  type self
+  type t
+  clone CreusotContracts_Logic_Model_Model_ModelTy as ModelTy0 with type self = t
+  predicate resolve_elswhere (self : self) (old' : ModelTy0.modelTy) (fin : ModelTy0.modelTy)
+end
+module Alloc_Vec_Impl17_IndexMut_Interface
+  type t
+  type i
+  type a
+  use prelude.Prelude
+  use seq.Seq
+  use Type
+  clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy0 with type t = t
+  clone Core_Slice_Index_SliceIndex_Output as Output0 with type self = i, type t = seq t
+  clone CreusotContracts_Std1_Slice_SliceIndexSpec_ResolveElswhere_Interface as ResolveElswhere0 with type self = i,
+  type t = seq t, type ModelTy0.modelTy = ModelTy0.modelTy
+  clone CreusotContracts_Std1_Slice_SliceIndexSpec_HasValue_Interface as HasValue0 with type self = i, type t = seq t,
+  type ModelTy0.modelTy = ModelTy0.modelTy, type Output0.output = Output0.output
+  clone CreusotContracts_Std1_Slice_SliceIndexSpec_InBounds_Interface as InBounds0 with type self = i, type t = seq t,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t, type a = a, axiom .
+  val index_mut [@cfg:stackify] (self : borrowed (Type.alloc_vec_vec t a)) (index : i) : borrowed Output0.output
+    requires {InBounds0.in_bounds index (Model0.model ( * self))}
+    ensures { HasValue0.has_value index (Model0.model ( * self)) ( * result) }
+    ensures { HasValue0.has_value index (Model0.model ( ^ self)) ( ^ result) }
+    ensures { ResolveElswhere0.resolve_elswhere index (Model0.model ( * self)) (Model0.model ( ^ self)) }
+    ensures { Seq.length (Model0.model ( ^ self)) = Seq.length (Model0.model ( * self)) }
+    
+end
+module Alloc_Vec_Impl17_IndexMut
+  type t
+  type i
+  type a
+  use prelude.Prelude
+  use seq.Seq
+  use Type
+  clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy0 with type t = t
+  clone Core_Slice_Index_SliceIndex_Output as Output0 with type self = i, type t = seq t
+  clone CreusotContracts_Std1_Slice_SliceIndexSpec_ResolveElswhere_Interface as ResolveElswhere0 with type self = i,
+  type t = seq t, type ModelTy0.modelTy = ModelTy0.modelTy
+  clone CreusotContracts_Std1_Slice_SliceIndexSpec_HasValue_Interface as HasValue0 with type self = i, type t = seq t,
+  type ModelTy0.modelTy = ModelTy0.modelTy, type Output0.output = Output0.output
+  clone CreusotContracts_Std1_Slice_SliceIndexSpec_InBounds_Interface as InBounds0 with type self = i, type t = seq t,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model0 with type t = t, type a = a, axiom .
+  val index_mut [@cfg:stackify] (self : borrowed (Type.alloc_vec_vec t a)) (index : i) : borrowed Output0.output
+    requires {InBounds0.in_bounds index (Model0.model ( * self))}
+    ensures { HasValue0.has_value index (Model0.model ( * self)) ( * result) }
+    ensures { HasValue0.has_value index (Model0.model ( ^ self)) ( ^ result) }
+    ensures { ResolveElswhere0.resolve_elswhere index (Model0.model ( * self)) (Model0.model ( ^ self)) }
+    ensures { Seq.length (Model0.model ( ^ self)) = Seq.length (Model0.model ( * self)) }
+    
+end
+module Alloc_Vec_Impl17
+  type t
+  type i
+  type a
+end
+module CreusotContracts_Std1_Slice_Impl3_ResolveElswhere_Interface
+  type t
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use seq.Seq
+  predicate resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t)
+end
+module CreusotContracts_Std1_Slice_Impl3_ResolveElswhere
+  type t
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use seq.Seq
+  use mach.int.Int32
+  predicate resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t) =
+    forall i : (int) . 0 <= i /\ i <> UInt64.to_int self /\ i < Seq.length old' -> Seq.get old' i = Seq.get fin i
+end
+module SetSat_Solver_PropagateLiteral_Interface
+  use prelude.Prelude
+  use seq.Seq
+  use Type
+  use mach.int.Int
+  use prelude.UInt8
+  clone SetSat_Logic_Logic_Impl0_IdxLessThan_Interface as IdxLessThan0
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = uint8, type a = Type.alloc_alloc_global,
+  axiom .
+  clone SetSat_Solver_Impl0_Model_Interface as Model0
+  val propagate_literal [@cfg:stackify] (lit : Type.setsat_solver_lit) (clause_db : borrowed (Type.setsat_solver_clausedb)) (trail : borrowed (Type.setsat_solver_trail)) : ()
+    requires {[#"../SetSAT/src/solver.rs" 195 11 195 59] IdxLessThan0.idx_less_than (Model0.model lit) (Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments ( * trail))))}
+    
+end
+module SetSat_Solver_PropagateLiteral
+  use prelude.Prelude
+  use seq.Seq
+  use Type
+  use mach.int.Int
+  use prelude.UInt8
+  clone SetSat_Logic_Logic_Impl0_IdxLessThan as IdxLessThan0
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = uint8, type a = Type.alloc_alloc_global, axiom .
+  clone SetSat_Solver_Impl0_Model as Model0
+  use mach.int.UInt64
+  clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy0 with type t = uint8
+  clone Core_Slice_Index_Impl2_Output as Output0 with type t = uint8
+  clone CreusotContracts_Std1_Slice_Impl3_ResolveElswhere as ResolveElswhere0 with type t = uint8
+  clone CreusotContracts_Std1_Slice_Impl3_HasValue as HasValue0 with type t = uint8
+  clone CreusotContracts_Std1_Slice_Impl3_InBounds as InBounds0 with type t = uint8
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve2 with type t = uint8
+  clone Alloc_Vec_Impl17_IndexMut_Interface as IndexMut0 with type t = uint8, type i = usize,
+  type a = Type.alloc_alloc_global, function Model0.model = Model1.model,
+  predicate InBounds0.in_bounds = InBounds0.in_bounds, predicate HasValue0.has_value = HasValue0.has_value,
+  predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere, type Output0.output = Output0.output
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve1 with type t = Type.setsat_solver_trail
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = Type.setsat_solver_clausedb
+  let rec cfg propagate_literal [@cfg:stackify] [#"../SetSAT/src/solver.rs" 196 0 196 75] (lit : Type.setsat_solver_lit) (clause_db : borrowed (Type.setsat_solver_clausedb)) (trail : borrowed (Type.setsat_solver_trail)) : ()
+    requires {[#"../SetSAT/src/solver.rs" 195 11 195 59] IdxLessThan0.idx_less_than (Model0.model lit) (Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments ( * trail))))}
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : ();
+  var lit_1 : Type.setsat_solver_lit;
+  var clause_db_2 : borrowed (Type.setsat_solver_clausedb);
+  var trail_3 : borrowed (Type.setsat_solver_trail);
+  var _4 : borrowed uint8;
+  var _5 : borrowed (Type.alloc_vec_vec uint8 (Type.alloc_alloc_global));
+  var _6 : usize;
+  var _7 : borrowed uint8;
+  var _8 : borrowed (Type.alloc_vec_vec uint8 (Type.alloc_alloc_global));
+  var _9 : usize;
+  {
+    lit_1 <- lit;
+    clause_db_2 <- clause_db;
+    trail_3 <- trail;
+    goto BB0
+  }
+  BB0 {
+    assume { Resolve0.resolve clause_db_2 };
+    switch (Type.setsat_solver_lit_Lit_polarity lit_1)
+      | False -> goto BB1
+      | _ -> goto BB2
+      end
+  }
+  BB1 {
+    _8 <- borrow_mut (Type.setsat_solver_trail_Trail_assignments ( * trail_3));
+    trail_3 <- { trail_3 with current = (let Type.SetSat_Solver_Trail a b c d e =  * trail_3 in Type.SetSat_Solver_Trail ( ^ _8) b c d e) };
+    assume { Resolve1.resolve trail_3 };
+    _9 <- Type.setsat_solver_lit_Lit_idx lit_1;
+    _7 <- ([#"../SetSAT/src/solver.rs" 199 16 199 42] IndexMut0.index_mut _8 _9);
+    goto BB4
+  }
+  BB2 {
+    _5 <- borrow_mut (Type.setsat_solver_trail_Trail_assignments ( * trail_3));
+    trail_3 <- { trail_3 with current = (let Type.SetSat_Solver_Trail a b c d e =  * trail_3 in Type.SetSat_Solver_Trail ( ^ _5) b c d e) };
+    assume { Resolve1.resolve trail_3 };
+    _6 <- Type.setsat_solver_lit_Lit_idx lit_1;
+    _4 <- ([#"../SetSAT/src/solver.rs" 198 16 198 42] IndexMut0.index_mut _5 _6);
+    goto BB3
+  }
+  BB3 {
+    _4 <- { _4 with current = (1 : uint8) };
+    assume { Resolve2.resolve _4 };
+    _0 <- ();
+    goto BB5
+  }
+  BB4 {
+    _7 <- { _7 with current = (0 : uint8) };
+    assume { Resolve2.resolve _7 };
+    _0 <- ();
+    goto BB5
+  }
+  BB5 {
+    return _0
+  }
+  
+end
+module SetSat_Solver_UnitPropLoop_Interface
+  use prelude.Prelude
+  use seq.Seq
+  use Type
+  use mach.int.Int
+  use prelude.UInt8
+  clone SetSat_Solver_Impl3_ModelTy as ModelTy0
+  clone SetSat_Solver_Impl3_Model_Interface as Model2
+  clone SetSat_Logic_Logic_Impl2_IdxesLessThan_Interface as IdxesLessThan0
+  clone CreusotContracts_Std1_Vec_Impl0_Model_Interface as Model1 with type t = uint8, type a = Type.alloc_alloc_global,
+  axiom .
+  clone CreusotContracts_Logic_Model_Impl1_Model_Interface as Model0 with type t = Type.setsat_solver_clausedb,
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  val unit_prop_loop [@cfg:stackify] (clause_db : borrowed (Type.setsat_solver_clausedb)) (trail : borrowed (Type.setsat_solver_trail)) : Type.setsat_solver_unsatorcontinue
+    requires {[#"../SetSAT/src/solver.rs" 212 11 212 67] IdxesLessThan0.idxes_less_than (Model0.model clause_db) (Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments ( * trail))))}
+    ensures { [#"../SetSAT/src/solver.rs" 211 10 211 69] Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments ( * trail))) = Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments ( ^ trail))) }
+    ensures { [#"../SetSAT/src/solver.rs" 213 10 213 67] IdxesLessThan0.idxes_less_than (Model2.model ( ^ clause_db)) (Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments ( * trail)))) }
+    
+end
+module SetSat_Solver_UnitPropLoop
+  use prelude.Prelude
+  use seq.Seq
+  use Type
+  use mach.int.UInt64
+  use mach.int.Int
+  use prelude.UInt8
+  clone SetSat_Logic_Logic_Impl0_IdxLessThan as IdxLessThan0
+  clone SetSat_Solver_Impl0_Model as Model5
+  clone CreusotContracts_Logic_Set_Impl0_Contains as Contains1 with type t = Type.setsat_solver_lit
+  clone SetSat_Logic_Logic_Impl1_IdxesLessThan as IdxesLessThan1 with predicate Contains0.contains = Contains1.contains,
+  function Model0.model = Model5.model, predicate IdxLessThan0.idx_less_than = IdxLessThan0.idx_less_than
+  clone SetSat_Solver_Impl2_Model as Model4
+  clone CreusotContracts_Logic_Set_Impl0_Contains as Contains0 with type t = Type.setsat_solver_clause
+  clone SetSat_Solver_Impl3_ModelTy as ModelTy0
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model3 with type t = Type.setsat_solver_clause,
+  type a = Type.alloc_alloc_global, axiom .
+  clone SetSat_Solver_Impl3_Model as Model2
+  clone SetSat_Logic_Logic_Impl2_IdxesLessThan as IdxesLessThan0 with predicate Contains0.contains = Contains0.contains,
+  function Model0.model = Model4.model, predicate IdxesLessThan0.idxes_less_than = IdxesLessThan1.idxes_less_than
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = uint8, type a = Type.alloc_alloc_global, axiom .
+  clone CreusotContracts_Logic_Model_Impl1_Model as Model0 with type t = Type.setsat_solver_clausedb,
+  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model2.model
+  use mach.int.Int64
+  clone SetSat_Solver_Impl2_ModelTy as ModelTy2
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model6 with type t = Type.setsat_solver_clause,
+  type ModelTy0.modelTy = ModelTy2.modelTy, function Model0.model = Model4.model
+  clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy1 with type t = Type.setsat_solver_clause
+  clone Core_Slice_Index_Impl2_Output as Output0 with type t = Type.setsat_solver_clause
+  clone CreusotContracts_Std1_Slice_Impl3_HasValue as HasValue0 with type t = Type.setsat_solver_clause
+  clone CreusotContracts_Std1_Slice_Impl3_InBounds as InBounds0 with type t = Type.setsat_solver_clause
+  clone SetSat_Solver_PropagateLiteral_Interface as PropagateLiteral0 with function Model0.model = Model5.model,
+  function Model1.model = Model1.model, predicate IdxLessThan0.idx_less_than = IdxLessThan0.idx_less_than
+  clone SetSat_Solver_AnalyzeAndLearn_Interface as AnalyzeAndLearn0
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve1 with type t = Type.setsat_solver_trail
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = Type.setsat_solver_clausedb
+  clone SetSat_Solver_Impl4_IsUnitOrUnsat_Interface as IsUnitOrUnsat0 with function Model0.model = Model6.model,
+  function Model1.model = Model1.model, predicate IdxesLessThan0.idxes_less_than = IdxesLessThan1.idxes_less_than,
+  function Model2.model = Model5.model, predicate IdxLessThan0.idx_less_than = IdxLessThan0.idx_less_than
+  clone Alloc_Vec_Impl16_Index_Interface as Index0 with type t = Type.setsat_solver_clause, type i = usize,
+  type a = Type.alloc_alloc_global, function Model0.model = Model3.model,
+  predicate InBounds0.in_bounds = InBounds0.in_bounds, predicate HasValue0.has_value = HasValue0.has_value,
+  type Output0.output = Output0.output
+  clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = Type.setsat_solver_clause, type a = Type.alloc_alloc_global,
+  function Model0.model = Model3.model
+  let rec cfg unit_prop_loop [@cfg:stackify] [#"../SetSAT/src/solver.rs" 214 0 214 81] (clause_db : borrowed (Type.setsat_solver_clausedb)) (trail : borrowed (Type.setsat_solver_trail)) : Type.setsat_solver_unsatorcontinue
+    requires {[#"../SetSAT/src/solver.rs" 212 11 212 67] IdxesLessThan0.idxes_less_than (Model0.model clause_db) (Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments ( * trail))))}
+    ensures { [#"../SetSAT/src/solver.rs" 211 10 211 69] Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments ( * trail))) = Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments ( ^ trail))) }
+    ensures { [#"../SetSAT/src/solver.rs" 213 10 213 67] IdxesLessThan0.idxes_less_than (Model2.model ( ^ clause_db)) (Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments ( * trail)))) }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Type.setsat_solver_unsatorcontinue;
+  var clause_db_1 : borrowed (Type.setsat_solver_clausedb);
+  var trail_2 : borrowed (Type.setsat_solver_trail);
+  var i_3 : usize;
+  ghost var old_trail_4 : borrowed (Type.setsat_solver_trail);
+  var _5 : ();
+  var _6 : ();
+  var _7 : ();
+  var _8 : bool;
+  var _9 : usize;
+  var _10 : usize;
+  var _11 : Type.alloc_vec_vec (Type.setsat_solver_clause) (Type.alloc_alloc_global);
+  var clause_12 : Type.setsat_solver_clause;
+  var _13 : Type.setsat_solver_clause;
+  var _14 : Type.alloc_vec_vec (Type.setsat_solver_clause) (Type.alloc_alloc_global);
+  var _15 : usize;
+  var _16 : Type.setsat_solver_clauseevalres;
+  var _17 : Type.setsat_solver_clause;
+  var _18 : Type.setsat_solver_trail;
+  var _19 : isize;
+  var lit_20 : Type.setsat_solver_lit;
+  var _21 : ();
+  var _22 : Type.setsat_solver_lit;
+  var _23 : borrowed (Type.setsat_solver_clausedb);
+  var _24 : borrowed (Type.setsat_solver_trail);
+  var _25 : Type.setsat_solver_unsatorcontinue;
+  var _26 : usize;
+  var _27 : borrowed (Type.setsat_solver_clausedb);
+  var _28 : borrowed (Type.setsat_solver_trail);
+  var _29 : isize;
+  var _30 : ();
+  var _31 : ();
+  var _32 : ();
+  var _33 : ();
+  {
+    clause_db_1 <- clause_db;
+    trail_2 <- trail;
+    goto BB0
+  }
+  BB0 {
+    i_3 <- (0 : usize);
+    _5 <- ();
+    old_trail_4 <- ghost ([#"../SetSAT/src/solver.rs" 216 39 216 52] trail_2);
+    goto BB1
+  }
+  BB1 {
+    goto BB2
+  }
+  BB2 {
+    invariant i_less { [#"../SetSAT/src/solver.rs" 218 24 218 56] UInt64.to_int i_3 <= Seq.length (Model3.model (Type.setsat_solver_clausedb_ClauseDB_clauses ( * clause_db_1))) };
+    invariant trail_len_unchanged { [#"../SetSAT/src/solver.rs" 219 37 219 105] Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments ( * old_trail_4))) = Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments ( * trail_2))) };
+    invariant idxes_in_range { [#"../SetSAT/src/solver.rs" 220 32 220 88] IdxesLessThan0.idxes_less_than (Model0.model clause_db_1) (Seq.length (Model1.model (Type.setsat_solver_trail_Trail_assignments ( * trail_2)))) };
+    _9 <- i_3;
+    _11 <- Type.setsat_solver_clausedb_ClauseDB_clauses ( * clause_db_1);
+    _10 <- ([#"../SetSAT/src/solver.rs" 221 14 221 37] Len0.len _11);
+    goto BB3
+  }
+  BB3 {
+    _8 <- ([#"../SetSAT/src/solver.rs" 221 10 221 37] _9 < _10);
+    switch (_8)
+      | False -> goto BB17
+      | _ -> goto BB4
+      end
+  }
+  BB4 {
+    _14 <- Type.setsat_solver_clausedb_ClauseDB_clauses ( * clause_db_1);
+    _15 <- i_3;
+    _13 <- ([#"../SetSAT/src/solver.rs" 222 22 222 42] Index0.index _14 _15);
+    goto BB5
+  }
+  BB5 {
+    clause_12 <- _13;
+    _17 <- clause_12;
+    _18 <-  * trail_2;
+    _16 <- ([#"../SetSAT/src/solver.rs" 223 14 223 44] IsUnitOrUnsat0.is_unit_or_unsat _17 _18);
+    goto BB6
+  }
+  BB6 {
+    switch (_16)
+      | Type.SetSat_Solver_ClauseEvalRes_Unit _ -> goto BB9
+      | Type.SetSat_Solver_ClauseEvalRes_Unsat -> goto BB11
+      | Type.SetSat_Solver_ClauseEvalRes_Other -> goto BB7
+      end
+  }
+  BB7 {
+    i_3 <- ([#"../SetSAT/src/solver.rs" 231 47 231 53] i_3 + (1 : usize));
+    _7 <- ();
+    goto BB16
+  }
+  BB8 {
+    assume { Resolve0.resolve clause_db_1 };
+    assume { Resolve1.resolve trail_2 };
+    absurd
+  }
+  BB9 {
+    lit_20 <- Type.setsat_solver_clauseevalres_Unit_0 _16;
+    _22 <- lit_20;
+    _23 <- borrow_mut ( * clause_db_1);
+    clause_db_1 <- { clause_db_1 with current = ( ^ _23) };
+    _24 <- borrow_mut ( * trail_2);
+    trail_2 <- { trail_2 with current = ( ^ _24) };
+    _21 <- ([#"../SetSAT/src/solver.rs" 224 42 224 82] PropagateLiteral0.propagate_literal _22 _23 _24);
+    goto BB10
+  }
+  BB10 {
+    i_3 <- (0 : usize);
+    _7 <- ();
+    goto BB16
+  }
+  BB11 {
+    _26 <- i_3;
+    _27 <- borrow_mut ( * clause_db_1);
+    clause_db_1 <- { clause_db_1 with current = ( ^ _27) };
+    _28 <- borrow_mut ( * trail_2);
+    trail_2 <- { trail_2 with current = ( ^ _28) };
+    _25 <- ([#"../SetSAT/src/solver.rs" 226 22 226 60] AnalyzeAndLearn0.analyze_and_learn _26 _27 _28);
+    goto BB12
+  }
+  BB12 {
+    switch (_25)
+      | Type.SetSat_Solver_UnsatOrContinue_Unsat -> goto BB15
+      | Type.SetSat_Solver_UnsatOrContinue_Continue -> goto BB13
+      end
+  }
+  BB13 {
+    i_3 <- (0 : usize);
+    _7 <- ();
+    goto BB16
+  }
+  BB14 {
+    assume { Resolve0.resolve clause_db_1 };
+    assume { Resolve1.resolve trail_2 };
+    absurd
+  }
+  BB15 {
+    assume { Resolve0.resolve clause_db_1 };
+    assume { Resolve1.resolve trail_2 };
+    _0 <- Type.SetSat_Solver_UnsatOrContinue_Unsat;
+    goto BB18
+  }
+  BB16 {
+    goto BB2
+  }
+  BB17 {
+    assume { Resolve0.resolve clause_db_1 };
+    assume { Resolve1.resolve trail_2 };
+    _6 <- ();
+    _0 <- Type.SetSat_Solver_UnsatOrContinue_Continue;
+    goto BB18
+  }
+  BB18 {
+    return _0
+  }
+  
+end
+module SetSat_Logic_Logic_Unset_Interface
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  predicate unset (v : uint8)
+end
+module SetSat_Logic_Logic_Unset
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  use mach.int.Int32
+  predicate unset [#"../SetSAT/src/logic/logic.rs" 19 0 19 38] (v : uint8) =
+    [#"../SetSAT/src/logic/logic.rs" 20 4 26 5] if UInt8.to_int v >= 2 then true else false
+end
+module CreusotContracts_Std1_Vec_Impl0_ModelTy
+  type t
+  type a
+  use seq.Seq
+  type modelTy  =
+    Seq.seq t
+end
+module SetSat_Solver_Impl6_MakeDecision_Interface
+  use Type
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use seq.Seq
+  use mach.int.Int32
+  use prelude.UInt8
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = uint8, type a = Type.alloc_alloc_global
+  clone SetSat_Logic_Logic_Unset_Interface as Unset0
+  clone CreusotContracts_Logic_Model_Impl0_Model_Interface as Model0 with type t = Type.alloc_vec_vec uint8 (Type.alloc_alloc_global),
+  type ModelTy0.modelTy = ModelTy0.modelTy
+  val make_decision [@cfg:stackify] (assignments : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global)) : Type.core_option_option usize
+    ensures { [#"../SetSAT/src/solver.rs" 176 14 179 5] match (result) with
+      | Type.Core_Option_Option_Some idx -> UInt64.to_int idx < Seq.length (Model0.model assignments) /\ Unset0.unset (Seq.get (Model0.model assignments) (UInt64.to_int idx))
+      | Type.Core_Option_Option_None -> forall i : (int) . 0 <= i /\ i < Seq.length (Model0.model assignments) -> not Unset0.unset (Seq.get (Model0.model assignments) i)
+      end }
+    
+end
+module SetSat_Solver_Impl6_MakeDecision
+  use Type
+  use mach.int.Int
+  use prelude.Prelude
+  use mach.int.UInt64
+  use seq.Seq
+  use mach.int.Int32
+  use prelude.UInt8
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = uint8, type a = Type.alloc_alloc_global, axiom .
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy0 with type t = uint8, type a = Type.alloc_alloc_global
+  clone SetSat_Logic_Logic_Unset as Unset0
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model0 with type t = Type.alloc_vec_vec uint8 (Type.alloc_alloc_global),
+  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model1.model
+  clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy1 with type t = uint8
+  clone Core_Slice_Index_Impl2_Output as Output0 with type t = uint8
+  clone CreusotContracts_Std1_Slice_Impl3_HasValue as HasValue0 with type t = uint8
+  clone CreusotContracts_Std1_Slice_Impl3_InBounds as InBounds0 with type t = uint8
+  clone Alloc_Vec_Impl16_Index_Interface as Index0 with type t = uint8, type i = usize,
+  type a = Type.alloc_alloc_global, function Model0.model = Model1.model,
+  predicate InBounds0.in_bounds = InBounds0.in_bounds, predicate HasValue0.has_value = HasValue0.has_value,
+  type Output0.output = Output0.output
+  clone Alloc_Vec_Impl1_Len_Interface as Len0 with type t = uint8, type a = Type.alloc_alloc_global,
+  function Model0.model = Model1.model
+  let rec cfg make_decision [@cfg:stackify] [#"../SetSAT/src/solver.rs" 180 4 180 75] (assignments : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global)) : Type.core_option_option usize
+    ensures { [#"../SetSAT/src/solver.rs" 176 14 179 5] match (result) with
+      | Type.Core_Option_Option_Some idx -> UInt64.to_int idx < Seq.length (Model0.model assignments) /\ Unset0.unset (Seq.get (Model0.model assignments) (UInt64.to_int idx))
+      | Type.Core_Option_Option_None -> forall i : (int) . 0 <= i /\ i < Seq.length (Model0.model assignments) -> not Unset0.unset (Seq.get (Model0.model assignments) i)
+      end }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Type.core_option_option usize;
+  var assignments_1 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
+  var i_2 : usize;
+  var _3 : ();
+  var _4 : ();
+  var _5 : bool;
+  var _6 : usize;
+  var _7 : usize;
+  var _8 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
+  var _9 : ();
+  var _10 : bool;
+  var _11 : uint8;
+  var _12 : uint8;
+  var _13 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
+  var _14 : usize;
+  var _15 : ();
+  var _16 : usize;
+  var _17 : ();
+  var _18 : ();
+  var _19 : ();
+  {
+    assignments_1 <- assignments;
+    goto BB0
+  }
+  BB0 {
+    i_2 <- (0 : usize);
+    goto BB1
+  }
+  BB1 {
+    invariant less_unassigned { [#"../SetSAT/src/solver.rs" 182 8 182 98] forall j : (int) . 0 <= j /\ j < UInt64.to_int i_2 -> not Unset0.unset (Seq.get (Model0.model assignments_1) j) };
+    _6 <- i_2;
+    _8 <- assignments_1;
+    _7 <- ([#"../SetSAT/src/solver.rs" 183 18 183 35] Len0.len _8);
+    goto BB2
+  }
+  BB2 {
+    _5 <- ([#"../SetSAT/src/solver.rs" 183 14 183 35] _6 < _7);
+    switch (_5)
+      | False -> goto BB7
+      | _ -> goto BB3
+      end
+  }
+  BB3 {
+    _13 <- assignments_1;
+    _14 <- i_2;
+    _12 <- ([#"../SetSAT/src/solver.rs" 185 15 185 29] Index0.index _13 _14);
+    goto BB4
+  }
+  BB4 {
+    _11 <- _12;
+    _10 <- ([#"../SetSAT/src/solver.rs" 185 15 185 34] _11 >= (2 : uint8));
+    switch (_10)
+      | False -> goto BB6
+      | _ -> goto BB5
+      end
+  }
+  BB5 {
+    _16 <- i_2;
+    _0 <- Type.Core_Option_Option_Some _16;
+    goto BB8
+  }
+  BB6 {
+    _9 <- ();
+    i_2 <- ([#"../SetSAT/src/solver.rs" 188 12 188 18] i_2 + (1 : usize));
+    _4 <- ();
+    goto BB1
+  }
+  BB7 {
+    _3 <- ();
+    _0 <- Type.Core_Option_Option_None;
+    goto BB8
+  }
+  BB8 {
+    return _0
+  }
+  
+end
+module SetSat_Solver_Solve_Interface
+  use Type
+  val solve [@cfg:stackify] (clause_db : Type.setsat_solver_clausedb) : Type.setsat_solver_satresult
+end
+module SetSat_Solver_Solve
+  use Type
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  use mach.int.UInt64
+  use mach.int.Int64
+  clone SetSat_Logic_Logic_Impl0_IdxLessThan as IdxLessThan0
+  clone SetSat_Solver_Impl0_Model as Model5
+  clone CreusotContracts_Logic_Set_Impl0_Contains as Contains1 with type t = Type.setsat_solver_lit
+  clone SetSat_Logic_Logic_Impl1_IdxesLessThan as IdxesLessThan1 with predicate Contains0.contains = Contains1.contains,
+  function Model0.model = Model5.model, predicate IdxLessThan0.idx_less_than = IdxLessThan0.idx_less_than
+  clone SetSat_Solver_Impl2_Model as Model4
+  clone CreusotContracts_Logic_Set_Impl0_Contains as Contains0 with type t = Type.setsat_solver_clause
+  clone CreusotContracts_Std1_Slice_Impl0_ModelTy as ModelTy2 with type t = uint8
+  clone Core_Slice_Index_Impl2_Output as Output0 with type t = uint8
+  clone CreusotContracts_Std1_Slice_Impl3_ResolveElswhere as ResolveElswhere0 with type t = uint8
+  clone CreusotContracts_Std1_Slice_Impl3_HasValue as HasValue0 with type t = uint8
+  clone CreusotContracts_Std1_Slice_Impl3_InBounds as InBounds0 with type t = uint8
+  clone CreusotContracts_Std1_Vec_Impl0_ModelTy as ModelTy1 with type t = uint8, type a = Type.alloc_alloc_global
+  clone SetSat_Logic_Logic_Unset as Unset0
+  clone CreusotContracts_Std1_Vec_Impl0_Model as Model1 with type t = uint8, type a = Type.alloc_alloc_global, axiom .
+  clone CreusotContracts_Logic_Model_Impl0_Model as Model3 with type t = Type.alloc_vec_vec uint8 (Type.alloc_alloc_global),
+  type ModelTy0.modelTy = ModelTy1.modelTy, function Model0.model = Model1.model
+  clone SetSat_Solver_Impl3_ModelTy as ModelTy0
+  clone SetSat_Solver_Impl3_Model as Model2
+  clone SetSat_Logic_Logic_Impl2_IdxesLessThan as IdxesLessThan0 with predicate Contains0.contains = Contains0.contains,
+  function Model0.model = Model4.model, predicate IdxesLessThan0.idxes_less_than = IdxesLessThan1.idxes_less_than
+  clone CreusotContracts_Logic_Model_Impl1_Model as Model0 with type t = Type.setsat_solver_clausedb,
+  type ModelTy0.modelTy = ModelTy0.modelTy, function Model0.model = Model2.model
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve2 with type t = uint8
+  clone Alloc_Vec_Impl17_IndexMut_Interface as IndexMut0 with type t = uint8, type i = usize,
+  type a = Type.alloc_alloc_global, function Model0.model = Model1.model,
+  predicate InBounds0.in_bounds = InBounds0.in_bounds, predicate HasValue0.has_value = HasValue0.has_value,
+  predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere, type Output0.output = Output0.output
+  clone SetSat_Solver_Impl6_MakeDecision_Interface as MakeDecision0 with function Model0.model = Model3.model,
+  predicate Unset0.unset = Unset0.unset
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve1 with type t = Type.setsat_solver_trail
+  clone CreusotContracts_Logic_Resolve_Impl1_Resolve as Resolve0 with type t = Type.setsat_solver_clausedb
+  clone SetSat_Solver_UnitPropLoop_Interface as UnitPropLoop0 with function Model0.model = Model0.model,
+  function Model1.model = Model1.model, predicate IdxesLessThan0.idxes_less_than = IdxesLessThan0.idxes_less_than,
+  function Model2.model = Model2.model
+  clone SetSat_Solver_Impl5_New_Interface as New0
+  let rec cfg solve [@cfg:stackify] [#"../SetSAT/src/solver.rs" 238 0 238 50] (clause_db : Type.setsat_solver_clausedb) : Type.setsat_solver_satresult
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Type.setsat_solver_satresult;
+  var clause_db_1 : Type.setsat_solver_clausedb;
+  var trail_2 : Type.setsat_solver_trail;
+  var _3 : usize;
+  var _4 : ();
+  var _5 : ();
+  var _6 : ();
+  var _7 : Type.setsat_solver_unsatorcontinue;
+  var _8 : borrowed (Type.setsat_solver_clausedb);
+  var _9 : borrowed (Type.setsat_solver_clausedb);
+  var _10 : borrowed (Type.setsat_solver_trail);
+  var _11 : borrowed (Type.setsat_solver_trail);
+  var _12 : isize;
+  var _13 : ();
+  var _14 : Type.core_option_option usize;
+  var _15 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
+  var _16 : Type.alloc_vec_vec uint8 (Type.alloc_alloc_global);
+  var _17 : isize;
+  var _18 : ();
+  var idx_19 : usize;
+  var _20 : borrowed uint8;
+  var _21 : borrowed (Type.alloc_vec_vec uint8 (Type.alloc_alloc_global));
+  var _22 : usize;
+  {
+    clause_db_1 <- clause_db;
+    goto BB0
+  }
+  BB0 {
+    _3 <- Type.setsat_solver_clausedb_ClauseDB_num_vars clause_db_1;
+    trail_2 <- ([#"../SetSAT/src/solver.rs" 239 20 239 50] New0.new _3);
+    goto BB1
+  }
+  BB1 {
+    goto BB2
+  }
+  BB2 {
+    _9 <- borrow_mut clause_db_1;
+    clause_db_1 <-  ^ _9;
+    _8 <- borrow_mut ( * _9);
+    _9 <- { _9 with current = ( ^ _8) };
+    _11 <- borrow_mut trail_2;
+    trail_2 <-  ^ _11;
+    _10 <- borrow_mut ( * _11);
+    _11 <- { _11 with current = ( ^ _10) };
+    _7 <- ([#"../SetSAT/src/solver.rs" 246 14 246 56] UnitPropLoop0.unit_prop_loop _8 _10);
+    goto BB3
+  }
+  BB3 {
+    assume { Resolve0.resolve _9 };
+    assume { Resolve1.resolve _11 };
+    switch (_7)
+      | Type.SetSat_Solver_UnsatOrContinue_Unsat -> goto BB6
+      | Type.SetSat_Solver_UnsatOrContinue_Continue -> goto BB4
+      end
+  }
+  BB4 {
+    _6 <- ();
+    _16 <- Type.setsat_solver_trail_Trail_assignments trail_2;
+    _15 <- _16;
+    _14 <- ([#"../SetSAT/src/solver.rs" 250 14 250 58] MakeDecision0.make_decision _15);
+    goto BB7
+  }
+  BB5 {
+    absurd
+  }
+  BB6 {
+    _0 <- Type.SetSat_Solver_SatResult_Unsat;
+    goto BB12
+  }
+  BB7 {
+    switch (_14)
+      | Type.Core_Option_Option_None -> goto BB10
+      | Type.Core_Option_Option_Some _ -> goto BB8
+      end
+  }
+  BB8 {
+    idx_19 <- Type.core_option_option_Some_0 _14;
+    _21 <- borrow_mut (Type.setsat_solver_trail_Trail_assignments trail_2);
+    trail_2 <- (let Type.SetSat_Solver_Trail a b c d e = trail_2 in Type.SetSat_Solver_Trail ( ^ _21) b c d e);
+    _22 <- idx_19;
+    _20 <- ([#"../SetSAT/src/solver.rs" 252 25 252 47] IndexMut0.index_mut _21 _22);
+    goto BB11
+  }
+  BB9 {
+    absurd
+  }
+  BB10 {
+    _0 <- Type.SetSat_Solver_SatResult_Sat;
+    goto BB12
+  }
+  BB11 {
+    _20 <- { _20 with current = (0 : uint8) };
+    assume { Resolve2.resolve _20 };
+    _5 <- ();
+    goto BB2
+  }
+  BB12 {
+    goto BB13
+  }
+  BB13 {
+    goto BB14
+  }
+  BB14 {
+    return _0
+  }
+  
+end
+module SetSat_Solver_Impl8_Clone_Interface
+  use prelude.Prelude
+  use Type
+  val clone' [@cfg:stackify] (self : Type.setsat_solver_lit) : Type.setsat_solver_lit
+end
+module SetSat_Solver_Impl8_Clone
+  use prelude.Prelude
+  use Type
+  let rec cfg clone' [@cfg:stackify] [#"../SetSAT/src/solver.rs" 24 15 24 20] (self : Type.setsat_solver_lit) : Type.setsat_solver_lit
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Type.setsat_solver_lit;
+  var self_1 : Type.setsat_solver_lit;
+  {
+    self_1 <- self;
+    goto BB0
+  }
+  BB0 {
+    _0 <- self_1;
+    return _0
+  }
+  
+end
+module SetSat_Logic_Logic_Pos_Interface
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  function pos (_ : ()) : uint8
+end
+module SetSat_Logic_Logic_Pos
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  function pos [#"../SetSAT/src/logic/logic.rs" 9 0 9 25] (_ : ()) : uint8 =
+    [#"../SetSAT/src/logic/logic.rs" 10 4 10 7] (1 : uint8)
+end
+module SetSat_Logic_Logic_Neg_Interface
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  function neg (_ : ()) : uint8
+end
+module SetSat_Logic_Logic_Neg
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  function neg [#"../SetSAT/src/logic/logic.rs" 14 0 14 25] (_ : ()) : uint8 =
+    [#"../SetSAT/src/logic/logic.rs" 15 4 15 7] (0 : uint8)
+end
+module SetSat_Logic_Logic_BoolToAssignedstate_Interface
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  function bool_to_assignedstate (b : bool) : uint8
+end
+module SetSat_Logic_Logic_BoolToAssignedstate
+  use mach.int.Int
+  use prelude.Prelude
+  use prelude.UInt8
+  function bool_to_assignedstate [#"../SetSAT/src/logic/logic.rs" 32 0 32 54] (b : bool) : uint8 =
+    [#"../SetSAT/src/logic/logic.rs" 29 0 29 8] if b then (1 : uint8) else (0 : uint8)
+end
+module SetSat_Logic_Logic_Impl0_Sat_Interface
+  use Type
+  predicate sat (self : Type.setsat_logic_logic_litlogic) (m : Type.setsat_logic_logic_assignmentslogic)
+end
+module SetSat_Logic_Logic_Impl0_Sat
+  use Type
+  use seq.Seq
+  clone SetSat_Logic_Logic_BoolToAssignedstate_Interface as BoolToAssignedstate0
+  predicate sat [#"../SetSAT/src/logic/logic.rs" 68 4 68 56] (self : Type.setsat_logic_logic_litlogic) (m : Type.setsat_logic_logic_assignmentslogic)
+    
+   =
+    [#"../SetSAT/src/logic/logic.rs" 69 8 69 61] Seq.get (Type.setsat_logic_logic_assignmentslogic_AssignmentsLogic_0 m) (Type.setsat_logic_logic_litlogic_LitLogic_idx self) = BoolToAssignedstate0.bool_to_assignedstate (Type.setsat_logic_logic_litlogic_LitLogic_polarity self)
+end
+module SetSat_Logic_Logic_Impl1_Sat_Interface
+  use Type
+  predicate sat (self : Type.setsat_logic_logic_clauselogic) (m : Type.setsat_logic_logic_assignmentslogic)
+end
+module SetSat_Logic_Logic_Impl1_Sat
+  use Type
+  clone SetSat_Logic_Logic_Impl0_Sat_Interface as Sat0
+  clone SetSat_Solver_Impl0_Model_Interface as Model0
+  clone CreusotContracts_Logic_Set_Impl0_Contains_Interface as Contains0 with type t = Type.setsat_solver_lit
+  predicate sat [#"../SetSAT/src/logic/logic.rs" 86 4 86 56] (self : Type.setsat_logic_logic_clauselogic) (m : Type.setsat_logic_logic_assignmentslogic)
+    
+   =
+    [#"../SetSAT/src/logic/logic.rs" 87 8 87 71] exists l : (Type.setsat_solver_lit) . Contains0.contains (Type.setsat_logic_logic_clauselogic_ClauseLogic_lits self) l /\ Sat0.sat (Model0.model l) m
+end
+module SetSat_Logic_Logic_Impl2_Sat_Interface
+  use Type
+  predicate sat (self : Type.setsat_logic_logic_formulalogic) (m : Type.setsat_logic_logic_assignmentslogic)
+end
+module SetSat_Logic_Logic_Impl2_Sat
+  use Type
+  clone SetSat_Logic_Logic_Impl1_Sat_Interface as Sat0
+  clone SetSat_Solver_Impl2_Model_Interface as Model0
+  clone CreusotContracts_Logic_Set_Impl0_Contains_Interface as Contains0 with type t = Type.setsat_solver_clause
+  predicate sat [#"../SetSAT/src/logic/logic.rs" 99 4 99 56] (self : Type.setsat_logic_logic_formulalogic) (m : Type.setsat_logic_logic_assignmentslogic)
+    
+   =
+    [#"../SetSAT/src/logic/logic.rs" 100 8 100 69] forall c : (Type.setsat_solver_clause) . Contains0.contains (Type.setsat_logic_logic_formulalogic_FormulaLogic_0 self) c -> Sat0.sat (Model0.model c) m
+end
+module SetSat_Solver_Impl7
+  
+end
+module Core_Clone_Clone_CloneFrom_Interface
+  type self
+  use prelude.Prelude
+  val clone_from [@cfg:stackify] (self : borrowed self) (source : self) : ()
+    requires {false}
+    
+end
+module Core_Clone_Clone_CloneFrom
+  type self
+  use prelude.Prelude
+  val clone_from [@cfg:stackify] (self : borrowed self) (source : self) : ()
+    requires {false}
+    
+end
+module Core_Clone_Clone_Clone_Interface
+  type self
+  use prelude.Prelude
+  val clone' [@cfg:stackify] (self : self) : self
+    ensures { result = self }
+    
+end
+module Core_Clone_Clone_Clone
+  type self
+  use prelude.Prelude
+  val clone' [@cfg:stackify] (self : self) : self
+    ensures { result = self }
+    
+end
+module SetSat_Solver_Impl8
+  use Type
+  clone Core_Clone_Clone_CloneFrom_Interface as CloneFrom0 with type self = Type.setsat_solver_lit
+  clone SetSat_Solver_Impl8_Clone_Interface as Clone0
+  clone Core_Clone_Clone_Clone_Interface as Clone1 with type self = Type.setsat_solver_lit, val clone' = Clone0.clone'
+end
