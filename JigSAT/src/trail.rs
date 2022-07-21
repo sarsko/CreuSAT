@@ -28,7 +28,7 @@ pub(crate) struct Trail {
 }
 
 impl Trail {
-    #[inline]
+    #[inline(always)]
     pub(crate) fn decision_level(&self) -> u32 {
         self.decisions.len() as u32
     }
@@ -44,6 +44,7 @@ impl Trail {
         }
     }
 
+    #[inline(always)]
     fn backstep(&mut self, formula: &Formula, target_phase: &mut TargetPhase) -> usize {
         match self.trail.pop() {
             Some(lit) => {
@@ -61,6 +62,7 @@ impl Trail {
         }
     }
 
+    #[inline(always)]
     pub(crate) fn restart(
         &mut self, formula: &mut Formula, decisions: &mut impl Decisions, watches: &mut Watches, solver: &Solver,
         target_phase: &mut TargetPhase,
@@ -69,6 +71,7 @@ impl Trail {
         formula.collect_garbage_on_empty_trail(watches, solver);
     }
 
+    #[inline(always)]
     pub(crate) fn backtrack_safe(
         &mut self, level: u32, formula: &Formula, decisions: &mut impl Decisions, target_phase: &mut TargetPhase,
     ) {
@@ -77,6 +80,7 @@ impl Trail {
         }
     }
 
+    #[inline(always)]
     pub(crate) fn backtrack_to(
         &mut self, level: u32, formula: &Formula, decisions: &mut impl Decisions, target_phase: &mut TargetPhase,
     ) {
@@ -108,6 +112,7 @@ impl Trail {
         self.curr_i = self.trail.len();
     }
 
+    #[inline(always)]
     pub(crate) fn enq_assignment(&mut self, lit: Lit, _f: &Formula, reason: Cref) {
         // This should be refactored to not have to be a match (ie splitting up enq_assignment)
         self.lit_to_reason[lit.index()] = reason;
@@ -117,6 +122,7 @@ impl Trail {
         self.trail.push(lit);
     }
 
+    #[inline(always)]
     pub(crate) fn enq_decision(&mut self, idx: usize, _f: &Formula, target_phase: &TargetPhase, mode_is_focus: bool) {
         let trail_len = self.trail.len();
         self.decisions.push(trail_len);
@@ -131,7 +137,7 @@ impl Trail {
         self.trail.push(lit);
     }
 
-    #[inline]
+    #[inline(always)]
     pub(crate) fn learn_unit(
         &mut self, lit: Lit, formula: &mut Formula, decisions: &mut impl Decisions, watches: &mut Watches,
         solver: &Solver, target_phase: &mut TargetPhase,

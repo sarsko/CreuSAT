@@ -129,7 +129,7 @@ impl Solver {
     ) {
         let clause_len = clause.len();
         let lbd = clause.lbd;
-        let cref = formula.learn_clause(clause, watches, trail);
+        let cref = formula.learn_clause(clause, watches, trail, self);
 
         self.restart.glucose.update(trail.trail.len(), lbd as usize);
         self.restart.block_restart(self.num_conflicts);

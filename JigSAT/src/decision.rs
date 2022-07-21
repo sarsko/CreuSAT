@@ -46,7 +46,8 @@ pub(crate) struct VMTF {
 
 impl Index<usize> for VMTF {
     type Output = Node;
-    #[inline]
+
+    #[inline(always)]
     fn index(&self, i: usize) -> &Node {
         //#[cfg(feature = "unsafe_access")]
         unsafe { self.linked_list.get_unchecked(i) }
@@ -56,7 +57,7 @@ impl Index<usize> for VMTF {
 }
 
 impl IndexMut<usize> for VMTF {
-    #[inline]
+    #[inline(always)]
     fn index_mut(&mut self, i: usize) -> &mut Node {
         //#[cfg(feature = "unsafe_access")]
         unsafe { self.linked_list.get_unchecked_mut(i) }
@@ -237,7 +238,8 @@ struct Heap {
 
 impl Index<usize> for Heap {
     type Output = usize;
-    #[inline]
+
+    #[inline(always)]
     fn index(&self, i: usize) -> &usize {
         //#[cfg(feature = "unsafe_access")]
         unsafe { self.heap.get_unchecked(i) }
@@ -247,7 +249,7 @@ impl Index<usize> for Heap {
 }
 
 impl IndexMut<usize> for Heap {
-    #[inline]
+    #[inline(always)]
     fn index_mut(&mut self, i: usize) -> &mut usize {
         //#[cfg(feature = "unsafe_access")]
         unsafe { self.heap.get_unchecked_mut(i) }
@@ -298,34 +300,42 @@ impl Heap {
         }
     }
 
+    #[inline(always)]
     fn left(idx: usize) -> usize {
         idx * 2 + 1
     }
 
+    #[inline(always)]
     fn right(idx: usize) -> usize {
         (idx + 1) * 2
     }
 
+    #[inline(always)]
     fn parent(idx: usize) -> usize {
         (idx - 1) >> 1
     }
 
+    #[inline(always)]
     fn len(&self) -> usize {
         self.heap.len()
     }
 
+    #[inline(always)]
     fn in_heap(&self, var: usize) -> bool {
         var < self.indices.len() && self.indices[var] < INVALID
     }
 
+    #[inline(always)]
     fn empty(&self) -> bool {
         self.heap.len() == 0
     }
 
+    #[inline(always)]
     fn decrease(&mut self, var: usize) {
         self.percolate_up(self.indices[var]);
     }
 
+    #[inline(always)]
     fn increase(&mut self, var: usize) {
         self.percolate_down(self.indices[var]);
     }
@@ -335,13 +345,15 @@ impl Heap {
         self.activity[x] > self.activity[y]
     }
 
+    #[inline(always)]
     fn insert(&mut self, var: usize) {
-        assert!(var < self.indices.len());
+        //assert!(var < self.indices.len());
         self.indices[var] = self.len();
         self.heap.push(var);
         self.percolate_up(self.indices[var]);
     }
 
+    #[inline(always)]
     fn percolate_up(&mut self, mut idx: usize) {
         let x = self[idx];
         let mut p = Self::parent(idx);
@@ -357,6 +369,7 @@ impl Heap {
         self.indices[x] = idx;
     }
 
+    #[inline(always)]
     fn percolate_down(&mut self, mut idx: usize) {
         let x = self[idx];
 
@@ -376,6 +389,7 @@ impl Heap {
         self.indices[x] = idx;
     }
 
+    #[inline(always)]
     fn remove_min(&mut self) -> usize {
         let x = self[0];
         self[0] = *self.heap.last().unwrap();
@@ -404,11 +418,13 @@ impl Default for VSIDS {
 }
 
 impl VSIDS {
+    #[inline(always)]
     fn empty(&self) -> bool {
         self.order_heap.empty()
     }
 
     // Has to be called on an non-empty heap
+    #[inline(always)]
     fn remove_min(&mut self) -> usize {
         self.order_heap.remove_min()
     }
@@ -423,6 +439,7 @@ impl Decisions for VSIDS {
         vsids
     }
 
+    #[inline(always)]
     fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize> {
         while !self.empty() {
             let next = self.remove_min();
@@ -434,6 +451,7 @@ impl Decisions for VSIDS {
         None
     }
 
+    #[inline(always)]
     fn bump_variable(&mut self, var: usize) {
         self.order_heap.activity[var] += self.var_inc;
         if self.order_heap.activity[var] > 1e100 {
@@ -449,20 +467,24 @@ impl Decisions for VSIDS {
         }
     }
 
+    #[inline(always)]
     fn decay_var_inc(&mut self) {
         self.var_inc *= 1.0 / self.var_decay;
     }
 
+    #[inline(always)]
     fn set_var_decay(&mut self, new_val: f64) {
         self.var_decay = new_val;
     }
 
+    #[inline(always)]
     fn insert(&mut self, var: usize) {
         if !self.order_heap.in_heap(var) && self.decision[var] {
             self.order_heap.insert(var);
         }
     }
 
+    #[inline(always)]
     fn bump_reason_literals(&mut self, var: usize, trail: &Trail, formula: &Formula) {
         let reason = trail.lit_to_reason[var];
         if reason == INVALID {
@@ -474,6 +496,7 @@ impl Decisions for VSIDS {
         }
     }
 
+    #[inline(always)]
     fn turn_off_decision_for_idx(&mut self, var: usize) {
         self.decision[var] = false;
     }

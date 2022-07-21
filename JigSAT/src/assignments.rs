@@ -6,7 +6,8 @@ pub struct Assignments(pub Vec<AssignedState>);
 
 impl Index<usize> for Assignments {
     type Output = AssignedState;
-    #[inline]
+
+    #[inline(always)]
     fn index(&self, i: usize) -> &AssignedState {
         //#[cfg(feature = "unsafe_access")]
         unsafe { self.0.get_unchecked(i) }
@@ -16,7 +17,7 @@ impl Index<usize> for Assignments {
 }
 
 impl IndexMut<usize> for Assignments {
-    #[inline]
+    #[inline(always)]
     fn index_mut(&mut self, i: usize) -> &mut AssignedState {
         //#[cfg(feature = "unsafe_access")]
         unsafe { self.0.get_unchecked_mut(i) }
@@ -26,22 +27,22 @@ impl IndexMut<usize> for Assignments {
 }
 
 impl Assignments {
-    #[inline]
+    #[inline(always)]
     pub(crate) fn len(&self) -> usize {
         self.0.len()
     }
 
-    #[inline]
+    #[inline(always)]
     pub(crate) fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &[Lit]) {
         self[lit.index()] = lit.is_positive() as u8;
     }
 
-    #[inline]
+    #[inline(always)]
     pub(crate) fn new(f: &Formula) -> Self {
         Assignments(vec![2; f.num_vars])
     }
 
-    #[inline]
+    #[inline(always)]
     pub(crate) fn is_assigned(&self, idx: usize) -> bool {
         self[idx] < 2
     }

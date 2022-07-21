@@ -1,6 +1,6 @@
 use crate::{formula::*, lit::*, solver::*, trail::*, watches::*};
 
-#[inline]
+#[inline(always)]
 fn unit_prop_check_rest(
     f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
 ) -> Result<(), ()> {
@@ -27,7 +27,7 @@ fn swap(f: &mut Formula, _trail: &Trail, _watches: &Watches, cref: usize, j: usi
 }
 
 // The solver is included so that we can update ticks.
-#[inline]
+#[inline(always)]
 fn unit_prop_do_outer(
     formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize, ticks: &mut usize,
 ) -> Result<bool, usize> {
@@ -41,7 +41,7 @@ fn unit_prop_do_outer(
     // At this point we know that none of the watched literals are sat
     let mut k: usize = 2;
     let clause_len: usize = clause.len();
-    let mut search = clause.search;
+    let mut search = clause.search as usize;
     while k < clause_len {
         search += 1;
         if search == clause_len {
@@ -50,7 +50,7 @@ fn unit_prop_do_outer(
         match unit_prop_check_rest(formula, trail, watches, cref, j, search, lit) {
             Err(_) => {}
             Ok(_) => {
-                formula[cref].search = search;
+                formula[cref].search = search as u32;
                 return Ok(false);
             }
         }
@@ -70,7 +70,7 @@ fn unit_prop_do_outer(
     }
 }
 
-#[inline]
+#[inline(always)]
 fn unit_prop_current_level(
     formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, lit: Lit, ticks: &mut usize,
 ) -> Result<(), usize> {
@@ -96,7 +96,7 @@ fn unit_prop_current_level(
     Ok(())
 }
 
-#[inline]
+#[inline(always)]
 pub(crate) fn unit_propagate(
     formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, ticks: &mut usize,
 ) -> Result<(), usize> {

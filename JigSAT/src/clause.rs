@@ -11,8 +11,10 @@ pub struct Clause {
     pub can_be_deleted: bool,
     pub mark: u8, // This is an artifact of Glucose/MiniSat, and should be enumed
     pub lbd: u32,
-    pub search: usize,
-    abstraction: usize,
+    pub search: u32,
+    abstraction: u32,
+    pub activity: f32,
+    touched: u32,
     pub lits: Vec<Lit>,
 }
 
@@ -71,12 +73,15 @@ impl Clause {
             lbd: 0,
             search: 1,
             mark: 0,
+            activity: 0.0,
             abstraction: Self::calc_abstraction(&lits),
+            touched: 0,
             lits,
         }
     }
 
-    fn calc_abstraction(lits: &[Lit]) -> usize {
+    #[inline(always)]
+    fn calc_abstraction(lits: &[Lit]) -> u32 {
         let mut abstraction = 0;
         for e in lits {
             abstraction |= 1 << (e.index() & 31);
@@ -84,10 +89,12 @@ impl Clause {
         abstraction
     }
 
+    #[inline(always)]
     pub(crate) fn swap(&mut self, i: usize, j: usize) {
         self.lits.swap(i, j);
     }
 
+    #[inline(always)]
     pub(crate) fn pop(&mut self) {
         self.lits.pop();
     }
@@ -162,6 +169,7 @@ impl Clause {
         self.pop();
     }
 
+    #[inline(always)]
     fn calc_lbd(&self, trail: &Trail, solver: &mut Solver) -> u32 {
         /*
         // We don't bother calculating for long clauses.
@@ -180,12 +188,35 @@ impl Clause {
         lbd
     }
 
+    #[inline(always)]
     pub(crate) fn calc_and_set_lbd(&mut self, trail: &Trail, solver: &mut Solver) {
         self.lbd = self.calc_lbd(trail, solver);
     }
 
+    #[inline(always)]
     fn calc_and_set_abstraction(&mut self) {
         self.abstraction = Clause::calc_abstraction(&self.lits);
+    }
+
+    #[inline(always)]
+    pub(crate) fn set_touched(&mut self, new_val: u32) {
+        self.touched = new_val;
+    }
+
+    #[inline(always)]
+    pub(crate) fn get_touched(&self) -> u32 {
+        self.touched
+    }
+
+    #[inline(always)]
+    pub(crate) fn reset_activity(&mut self) {
+        self.activity = 0.0;
+    }
+
+    #[inline(always)]
+    pub(crate) fn bump_activity(&mut self, to_bump: f32) -> f32 {
+        self.activity += to_bump;
+        self.activity
     }
 }
 
