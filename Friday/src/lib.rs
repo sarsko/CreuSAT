@@ -6,11 +6,14 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
+use creusot_contracts::derive::Clone;
+
 // This is a very naive, but verified SAT solver.
 // It is a port of a verified WhyML solver, and is therefore
 // an imperative implementation of a functional prgram.
 // In other words: very naive, very slow.
 
+#[derive(Clone)]
 struct Assignments(Vec<bool>);
 struct Lit {
     var: usize,
@@ -18,6 +21,7 @@ struct Lit {
 }
 struct Clause(Vec<Lit>);
 
+#[derive(Clone)]
 struct Pasn {
     assign: Assignments,
     ix: usize,
@@ -25,22 +29,6 @@ struct Pasn {
 pub struct Formula {
     clauses: Vec<Clause>,
     num_vars: usize,
-}
-
-impl Clone for Assignments {
-    #[trusted]
-    #[ensures(*self == result)]
-    fn clone(&self) -> Self {
-        Assignments(self.0.clone())
-    }
-}
-
-impl Clone for Pasn {
-    #[trusted]
-    #[ensures(*self == result)]
-    fn clone(&self) -> Self {
-        Pasn { assign: self.assign.clone(), ix: self.ix }
-    }
 }
 
 impl Formula {

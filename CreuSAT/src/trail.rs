@@ -248,12 +248,6 @@ impl Trail {
         proof_assert!(step.invariant(*_f));
         proof_assert!(lemma_push_maintains_lit_not_in_less(*self, *_f, step); true);
         self.trail.push(step);
-        proof_assert! {
-            match step.reason {
-                Reason::Long(k) => { clause_post_with_regards_to_inner((@_f.clauses)[@k], @(*self).assignments, step.lit.index_logic()) },
-                    _ => true,
-                }
-        };
 
         proof_assert!(self.lit_is_unique());
         proof_assert!(self.lit_not_in_less(*_f));

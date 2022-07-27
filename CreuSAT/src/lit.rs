@@ -3,6 +3,8 @@ use ::std::ops;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
+use creusot_contracts::derive::Clone;
+
 use crate::assignments::*;
 
 #[cfg(feature = "contracts")]
