@@ -156,7 +156,7 @@ impl Formula {
     #[ensures((@(^self).clauses)[@result] == clause)]
     #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
     pub fn add_unwatched_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
-        let old_self: Ghost<&mut Formula>= ghost! { self };
+        let old_self: Ghost<&mut Formula> = ghost! { self };
         let cref = self.clauses.len();
         self.clauses.push(clause);
         proof_assert!(old_self.equisat_compatible(*self));

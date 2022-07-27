@@ -134,7 +134,7 @@ impl Decisions {
     #[ensures((@(^self).linked_list).len() == (@self.linked_list).len())]
     fn rescore(&mut self, _f: &Formula) {
         let INVALID: usize = usize::MAX;
-        let old_self : Ghost<&mut Decisions>= ghost! { self };
+        let old_self: Ghost<&mut Decisions> = ghost! { self };
         let mut curr_score = self.linked_list.len();
         let mut i: usize = 0;
         let mut curr = self.start;

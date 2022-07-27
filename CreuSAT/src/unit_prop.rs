@@ -4,7 +4,7 @@ use creusot_contracts::logic::Ghost;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::{formula::*, lit::*, trail::*, util, watches::*, clause::*};
+use crate::{clause::*, formula::*, lit::*, trail::*, util, watches::*};
 
 use crate::logic::{
     logic::*,
