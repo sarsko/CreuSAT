@@ -50,7 +50,7 @@ fn inner(f: &Formula, mut a: Assignments, d: &Decisions) -> bool {
 })]
 #[ensures((^formula).clauses == formula.clauses)]
 pub fn solver(formula: &mut Formula) -> SatResult {
-    let old_f = ghost!(formula);
+    let old_f: Ghost<&mut Formula> = ghost!(formula);
     match formula.check_and_establish_formula_invariant() {
         SatResult::Unknown => {}
         o => return o,

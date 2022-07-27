@@ -4,7 +4,7 @@ use creusot_contracts::logic::Ghost;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::{formula::*, lit::*, trail::*, util, watches::*};
+use crate::{formula::*, lit::*, trail::*, util, watches::*, clause::*};
 
 use crate::logic::{
     logic::*,
@@ -64,7 +64,7 @@ fn check_and_move_watch(
 //#[ensures((@(@f.clauses)[@cref]).len() == (@(@(^f).clauses)[@cref]).len())]
 #[ensures(f.equisat(^f))]
 fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize, k: usize) {
-    let old_f = ghost! { f };
+    let old_f: Ghost<&mut Formula> = ghost! { f };
     proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
     proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments) && true);
     //f[cref].lits.swap(j, k); // doesnt prove for some reason.
@@ -101,8 +101,8 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
 fn exists_new_watchable_lit(
     f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, lit: Lit,
 ) -> bool {
-    let old_w = ghost! { watches };
-    let old_f = ghost! { f };
+    let old_w: Ghost<&mut Watches> = ghost! { watches };
+    let old_f: Ghost<&mut Formula> = ghost! { f };
     let clause_len: usize = f.clauses[cref].len();
     let init_search = util::max(util::min(f[cref].search, clause_len), 2); // TODO: Lame check
     let mut search = init_search;
@@ -114,7 +114,7 @@ fn exists_new_watchable_lit(
     #[invariant(first_not_sat, !(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
     while search < clause_len {
         if check_and_move_watch(f, trail, watches, cref, j, search, lit) {
-            let old_f2 = ghost! { f };
+            let old_f2: Ghost<&mut Formula> = ghost! { f };
             f.clauses[cref].search = search;
             proof_assert!(forall<j: Int> 0 <= j && j < (@f.clauses).len() ==> @(@f.clauses)[j] == @(@(old_f2.inner()).clauses)[j]);
             proof_assert!(old_f2.inner().equisat(*f));
@@ -133,7 +133,7 @@ fn exists_new_watchable_lit(
     #[invariant(first_not_sat, !(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
     while search < init_search {
         if check_and_move_watch(f, trail, watches, cref, j, search, lit) {
-            let old_f2 = ghost! { f };
+            let old_f2: Ghost<&mut Formula> = ghost! { f };
             f.clauses[cref].search = search;
             proof_assert!(forall<j: Int> 0 <= j && j < (@f.clauses).len() ==> @(@f.clauses)[j] == @(@(old_f2.inner()).clauses)[j]);
             proof_assert!(old_f2.inner().equisat(*f));
@@ -166,7 +166,7 @@ fn exists_new_watchable_lit(
 fn propagate_lit_with_regard_to_clause(
     f: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize,
 ) -> Result<bool, usize> {
-    let old_w = ghost! { watches };
+    let old_w: Ghost<&mut Watches> = ghost! { watches };
     let clause = &f[cref];
     let first_lit = clause[0];
     if first_lit.lit_sat(&trail.assignments) {
@@ -212,7 +212,7 @@ fn propagate_lit_with_regard_to_clause(
         return Ok(true);
     } else if second_lit.lit_unset(&trail.assignments) {
         let step = Step { lit: second_lit, decision_level: trail.decision_level(), reason: Reason::Long(cref) };
-        let old_c = ghost! { f.clauses[cref] };
+        let old_c: Ghost<Clause> = ghost! { f.clauses[cref] };
         proof_assert!((@(@f.clauses)[@cref])[1].unset(trail.assignments));
         swap(f, trail, watches, cref, 0, 1);
         proof_assert!((@(@f.clauses)[@cref]).exchange(@old_c, 0, 1));
@@ -243,9 +243,9 @@ fn propagate_literal(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, 
     let watchidx = lit.to_watchidx();
     proof_assert!((@watches.watches).len() == 2 * @f.num_vars);
     proof_assert!((@watches.watches).len() > @watchidx);
-    let old_trail = ghost! { trail };
-    let old_f = ghost! { f };
-    let old_w = ghost! { watches };
+    let old_trail: Ghost<&mut Trail> = ghost! { trail };
+    let old_f: Ghost<&mut Formula> = ghost! { f };
+    let old_w: Ghost<&mut Watches> = ghost! { watches };
     #[invariant(trail_inv, trail.invariant(*f))]
     #[invariant(watch_len, (@watches.watches).len() == (@old_w.watches).len())]
     #[invariant(watch_inv, watches.invariant(*f))]
@@ -289,9 +289,9 @@ fn propagate_literal(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, 
 #[ensures(f.equisat(^f))]
 pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches) -> Result<(), usize> {
     let mut i = trail.curr_i;
-    let old_trail = ghost! { trail };
-    let old_f = ghost! { f };
-    let old_w = ghost! { watches };
+    let old_trail: Ghost<&mut Trail> = ghost! { trail };
+    let old_f: Ghost<&mut Formula> = ghost! { f };
+    let old_w: Ghost<&mut Watches> = ghost! { watches };
     #[invariant(f_inv, f.invariant())]
     #[invariant(trail_inv, trail.invariant(*f))]
     #[invariant(watch_len, (@watches.watches).len() == (@old_w.watches).len())]

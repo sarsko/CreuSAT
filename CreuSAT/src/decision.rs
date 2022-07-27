@@ -134,7 +134,7 @@ impl Decisions {
     #[ensures((@(^self).linked_list).len() == (@self.linked_list).len())]
     fn rescore(&mut self, _f: &Formula) {
         let INVALID: usize = usize::MAX;
-        let old_self = ghost! { self };
+        let old_self : Ghost<&mut Decisions>= ghost! { self };
         let mut curr_score = self.linked_list.len();
         let mut i: usize = 0;
         let mut curr = self.start;
@@ -203,7 +203,7 @@ impl Decisions {
     #[maintains((mut self).invariant(@f.num_vars))]
     pub fn increment_and_move(&mut self, f: &Formula, v: Vec<usize>) {
         let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); v.len()];
-        let old_self = ghost! { self };
+        let old_self: Ghost<&mut Decisions> = ghost! { self };
         let mut i: usize = 0;
         #[invariant(unch, old_self.inner() == self)]
         #[invariant(proph, ^old_self.inner() == ^self)]

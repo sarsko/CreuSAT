@@ -12,7 +12,7 @@ use crate::logic::logic_util::*;
 #[ensures((@^v).permutation_of(@v))]
 pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
     let mut i: usize = 0;
-    let old_v = ghost! { v };
+    let old_v: Ghost<&mut Vec<(usize, usize)>> = ghost! { v };
     #[invariant(proph_const, ^v == ^old_v.inner())]
     #[invariant(permutation, (@v).permutation_of(@*old_v.inner()))]
     #[invariant(i_bound, @i <= (@v).len())]
@@ -61,7 +61,7 @@ pub fn update_slow(slow: &mut usize, lbd: usize) {
 #[ensures((@^v).permutation_of(@v))]
 pub fn sort(v: &mut Vec<(usize, usize)>) {
     let mut i: usize = 0;
-    let old_v = ghost! { v };
+    let old_v: Ghost<&mut Vec<(usize, usize)>> = ghost! { v };
     #[invariant(proph_const, ^v == ^old_v.inner())]
     #[invariant(permutation, (@v).permutation_of(@*old_v.inner()))]
     #[invariant(i_bound, @i <= (@v).len())]

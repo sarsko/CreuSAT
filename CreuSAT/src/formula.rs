@@ -122,7 +122,7 @@ impl Formula {
     #[ensures((@(^self).clauses)[@result] == clause)]
     #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
     pub fn add_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
-        let old_self = ghost! { self };
+        let old_self: Ghost<&mut Formula> = ghost! { self };
         let cref = self.clauses.len();
         // The weird assignment to first_/second_lit is because otherwise we break the precond for
         // add_watcher that the cref should be less than f.clauses.len(). We can't update the watches
@@ -156,7 +156,7 @@ impl Formula {
     #[ensures((@(^self).clauses)[@result] == clause)]
     #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
     pub fn add_unwatched_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
-        let old_self = ghost! { self };
+        let old_self: Ghost<&mut Formula>= ghost! { self };
         let cref = self.clauses.len();
         self.clauses.push(clause);
         proof_assert!(old_self.equisat_compatible(*self));
@@ -180,7 +180,7 @@ impl Formula {
     #[ensures((@(@(^self).clauses)[@result]).len() == 1)]
     #[ensures((@self.clauses).len() + 1 == (@(^self).clauses).len())]
     pub fn add_unit(&mut self, clause: Clause, _t: &Trail) -> usize {
-        let old_self = ghost! { self };
+        let old_self: Ghost<&mut Formula> = ghost! { self };
         let cref = self.clauses.len();
         self.clauses.push(clause);
         proof_assert!(old_self.equisat_compatible(*self));
@@ -214,7 +214,7 @@ impl Formula {
     #[ensures(self.equisat(^self))]
     #[ensures(self.num_vars == (^self).num_vars)]
     fn delete_clause(&mut self, cref: usize, watches: &mut Watches, t: &Trail) {
-        let old_f = ghost! { self };
+        let old_f: Ghost<&mut Formula> = ghost! { self };
         watches.unwatch(self, t, cref, self.clauses[cref][0]);
         watches.unwatch(self, t, cref, self.clauses[cref][1]);
         self.clauses[cref].deleted = true;
@@ -234,8 +234,8 @@ impl Formula {
     #[ensures(self.num_vars == (^self).num_vars)]
     #[ensures(self.equisat(^self))]
     pub fn delete_clauses(&mut self, watches: &mut Watches, t: &Trail) {
-        let old_f = ghost! { self };
-        let old_w = ghost! { watches };
+        let old_f: Ghost<&mut Formula> = ghost! { self };
+        let old_w: Ghost<&mut Watches> = ghost! { watches };
         // unwatch trivially SAT
         let mut i = 0;
         #[invariant(w_inv, watches.invariant(*self))]
@@ -291,8 +291,8 @@ impl Formula {
         }
         //s.num_lemmas = 0;
         let mut i = s.initial_len;
-        let old_f = ghost! { self };
-        let old_w = ghost! { watches };
+        let old_f: Ghost<&mut Formula> = ghost! { self };
+        let old_w: Ghost<&mut Watches> = ghost! { watches };
         #[invariant(w_inv, watches.invariant(*self))]
         #[invariant(t_inv, t.invariant(*self))]
         #[invariant(f_inv, self.invariant())]

@@ -152,7 +152,7 @@ impl Assignments {
     #[ensures((self).complete() ==> *self == ^self && ((result == ClauseState::Unsat) || (result == ClauseState::Sat)))]
     pub fn unit_prop_once(&mut self, i: usize, f: &Formula) -> ClauseState {
         let clause = &f.clauses[i];
-        let _old_a = ghost!(self);
+        let _old_a: Ghost<&mut Assignments> = ghost!(self);
         match clause.check_if_unit(self, f) {
             ClauseState::Unit => {
                 // I tried both to make ClauseState::Unit contain a usize and to return a tuple, but
@@ -190,7 +190,7 @@ impl Assignments {
     })]
     #[ensures((self).complete() ==> *self == (^self) && ((result == ClauseState::Unsat) || f.sat(*self)))]
     pub fn unit_propagate(&mut self, f: &Formula) -> ClauseState {
-        let _old_a = ghost!(self);
+        let _old_a: Ghost<&mut Assignments> = ghost!(self);
         let mut i: usize = 0;
         let mut out = ClauseState::Sat;
         #[invariant(assignment_invariant, self.invariant(*f))]
@@ -238,7 +238,7 @@ impl Assignments {
     #[ensures(result == Some(true) ==> f.sat(^self))]
     #[ensures(result == None ==> !(^self).complete())]
     pub fn do_unit_propagation(&mut self, f: &Formula) -> Option<bool> {
-        let _old_a = ghost!(self);
+        let _old_a: Ghost<&mut Assignments> = ghost!(self);
         #[invariant(assignments_invariant, self.invariant(*f))]
         #[invariant(proph, ^self == ^_old_a.inner())]
         #[invariant(maintains_compat, _old_a.compatible(*self))]

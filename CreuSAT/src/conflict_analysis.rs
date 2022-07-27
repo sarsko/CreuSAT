@@ -56,10 +56,10 @@ fn resolve(
     _f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, trail: &Trail, seen: &mut Vec<bool>,
     path_c: &mut usize, to_bump: &mut Vec<usize>,
 ) {
-    let old_c = ghost!(c);
-    let old_seen = ghost!(seen);
-    let old_path_c = ghost!(path_c);
-    let old_to_bump = ghost!(to_bump);
+    let old_c: Ghost<&mut Clause> = ghost!(c);
+    let old_seen: Ghost<&mut Vec<bool>> = ghost!(seen);
+    let old_path_c: Ghost<&mut usize> = ghost!(path_c);
+    let old_to_bump: Ghost<&mut Vec<usize>> = ghost!(to_bump);
 
     proof_assert!(c.clause_is_seen(*seen));
 
@@ -70,7 +70,7 @@ fn resolve(
 
     proof_assert!(^seen == ^old_seen.inner());
     proof_assert!(c.clause_is_seen(*seen));
-    let old_c2 = ghost!(c);
+    let old_c2: Ghost<&mut Clause> = ghost!(c);
     proof_assert!(!(@old_c)[@c_idx].lit_in(*c));
     proof_assert!(^c == ^old_c.inner());
     proof_assert!(forall<j: Int> 0 <= j && j < (@old_c).len()
@@ -96,7 +96,7 @@ fn resolve(
     #[invariant(proph_path_c, ^path_c == ^old_path_c.inner())]
     #[invariant(proph_to_bump, ^to_bump == ^old_to_bump.inner())]
     while i < o.len() {
-        let old_c3 = ghost!(c);
+        let old_c3: Ghost<&mut Clause> = ghost!(c);
         proof_assert!(^c == ^old_c3.inner());
         if idx_in(&c.lits, o[i].index(), &seen) {
             //if seen[o.rest[i].index()] {
@@ -136,7 +136,7 @@ fn resolve(
     None => @^i == 0
 })]
 fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula, seen: &Vec<bool>) -> Option<usize> {
-    let old_i = ghost! {i};
+    let old_i: Ghost<&mut usize> = ghost! {i};
     #[invariant(i_bound, 0 <= @i && @i <= (@trail.trail).len())]
     #[invariant(proph_i, ^i == ^old_i.inner())]
     while *i > 0 {

@@ -42,7 +42,7 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
     watches.watches[watchidx].swap(j, end);
     let curr_lit = f[cref][k];
     proof_assert!(@watchidx < (@watches.watches).len());
-    let old_w = ghost!(watches);
+    let old_w: Ghost<&mut Watches> = ghost!(watches);
     proof_assert!(watcher_crefs_in_range(@(@watches.watches)[@watchidx], *f));
     match watches.watches[watchidx].pop() {
         Some(w) => {
@@ -133,7 +133,7 @@ impl Watches {
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(f.invariant())]
     pub fn init_watches(&mut self, f: &Formula) {
-        let old_w = ghost! { self };
+        let old_w: Ghost<&mut Watches> = ghost! { self };
         let mut i = 0;
         #[invariant(watch_inv, self.invariant(*f))]
         #[invariant(same_len, (@self.watches).len() == 2 * @f.num_vars)]
@@ -167,7 +167,7 @@ impl Watches {
             if self.watches[watchidx][i].cref == cref {
                 let end = self.watches[watchidx].len() - 1;
                 self.watches[watchidx].swap(i, end);
-                let old_w = ghost! { self };
+                let old_w: Ghost<&mut Watches> = ghost! { self };
                 match self.watches[watchidx].pop() {
                     Some(w) => {
                         proof_assert!(^old_w.inner() == ^self);

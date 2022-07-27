@@ -131,7 +131,7 @@ impl Formula {
             proof_assert!(self.eventually_sat_no_ass());
             return SatResult::Sat(a);
         }
-        let old_self = ghost!(self);
+        let old_self: Ghost<&mut Formula> = ghost!(self);
         let mut i: usize = 0;
         #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@self.clauses)[j].invariant(@self.num_vars))]
         #[invariant(inv, forall<j: Int> 0 <= j && j < @i ==> (@(@self.clauses)[j]).len() > 0)]

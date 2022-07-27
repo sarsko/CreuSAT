@@ -172,7 +172,7 @@ impl Clause {
     #[maintains((mut self).equisat_extension(*_f))]
     #[ensures((@self).len() == (@(^self)).len())]
     pub fn swap_lits_in_clause(&mut self, _f: &Formula, j: usize, k: usize) {
-        let old_c = ghost! { self };
+        let old_c: Ghost<&mut Clause> = ghost! { self };
         self.lits.swap(j, k);
         proof_assert!(^old_c.inner() == ^self);
         proof_assert!(old_c.equisat_extension(*_f));

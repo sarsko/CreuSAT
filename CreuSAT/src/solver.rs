@@ -228,10 +228,10 @@ impl Solver {
     #[ensures(@f.num_vars == @(^f).num_vars)]
     #[ensures(f.equisat(^f))]
     fn unit_prop_loop(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
-        let old_f = ghost! { f };
-        let old_t = ghost! { t };
-        let old_w = ghost! { w };
-        let old_d = ghost! { d };
+        let old_f: Ghost<&mut Formula> = ghost! { f };
+        let old_t: Ghost<&mut Trail> = ghost! { t };
+        let old_w: Ghost<&mut Watches> = ghost! { w };
+        let old_d: Ghost<&mut Decisions> = ghost! { d };
         #[invariant(maintains_f, f.invariant())]
         #[invariant(maintains_t, t.invariant(*f))]
         #[invariant(maintains_w, w.invariant(*f))]
@@ -325,7 +325,7 @@ impl Solver {
     fn inner(
         &mut self, formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut watches: Watches,
     ) -> SatResult {
-        let old_f = ghost! { formula };
+        let old_f: Ghost<&mut Formula> = ghost! { formula };
         #[invariant(equi, old_f.inner().equisat(*formula))]
         #[invariant(num_vars, @formula.num_vars == @old_f.num_vars)]
         #[invariant(maintains_f, formula.invariant())]
