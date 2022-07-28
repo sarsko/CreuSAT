@@ -309,7 +309,7 @@ impl Solver {
     }
 
     // OK
-    #[cfg_attr(feature = "trust_solver", trusted)]
+    //#[cfg_attr(feature = "trust_solver", trusted)]
     #[requires(@formula.num_vars < @usize::MAX/2)]
     #[requires(formula.invariant())]
     #[requires(decisions.invariant(@formula.num_vars))]

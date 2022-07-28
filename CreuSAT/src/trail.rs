@@ -206,7 +206,6 @@ impl Trail {
         //self.curr_i = self.trail.len();
     }
 
-    // TODO: Revisit
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(_f.invariant())]
@@ -255,9 +254,6 @@ impl Trail {
         proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
     }
 
-    // TODO: Revisit
-    // Checks out on mac with introduction of lemma. For some reason trail_entries_are_assigned
-    // is now slowest. Should be solveable by another lemma
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[requires(_f.invariant())]
     #[maintains((mut self).invariant(*_f))]
@@ -280,15 +276,6 @@ impl Trail {
         let step = Step { lit: lit, decision_level: dlevel, reason: Reason::Decision };
 
         self.trail.push(step);
-        proof_assert!(self.lit_not_in_less(*_f));
-        // TODO: Check that this lemma is actually being applied, it doesn't seem like it...
-        //proof_assert!(lemma_assign_maintains_long_are_post_unit2(@self.trail, *_f, self.assignments, idx); true);
-        proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
-        // This is just the trail invariant unwrapped
-        // proof_assert!(trail_invariant(@self.trail, *_f));
-
-        proof_assert!(self.lit_is_unique());
-        proof_assert!(self.trail_entries_are_assigned());
     }
 
     // Okay so I should really just prove the backtracking mechanism, this is not nice

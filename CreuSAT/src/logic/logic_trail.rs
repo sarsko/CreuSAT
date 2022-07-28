@@ -161,9 +161,7 @@ pub fn trail_invariant(trail: Seq<Step>, f: Formula) -> bool {
 
 #[predicate]
 fn lit_to_level_invariant(lit_to_level: Seq<usize>, f: Formula) -> bool {
-    pearlite! {
-        lit_to_level.len() == @f.num_vars
-    }
+    pearlite! { lit_to_level.len() == @f.num_vars }
 }
 
 #[predicate]
@@ -201,9 +199,7 @@ pub fn clause_post_with_regards_to_inner(c: Clause, a: Seq<AssignedState>, j: In
 
 #[predicate]
 pub fn clause_post_with_regards_to_lit(c: Clause, a: Assignments, lit: Lit) -> bool {
-    pearlite! {
-        clause_post_with_regards_to_inner(c, @a, @lit.idx)
-    }
+    pearlite! { clause_post_with_regards_to_inner(c, @a, @lit.idx) }
 }
 
 #[predicate]
@@ -250,6 +246,7 @@ fn unit_are_sat(trail: Seq<Step>, f: Formula, a: Assignments) -> bool {
     }
 }
 
+/*
 #[cfg_attr(feature = "trust_trail_logic", trusted)]
 #[logic]
 #[requires(a.invariant(f))]
@@ -262,6 +259,7 @@ fn unit_are_sat(trail: Seq<Step>, f: Formula, a: Assignments) -> bool {
 #[ensures(long_are_post_unit_inner(v, f, (@a).set(lit.index_logic(), 1u8)))]
 #[ensures(long_are_post_unit_inner(v, f, (@a).set(lit.index_logic(), 0u8)))]
 pub fn lemma_assign_maintains_long_are_post_unit(v: Seq<Step>, f: Formula, a: Assignments, lit: Lit) {}
+*/
 
 #[cfg_attr(feature = "trust_trail_logic", trusted)]
 #[logic]

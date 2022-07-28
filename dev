@@ -1,0 +1,19 @@
+
+#! /bin/bash
+
+focus=""
+output="mlcfgs/creusat.mlcfg"
+if [ -z ${1+x} ]
+then
+  focus=""
+else
+  focus="--focus-on=$1"
+  echo $focus
+  output="mlcfgs/$1.mlcfg"
+fi
+
+cargo clean -p CreuSAT &&
+
+cargo creusot $focus --span-mode=absolute --output-file=$output -- --features=contracts &&
+
+ ./ide $output

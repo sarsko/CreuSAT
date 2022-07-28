@@ -198,40 +198,6 @@ impl Clause {
         }
     }
 
-    // TODO: remove
-    #[predicate]
-    pub fn invariant_unary_ok(self, n: Int) -> bool {
-        // Should remove the possibility of empty clauses
-        pearlite! { self.vars_in_range(n) && self.no_duplicate_indexes() && self.search_idx_in_range() }
-    }
-
-    // TODO: Revisit and see if it is needed
-    #[predicate]
-    pub fn equals(self, o: Clause) -> bool {
-        pearlite! {
-            (@self).len() == (@o).len()
-            && forall<j: Int> 0 <= j && j < (@self).len() ==>
-                (@self)[j] == (@o)[j]
-        }
-    }
-
-    // TODO: Revisit and see if it is needed. Currently used for the swap in clause
-    #[predicate]
-    pub fn equisat(self, o: Clause) -> bool {
-        pearlite! {
-              (forall<a : Seq<AssignedState>> self.sat_inner(a)   == o.sat_inner(a))
-            && forall<a : Seq<AssignedState>> self.unsat_inner(a) == o.unsat_inner(a)
-        }
-    }
-
-    // TODO: Revisit and see if it is needed. Currently used for the swap in clause
-    #[predicate]
-    pub fn equisat2(self, o: Clause, f: Formula) -> bool {
-        pearlite! {
-               (forall<a : Seq<AssignedState>> a.len() == @f.num_vars && complete_inner(a) ==> (self.sat_inner(a) == o.sat_inner(a)))
-            && (forall<a : Seq<AssignedState>> a.len() == @f.num_vars && complete_inner(a) ==> (self.unsat_inner(a) == o.unsat_inner(a)))
-        }
-    }
 
     #[predicate]
     pub fn clause_is_seen(self, seen: Vec<bool>) -> bool {

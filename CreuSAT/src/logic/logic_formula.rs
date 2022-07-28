@@ -50,22 +50,6 @@ fn equisat(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
     }
 }
 
-#[predicate]
-fn compatible(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
-    pearlite! {
-        f.1 == o.1
-        && o.0.len() >= f.0.len()
-        && forall<i: Int> 0 <= i && i < f.0.len() ==>
-            (f.0[i]).equals(o.0[i])
-    }
-}
-
-#[predicate]
-fn equisat_compatible_inner(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
-    pearlite! {
-        compatible(f, o) && equisat(f, o)
-    }
-}
 
 // Predicates
 impl Formula {
@@ -80,20 +64,6 @@ impl Formula {
         self.eventually_sat_complete_no_ass() == o.eventually_sat_complete_no_ass()
     }
 
-    #[predicate]
-    pub fn compatible(self, o: Formula) -> bool {
-        pearlite! {
-            @self.num_vars == @o.num_vars
-            && (@o.clauses).len() >= (@self.clauses).len()
-            && forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
-                ((@self.clauses)[i]).equals((@o.clauses)[i])
-        }
-    }
-
-    #[predicate]
-    pub fn equisat_compatible(self, o: Formula) -> bool {
-        pearlite! { equisat_compatible_inner(@self, @o) }
-    }
 
     #[predicate]
     #[cfg_attr(feature = "trust_formula_logic", trusted)]
@@ -166,8 +136,6 @@ impl Formula {
 
     #[predicate]
     pub fn not_satisfiable(self) -> bool {
-        pearlite! {
-            exists<c: Clause> (@c).len() == 0 && c.equisat_extension(self)
-        }
+        pearlite! { exists<c: Clause> (@c).len() == 0 && c.equisat_extension(self) }
     }
 }

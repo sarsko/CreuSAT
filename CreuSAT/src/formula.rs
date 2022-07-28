@@ -134,7 +134,7 @@ impl Formula {
         watches.add_watcher(first_lit, cref, self, second_lit);
         watches.add_watcher(second_lit, cref, self, first_lit);
         proof_assert!(^old_self.inner() == ^self);
-        proof_assert!(old_self.equisat_compatible(*self));
+        //proof_assert!(old_self.equisat_compatible(*self));
         proof_assert!(old_self.equisat(*self));
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
@@ -146,8 +146,6 @@ impl Formula {
     #[maintains((mut watches).invariant(mut self))]
     #[requires((@clause).len() >= 2)]
     #[requires(@self.num_vars < @usize::MAX/2)]
-    //#[requires(vars_in_range_inner(@clause, @self.num_vars))]
-    //#[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(clause.invariant(@self.num_vars))]
     #[requires(equisat_extension_inner(clause, @self))]
     #[ensures(@self.num_vars == @(^self).num_vars)]
@@ -159,8 +157,6 @@ impl Formula {
         let old_self: Ghost<&mut Formula> = ghost! { self };
         let cref = self.clauses.len();
         self.clauses.push(clause);
-        proof_assert!(old_self.equisat_compatible(*self));
-        proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
 
@@ -174,7 +170,7 @@ impl Formula {
     #[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(equisat_extension_inner(clause, @self))]
     #[ensures(@self.num_vars == @(^self).num_vars)]
-    #[ensures(self.equisat_compatible(^self))]
+    //#[ensures(self.equisat_compatible(^self))]
     #[ensures(self.equisat(^self))] // Added/changed
     #[ensures(@result == (@self.clauses).len())]
     #[ensures((@(@(^self).clauses)[@result]).len() == 1)]
@@ -183,8 +179,6 @@ impl Formula {
         let old_self: Ghost<&mut Formula> = ghost! { self };
         let cref = self.clauses.len();
         self.clauses.push(clause);
-        proof_assert!(old_self.equisat_compatible(*self));
-        // proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
 
