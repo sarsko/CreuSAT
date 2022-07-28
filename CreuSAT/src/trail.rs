@@ -172,7 +172,7 @@ impl Trail {
         #[invariant(inv, self.invariant_no_decision(*f))]
         #[invariant(proph, ^old_t.inner() == ^self)]
         while self.decisions.len() > 0 && self.decisions[self.decisions.len() - 1] > self.trail.len() {
-            let old_t3: Ghost<& mut Trail> = ghost! { self };
+            let old_t3: Ghost<&mut Trail> = ghost! { self };
             proof_assert!(sorted(@self.decisions));
             proof_assert!((@self.decisions).len() > 0);
             proof_assert!(lemma_pop_maintains_sorted(@self.decisions); true);
