@@ -174,8 +174,8 @@ impl Clause {
     pub fn swap_lits_in_clause(&mut self, _f: &Formula, j: usize, k: usize) {
         let old_c: Ghost<&mut Clause> = ghost! { self };
         self.lits.swap(j, k);
-        proof_assert!(eventually_sat_complete_no_ass((((@_f).0).push(*self), (@_f).1)) ==>
-                      eventually_sat_complete_no_ass((((@_f).0).push(*old_c.inner()), (@_f).1)));
+        proof_assert!(eventually_sat_complete((((@_f).0).push(*self), (@_f).1)) ==>
+                      eventually_sat_complete((((@_f).0).push(*old_c.inner()), (@_f).1)));
     }
 
     #[cfg_attr(feature = "trust_clause", trusted)]

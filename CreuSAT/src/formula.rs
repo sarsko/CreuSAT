@@ -160,7 +160,7 @@ impl Formula {
         cref
     }
 
-    #[cfg_attr(feature = "trust_formula", trusted)]
+    //#[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains(_t.invariant(mut self))]
     #[requires((@clause).len() == 1)]
@@ -171,6 +171,8 @@ impl Formula {
     #[requires(equisat_extension_inner(clause, @self))]
     #[ensures(@self.num_vars == @(^self).num_vars)]
     //#[ensures(self.equisat_compatible(^self))]
+    #[ensures(forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+        (@self.clauses)[i] == (@(^self).clauses)[i])] // Needed for the watch invariant
     #[ensures(self.equisat(^self))] // Added/changed
     #[ensures(@result == (@self.clauses).len())]
     #[ensures((@(@(^self).clauses)[@result]).len() == 1)]
@@ -255,8 +257,10 @@ impl Formula {
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains((mut watches).invariant(mut self))]
-    #[maintains((*t).invariant(mut self))]
+    //#[maintains((*t).invariant(mut self))]
     #[requires(@self.num_vars < @usize::MAX/2)]
+    #[requires(t.invariant(*self))]
+    #[ensures(t.invariant(^self))]
     #[ensures(self.num_vars == (^self).num_vars)]
     #[ensures(self.equisat(^self))]
     pub fn simplify_formula(&mut self, watches: &mut Watches, t: &Trail) {
@@ -268,9 +272,10 @@ impl Formula {
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains((mut watches).invariant(mut self))]
-    #[maintains((*t).invariant(mut self))]
+    //#[maintains((*t).invariant(mut self))]
     #[requires(self.invariant())]
     #[requires(t.invariant(*self))]
+    #[ensures(t.invariant(^self))]
     #[requires(@self.num_vars < @usize::MAX/2)]
     #[ensures(self.num_vars == (^self).num_vars)]
     #[ensures(self.equisat(^self))]

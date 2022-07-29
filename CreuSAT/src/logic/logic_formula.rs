@@ -20,11 +20,8 @@ impl Model for Formula {
 #[predicate]
 pub fn formula_invariant(f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
-        (forall<i: Int> 0 <= i && i < f.0.len() ==>
-            f.0[i].invariant(f.1))
-        &&
-        (forall<i: Int> 0 <= i && i < f.0.len() ==>
-            (@f.0[i]).len() > 0)
+        forall<i: Int> 0 <= i && i < f.0.len() ==>
+            (f.0[i].invariant(f.1) && (@f.0[i]).len() > 0)
     }
 }
 
@@ -37,7 +34,7 @@ pub fn formula_sat_inner(f: (Seq<Clause>, Int), a: Seq<AssignedState>) -> bool {
 }
 
 #[predicate]
-pub fn eventually_sat_complete_no_ass(f: (Seq<Clause>, Int)) -> bool {
+pub fn eventually_sat_complete(f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
         exists<a2 : Seq<AssignedState>> a2.len() == f.1 && complete_inner(a2) && formula_sat_inner(f, a2)
     }
@@ -46,24 +43,22 @@ pub fn eventually_sat_complete_no_ass(f: (Seq<Clause>, Int)) -> bool {
 #[predicate]
 fn equisat(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
     pearlite! {
-        eventually_sat_complete_no_ass(f) == eventually_sat_complete_no_ass(o)
+        eventually_sat_complete(f) == eventually_sat_complete(o)
     }
 }
-
 
 // Predicates
 impl Formula {
     #[predicate]
-    pub fn eventually_sat_complete_no_ass(self) -> bool {
+    pub fn eventually_sat_complete(self) -> bool {
         pearlite! {
             exists<a2 : Seq<AssignedState>> a2.len() == @self.num_vars && complete_inner(a2) && self.sat_inner(a2)
         }
     }
     #[predicate]
     pub fn equisat(self, o: Formula) -> bool {
-        self.eventually_sat_complete_no_ass() == o.eventually_sat_complete_no_ass()
+        self.eventually_sat_complete() == o.eventually_sat_complete()
     }
-
 
     #[predicate]
     #[cfg_attr(feature = "trust_formula_logic", trusted)]
@@ -96,11 +91,6 @@ impl Formula {
         pearlite! {
             exists<a2 : Seq<AssignedState>> a2.len() == @self.num_vars && compatible_complete_inner(a, a2) && self.sat_inner(a2)
         }
-    }
-
-    #[predicate]
-    fn eventually_sat_complete(self, a: Assignments) -> bool {
-        pearlite! { self.eventually_sat_complete_inner(@a)}
     }
 
     #[predicate]

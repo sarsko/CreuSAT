@@ -89,10 +89,10 @@ impl Trail {
         // proof_assert!(trail_invariant(@self.trail, *f));
         // proof_assert!(lit_to_level_invariant(@self.lit_to_level, *f));
         //proof_assert!(decisions_invariant(@self.decisions, @self.trail));
-        proof_assert!(self.lit_not_in_less(*f));
-        proof_assert!(self.lit_is_unique());
+        //proof_assert!(self.lit_not_in_less(*f));
+        //proof_assert!(self.lit_is_unique());
         proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
-        proof_assert!(self.trail_entries_are_assigned());
+        //proof_assert!(self.trail_entries_are_assigned());
         return 0;
     }
 
@@ -197,10 +197,10 @@ impl Trail {
         proof_assert!(self.assignments.invariant(*f));
         // proof_assert!(trail_invariant(@self.trail, *f));
         // proof_assert!(lit_to_level_invariant(@self.lit_to_level, *f));
-        proof_assert!(self.lit_not_in_less(*f));
-        proof_assert!(self.lit_is_unique());
+        //proof_assert!(self.lit_not_in_less(*f));
+        //proof_assert!(self.lit_is_unique());
         proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
-        proof_assert!(self.trail_entries_are_assigned());
+        //proof_assert!(self.trail_entries_are_assigned());
 
         self.curr_i = level;
         //self.curr_i = self.trail.len();
@@ -210,7 +210,7 @@ impl Trail {
     #[maintains((mut self).invariant(*_f))]
     #[requires(_f.invariant())]
     #[requires(step.lit.invariant(@_f.num_vars))]
-    #[requires(step.invariant(*_f))]
+    #[requires(step.reason.invariant(*_f))]
     #[requires(match step.reason {
         Reason::Long(cref) => {@cref < (@_f.clauses).len()
                             && (@(@_f.clauses)[@cref])[0].unset(self.assignments)
@@ -244,12 +244,12 @@ impl Trail {
 
         self.assignments.set_assignment(step.lit, _f, trail);
 
-        proof_assert!(step.invariant(*_f));
+        //proof_assert!(step.invariant(*_f));
         proof_assert!(lemma_push_maintains_lit_not_in_less(*self, *_f, step); true);
         self.trail.push(step);
 
-        proof_assert!(self.lit_is_unique());
-        proof_assert!(self.lit_not_in_less(*_f));
+        //proof_assert!(self.lit_is_unique());
+        //proof_assert!(self.lit_not_in_less(*_f));
 
         proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
     }

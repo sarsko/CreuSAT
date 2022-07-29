@@ -33,7 +33,7 @@ pub fn invariant_internal(s: Seq<Lit>, n: Int) -> bool {
 #[predicate]
 pub fn equisat_extension_inner(c: Clause, f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
-        eventually_sat_complete_no_ass(f) ==> eventually_sat_complete_no_ass((f.0.push(c), f.1))
+        eventually_sat_complete(f) ==> eventually_sat_complete((f.0.push(c), f.1))
     }
 }
 
@@ -186,24 +186,28 @@ impl Clause {
 
     #[predicate]
     pub fn search_idx_in_range(self) -> bool {
-        pearlite! {
-            2 <= @self.search && @self.search <= (@self).len()
-        }
+        pearlite! { 2 <= @self.search && @self.search <= (@self).len() }
     }
 
     #[predicate]
     pub fn invariant(self, n: Int) -> bool {
-        pearlite! {
-            invariant_internal(@self, n)
-        }
+        pearlite! { invariant_internal(@self, n) }
     }
-
 
     #[predicate]
     pub fn clause_is_seen(self, seen: Vec<bool>) -> bool {
         pearlite! {
             forall<idx: Int> 0 <= idx && idx < (@seen).len() ==>
                 ((@seen)[idx] == idx_in_logic(idx, @self))
+        }
+    }
+
+    #[predicate]
+    pub fn equals(self, o: Clause) -> bool {
+        pearlite! {
+            (@self).len() == (@o).len()
+            && forall<j: Int> 0 <= j && j < (@self).len() ==>
+                (@self)[j] == (@o)[j]
         }
     }
 }

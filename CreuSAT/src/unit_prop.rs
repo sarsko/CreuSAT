@@ -4,7 +4,10 @@ use creusot_contracts::logic::Ghost;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::{clause::*, formula::*, lit::*, trail::*, util, watches::*};
+use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*, util, watches::*};
+
+#[cfg(feature = "contracts")]
+use crate::logic::{logic_assignments::*, logic_formula::*};
 
 use crate::logic::{
     logic::*,
@@ -57,7 +60,6 @@ fn check_and_move_watch(
 #[requires((@(@f.clauses)[@cref]).len() > @j)]
 #[requires((@(@f.clauses)[@cref]).len() > @k)]
 #[requires(!(@(@f.clauses)[@cref])[0].sat_inner(@trail.assignments))]
-//#[requires(@f.num_vars < @usize::MAX/2)]
 #[ensures(((@(@(^f).clauses)[@cref]).exchange(@(@f.clauses)[@cref], @j, @k)))]
 #[ensures(@f.num_vars == @(^f).num_vars)]
 #[ensures((@f.clauses).len() == (@(^f).clauses).len())]
@@ -65,20 +67,14 @@ fn check_and_move_watch(
 #[ensures(f.equisat(^f))]
 fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize, k: usize) {
     let old_f: Ghost<&mut Formula> = ghost! { f };
-    proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
-    proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments) && true);
-    //f[cref].lits.swap(j, k); // doesnt prove for some reason.
+
     f.clauses[cref].lits.swap(j, k);
-    proof_assert!((@(@f.clauses)[@cref]).exchange(@(@old_f.clauses)[@cref], @j, @k));
-    proof_assert!(forall<i: Int> 0 <= i && i < (@trail.trail).len() ==>
-    match (@trail.trail)[i].reason {
-    Reason::Long(cref2) => { @cref != @cref2 },
-        _ => true,
-    });
+
     proof_assert!(vars_in_range_inner(@(@f.clauses)[@cref], @f.num_vars));
     proof_assert!(no_duplicate_indexes_inner(@(@f.clauses)[@cref]));
-    proof_assert!(long_are_post_unit_inner(@trail.trail, *f, @trail.assignments));
-    proof_assert!(crefs_in_range(@trail.trail, *f));
+
+    proof_assert!(forall<a2 : Seq<AssignedState>> a2.len() == @f.num_vars && complete_inner(a2) && (@old_f.clauses)[@cref].sat_inner(a2) ==> (@f.clauses)[@cref].sat_inner(a2));
+    proof_assert!(eventually_sat_complete(@old_f) ==> eventually_sat_complete(@f));
 }
 
 // This has to do f.clauses[cref] and not f[cref]
@@ -118,7 +114,7 @@ fn exists_new_watchable_lit(
             f.clauses[cref].search = search;
             proof_assert!(forall<j: Int> 0 <= j && j < (@f.clauses).len() ==> @(@f.clauses)[j] == @(@(old_f2.inner()).clauses)[j]);
             proof_assert!(old_f2.inner().equisat(*f));
-            proof_assert!(crefs_in_range(@trail.trail, *f)); // I am here to help the trail invariant pass
+            //proof_assert!(crefs_in_range(@trail.trail, *f)); // I am here to help the trail invariant pass
             return true;
         }
         search += 1;
@@ -137,7 +133,7 @@ fn exists_new_watchable_lit(
             f.clauses[cref].search = search;
             proof_assert!(forall<j: Int> 0 <= j && j < (@f.clauses).len() ==> @(@f.clauses)[j] == @(@(old_f2.inner()).clauses)[j]);
             proof_assert!(old_f2.inner().equisat(*f));
-            proof_assert!(crefs_in_range(@trail.trail, *f)); // I am here to help the trail invariant pass
+            //proof_assert!(crefs_in_range(@trail.trail, *f)); // I am here to help the trail invariant pass
             return true;
         }
         search += 1;

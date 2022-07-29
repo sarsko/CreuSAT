@@ -30,7 +30,6 @@ fn test_satcomp_easy_unsat() {
     test_all_path("mfleury/SAT-2009-preprocessed/easy/unsat", false, 1);
 }
 
-
 #[allow(unused)]
 // paths: Path to directory to be read,
 // expected: expected value for the assertion,
