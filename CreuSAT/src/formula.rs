@@ -26,6 +26,7 @@ pub struct Formula {
 impl Index<usize> for Formula {
     type Output = Clause;
     #[inline]
+    #[cfg_attr(feature = "trust_formula", trusted)]
     #[requires(@ix < (@self).0.len())]
     #[ensures((@self).0[@ix] == *result)]
     fn index(&self, ix: usize) -> &Clause {
@@ -40,6 +41,7 @@ impl Index<usize> for Formula {
 
 impl IndexMut<usize> for Formula {
     #[inline]
+    #[cfg_attr(feature = "trust_formula", trusted)]
     #[requires(@ix < (@self).0.len())]
     #[ensures((@*self).0[@ix] == *result)]
     #[ensures((@^self).0[@ix] == ^result)]
@@ -160,7 +162,7 @@ impl Formula {
         cref
     }
 
-    //#[cfg_attr(feature = "trust_formula", trusted)]
+    #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains(_t.invariant(mut self))]
     #[requires((@clause).len() == 1)]
@@ -172,7 +174,7 @@ impl Formula {
     #[ensures(@self.num_vars == @(^self).num_vars)]
     //#[ensures(self.equisat_compatible(^self))]
     #[ensures(forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
-        (@self.clauses)[i] == (@(^self).clauses)[i])] // Needed for the watch invariant
+        (@self.clauses)[i] == (@(^self).clauses)[i])] // This or equisat_compatible is needed for the watch invariant.
     #[ensures(self.equisat(^self))] // Added/changed
     #[ensures(@result == (@self.clauses).len())]
     #[ensures((@(@(^self).clauses)[@result]).len() == 1)]

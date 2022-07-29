@@ -6,9 +6,12 @@ use creusot_contracts::*;
 use crate::{assignments::*, formula::*, lit::*, solver::*, trail::*};
 use ::std::ops::{Index, IndexMut};
 
+use creusot_contracts::derive::Clone;
+
 #[cfg(feature = "contracts")]
 use crate::logic::{logic_clause::*, logic_formula::*};
 
+#[derive(Clone)]
 pub struct Clause {
     pub deleted: bool,
     pub lbd: u32,
@@ -19,6 +22,7 @@ pub struct Clause {
 impl Index<usize> for Clause {
     type Output = Lit;
     #[inline]
+    #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires(@ix < (@self).len())]
     #[ensures((@self)[@ix] == *result)]
     fn index(&self, ix: usize) -> &Lit {
@@ -33,6 +37,7 @@ impl Index<usize> for Clause {
 
 impl IndexMut<usize> for Clause {
     #[inline]
+    #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires(@ix < (@self).len())]
     #[ensures((@*self)[@ix] == *result)]
     #[ensures((@^self)[@ix] == ^result)]
@@ -45,14 +50,6 @@ impl IndexMut<usize> for Clause {
         }
         #[cfg(feature = "contracts")]
         &mut self.lits[ix]
-    }
-}
-
-impl Clone for Clause {
-    #[trusted] // TODO
-    #[ensures(result == *self)]
-    fn clone(&self) -> Self {
-        Clause { deleted: self.deleted, lbd: self.lbd, search: self.search, lits: self.lits.clone() }
     }
 }
 

@@ -151,7 +151,7 @@ impl Watches {
     }
 
     // This is just the first half of update_watch.
-    //#[cfg_attr(feature = "trust_watches", trusted)]
+    #[cfg_attr(feature = "trust_watches", trusted)]
     #[maintains((mut self).invariant(*f))]
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(lit.index_logic() < @f.num_vars)]

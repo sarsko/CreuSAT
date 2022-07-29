@@ -18,6 +18,7 @@ pub struct Assignments(pub Vec<AssignedState>);
 impl Index<usize> for Assignments {
     type Output = AssignedState;
     #[inline]
+    #[cfg_attr(feature = "trust_assignments", trusted)]
     #[requires(@ix < (@self).len())]
     #[ensures((@self)[@ix] == *result)]
     fn index(&self, ix: usize) -> &AssignedState {
@@ -32,6 +33,7 @@ impl Index<usize> for Assignments {
 
 impl IndexMut<usize> for Assignments {
     #[inline]
+    #[cfg_attr(feature = "trust_assignments", trusted)]
     #[requires(@ix < (@self).len())]
     #[ensures((@*self)[@ix] == *result)]
     #[ensures((@^self)[@ix] == ^result)]

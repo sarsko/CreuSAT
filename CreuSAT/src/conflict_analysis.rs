@@ -19,7 +19,7 @@ pub enum Conflict {
 }
 
 #[inline(always)]
-//#[cfg_attr(feature = "trust_conflict", trusted)]
+#[cfg_attr(feature = "trust_conflict", trusted)]
 #[requires(vars_in_range_inner(@c, (@seen).len()))]
 #[requires(@idx < (@seen).len())]
 #[requires((@seen)[@idx] == idx_in_logic(@idx, @c))]
