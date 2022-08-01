@@ -21,6 +21,7 @@ mod logic;
 pub mod parser;
 mod solver;
 mod trail;
+mod vsids;
 mod unit_prop;
 mod util;
 mod watches;

@@ -24,6 +24,7 @@ pub struct Step {
 pub struct Trail {
     pub assignments: Assignments,
     pub lit_to_level: Vec<usize>, // usize::MAX if unassigned
+    pub lit_to_reason: Vec<usize>, // usize::MAX if unassigned // NEW
     pub trail: Vec<Step>,
     pub curr_i: usize,
     pub decisions: Vec<usize>,
@@ -46,6 +47,7 @@ impl Trail {
         Trail {
             assignments: a,
             lit_to_level: vec::from_elem(usize::MAX, f.num_vars),
+            lit_to_reason: vec::from_elem(usize::MAX, f.num_vars),
             trail: Vec::new(),
             curr_i: 0,
             decisions: Vec::new(),
