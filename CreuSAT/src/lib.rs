@@ -19,6 +19,7 @@ mod formula;
 mod lit;
 mod logic;
 pub mod parser;
+mod target_phase;
 mod solver;
 mod trail;
 mod unit_prop;
