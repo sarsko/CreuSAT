@@ -98,11 +98,8 @@ fn resolve(
     while i < o.len() {
         let old_c3: Ghost<&mut Clause> = ghost!(c);
         proof_assert!(^c == ^old_c3.inner());
-        if idx_in(&c.lits, o[i].index(), &seen) {
-            //if seen[o.rest[i].index()] {
-            proof_assert!((@o)[@i].lit_in(*c));
-            proof_assert!(@c == @old_c3);
-        } else {
+
+        if !idx_in(&c.lits, o[i].index(), &seen) {
             seen[o[i].index()] = true;
             to_bump.push(o[i].index());
             c.lits.push(o[i]);
@@ -110,15 +107,16 @@ fn resolve(
                 *path_c += 1;
             }
             proof_assert!(@c == (@old_c3).push((@o)[@i]));
+            proof_assert!((@c).len() == (@old_c3).len() + 1);
             proof_assert!((@o)[@i].lit_in(*c));
         }
+
         proof_assert!(forall<j: Int> 0 <= j && j < (@old_c3).len() ==>
             ((@old_c3)[j] == (@c)[j]));
         i += 1;
     }
     proof_assert!(c.resolvent_of(*old_c.inner(), *o, 0, @c_idx));
     proof_assert!(lemma_resolvent_of_equisat_extension_is_equisat(@_f, *old_c.inner(), *o, *c, @c_idx, 0);true);
-    //proof_assert!(equisat_extension_inner(*c, @_f));
 }
 
 #[cfg_attr(feature = "trust_conflict", trusted)]

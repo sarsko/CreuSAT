@@ -33,7 +33,7 @@ pub fn invariant_internal(s: Seq<Lit>, n: Int) -> bool {
 #[predicate]
 pub fn equisat_extension_inner(c: Clause, f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
-        eventually_sat_complete_no_ass(f) ==> eventually_sat_complete_no_ass((f.0.push(c), f.1))
+        eventually_sat_complete(f) ==> eventually_sat_complete((f.0.push(c), f.1))
     }
 }
 
@@ -186,51 +186,12 @@ impl Clause {
 
     #[predicate]
     pub fn search_idx_in_range(self) -> bool {
-        pearlite! {
-            2 <= @self.search && @self.search <= (@self).len()
-        }
+        pearlite! { 2 <= @self.search && @self.search <= (@self).len() }
     }
 
     #[predicate]
     pub fn invariant(self, n: Int) -> bool {
-        pearlite! {
-            invariant_internal(@self, n)
-        }
-    }
-
-    // TODO: remove
-    #[predicate]
-    pub fn invariant_unary_ok(self, n: Int) -> bool {
-        // Should remove the possibility of empty clauses
-        pearlite! { self.vars_in_range(n) && self.no_duplicate_indexes() && self.search_idx_in_range() }
-    }
-
-    // TODO: Revisit and see if it is needed
-    #[predicate]
-    pub fn equals(self, o: Clause) -> bool {
-        pearlite! {
-            (@self).len() == (@o).len()
-            && forall<j: Int> 0 <= j && j < (@self).len() ==>
-                (@self)[j] == (@o)[j]
-        }
-    }
-
-    // TODO: Revisit and see if it is needed. Currently used for the swap in clause
-    #[predicate]
-    pub fn equisat(self, o: Clause) -> bool {
-        pearlite! {
-              (forall<a : Seq<AssignedState>> self.sat_inner(a)   == o.sat_inner(a))
-            && forall<a : Seq<AssignedState>> self.unsat_inner(a) == o.unsat_inner(a)
-        }
-    }
-
-    // TODO: Revisit and see if it is needed. Currently used for the swap in clause
-    #[predicate]
-    pub fn equisat2(self, o: Clause, f: Formula) -> bool {
-        pearlite! {
-               (forall<a : Seq<AssignedState>> a.len() == @f.num_vars && complete_inner(a) ==> (self.sat_inner(a) == o.sat_inner(a)))
-            && (forall<a : Seq<AssignedState>> a.len() == @f.num_vars && complete_inner(a) ==> (self.unsat_inner(a) == o.unsat_inner(a)))
-        }
+        pearlite! { invariant_internal(@self, n) }
     }
 
     #[predicate]
@@ -238,6 +199,15 @@ impl Clause {
         pearlite! {
             forall<idx: Int> 0 <= idx && idx < (@seen).len() ==>
                 ((@seen)[idx] == idx_in_logic(idx, @self))
+        }
+    }
+
+    #[predicate]
+    pub fn equals(self, o: Clause) -> bool {
+        pearlite! {
+            (@self).len() == (@o).len()
+            && forall<j: Int> 0 <= j && j < (@self).len() ==>
+                (@self)[j] == (@o)[j]
         }
     }
 }

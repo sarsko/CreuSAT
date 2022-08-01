@@ -167,19 +167,15 @@ impl Watches {
             if self.watches[watchidx][i].cref == cref {
                 let end = self.watches[watchidx].len() - 1;
                 self.watches[watchidx].swap(i, end);
+
+                // Ugly "ghost" match. Grr.
                 let old_w: Ghost<&mut Watches> = ghost! { self };
                 match self.watches[watchidx].pop() {
                     Some(w) => {
                         proof_assert!(^old_w.inner() == ^self);
-                        proof_assert!(lemma_pop_watch_maintains_watcher_invariant(@(@old_w.watches)[@watchidx], *f); true);
-                        proof_assert!(watcher_crefs_in_range(pop(@(@old_w.watches)[@watchidx]), *f));
-                        proof_assert!(@(@self.watches)[@watchidx] == pop(@(@old_w.watches)[@watchidx]));
-                        proof_assert!(watcher_crefs_in_range(@(@self.watches)[@watchidx], *f));
                         proof_assert!(self.invariant(*f));
                     }
-                    None => {
-                        unreachable!();
-                    }
+                    None => unreachable!(),
                 }
                 return;
             }

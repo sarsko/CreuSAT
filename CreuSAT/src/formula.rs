@@ -26,6 +26,7 @@ pub struct Formula {
 impl Index<usize> for Formula {
     type Output = Clause;
     #[inline]
+    #[cfg_attr(feature = "trust_formula", trusted)]
     #[requires(@ix < (@self).0.len())]
     #[ensures((@self).0[@ix] == *result)]
     fn index(&self, ix: usize) -> &Clause {
@@ -40,6 +41,7 @@ impl Index<usize> for Formula {
 
 impl IndexMut<usize> for Formula {
     #[inline]
+    #[cfg_attr(feature = "trust_formula", trusted)]
     #[requires(@ix < (@self).0.len())]
     #[ensures((@*self).0[@ix] == *result)]
     #[ensures((@^self).0[@ix] == ^result)]
@@ -134,7 +136,7 @@ impl Formula {
         watches.add_watcher(first_lit, cref, self, second_lit);
         watches.add_watcher(second_lit, cref, self, first_lit);
         proof_assert!(^old_self.inner() == ^self);
-        proof_assert!(old_self.equisat_compatible(*self));
+        //proof_assert!(old_self.equisat_compatible(*self));
         proof_assert!(old_self.equisat(*self));
         proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
@@ -146,8 +148,6 @@ impl Formula {
     #[maintains((mut watches).invariant(mut self))]
     #[requires((@clause).len() >= 2)]
     #[requires(@self.num_vars < @usize::MAX/2)]
-    //#[requires(vars_in_range_inner(@clause, @self.num_vars))]
-    //#[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(clause.invariant(@self.num_vars))]
     #[requires(equisat_extension_inner(clause, @self))]
     #[ensures(@self.num_vars == @(^self).num_vars)]
@@ -159,8 +159,6 @@ impl Formula {
         let old_self: Ghost<&mut Formula> = ghost! { self };
         let cref = self.clauses.len();
         self.clauses.push(clause);
-        proof_assert!(old_self.equisat_compatible(*self));
-        proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
 
@@ -174,7 +172,9 @@ impl Formula {
     #[requires(no_duplicate_indexes_inner(@clause))]
     #[requires(equisat_extension_inner(clause, @self))]
     #[ensures(@self.num_vars == @(^self).num_vars)]
-    #[ensures(self.equisat_compatible(^self))]
+    //#[ensures(self.equisat_compatible(^self))]
+    #[ensures(forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
+        (@self.clauses)[i] == (@(^self).clauses)[i])] // This or equisat_compatible is needed for the watch invariant.
     #[ensures(self.equisat(^self))] // Added/changed
     #[ensures(@result == (@self.clauses).len())]
     #[ensures((@(@(^self).clauses)[@result]).len() == 1)]
@@ -183,8 +183,6 @@ impl Formula {
         let old_self: Ghost<&mut Formula> = ghost! { self };
         let cref = self.clauses.len();
         self.clauses.push(clause);
-        proof_assert!(old_self.equisat_compatible(*self));
-        // proof_assert!(trail_invariant(@_t.trail, *self)); // This one needs some inlining/splits
         cref
     }
 
@@ -261,8 +259,10 @@ impl Formula {
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains((mut watches).invariant(mut self))]
-    #[maintains((*t).invariant(mut self))]
+    //#[maintains((*t).invariant(mut self))]
     #[requires(@self.num_vars < @usize::MAX/2)]
+    #[requires(t.invariant(*self))]
+    #[ensures(t.invariant(^self))]
     #[ensures(self.num_vars == (^self).num_vars)]
     #[ensures(self.equisat(^self))]
     pub fn simplify_formula(&mut self, watches: &mut Watches, t: &Trail) {
@@ -274,9 +274,10 @@ impl Formula {
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[maintains((mut self).invariant())]
     #[maintains((mut watches).invariant(mut self))]
-    #[maintains((*t).invariant(mut self))]
+    //#[maintains((*t).invariant(mut self))]
     #[requires(self.invariant())]
     #[requires(t.invariant(*self))]
+    #[ensures(t.invariant(^self))]
     #[requires(@self.num_vars < @usize::MAX/2)]
     #[ensures(self.num_vars == (^self).num_vars)]
     #[ensures(self.equisat(^self))]

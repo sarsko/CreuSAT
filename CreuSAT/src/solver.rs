@@ -177,6 +177,7 @@ impl Solver {
                     Err(_) => return Some(true),
                     Ok(_) => {}
                 }
+
                 f.reduceDB(w, t, self);
                 f.simplify_formula(w, t);
             }
@@ -317,7 +318,7 @@ impl Solver {
     #[requires(watches.invariant(*formula))]
     #[requires(decisions.invariant(@formula.num_vars))]
     #[ensures(match result {
-        SatResult::Sat(v) => { (^formula).sat_inner(@v) && formula.equisat(^formula) && formula.eventually_sat_complete_no_ass()},
+        SatResult::Sat(v) => { (^formula).sat_inner(@v) && formula.equisat(^formula) && formula.eventually_sat_complete() },
         SatResult::Unsat => { (^formula).not_satisfiable() && formula.equisat(^formula) }
         _ => true,
     })]

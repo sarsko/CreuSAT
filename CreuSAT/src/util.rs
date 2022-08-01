@@ -93,6 +93,7 @@ fn min_log(a: Int, b: Int) -> Int {
     }
 }
 
+#[cfg_attr(feature = "trust_util", trusted)]
 #[ensures(@result == min_log(@a, @b))]
 #[ensures(@a <= @b ==> @result == @a)]
 #[ensures(@b < @a ==> @result == @b)]
@@ -114,6 +115,7 @@ fn max_log(a: Int, b: Int) -> Int {
     }
 }
 
+#[cfg_attr(feature = "trust_util", trusted)]
 #[ensures(@result == max_log(@a, @b))]
 pub fn max(a: usize, b: usize) -> usize {
     if a >= b {

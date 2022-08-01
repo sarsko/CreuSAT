@@ -89,10 +89,10 @@ impl Trail {
         // proof_assert!(trail_invariant(@self.trail, *f));
         // proof_assert!(lit_to_level_invariant(@self.lit_to_level, *f));
         //proof_assert!(decisions_invariant(@self.decisions, @self.trail));
-        proof_assert!(self.lit_not_in_less(*f));
-        proof_assert!(self.lit_is_unique());
+        //proof_assert!(self.lit_not_in_less(*f));
+        //proof_assert!(self.lit_is_unique());
         proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
-        proof_assert!(self.trail_entries_are_assigned());
+        //proof_assert!(self.trail_entries_are_assigned());
         return 0;
     }
 
@@ -197,21 +197,20 @@ impl Trail {
         proof_assert!(self.assignments.invariant(*f));
         // proof_assert!(trail_invariant(@self.trail, *f));
         // proof_assert!(lit_to_level_invariant(@self.lit_to_level, *f));
-        proof_assert!(self.lit_not_in_less(*f));
-        proof_assert!(self.lit_is_unique());
+        //proof_assert!(self.lit_not_in_less(*f));
+        //proof_assert!(self.lit_is_unique());
         proof_assert!(long_are_post_unit_inner(@self.trail, *f, @self.assignments));
-        proof_assert!(self.trail_entries_are_assigned());
+        //proof_assert!(self.trail_entries_are_assigned());
 
         self.curr_i = level;
         //self.curr_i = self.trail.len();
     }
 
-    // TODO: Revisit
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(_f.invariant())]
     #[requires(step.lit.invariant(@_f.num_vars))]
-    #[requires(step.invariant(*_f))]
+    #[requires(step.reason.invariant(*_f))]
     #[requires(match step.reason {
         Reason::Long(cref) => {@cref < (@_f.clauses).len()
                             && (@(@_f.clauses)[@cref])[0].unset(self.assignments)
@@ -245,19 +244,16 @@ impl Trail {
 
         self.assignments.set_assignment(step.lit, _f, trail);
 
-        proof_assert!(step.invariant(*_f));
+        //proof_assert!(step.invariant(*_f));
         proof_assert!(lemma_push_maintains_lit_not_in_less(*self, *_f, step); true);
         self.trail.push(step);
 
-        proof_assert!(self.lit_is_unique());
-        proof_assert!(self.lit_not_in_less(*_f));
+        //proof_assert!(self.lit_is_unique());
+        //proof_assert!(self.lit_not_in_less(*_f));
 
         proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
     }
 
-    // TODO: Revisit
-    // Checks out on mac with introduction of lemma. For some reason trail_entries_are_assigned
-    // is now slowest. Should be solveable by another lemma
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[requires(_f.invariant())]
     #[maintains((mut self).invariant(*_f))]
@@ -280,15 +276,6 @@ impl Trail {
         let step = Step { lit: lit, decision_level: dlevel, reason: Reason::Decision };
 
         self.trail.push(step);
-        proof_assert!(self.lit_not_in_less(*_f));
-        // TODO: Check that this lemma is actually being applied, it doesn't seem like it...
-        //proof_assert!(lemma_assign_maintains_long_are_post_unit2(@self.trail, *_f, self.assignments, idx); true);
-        proof_assert!(long_are_post_unit_inner(@self.trail, *_f, @self.assignments));
-        // This is just the trail invariant unwrapped
-        // proof_assert!(trail_invariant(@self.trail, *_f));
-
-        proof_assert!(self.lit_is_unique());
-        proof_assert!(self.trail_entries_are_assigned());
     }
 
     // Okay so I should really just prove the backtracking mechanism, this is not nice

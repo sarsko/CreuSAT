@@ -6,9 +6,12 @@ use creusot_contracts::*;
 use crate::{assignments::*, formula::*, lit::*, solver::*, trail::*};
 use ::std::ops::{Index, IndexMut};
 
+use creusot_contracts::derive::Clone;
+
 #[cfg(feature = "contracts")]
 use crate::logic::{logic_clause::*, logic_formula::*};
 
+#[derive(Clone)]
 pub struct Clause {
     pub deleted: bool,
     pub lbd: u32,
@@ -19,6 +22,7 @@ pub struct Clause {
 impl Index<usize> for Clause {
     type Output = Lit;
     #[inline]
+    #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires(@ix < (@self).len())]
     #[ensures((@self)[@ix] == *result)]
     fn index(&self, ix: usize) -> &Lit {
@@ -33,6 +37,7 @@ impl Index<usize> for Clause {
 
 impl IndexMut<usize> for Clause {
     #[inline]
+    #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires(@ix < (@self).len())]
     #[ensures((@*self)[@ix] == *result)]
     #[ensures((@^self)[@ix] == ^result)]
@@ -45,14 +50,6 @@ impl IndexMut<usize> for Clause {
         }
         #[cfg(feature = "contracts")]
         &mut self.lits[ix]
-    }
-}
-
-impl Clone for Clause {
-    #[trusted] // TODO
-    #[ensures(result == *self)]
-    fn clone(&self) -> Self {
-        Clause { deleted: self.deleted, lbd: self.lbd, search: self.search, lits: self.lits.clone() }
     }
 }
 
@@ -174,18 +171,8 @@ impl Clause {
     pub fn swap_lits_in_clause(&mut self, _f: &Formula, j: usize, k: usize) {
         let old_c: Ghost<&mut Clause> = ghost! { self };
         self.lits.swap(j, k);
-        proof_assert!(^old_c.inner() == ^self);
-        proof_assert!(old_c.equisat_extension(*_f));
-        proof_assert!(self.invariant(@_f.num_vars));
-        proof_assert!((@self).exchange(@old_c, @j, @k));
-        proof_assert!((@old_c).permut(@self, 0, (@self).len()));
-        proof_assert!(self.equisat(*old_c.inner()));
-        proof_assert!(self.equisat2(*old_c.inner(), *_f));
-        proof_assert!(^old_c.inner() == ^self);
-        // This is the critical assertion. TODO: Look at the assertions above and remove the unneded ones.
-        proof_assert!(eventually_sat_complete_no_ass((((@_f).0).push(*self), (@_f).1)) ==
-                      eventually_sat_complete_no_ass((((@_f).0).push(*old_c.inner()), (@_f).1)));
-        proof_assert!(self.equisat_extension(*_f));
+        proof_assert!(eventually_sat_complete((((@_f).0).push(*self), (@_f).1)) ==>
+                      eventually_sat_complete((((@_f).0).push(*old_c.inner()), (@_f).1)));
     }
 
     #[cfg_attr(feature = "trust_clause", trusted)]

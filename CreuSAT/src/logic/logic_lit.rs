@@ -52,16 +52,12 @@ impl Lit {
 
     #[predicate]
     pub fn lit_in_internal(self, c: Seq<Lit>) -> bool {
-        pearlite! {
-            exists<i: Int> 0 <= i && i < c.len() && c[i] == self
-        }
+        pearlite! { exists<i: Int> 0 <= i && i < c.len() && c[i] == self }
     }
 
     #[predicate]
     pub fn lit_in(self, c: Clause) -> bool {
-        pearlite! {
-            exists<i: Int> 0 <= i && i < (@c).len() && (@c)[i] == self
-        }
+        pearlite! { exists<i: Int> 0 <= i && i < (@c).len() && (@c)[i] == self }
     }
 
     #[predicate]
