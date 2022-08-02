@@ -37,6 +37,7 @@ impl Default for Node {
     }
 }
 
+#[allow(clippy::upper_case_acronyms)]
 pub(crate) struct VMTF {
     pub linked_list: Vec<Node>,
     timestamp: usize,
@@ -213,22 +214,23 @@ impl Decisions for VMTF {
     }
 
     // TODO: Add decision toggling for VMTF.
-    fn turn_off_decision_for_idx(&mut self, var: usize) {}
+    fn turn_off_decision_for_idx(&mut self, _var: usize) {}
 
     // No-op, but may add to see.
-    fn bump_reason_literals(&mut self, var: usize, trail: &Trail, formula: &Formula) {}
+    fn bump_reason_literals(&mut self, _var: usize, _trail: &Trail, _formula: &Formula) {}
 
     // This is a no-op, as VMTF only support bumping of vecs of vars.
-    fn bump_variable(&mut self, var: usize) {}
+    fn bump_variable(&mut self, _var: usize) {}
 
     // No-ops
     fn decay_var_inc(&mut self) {}
 
-    fn set_var_decay(&mut self, new_val: f64) {}
+    fn set_var_decay(&mut self, _new_val: f64) {}
 
-    fn insert(&mut self, var: usize) {}
+    fn insert(&mut self, _var: usize) {}
 }
 
+#[derive(Default)]
 struct Heap {
     activity: Vec<f64>,
     heap: Vec<usize>,
@@ -256,11 +258,6 @@ impl IndexMut<usize> for Heap {
     }
 }
 
-impl Default for Heap {
-    fn default() -> Self {
-        Heap { activity: Vec::new(), heap: Vec::new(), indices: Vec::new() }
-    }
-}
 
 impl Heap {
     pub(crate) fn new(n: usize) -> Self {
@@ -319,13 +316,14 @@ impl Heap {
     }
 
     fn empty(&self) -> bool {
-        self.heap.len() == 0
+        self.heap.is_empty()
     }
 
     fn decrease(&mut self, var: usize) {
         self.percolate_up(self.indices[var]);
     }
 
+    // This is supposed to be used in add_clause
     fn increase(&mut self, var: usize) {
         self.percolate_down(self.indices[var]);
     }
@@ -390,6 +388,7 @@ impl Heap {
     }
 }
 
+#[allow(clippy::upper_case_acronyms)]
 pub(crate) struct VSIDS {
     order_heap: Heap,
     var_inc: f64,
@@ -468,7 +467,6 @@ impl Decisions for VSIDS {
         if reason == INVALID {
             return;
         }
-        let clause = &formula[reason];
         for l in formula.clauses[reason].lits.iter().skip(1) {
             self.bump_variable(l.index());
         }
@@ -479,7 +477,7 @@ impl Decisions for VSIDS {
     }
 
     // Deliberately a no-op
-    fn bump_vec_of_vars(&mut self, f: &Formula, v: Vec<usize>) {}
+    fn bump_vec_of_vars(&mut self, _f: &Formula, _v: Vec<usize>) {}
 }
 
 /*

@@ -44,7 +44,7 @@ impl Trail {
         }
     }
 
-    fn backstep(&mut self, formula: &Formula, target_phase: &mut TargetPhase) -> usize {
+    fn backstep(&mut self, target_phase: &mut TargetPhase) -> usize {
         match self.trail.pop() {
             Some(lit) => {
                 target_phase.set_polarity(lit.index(), lit.is_positive());
@@ -65,20 +65,20 @@ impl Trail {
         &mut self, formula: &mut Formula, decisions: &mut impl Decisions, watches: &mut Watches, solver: &Solver,
         target_phase: &mut TargetPhase,
     ) {
-        self.backtrack_safe(0, formula, decisions, target_phase);
+        self.backtrack_safe(0, decisions, target_phase);
         formula.collect_garbage_on_empty_trail(watches, solver);
     }
 
     pub(crate) fn backtrack_safe(
-        &mut self, level: u32, formula: &Formula, decisions: &mut impl Decisions, target_phase: &mut TargetPhase,
+        &mut self, level: u32, decisions: &mut impl Decisions, target_phase: &mut TargetPhase,
     ) {
         if level < self.decision_level() {
-            self.backtrack_to(level, formula, decisions, target_phase);
+            self.backtrack_to(level, decisions, target_phase);
         }
     }
 
     pub(crate) fn backtrack_to(
-        &mut self, level: u32, formula: &Formula, decisions: &mut impl Decisions, target_phase: &mut TargetPhase,
+        &mut self, level: u32, decisions: &mut impl Decisions, target_phase: &mut TargetPhase,
     ) {
         let how_many = self.trail.len() - self.decisions[level as usize];
         let mut i: usize = 0;
@@ -87,7 +87,7 @@ impl Trail {
         //let mut timestamp = unsafe { d.linked_list.get_unchecked(curr).ts }; //VMTF
 
         while i < how_many {
-            let idx = self.backstep(formula, target_phase);
+            let idx = self.backstep(target_phase);
             decisions.insert(idx);
 
             /*
@@ -147,10 +147,8 @@ impl Trail {
             if clause.len() == 1 {
                 let lit = clause[0];
                 // This check should be removed by an invariant that the formula only contains unique clauses
-                if lit.lit_set(&self.assignments) {
-                    if lit.lit_unsat(&self.assignments) {
-                        return Some(i);
-                    }
+                if lit.lit_unsat(&self.assignments) {
+                    return Some(i);
                 }
                 self.enq_assignment(lit, formula, UNIT);
                 formula.remove_clause_in_preprocessing(i);

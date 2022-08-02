@@ -1,4 +1,4 @@
-use crate::{formula::*, lit::*, solver::*, trail::*};
+use crate::{formula::*, lit::*, solver::*, };
 use std::ops::{Index, IndexMut};
 
 // Lets try this scheme and see how well it fares
@@ -35,7 +35,7 @@ impl IndexMut<usize> for Watches {
 
 #[inline]
 pub(crate) fn update_watch(
-    f: &Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
+    f: &Formula, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
 ) {
     let watchidx = lit.to_watchidx();
     let end = watches.watches[watchidx].len() - 1;
@@ -68,11 +68,6 @@ impl Watches {
         Watches { watches }
     }
 
-    pub(crate) fn move_to_end(&mut self, old_idx: usize, old_pos: usize, new_lit: Lit, _f: &Formula) {
-        let end = self.watches[old_idx].len() - 1;
-        self[old_idx].swap(old_pos, end);
-    }
-
     pub(crate) fn init_watches(&mut self, f: &Formula) {
         let mut i = 0;
         while i < f.len() {
@@ -86,7 +81,7 @@ impl Watches {
     }
 
     #[inline]
-    pub(crate) fn unwatch(&mut self, f: &Formula, trail: &Trail, cref: usize, lit: Lit) {
+    pub(crate) fn unwatch(&mut self, cref: usize, lit: Lit) {
         let watchidx = lit.to_neg_watchidx();
         let mut i: usize = 0;
         while i < self[watchidx].len() {
@@ -113,7 +108,7 @@ impl Watches {
     }
 
     #[inline]
-    pub(crate) fn unwatch_all_lemmas(&mut self, f: &Formula, s: &Solver) {
+    pub(crate) fn unwatch_all_lemmas(&mut self, s: &Solver) {
         let mut i: usize = 0;
         while i < self.len() {
             let mut j = 0;

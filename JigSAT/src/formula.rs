@@ -1,4 +1,4 @@
-use crate::{assignments::*, clause::*, lit::*, solver::*, solver_types::*, trail::*, watches::*};
+use crate::{assignments::*, clause::*, solver::*, solver_types::*, trail::*, watches::*};
 
 use log::debug;
 use std::ops::{Index, IndexMut};
@@ -51,6 +51,7 @@ impl Formula {
         self.clauses.len()
     }
 
+    #[allow(unused)]
     pub(crate) fn check_formula_invariant(&self) -> SatResult {
         if self.num_vars >= usize::MAX / 2 {
             return SatResult::Err;
@@ -84,10 +85,6 @@ impl Formula {
             i += 1;
         }
         false
-    }
-
-    pub(crate) fn swap_lits_in_clause(&mut self, trail: &Trail, watches: &Watches, cref: usize, j: usize, k: usize) {
-        self[cref].swap(j, k);
     }
 
     pub(crate) fn learn_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> Cref {
@@ -137,9 +134,9 @@ impl Formula {
     }
 
     #[inline(always)]
-    fn unwatch_and_mark_as_deleted(&mut self, cref: usize, watches: &mut Watches, t: &Trail) {
-        watches.unwatch(self, t, cref, self[cref][0]);
-        watches.unwatch(self, t, cref, self[cref][1]);
+    fn unwatch_and_mark_as_deleted(&mut self, cref: usize, watches: &mut Watches) {
+        watches.unwatch(cref, self[cref][0]);
+        watches.unwatch(cref, self[cref][1]);
         self.mark_clause_as_deleted(cref);
     }
 
@@ -147,10 +144,8 @@ impl Formula {
         // unwatch trivially SAT
         let mut i = 0;
         while i < self.len() {
-            if !self[i].deleted {
-                if self[i].len() > 1 && self.is_clause_sat(i, &t.assignments) {
-                    self.unwatch_and_mark_as_deleted(i, watches, t);
-                }
+            if !self[i].deleted && self[i].len() > 1 && self.is_clause_sat(i, &t.assignments) {
+                self.unwatch_and_mark_as_deleted(i, watches);
             }
             i += 1;
         }
@@ -167,7 +162,7 @@ impl Formula {
 
     #[inline]
     pub(crate) fn reduceDB(&mut self, watches: &mut Watches, trail: &Trail, s: &mut Solver) {
-        if self.learnt_core.len() == 0 {
+        if self.learnt_core.is_empty() {
             return;
         }
         self.learnt_core.sort_unstable_by(|a, b| self.clauses[*a].less_than(&self.clauses[*b]));
@@ -188,7 +183,7 @@ impl Formula {
             let clause = &mut self[cref];
             if clause.lbd > 2 && clause.len() > 2 && clause.can_be_deleted {
                 //&& !trail.locked(clause[0]) {
-                self.unwatch_and_mark_as_deleted(cref, watches, trail);
+                self.unwatch_and_mark_as_deleted(cref, watches);
                 self.learnt_core.swap_remove(i);
                 limit -= 1;
             } else {
@@ -218,7 +213,7 @@ impl Formula {
             return;
         }
 
-        watches.unwatch_all_lemmas(self, s);
+        watches.unwatch_all_lemmas(s);
 
         self.learnt_core.clear();
         let mut i = s.initial_len;

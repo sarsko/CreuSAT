@@ -1,6 +1,6 @@
 use crate::{
     assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, lit::*, modes::*, preprocess::*,
-    restart::*, target_phase::*, trail::*, unit_prop::*, util::*, watches::*,
+    restart::*, target_phase::*, trail::*, unit_prop::*, watches::*,
 };
 
 use log::debug;
@@ -63,15 +63,17 @@ pub(crate) struct Stats {
     pub(crate) num_glues: usize,
     pub(crate) num_binary: usize,
     pub(crate) num_unary: usize,
+    pub(crate) no_decision_conflict: usize,
+    /*
     pub(crate) lcm_tested: usize,
     pub(crate) lcm_reduced: usize,
     pub(crate) nb_walk: usize,
     pub(crate) walk_time: usize,
     pub(crate) nb_flips: usize,
-    pub(crate) no_decision_conflict: usize,
     pub(crate) nb_reduced_clauses: usize,
     pub(crate) nb_self_subsumptions: usize,
     pub(crate) nb_stats: usize,
+    */
 }
 
 pub(crate) struct Solver {
@@ -142,7 +144,7 @@ impl Solver {
         }
 
         //d.increment_and_move(f, cref, &t.assignments);
-        trail.backtrack_to(level, formula, decisions, target_phase);
+        trail.backtrack_to(level, decisions, target_phase);
         let lit = formula[cref][0];
         trail.enq_assignment(lit, formula, cref);
     }
@@ -294,11 +296,11 @@ impl Solver {
     }
 
     fn simplify(
-        &mut self, formula: &mut Formula, decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches,
+        &mut self, formula: &mut Formula, _decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches,
     ) -> bool {
         // TODO: Add subsumption here.
         formula.simplify_formula(watches, trail);
-        return true;
+        true
     }
 }
 

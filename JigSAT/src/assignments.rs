@@ -1,4 +1,4 @@
-use crate::{formula::*, lit::*, trail::*};
+use crate::{formula::*, lit::*};
 use std::ops::{Index, IndexMut};
 
 pub type AssignedState = u8;

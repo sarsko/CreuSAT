@@ -1,4 +1,4 @@
-use crate::{formula::*, lit::*, solver::*, trail::*, watches::*};
+use crate::{formula::*, lit::*, trail::*, watches::*};
 
 #[inline]
 fn unit_prop_check_rest(
@@ -9,11 +9,11 @@ fn unit_prop_check_rest(
         if f[cref][0].index() == lit.index() {
             // First
             swap(f, trail, watches, cref, k, 0);
-            update_watch(f, trail, watches, cref, j, 0, lit);
+            update_watch(f, watches, cref, j, 0, lit);
         } else {
             swap(f, trail, watches, cref, k, 1);
             swap(f, trail, watches, cref, 1, 0);
-            update_watch(f, trail, watches, cref, j, 0, lit);
+            update_watch(f, watches, cref, j, 0, lit);
             //update_watch(f, trail, watches, cref, j, 1, lit);
         }
         return Ok(()); // dont increase j
@@ -62,11 +62,11 @@ fn unit_prop_do_outer(
     }
     if formula[cref][0].lit_unset(&trail.assignments) {
         trail.enq_assignment(formula[cref][0], formula, cref);
-        return Ok(true);
+        Ok(true)
     } else {
         trail.enq_assignment(formula[cref][1], formula, cref);
         formula[cref].swap(0, 1);
-        return Ok(true);
+        Ok(true)
     }
 }
 

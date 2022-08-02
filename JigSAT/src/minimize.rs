@@ -7,12 +7,12 @@ use crate::{
 
 #[inline(always)]
 pub(crate) fn lit_redundant(
-    solver: &mut Solver, trail: &Trail, formula: &Formula, lit: Lit, abstract_levels: u32, seen: &mut Vec<bool>,
+    solver: &mut Solver, trail: &Trail, formula: &Formula, lit: Lit, abstract_levels: u32, seen: &mut [bool],
 ) -> bool {
     solver.analyze_stack.clear();
     solver.analyze_stack.push(lit);
     let top = solver.analyze_toclear.len();
-    while solver.analyze_stack.len() > 0 {
+    while !solver.analyze_stack.is_empty() {
         //assert(reason(var(analyze_stack.last())) != CRef_Undef);
         let ante_ref = trail.lit_to_reason[solver.analyze_stack.pop().unwrap().index()];
         let c = &formula.clauses[ante_ref];
@@ -48,7 +48,7 @@ pub(crate) fn lit_redundant(
             i += 1;
         }
     }
-    return true;
+    true
 }
 
 #[allow(unused)]

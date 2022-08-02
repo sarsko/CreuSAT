@@ -1,4 +1,4 @@
-use crate::{formula::*, lit::*, solver::Solver, trail::*};
+use crate::{lit::*, solver::Solver, trail::*};
 use std::{
     cmp::Ordering,
     ops::{Index, IndexMut},
@@ -88,10 +88,6 @@ impl Clause {
         self.lits.swap(i, j);
     }
 
-    pub(crate) fn pop(&mut self) {
-        self.lits.pop();
-    }
-
     pub(crate) fn less_than(&self, other: &Clause) -> Ordering {
         if self.len() == 2 {
             if other.len() == 2 {
@@ -148,18 +144,6 @@ impl Clause {
     #[inline(always)]
     pub(crate) fn len(&self) -> usize {
         self.lits.len()
-    }
-
-    #[inline(always)]
-    fn move_to_end(&mut self, idx: usize, _f: &Formula) {
-        let end = self.len() - 1;
-        self.swap(idx, end);
-    }
-
-    #[inline(always)]
-    pub(crate) fn remove_from_clause(&mut self, idx: usize, _f: &Formula) {
-        self.move_to_end(idx, _f);
-        self.pop();
     }
 
     fn calc_lbd(&self, trail: &Trail, solver: &mut Solver) -> u32 {
@@ -230,7 +214,7 @@ impl Clause {
             }
             return SubsumptionRes::NoSubsumption;
         }
-        return ret;
+        ret
     }
 
     pub(crate) fn is_marked(&self) -> bool {

@@ -27,7 +27,6 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
     */
     use std::collections::HashSet;
     let mut num_literals = 0;
-    let mut num_lits_set = false;
     let mut out_clauses = vec![];
     let mut curr_clause = vec![];
     let mut line_cntr = 0;
@@ -39,7 +38,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
             line_cntr += 1;
             if let Ok(line) = line {
                 let split = line.split(' ').filter(|e| e != &"").collect::<Vec<_>>();
-                if split.len() > 0 {
+                if !split.is_empty() {
                     match split[0].chars().next().unwrap() {
                         'c' => {}
                         'p' => { /*match split[2].parse::<usize>() {
@@ -95,14 +94,11 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
     } else {
         return Err("File not found!".to_string());
     }
-    if !num_lits_set {
-        //return Err("Error in input file - no p line".to_string());
-    }
     if num_literals != max_literal {
         //return Err("p line does not match the actual number of literals".to_string());
         num_literals = max_literal;
     }
-    if curr_clause.len() > 0 {
+    if !curr_clause.is_empty() {
         return Err("Error in input file - last clause not terminated".to_string());
     }
     Ok((out_clauses, num_literals))
@@ -125,7 +121,7 @@ pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_li
                 currclause.push(new_lit);
             }
         }
-        if currclause.len() == 0 {
+        if currclause.is_empty() {
             return false;
         } else {
             let clause2: Clause2 = Clause2::new(currclause);

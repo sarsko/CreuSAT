@@ -65,10 +65,8 @@ impl Preprocess {
 
     // Requires empty elim heap
     fn populate_elim(&mut self) {
-        let mut j = 0;
-        for i in (0..self.n_occ.len()).step_by(2) {
+        for (j, i) in (0..self.n_occ.len()).step_by(2).enumerate() {
             self.elim_heap.push((j, self.n_occ[i] * self.n_occ[i + 1]));
-            j += 1;
         }
         self.elim_heap.sort_by_key(|k| k.1);
         self.elim_heap.reverse();
@@ -85,16 +83,11 @@ impl Preprocess {
         }
     }
 
-    fn populate_subsumption_queue(&mut self, formula: &Formula) {
-        // Populated as part of gather_touched_clauses
-        // unimplemented!()
-    }
-
     fn init(&mut self, formula: &Formula) {
         self.touched = vec![false; formula.num_vars];
         self.populate_occurs_and_n_occ(formula);
         self.populate_elim();
-        self.populate_subsumption_queue(formula);
+        // self.populate_subsumption_queue(formula); // Done through gather_touched_clauses
         self.eliminated = vec![false; formula.num_vars];
     }
 }
@@ -174,10 +167,10 @@ impl Preprocess {
             return false;
         }
 
-        while self.n_touched > 0 || self.bwdsub_assigns < trail.trail.len() || self.elim_heap.len() > 0 {
+        while self.n_touched > 0 || self.bwdsub_assigns < trail.trail.len() || !self.elim_heap.is_empty() {
             self.gather_touched_clauses(formula);
 
-            if self.subsumption_queue.len() > 0 || self.bwdsub_assigns < trail.trail.len() {
+            if !self.subsumption_queue.is_empty() || self.bwdsub_assigns < trail.trail.len() {
                 match self.backward_subsumption_check(formula, trail, watches) {
                     Some(false) => return false,
                     Some(true) => {}
@@ -210,8 +203,8 @@ impl Preprocess {
         }
         formula.remove_deleted();
 
-        *watches = Watches::new(&formula);
-        watches.init_watches(&formula);
+        *watches = Watches::new(formula);
+        watches.init_watches(formula);
 
         true
     }
@@ -219,7 +212,6 @@ impl Preprocess {
     fn remove_clause_in_preprocessing(&mut self, formula: &mut Formula, cref: usize) {
         if formula.clauses[cref].deleted {
             unreachable!("Already deleted");
-            return;
         }
         debug!("Removing cref: {}, {:?}", cref, &formula[cref].lits);
         for l in &formula[cref].lits {
@@ -243,9 +235,9 @@ impl Preprocess {
     ) -> Option<bool> {
         //assert(decisionLevel() == 0);
 
-        while self.subsumption_queue.len() > 0 || self.bwdsub_assigns < trail.trail.len() {
+        while !self.subsumption_queue.is_empty() || self.bwdsub_assigns < trail.trail.len() {
             // Check top-level assignments by creating a dummy clause and placing it in the queue:
-            if self.subsumption_queue.len() == 0 && self.bwdsub_assigns < trail.trail.len() {
+            if self.subsumption_queue.is_empty() && self.bwdsub_assigns < trail.trail.len() {
                 println!("c sub_q.len() == 0 and bwdsub_assigns < trail.len()");
                 //panic!();
                 return None;
@@ -348,7 +340,7 @@ impl Preprocess {
             c.strengthen(lit);
             let unit_lit = c[0];
             formula.mark_clause_as_deleted(cref);
-            trail.learn_unit_in_preprocessing(unit_lit, &formula);
+            trail.learn_unit_in_preprocessing(unit_lit, formula);
             let mut mock = 0;
             return match unit_propagate(formula, trail, watches, &mut mock) {
                 Err(_) => false,
@@ -441,7 +433,6 @@ impl Preprocess {
                 let mut resolvent = Vec::new();
                 if formula[*p].deleted || formula[*n].deleted {
                     panic!("Deleted clauses used in the DP procedure");
-                    continue;
                 }
                 if self.merge_and_get(&formula[*p], &formula[*n], v, &mut resolvent) {
                     debug!("Resolved {} and {} to get {:?}", &formula[*p], &formula[*n], &resolvent);
@@ -458,14 +449,14 @@ impl Preprocess {
         self.remove_clauses(formula, v);
 
         // Occurs is wiped in remove_clauses as well
-        assert!(self.occurs[v].len() == 0);
+        assert!(self.occurs[v].is_empty());
 
         // (We do this before adding watches, so there are no watchers to clear)
         // Free watchers lists for this variable, if possible:
         //if(watches[mkLit(v)].size() == 0) watches[mkLit(v)].clear(true);
         //if(watches[~mkLit(v)].size() == 0) watches[~mkLit(v)].clear(true);
 
-        return self.backward_subsumption_check(formula, trail, watches);
+        self.backward_subsumption_check(formula, trail, watches)
     }
 
     // v is the index of the literal which we are trying to eliminate
@@ -493,7 +484,7 @@ impl Preprocess {
             }
         }
 
-        return true;
+        true
     }
 
     // v is the index of the literal which we are trying to eliminate
@@ -524,7 +515,7 @@ impl Preprocess {
             }
         }
 
-        return true;
+        true
     }
 
     fn remove_clauses(&mut self, formula: &mut Formula, v: usize) {

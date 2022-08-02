@@ -4,7 +4,7 @@ use crate::{
     decision::*,
     restart::*,
     solver::*,
-    target_phase::{self, TargetPhase},
+    target_phase::{TargetPhase},
 };
 
 //#[inline(always)]

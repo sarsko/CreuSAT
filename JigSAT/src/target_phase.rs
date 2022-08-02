@@ -59,18 +59,21 @@ impl Default for TargetPhase {
 impl TargetPhase {
     // We init to all false
     pub(crate) fn new(num_vars: usize) -> Self {
-        let mut target_phase = TargetPhase::default();
-        target_phase.polarity = vec![false; num_vars];
-        target_phase.target_polarity = vec![0; num_vars];
-        target_phase.best_polarity = vec![0; num_vars];
-        target_phase.min_len = num_vars;
-
-        // TODO: Implement walk and uncomment this
-        if num_vars < 70_000 && false {
-            target_phase.cycle = vec![B, W, B, O, B, I, B, W, B, R, B, F];
+        TargetPhase {
+            polarity: vec![false; num_vars],
+            target_polarity: vec![0; num_vars],
+            best_polarity: vec![0; num_vars],
+            min_len: num_vars,
+            ..Default::default()
         }
 
-        target_phase
+        // TODO: Implement walk and uncomment this
+        /*
+        if num_vars < 70_000 {
+            target_phase.cycle = vec![B, W, B, O, B, I, B, W, B, R, B, F];
+        }
+        */
+
     }
 
     #[inline(always)]

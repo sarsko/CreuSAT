@@ -3,6 +3,7 @@ pub(crate) enum RestartMode {
     Luby,
 }
 
+#[allow(clippy::upper_case_acronyms)]
 struct EMA {
     value: f64,
     alpha: f64,
@@ -17,8 +18,8 @@ impl EMA {
 
         self.wait -= 1;
         if self.beta > self.alpha && self.wait == 0 {
-            self.wait = 2 * self.period;
-            self.period = 2 * self.period;
+            self.period *= 2;
+            self.wait = self.period;
             self.beta *= 0.5;
             if self.beta < self.alpha {
                 self.beta = self.alpha;
@@ -116,7 +117,7 @@ fn luby(y: f64, mut x: usize) -> usize {
     while size - 1 != x {
         size = (size - 1) >> 1;
         seq -= 1;
-        x = x % size;
+        x %= size;
     }
     y.powf(seq as f64) as usize
 }

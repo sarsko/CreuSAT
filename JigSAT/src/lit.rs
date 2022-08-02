@@ -64,6 +64,7 @@ impl Lit {
         a[self.index()] < 2
     }
 
+    #[allow(unused)]
     #[inline(always)]
     pub fn get_curr_assigned_state(self, a: &Assignments) -> AssignedState {
         a[self.index()]
@@ -89,7 +90,7 @@ impl Lit {
     }
 
     #[inline]
-    pub(crate) fn abstract_level(self, t: &Vec<u32>) -> u32 {
+    pub(crate) fn abstract_level(self, t: &[u32]) -> u32 {
         1 << (t[self.index()] & 31)
     }
 
