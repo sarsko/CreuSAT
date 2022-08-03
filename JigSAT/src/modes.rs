@@ -1,15 +1,16 @@
 // An attempt to separate out the modes and phases stuff
 
-use crate::{decision::*, restart::*, solver::*, target_phase::TargetPhase};
+use crate::{decision::*, formula::*, restart::*, solver::*, target_phase::TargetPhase};
 
 //#[inline(always)]
-pub(crate) fn adapt_solver(solver: &mut Solver, decisions: &mut impl Decisions) -> bool {
+pub(crate) fn adapt_solver(solver: &mut Solver, decisions: &mut impl Decisions, formula: &mut Formula) -> bool {
     solver.adapt_strategies = false;
     let dec_to_confl_ratio = (solver.num_decisions as f64) / (solver.num_conflicts as f64);
     if dec_to_confl_ratio <= 1.2 {
         println!("c Adjusting for low decision levels");
         solver.restart.set_restart_mode(RestartMode::Glucose);
         solver.search_mode = SearchMode::OnlyFocus;
+        formula.core_upper_bound = 5;
         // (If one adds tiered clause management: set core_upper_bound to 5 in formula.)
         return true;
     }
@@ -17,7 +18,7 @@ pub(crate) fn adapt_solver(solver: &mut Solver, decisions: &mut impl Decisions) 
     if solver.stats.no_decision_conflict < 30000 {
         println!("c Adjusting for low successive conflicts");
         solver.restart.set_restart_mode(RestartMode::Luby);
-        solver.search_mode = SearchMode::OnlyStable; // OnlyFocus in Glucose
+        solver.search_mode = SearchMode::OnlyFocus; // OnlyFocus in Glucose. I think it should be OnlyStable
         decisions.set_var_decay(0.999);
         return true;
     }
@@ -31,13 +32,13 @@ pub(crate) fn change_mode(solver: &mut Solver, decisions: &mut impl Decisions, t
     match solver.search_mode {
         SearchMode::Stable => {
             println!("c Changing mode to Focus mode");
-            solver.restart.swap_mode();
+            solver.restart.set_restart_mode(RestartMode::Glucose);
             decisions.set_var_decay(0.95);
             solver.search_mode = SearchMode::Focus;
         }
         SearchMode::Focus => {
             println!("c Changing mode to Stable mode");
-            solver.restart.swap_mode();
+            solver.restart.set_restart_mode(RestartMode::Luby);
             decisions.set_var_decay(0.75);
             solver.search_mode = SearchMode::Stable;
             target_phase.reset();

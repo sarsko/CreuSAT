@@ -14,9 +14,10 @@ pub struct Formula {
     num_deleted_clauses: usize,
     next_tier_reduce: usize,
     next_local_reduce: usize,
-    core_upper_bound: u32,
+    pub(crate) core_upper_bound: u32,
     tiers_upper_bound: u32,
     clause_activity_inc: f64,
+    clause_decay: f64,
 }
 
 impl Index<usize> for Formula {
@@ -57,6 +58,7 @@ impl Formula {
             core_upper_bound: 3,
             tiers_upper_bound: 6,
             clause_activity_inc: 1.0,
+            clause_decay: 0.999,
         }
     }
 
@@ -320,20 +322,20 @@ impl Formula {
 
         let mut i = s.initial_len;
         while i < self.len() {
-            let clause = &self[i];
+            let clause = &mut self.clauses[i];
             if clause.deleted {
                 self.clauses.swap_remove(i);
             } else {
                 // TODO: Fix how this is done
                 if clause.lbd <= self.core_upper_bound {
                     self.learnt_core.push(i);
-                    //c.location(ClauseLocation::core);
+                    clause.set_location(ClauseLocation::Core);
                 } else if clause.lbd <= self.tiers_upper_bound {
                     self.learnt_tier.push(i);
-                    //c.location(ClauseLocation::tiers);
-                    //clause.set_touched(s.num_conflicts as u32);
+                    clause.set_location(ClauseLocation::Tiers);
+                    clause.set_touched(s.num_conflicts as u32);
                 } else {
-                    //c.location(ClauseLocation::local);
+                    clause.set_location(ClauseLocation::Local);
                     self.learnt_local.push(i);
                 }
                 i += 1;
@@ -363,6 +365,10 @@ impl Formula {
             return true;
         }
         false
+    }
+
+    pub(crate) fn decay_clause_activity(&mut self) {
+        self.clause_activity_inc *= 1.0 / self.clause_decay;
     }
 
     #[inline(always)]

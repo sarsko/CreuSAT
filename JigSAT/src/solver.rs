@@ -173,9 +173,9 @@ impl Solver {
         }
 
         decisions.decay_var_inc();
-        //claDecayActivity();
+        formula.decay_clause_activity();
 
-        if self.adapt_strategies && self.num_conflicts == 100000 && adapt_solver(self, decisions) {
+        if self.adapt_strategies && self.num_conflicts == 100000 && adapt_solver(self, decisions, formula) {
             trail.restart(formula, decisions, watches, self, target_phase);
         }
 
