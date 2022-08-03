@@ -82,8 +82,9 @@ impl TargetPhase {
 
     #[inline]
     pub(crate) fn update_best_phase(&mut self, trail: &Trail) {
-        // Just copy assignments verbatim, no?
-        let len = trail.trail.len();
+        // Dunno if getting the length at the last decision is better than just getting the length.
+        //let len = trail.trail.len();
+        let len = *trail.decisions.last().unwrap_or(&0);
         if len < self.min_len && len > 0 {
             self.min_len = len;
         }
@@ -167,7 +168,7 @@ impl TargetPhase {
         if mode_is_focus || self.target_polarity[idx] == 2 {
             self.polarity[idx]
         } else {
-            assert!(self.target_polarity[idx] == 0 || self.target_polarity[idx] == 1);
+            //assert!(self.target_polarity[idx] == 0 || self.target_polarity[idx] == 1);
             self.target_polarity[idx] != 0
         }
     }

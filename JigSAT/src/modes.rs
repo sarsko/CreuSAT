@@ -11,7 +11,6 @@ pub(crate) fn adapt_solver(solver: &mut Solver, decisions: &mut impl Decisions, 
         solver.restart.set_restart_mode(RestartMode::Glucose);
         solver.search_mode = SearchMode::OnlyFocus;
         formula.core_upper_bound = 5;
-        // (If one adds tiered clause management: set core_upper_bound to 5 in formula.)
         return true;
     }
 
