@@ -1,4 +1,4 @@
-use crate::{formula::*, lit::*, solver::*, };
+use crate::{formula::*, lit::*, solver::*};
 use std::ops::{Index, IndexMut};
 
 // Lets try this scheme and see how well it fares
@@ -34,9 +34,7 @@ impl IndexMut<usize> for Watches {
 }
 
 #[inline]
-pub(crate) fn update_watch(
-    f: &Formula, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
-) {
+pub(crate) fn update_watch(f: &Formula, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit) {
     let watchidx = lit.to_watchidx();
     let end = watches.watches[watchidx].len() - 1;
     watches.watches[watchidx].swap(j, end);

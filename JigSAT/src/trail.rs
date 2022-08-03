@@ -77,9 +77,7 @@ impl Trail {
         }
     }
 
-    pub(crate) fn backtrack_to(
-        &mut self, level: u32, decisions: &mut impl Decisions, target_phase: &mut TargetPhase,
-    ) {
+    pub(crate) fn backtrack_to(&mut self, level: u32, decisions: &mut impl Decisions, target_phase: &mut TargetPhase) {
         let how_many = self.trail.len() - self.decisions[level as usize];
         let mut i: usize = 0;
 
