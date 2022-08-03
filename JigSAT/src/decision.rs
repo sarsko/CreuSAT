@@ -258,7 +258,6 @@ impl IndexMut<usize> for Heap {
     }
 }
 
-
 impl Heap {
     pub(crate) fn new(n: usize) -> Self {
         Heap { activity: vec![0.0; n], heap: Vec::new(), indices: vec![INVALID; n] }

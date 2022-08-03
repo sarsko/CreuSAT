@@ -73,7 +73,6 @@ impl TargetPhase {
             target_phase.cycle = vec![B, W, B, O, B, I, B, W, B, R, B, F];
         }
         */
-
     }
 
     #[inline(always)]

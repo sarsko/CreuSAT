@@ -1,11 +1,6 @@
 // An attempt to separate out the modes and phases stuff
 
-use crate::{
-    decision::*,
-    restart::*,
-    solver::*,
-    target_phase::{TargetPhase},
-};
+use crate::{decision::*, restart::*, solver::*, target_phase::TargetPhase};
 
 //#[inline(always)]
 pub(crate) fn adapt_solver(solver: &mut Solver, decisions: &mut impl Decisions) -> bool {
