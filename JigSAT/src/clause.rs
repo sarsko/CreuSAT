@@ -6,10 +6,18 @@ use std::{
 
 use crate::preprocess::SubsumptionRes;
 
+#[derive(PartialEq, Copy, Clone)]
+pub(crate) enum ClauseLocation {
+    Local,
+    Core,
+    Tiers,
+}
+
 pub struct Clause {
     pub deleted: bool,
     pub can_be_deleted: bool,
     pub mark: u8, // This is an artifact of Glucose/MiniSat, and should be enumed
+    location: ClauseLocation,
     pub lbd: u32,
     pub search: u32,
     abstraction: u32,
@@ -65,11 +73,13 @@ impl fmt::Debug for Clause {
 
 impl Clause {
     // Does not set lbd !
+    // Default location to Core !!
     // Inits search to 1 and mark to 0. Sets abstraction.
     pub(crate) fn new(lits: Vec<Lit>) -> Clause {
         Clause {
             deleted: false,
             can_be_deleted: true,
+            location: ClauseLocation::Core,
             lbd: 0,
             search: 1,
             mark: 0,
@@ -112,12 +122,10 @@ impl Clause {
             Ordering::Less
         } else if self.lbd > other.lbd {
             Ordering::Greater
-        } else if self.len() < other.len() {
+        } else if self.activity < other.activity {
             Ordering::Less
-        } else if self.len() > other.len() {
-            Ordering::Greater
         } else {
-            Ordering::Equal
+            Ordering::Greater
         }
     }
 
@@ -170,7 +178,7 @@ impl Clause {
     }
 
     #[inline(always)]
-    fn calc_lbd(&self, trail: &Trail, solver: &mut Solver) -> u32 {
+    pub(crate) fn calc_lbd(&self, trail: &Trail, solver: &mut Solver) -> u32 {
         /*
         // We don't bother calculating for long clauses.
         if self.len() >= 2024 {
@@ -211,6 +219,16 @@ impl Clause {
     #[inline(always)]
     pub(crate) fn reset_activity(&mut self) {
         self.activity = 0.0;
+    }
+
+    #[inline(always)]
+    pub(crate) fn get_location(&self) -> ClauseLocation {
+        self.location
+    }
+
+    #[inline(always)]
+    pub(crate) fn set_location(&mut self, location: ClauseLocation) {
+        self.location = location;
     }
 
     #[inline(always)]

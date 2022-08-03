@@ -52,8 +52,8 @@ impl Formula {
             num_clauses_before_reduce: 2000,
             special_inc_reduce_db: 1000,
             num_deleted_clauses: 0,
-            next_tier_reduce: 10000,
-            next_local_reduce: 15000,
+            next_tier_reduce: 10_000,
+            next_local_reduce: 15_000,
             core_upper_bound: 3,
             tiers_upper_bound: 6,
             clause_activity_inc: 1.0,
@@ -114,6 +114,36 @@ impl Formula {
         self.clauses.push(clause);
 
         cref
+    }
+
+    // Requires that the clause is learned
+    // Can only be called during analysis (ie duringAnalysis always true)
+    pub(crate) fn update_clause(&mut self, cref: Cref, trail: &Trail, solver: &mut Solver) {
+        let clause = &mut self.clauses[cref];
+        if clause.get_location() != ClauseLocation::Core {
+            let new_lbd = clause.calc_lbd(trail, solver);
+            if new_lbd < clause.lbd {
+                // Is it correct that this should be old lbd?
+                if clause.lbd <= 30 {
+                    clause.can_be_deleted = false;
+                }
+                clause.lbd = new_lbd;
+                // Now I get why we need to store location
+                if new_lbd <= self.core_upper_bound {
+                    self.learnt_core.push(cref);
+                    clause.set_location(ClauseLocation::Core);
+                } else if new_lbd <= self.tiers_upper_bound && clause.get_location() == ClauseLocation::Local {
+                    self.learnt_tier.push(cref);
+                    clause.set_location(ClauseLocation::Tiers);
+                }
+            }
+
+            if clause.get_location() == ClauseLocation::Tiers {
+                clause.set_touched(solver.num_conflicts as u32);
+            } else if clause.get_location() == ClauseLocation::Local {
+                self.bump_clause_activity_cref(cref);
+            }
+        }
     }
 
     // This is only valid to run before solver is created and before watches are added.
@@ -186,21 +216,19 @@ impl Formula {
 
     #[inline]
     pub(crate) fn reduce_tier_2(&mut self, watches: &mut Watches, trail: &Trail, s: &mut Solver) {
-        //self.learnt_tier.sort_unstable_by(|a, b| self.clauses[*a].less_than(&self.clauses[*b]));
-
         let mut i = 0;
         while i < self.learnt_tier.len() {
             let cref = self.learnt_tier[i];
             let clause = &mut self[cref];
 
-            // Don't really get this. Is learnt_tier lazy?
-            //if c.location() == ClauseLocation::Tier {
-
-            if clause.get_touched() as usize + 30_000 < s.num_conflicts {
+            if clause.get_location() != ClauseLocation::Tiers {
+                self.learnt_tier.swap_remove(i);
+            } else if clause.get_touched() as usize + 30_000 < s.num_conflicts {
                 //&& !trail.locked(clause[0]) {
                 // Move the clause from tier to local
 
                 clause.reset_activity();
+                clause.set_location(ClauseLocation::Local);
                 self.bump_cref_activity(cref);
 
                 self.learnt_tier.swap_remove(i);
@@ -217,8 +245,8 @@ impl Formula {
 
     #[inline]
     pub(crate) fn reduce_local(&mut self, watches: &mut Watches, trail: &Trail, s: &mut Solver) {
-        // TODO: Update less_than to check activity
-        self.learnt_local.sort_unstable_by(|a, b| self.clauses[*a].less_than(&self.clauses[*b]));
+        // Sorts with smallest last.
+        self.learnt_local.sort_unstable_by(|a, b| self.clauses[*b].less_than(&self.clauses[*a]));
 
         let mut limit = self.learnt_local.len() / 2;
 
@@ -227,10 +255,9 @@ impl Formula {
             let cref = self.learnt_local[i];
             let clause = &mut self[cref];
 
-            // Don't really get this. Is learnt_local lazy?
-            //if c.location() == ClauseLocation::Local {
-
-            if clause.can_be_deleted {
+            if clause.get_location() != ClauseLocation::Local {
+                self.learnt_local.swap_remove(i);
+            } else if clause.can_be_deleted {
                 //&& !trail.locked(clause[0]) {
                 self.unwatch_and_mark_as_deleted(cref, watches, trail);
                 self.learnt_local.swap_remove(i);
@@ -338,8 +365,17 @@ impl Formula {
         false
     }
 
-    // TODO
-    pub(crate) fn update_clause(&mut self, cref: Cref) {}
+    #[inline(always)]
+    pub(crate) fn bump_clause_activity_cref(&mut self, cref: Cref) {
+        let clause = &mut self.clauses[cref];
+        if clause.bump_activity(self.clause_activity_inc as f32) > 1e20 {
+            // Rescale
+            for e in &self.learnt_core {
+                self.clauses[*e].activity *= 1e-20;
+            }
+            self.clause_activity_inc *= 1e-20;
+        }
+    }
 
     pub(crate) fn bump_clause_activity(&mut self, clause: &mut Clause) {
         if clause.bump_activity(self.clause_activity_inc as f32) > 1e20 {

@@ -17,7 +17,7 @@ pub(crate) enum Conflict {
 
 #[inline]
 pub(crate) fn analyze_conflict(
-    formula: &Formula, trail: &Trail, cref: usize, decisions: &mut impl Decisions, solver: &mut Solver,
+    formula: &mut Formula, trail: &Trail, cref: usize, decisions: &mut impl Decisions, solver: &mut Solver,
 ) -> Conflict {
     let decisionlevel = trail.decision_level();
     if decisionlevel == 0 {
@@ -31,8 +31,14 @@ pub(crate) fn analyze_conflict(
     let mut confl = cref;
     let mut i = trail.trail.len();
     loop {
+        // If it is a learned clause
+        if confl >= solver.initial_len {
+            formula.update_clause(cref, trail, solver);
+        }
+
         let clause = &formula[confl];
         let mut k = if confl == cref { 0 } else { 1 };
+
         while k < clause.len() {
             let lit = clause[k];
             if !seen[lit.index()] {
