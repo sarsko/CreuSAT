@@ -91,6 +91,7 @@ pub(crate) struct Solver {
     pub(crate) num_phase_changes: usize,
     pub(crate) a_decision_was_made: bool,
     pub(crate) adapt_strategies: bool,
+    pub(crate) lbd_num: usize,
     //pub seen: Vec<bool>,
 }
 /*
@@ -121,6 +122,7 @@ impl Solver {
             num_phase_changes: 1,
             a_decision_was_made: false,
             adapt_strategies: true,
+            lbd_num: 1,
         }
     }
 

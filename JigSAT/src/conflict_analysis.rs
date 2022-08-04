@@ -93,7 +93,7 @@ pub(crate) fn analyze_conflict(
     }
     // decisions.bump_vec_of_vars(f, to_bump); // VMTF. NO-OP for VSIDS
 
-    // recursive_minimization(&mut out_learnt, trail, formula, solver, seen);
+    //recursive_minimization(&mut out_learnt, trail, formula, solver, seen);
 
     //println!("c out learned len: {}", out_learnt.len());
     if out_learnt.len() == 1 {
