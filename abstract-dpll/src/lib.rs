@@ -20,13 +20,18 @@ struct Model(Mapping<Int, bool>);
 
 impl Model {
     #[predicate]
+    fn satisfy_lit(self, l: Literal) -> bool {
+        self.0.get(l.0) == l.1
+    }
+
+    #[predicate]
     #[variant(cl.len())]
     fn interp_clause(self, cl: FSet<Literal>) -> bool {
         if cl == FSet::EMPTY {
             false
         } else {
             let l = cl.peek();
-            self.0.get(l.0) == l.1 || self.interp_clause(cl.remove(l))
+            self.satisfy_lit(l) || self.interp_clause(cl.remove(l))
         }
     }
 
@@ -59,9 +64,19 @@ impl Formula {
     fn contains(self, l : Literal) -> bool {
         pearlite! { exists<c : _> self.0.contains(c) && c.0.contains(l) }
     }
+
+    #[predicate]
+    fn contains_clause(self, c: Clause) -> bool {
+        pearlite! { self.0.contains(c) }
+    }
 }
 
 impl Clause {
+    #[predicate]
+    fn contains(self, l : Literal) -> bool {
+        self.0.contains(l)
+    }
+
     #[predicate]
     fn entails(self, c: Self) -> bool {
         pearlite! {
@@ -121,6 +136,21 @@ impl Trail {
             Trail::Empty => false,
         }
     }
+
+    #[predicate]
+    fn models(self, m : self::Model) -> bool {
+        match self {
+            Trail::Assign(a, tl) => m.satisfy_lit(a.literal()) && tl.models(m),
+            Trail::Empty => true
+        }
+    }
+
+    #[predicate]
+    fn unsat(self, c : FSet<Literal>) -> bool {
+        pearlite! {
+            forall<m : self::Model> self.models(m) ==> !m.interp_clause(c)
+        }
+    }
 }
 
 // We characterize DPLL(T) as a two-state transition system, in the normal state
@@ -152,10 +182,21 @@ impl Conflict {
 // The transition rules of the DPLL(T) system
 impl Normal {
     #[logic]
-    fn unit_prop(self) -> Self { self }
+    #[requires(c.contains(l))]
+    #[requires(self.1.contains_clause(c))]
+    #[requires(self.0.unsat(c.0.remove(l)))]
+    #[requires(!self.0.contains(l))]
+    fn unit_prop(self, c: Clause, l : Literal) -> Self {
+        Normal(Trail::Assign(Assignment::Justified(c, l), Box::new(self.0)), self.1)
+    }
 
     #[logic]
-    fn decide(self) -> Self { self }
+    #[requires(self.1.contains(l) || self.0.contains(l.negate()))]
+    #[requires(!self.0.contains(l))]
+    fn decide(self, l: Literal) -> Self {
+        Normal(Trail::Assign(Assignment::Decision(l), Box::new(self.0)), self.1)
+
+     }
 
     #[predicate]
     fn fail(self) -> bool {
