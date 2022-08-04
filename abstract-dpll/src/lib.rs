@@ -21,7 +21,7 @@ struct Model(Mapping<Int, bool>);
 impl Model {
     #[predicate]
     #[variant(cl.len())]
-    fn interp_clause(self, cl: FSet<LiteraL>) -> bool {
+    fn interp_clause(self, cl: FSet<Literal>) -> bool {
         if cl == FSet::EMPTY {
             false
         } else {
@@ -37,7 +37,7 @@ impl Model {
             false
         } else {
             let c = f.peek();
-            self.interp_clause(c) && self.interp_formula(f.remove(c))
+            self.interp_clause(c.0) && self.interp_formula(f.remove(c))
         }
     }
 
@@ -51,8 +51,13 @@ impl Formula {
     #[predicate]
     fn entails(self, f: Self) -> bool {
         pearlite! {
-            forall<m : _> m.satisfies(self) ==> m.satisfies(f)
+            forall<m : self::Model> m.satisfies(self) ==> m.satisfies(f)
         }
+    }
+
+    #[predicate]
+    fn contains(self, l : Literal) -> bool {
+        pearlite! { exists<c : _> self.0.contains(c) && c.0.contains(l) }
     }
 }
 
@@ -60,32 +65,61 @@ impl Clause {
     #[predicate]
     fn entails(self, c: Self) -> bool {
         pearlite! {
-            forall<m : _> m.satisfies(self) ==> m.satisfies(c)
+            forall<m : self::Model> m.interp_clause(self.0) ==> m.interp_clause(c.0)
         }
     }
 }
 
+impl Literal {
+    #[logic]
+    fn negate(self) -> Self {
+        Literal(self.0, !self.1)
+    }
+}
+
+impl Assignment {
+    #[logic]
+    fn literal(self) -> Literal {
+        match self {
+            Assignment::Decision(l) => l,
+            Assignment::Justified(_, l) => l,
+        }
+    }
+}
 impl Formula {
     #[predicate]
     fn invariant(self) -> bool {
         true
-    }
-
-    #[predicate]
-    fn contains(l : Literal) -> bool {
-        false
     }
 }
 
 impl Trail {
     #[predicate]
     fn invariant(self) -> bool {
-        true
+        self.trail_unique()
     }
 
     #[predicate]
-    fn contains(self, l : Literal) -> bool {
-        false
+    fn trail_unique(self) -> bool {
+        match self {
+            Trail::Assign(a, tl) => {
+                !tl.contains(a.literal()) && !tl.contains(a.literal().negate())
+            }
+            Trail::Empty => true
+        }
+    }
+
+    #[predicate]
+    fn contains(self, l: Literal) -> bool {
+        match self {
+            Trail::Assign(Assignment::Decision(l2), tl) => {
+                l2 == l || tl.contains(l)
+            },
+            Trail::Assign(Assignment::Justified(_, l2), tl) => {
+                l2 == l || tl.contains(l)
+            },
+            Trail::Empty => false,
+        }
     }
 }
 
@@ -117,20 +151,16 @@ impl Conflict {
 }
 // The transition rules of the DPLL(T) system
 impl Normal {
-
+    #[logic]
+    fn unit_prop(self) -> Self { self }
 
     #[logic]
-    fn unit_prop(self) -> Self {
-
-    }
-
-    #[logic]
-    fn decide(self) -> Self {
-
-    }
+    fn decide(self) -> Self { self }
 
     #[predicate]
-    fn fail(self) -> bool { false }
+    fn fail(self) -> bool {
+        false
+    }
 
     #[logic]
     fn conflict(self) -> Conflict {
@@ -140,12 +170,8 @@ impl Normal {
 
 impl Conflict {
     #[logic]
-    fn resolve(self) -> Self {
-
-    }
+    fn resolve(self) -> Self { self }
 
     #[logic]
-    fn learn_backjump(self) -> Normal {
-
-    }
+    fn learn_backjump(self) -> Normal { Normal(self.0, self.1) }
 }
