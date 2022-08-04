@@ -23,6 +23,7 @@ pub(crate) fn analyze_conflict(
     if decisionlevel == 0 {
         return Conflict::Ground;
     }
+    //println!("c analyzing {:?}", formula[cref][0]);
     // I tried moving seen to solver, but it wasn't really any faster (+ it is nice to not have to carry the invariant that seen is all false)
     let mut to_bump = Vec::new(); // VMTF and VSIDS
     let mut seen = vec![false; formula.num_vars];
@@ -94,6 +95,7 @@ pub(crate) fn analyze_conflict(
 
     // recursive_minimization(&mut out_learnt, trail, formula, solver, seen);
 
+    //println!("c out learned len: {}", out_learnt.len());
     if out_learnt.len() == 1 {
         Conflict::Unit(out_learnt[0])
     } else {

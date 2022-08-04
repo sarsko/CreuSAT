@@ -11,13 +11,16 @@ pub struct Formula {
     cur_restart: usize,
     num_clauses_before_reduce: usize,
     special_inc_reduce_db: usize,
-    num_deleted_clauses: usize,
     next_tier_reduce: usize,
     next_local_reduce: usize,
     pub(crate) core_upper_bound: u32,
     tiers_upper_bound: u32,
     clause_activity_inc: f64,
     clause_decay: f64,
+
+    // Stats
+    pub(crate) num_reduced: usize,
+    pub(crate) num_deleted_clauses: usize,
 }
 
 impl Index<usize> for Formula {
@@ -52,13 +55,16 @@ impl Formula {
             cur_restart: 1,
             num_clauses_before_reduce: 2000,
             special_inc_reduce_db: 1000,
-            num_deleted_clauses: 0,
             next_tier_reduce: 10_000,
             next_local_reduce: 15_000,
             core_upper_bound: 3,
             tiers_upper_bound: 6,
             clause_activity_inc: 1.0,
             clause_decay: 0.999,
+
+            // Stats
+            num_reduced: 0,
+            num_deleted_clauses: 0,
         }
     }
 
@@ -85,13 +91,13 @@ impl Formula {
         self.bump_clause_activity(&mut clause);
         if clause.lbd <= self.core_upper_bound {
             self.learnt_core.push(cref);
-            //c.location(ClauseLocation::core);
+            clause.set_location(ClauseLocation::Core);
         } else if clause.lbd <= self.tiers_upper_bound {
             self.learnt_tier.push(cref);
-            //c.location(ClauseLocation::tiers);
+            clause.set_location(ClauseLocation::Tiers);
             clause.set_touched(s.num_conflicts as u32);
         } else {
-            //c.location(ClauseLocation::local);
+            clause.set_location(ClauseLocation::Local);
             self.learnt_local.push(cref);
         }
 
@@ -157,7 +163,7 @@ impl Formula {
     #[inline(always)]
     pub(crate) fn mark_clause_as_deleted(&mut self, cref: usize) {
         self.clauses[cref].deleted = true;
-        self.num_deleted_clauses += 1;
+        //self.num_deleted_clauses += 1;
         //self.clauses.remove(cref);
     }
 
@@ -204,6 +210,8 @@ impl Formula {
 
     #[inline]
     pub(crate) fn reduceDB(&mut self, watches: &mut Watches, trail: &Trail, s: &mut Solver) {
+        self.num_reduced += 1;
+
         if s.num_conflicts >= self.next_tier_reduce {
             self.next_tier_reduce += 10_000;
             self.reduce_tier_2(watches, trail, s);
@@ -246,6 +254,14 @@ impl Formula {
     }
 
     #[inline]
+    #[allow(unused)]
+    fn is_locked(&self, cref: Cref, trail: &Trail) -> bool {
+        assert!(self[cref].len() > 2);
+        let first_lit = self[cref][0];
+        first_lit.lit_sat(&trail.assignments) && trail.lit_to_reason[first_lit.index()] == cref
+    }
+
+    #[inline]
     pub(crate) fn reduce_local(&mut self, watches: &mut Watches, trail: &Trail, s: &mut Solver) {
         // Sorts with smallest last.
         self.learnt_local.sort_unstable_by(|a, b| self.clauses[*b].less_than(&self.clauses[*a]));
@@ -255,6 +271,7 @@ impl Formula {
         let mut i = 0;
         while i < self.learnt_local.len() && limit > 0 {
             let cref = self.learnt_local[i];
+            //let is_locked = self.is_locked(cref, trail);
             let clause = &mut self[cref];
 
             if clause.get_location() != ClauseLocation::Local {
@@ -263,8 +280,14 @@ impl Formula {
                 //&& !trail.locked(clause[0]) {
                 self.unwatch_and_mark_as_deleted(cref, watches, trail);
                 self.learnt_local.swap_remove(i);
+
+                self.num_deleted_clauses += 1;
+
                 limit -= 1;
             } else {
+                if clause.can_be_deleted {
+                    limit -= 1;
+                }
                 clause.can_be_deleted = true;
                 i += 1;
             }

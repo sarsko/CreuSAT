@@ -165,4 +165,8 @@ impl Restart {
             RestartMode::Luby => true,
         }
     }
+
+    pub(crate) fn get_number_of_restarts(&self) -> usize {
+        self.glucose.num_restarts + self.luby.num_restarts
+    }
 }

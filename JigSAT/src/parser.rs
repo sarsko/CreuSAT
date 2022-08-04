@@ -108,6 +108,9 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
 // TODO, fix it so that 0 and 1 len clauses are supported
 /// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
 pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_literals: usize) -> bool {
+    use std::time::Instant;
+    let now = Instant::now();
+
     let mut formula = Formula::new(num_literals);
     for clause in clauses {
         let mut currclause: Vec<Lit2> = vec![];
@@ -128,6 +131,8 @@ pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_li
             formula.clauses.push(clause2);
         }
     }
+
+    println!("c parse time: {:?}", now.elapsed());
     match solver(formula) {
         SatResult::Sat(_) => true,
         SatResult::Unsat => false,

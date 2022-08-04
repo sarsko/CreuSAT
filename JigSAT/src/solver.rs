@@ -279,11 +279,11 @@ impl Solver {
 
     #[inline]
     fn solve(
-        mut self, mut formula: Formula, mut decisions: impl Decisions, mut trail: Trail, mut watches: Watches,
+        &mut self, formula: &mut Formula, mut decisions: impl Decisions, mut trail: Trail, mut watches: Watches,
         mut target_phase: TargetPhase,
     ) -> SatResult {
         loop {
-            match self.outer_loop(&mut formula, &mut decisions, &mut trail, &mut watches, &mut target_phase) {
+            match self.outer_loop(formula, &mut decisions, &mut trail, &mut watches, &mut target_phase) {
                 SatResult::Unknown => {} // continue
                 SatResult::Sat(_) => {
                     return SatResult::Sat(trail.assignments.0);
@@ -305,8 +305,10 @@ impl Solver {
 }
 
 pub fn solver(mut formula: Formula) -> SatResult {
+    use std::time::Instant;
     let mut trail = Trail::new(&formula, Assignments::new(&formula));
 
+    let now = Instant::now();
     match trail.learn_units(&mut formula) {
         Some(_) => {
             println!("c UNSAT due to learn_units");
@@ -330,7 +332,39 @@ pub fn solver(mut formula: Formula) -> SatResult {
     */
 
     let target_phase = TargetPhase::new(formula.num_vars);
-    let solver = Solver::new(&formula);
+    let elapsed = now.elapsed();
 
-    solver.solve(formula, decisions, trail, watches, target_phase)
+    println!("c setup time:        : {:?}", elapsed);
+    let now = Instant::now();
+
+    let mut solver = Solver::new(&formula);
+
+    let res = solver.solve(&mut formula, decisions, trail, watches, target_phase);
+
+    let elapsed = now.elapsed();
+
+    println!("c restarts            : {}", solver.restart.get_number_of_restarts());
+    println!("c nb ReduceDB         : {}", formula.num_reduced);
+    println!("c nb removed          : {}", formula.num_deleted_clauses);
+    println!("c nb learnts glue     : {}", solver.stats.num_glues);
+    println!("c nb learnts size 2   : {}", solver.stats.num_binary);
+    println!("c nb learnts size 1   : {}", solver.stats.num_unary);
+    println!(
+        "c conflicts           : {}        ({} / sec)",
+        solver.num_conflicts,
+        (solver.num_conflicts as u128) * 1000 / (elapsed.as_millis())
+    );
+    println!(
+        "c decisions           : {}        ({} / sec)",
+        solver.num_decisions,
+        (solver.num_decisions as u128) * 1000 / (elapsed.as_millis())
+    );
+    println!(
+        "c propagations        : {}        ({} / sec)",
+        solver.ticks,
+        (solver.ticks as u128) * 1000 / (elapsed.as_millis())
+    );
+
+    println!("c solve time          : {:?}", elapsed);
+    res
 }

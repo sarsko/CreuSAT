@@ -145,11 +145,13 @@ impl TargetPhase {
             }
             Phase::Random => {
                 println!("c Rephasing to Random");
+                /*
                 for e in self.target_polarity.iter_mut() {
                     let mut rng = rand::thread_rng();
                     let y: f64 = rng.gen();
                     *e = (y > 0.5) as u8;
                 }
+                */
             }
             Phase::Walk => {
                 println!("c Rephasing to Walk");
