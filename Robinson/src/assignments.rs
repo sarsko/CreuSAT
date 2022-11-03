@@ -1,4 +1,5 @@
 extern crate creusot_contracts;
+use creusot_contracts::model::*;
 #[allow(unused)]
 use creusot_contracts::std::*;
 #[allow(unused)]
@@ -14,12 +15,12 @@ pub type AssignedState = u8;
 pub struct Assignments(pub Vec<AssignedState>, pub usize);
 
 #[cfg(feature = "contracts")]
-impl Model for Assignments {
-    type ModelTy = Seq<AssignedState>;
+impl ShallowModel for Assignments {
+    type ShallowModelTy = Seq<AssignedState>;
 
     #[logic]
-    fn model(self) -> Self::ModelTy {
-        self.0.model()
+    fn shallow_model(self) -> Self::ShallowModelTy {
+        self.0.shallow_model()
     }
 }
 

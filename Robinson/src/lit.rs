@@ -2,9 +2,7 @@ extern crate creusot_contracts;
 #[allow(unused)]
 use creusot_contracts::std::*;
 #[allow(unused)]
-use creusot_contracts::*;
-
-use creusot_contracts::derive::Clone;
+use creusot_contracts::{std::clone::Clone, *};
 
 use crate::assignments::*;
 

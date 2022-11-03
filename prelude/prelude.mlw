@@ -1,6 +1,11 @@
 module Opaque
   type opaque_ptr
 end
+module Mapping
+  function from_fn (f : 'a -> 'b) : ('a -> 'b) = f
+  val from_fn (f : 'a -> 'b) : ('a -> 'b)
+    ensures { result = from_fn f }
+end
 module Bool
   let eqb (a : bool) (b : bool) : bool =
     ensures { result <-> a = b  }
@@ -9,6 +14,18 @@ module Bool
     | False, False -> True
     | _ -> False
     end
+
+  let neqb (a : bool) (b : bool) : bool =
+    ensures { result <-> a <> b  }
+    not (eqb a b)
+
+  let to_int (b : bool) : int =
+    if b then 1 else 0
+
+  use int.Int
+
+  let of_int (i : int) : bool =
+    i = 1
 end
 module Borrow
   type borrowed 'a = { current : 'a ; final : 'a; }
@@ -115,7 +132,6 @@ module UInt16
     lemma to_int_in_bounds,
     lemma extensionality
 end
-
 module UInt128
   use int.Int
 
@@ -132,4 +148,27 @@ module UInt128
     function to_int = uint128'int,
     lemma to_int_in_bounds,
     lemma extensionality
+end
+module Char
+  (* utf8 characters (not glyphs)
+      highly restricted until Why3 supports Unicode strings
+  *)
+  use int.Int
+
+  type char
+
+  function code char : int
+
+  axiom code: forall c. 0 <= code c < 0x10FFFF
+
+  val function chr (n: int) : char
+
+  axiom code_chr: forall n. 0 <= n < 0x10FFFF -> code (chr n) = n
+
+  axiom chr_code: forall c. chr (code c) = c
+end
+module Ghost
+  type ghost_ty 't = 't
+  let function new (x : 't) : ghost_ty 't = x
+  let function inner (x : ghost_ty 't) : 't = x
 end
