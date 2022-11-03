@@ -1,12 +1,7 @@
 extern crate creusot_contracts;
-#[allow(unused)]
-use creusot_contracts::std::*;
-#[allow(unused)]
 use creusot_contracts::*;
 
-use crate::assignments::*;
-use crate::decision::*;
-use crate::formula::*;
+use crate::{assignments::*, decision::*, formula::*};
 
 pub enum SatResult {
     Sat(Vec<AssignedState>),

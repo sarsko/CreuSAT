@@ -3,8 +3,7 @@
 #![cfg_attr(not(feature = "contracts"), feature(stmt_expr_attributes, proc_macro_hygiene))]
 extern crate creusot_contracts;
 
-use creusot_contracts::std::*;
-use creusot_contracts::{std::clone::Clone, *};
+use creusot_contracts::{std::clone::Clone, std::*, *};
 
 // This is a very naive, but verified SAT solver.
 // It is a port of a verified WhyML solver, and is therefore
