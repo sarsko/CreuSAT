@@ -1,8 +1,5 @@
 extern crate creusot_contracts;
-use creusot_contracts::derive::Clone;
-use creusot_contracts::logic::Ghost;
-use creusot_contracts::std::*;
-use creusot_contracts::*;
+use creusot_contracts::{ensures, ghost, invariant, maintains, proof_assert, requires, std::vec, Clone, Ghost};
 
 use crate::{assignments::*, formula::*, util::*};
 

@@ -1,9 +1,8 @@
 extern crate creusot_contracts;
 use ::std::ops;
-use creusot_contracts::std::*;
-use creusot_contracts::*;
+use creusot_contracts::{std::*, *};
 
-use creusot_contracts::derive::Clone;
+use creusot_contracts::Clone;
 
 use crate::assignments::*;
 
