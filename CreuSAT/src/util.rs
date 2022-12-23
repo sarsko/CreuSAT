@@ -1,12 +1,10 @@
 extern crate creusot_contracts;
-use creusot_contracts::logic::Ghost;
-use creusot_contracts::std::*;
-use creusot_contracts::*;
+use creusot_contracts::{std::*, Ghost, *};
 
 #[cfg(feature = "contracts")]
 use crate::logic::logic_util::*;
 
-// Selection sort with larger elements first. Based on the one in Creusot repo by me and Xavier
+// Selection sort with larger elements first. Based on the one in Creusot repo by Xavier and I
 #[cfg_attr(feature = "trust_util", trusted)]
 #[ensures(sorted_rev(@^v))]
 #[ensures((@^v).permutation_of(@v))]
@@ -55,7 +53,7 @@ pub fn update_slow(slow: &mut usize, lbd: usize) {
     }
 }
 
-// Regular selection sort. Based on the one in Creusot repo by me and Xavier
+// Regular selection sort. Based on the one in Creusot repo by Xavier and I
 #[cfg_attr(feature = "trust_util", trusted)]
 #[ensures(sorted_tuple_zeroth(@^v))]
 #[ensures((@^v).permutation_of(@v))]

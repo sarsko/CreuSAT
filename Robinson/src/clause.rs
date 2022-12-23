@@ -1,8 +1,6 @@
 extern crate creusot_contracts;
 #[allow(unused)]
-use creusot_contracts::std::*;
-#[allow(unused)]
-use creusot_contracts::*;
+use creusot_contracts::{model::*, std::*, *};
 
 use crate::{assignments::*, formula::*, lit::*};
 
@@ -14,12 +12,12 @@ pub struct Clause {
 }
 
 #[cfg(feature = "contracts")]
-impl Model for Clause {
-    type ModelTy = Seq<Lit>;
+impl ShallowModel for Clause {
+    type ShallowModelTy = Seq<Lit>;
 
     #[logic]
-    fn model(self) -> Self::ModelTy {
-        self.rest.model()
+    fn shallow_model(self) -> Self::ShallowModelTy {
+        self.rest.shallow_model()
     }
 }
 

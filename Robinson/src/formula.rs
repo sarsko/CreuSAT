@@ -1,8 +1,6 @@
 extern crate creusot_contracts;
 #[allow(unused)]
-use creusot_contracts::std::*;
-#[allow(unused)]
-use creusot_contracts::*;
+use creusot_contracts::{model::*, *};
 
 use crate::{clause::*, solver::*};
 
@@ -15,12 +13,12 @@ pub struct Formula {
 }
 
 #[cfg(feature = "contracts")]
-impl Model for Formula {
-    type ModelTy = (Seq<Clause>, Int);
+impl ShallowModel for Formula {
+    type ShallowModelTy = (Seq<Clause>, Int);
 
     #[logic]
-    fn model(self) -> Self::ModelTy {
-        (self.clauses.model(), self.num_vars.model())
+    fn shallow_model(self) -> Self::ShallowModelTy {
+        (self.clauses.shallow_model(), self.num_vars.shallow_model())
     }
 }
 

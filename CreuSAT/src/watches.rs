@@ -1,8 +1,5 @@
-// Wactches is Mac OK 11.04 22.10 and 13.04 12:25
 extern crate creusot_contracts;
-use creusot_contracts::logic::Ghost;
-use creusot_contracts::std::*;
-use creusot_contracts::*;
+use creusot_contracts::{std::*, Ghost, *};
 
 use crate::{formula::*, lit::*, trail::*};
 

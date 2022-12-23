@@ -1,6 +1,5 @@
-use std::fs::read_dir;
-use std::io::Write;
-use std::time::Instant;
+#![allow(non_snake_case)]
+use std::{fs::read_dir, io::Write, time::Instant};
 use termcolor::*;
 
 extern crate JigSAT;

@@ -1,9 +1,7 @@
 extern crate creusot_contracts;
 use ::std::panic;
 
-use creusot_contracts::logic::Ghost;
-use creusot_contracts::std::*;
-use creusot_contracts::*;
+use creusot_contracts::{std::*, Ghost, *};
 
 use crate::{
     assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, trail::*, unit_prop::*, util::*,

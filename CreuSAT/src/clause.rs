@@ -1,12 +1,8 @@
 extern crate creusot_contracts;
-use creusot_contracts::logic::Ghost;
-use creusot_contracts::std::*;
-use creusot_contracts::*;
+use creusot_contracts::{std::*, Clone, Ghost, *};
 
 use crate::{assignments::*, formula::*, lit::*, solver::*, trail::*};
 use ::std::ops::{Index, IndexMut};
-
-use creusot_contracts::derive::Clone;
 
 #[cfg(feature = "contracts")]
 use crate::logic::{logic_clause::*, logic_formula::*};

@@ -1,4 +1,5 @@
 #![feature(type_ascription)]
+#![allow(non_snake_case)]
 #![cfg_attr(not(feature = "contracts"), feature(stmt_expr_attributes, proc_macro_hygiene))]
 #![allow(unused)]
 extern crate creusot_contracts;

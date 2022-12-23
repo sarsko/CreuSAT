@@ -1,7 +1,4 @@
 extern crate creusot_contracts;
-#[allow(unused)]
-use creusot_contracts::std::*;
-#[allow(unused)]
 use creusot_contracts::*;
 
 #[predicate]
