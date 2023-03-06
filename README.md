@@ -93,4 +93,30 @@ Overview of the repository: \
 [/Robinson](/Robinson/) - A fully verified DPLL-based solver. \
 [/mlcfgs](/mlcfgs/) - Output directory for generated mlcfg + Why3 session files. \
 [/prelude](/prelude/) - Copy of [prelude](https://github.com/xldenis/creusot/tree/master/prelude) from the Creusot directory. Included here to make `cargo make` happy. \
-[/tests](/tests/) - Directory for tests. 
+[/tests](/tests/) - Directory for tests.
+
+## Citing CreuSAT
+To cite, you may use the following:
+
+BibLaTeX:
+```BibTeX
+@thesis{skotam_creusat_2022,
+	title = {{CreuSAT}, Using {Rust} and {Creusot} to create the world’s fastest deductively verified {SAT} solver},
+	url = {https://www.duo.uio.no/handle/10852/96757},
+	institution = {University of Oslo},
+	type = {Master's Thesis},
+	author = {Skotåm, Sarek Høverstad},
+	date = {2022},
+}
+```
+BibTeX:
+```BibTeX
+@mastersthesis{skotam_creusat_2022,
+	title = {{CreuSAT}, Using {Rust} and {Creusot} to create the world’s fastest deductively verified {SAT} solver},
+	url = {https://www.duo.uio.no/handle/10852/96757},
+	school = {University of Oslo},
+	author = {Skotåm, Sarek Høverstad},
+	year = {2022},
+}
+```
+
