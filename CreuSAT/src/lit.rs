@@ -1,6 +1,6 @@
 extern crate creusot_contracts;
 use ::std::ops;
-use creusot_contracts::{std::*, *, model::*};
+use creusot_contracts::{model::*, std::*, *};
 
 use creusot_contracts::Clone;
 

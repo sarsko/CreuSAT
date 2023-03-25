@@ -31,7 +31,6 @@ impl creusot_contracts::Default for Node {
     }
 }
 
-
 pub struct Decisions {
     pub linked_list: Vec<Node>,
     timestamp: usize,
