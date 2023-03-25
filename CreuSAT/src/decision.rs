@@ -1,5 +1,5 @@
 extern crate creusot_contracts;
-use creusot_contracts::{ensures, ghost, invariant, maintains, proof_assert, requires, std::vec, Clone, Ghost};
+use creusot_contracts::{ensures, ghost, invariant, maintains, proof_assert, requires, std::vec, Clone, Ghost, Int, *};
 
 use crate::{assignments::*, formula::*, util::*};
 
@@ -15,7 +15,7 @@ pub struct Node {
 
 //const INVALID: usize = usize::MAX;
 
-impl Default for Node {
+impl ::std::default::Default for Node {
     #[ensures(@result.next == @usize::MAX)]
     #[ensures(@result.prev == @usize::MAX)]
     #[ensures(@result.ts   == 0)]
@@ -23,6 +23,14 @@ impl Default for Node {
         Node { next: usize::MAX, prev: usize::MAX, ts: 0 }
     }
 }
+
+impl creusot_contracts::Default for Node {
+    #[predicate]
+    fn is_default(self) -> bool {
+        pearlite! { @self.next == @usize::MAX && @self.prev == @usize::MAX && @self.ts == 0 }
+    }
+}
+
 
 pub struct Decisions {
     pub linked_list: Vec<Node>,
@@ -42,7 +50,7 @@ impl Decisions {
     #[ensures(result.invariant(@f.num_vars))]
     pub fn make_linked_list(f: &Formula, lit_order: Vec<usize>) -> Decisions {
         let INVALID: usize = usize::MAX;
-        let mut linked_list: Vec<Node> = vec::from_elem(Default::default(), f.num_vars);
+        let mut linked_list: Vec<Node> = vec::from_elem(Node::default(), f.num_vars);
         let mut i: usize = 0;
         let mut head: usize = 0;
         #[invariant(len_ok, (@linked_list).len() == @f.num_vars)]

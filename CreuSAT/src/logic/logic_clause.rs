@@ -8,12 +8,12 @@ use crate::{assignments::*, clause::*, formula::*, lit::*};
 use crate::logic::{logic_assignments::complete_inner, logic_formula::*, logic_lit::idx_in_logic};
 
 #[cfg(creusot)]
-impl Model for Clause {
-    type ModelTy = Seq<Lit>;
+impl ShallowModel for Clause {
+    type ShallowModelTy = Seq<Lit>;
 
     #[logic]
-    fn model(self) -> Self::ModelTy {
-        self.lits.model() //.push(self.first)//.push(self.second)
+    fn shallow_model(self) -> Self::ShallowModelTy {
+        self.lits.shallow_model() //.push(self.first)//.push(self.second)
     }
 }
 

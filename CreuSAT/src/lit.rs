@@ -1,6 +1,6 @@
 extern crate creusot_contracts;
 use ::std::ops;
-use creusot_contracts::{std::*, *};
+use creusot_contracts::{std::*, *, model::*};
 
 use creusot_contracts::Clone;
 
@@ -16,11 +16,21 @@ pub struct Lit {
 }
 
 #[cfg(creusot)]
-impl Model for Lit {
-    type ModelTy = Lit;
+impl ShallowModel for Lit {
+    type ShallowModelTy = Lit;
 
     #[logic]
-    fn model(self) -> Self {
+    fn shallow_model(self) -> Self {
+        self
+    }
+}
+
+#[cfg(creusot)]
+impl DeepModel for Lit {
+    type DeepModelTy = Lit;
+
+    #[logic]
+    fn deep_model(self) -> Self {
         self
     }
 }

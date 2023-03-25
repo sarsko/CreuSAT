@@ -1,6 +1,5 @@
 extern crate creusot_contracts;
-use creusot_contracts::std::*;
-use creusot_contracts::*;
+use creusot_contracts::{std::*, model::*, *};
 
 use crate::{
     assignments::*,
@@ -12,12 +11,12 @@ use crate::{
 use crate::logic::{logic::*, logic_formula::*};
 
 #[cfg(creusot)]
-impl Model for Assignments {
-    type ModelTy = Seq<AssignedState>;
+impl ShallowModel for Assignments {
+    type ShallowModelTy = Seq<AssignedState>;
 
     #[logic]
-    fn model(self) -> Self::ModelTy {
-        self.0.model()
+    fn shallow_model(self) -> Self::ShallowModelTy {
+        self.0.shallow_model()
     }
 }
 
