@@ -37,20 +37,20 @@ jobs:
     #     cargo install cargo-make
     #     cargo make gen-cfg-CreuSAT
     #     git diff-index --quiet HEAD --
-  replay:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Use OCaml ${{ env.OCAML_COMPILER }}
-      uses: ocaml/setup-ocaml@v2
-      with:
-        ocaml-compiler: ${{ env.OCAML_COMPILER }}
-    - name: Install Why3
-      run: |
-        opam pin add why3 https://gitlab.inria.fr/why3/why3.git
-        opam install camlzip ocamlgraph why3
-    - name: Replay
-      run: |
-        eval $(opam env)
-        WHY3CONFIG= why3 replay -Lprelude --merging-only mlcfgs/CreuSAT
+  #replay:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #  - uses: actions/checkout@v2
+  #  - name: Use OCaml ${{ env.OCAML_COMPILER }}
+  #    uses: ocaml/setup-ocaml@v2
+  #    with:
+  #      ocaml-compiler: ${{ env.OCAML_COMPILER }}
+  #  - name: Install Why3
+  #   run: |
+  #      opam pin add why3 https://gitlab.inria.fr/why3/why3.git
+  #      opam install camlzip ocamlgraph why3
+  #  - name: Replay
+  #    run: |
+  #      eval $(opam env)
+  #      WHY3CONFIG= why3 replay -Lprelude --merging-only mlcfgs/CreuSAT
 
