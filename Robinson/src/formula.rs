@@ -4,7 +4,7 @@ use creusot_contracts::{model::*, *};
 
 use crate::{clause::*, solver::*};
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 use crate::assignments::*;
 
 pub struct Formula {
@@ -12,7 +12,7 @@ pub struct Formula {
     pub num_vars: usize,
 }
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 impl ShallowModel for Formula {
     type ShallowModelTy = (Seq<Clause>, Int);
 

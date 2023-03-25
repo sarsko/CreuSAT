@@ -4,14 +4,14 @@ use creusot_contracts::{model::*, std::*, *};
 
 use crate::{assignments::*, formula::*, lit::*};
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 use crate::logic::*;
 
 pub struct Clause {
     pub rest: Vec<Lit>,
 }
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 impl ShallowModel for Clause {
     type ShallowModelTy = Seq<Lit>;
 

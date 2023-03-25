@@ -4,14 +4,14 @@ use creusot_contracts::{model::*, std::*, *};
 
 use crate::{clause::*, decision::*, formula::*};
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 use crate::logic::*;
 
 pub type AssignedState = u8;
 
 pub struct Assignments(pub Vec<AssignedState>, pub usize);
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 impl ShallowModel for Assignments {
     type ShallowModelTy = Seq<AssignedState>;
 

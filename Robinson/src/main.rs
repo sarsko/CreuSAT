@@ -1,10 +1,10 @@
 //#[global_allocator]
 //static GLOBAL: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 fn main() {}
 
-#[cfg(not(feature = "contracts"))]
+#[cfg(not(creusot))]
 fn main() {
     use clap::{crate_authors, App, AppSettings, Arg};
     use Robinson::parser::{parse_cnf, preproc_and_solve};

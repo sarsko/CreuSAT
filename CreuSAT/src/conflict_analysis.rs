@@ -1,5 +1,5 @@
 extern crate creusot_contracts;
-use creusot_contracts::{std::*, Ghost, *};
+use creusot_contracts::{std::*, Ghost, *, vec};
 
 use crate::{assignments::*, clause::*, decision::*, formula::*, lit::*, trail::*};
 

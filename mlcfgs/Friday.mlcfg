@@ -18,7 +18,7 @@ module Core_Ptr_Unique_Unique_Type
     
 end
 module Alloc_RawVec_RawVec_Type
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   use Core_Ptr_Unique_Unique_Type as Core_Ptr_Unique_Unique_Type
   type t_rawvec 't 'a =
@@ -26,7 +26,7 @@ module Alloc_RawVec_RawVec_Type
     
 end
 module Alloc_Vec_Vec_Type
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   use Alloc_RawVec_RawVec_Type as Alloc_RawVec_RawVec_Type
   type t_vec 't 'a =
@@ -50,40 +50,31 @@ module Friday_Assignments_Type
       | C_Assignments a -> a
       end
 end
-module Alloc_Vec_Impl14_Clone_Interface
+module Alloc_Vec_Impl13_Clone_Interface
   type t
   type a
   use prelude.Borrow
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  val clone' [@cfg:stackify] (self : Alloc_Vec_Vec_Type.t_vec t a) : Alloc_Vec_Vec_Type.t_vec t a
-    ensures { result = self }
-    
-end
-module Alloc_Vec_Impl14_Clone
-  type t
-  type a
-  use prelude.Borrow
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  val clone' [@cfg:stackify] (self : Alloc_Vec_Vec_Type.t_vec t a) : Alloc_Vec_Vec_Type.t_vec t a
+  val clone' (self : Alloc_Vec_Vec_Type.t_vec t a) : Alloc_Vec_Vec_Type.t_vec t a
     ensures { result = self }
     
 end
 module Friday_Impl8_Clone_Interface
   use prelude.Borrow
   use Friday_Assignments_Type as Friday_Assignments_Type
-  val clone' [@cfg:stackify] [#"../Friday/src/lib.rs" 13 9 13 14] (self : Friday_Assignments_Type.t_assignments) : Friday_Assignments_Type.t_assignments
+  val clone' [#"../Friday/src/lib.rs" 13 9 13 14] (self : Friday_Assignments_Type.t_assignments) : Friday_Assignments_Type.t_assignments
     ensures { [#"../Friday/src/lib.rs" 13 9 13 14] result = self }
     
 end
 module Friday_Impl8_Clone
   use prelude.Borrow
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Alloc_Vec_Impl14_Clone_Interface as Clone0 with
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  clone Alloc_Vec_Impl13_Clone_Interface as Clone0 with
     type t = bool,
     type a = Alloc_Alloc_Global_Type.t_global
   use Friday_Assignments_Type as Friday_Assignments_Type
-  let rec cfg clone' [@cfg:stackify] [#"../Friday/src/lib.rs" 13 9 13 14] (self : Friday_Assignments_Type.t_assignments) : Friday_Assignments_Type.t_assignments
+  let rec cfg clone' [#"../Friday/src/lib.rs" 13 9 13 14] [@cfg:stackify] [@cfg:subregion_analysis] (self : Friday_Assignments_Type.t_assignments) : Friday_Assignments_Type.t_assignments
     ensures { [#"../Friday/src/lib.rs" 13 9 13 14] result = self }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
@@ -110,7 +101,7 @@ module Friday_Impl8_Clone
   
 end
 module Friday_Pasn_Type
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   use Friday_Assignments_Type as Friday_Assignments_Type
   type t_pasn  =
@@ -127,36 +118,28 @@ module Friday_Pasn_Type
 end
 module Core_Clone_Impls_Impl5_Clone_Interface
   use prelude.Borrow
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
-  val clone' [@cfg:stackify] (self : usize) : usize
-    ensures { result = self }
-    
-end
-module Core_Clone_Impls_Impl5_Clone
-  use prelude.Borrow
-  use mach.int.Int
-  use prelude.UIntSize
-  val clone' [@cfg:stackify] (self : usize) : usize
+  val clone' (self : usize) : usize
     ensures { result = self }
     
 end
 module Friday_Impl9_Clone_Interface
   use prelude.Borrow
   use Friday_Pasn_Type as Friday_Pasn_Type
-  val clone' [@cfg:stackify] [#"../Friday/src/lib.rs" 21 9 21 14] (self : Friday_Pasn_Type.t_pasn) : Friday_Pasn_Type.t_pasn
+  val clone' [#"../Friday/src/lib.rs" 21 9 21 14] (self : Friday_Pasn_Type.t_pasn) : Friday_Pasn_Type.t_pasn
     ensures { [#"../Friday/src/lib.rs" 21 9 21 14] result = self }
     
 end
 module Friday_Impl9_Clone
   use prelude.Borrow
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   clone Core_Clone_Impls_Impl5_Clone_Interface as Clone1
   use Friday_Assignments_Type as Friday_Assignments_Type
   clone Friday_Impl8_Clone_Interface as Clone0
   use Friday_Pasn_Type as Friday_Pasn_Type
-  let rec cfg clone' [@cfg:stackify] [#"../Friday/src/lib.rs" 21 9 21 14] (self : Friday_Pasn_Type.t_pasn) : Friday_Pasn_Type.t_pasn
+  let rec cfg clone' [#"../Friday/src/lib.rs" 21 9 21 14] [@cfg:stackify] [@cfg:subregion_analysis] (self : Friday_Pasn_Type.t_pasn) : Friday_Pasn_Type.t_pasn
     ensures { [#"../Friday/src/lib.rs" 21 9 21 14] result = self }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
@@ -190,7 +173,7 @@ module Friday_Impl9_Clone
   
 end
 module Friday_Lit_Type
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   type t_lit  =
     | C_Lit usize bool
@@ -219,7 +202,7 @@ module Friday_Clause_Type
       end
 end
 module Friday_Formula_Type
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Friday_Clause_Type as Friday_Clause_Type
@@ -239,12 +222,12 @@ module Friday_Formula_Type
       end
 end
 module Core_Num_Impl12_Max_Stub
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   val constant mAX'  : usize
 end
 module Core_Num_Impl12_Max
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   let constant mAX'  : usize = [@vc:do_not_keep_trace] [@vc:sp]
     (18446744073709551615 : usize)
@@ -253,8 +236,8 @@ module CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub
   type t
   type a
   use seq.Seq
-  use mach.int.UInt64
-  use mach.int.Int
+  use prelude.UIntSize
+  use prelude.Int
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl12_Max_Stub as Max0
   function shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
@@ -263,60 +246,59 @@ module CreusotContracts_Std1_Vec_Impl0_ShallowModel_Interface
   type t
   type a
   use seq.Seq
-  use mach.int.UInt64
-  use mach.int.Int
+  use prelude.UIntSize
+  use prelude.Int
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl12_Max_Stub as Max0
   function shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
-  axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . Seq.length (shallow_model self) <= UInt64.to_int Max0.mAX'
+  axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
 end
 module CreusotContracts_Std1_Vec_Impl0_ShallowModel
   type t
   type a
   use seq.Seq
-  use mach.int.UInt64
-  use mach.int.Int
+  use prelude.UIntSize
+  use prelude.Int
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl12_Max_Stub as Max0
   function shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
   val shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
     ensures { result = shallow_model self }
     
-  axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . Seq.length (shallow_model self) <= UInt64.to_int Max0.mAX'
+  axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
 end
 module Friday_Impl2_VarInRange_Stub
-  use mach.int.Int
+  use prelude.Int
   use Friday_Lit_Type as Friday_Lit_Type
   predicate var_in_range [#"../Friday/src/lib.rs" 61 4 61 41] (self : Friday_Lit_Type.t_lit) (n : int)
 end
 module Friday_Impl2_VarInRange_Interface
-  use mach.int.Int
+  use prelude.Int
   use Friday_Lit_Type as Friday_Lit_Type
   predicate var_in_range [#"../Friday/src/lib.rs" 61 4 61 41] (self : Friday_Lit_Type.t_lit) (n : int)
 end
 module Friday_Impl2_VarInRange
-  use mach.int.Int
+  use prelude.Int
+  use prelude.UIntSize
   use Friday_Lit_Type as Friday_Lit_Type
-  use mach.int.UInt64
   predicate var_in_range [#"../Friday/src/lib.rs" 61 4 61 41] (self : Friday_Lit_Type.t_lit) (n : int) =
-    [#"../Friday/src/lib.rs" 63 12 63 25] UInt64.to_int (Friday_Lit_Type.lit_var self) < n
+    [#"../Friday/src/lib.rs" 63 12 63 25] UIntSize.to_int (Friday_Lit_Type.lit_var self) < n
   val var_in_range [#"../Friday/src/lib.rs" 61 4 61 41] (self : Friday_Lit_Type.t_lit) (n : int) : bool
     ensures { result = var_in_range self n }
     
 end
 module Friday_Impl1_VarsInRange_Stub
-  use mach.int.Int
+  use prelude.Int
   use Friday_Clause_Type as Friday_Clause_Type
   predicate vars_in_range [#"../Friday/src/lib.rs" 51 4 51 42] (self : Friday_Clause_Type.t_clause) (n : int)
 end
 module Friday_Impl1_VarsInRange_Interface
-  use mach.int.Int
+  use prelude.Int
   use Friday_Clause_Type as Friday_Clause_Type
   predicate vars_in_range [#"../Friday/src/lib.rs" 51 4 51 42] (self : Friday_Clause_Type.t_clause) (n : int)
 end
 module Friday_Impl1_VarsInRange
-  use mach.int.Int
-  use Friday_Clause_Type as Friday_Clause_Type
+  use prelude.Int
   use seq.Seq
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Friday_Lit_Type as Friday_Lit_Type
@@ -328,6 +310,7 @@ module Friday_Impl1_VarsInRange
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
+  use Friday_Clause_Type as Friday_Clause_Type
   predicate vars_in_range [#"../Friday/src/lib.rs" 51 4 51 42] (self : Friday_Clause_Type.t_clause) (n : int) =
     [#"../Friday/src/lib.rs" 52 8 55 9] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (Friday_Clause_Type.clause_0 self)) -> VarInRange0.var_in_range (Seq.get (ShallowModel0.shallow_model (Friday_Clause_Type.clause_0 self)) i) n
   val vars_in_range [#"../Friday/src/lib.rs" 51 4 51 42] (self : Friday_Clause_Type.t_clause) (n : int) : bool
@@ -343,10 +326,9 @@ module Friday_Impl0_Invariant_Interface
   predicate invariant' [#"../Friday/src/lib.rs" 33 4 33 30] (self : Friday_Formula_Type.t_formula)
 end
 module Friday_Impl0_Invariant
-  use Friday_Formula_Type as Friday_Formula_Type
-  use mach.int.Int
+  use prelude.Int
   use seq.Seq
-  use mach.int.UInt64
+  use prelude.UIntSize
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Friday_Clause_Type as Friday_Clause_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
@@ -357,8 +339,9 @@ module Friday_Impl0_Invariant
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
+  use Friday_Formula_Type as Friday_Formula_Type
   predicate invariant' [#"../Friday/src/lib.rs" 33 4 33 30] (self : Friday_Formula_Type.t_formula) =
-    [#"../Friday/src/lib.rs" 34 8 37 9] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (Friday_Formula_Type.formula_clauses self)) -> VarsInRange0.vars_in_range (Seq.get (ShallowModel0.shallow_model (Friday_Formula_Type.formula_clauses self)) i) (UInt64.to_int (Friday_Formula_Type.formula_num_vars self))
+    [#"../Friday/src/lib.rs" 34 8 37 9] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (Friday_Formula_Type.formula_clauses self)) -> VarsInRange0.vars_in_range (Seq.get (ShallowModel0.shallow_model (Friday_Formula_Type.formula_clauses self)) i) (UIntSize.to_int (Friday_Formula_Type.formula_num_vars self))
   val invariant' [#"../Friday/src/lib.rs" 33 4 33 30] (self : Friday_Formula_Type.t_formula) : bool
     ensures { result = invariant' self }
     
@@ -376,9 +359,7 @@ module Friday_Impl2_Sat_Interface
     
 end
 module Friday_Impl2_Sat
-  use Friday_Assignments_Type as Friday_Assignments_Type
-  use Friday_Lit_Type as Friday_Lit_Type
-  use mach.int.UInt64
+  use prelude.UIntSize
   use seq.Seq
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
@@ -388,10 +369,12 @@ module Friday_Impl2_Sat
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
+  use Friday_Assignments_Type as Friday_Assignments_Type
+  use Friday_Lit_Type as Friday_Lit_Type
   predicate sat [#"../Friday/src/lib.rs" 68 4 68 40] (self : Friday_Lit_Type.t_lit) (a : Friday_Assignments_Type.t_assignments)
     
    =
-    [#"../Friday/src/lib.rs" 70 12 70 43] Seq.get (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 a)) (UInt64.to_int (Friday_Lit_Type.lit_var self)) = Friday_Lit_Type.lit_value self
+    [#"../Friday/src/lib.rs" 70 12 70 43] Seq.get (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 a)) (UIntSize.to_int (Friday_Lit_Type.lit_var self)) = Friday_Lit_Type.lit_value self
   val sat [#"../Friday/src/lib.rs" 68 4 68 40] (self : Friday_Lit_Type.t_lit) (a : Friday_Assignments_Type.t_assignments) : bool
     ensures { result = sat self a }
     
@@ -409,20 +392,20 @@ module Friday_Impl5_Sat_Interface
     
 end
 module Friday_Impl5_Sat
-  use Friday_Assignments_Type as Friday_Assignments_Type
-  use Friday_Clause_Type as Friday_Clause_Type
-  use mach.int.Int
+  use prelude.Int
   use seq.Seq
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Friday_Lit_Type as Friday_Lit_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl12_Max_Stub as Max0
+  use Friday_Assignments_Type as Friday_Assignments_Type
   clone Friday_Impl2_Sat_Stub as Sat0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = Friday_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
+  use Friday_Clause_Type as Friday_Clause_Type
   predicate sat [#"../Friday/src/lib.rs" 98 4 98 40] (self : Friday_Clause_Type.t_clause) (a : Friday_Assignments_Type.t_assignments)
     
    =
@@ -444,20 +427,20 @@ module Friday_Impl0_Sat_Interface
     
 end
 module Friday_Impl0_Sat
-  use Friday_Assignments_Type as Friday_Assignments_Type
-  use Friday_Formula_Type as Friday_Formula_Type
-  use mach.int.Int
+  use prelude.Int
   use seq.Seq
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Friday_Clause_Type as Friday_Clause_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl12_Max_Stub as Max0
+  use Friday_Assignments_Type as Friday_Assignments_Type
   clone Friday_Impl5_Sat_Stub as Sat0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = Friday_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
+  use Friday_Formula_Type as Friday_Formula_Type
   predicate sat [#"../Friday/src/lib.rs" 41 4 41 40] (self : Friday_Formula_Type.t_formula) (a : Friday_Assignments_Type.t_assignments)
     
    =
@@ -479,11 +462,9 @@ module Friday_Impl3_Compatible_Interface
     
 end
 module Friday_Impl3_Compatible
-  use Friday_Pasn_Type as Friday_Pasn_Type
-  use Friday_Assignments_Type as Friday_Assignments_Type
   use seq.Seq
-  use mach.int.Int
-  use mach.int.UInt64
+  use prelude.Int
+  use prelude.UIntSize
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl12_Max_Stub as Max0
@@ -492,28 +473,29 @@ module Friday_Impl3_Compatible
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
+  use Friday_Pasn_Type as Friday_Pasn_Type
+  use Friday_Assignments_Type as Friday_Assignments_Type
   predicate compatible [#"../Friday/src/lib.rs" 77 4 77 41] (self : Friday_Assignments_Type.t_assignments) (pa : Friday_Pasn_Type.t_pasn)
     
    =
-    [#"../Friday/src/lib.rs" 78 8 82 9] Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign pa))) = Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 self)) /\ (forall i : int . 0 <= i /\ i < UInt64.to_int (Friday_Pasn_Type.pasn_ix pa) -> Seq.get (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign pa))) i = Seq.get (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 self)) i)
+    [#"../Friday/src/lib.rs" 78 8 82 9] Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign pa))) = Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 self)) /\ (forall i : int . 0 <= i /\ i < UIntSize.to_int (Friday_Pasn_Type.pasn_ix pa) -> Seq.get (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign pa))) i = Seq.get (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 self)) i)
   val compatible [#"../Friday/src/lib.rs" 77 4 77 41] (self : Friday_Assignments_Type.t_assignments) (pa : Friday_Pasn_Type.t_pasn) : bool
     ensures { result = compatible self pa }
     
 end
 module Friday_Impl4_Invariant_Stub
-  use mach.int.Int
+  use prelude.Int
   use Friday_Pasn_Type as Friday_Pasn_Type
   predicate invariant' [#"../Friday/src/lib.rs" 88 4 88 38] (self : Friday_Pasn_Type.t_pasn) (n : int)
 end
 module Friday_Impl4_Invariant_Interface
-  use mach.int.Int
+  use prelude.Int
   use Friday_Pasn_Type as Friday_Pasn_Type
   predicate invariant' [#"../Friday/src/lib.rs" 88 4 88 38] (self : Friday_Pasn_Type.t_pasn) (n : int)
 end
 module Friday_Impl4_Invariant
-  use mach.int.Int
-  use Friday_Pasn_Type as Friday_Pasn_Type
-  use mach.int.UInt64
+  use prelude.Int
+  use prelude.UIntSize
   use seq.Seq
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
@@ -524,8 +506,9 @@ module Friday_Impl4_Invariant
     val Max0.mAX' = Max0.mAX',
     axiom .
   use Friday_Assignments_Type as Friday_Assignments_Type
+  use Friday_Pasn_Type as Friday_Pasn_Type
   predicate invariant' [#"../Friday/src/lib.rs" 88 4 88 38] (self : Friday_Pasn_Type.t_pasn) (n : int) =
-    [#"../Friday/src/lib.rs" 90 12 91 42] UInt64.to_int (Friday_Pasn_Type.pasn_ix self) <= Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign self))) /\ Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign self))) = n
+    [#"../Friday/src/lib.rs" 90 12 91 42] UIntSize.to_int (Friday_Pasn_Type.pasn_ix self) <= Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign self))) /\ Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign self))) = n
   val invariant' [#"../Friday/src/lib.rs" 88 4 88 38] (self : Friday_Pasn_Type.t_pasn) (n : int) : bool
     ensures { result = invariant' self n }
     
@@ -583,49 +566,20 @@ module CreusotContracts_Model_Impl1_ShallowModel
     ensures { result = shallow_model self }
     
 end
-module CreusotContracts_Std1_Vec_Impl0_ShallowModelTy_Type
-  type t
-  type a
-  use seq.Seq
-  type shallowModelTy  =
-    Seq.seq t
-end
 module Alloc_Vec_Impl1_Len_Interface
   type t
   type a
-  use mach.int.UInt64
+  use prelude.UIntSize
   use seq.Seq
   use prelude.Borrow
-  use mach.int.Int
-  use prelude.UIntSize
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModelTy_Type as ShallowModelTy0 with
-    type t = t,
-    type a = a
+  use prelude.Int
+  use seq.Seq
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
     type t = Alloc_Vec_Vec_Type.t_vec t a,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy
-  val len [@cfg:stackify] (self : Alloc_Vec_Vec_Type.t_vec t a) : usize
-    ensures { UInt64.to_int result = Seq.length (ShallowModel0.shallow_model self) }
-    
-end
-module Alloc_Vec_Impl1_Len
-  type t
-  type a
-  use mach.int.UInt64
-  use seq.Seq
-  use prelude.Borrow
-  use mach.int.Int
-  use prelude.UIntSize
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModelTy_Type as ShallowModelTy0 with
-    type t = t,
-    type a = a
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone CreusotContracts_Model_Impl1_ShallowModel_Interface as ShallowModel0 with
-    type t = Alloc_Vec_Vec_Type.t_vec t a,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy
-  val len [@cfg:stackify] (self : Alloc_Vec_Vec_Type.t_vec t a) : usize
-    ensures { UInt64.to_int result = Seq.length (ShallowModel0.shallow_model self) }
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
+  val len (self : Alloc_Vec_Vec_Type.t_vec t a) : usize
+    ensures { UIntSize.to_int result = Seq.length (ShallowModel0.shallow_model self) }
     
 end
 module CreusotContracts_Std1_Slice_SliceIndex_InBounds_Stub
@@ -690,24 +644,15 @@ module CreusotContracts_Std1_Slice_SliceIndex_HasValue
     ensures { result = has_value self seq out }
     
 end
-module CreusotContracts_Std1_Slice_Impl0_ShallowModelTy_Type
-  type t
-  use seq.Seq
-  type shallowModelTy  =
-    Seq.seq t
-end
-module Alloc_Vec_Impl16_Index_Interface
+module Alloc_Vec_Impl15_Index_Interface
   type t
   type i
   type a
   use prelude.Borrow
   use prelude.Slice
+  use prelude.Seq
   use seq.Seq
-  clone CreusotContracts_Std1_Slice_Impl0_ShallowModelTy_Type as ShallowModelTy1 with
-    type t = t
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModelTy_Type as ShallowModelTy0 with
-    type t = t,
-    type a = a
+  use seq.Seq
   clone Core_Slice_Index_SliceIndex_Output_Type as Output0 with
     type self = i,
     type t = seq t
@@ -715,109 +660,69 @@ module Alloc_Vec_Impl16_Index_Interface
   clone CreusotContracts_Std1_Slice_SliceIndex_HasValue_Stub as HasValue0 with
     type self = i,
     type t = seq t,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy1.shallowModelTy,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t,
     type Output0.output = Output0.output
   clone CreusotContracts_Std1_Slice_SliceIndex_InBounds_Stub as InBounds0 with
     type self = i,
     type t = seq t,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy1.shallowModelTy
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
   clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
     type t = Alloc_Vec_Vec_Type.t_vec t a,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy
-  val index [@cfg:stackify] (self : Alloc_Vec_Vec_Type.t_vec t a) (index : i) : Output0.output
-    requires {InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
-    ensures { HasValue0.has_value index (ShallowModel0.shallow_model self) result }
-    
-end
-module Alloc_Vec_Impl16_Index
-  type t
-  type i
-  type a
-  use prelude.Borrow
-  use prelude.Slice
-  use seq.Seq
-  clone CreusotContracts_Std1_Slice_Impl0_ShallowModelTy_Type as ShallowModelTy1 with
-    type t = t
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModelTy_Type as ShallowModelTy0 with
-    type t = t,
-    type a = a
-  clone Core_Slice_Index_SliceIndex_Output_Type as Output0 with
-    type self = i,
-    type t = seq t
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone CreusotContracts_Std1_Slice_SliceIndex_HasValue_Interface as HasValue0 with
-    type self = i,
-    type t = seq t,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy1.shallowModelTy,
-    type Output0.output = Output0.output
-  clone CreusotContracts_Std1_Slice_SliceIndex_InBounds_Interface as InBounds0 with
-    type self = i,
-    type t = seq t,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy1.shallowModelTy
-  clone CreusotContracts_Model_Impl1_ShallowModel_Interface as ShallowModel0 with
-    type t = Alloc_Vec_Vec_Type.t_vec t a,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy
-  val index [@cfg:stackify] (self : Alloc_Vec_Vec_Type.t_vec t a) (index : i) : Output0.output
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
+  val index (self : Alloc_Vec_Vec_Type.t_vec t a) (index : i) : Output0.output
     requires {InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
     ensures { HasValue0.has_value index (ShallowModel0.shallow_model self) result }
     
 end
 module CreusotContracts_Std1_Slice_Impl5_InBounds_Stub
   type t
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   use seq.Seq
   predicate in_bounds [@inline:trivial] (self : usize) (seq : Seq.seq t)
 end
 module CreusotContracts_Std1_Slice_Impl5_InBounds_Interface
   type t
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   use seq.Seq
   predicate in_bounds [@inline:trivial] (self : usize) (seq : Seq.seq t)
 end
 module CreusotContracts_Std1_Slice_Impl5_InBounds
   type t
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   use seq.Seq
-  use mach.int.UInt64
   predicate in_bounds [@inline:trivial] (self : usize) (seq : Seq.seq t) =
-    UInt64.to_int self < Seq.length seq
+    UIntSize.to_int self < Seq.length seq
   val in_bounds [@inline:trivial] (self : usize) (seq : Seq.seq t) : bool
     ensures { result = in_bounds self seq }
     
 end
 module CreusotContracts_Std1_Slice_Impl5_HasValue_Stub
   type t
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   use seq.Seq
   predicate has_value [@inline:trivial] (self : usize) (seq : Seq.seq t) (out : t)
 end
 module CreusotContracts_Std1_Slice_Impl5_HasValue_Interface
   type t
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   use seq.Seq
   predicate has_value [@inline:trivial] (self : usize) (seq : Seq.seq t) (out : t)
 end
 module CreusotContracts_Std1_Slice_Impl5_HasValue
   type t
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   use seq.Seq
-  use mach.int.UInt64
   predicate has_value [@inline:trivial] (self : usize) (seq : Seq.seq t) (out : t) =
-    Seq.get seq (UInt64.to_int self) = out
+    Seq.get seq (UIntSize.to_int self) = out
   val has_value [@inline:trivial] (self : usize) (seq : Seq.seq t) (out : t) : bool
     ensures { result = has_value self seq out }
     
-end
-module Core_Slice_Index_Impl2_Output_Type
-  type t
-  type output  =
-    t
 end
 module Friday_Impl6_Eval_Interface
   use seq.Seq
@@ -834,32 +739,25 @@ module Friday_Impl6_Eval_Interface
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
-  val eval [@cfg:stackify] [#"../Friday/src/lib.rs" 109 4 109 43] (self : Friday_Clause_Type.t_clause) (a : Friday_Assignments_Type.t_assignments) : bool
+  val eval [#"../Friday/src/lib.rs" 109 4 109 43] (self : Friday_Clause_Type.t_clause) (a : Friday_Assignments_Type.t_assignments) : bool
     requires {[#"../Friday/src/lib.rs" 107 15 107 47] VarsInRange0.vars_in_range self (Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 a)))}
     ensures { [#"../Friday/src/lib.rs" 108 14 108 36] result = Sat0.sat self a }
     
 end
 module Friday_Impl6_Eval
   use prelude.Borrow
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   use seq.Seq
-  use mach.int.UInt64
   use prelude.Bool
-  clone CreusotContracts_Std1_Slice_Impl0_ShallowModelTy_Type as ShallowModelTy3 with
-    type t = bool
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModelTy_Type as ShallowModelTy2 with
-    type t = bool,
-    type a = Alloc_Alloc_Global_Type.t_global
-  clone Core_Slice_Index_Impl2_Output_Type as Output1 with
-    type t = bool
+  use seq.Seq
   clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue1 with
     type t = bool
   clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds1 with
     type t = bool
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl12_Max as Max0
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
     type t = bool,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -867,20 +765,13 @@ module Friday_Impl6_Eval
     axiom .
   clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel3 with
     type t = Alloc_Vec_Vec_Type.t_vec bool (Alloc_Alloc_Global_Type.t_global),
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy2.shallowModelTy,
+    type ShallowModelTy0.shallowModelTy = Seq.seq bool,
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model
   use Friday_Lit_Type as Friday_Lit_Type
-  clone CreusotContracts_Std1_Slice_Impl0_ShallowModelTy_Type as ShallowModelTy1 with
-    type t = Friday_Lit_Type.t_lit
-  clone Core_Slice_Index_Impl2_Output_Type as Output0 with
-    type t = Friday_Lit_Type.t_lit
   clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
     type t = Friday_Lit_Type.t_lit
   clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
     type t = Friday_Lit_Type.t_lit
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModelTy_Type as ShallowModelTy0 with
-    type t = Friday_Lit_Type.t_lit,
-    type a = Alloc_Alloc_Global_Type.t_global
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel1 with
     type t = Friday_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -888,25 +779,25 @@ module Friday_Impl6_Eval
     axiom .
   clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel2 with
     type t = Alloc_Vec_Vec_Type.t_vec (Friday_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global),
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy,
+    type ShallowModelTy0.shallowModelTy = Seq.seq (Friday_Lit_Type.t_lit),
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model
   clone Friday_Impl2_VarInRange as VarInRange0
-  clone Alloc_Vec_Impl16_Index_Interface as Index1 with
+  clone Alloc_Vec_Impl15_Index_Interface as Index1 with
     type t = bool,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
     function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
     predicate InBounds0.in_bounds = InBounds1.in_bounds,
     predicate HasValue0.has_value = HasValue1.has_value,
-    type Output0.output = Output1.output
-  clone Alloc_Vec_Impl16_Index_Interface as Index0 with
+    type Output0.output = bool
+  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
     type t = Friday_Lit_Type.t_lit,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
     function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = Output0.output
+    type Output0.output = Friday_Lit_Type.t_lit
   use Friday_Assignments_Type as Friday_Assignments_Type
   clone Friday_Impl2_Sat as Sat1 with
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
@@ -924,7 +815,7 @@ module Friday_Impl6_Eval
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
     predicate VarInRange0.var_in_range = VarInRange0.var_in_range,
     val Max0.mAX' = Max0.mAX'
-  let rec cfg eval [@cfg:stackify] [#"../Friday/src/lib.rs" 109 4 109 43] (self : Friday_Clause_Type.t_clause) (a : Friday_Assignments_Type.t_assignments) : bool
+  let rec cfg eval [#"../Friday/src/lib.rs" 109 4 109 43] [@cfg:stackify] [@cfg:subregion_analysis] (self : Friday_Clause_Type.t_clause) (a : Friday_Assignments_Type.t_assignments) : bool
     requires {[#"../Friday/src/lib.rs" 107 15 107 47] VarsInRange0.vars_in_range self (Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 a)))}
     ensures { [#"../Friday/src/lib.rs" 108 14 108 36] result = Sat0.sat self a }
     
@@ -972,8 +863,8 @@ module Friday_Impl6_Eval
     goto BB2
   }
   BB2 {
-    invariant prev_not_sat { [#"../Friday/src/lib.rs" 112 8 113 71] forall j : int . 0 <= j /\ j < UInt64.to_int i_5 -> not Sat1.sat (Seq.get (ShallowModel1.shallow_model (Friday_Clause_Type.clause_0 self_1)) j) a_2 };
-    invariant loop_invariant { [#"../Friday/src/lib.rs" 114 36 114 53] UInt64.to_int i_5 <= UInt64.to_int clause_len_6 };
+    invariant prev_not_sat { [#"../Friday/src/lib.rs" 112 8 113 71] forall j : int . 0 <= j /\ j < UIntSize.to_int i_5 -> not Sat1.sat (Seq.get (ShallowModel1.shallow_model (Friday_Clause_Type.clause_0 self_1)) j) a_2 };
+    invariant loop_invariant { [#"../Friday/src/lib.rs" 114 36 114 53] UIntSize.to_int i_5 <= UIntSize.to_int clause_len_6 };
     _13 <- i_5;
     _14 <- clause_len_6;
     _12 <- ([#"../Friday/src/lib.rs" 115 14 115 28] _13 < _14);
@@ -1031,7 +922,7 @@ module Friday_Impl6_Eval
 end
 module Friday_Impl7_Eval_Interface
   use seq.Seq
-  use mach.int.UInt64
+  use prelude.UIntSize
   use prelude.Borrow
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
@@ -1045,35 +936,28 @@ module Friday_Impl7_Eval_Interface
     val Max0.mAX' = Max0.mAX',
     axiom .
   clone Friday_Impl0_Invariant_Stub as Invariant0
-  val eval [@cfg:stackify] [#"../Friday/src/lib.rs" 129 4 129 43] (self : Friday_Formula_Type.t_formula) (a : Friday_Assignments_Type.t_assignments) : bool
+  val eval [#"../Friday/src/lib.rs" 129 4 129 43] (self : Friday_Formula_Type.t_formula) (a : Friday_Assignments_Type.t_assignments) : bool
     requires {[#"../Friday/src/lib.rs" 126 15 126 31] Invariant0.invariant' self}
-    requires {[#"../Friday/src/lib.rs" 127 15 127 45] Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 a)) = UInt64.to_int (Friday_Formula_Type.formula_num_vars self)}
+    requires {[#"../Friday/src/lib.rs" 127 15 127 45] Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 a)) = UIntSize.to_int (Friday_Formula_Type.formula_num_vars self)}
     ensures { [#"../Friday/src/lib.rs" 128 14 128 36] result = Sat0.sat self a }
     
 end
 module Friday_Impl7_Eval
   use prelude.Borrow
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   use seq.Seq
-  use mach.int.UInt64
   use Friday_Lit_Type as Friday_Lit_Type
   clone Friday_Impl2_VarInRange as VarInRange0
   use Friday_Clause_Type as Friday_Clause_Type
-  clone CreusotContracts_Std1_Slice_Impl0_ShallowModelTy_Type as ShallowModelTy1 with
-    type t = Friday_Clause_Type.t_clause
-  clone Core_Slice_Index_Impl2_Output_Type as Output0 with
-    type t = Friday_Clause_Type.t_clause
   clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
     type t = Friday_Clause_Type.t_clause
   clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
     type t = Friday_Clause_Type.t_clause
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModelTy_Type as ShallowModelTy0 with
-    type t = Friday_Clause_Type.t_clause,
-    type a = Alloc_Alloc_Global_Type.t_global
+  use seq.Seq
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl12_Max as Max0
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel1 with
     type t = Friday_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -1081,7 +965,7 @@ module Friday_Impl7_Eval
     axiom .
   clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel3 with
     type t = Alloc_Vec_Vec_Type.t_vec (Friday_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global),
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy,
+    type ShallowModelTy0.shallowModelTy = Seq.seq (Friday_Clause_Type.t_clause),
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
     type t = bool,
@@ -1110,14 +994,14 @@ module Friday_Impl7_Eval
     predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
     predicate Sat0.sat = Sat1.sat,
     val Max0.mAX' = Max0.mAX'
-  clone Alloc_Vec_Impl16_Index_Interface as Index0 with
+  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
     type t = Friday_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
     function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = Output0.output
+    type Output0.output = Friday_Clause_Type.t_clause
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with
     type t = Friday_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -1131,9 +1015,9 @@ module Friday_Impl7_Eval
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
     predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
     val Max0.mAX' = Max0.mAX'
-  let rec cfg eval [@cfg:stackify] [#"../Friday/src/lib.rs" 129 4 129 43] (self : Friday_Formula_Type.t_formula) (a : Friday_Assignments_Type.t_assignments) : bool
+  let rec cfg eval [#"../Friday/src/lib.rs" 129 4 129 43] [@cfg:stackify] [@cfg:subregion_analysis] (self : Friday_Formula_Type.t_formula) (a : Friday_Assignments_Type.t_assignments) : bool
     requires {[#"../Friday/src/lib.rs" 126 15 126 31] Invariant0.invariant' self}
-    requires {[#"../Friday/src/lib.rs" 127 15 127 45] Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 a)) = UInt64.to_int (Friday_Formula_Type.formula_num_vars self)}
+    requires {[#"../Friday/src/lib.rs" 127 15 127 45] Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 a)) = UIntSize.to_int (Friday_Formula_Type.formula_num_vars self)}
     ensures { [#"../Friday/src/lib.rs" 128 14 128 36] result = Sat0.sat self a }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
@@ -1169,7 +1053,7 @@ module Friday_Impl7_Eval
     goto BB1
   }
   BB1 {
-    invariant prev_sat { [#"../Friday/src/lib.rs" 131 8 132 76] forall j : int . 0 <= j /\ j < UInt64.to_int i_6 -> Sat1.sat (Seq.get (ShallowModel1.shallow_model (Friday_Formula_Type.formula_clauses self_1)) j) a_2 };
+    invariant prev_sat { [#"../Friday/src/lib.rs" 131 8 132 76] forall j : int . 0 <= j /\ j < UIntSize.to_int i_6 -> Sat1.sat (Seq.get (ShallowModel1.shallow_model (Friday_Formula_Type.formula_clauses self_1)) j) a_2 };
     _11 <- i_6;
     _13 <- Friday_Formula_Type.formula_clauses self_1;
     _12 <- ([#"../Friday/src/lib.rs" 133 18 133 36] Len0.len _13);
@@ -1222,12 +1106,12 @@ module Friday_Impl7_Eval
   
 end
 module Core_Usize_Max_Stub
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   val constant mAX'  : usize
 end
 module Core_Usize_Max
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   let constant mAX'  : usize = [@vc:do_not_keep_trace] [@vc:sp]
     (18446744073709551615 : usize)
@@ -1287,19 +1171,16 @@ module CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere
     ensures { result = resolve_elswhere self old' fin }
     
 end
-module Alloc_Vec_Impl17_IndexMut_Interface
+module Alloc_Vec_Impl16_IndexMut_Interface
   type t
   type i
   type a
   use prelude.Borrow
   use seq.Seq
   use prelude.Slice
+  use prelude.Seq
   clone Core_Num_Impl12_Max_Stub as Max0
-  clone CreusotContracts_Std1_Slice_Impl0_ShallowModelTy_Type as ShallowModelTy1 with
-    type t = t
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModelTy_Type as ShallowModelTy0 with
-    type t = t,
-    type a = a
+  use seq.Seq
   clone Core_Slice_Index_SliceIndex_Output_Type as Output0 with
     type self = i,
     type t = seq t
@@ -1307,7 +1188,7 @@ module Alloc_Vec_Impl17_IndexMut_Interface
   clone CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere_Stub as ResolveElswhere0 with
     type self = i,
     type t = seq t,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy1.shallowModelTy
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel1 with
     type t = t,
     type a = a,
@@ -1316,62 +1197,16 @@ module Alloc_Vec_Impl17_IndexMut_Interface
   clone CreusotContracts_Std1_Slice_SliceIndex_HasValue_Stub as HasValue0 with
     type self = i,
     type t = seq t,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy1.shallowModelTy,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t,
     type Output0.output = Output0.output
   clone CreusotContracts_Std1_Slice_SliceIndex_InBounds_Stub as InBounds0 with
     type self = i,
     type t = seq t,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy1.shallowModelTy
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
   clone CreusotContracts_Model_Impl3_ShallowModel_Stub as ShallowModel0 with
     type t = Alloc_Vec_Vec_Type.t_vec t a,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy
-  val index_mut [@cfg:stackify] (self : borrowed (Alloc_Vec_Vec_Type.t_vec t a)) (index : i) : borrowed Output0.output
-    requires {InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
-    ensures { HasValue0.has_value index (ShallowModel0.shallow_model self) ( * result) }
-    ensures { HasValue0.has_value index (ShallowModel1.shallow_model ( ^ self)) ( ^ result) }
-    ensures { ResolveElswhere0.resolve_elswhere index (ShallowModel0.shallow_model self) (ShallowModel1.shallow_model ( ^ self)) }
-    ensures { Seq.length (ShallowModel1.shallow_model ( ^ self)) = Seq.length (ShallowModel0.shallow_model self) }
-    
-end
-module Alloc_Vec_Impl17_IndexMut
-  type t
-  type i
-  type a
-  use prelude.Borrow
-  use seq.Seq
-  use prelude.Slice
-  clone Core_Num_Impl12_Max_Stub as Max0
-  clone CreusotContracts_Std1_Slice_Impl0_ShallowModelTy_Type as ShallowModelTy1 with
-    type t = t
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModelTy_Type as ShallowModelTy0 with
-    type t = t,
-    type a = a
-  clone Core_Slice_Index_SliceIndex_Output_Type as Output0 with
-    type self = i,
-    type t = seq t
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere_Interface as ResolveElswhere0 with
-    type self = i,
-    type t = seq t,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy1.shallowModelTy
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Interface as ShallowModel1 with
-    type t = t,
-    type a = a,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  clone CreusotContracts_Std1_Slice_SliceIndex_HasValue_Interface as HasValue0 with
-    type self = i,
-    type t = seq t,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy1.shallowModelTy,
-    type Output0.output = Output0.output
-  clone CreusotContracts_Std1_Slice_SliceIndex_InBounds_Interface as InBounds0 with
-    type self = i,
-    type t = seq t,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy1.shallowModelTy
-  clone CreusotContracts_Model_Impl3_ShallowModel_Interface as ShallowModel0 with
-    type t = Alloc_Vec_Vec_Type.t_vec t a,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy
-  val index_mut [@cfg:stackify] (self : borrowed (Alloc_Vec_Vec_Type.t_vec t a)) (index : i) : borrowed Output0.output
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
+  val index_mut (self : borrowed (Alloc_Vec_Vec_Type.t_vec t a)) (index : i) : borrowed Output0.output
     requires {InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
     ensures { HasValue0.has_value index (ShallowModel0.shallow_model self) ( * result) }
     ensures { HasValue0.has_value index (ShallowModel1.shallow_model ( ^ self)) ( ^ result) }
@@ -1400,34 +1235,33 @@ module CreusotContracts_Resolve_Impl1_Resolve
 end
 module CreusotContracts_Std1_Slice_Impl5_ResolveElswhere_Stub
   type t
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   use seq.Seq
   predicate resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t)
 end
 module CreusotContracts_Std1_Slice_Impl5_ResolveElswhere_Interface
   type t
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   use seq.Seq
   predicate resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t)
 end
 module CreusotContracts_Std1_Slice_Impl5_ResolveElswhere
   type t
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   use seq.Seq
-  use mach.int.UInt64
   predicate resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t) =
-    forall i : int . 0 <= i /\ i <> UInt64.to_int self /\ i < Seq.length old' -> Seq.get old' i = Seq.get fin i
+    forall i : int . 0 <= i /\ i <> UIntSize.to_int self /\ i < Seq.length old' -> Seq.get old' i = Seq.get fin i
   val resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t) : bool
     ensures { result = resolve_elswhere self old' fin }
     
 end
 module Friday_SetNext_Interface
-  use mach.int.UInt64
+  use prelude.UIntSize
   use seq.Seq
-  use mach.int.Int
+  use prelude.Int
   use prelude.Borrow
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
@@ -1441,28 +1275,20 @@ module Friday_SetNext_Interface
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max1.mAX',
     axiom .
-  val set_next [@cfg:stackify] [#"../Friday/src/lib.rs" 148 0 148 39] (pa : Friday_Pasn_Type.t_pasn) (b : bool) : Friday_Pasn_Type.t_pasn
-    requires {[#"../Friday/src/lib.rs" 143 11 143 40] UInt64.to_int (Friday_Pasn_Type.pasn_ix pa) < Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign pa)))}
-    requires {[#"../Friday/src/lib.rs" 144 11 144 46] Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign pa))) <= UInt64.to_int Max0.mAX'}
+  val set_next [#"../Friday/src/lib.rs" 148 0 148 39] (pa : Friday_Pasn_Type.t_pasn) (b : bool) : Friday_Pasn_Type.t_pasn
+    requires {[#"../Friday/src/lib.rs" 143 11 143 40] UIntSize.to_int (Friday_Pasn_Type.pasn_ix pa) < Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign pa)))}
+    requires {[#"../Friday/src/lib.rs" 144 11 144 46] Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign pa))) <= UIntSize.to_int Max0.mAX'}
     ensures { [#"../Friday/src/lib.rs" 145 0 145 41] Compatible0.compatible (Friday_Pasn_Type.pasn_assign result) pa }
-    ensures { [#"../Friday/src/lib.rs" 146 10 146 41] Seq.get (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign result))) (UInt64.to_int (Friday_Pasn_Type.pasn_ix pa)) = b }
-    ensures { [#"../Friday/src/lib.rs" 147 10 147 34] UInt64.to_int (Friday_Pasn_Type.pasn_ix result) = UInt64.to_int (Friday_Pasn_Type.pasn_ix pa) + 1 }
+    ensures { [#"../Friday/src/lib.rs" 146 10 146 41] Seq.get (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign result))) (UIntSize.to_int (Friday_Pasn_Type.pasn_ix pa)) = b }
+    ensures { [#"../Friday/src/lib.rs" 147 10 147 34] UIntSize.to_int (Friday_Pasn_Type.pasn_ix result) = UIntSize.to_int (Friday_Pasn_Type.pasn_ix pa) + 1 }
     
 end
 module Friday_SetNext
   use prelude.Borrow
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
-  use mach.int.UInt64
   use seq.Seq
-  clone CreusotContracts_Std1_Slice_Impl0_ShallowModelTy_Type as ShallowModelTy1 with
-    type t = bool
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModelTy_Type as ShallowModelTy0 with
-    type t = bool,
-    type a = Alloc_Alloc_Global_Type.t_global
-  clone Core_Slice_Index_Impl2_Output_Type as Output0 with
-    type t = bool
+  use seq.Seq
   clone CreusotContracts_Std1_Slice_Impl5_ResolveElswhere as ResolveElswhere0 with
     type t = bool
   clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
@@ -1471,6 +1297,7 @@ module Friday_SetNext
     type t = bool
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl12_Max as Max1
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
     type t = bool,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -1478,11 +1305,11 @@ module Friday_SetNext
     axiom .
   clone CreusotContracts_Model_Impl3_ShallowModel as ShallowModel1 with
     type t = Alloc_Vec_Vec_Type.t_vec bool (Alloc_Alloc_Global_Type.t_global),
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy,
+    type ShallowModelTy0.shallowModelTy = Seq.seq bool,
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
     type t = bool
-  clone Alloc_Vec_Impl17_IndexMut_Interface as IndexMut0 with
+  clone Alloc_Vec_Impl16_IndexMut_Interface as IndexMut0 with
     type t = bool,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -1491,7 +1318,7 @@ module Friday_SetNext
     predicate HasValue0.has_value = HasValue0.has_value,
     function ShallowModel1.shallow_model = ShallowModel0.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-    type Output0.output = Output0.output,
+    type Output0.output = bool,
     val Max0.mAX' = Max1.mAX'
   use Friday_Pasn_Type as Friday_Pasn_Type
   clone Friday_Impl9_Clone_Interface as Clone0
@@ -1500,12 +1327,12 @@ module Friday_SetNext
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
     val Max0.mAX' = Max1.mAX'
   clone Core_Usize_Max as Max0
-  let rec cfg set_next [@cfg:stackify] [#"../Friday/src/lib.rs" 148 0 148 39] (pa : Friday_Pasn_Type.t_pasn) (b : bool) : Friday_Pasn_Type.t_pasn
-    requires {[#"../Friday/src/lib.rs" 143 11 143 40] UInt64.to_int (Friday_Pasn_Type.pasn_ix pa) < Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign pa)))}
-    requires {[#"../Friday/src/lib.rs" 144 11 144 46] Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign pa))) <= UInt64.to_int Max0.mAX'}
+  let rec cfg set_next [#"../Friday/src/lib.rs" 148 0 148 39] [@cfg:stackify] [@cfg:subregion_analysis] (pa : Friday_Pasn_Type.t_pasn) (b : bool) : Friday_Pasn_Type.t_pasn
+    requires {[#"../Friday/src/lib.rs" 143 11 143 40] UIntSize.to_int (Friday_Pasn_Type.pasn_ix pa) < Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign pa)))}
+    requires {[#"../Friday/src/lib.rs" 144 11 144 46] Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign pa))) <= UIntSize.to_int Max0.mAX'}
     ensures { [#"../Friday/src/lib.rs" 145 0 145 41] Compatible0.compatible (Friday_Pasn_Type.pasn_assign result) pa }
-    ensures { [#"../Friday/src/lib.rs" 146 10 146 41] Seq.get (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign result))) (UInt64.to_int (Friday_Pasn_Type.pasn_ix pa)) = b }
-    ensures { [#"../Friday/src/lib.rs" 147 10 147 34] UInt64.to_int (Friday_Pasn_Type.pasn_ix result) = UInt64.to_int (Friday_Pasn_Type.pasn_ix pa) + 1 }
+    ensures { [#"../Friday/src/lib.rs" 146 10 146 41] Seq.get (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 (Friday_Pasn_Type.pasn_assign result))) (UIntSize.to_int (Friday_Pasn_Type.pasn_ix pa)) = b }
+    ensures { [#"../Friday/src/lib.rs" 147 10 147 34] UIntSize.to_int (Friday_Pasn_Type.pasn_ix result) = UIntSize.to_int (Friday_Pasn_Type.pasn_ix pa) + 1 }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : Friday_Pasn_Type.t_pasn;
@@ -1550,8 +1377,8 @@ module Friday_SetNext
   
 end
 module Friday_Solve_Interface
-  use mach.int.UInt64
-  use mach.int.Int
+  use prelude.UIntSize
+  use prelude.Int
   use prelude.Borrow
   use Friday_Pasn_Type as Friday_Pasn_Type
   use Friday_Assignments_Type as Friday_Assignments_Type
@@ -1560,20 +1387,20 @@ module Friday_Solve_Interface
   clone Friday_Impl3_Compatible_Stub as Compatible0
   clone Friday_Impl0_Invariant_Stub as Invariant1
   clone Friday_Impl4_Invariant_Stub as Invariant0
-  val solve [@cfg:stackify] [#"../Friday/src/lib.rs" 159 0 159 39] (f : Friday_Formula_Type.t_formula) (pa : Friday_Pasn_Type.t_pasn) : bool
-    requires {[#"../Friday/src/lib.rs" 156 11 156 36] Invariant0.invariant' pa (UInt64.to_int (Friday_Formula_Type.formula_num_vars f))}
+  val solve [#"../Friday/src/lib.rs" 159 0 159 39] (f : Friday_Formula_Type.t_formula) (pa : Friday_Pasn_Type.t_pasn) : bool
+    requires {[#"../Friday/src/lib.rs" 156 11 156 36] Invariant0.invariant' pa (UIntSize.to_int (Friday_Formula_Type.formula_num_vars f))}
     requires {[#"../Friday/src/lib.rs" 157 11 157 24] Invariant1.invariant' f}
     ensures { [#"../Friday/src/lib.rs" 158 10 158 76] (not result) = (forall a : Friday_Assignments_Type.t_assignments . Compatible0.compatible a pa -> not Sat0.sat f a) }
     
 end
 module Friday_Solve
   use prelude.Borrow
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
-  use mach.int.UInt64
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use seq.Seq
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl12_Max as Max0
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
     type t = bool,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -1591,12 +1418,10 @@ module Friday_Solve
     val Max0.mAX' = Max0.mAX',
     axiom .
   clone Core_Usize_Max as Max1
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModelTy_Type as ShallowModelTy0 with
-    type t = bool,
-    type a = Alloc_Alloc_Global_Type.t_global
+  use seq.Seq
   clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel2 with
     type t = Alloc_Vec_Vec_Type.t_vec bool (Alloc_Alloc_Global_Type.t_global),
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy,
+    type ShallowModelTy0.shallowModelTy = Seq.seq bool,
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model
   use Friday_Clause_Type as Friday_Clause_Type
   clone Friday_Impl5_Sat as Sat1 with
@@ -1642,11 +1467,11 @@ module Friday_Solve
   clone Friday_Impl4_Invariant as Invariant0 with
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
     val Max0.mAX' = Max0.mAX'
-  let rec cfg solve [@cfg:stackify] [#"../Friday/src/lib.rs" 159 0 159 39] (f : Friday_Formula_Type.t_formula) (pa : Friday_Pasn_Type.t_pasn) : bool
-    requires {[#"../Friday/src/lib.rs" 156 11 156 36] Invariant0.invariant' pa (UInt64.to_int (Friday_Formula_Type.formula_num_vars f))}
+  let rec cfg solve [#"../Friday/src/lib.rs" 159 0 159 39] [@cfg:stackify] [@cfg:subregion_analysis] (f : Friday_Formula_Type.t_formula) (pa : Friday_Pasn_Type.t_pasn) : bool
+    requires {[#"../Friday/src/lib.rs" 156 11 156 36] Invariant0.invariant' pa (UIntSize.to_int (Friday_Formula_Type.formula_num_vars f))}
     requires {[#"../Friday/src/lib.rs" 157 11 157 24] Invariant1.invariant' f}
     ensures { [#"../Friday/src/lib.rs" 158 10 158 76] (not result) = (forall a : Friday_Assignments_Type.t_assignments . Compatible0.compatible a pa -> not Sat0.sat f a) }
-    variant {[#"../Friday/src/lib.rs" 155 0 155 32] UInt64.to_int (Friday_Formula_Type.formula_num_vars f) - UInt64.to_int (Friday_Pasn_Type.pasn_ix pa)}
+    variant {[#"../Friday/src/lib.rs" 155 0 155 32] UIntSize.to_int (Friday_Formula_Type.formula_num_vars f) - UIntSize.to_int (Friday_Pasn_Type.pasn_ix pa)}
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : bool;
@@ -1754,9 +1579,8 @@ end
 module Alloc_Vec_FromElem_Interface
   type t
   use seq.Seq
-  use mach.int.UInt64
-  use mach.int.Int
   use prelude.UIntSize
+  use prelude.Int
   clone Core_Num_Impl12_Max_Stub as Max0
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
@@ -1765,33 +1589,14 @@ module Alloc_Vec_FromElem_Interface
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
-  val from_elem [@cfg:stackify] (elem : t) (n : usize) : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)
-    ensures { Seq.length (ShallowModel0.shallow_model result) = UInt64.to_int n }
-    ensures { forall i : int . 0 <= i /\ i < UInt64.to_int n -> Seq.get (ShallowModel0.shallow_model result) i = elem }
-    
-end
-module Alloc_Vec_FromElem
-  type t
-  use seq.Seq
-  use mach.int.UInt64
-  use mach.int.Int
-  use prelude.UIntSize
-  clone Core_Num_Impl12_Max_Stub as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Interface as ShallowModel0 with
-    type t = t,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  val from_elem [@cfg:stackify] (elem : t) (n : usize) : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)
-    ensures { Seq.length (ShallowModel0.shallow_model result) = UInt64.to_int n }
-    ensures { forall i : int . 0 <= i /\ i < UInt64.to_int n -> Seq.get (ShallowModel0.shallow_model result) i = elem }
+  val from_elem (elem : t) (n : usize) : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)
+    ensures { Seq.length (ShallowModel0.shallow_model result) = UIntSize.to_int n }
+    ensures { forall i : int . 0 <= i /\ i < UIntSize.to_int n -> Seq.get (ShallowModel0.shallow_model result) i = elem }
     
 end
 module Friday_Solver_Interface
   use seq.Seq
-  use mach.int.UInt64
+  use prelude.UIntSize
   use prelude.Borrow
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
@@ -1805,21 +1610,20 @@ module Friday_Solver_Interface
     val Max0.mAX' = Max0.mAX',
     axiom .
   clone Friday_Impl0_Invariant_Stub as Invariant0
-  val solver [@cfg:stackify] [#"../Friday/src/lib.rs" 170 0 170 34] (f : Friday_Formula_Type.t_formula) : bool
+  val solver [#"../Friday/src/lib.rs" 170 0 170 34] (f : Friday_Formula_Type.t_formula) : bool
     requires {[#"../Friday/src/lib.rs" 166 11 166 24] Invariant0.invariant' f}
-    ensures { [#"../Friday/src/lib.rs" 167 0 168 33] not result -> (forall a : Friday_Assignments_Type.t_assignments . Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 a)) = UInt64.to_int (Friday_Formula_Type.formula_num_vars f) -> not Sat0.sat f a) }
+    ensures { [#"../Friday/src/lib.rs" 167 0 168 33] not result -> (forall a : Friday_Assignments_Type.t_assignments . Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 a)) = UIntSize.to_int (Friday_Formula_Type.formula_num_vars f) -> not Sat0.sat f a) }
     ensures { [#"../Friday/src/lib.rs" 169 0 169 55] result -> (exists a : Friday_Assignments_Type.t_assignments . Sat0.sat f a) }
     
 end
 module Friday_Solver
   use prelude.Borrow
-  use mach.int.Int
+  use prelude.Int
   use prelude.UIntSize
   use seq.Seq
-  use mach.int.UInt64
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl12_Max as Max0
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
     type t = bool,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -1875,9 +1679,9 @@ module Friday_Solver
     type t = bool,
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
     val Max0.mAX' = Max0.mAX'
-  let rec cfg solver [@cfg:stackify] [#"../Friday/src/lib.rs" 170 0 170 34] (f : Friday_Formula_Type.t_formula) : bool
+  let rec cfg solver [#"../Friday/src/lib.rs" 170 0 170 34] [@cfg:stackify] [@cfg:subregion_analysis] (f : Friday_Formula_Type.t_formula) : bool
     requires {[#"../Friday/src/lib.rs" 166 11 166 24] Invariant0.invariant' f}
-    ensures { [#"../Friday/src/lib.rs" 167 0 168 33] not result -> (forall a : Friday_Assignments_Type.t_assignments . Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 a)) = UInt64.to_int (Friday_Formula_Type.formula_num_vars f) -> not Sat0.sat f a) }
+    ensures { [#"../Friday/src/lib.rs" 167 0 168 33] not result -> (forall a : Friday_Assignments_Type.t_assignments . Seq.length (ShallowModel0.shallow_model (Friday_Assignments_Type.assignments_0 a)) = UIntSize.to_int (Friday_Formula_Type.formula_num_vars f) -> not Sat0.sat f a) }
     ensures { [#"../Friday/src/lib.rs" 169 0 169 55] result -> (exists a : Friday_Assignments_Type.t_assignments . Sat0.sat f a) }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
@@ -1915,31 +1719,13 @@ module Friday_Solver
   }
   
 end
-module Core_Clone_Clone_Clone_Interface
-  type self
-  use prelude.Borrow
-  val clone' [@cfg:stackify] (self : self) : self
-    ensures { result = self }
-    
-end
-module Core_Clone_Clone_Clone
-  type self
-  use prelude.Borrow
-  val clone' [@cfg:stackify] (self : self) : self
-    ensures { result = self }
-    
-end
 module Friday_Impl8
+  use prelude.Borrow
   use Friday_Assignments_Type as Friday_Assignments_Type
-  clone Friday_Impl8_Clone_Interface as Clone0
-  clone Core_Clone_Clone_Clone_Interface as Clone1 with
-    type self = Friday_Assignments_Type.t_assignments,
-    val clone' = Clone0.clone'
+  goal clone'_refn : [#"../Friday/src/lib.rs" 13 9 13 14] forall self : Friday_Assignments_Type.t_assignments . forall result : Friday_Assignments_Type.t_assignments . result = self -> result = self
 end
 module Friday_Impl9
+  use prelude.Borrow
   use Friday_Pasn_Type as Friday_Pasn_Type
-  clone Friday_Impl9_Clone_Interface as Clone0
-  clone Core_Clone_Clone_Clone_Interface as Clone1 with
-    type self = Friday_Pasn_Type.t_pasn,
-    val clone' = Clone0.clone'
+  goal clone'_refn : [#"../Friday/src/lib.rs" 21 9 21 14] forall self : Friday_Pasn_Type.t_pasn . forall result : Friday_Pasn_Type.t_pasn . result = self -> result = self
 end

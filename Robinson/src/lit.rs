@@ -4,7 +4,7 @@ use creusot_contracts::{std::clone::Clone, std::*, *};
 
 use crate::assignments::*;
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 use crate::clause::*;
 
 #[derive(Clone, Copy)]
