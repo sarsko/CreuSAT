@@ -1,9 +1,9 @@
 use clap::{crate_authors, App, AppSettings, Arg};
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 fn main() {}
 
-#[cfg(not(feature = "contracts"))]
+#[cfg(not(creusot))]
 fn main() {
     use CreuSAT::parser::{parse_cnf, preproc_and_solve};
     let matches = App::new("\nCreuSAT")

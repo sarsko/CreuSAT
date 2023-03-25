@@ -1,5 +1,5 @@
 #![feature(type_ascription)]
-#![cfg_attr(not(feature = "contracts"), feature(stmt_expr_attributes, proc_macro_hygiene))]
+#![cfg_attr(not(creusot), feature(stmt_expr_attributes, proc_macro_hygiene))]
 #![allow(unused_imports)]
 #![allow(unused)]
 #![allow(dead_code)]

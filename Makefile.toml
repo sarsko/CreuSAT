@@ -13,7 +13,7 @@ disabled = true
 [tasks.creusot-Friday]
 workspace = false
 command = "cargo"
-args = ["creusot", "--", "-p", "Friday", "--features=contracts,${@}"]
+args = ["creusot", "--", "-p", "Friday", "--features=${@}"]
 
 [tasks.move-Friday]
 workspace = false
@@ -23,10 +23,7 @@ script = '''
 
 [tasks.gen-cfg-Friday]
 workspace = false
-dependencies = [
-    "creusot-Friday",
-    "move-Friday",
-]
+dependencies = ["creusot-Friday", "move-Friday"]
 
 [tasks.ide-Friday]
 workspace = false
@@ -36,15 +33,12 @@ script = '''
 
 [tasks.prove-Friday]
 workspace = false
-dependencies = [
-    "gen-cfg-Friday",
-    "ide-Friday",
-]
+dependencies = ["gen-cfg-Friday", "ide-Friday"]
 
 [tasks.creusot-Robinson]
 workspace = false
 command = "cargo"
-args = ["creusot", "--", "-p", "Robinson", "--features=contracts,${@}"]
+args = ["creusot", "--", "-p", "Robinson", "--features=${@}"]
 
 [tasks.move-Robinson]
 workspace = false
@@ -54,10 +48,7 @@ script = '''
 
 [tasks.gen-cfg-Robinson]
 workspace = false
-dependencies = [
-    "creusot-Robinson",
-    "move-Robinson",
-]
+dependencies = ["creusot-Robinson", "move-Robinson"]
 
 [tasks.ide-Robinson]
 workspace = false
@@ -67,15 +58,19 @@ script = '''
 
 [tasks.prove-Robinson]
 workspace = false
-dependencies = [
-    "gen-cfg-Robinson",
-    "ide-Robinson",
-]
+dependencies = ["gen-cfg-Robinson", "ide-Robinson"]
 
 [tasks.creusot-CreuSAT]
 workspace = false
 command = "cargo"
-args = ["creusot", "--span-mode=relative", "--", "-p", "CreuSAT", "--features=contracts,${@}"]
+args = [
+    "creusot",
+    "--span-mode=relative",
+    "--",
+    "-p",
+    "CreuSAT",
+    "--features=${@}",
+]
 
 [tasks.move-CreuSAT]
 workspace = false
@@ -85,10 +80,7 @@ script = '''
 
 [tasks.gen-cfg-CreuSAT]
 workspace = false
-dependencies = [
-    "creusot-CreuSAT",
-    "move-CreuSAT",
-]
+dependencies = ["creusot-CreuSAT", "move-CreuSAT"]
 
 [tasks.ide-CreuSAT]
 workspace = false
@@ -98,19 +90,12 @@ script = '''
 
 [tasks.prove-CreuSAT]
 workspace = false
-dependencies = [
-    "gen-cfg-CreuSAT",
-    "ide-CreuSAT",
-]
+dependencies = ["gen-cfg-CreuSAT", "ide-CreuSAT"]
 
 [tasks.p]
 workspace = false
-dependencies = [
-    "prove-CreuSAT",
-]
-args = [
-    "${@}"
-]
+dependencies = ["prove-CreuSAT"]
+args = ["${@}"]
 
 [tasks.build-musl]
 workspace = false
@@ -162,19 +147,11 @@ cd JigSAT/StarExec && zip -r jigsat.zip bin
 
 [tasks.StarExec-linux]
 workspace = false
-dependencies = [
-    "build-musl",
-    "move-musl",
-    "make-zip",
-]
+dependencies = ["build-musl", "move-musl", "make-zip"]
 
 [tasks.StarExec-mac]
 workspace = false
-dependencies = [
-    "build-musl-mac",
-    "move-musl",
-    "make-zip",
-]
+dependencies = ["build-musl-mac", "move-musl", "make-zip"]
 
 [tasks.StarExec]
 linux_alias = "StarExec-linux"
@@ -191,11 +168,7 @@ dependencies = [
 
 [tasks.StarExec-JigSAT-mac]
 workspace = false
-dependencies = [
-    "build-musl-JigSAT-mac",
-    "move-musl-JigSAT",
-    "make-zip-JigSAT",
-]
+dependencies = ["build-musl-JigSAT-mac", "move-musl-JigSAT", "make-zip-JigSAT"]
 
 [tasks.StarExec-JigSAT]
 linux_alias = "StarExec-JigSAT-linux"
@@ -223,8 +196,4 @@ rm -rf mlcfgs/CreuSAT*
 
 [tasks.clean-proofs]
 workspace = false
-dependencies = [
-    "clean-Friday",
-    "clean-Robinson",
-    "clean-CreuSAT",
-]
+dependencies = ["clean-Friday", "clean-Robinson", "clean-CreuSAT"]

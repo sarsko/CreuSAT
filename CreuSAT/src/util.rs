@@ -1,7 +1,7 @@
 extern crate creusot_contracts;
 use creusot_contracts::{std::*, Ghost, *};
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 use crate::logic::logic_util::*;
 
 // Selection sort with larger elements first. Based on the one in Creusot repo by Xavier and I

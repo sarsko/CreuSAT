@@ -3,7 +3,7 @@ use creusot_contracts::{std::*, Ghost, *};
 
 use crate::{assignments::*, decision::*, formula::*, lit::*};
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 use crate::logic::{logic::*, logic_trail::*, logic_util::*};
 
 pub enum Reason {

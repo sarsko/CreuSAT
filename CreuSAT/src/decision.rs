@@ -3,7 +3,7 @@ use creusot_contracts::{ensures, ghost, invariant, maintains, proof_assert, requ
 
 use crate::{assignments::*, formula::*, util::*};
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 use crate::logic::{logic::unset, logic_decision::*, logic_util::*};
 
 #[derive(Clone, Copy)]

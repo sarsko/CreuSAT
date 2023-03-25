@@ -4,7 +4,7 @@ use creusot_contracts::*;
 
 use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*};
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 use crate::logic::{logic::*, logic_clause::*, logic_util::*};
 
 impl Reason {

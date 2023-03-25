@@ -7,7 +7,7 @@ use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*, watches::*}
 
 use crate::logic::{logic::*, logic_assignments::*};
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 impl Model for Formula {
     type ModelTy = (Seq<Clause>, Int);
 

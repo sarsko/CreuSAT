@@ -3,7 +3,7 @@ use creusot_contracts::{std::*, Ghost, *};
 
 use crate::{formula::*, lit::*, trail::*};
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 use crate::logic::{logic_util::*, logic_watches::*};
 
 // Lets try this scheme and see how well it fares

@@ -6,7 +6,7 @@ use creusot_contracts::Clone;
 
 use crate::assignments::*;
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 use crate::logic::logic_lit::*;
 
 #[derive(Clone, Copy)]
@@ -15,7 +15,7 @@ pub struct Lit {
     pub polarity: bool,
 }
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 impl Model for Lit {
     type ModelTy = Lit;
 

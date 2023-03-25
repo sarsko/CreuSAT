@@ -4,7 +4,7 @@ use creusot_contracts::{std::*, Clone, Ghost, *};
 use crate::{assignments::*, formula::*, lit::*, solver::*, trail::*};
 use ::std::ops::{Index, IndexMut};
 
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 use crate::logic::{logic_clause::*, logic_formula::*};
 
 #[derive(Clone)]
@@ -22,11 +22,11 @@ impl Index<usize> for Clause {
     #[requires(@ix < (@self).len())]
     #[ensures((@self)[@ix] == *result)]
     fn index(&self, ix: usize) -> &Lit {
-        #[cfg(not(feature = "contracts"))]
+        #[cfg(not(creusot))]
         unsafe {
             self.lits.get_unchecked(ix)
         }
-        #[cfg(feature = "contracts")]
+        #[cfg(creusot)]
         &self.lits[ix]
     }
 }
@@ -40,11 +40,11 @@ impl IndexMut<usize> for Clause {
     #[ensures(forall<i : Int> 0 <= i && i != @ix && i < (@self).len() ==> (@self)[i] == (@^self)[i])]
     #[ensures((@^self).len() == (@*self).len())]
     fn index_mut(&mut self, ix: usize) -> &mut Lit {
-        #[cfg(not(feature = "contracts"))]
+        #[cfg(not(creusot))]
         unsafe {
             self.lits.get_unchecked_mut(ix)
         }
-        #[cfg(feature = "contracts")]
+        #[cfg(creusot)]
         &mut self.lits[ix]
     }
 }

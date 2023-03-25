@@ -9,7 +9,7 @@ use crate::{
 };
 
 // Tmp
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 use crate::logic::{logic::*, logic_clause::*, logic_formula::*};
 
 pub enum SatResult {

@@ -5,7 +5,7 @@ use crate::{formula::*, lit::*, trail::*};
 use ::std::ops::{Index, IndexMut};
 
 #[allow(unused_features)]
-#[cfg(feature = "contracts")]
+#[cfg(creusot)]
 use crate::logic::{logic::*, logic_assignments::*, logic_clause::*, logic_trail::*};
 
 pub type AssignedState = u8;
@@ -20,11 +20,11 @@ impl Index<usize> for Assignments {
     #[requires(@ix < (@self).len())]
     #[ensures((@self)[@ix] == *result)]
     fn index(&self, ix: usize) -> &AssignedState {
-        #[cfg(not(feature = "contracts"))]
+        #[cfg(not(creusot))]
         unsafe {
             self.0.get_unchecked(ix)
         }
-        #[cfg(feature = "contracts")]
+        #[cfg(creusot)]
         &self.0[ix]
     }
 }
@@ -38,11 +38,11 @@ impl IndexMut<usize> for Assignments {
     #[ensures(forall<i : Int> 0 <= i && i != @ix && i < (@self).len() ==> (@self)[i] == (@^self)[i])]
     #[ensures((@^self).len() == (@*self).len())]
     fn index_mut(&mut self, ix: usize) -> &mut AssignedState {
-        #[cfg(not(feature = "contracts"))]
+        #[cfg(not(creusot))]
         unsafe {
             self.0.get_unchecked_mut(ix)
         }
-        #[cfg(feature = "contracts")]
+        #[cfg(creusot)]
         &mut self.0[ix]
     }
 }
