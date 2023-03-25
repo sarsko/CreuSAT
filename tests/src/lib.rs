@@ -2,10 +2,10 @@
 use std::{fs::read_dir, io::Write, time::Instant};
 use termcolor::*;
 
-extern crate JigSAT;
-use JigSAT::parser::{parse_cnf, preproc_and_solve};
-//extern crate CreuSAT;
-//use CreuSAT::parser::{parse_cnf, preproc_and_solve};
+//extern crate JigSAT;
+//use JigSAT::parser::{parse_cnf, preproc_and_solve};
+extern crate CreuSAT;
+use CreuSAT::parser::{parse_cnf, preproc_and_solve};
 
 #[test]
 fn test_all_sat() {
