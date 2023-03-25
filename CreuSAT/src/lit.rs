@@ -25,6 +25,16 @@ impl ShallowModel for Lit {
     }
 }
 
+#[cfg(creusot)]
+impl DeepModel for Lit {
+    type DeepModelTy = Lit;
+
+    #[logic]
+    fn deep_model(self) -> Self {
+        self
+    }
+}
+
 impl Lit {
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
