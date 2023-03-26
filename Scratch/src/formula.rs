@@ -3,9 +3,13 @@ extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
-use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*, watches::*};
+use crate::{assignments::*, clause::*, lit::*};
 
-use crate::logic::{logic::*, logic_assignments::*};
+// ===== Formula =====
+pub struct Formula {
+    pub clauses: Vec<Clause>,
+    pub num_vars: usize,
+}
 
 #[cfg(creusot)]
 impl ShallowModel for Formula {

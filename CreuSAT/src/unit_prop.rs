@@ -48,9 +48,12 @@ fn check_and_move_watch(
     return false;
 }
 
-#[cfg_attr(feature = "trust_unit", trusted)]
+// TODO: Look at strategies or look at making lemmas / assertions to make it easier.
+// This has previously had issues on the trail invariant and on the formula equisatisfiability.
+// Solved fairly easily by Auto Level 3 when targeted direcly, but Auto Level 8/9 struggles.
+#[cfg_attr(all(feature = "trust_unit", not(feature = "problem_child")), trusted)]
 #[maintains((mut f).invariant())]
-#[maintains((*trail).invariant(mut f))]
+#[maintains((*trail).invariant(mut f))] // <-
 #[maintains((*watches).invariant(mut f))]
 #[requires((@(@f.clauses)[@cref]).len() >= 2)]
 #[requires(@cref < (@f.clauses).len())]
@@ -61,7 +64,7 @@ fn check_and_move_watch(
 #[ensures(@f.num_vars == @(^f).num_vars)]
 #[ensures((@f.clauses).len() == (@(^f).clauses).len())]
 //#[ensures((@(@f.clauses)[@cref]).len() == (@(@(^f).clauses)[@cref]).len())]
-#[ensures(f.equisat(^f))]
+#[ensures(f.equisat(^f))] // <-
 fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize, k: usize) {
     let old_f: Ghost<&mut Formula> = ghost! { f };
 
@@ -72,6 +75,7 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
 
     proof_assert!(forall<a2 : Seq<AssignedState>> a2.len() == @f.num_vars && complete_inner(a2) && (@old_f.clauses)[@cref].sat_inner(a2) ==> (@f.clauses)[@cref].sat_inner(a2));
     proof_assert!(eventually_sat_complete(@old_f) ==> eventually_sat_complete(@f));
+    proof_assert!(^f == ^old_f.inner());
 }
 
 // This has to do f.clauses[cref] and not f[cref]

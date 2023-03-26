@@ -197,3 +197,36 @@ rm -rf mlcfgs/CreuSAT*
 [tasks.clean-proofs]
 workspace = false
 dependencies = ["clean-Friday", "clean-Robinson", "clean-CreuSAT"]
+
+
+[tasks.creusot-Scratch]
+workspace = false
+command = "cargo"
+args = ["creusot", "--", "-p", "Scratch", "--features=${@}"]
+
+[tasks.move-Scratch]
+workspace = false
+script = '''
+[ ! -f ./target/debug/Scratch-rlib.mlcfg ] || cp ./target/debug/Scratch-rlib.mlcfg ./mlcfgs/Scratch.mlcfg
+'''
+
+[tasks.gen-cfg-Scratch]
+workspace = false
+dependencies = ["creusot-Scratch", "move-Scratch"]
+
+[tasks.ide-Scratch]
+workspace = false
+script = '''
+./ide ./mlcfgs/Scratch.mlcfg
+'''
+
+[tasks.prove-Scratch]
+workspace = false
+dependencies = ["gen-cfg-Scratch", "ide-Scratch"]
+
+
+[tasks.clean-Scratch]
+workspace = false
+script = '''
+rm -rf mlcfgs/Scratch*
+'''

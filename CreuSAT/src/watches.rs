@@ -23,7 +23,7 @@ pub struct Watches {
 // The root cause seems to be that Why3 doesn't wan't to "peek" into things, so when I made abstraction
 // barriers for the invariants, stuff took forever. It checks out, but I should probably come back later and clean up
 // #10 and #19 just take some time, but check out on Mac
-#[cfg_attr(feature = "trust_watches", trusted)]
+#[cfg_attr(all(feature = "trust_watches", not(feature = "problem_child")), trusted)]
 #[maintains((mut watches).invariant(*f))]
 #[requires(@f.num_vars < @usize::MAX/2)]
 #[requires(lit.index_logic() < @f.num_vars)]
@@ -148,7 +148,7 @@ impl Watches {
     }
 
     // This is just the first half of update_watch.
-    #[cfg_attr(feature = "trust_watches", trusted)]
+    #[cfg_attr(all(feature = "trust_watches", not(feature = "problem_child")), trusted)]
     #[maintains((mut self).invariant(*f))]
     #[requires(@f.num_vars < @usize::MAX/2)]
     #[requires(lit.index_logic() < @f.num_vars)]
@@ -165,6 +165,7 @@ impl Watches {
                 let end = self.watches[watchidx].len() - 1;
                 self.watches[watchidx].swap(i, end);
 
+                // TODO
                 // Ugly "ghost" match. Grr.
                 let old_w: Ghost<&mut Watches> = ghost! { self };
                 match self.watches[watchidx].pop() {

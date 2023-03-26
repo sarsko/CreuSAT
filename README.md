@@ -51,6 +51,7 @@ To prove it you'll need to do the following:
 1. Install [Rust](https://www.rust-lang.org/tools/install).
 2. Install [Creusot](https://github.com/xldenis/creusot). Clone it, and then run `cargo install --path creusot`.
 3. Install Why3. I recommend following the guide in the [Creusot](https://github.com/xldenis/creusot#installing) repository.
+4. Install some SMT solvers: [Z3](https://github.com/Z3Prover/z3) (available by `brew`, `apt`, etc.), [CVC4](https://cvc4.github.io/) (`brew`, `apt`, etc.), [Alt-Ergo](https://alt-ergo.ocamlpro.com/) (`opam`, `apt`, etc.).
 
 CreuSAT is using [Cargo Make](https://github.com/sagiegurari/cargo-make) to make building easier. It can be installed by running:
 ```
@@ -63,7 +64,8 @@ cargo make prove-CreuSAT
 
 And hopefully the Why3 IDE will appear. If not, then most likely something is not installed or pathed correctly, or I have given the wrong instructions (sorry).
 
-If the Why3 IDE appears, then it should work to press <kbd>3</kbd> and wait a bit. If you are doing the proof from scratch, then you will need to wait a while.
+Once you are in the Why3 IDE, you may click "Tools -> Strategies -> PROVE EVERYTHING" (or press <kbd>4</kbd>). This should Just Work™ and have everything proved in ~5 minutes on decently modern hardware (I am using a 2019 MacBook Pro). If you have slower hardware, you may need to tweak [why3.conf](why3.conf) a bit. Feel free to reach out to me or open an issue if you experience any issues.
+
 
 The following `cargo make` commands are supported:
 - `prove-CreuSAT`/`p` : Generate the MLCFG for `CreuSAT` and run the Why3 IDE.

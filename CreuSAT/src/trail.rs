@@ -50,8 +50,7 @@ impl Trail {
         }
     }
 
-    // For some reason the post takes forever(but it solved on Mac with auto level 3)
-    #[cfg_attr(feature = "trust_trail", trusted)]
+    #[cfg_attr(all(feature = "trust_trail", not(feature = "problem_child")), trusted)]
     #[inline(always)]
     #[requires(f.invariant())]
     #[requires(@f.num_vars > 0)]

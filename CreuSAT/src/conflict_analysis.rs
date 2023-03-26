@@ -258,7 +258,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
     }
 }
 
-#[cfg_attr(feature = "trust_conflict", trusted)]
+#[cfg_attr(all(feature = "trust_conflict", not(feature = "problem_child")), trusted)]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
 #[requires(@cref < (@f.clauses).len())]
