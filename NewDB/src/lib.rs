@@ -39,12 +39,12 @@ pub struct Formula {
 #[logic]
 #[why3::attr = "inline:trivial"]
 fn bool_as_u8(b: bool) -> u8 {
-    pearlite! { 
-        match b {
-            true => 1u8,
-            false => 0u8,
-        }
-     }
+    pearlite! {
+       match b {
+           true => 1u8,
+           false => 0u8,
+       }
+    }
 }
 
 impl Lit {
@@ -130,7 +130,6 @@ impl Clause {
         }
     }
 }
-
 
 impl Assignments {
     #[predicate]
