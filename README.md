@@ -88,12 +88,17 @@ which are both easier to grok algorithmically and proof-wise.
 
 ## Overview of the repository
 
-Overview of the repository: \
+**The interesting stuff:** \
 [/CreuSAT](/CreuSAT/) - The source code for CreuSAT. \
-[/Friday](/Friday/) - A fully verified and super naive SAT solver. \
-[/JigSAT](/JigSAT/) - An unverified solver based on CreuSAT. Used for experimenting. \
 [/Robinson](/Robinson/) - A fully verified DPLL-based solver. \
-[/Scratch](/Scratch/) - A (temporary-ish) scratch space which I use to experiment with proof stuff. \
+[/Friday](/Friday/) - A fully verified and super naive SAT solver. 
+
+**The playground stuff:** \
+[/NewDB](/NewDB/) - A playground to be used to iron out the new clause database design. \
+[/JigSAT](/JigSAT/) - An unverified solver based on CreuSAT. Used for experimenting with optimizations. \
+[/Scratch](/Scratch/) - A (temporary-ish) scratch space which I use to experiment with proof stuff. 
+
+**The boring stuff:** \
 [/mlcfgs](/mlcfgs/) - Output directory for generated mlcfg + Why3 session files. \
 [/prelude](/prelude/) - Copy of [prelude](https://github.com/xldenis/creusot/tree/master/prelude) from the Creusot directory. Included here to make `cargo make` happy. \
 [/tests](/tests/) - Directory for tests.
