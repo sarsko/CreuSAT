@@ -68,7 +68,7 @@ Once you are in the Why3 IDE, you may click "Tools -> Strategies -> PROVE EVERYT
 
 
 The following `cargo make` commands are supported:
-- `prove-CreuSAT`/`p` : Generate the MLCFG for `CreuSAT` and run the Why3 IDE.
+- `prove-CreuSAT`/`p` : Generate the MLCFG for `CreuSAT` and run the Whygs3 IDE.
 - `prove-Robinson` : Generate the MLCFG for `Robinson` and run the Why3 IDE.
 - `prove-Friday` : Generate the MLCFG for `Friday` and run the Why3 IDE.
 - `clean` : Cleans all generated CFG and Why3 session files.
