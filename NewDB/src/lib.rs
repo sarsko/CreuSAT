@@ -1,245 +1,230 @@
 #![allow(non_snake_case)]
+#![allow(unused)]
 #![feature(type_ascription)]
 #![cfg_attr(not(creusot), feature(stmt_expr_attributes, proc_macro_hygiene))]
 extern crate creusot_contracts;
 
+use creusot_contracts::logic::FSet;
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
-pub type AssignedState = u8;
+mod assignments;
+mod friday;
+mod lit;
+mod logic_util;
+
+use crate::{assignments::*, lit::*};
+
+use crate::logic_util::*;
+
+// TODO: Decide on whether to have it as a type or a struct
+type CRef = u32;
+
+// TODO: This seems to be a non-ideal invariant
+// TODO: Add more
+#[predicate]
+fn cref_invariant(cref: Int, clause_allocator: ClauseAllocator) -> bool {
+    pearlite! {
+        cref < (@clause_allocator).len()
+        && @(@clause_allocator)[cref].code + cref + @HEADER_LEN <= (@clause_allocator).len()
+    }
+}
 
 #[derive(Clone)]
-pub struct Assignments(pub Vec<AssignedState>);
+struct ClauseAllocator {
+    buffer: Vec<Lit>,
+}
+
+impl ClauseAllocator {
+    #[predicate]
+    pub(crate) fn invariant(self) -> bool {
+        pearlite! { (@self).len() <= @u32::MAX }
+    }
+
+    #[logic]
+    //#[requires(cref_invariant(cref, self))]
+    pub(crate) fn get_clause_logic(self, cref: Int) -> Seq<Lit> {
+        pearlite! {
+            (@self).subsequence(cref + @HEADER_LEN, cref + @HEADER_LEN + @((@self)[cref]).code)
+        }
+    }
+
+    #[logic]
+    //#[requires(cref_invariant(cref, self))]
+    pub(crate) fn get_clause_fset(self, cref: Int) -> FSet<Lit> {
+        pearlite! {
+            self.get_clause_fset_internal(cref, cref + @HEADER_LEN, cref + @HEADER_LEN + @((@self)[cref]).code)
+        }
+    }
+
+    #[logic]
+    //#[requires(cref_invariant(cref, self))]
+    #[variant(upper - idx)]
+    #[requires(idx >= 0 && upper <= (@self).len())]
+    fn get_clause_fset_internal(self, cref: Int, idx: Int, upper: Int) -> FSet<Lit> {
+        pearlite! {
+            if idx < upper {
+                let set = self.get_clause_fset_internal(cref, idx + 1, upper);
+                set.insert((@self)[cref + idx])
+            } else {
+                FSet::EMPTY
+            }
+        }
+    }
+}
 
 #[cfg(creusot)]
-impl ShallowModel for Assignments {
-    type ShallowModelTy = Seq<AssignedState>;
+impl ShallowModel for ClauseAllocator {
+    type ShallowModelTy = Seq<Lit>;
 
     #[logic]
     fn shallow_model(self) -> Self::ShallowModelTy {
-        self.0.shallow_model()
+        self.buffer.shallow_model()
     }
 }
 
-#[derive(Copy, Clone)]
-struct Lit {
-    code: u32,
-}
-struct Clause(Vec<Lit>);
+const HEADER_LEN: usize = 1;
 
-#[derive(Clone)]
-struct Pasn {
-    assign: Assignments,
-    ix: usize,
-}
-pub struct Formula {
-    clauses: Vec<Clause>,
-    num_vars: usize,
-}
+impl ClauseAllocator {
+    #[maintains((mut self).invariant())]
+    #[requires((@lits).len() > 0)]
+    #[requires((@self).len() + (@lits).len() + @HEADER_LEN <= @u32::MAX)] // TODO: May have to move this to a runtime check
+    #[ensures((@^self).len() == (@self).len() + (@lits).len() + @HEADER_LEN)]
+    #[ensures(@result == (@self).len())]
+    #[ensures(@(@^self)[@result].code == (@lits).len())]
+    #[ensures(forall<i: Int> 0 <= i && i < (@self).len() ==> (@^self)[i] == (@self)[i])] // Head unchanged. TODO: Refactor ?
+    #[ensures(forall<i: Int> 0 <= i && i < (@lits).len() ==> (@^self)[@result + @HEADER_LEN + i] == (@lits)[i])] // Extended. TODO: Refactor ?
+    #[ensures(cref_invariant(@result, ^self))]
+    fn add_clause(&mut self, lits: &[Lit]) -> CRef {
+        let cref = self.buffer.len() as CRef;
+        self.buffer.push(Lit::raw(lits.len() as u32));
 
-#[logic]
-#[why3::attr = "inline:trivial"]
-fn bool_as_u8(b: bool) -> u8 {
-    pearlite! {
-       match b {
-           true => 1u8,
-           false => 0u8,
-       }
+        let old_buffer: Ghost<&mut Vec<Lit>> = ghost!(&mut self.buffer);
+
+        #[invariant(vec_proph, ^*old_buffer == (^self).buffer)]
+        #[invariant(len, (@self).len() == (@old_buffer).len() + produced.len())]
+        #[invariant(head_unchanged, forall<i: Int> 0 <= i && i < (@old_buffer).len() ==> (@self)[i] == (@old_buffer)[i])] // TODO: Refactor ?
+        #[invariant(extended, forall<i: Int> 0 <= i && i < (produced).len() ==> (@self)[@cref + @HEADER_LEN + i] == *(produced)[i])]
+        for lit in lits {
+            self.buffer.push(*lit)
+        }
+
+        cref
+    }
+
+    #[requires(self.invariant())]
+    #[requires(cref_invariant(@cref, *self))]
+    #[ensures(@result == self.get_clause_logic(@cref))]
+    fn get_clause(&self, cref: u32) -> &[Lit] {
+        let idx = cref as usize;
+        let len = self.buffer[idx].code as usize;
+        &self.buffer[idx + HEADER_LEN..idx + HEADER_LEN + len]
     }
 }
 
-impl Lit {
+struct CRefManager {
+    crefs: Vec<CRef>,
+}
+
+#[cfg(creusot)]
+impl ShallowModel for CRefManager {
+    type ShallowModelTy = Seq<CRef>;
+
     #[logic]
-    #[why3::attr = "inline:trivial"]
-    pub fn index_logic(self) -> Int {
-        pearlite! { @self.code / 2 }
-    }
-
-    #[logic]
-    #[why3::attr = "inline:trivial"]
-    pub fn is_positive_logic(self) -> bool {
-        pearlite! { @self.code % 2 == 0 }
+    fn shallow_model(self) -> Self::ShallowModelTy {
+        self.crefs.shallow_model()
     }
 }
 
-impl Lit {
+impl CRefManager {
     #[predicate]
-    fn var_in_range(self, n: Int) -> bool {
+    fn invariant(self, clause_allocator: ClauseAllocator) -> bool {
         pearlite! {
-            self.index_logic() < n
+            clause_allocator.invariant() &&
+            forall<i: Int> 0 <= i && i < (@self).len() ==>
+                cref_invariant(@(@self)[i], clause_allocator)
         }
     }
 
     #[predicate]
-    #[why3::attr = "inline:trivial"]
-    fn lit_sat_logic(self, a: Assignments) -> bool {
-        pearlite! {
-            (@a)[self.index_logic()] == bool_as_u8(self.is_positive_logic())
-        }
-    }
-}
-
-impl Lit {
-    // TODO: Add support for shr
-    #[inline(always)]
-    #[ensures(@result == self.index_logic())]
-    pub fn index(self) -> usize {
-        //(self.code >> 1) as usize
-        (self.code / 2) as usize
-    }
-
-    // TODO: Add support for &
-    #[inline(always)]
-    #[ensures(result == self.is_positive_logic())]
-    pub fn is_positive(self) -> bool {
-        //self.code & 1 != 0
-        self.code % 2 == 0
-    }
-
-    #[inline(always)]
-    #[requires(self.index_logic() < (@a).len())]
-    #[ensures(result == self.lit_sat_logic(*a))]
-    pub fn lit_sat(self, a: &Assignments) -> bool {
-        a.0[self.index()] == self.is_positive() as u8
-    }
-}
-
-impl Formula {
-    #[predicate]
-    fn invariant(self) -> bool {
-        pearlite! {
-            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
-                (@self.clauses)[i].vars_in_range(@self.num_vars)
-        }
-    }
-
-    #[predicate]
-    fn sat(self, a: Assignments) -> bool {
-        pearlite! {
-            forall<i: Int> 0 <= i && i < (@self.clauses).len() ==>
-                (@self.clauses)[i].clause_sat_logic(a)
-        }
-    }
-}
-
-impl Clause {
-    #[predicate]
-    fn vars_in_range(self, n: Int) -> bool {
-        pearlite! {
-            forall<i: Int> 0 <= i && i < (@self.0).len() ==>
-                (@self.0)[i].var_in_range(n)
-        }
-    }
-}
-
-impl Assignments {
-    #[predicate]
-    fn compatible(self, pa: Pasn) -> bool {
-        pearlite! {
-            self.invariant() &&
-            (@pa.assign.0).len() == (@self.0).len() &&
-                forall<i: Int> 0 <= i && i < @pa.ix ==>
-                    (@pa.assign.0)[i] == (@self.0)[i]
-        }
-    }
-
-    #[predicate]
-    fn invariant(self) -> bool {
+    fn are_implied_by(self, original_clauses: CRefManager, clause_allocator: ClauseAllocator) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < (@self).len() ==>
-                @(@self)[i] < 2
+                original_clauses.implies(@(@self)[i], clause_allocator)
         }
     }
-}
 
-impl Pasn {
+    // Does this need the cref invariant again?
     #[predicate]
-    fn invariant(self, n: Int) -> bool {
+    fn implies(self: CRefManager, cref: Int, clause_allocator: ClauseAllocator) -> bool {
         pearlite! {
-            @self.ix <= (@self.assign.0).len()
-            && (@self.assign.0).len() == n
-            && self.assign.invariant()
+            true
         }
     }
 }
 
-impl Clause {
+struct ClauseManager {
+    clause_allocator: ClauseAllocator,
+    original_clauses: CRefManager,
+    learnt_core: CRefManager,
+}
+
+impl ClauseManager {
     #[predicate]
-    fn clause_sat_logic(self, a: Assignments) -> bool {
+    fn invariant(self) -> bool {
         pearlite! {
-            exists<i: Int> 0 <= i && i < (@self.0).len() &&
-                (@self.0)[i].lit_sat_logic(a)
+            self.clause_allocator.invariant()
+            && self.original_clauses.invariant(self.clause_allocator)
+            && self.learnt_core.invariant(self.clause_allocator)
+            && self.learnt_core.are_implied_by(self.original_clauses, self.clause_allocator)
         }
     }
 }
 
-impl Clause {
-    #[requires(self.vars_in_range((@a.0).len()))]
-    #[ensures(!result ==> !self.clause_sat_logic(*a))]
-    #[ensures(result ==> self.clause_sat_logic(*a))]
-    fn eval_clause(&self, a: &Assignments) -> bool {
-        let mut i: usize = 0;
-        let clause_len = self.0.len();
-        #[invariant(prev_not_sat,
-            forall<j: Int> 0 <= j && j < @i ==> !(@self.0)[j].lit_sat_logic(*a))]
-        #[invariant(loop_invariant, @i <= @clause_len)]
-        while i < clause_len {
-            if self.0[i].lit_sat(a) {
-                return true;
-            }
-            i += 1;
-        }
-        false
+struct Formula {
+    formula: FSet<FSet<Lit>>,
+}
+
+/*
+#[logic]
+#[variant(just.len() - ix)]
+#[requires(ix >= 0)]
+#[requires(forall<i : _> 0 <= i && i < just.len() ==> @just[i] < (@self.assignments).len())]
+#[ensures(forall<a : _> result.contains(a) ==> exists<i : _> 0 <= i && i < (@self.assignments).len() && a == (@self.assignments)[i].term_value())]
+#[ensures(forall<a : _> result.contains(a) ==> exists<i : _> ix <= i && i < just.len() && a == (@self.assignments)[@just[i]].term_value())]
+#[ensures(forall<i : _ > ix <= i && i < just.len() ==> result.contains((@self.assignments)[@just[i]].term_value()))]
+pub fn abs_just_inner(self, just: Seq<usize>, ix: Int) -> FSet<(theory::Term, theory::Value)> {
+    if ix < just.len() {
+        let set = self.abs_just_inner(just, ix + 1);
+        let a = (self.assignments.model())[just[ix].model()];
+        set.insert((a.term.model(), a.val.model()))
+    } else {
+        FSet::EMPTY
     }
 }
+*/
 
 impl Formula {
-    #[requires(self.invariant())]
-    #[requires((@a.0).len() == @self.num_vars)]
-    #[ensures(result == self.sat(*a))]
-    fn eval_formula(&self, a: &Assignments) -> bool {
-        let mut i: usize = 0;
-        #[invariant(prev_sat,
-            forall<j: Int> 0 <= j && j < @i ==> (@self.clauses)[j].clause_sat_logic(*a))]
-        while i < self.clauses.len() {
-            if !self.clauses[i].eval_clause(a) {
-                return false;
+    // TODO: Look at actually implementing from
+    #[logic]
+    fn from(crefs: Seq<CRef>, clause_allocator: ClauseAllocator) -> Formula {
+        Formula { formula: Formula::from_internal(crefs, clause_allocator, 0) }
+    }
+
+    #[logic]
+    #[variant((@clause_allocator).len() - idx)]
+    #[requires(idx >= 0)]
+    #[requires(clause_allocator.invariant())]
+    #[requires(forall<i: Int> 0 <= i && i < crefs.len() ==>
+                cref_invariant(@crefs[i], clause_allocator))] // CRefManager.invariant unwrapped -> TODO: refactor?
+    fn from_internal(crefs: Seq<CRef>, clause_allocator: ClauseAllocator, idx: Int) -> FSet<FSet<Lit>> {
+        pearlite! {
+            if idx < (@clause_allocator).len() {
+                let set = Formula::from_internal(crefs, clause_allocator, idx + 1);
+                let clause = clause_allocator.get_clause_fset(@crefs[idx]);
+                set.insert(clause)
+            } else {
+                FSet::EMPTY
             }
-            i += 1;
         }
-        true
     }
-}
-
-#[requires(@pa.ix < (@pa.assign.0).len())]
-#[requires((@pa.assign.0).len() <= @usize::MAX)]
-#[requires(pa.invariant((@pa.assign).len()))]
-#[requires(@b < 2)]
-#[ensures(result.invariant((@pa.assign).len()))]
-#[ensures(result.assign.compatible(*pa))]
-#[ensures((@result.assign.0)[@pa.ix] == b)]
-#[ensures(@result.ix == @pa.ix + 1)]
-fn set_next(pa: &Pasn, b: AssignedState) -> Pasn {
-    let mut new_pa = pa.clone();
-    new_pa.assign.0[pa.ix] = b;
-    new_pa.ix += 1;
-    new_pa
-}
-
-#[variant(@f.num_vars - @pa.ix)]
-#[requires(pa.invariant(@f.num_vars))]
-#[requires(f.invariant())]
-#[ensures(!result == (forall<a: Assignments> a.compatible(pa) ==> !f.sat(a)))]
-fn solve(f: &Formula, pa: Pasn) -> bool {
-    if pa.ix == pa.assign.0.len() {
-        return f.eval_formula(&pa.assign);
-    }
-    solve(f, set_next(&pa, 1)) || solve(f, set_next(&pa, 0))
-}
-
-#[requires(f.invariant())]
-#[ensures(!result ==> forall<a: Assignments> (@a.0).len() == @f.num_vars && a.invariant()
-                  ==> !f.sat(a))]
-#[ensures( result ==> exists<a: Assignments> f.sat(a))]
-pub fn solver(f: &Formula) -> bool {
-    solve(f, Pasn { assign: Assignments(vec![0; f.num_vars]), ix: 0 })
 }
