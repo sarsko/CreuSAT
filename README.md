@@ -41,7 +41,7 @@ cargo run -- --file [PATH_TO_FILE]
 ```
 where the provided file must be a correctly formatted [DIMACS CNF](https://people.sc.fsu.edu/~jburkardt/data/cnf/cnf.html) file.
 
-Remember do add the `--release` as in `cargo test --release [TEST_TO_RUN]`, otherwise it will be built in debug mode, which is *slow*.
+Remember do add the `--release` as in `cargo test --release [TEST_TO_RUN]`, otherwise it will be built in debug mode, which is **slow**.
 
 ## How do I prove the solver?
 
@@ -93,6 +93,7 @@ Overview of the repository: \
 [/Friday](/Friday/) - A fully verified and super naive SAT solver. \
 [/JigSAT](/JigSAT/) - An unverified solver based on CreuSAT. Used for experimenting. \
 [/Robinson](/Robinson/) - A fully verified DPLL-based solver. \
+[/Scratch](/Scratch/) - A (temporary-ish) scratch space which I use to experiment with proof stuff. \
 [/mlcfgs](/mlcfgs/) - Output directory for generated mlcfg + Why3 session files. \
 [/prelude](/prelude/) - Copy of [prelude](https://github.com/xldenis/creusot/tree/master/prelude) from the Creusot directory. Included here to make `cargo make` happy. \
 [/tests](/tests/) - Directory for tests.
