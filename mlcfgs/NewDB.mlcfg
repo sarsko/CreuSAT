@@ -1,0 +1,2149 @@
+
+module Core_Ptr_NonNull_NonNull_Type
+  use prelude.Opaque
+  type t_nonnull 't =
+    | C_NonNull opaque_ptr
+    
+end
+module Core_Marker_PhantomData_Type
+  type t_phantomdata 't =
+    | C_PhantomData
+    
+end
+module Core_Ptr_Unique_Unique_Type
+  use Core_Marker_PhantomData_Type as Core_Marker_PhantomData_Type
+  use Core_Ptr_NonNull_NonNull_Type as Core_Ptr_NonNull_NonNull_Type
+  type t_unique 't =
+    | C_Unique (Core_Ptr_NonNull_NonNull_Type.t_nonnull 't) (Core_Marker_PhantomData_Type.t_phantomdata 't)
+    
+end
+module Alloc_RawVec_RawVec_Type
+  use prelude.Int
+  use prelude.UIntSize
+  use Core_Ptr_Unique_Unique_Type as Core_Ptr_Unique_Unique_Type
+  type t_rawvec 't 'a =
+    | C_RawVec (Core_Ptr_Unique_Unique_Type.t_unique 't) usize 'a
+    
+end
+module Alloc_Vec_Vec_Type
+  use prelude.Int
+  use prelude.UIntSize
+  use Alloc_RawVec_RawVec_Type as Alloc_RawVec_RawVec_Type
+  type t_vec 't 'a =
+    | C_Vec (Alloc_RawVec_RawVec_Type.t_rawvec 't 'a) usize
+    
+end
+module Alloc_Alloc_Global_Type
+  type t_global  =
+    | C_Global
+    
+end
+module NewDb_Assignments_Type
+  use prelude.Int
+  use prelude.UInt8
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  type t_assignments  =
+    | C_Assignments (Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global))
+    
+  let function assignments_0 (self : t_assignments) : Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global)
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Assignments a -> a
+      end
+end
+module Alloc_Vec_Impl13_Clone_Interface
+  type t
+  type a
+  use prelude.Borrow
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  val clone' (self : Alloc_Vec_Vec_Type.t_vec t a) : Alloc_Vec_Vec_Type.t_vec t a
+    ensures { result = self }
+    
+end
+module NewDb_Impl11_Clone_Interface
+  use prelude.Borrow
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  val clone' [#"../NewDB/src/lib.rs" 10 9 10 14] (self : NewDb_Assignments_Type.t_assignments) : NewDb_Assignments_Type.t_assignments
+    ensures { [#"../NewDB/src/lib.rs" 10 9 10 14] result = self }
+    
+end
+module NewDb_Impl11_Clone
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UInt8
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  clone Alloc_Vec_Impl13_Clone_Interface as Clone0 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  let rec cfg clone' [#"../NewDB/src/lib.rs" 10 9 10 14] [@cfg:stackify] [@cfg:subregion_analysis] (self : NewDb_Assignments_Type.t_assignments) : NewDb_Assignments_Type.t_assignments
+    ensures { [#"../NewDB/src/lib.rs" 10 9 10 14] result = self }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : NewDb_Assignments_Type.t_assignments;
+  var self_1 : NewDb_Assignments_Type.t_assignments;
+  var _3 : Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global);
+  var _4 : Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global);
+  {
+    self_1 <- self;
+    goto BB0
+  }
+  BB0 {
+    _4 <- NewDb_Assignments_Type.assignments_0 self_1;
+    _3 <- ([#"../NewDB/src/lib.rs" 11 23 11 45] Clone0.clone' _4);
+    goto BB1
+  }
+  BB1 {
+    _0 <- NewDb_Assignments_Type.C_Assignments _3;
+    goto BB2
+  }
+  BB2 {
+    return _0
+  }
+  
+end
+module Core_Num_Impl12_Max_Stub
+  use prelude.Int
+  use prelude.UIntSize
+  val constant mAX'  : usize
+end
+module Core_Num_Impl12_Max
+  use prelude.Int
+  use prelude.UIntSize
+  let constant mAX'  : usize = [@vc:do_not_keep_trace] [@vc:sp]
+    (18446744073709551615 : usize)
+end
+module CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub
+  type t
+  type a
+  use seq.Seq
+  use prelude.UIntSize
+  use prelude.Int
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max_Stub as Max0
+  function shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
+end
+module CreusotContracts_Std1_Vec_Impl0_ShallowModel_Interface
+  type t
+  type a
+  use seq.Seq
+  use prelude.UIntSize
+  use prelude.Int
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max_Stub as Max0
+  function shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
+  axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
+end
+module CreusotContracts_Std1_Vec_Impl0_ShallowModel
+  type t
+  type a
+  use seq.Seq
+  use prelude.UIntSize
+  use prelude.Int
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max_Stub as Max0
+  function shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
+  val shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
+    ensures { result = shallow_model self }
+    
+  axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
+end
+module NewDb_Impl0_ShallowModel_Stub
+  use seq.Seq
+  use prelude.Int
+  use prelude.UInt8
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  function shallow_model [#"../NewDB/src/lib.rs" 18 4 18 50] (self : NewDb_Assignments_Type.t_assignments) : Seq.seq uint8
+    
+end
+module NewDb_Impl0_ShallowModel_Interface
+  use seq.Seq
+  use prelude.Int
+  use prelude.UInt8
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  function shallow_model [#"../NewDB/src/lib.rs" 18 4 18 50] (self : NewDb_Assignments_Type.t_assignments) : Seq.seq uint8
+    
+end
+module NewDb_Impl0_ShallowModel
+  use seq.Seq
+  use prelude.Int
+  use prelude.UInt8
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max_Stub as Max0
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  function shallow_model [#"../NewDB/src/lib.rs" 18 4 18 50] (self : NewDb_Assignments_Type.t_assignments) : Seq.seq uint8
+    
+   =
+    [#"../NewDB/src/lib.rs" 17 4 17 12] ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 self)
+  val shallow_model [#"../NewDB/src/lib.rs" 18 4 18 50] (self : NewDb_Assignments_Type.t_assignments) : Seq.seq uint8
+    ensures { result = shallow_model self }
+    
+end
+module NewDb_Lit_Type
+  use prelude.Int
+  use prelude.UInt32
+  type t_lit  =
+    | C_Lit uint32
+    
+  let function lit_code (self : t_lit) : uint32 = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Lit a -> a
+      end
+end
+module Core_Clone_Impls_Impl8_Clone_Interface
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UInt32
+  val clone' (self : uint32) : uint32
+    ensures { result = self }
+    
+end
+module NewDb_Impl13_Clone_Interface
+  use prelude.Borrow
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  val clone' [#"../NewDB/src/lib.rs" 23 15 23 20] (self : NewDb_Lit_Type.t_lit) : NewDb_Lit_Type.t_lit
+    ensures { [#"../NewDB/src/lib.rs" 23 15 23 20] result = self }
+    
+end
+module NewDb_Impl13_Clone
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UInt32
+  clone Core_Clone_Impls_Impl8_Clone_Interface as Clone0
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  let rec cfg clone' [#"../NewDB/src/lib.rs" 23 15 23 20] [@cfg:stackify] [@cfg:subregion_analysis] (self : NewDb_Lit_Type.t_lit) : NewDb_Lit_Type.t_lit
+    ensures { [#"../NewDB/src/lib.rs" 23 15 23 20] result = self }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : NewDb_Lit_Type.t_lit;
+  var self_1 : NewDb_Lit_Type.t_lit;
+  var _3 : uint32;
+  var _4 : uint32;
+  {
+    self_1 <- self;
+    goto BB0
+  }
+  BB0 {
+    _4 <- NewDb_Lit_Type.lit_code self_1;
+    _3 <- ([#"../NewDB/src/lib.rs" 25 4 25 13] Clone0.clone' _4);
+    goto BB1
+  }
+  BB1 {
+    _0 <- NewDb_Lit_Type.C_Lit _3;
+    return _0
+  }
+  
+end
+module NewDb_Pasn_Type
+  use prelude.Int
+  use prelude.UIntSize
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  type t_pasn  =
+    | C_Pasn (NewDb_Assignments_Type.t_assignments) usize
+    
+  let function pasn_assign (self : t_pasn) : NewDb_Assignments_Type.t_assignments = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Pasn a _ -> a
+      end
+  let function pasn_ix (self : t_pasn) : usize = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Pasn _ a -> a
+      end
+end
+module Core_Clone_Impls_Impl5_Clone_Interface
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  val clone' (self : usize) : usize
+    ensures { result = self }
+    
+end
+module NewDb_Impl14_Clone_Interface
+  use prelude.Borrow
+  use NewDb_Pasn_Type as NewDb_Pasn_Type
+  val clone' [#"../NewDB/src/lib.rs" 29 9 29 14] (self : NewDb_Pasn_Type.t_pasn) : NewDb_Pasn_Type.t_pasn
+    ensures { [#"../NewDB/src/lib.rs" 29 9 29 14] result = self }
+    
+end
+module NewDb_Impl14_Clone
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  clone Core_Clone_Impls_Impl5_Clone_Interface as Clone1
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  clone NewDb_Impl11_Clone_Interface as Clone0
+  use NewDb_Pasn_Type as NewDb_Pasn_Type
+  let rec cfg clone' [#"../NewDB/src/lib.rs" 29 9 29 14] [@cfg:stackify] [@cfg:subregion_analysis] (self : NewDb_Pasn_Type.t_pasn) : NewDb_Pasn_Type.t_pasn
+    ensures { [#"../NewDB/src/lib.rs" 29 9 29 14] result = self }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : NewDb_Pasn_Type.t_pasn;
+  var self_1 : NewDb_Pasn_Type.t_pasn;
+  var _3 : NewDb_Assignments_Type.t_assignments;
+  var _4 : NewDb_Assignments_Type.t_assignments;
+  var _5 : usize;
+  var _6 : usize;
+  {
+    self_1 <- self;
+    goto BB0
+  }
+  BB0 {
+    _4 <- NewDb_Pasn_Type.pasn_assign self_1;
+    _3 <- ([#"../NewDB/src/lib.rs" 31 4 31 23] Clone0.clone' _4);
+    goto BB1
+  }
+  BB1 {
+    _6 <- NewDb_Pasn_Type.pasn_ix self_1;
+    _5 <- ([#"../NewDB/src/lib.rs" 32 4 32 13] Clone1.clone' _6);
+    goto BB2
+  }
+  BB2 {
+    _0 <- NewDb_Pasn_Type.C_Pasn _3 _5;
+    goto BB3
+  }
+  BB3 {
+    return _0
+  }
+  
+end
+module NewDb_BoolAsU8_Stub
+  use prelude.Int
+  use prelude.UInt8
+  function bool_as_u8 [@inline:trivial] [#"../NewDB/src/lib.rs" 41 0 41 28] (b : bool) : uint8
+end
+module NewDb_BoolAsU8_Interface
+  use prelude.Int
+  use prelude.UInt8
+  function bool_as_u8 [@inline:trivial] [#"../NewDB/src/lib.rs" 41 0 41 28] (b : bool) : uint8
+end
+module NewDb_BoolAsU8
+  use prelude.Int
+  use prelude.UInt8
+  function bool_as_u8 [@inline:trivial] [#"../NewDB/src/lib.rs" 41 0 41 28] (b : bool) : uint8 =
+    [#"../NewDB/src/lib.rs" 43 8 46 9] if b then (1 : uint8) else (0 : uint8)
+  val bool_as_u8 [@inline:trivial] [#"../NewDB/src/lib.rs" 41 0 41 28] (b : bool) : uint8
+    ensures { result = bool_as_u8 b }
+    
+end
+module NewDb_Impl1_IndexLogic_Stub
+  use prelude.Int
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  function index_logic [@inline:trivial] [#"../NewDB/src/lib.rs" 53 4 53 35] (self : NewDb_Lit_Type.t_lit) : int
+end
+module NewDb_Impl1_IndexLogic_Interface
+  use prelude.Int
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  function index_logic [@inline:trivial] [#"../NewDB/src/lib.rs" 53 4 53 35] (self : NewDb_Lit_Type.t_lit) : int
+end
+module NewDb_Impl1_IndexLogic
+  use prelude.Int
+  use prelude.UInt32
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  function index_logic [@inline:trivial] [#"../NewDB/src/lib.rs" 53 4 53 35] (self : NewDb_Lit_Type.t_lit) : int =
+    [#"../NewDB/src/lib.rs" 54 8 54 36] div (UInt32.to_int (NewDb_Lit_Type.lit_code self)) 2
+  val index_logic [@inline:trivial] [#"../NewDB/src/lib.rs" 53 4 53 35] (self : NewDb_Lit_Type.t_lit) : int
+    ensures { result = index_logic self }
+    
+end
+module NewDb_Impl1_IsPositiveLogic_Stub
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  function is_positive_logic [@inline:trivial] [#"../NewDB/src/lib.rs" 59 4 59 42] (self : NewDb_Lit_Type.t_lit) : bool
+end
+module NewDb_Impl1_IsPositiveLogic_Interface
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  function is_positive_logic [@inline:trivial] [#"../NewDB/src/lib.rs" 59 4 59 42] (self : NewDb_Lit_Type.t_lit) : bool
+end
+module NewDb_Impl1_IsPositiveLogic
+  use prelude.UInt32
+  use prelude.Int
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  function is_positive_logic [@inline:trivial] [#"../NewDB/src/lib.rs" 59 4 59 42] (self : NewDb_Lit_Type.t_lit) : bool
+   =
+    [#"../NewDB/src/lib.rs" 60 20 60 39] mod (UInt32.to_int (NewDb_Lit_Type.lit_code self)) 2 = 0
+  val is_positive_logic [@inline:trivial] [#"../NewDB/src/lib.rs" 59 4 59 42] (self : NewDb_Lit_Type.t_lit) : bool
+    ensures { result = is_positive_logic self }
+    
+end
+module NewDb_Impl2_VarInRange_Stub
+  use prelude.Int
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  predicate var_in_range [#"../NewDB/src/lib.rs" 66 4 66 41] (self : NewDb_Lit_Type.t_lit) (n : int)
+end
+module NewDb_Impl2_VarInRange_Interface
+  use prelude.Int
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  predicate var_in_range [#"../NewDB/src/lib.rs" 66 4 66 41] (self : NewDb_Lit_Type.t_lit) (n : int)
+end
+module NewDb_Impl2_VarInRange
+  use prelude.Int
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  clone NewDb_Impl1_IndexLogic_Stub as IndexLogic0
+  predicate var_in_range [#"../NewDB/src/lib.rs" 66 4 66 41] (self : NewDb_Lit_Type.t_lit) (n : int) =
+    [#"../NewDB/src/lib.rs" 68 12 68 34] IndexLogic0.index_logic self < n
+  val var_in_range [#"../NewDB/src/lib.rs" 66 4 66 41] (self : NewDb_Lit_Type.t_lit) (n : int) : bool
+    ensures { result = var_in_range self n }
+    
+end
+module NewDb_Impl2_LitSatLogic_Stub
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  predicate lit_sat_logic [@inline:trivial] [#"../NewDB/src/lib.rs" 74 4 74 50] (self : NewDb_Lit_Type.t_lit) (a : NewDb_Assignments_Type.t_assignments)
+    
+end
+module NewDb_Impl2_LitSatLogic_Interface
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  predicate lit_sat_logic [@inline:trivial] [#"../NewDB/src/lib.rs" 74 4 74 50] (self : NewDb_Lit_Type.t_lit) (a : NewDb_Assignments_Type.t_assignments)
+    
+end
+module NewDb_Impl2_LitSatLogic
+  use seq.Seq
+  clone NewDb_BoolAsU8_Stub as BoolAsU80
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  clone NewDb_Impl1_IsPositiveLogic_Stub as IsPositiveLogic0
+  clone NewDb_Impl1_IndexLogic_Stub as IndexLogic0
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  clone NewDb_Impl0_ShallowModel_Stub as ShallowModel0
+  predicate lit_sat_logic [@inline:trivial] [#"../NewDB/src/lib.rs" 74 4 74 50] (self : NewDb_Lit_Type.t_lit) (a : NewDb_Assignments_Type.t_assignments)
+    
+   =
+    [#"../NewDB/src/lib.rs" 76 12 76 76] Seq.get (ShallowModel0.shallow_model a) (IndexLogic0.index_logic self) = BoolAsU80.bool_as_u8 (IsPositiveLogic0.is_positive_logic self)
+  val lit_sat_logic [@inline:trivial] [#"../NewDB/src/lib.rs" 74 4 74 50] (self : NewDb_Lit_Type.t_lit) (a : NewDb_Assignments_Type.t_assignments) : bool
+    ensures { result = lit_sat_logic self a }
+    
+end
+module NewDb_Impl3_Index_Interface
+  use prelude.UIntSize
+  use prelude.Int
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  clone NewDb_Impl1_IndexLogic_Stub as IndexLogic0
+  val index [#"../NewDB/src/lib.rs" 85 4 85 31] (self : NewDb_Lit_Type.t_lit) : usize
+    ensures { [#"../NewDB/src/lib.rs" 84 14 84 43] UIntSize.to_int result = IndexLogic0.index_logic self }
+    
+end
+module NewDb_Impl3_Index
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.UInt32
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  clone NewDb_Impl1_IndexLogic as IndexLogic0
+  let rec cfg index [#"../NewDB/src/lib.rs" 85 4 85 31] [@cfg:stackify] [@cfg:subregion_analysis] (self : NewDb_Lit_Type.t_lit) : usize
+    ensures { [#"../NewDB/src/lib.rs" 84 14 84 43] UIntSize.to_int result = IndexLogic0.index_logic self }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : usize;
+  var self_1 : NewDb_Lit_Type.t_lit;
+  var _3 : uint32;
+  var _4 : uint32;
+  var _5 : bool;
+  {
+    self_1 <- self;
+    goto BB0
+  }
+  BB0 {
+    _4 <- NewDb_Lit_Type.lit_code self_1;
+    _5 <- ([#"../NewDB/src/lib.rs" 87 8 87 23] ([#"../NewDB/src/lib.rs" 87 21 87 22] (2 : uint32)) = ([#"../NewDB/src/lib.rs" 87 8 87 23] (0 : uint32)));
+    assert { [#"../NewDB/src/lib.rs" 87 8 87 23] not _5 };
+    goto BB1
+  }
+  BB1 {
+    _3 <- ([#"../NewDB/src/lib.rs" 87 8 87 23] _4 / ([#"../NewDB/src/lib.rs" 87 21 87 22] (2 : uint32)));
+    _0 <- UIntSize.of_int (UInt32.to_int _3);
+    return _0
+  }
+  
+end
+module NewDb_Impl3_IsPositive_Interface
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  clone NewDb_Impl1_IsPositiveLogic_Stub as IsPositiveLogic0
+  val is_positive [#"../NewDB/src/lib.rs" 93 4 93 36] (self : NewDb_Lit_Type.t_lit) : bool
+    ensures { [#"../NewDB/src/lib.rs" 92 14 92 48] result = IsPositiveLogic0.is_positive_logic self }
+    
+end
+module NewDb_Impl3_IsPositive
+  use prelude.Int
+  use prelude.UInt32
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  clone NewDb_Impl1_IsPositiveLogic as IsPositiveLogic0
+  let rec cfg is_positive [#"../NewDB/src/lib.rs" 93 4 93 36] [@cfg:stackify] [@cfg:subregion_analysis] (self : NewDb_Lit_Type.t_lit) : bool
+    ensures { [#"../NewDB/src/lib.rs" 92 14 92 48] result = IsPositiveLogic0.is_positive_logic self }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : bool;
+  var self_1 : NewDb_Lit_Type.t_lit;
+  var _3 : uint32;
+  var _4 : uint32;
+  var _5 : bool;
+  {
+    self_1 <- self;
+    goto BB0
+  }
+  BB0 {
+    _4 <- NewDb_Lit_Type.lit_code self_1;
+    _5 <- ([#"../NewDB/src/lib.rs" 95 8 95 21] ([#"../NewDB/src/lib.rs" 95 20 95 21] (2 : uint32)) = ([#"../NewDB/src/lib.rs" 95 8 95 21] (0 : uint32)));
+    assert { [#"../NewDB/src/lib.rs" 95 8 95 21] not _5 };
+    goto BB1
+  }
+  BB1 {
+    _3 <- ([#"../NewDB/src/lib.rs" 95 8 95 21] _4 % ([#"../NewDB/src/lib.rs" 95 20 95 21] (2 : uint32)));
+    _0 <- ([#"../NewDB/src/lib.rs" 95 8 95 26] _3 = ([#"../NewDB/src/lib.rs" 95 25 95 26] (0 : uint32)));
+    return _0
+  }
+  
+end
+module CreusotContracts_Model_ShallowModel_ShallowModelTy_Type
+  type self
+  type shallowModelTy
+end
+module CreusotContracts_Model_ShallowModel_ShallowModel_Stub
+  type self
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = self
+  function shallow_model (self : self) : ShallowModelTy0.shallowModelTy
+end
+module CreusotContracts_Model_ShallowModel_ShallowModel_Interface
+  type self
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = self
+  function shallow_model (self : self) : ShallowModelTy0.shallowModelTy
+end
+module CreusotContracts_Model_ShallowModel_ShallowModel
+  type self
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = self
+  function shallow_model (self : self) : ShallowModelTy0.shallowModelTy
+  val shallow_model (self : self) : ShallowModelTy0.shallowModelTy
+    ensures { result = shallow_model self }
+    
+end
+module CreusotContracts_Model_Impl1_ShallowModel_Stub
+  type t
+  use prelude.Borrow
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  function shallow_model (self : t) : ShallowModelTy0.shallowModelTy
+end
+module CreusotContracts_Model_Impl1_ShallowModel_Interface
+  type t
+  use prelude.Borrow
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  function shallow_model (self : t) : ShallowModelTy0.shallowModelTy
+end
+module CreusotContracts_Model_Impl1_ShallowModel
+  type t
+  use prelude.Borrow
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  clone CreusotContracts_Model_ShallowModel_ShallowModel_Stub as ShallowModel0 with
+    type self = t,
+    type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy
+  function shallow_model (self : t) : ShallowModelTy0.shallowModelTy =
+    ShallowModel0.shallow_model self
+  val shallow_model (self : t) : ShallowModelTy0.shallowModelTy
+    ensures { result = shallow_model self }
+    
+end
+module CreusotContracts_Std1_Slice_SliceIndex_InBounds_Stub
+  type self
+  type t
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  predicate in_bounds (self : self) (seq : ShallowModelTy0.shallowModelTy)
+end
+module CreusotContracts_Std1_Slice_SliceIndex_InBounds_Interface
+  type self
+  type t
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  predicate in_bounds (self : self) (seq : ShallowModelTy0.shallowModelTy)
+end
+module CreusotContracts_Std1_Slice_SliceIndex_InBounds
+  type self
+  type t
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  predicate in_bounds (self : self) (seq : ShallowModelTy0.shallowModelTy)
+  val in_bounds (self : self) (seq : ShallowModelTy0.shallowModelTy) : bool
+    ensures { result = in_bounds self seq }
+    
+end
+module Core_Slice_Index_SliceIndex_Output_Type
+  type self
+  type t
+  type output
+end
+module CreusotContracts_Std1_Slice_SliceIndex_HasValue_Stub
+  type self
+  type t
+  clone Core_Slice_Index_SliceIndex_Output_Type as Output0 with
+    type self = self,
+    type t = t
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  predicate has_value (self : self) (seq : ShallowModelTy0.shallowModelTy) (out : Output0.output)
+end
+module CreusotContracts_Std1_Slice_SliceIndex_HasValue_Interface
+  type self
+  type t
+  clone Core_Slice_Index_SliceIndex_Output_Type as Output0 with
+    type self = self,
+    type t = t
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  predicate has_value (self : self) (seq : ShallowModelTy0.shallowModelTy) (out : Output0.output)
+end
+module CreusotContracts_Std1_Slice_SliceIndex_HasValue
+  type self
+  type t
+  clone Core_Slice_Index_SliceIndex_Output_Type as Output0 with
+    type self = self,
+    type t = t
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  predicate has_value (self : self) (seq : ShallowModelTy0.shallowModelTy) (out : Output0.output)
+  val has_value (self : self) (seq : ShallowModelTy0.shallowModelTy) (out : Output0.output) : bool
+    ensures { result = has_value self seq out }
+    
+end
+module Alloc_Vec_Impl15_Index_Interface
+  type t
+  type i
+  type a
+  use prelude.Borrow
+  use prelude.Slice
+  use prelude.Seq
+  use seq.Seq
+  use seq.Seq
+  clone Core_Slice_Index_SliceIndex_Output_Type as Output0 with
+    type self = i,
+    type t = seq t
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone CreusotContracts_Std1_Slice_SliceIndex_HasValue_Stub as HasValue0 with
+    type self = i,
+    type t = seq t,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t,
+    type Output0.output = Output0.output
+  clone CreusotContracts_Std1_Slice_SliceIndex_InBounds_Stub as InBounds0 with
+    type self = i,
+    type t = seq t,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
+  clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
+    type t = Alloc_Vec_Vec_Type.t_vec t a,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
+  val index (self : Alloc_Vec_Vec_Type.t_vec t a) (index : i) : Output0.output
+    requires {InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
+    ensures { HasValue0.has_value index (ShallowModel0.shallow_model self) result }
+    
+end
+module CreusotContracts_Std1_Slice_Impl5_InBounds_Stub
+  type t
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  predicate in_bounds [@inline:trivial] (self : usize) (seq : Seq.seq t)
+end
+module CreusotContracts_Std1_Slice_Impl5_InBounds_Interface
+  type t
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  predicate in_bounds [@inline:trivial] (self : usize) (seq : Seq.seq t)
+end
+module CreusotContracts_Std1_Slice_Impl5_InBounds
+  type t
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  predicate in_bounds [@inline:trivial] (self : usize) (seq : Seq.seq t) =
+    UIntSize.to_int self < Seq.length seq
+  val in_bounds [@inline:trivial] (self : usize) (seq : Seq.seq t) : bool
+    ensures { result = in_bounds self seq }
+    
+end
+module CreusotContracts_Std1_Slice_Impl5_HasValue_Stub
+  type t
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  predicate has_value [@inline:trivial] (self : usize) (seq : Seq.seq t) (out : t)
+end
+module CreusotContracts_Std1_Slice_Impl5_HasValue_Interface
+  type t
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  predicate has_value [@inline:trivial] (self : usize) (seq : Seq.seq t) (out : t)
+end
+module CreusotContracts_Std1_Slice_Impl5_HasValue
+  type t
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  predicate has_value [@inline:trivial] (self : usize) (seq : Seq.seq t) (out : t) =
+    Seq.get seq (UIntSize.to_int self) = out
+  val has_value [@inline:trivial] (self : usize) (seq : Seq.seq t) (out : t) : bool
+    ensures { result = has_value self seq out }
+    
+end
+module NewDb_Impl3_LitSat_Interface
+  use seq.Seq
+  use prelude.Int
+  use prelude.Borrow
+  use prelude.UInt8
+  use seq.Seq
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  clone NewDb_Impl2_LitSatLogic_Stub as LitSatLogic0
+  clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
+    type t = NewDb_Assignments_Type.t_assignments,
+    type ShallowModelTy0.shallowModelTy = Seq.seq uint8
+  clone NewDb_Impl1_IndexLogic_Stub as IndexLogic0
+  val lit_sat [#"../NewDB/src/lib.rs" 101 4 101 49] (self : NewDb_Lit_Type.t_lit) (a : NewDb_Assignments_Type.t_assignments) : bool
+    requires {[#"../NewDB/src/lib.rs" 99 15 99 46] IndexLogic0.index_logic self < Seq.length (ShallowModel0.shallow_model a)}
+    ensures { [#"../NewDB/src/lib.rs" 100 14 100 46] result = LitSatLogic0.lit_sat_logic self a }
+    
+end
+module NewDb_Impl3_LitSat
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UInt8
+  use prelude.UIntSize
+  use seq.Seq
+  use prelude.Bool
+  clone Core_Num_Impl12_Max as Max0
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
+    type t = uint8
+  clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
+    type t = uint8
+  use seq.Seq
+  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel2 with
+    type t = Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global),
+    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model
+  clone NewDb_BoolAsU8 as BoolAsU80
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  clone NewDb_Impl1_IsPositiveLogic as IsPositiveLogic0
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  clone NewDb_Impl0_ShallowModel as ShallowModel1 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_Impl3_IsPositive_Interface as IsPositive0 with
+    function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic
+  clone Alloc_Vec_Impl15_Index_Interface as Index1 with
+    type t = uint8,
+    type i = usize,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
+    predicate InBounds0.in_bounds = InBounds0.in_bounds,
+    predicate HasValue0.has_value = HasValue0.has_value,
+    type Output0.output = uint8
+  clone NewDb_Impl1_IndexLogic as IndexLogic0
+  clone NewDb_Impl3_Index_Interface as Index0 with
+    function IndexLogic0.index_logic = IndexLogic0.index_logic
+  clone NewDb_Impl2_LitSatLogic as LitSatLogic0 with
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    function IndexLogic0.index_logic = IndexLogic0.index_logic,
+    function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
+    function BoolAsU80.bool_as_u8 = BoolAsU80.bool_as_u8
+  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel0 with
+    type t = NewDb_Assignments_Type.t_assignments,
+    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model
+  let rec cfg lit_sat [#"../NewDB/src/lib.rs" 101 4 101 49] [@cfg:stackify] [@cfg:subregion_analysis] (self : NewDb_Lit_Type.t_lit) (a : NewDb_Assignments_Type.t_assignments) : bool
+    requires {[#"../NewDB/src/lib.rs" 99 15 99 46] IndexLogic0.index_logic self < Seq.length (ShallowModel0.shallow_model a)}
+    ensures { [#"../NewDB/src/lib.rs" 100 14 100 46] result = LitSatLogic0.lit_sat_logic self a }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : bool;
+  var self_1 : NewDb_Lit_Type.t_lit;
+  var a_2 : NewDb_Assignments_Type.t_assignments;
+  var _5 : uint8;
+  var _6 : uint8;
+  var _7 : Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global);
+  var _8 : usize;
+  var _9 : NewDb_Lit_Type.t_lit;
+  var _10 : uint8;
+  var _11 : bool;
+  var _12 : NewDb_Lit_Type.t_lit;
+  {
+    self_1 <- self;
+    a_2 <- a;
+    goto BB0
+  }
+  BB0 {
+    _7 <- NewDb_Assignments_Type.assignments_0 a_2;
+    _9 <- self_1;
+    _8 <- ([#"../NewDB/src/lib.rs" 102 12 102 24] Index0.index _9);
+    goto BB1
+  }
+  BB1 {
+    _6 <- ([#"../NewDB/src/lib.rs" 102 8 102 25] Index1.index _7 _8);
+    goto BB2
+  }
+  BB2 {
+    _5 <- _6;
+    _12 <- self_1;
+    _11 <- ([#"../NewDB/src/lib.rs" 102 29 102 47] IsPositive0.is_positive _12);
+    goto BB3
+  }
+  BB3 {
+    _10 <- UInt8.of_int (Bool.to_int _11);
+    _0 <- ([#"../NewDB/src/lib.rs" 102 8 102 53] _5 = _10);
+    return _0
+  }
+  
+end
+module NewDb_Clause_Type
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  type t_clause  =
+    | C_Clause (Alloc_Vec_Vec_Type.t_vec (NewDb_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global))
+    
+  let function clause_0 (self : t_clause) : Alloc_Vec_Vec_Type.t_vec (NewDb_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global)
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Clause a -> a
+      end
+end
+module NewDb_Formula_Type
+  use prelude.Int
+  use prelude.UIntSize
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use NewDb_Clause_Type as NewDb_Clause_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  type t_formula  =
+    | C_Formula (Alloc_Vec_Vec_Type.t_vec (NewDb_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global)) usize
+    
+  let function formula_clauses (self : t_formula) : Alloc_Vec_Vec_Type.t_vec (NewDb_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global)
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Formula a _ -> a
+      end
+  let function formula_num_vars (self : t_formula) : usize = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Formula _ a -> a
+      end
+end
+module NewDb_Impl5_VarsInRange_Stub
+  use prelude.Int
+  use NewDb_Clause_Type as NewDb_Clause_Type
+  predicate vars_in_range [#"../NewDB/src/lib.rs" 126 4 126 42] (self : NewDb_Clause_Type.t_clause) (n : int)
+end
+module NewDb_Impl5_VarsInRange_Interface
+  use prelude.Int
+  use NewDb_Clause_Type as NewDb_Clause_Type
+  predicate vars_in_range [#"../NewDB/src/lib.rs" 126 4 126 42] (self : NewDb_Clause_Type.t_clause) (n : int)
+end
+module NewDb_Impl5_VarsInRange
+  use prelude.Int
+  use seq.Seq
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max_Stub as Max0
+  clone NewDb_Impl2_VarInRange_Stub as VarInRange0
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+    type t = NewDb_Lit_Type.t_lit,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  use NewDb_Clause_Type as NewDb_Clause_Type
+  predicate vars_in_range [#"../NewDB/src/lib.rs" 126 4 126 42] (self : NewDb_Clause_Type.t_clause) (n : int) =
+    [#"../NewDB/src/lib.rs" 127 8 130 9] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (NewDb_Clause_Type.clause_0 self)) -> VarInRange0.var_in_range (Seq.get (ShallowModel0.shallow_model (NewDb_Clause_Type.clause_0 self)) i) n
+  val vars_in_range [#"../NewDB/src/lib.rs" 126 4 126 42] (self : NewDb_Clause_Type.t_clause) (n : int) : bool
+    ensures { result = vars_in_range self n }
+    
+end
+module NewDb_Impl4_Invariant_Stub
+  use NewDb_Formula_Type as NewDb_Formula_Type
+  predicate invariant' [#"../NewDB/src/lib.rs" 108 4 108 30] (self : NewDb_Formula_Type.t_formula)
+end
+module NewDb_Impl4_Invariant_Interface
+  use NewDb_Formula_Type as NewDb_Formula_Type
+  predicate invariant' [#"../NewDB/src/lib.rs" 108 4 108 30] (self : NewDb_Formula_Type.t_formula)
+end
+module NewDb_Impl4_Invariant
+  use prelude.Int
+  use seq.Seq
+  use prelude.UIntSize
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use NewDb_Clause_Type as NewDb_Clause_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max_Stub as Max0
+  clone NewDb_Impl5_VarsInRange_Stub as VarsInRange0
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+    type t = NewDb_Clause_Type.t_clause,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  use NewDb_Formula_Type as NewDb_Formula_Type
+  predicate invariant' [#"../NewDB/src/lib.rs" 108 4 108 30] (self : NewDb_Formula_Type.t_formula) =
+    [#"../NewDB/src/lib.rs" 109 8 112 9] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (NewDb_Formula_Type.formula_clauses self)) -> VarsInRange0.vars_in_range (Seq.get (ShallowModel0.shallow_model (NewDb_Formula_Type.formula_clauses self)) i) (UIntSize.to_int (NewDb_Formula_Type.formula_num_vars self))
+  val invariant' [#"../NewDB/src/lib.rs" 108 4 108 30] (self : NewDb_Formula_Type.t_formula) : bool
+    ensures { result = invariant' self }
+    
+end
+module NewDb_Impl8_ClauseSatLogic_Stub
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  use NewDb_Clause_Type as NewDb_Clause_Type
+  predicate clause_sat_logic [#"../NewDB/src/lib.rs" 168 4 168 53] (self : NewDb_Clause_Type.t_clause) (a : NewDb_Assignments_Type.t_assignments)
+    
+end
+module NewDb_Impl8_ClauseSatLogic_Interface
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  use NewDb_Clause_Type as NewDb_Clause_Type
+  predicate clause_sat_logic [#"../NewDB/src/lib.rs" 168 4 168 53] (self : NewDb_Clause_Type.t_clause) (a : NewDb_Assignments_Type.t_assignments)
+    
+end
+module NewDb_Impl8_ClauseSatLogic
+  use prelude.Int
+  use seq.Seq
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max_Stub as Max0
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  clone NewDb_Impl2_LitSatLogic_Stub as LitSatLogic0
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+    type t = NewDb_Lit_Type.t_lit,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  use NewDb_Clause_Type as NewDb_Clause_Type
+  predicate clause_sat_logic [#"../NewDB/src/lib.rs" 168 4 168 53] (self : NewDb_Clause_Type.t_clause) (a : NewDb_Assignments_Type.t_assignments)
+    
+   =
+    [#"../NewDB/src/lib.rs" 169 8 172 9] exists i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (NewDb_Clause_Type.clause_0 self)) /\ LitSatLogic0.lit_sat_logic (Seq.get (ShallowModel0.shallow_model (NewDb_Clause_Type.clause_0 self)) i) a
+  val clause_sat_logic [#"../NewDB/src/lib.rs" 168 4 168 53] (self : NewDb_Clause_Type.t_clause) (a : NewDb_Assignments_Type.t_assignments) : bool
+    ensures { result = clause_sat_logic self a }
+    
+end
+module NewDb_Impl4_Sat_Stub
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  use NewDb_Formula_Type as NewDb_Formula_Type
+  predicate sat [#"../NewDB/src/lib.rs" 116 4 116 40] (self : NewDb_Formula_Type.t_formula) (a : NewDb_Assignments_Type.t_assignments)
+    
+end
+module NewDb_Impl4_Sat_Interface
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  use NewDb_Formula_Type as NewDb_Formula_Type
+  predicate sat [#"../NewDB/src/lib.rs" 116 4 116 40] (self : NewDb_Formula_Type.t_formula) (a : NewDb_Assignments_Type.t_assignments)
+    
+end
+module NewDb_Impl4_Sat
+  use prelude.Int
+  use seq.Seq
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use NewDb_Clause_Type as NewDb_Clause_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max_Stub as Max0
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  clone NewDb_Impl8_ClauseSatLogic_Stub as ClauseSatLogic0
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+    type t = NewDb_Clause_Type.t_clause,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  use NewDb_Formula_Type as NewDb_Formula_Type
+  predicate sat [#"../NewDB/src/lib.rs" 116 4 116 40] (self : NewDb_Formula_Type.t_formula) (a : NewDb_Assignments_Type.t_assignments)
+    
+   =
+    [#"../NewDB/src/lib.rs" 117 8 120 9] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (NewDb_Formula_Type.formula_clauses self)) -> ClauseSatLogic0.clause_sat_logic (Seq.get (ShallowModel0.shallow_model (NewDb_Formula_Type.formula_clauses self)) i) a
+  val sat [#"../NewDB/src/lib.rs" 116 4 116 40] (self : NewDb_Formula_Type.t_formula) (a : NewDb_Assignments_Type.t_assignments) : bool
+    ensures { result = sat self a }
+    
+end
+module NewDb_Impl6_Invariant_Stub
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  predicate invariant' [#"../NewDB/src/lib.rs" 147 4 147 30] (self : NewDb_Assignments_Type.t_assignments)
+end
+module NewDb_Impl6_Invariant_Interface
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  predicate invariant' [#"../NewDB/src/lib.rs" 147 4 147 30] (self : NewDb_Assignments_Type.t_assignments)
+end
+module NewDb_Impl6_Invariant
+  use prelude.Int
+  use seq.Seq
+  use prelude.UInt8
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  clone NewDb_Impl0_ShallowModel_Stub as ShallowModel0
+  predicate invariant' [#"../NewDB/src/lib.rs" 147 4 147 30] (self : NewDb_Assignments_Type.t_assignments) =
+    [#"../NewDB/src/lib.rs" 148 8 151 9] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) -> UInt8.to_int (Seq.get (ShallowModel0.shallow_model self) i) < 2
+  val invariant' [#"../NewDB/src/lib.rs" 147 4 147 30] (self : NewDb_Assignments_Type.t_assignments) : bool
+    ensures { result = invariant' self }
+    
+end
+module NewDb_Impl6_Compatible_Stub
+  use NewDb_Pasn_Type as NewDb_Pasn_Type
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  predicate compatible [#"../NewDB/src/lib.rs" 137 4 137 41] (self : NewDb_Assignments_Type.t_assignments) (pa : NewDb_Pasn_Type.t_pasn)
+    
+end
+module NewDb_Impl6_Compatible_Interface
+  use NewDb_Pasn_Type as NewDb_Pasn_Type
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  predicate compatible [#"../NewDB/src/lib.rs" 137 4 137 41] (self : NewDb_Assignments_Type.t_assignments) (pa : NewDb_Pasn_Type.t_pasn)
+    
+end
+module NewDb_Impl6_Compatible
+  use seq.Seq
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.UInt8
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max_Stub as Max0
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  clone NewDb_Impl6_Invariant_Stub as Invariant0
+  use NewDb_Pasn_Type as NewDb_Pasn_Type
+  predicate compatible [#"../NewDB/src/lib.rs" 137 4 137 41] (self : NewDb_Assignments_Type.t_assignments) (pa : NewDb_Pasn_Type.t_pasn)
+    
+   =
+    [#"../NewDB/src/lib.rs" 138 8 143 9] Invariant0.invariant' self /\ Seq.length (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 (NewDb_Pasn_Type.pasn_assign pa))) = Seq.length (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 self)) /\ (forall i : int . 0 <= i /\ i < UIntSize.to_int (NewDb_Pasn_Type.pasn_ix pa) -> Seq.get (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 (NewDb_Pasn_Type.pasn_assign pa))) i = Seq.get (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 self)) i)
+  val compatible [#"../NewDB/src/lib.rs" 137 4 137 41] (self : NewDb_Assignments_Type.t_assignments) (pa : NewDb_Pasn_Type.t_pasn) : bool
+    ensures { result = compatible self pa }
+    
+end
+module NewDb_Impl7_Invariant_Stub
+  use prelude.Int
+  use NewDb_Pasn_Type as NewDb_Pasn_Type
+  predicate invariant' [#"../NewDB/src/lib.rs" 157 4 157 38] (self : NewDb_Pasn_Type.t_pasn) (n : int)
+end
+module NewDb_Impl7_Invariant_Interface
+  use prelude.Int
+  use NewDb_Pasn_Type as NewDb_Pasn_Type
+  predicate invariant' [#"../NewDB/src/lib.rs" 157 4 157 38] (self : NewDb_Pasn_Type.t_pasn) (n : int)
+end
+module NewDb_Impl7_Invariant
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  use prelude.UInt8
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max_Stub as Max0
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  clone NewDb_Impl6_Invariant_Stub as Invariant0
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  use NewDb_Pasn_Type as NewDb_Pasn_Type
+  predicate invariant' [#"../NewDB/src/lib.rs" 157 4 157 38] (self : NewDb_Pasn_Type.t_pasn) (n : int) =
+    [#"../NewDB/src/lib.rs" 158 8 162 9] UIntSize.to_int (NewDb_Pasn_Type.pasn_ix self) <= Seq.length (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 (NewDb_Pasn_Type.pasn_assign self))) /\ Seq.length (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 (NewDb_Pasn_Type.pasn_assign self))) = n /\ Invariant0.invariant' (NewDb_Pasn_Type.pasn_assign self)
+  val invariant' [#"../NewDB/src/lib.rs" 157 4 157 38] (self : NewDb_Pasn_Type.t_pasn) (n : int) : bool
+    ensures { result = invariant' self n }
+    
+end
+module Alloc_Vec_Impl1_Len_Interface
+  type t
+  type a
+  use prelude.UIntSize
+  use seq.Seq
+  use prelude.Borrow
+  use prelude.Int
+  use seq.Seq
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
+    type t = Alloc_Vec_Vec_Type.t_vec t a,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
+  val len (self : Alloc_Vec_Vec_Type.t_vec t a) : usize
+    ensures { UIntSize.to_int result = Seq.length (ShallowModel0.shallow_model self) }
+    
+end
+module NewDb_Impl9_EvalClause_Interface
+  use seq.Seq
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UInt8
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max_Stub as Max0
+  use NewDb_Clause_Type as NewDb_Clause_Type
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  clone NewDb_Impl8_ClauseSatLogic_Stub as ClauseSatLogic0
+  clone NewDb_Impl5_VarsInRange_Stub as VarsInRange0
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  val eval_clause [#"../NewDB/src/lib.rs" 180 4 180 50] (self : NewDb_Clause_Type.t_clause) (a : NewDb_Assignments_Type.t_assignments) : bool
+    requires {[#"../NewDB/src/lib.rs" 177 15 177 47] VarsInRange0.vars_in_range self (Seq.length (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 a)))}
+    ensures { [#"../NewDB/src/lib.rs" 178 4 178 54] not result -> not ClauseSatLogic0.clause_sat_logic self a }
+    ensures { [#"../NewDB/src/lib.rs" 179 4 179 52] result -> ClauseSatLogic0.clause_sat_logic self a }
+    
+end
+module NewDb_Impl9_EvalClause
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  use prelude.UInt8
+  use seq.Seq
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max as Max0
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  clone NewDb_Impl0_ShallowModel as ShallowModel3 with
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel4 with
+    type t = NewDb_Assignments_Type.t_assignments,
+    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
+    type t = NewDb_Lit_Type.t_lit
+  clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
+    type t = NewDb_Lit_Type.t_lit
+  clone NewDb_BoolAsU8 as BoolAsU80
+  clone NewDb_Impl1_IsPositiveLogic as IsPositiveLogic0
+  clone NewDb_Impl1_IndexLogic as IndexLogic0
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel1 with
+    type t = NewDb_Lit_Type.t_lit,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel2 with
+    type t = Alloc_Vec_Vec_Type.t_vec (NewDb_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global),
+    type ShallowModelTy0.shallowModelTy = Seq.seq (NewDb_Lit_Type.t_lit),
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model
+  clone NewDb_Impl2_VarInRange as VarInRange0 with
+    function IndexLogic0.index_logic = IndexLogic0.index_logic
+  clone NewDb_Impl2_LitSatLogic as LitSatLogic0 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    function IndexLogic0.index_logic = IndexLogic0.index_logic,
+    function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
+    function BoolAsU80.bool_as_u8 = BoolAsU80.bool_as_u8
+  clone NewDb_Impl3_LitSat_Interface as LitSat0 with
+    function IndexLogic0.index_logic = IndexLogic0.index_logic,
+    function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
+    predicate LitSatLogic0.lit_sat_logic = LitSatLogic0.lit_sat_logic
+  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
+    type t = NewDb_Lit_Type.t_lit,
+    type i = usize,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
+    predicate InBounds0.in_bounds = InBounds0.in_bounds,
+    predicate HasValue0.has_value = HasValue0.has_value,
+    type Output0.output = NewDb_Lit_Type.t_lit
+  clone Alloc_Vec_Impl1_Len_Interface as Len0 with
+    type t = NewDb_Lit_Type.t_lit,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model
+  use NewDb_Clause_Type as NewDb_Clause_Type
+  clone NewDb_Impl8_ClauseSatLogic as ClauseSatLogic0 with
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    predicate LitSatLogic0.lit_sat_logic = LitSatLogic0.lit_sat_logic,
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_Impl5_VarsInRange as VarsInRange0 with
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    predicate VarInRange0.var_in_range = VarInRange0.var_in_range,
+    val Max0.mAX' = Max0.mAX'
+  let rec cfg eval_clause [#"../NewDB/src/lib.rs" 180 4 180 50] [@cfg:stackify] [@cfg:subregion_analysis] (self : NewDb_Clause_Type.t_clause) (a : NewDb_Assignments_Type.t_assignments) : bool
+    requires {[#"../NewDB/src/lib.rs" 177 15 177 47] VarsInRange0.vars_in_range self (Seq.length (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 a)))}
+    ensures { [#"../NewDB/src/lib.rs" 178 4 178 54] not result -> not ClauseSatLogic0.clause_sat_logic self a }
+    ensures { [#"../NewDB/src/lib.rs" 179 4 179 52] result -> ClauseSatLogic0.clause_sat_logic self a }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : bool;
+  var self_1 : NewDb_Clause_Type.t_clause;
+  var a_2 : NewDb_Assignments_Type.t_assignments;
+  var i_6 : usize;
+  var clause_len_7 : usize;
+  var _8 : Alloc_Vec_Vec_Type.t_vec (NewDb_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global);
+  var _9 : ();
+  var _12 : ();
+  var _13 : bool;
+  var _14 : usize;
+  var _15 : usize;
+  var _16 : ();
+  var _17 : bool;
+  var _18 : NewDb_Lit_Type.t_lit;
+  var _19 : NewDb_Lit_Type.t_lit;
+  var _20 : Alloc_Vec_Vec_Type.t_vec (NewDb_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global);
+  var _21 : usize;
+  var _22 : NewDb_Assignments_Type.t_assignments;
+  var _23 : ();
+  var _24 : ();
+  var _25 : ();
+  var _26 : ();
+  {
+    self_1 <- self;
+    a_2 <- a;
+    goto BB0
+  }
+  BB0 {
+    i_6 <- ([#"../NewDB/src/lib.rs" 181 27 181 28] (0 : usize));
+    _8 <- NewDb_Clause_Type.clause_0 self_1;
+    clause_len_7 <- ([#"../NewDB/src/lib.rs" 182 25 182 37] Len0.len _8);
+    goto BB1
+  }
+  BB1 {
+    goto BB2
+  }
+  BB2 {
+    invariant prev_not_sat { [#"../NewDB/src/lib.rs" 183 8 184 81] forall j : int . 0 <= j /\ j < UIntSize.to_int i_6 -> not LitSatLogic0.lit_sat_logic (Seq.get (ShallowModel1.shallow_model (NewDb_Clause_Type.clause_0 self_1)) j) a_2 };
+    invariant loop_invariant { [#"../NewDB/src/lib.rs" 185 36 185 53] UIntSize.to_int i_6 <= UIntSize.to_int clause_len_7 };
+    _14 <- i_6;
+    _15 <- clause_len_7;
+    _13 <- ([#"../NewDB/src/lib.rs" 186 14 186 28] _14 < _15);
+    switch (_13)
+      | False -> goto BB8
+      | True -> goto BB3
+      end
+  }
+  BB3 {
+    _20 <- NewDb_Clause_Type.clause_0 self_1;
+    _21 <- i_6;
+    _19 <- ([#"../NewDB/src/lib.rs" 187 15 187 24] Index0.index _20 _21);
+    goto BB4
+  }
+  BB4 {
+    _18 <- _19;
+    _22 <- a_2;
+    _17 <- ([#"../NewDB/src/lib.rs" 187 15 187 35] LitSat0.lit_sat _18 _22);
+    goto BB5
+  }
+  BB5 {
+    switch (_17)
+      | False -> goto BB7
+      | True -> goto BB6
+      end
+  }
+  BB6 {
+    _0 <- ([#"../NewDB/src/lib.rs" 188 23 188 27] true);
+    goto BB9
+  }
+  BB7 {
+    _16 <- ();
+    i_6 <- ([#"../NewDB/src/lib.rs" 190 12 190 18] i_6 + ([#"../NewDB/src/lib.rs" 190 17 190 18] (1 : usize)));
+    _12 <- ();
+    goto BB2
+  }
+  BB8 {
+    _9 <- ();
+    _0 <- ([#"../NewDB/src/lib.rs" 192 8 192 13] false);
+    goto BB9
+  }
+  BB9 {
+    return _0
+  }
+  
+end
+module NewDb_Impl10_EvalFormula_Interface
+  use seq.Seq
+  use prelude.UIntSize
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UInt8
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max_Stub as Max0
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  use NewDb_Formula_Type as NewDb_Formula_Type
+  clone NewDb_Impl4_Sat_Stub as Sat0
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone NewDb_Impl4_Invariant_Stub as Invariant0
+  val eval_formula [#"../NewDB/src/lib.rs" 200 4 200 51] (self : NewDb_Formula_Type.t_formula) (a : NewDb_Assignments_Type.t_assignments) : bool
+    requires {[#"../NewDB/src/lib.rs" 197 15 197 31] Invariant0.invariant' self}
+    requires {[#"../NewDB/src/lib.rs" 198 15 198 45] Seq.length (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 a)) = UIntSize.to_int (NewDb_Formula_Type.formula_num_vars self)}
+    ensures { [#"../NewDB/src/lib.rs" 199 14 199 36] result = Sat0.sat self a }
+    
+end
+module NewDb_Impl10_EvalFormula
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  use prelude.UInt8
+  clone NewDb_BoolAsU8 as BoolAsU80
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  clone NewDb_Impl1_IsPositiveLogic as IsPositiveLogic0
+  clone NewDb_Impl1_IndexLogic as IndexLogic0
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max as Max0
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  clone NewDb_Impl0_ShallowModel as ShallowModel4 with
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_Impl2_VarInRange as VarInRange0 with
+    function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use NewDb_Clause_Type as NewDb_Clause_Type
+  clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
+    type t = NewDb_Clause_Type.t_clause
+  clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
+    type t = NewDb_Clause_Type.t_clause
+  use seq.Seq
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel1 with
+    type t = NewDb_Clause_Type.t_clause,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel3 with
+    type t = Alloc_Vec_Vec_Type.t_vec (NewDb_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global),
+    type ShallowModelTy0.shallowModelTy = Seq.seq (NewDb_Clause_Type.t_clause),
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model
+  clone NewDb_Impl2_LitSatLogic as LitSatLogic0 with
+    function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
+    function IndexLogic0.index_logic = IndexLogic0.index_logic,
+    function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
+    function BoolAsU80.bool_as_u8 = BoolAsU80.bool_as_u8
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
+    type t = NewDb_Lit_Type.t_lit,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone NewDb_Impl5_VarsInRange as VarsInRange0 with
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
+    predicate VarInRange0.var_in_range = VarInRange0.var_in_range,
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_Impl8_ClauseSatLogic as ClauseSatLogic0 with
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
+    predicate LitSatLogic0.lit_sat_logic = LitSatLogic0.lit_sat_logic,
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_Impl9_EvalClause_Interface as EvalClause0 with
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
+    predicate ClauseSatLogic0.clause_sat_logic = ClauseSatLogic0.clause_sat_logic,
+    val Max0.mAX' = Max0.mAX'
+  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
+    type t = NewDb_Clause_Type.t_clause,
+    type i = usize,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    predicate InBounds0.in_bounds = InBounds0.in_bounds,
+    predicate HasValue0.has_value = HasValue0.has_value,
+    type Output0.output = NewDb_Clause_Type.t_clause
+  clone Alloc_Vec_Impl1_Len_Interface as Len0 with
+    type t = NewDb_Clause_Type.t_clause,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model
+  use NewDb_Formula_Type as NewDb_Formula_Type
+  clone NewDb_Impl4_Sat as Sat0 with
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    predicate ClauseSatLogic0.clause_sat_logic = ClauseSatLogic0.clause_sat_logic,
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_Impl4_Invariant as Invariant0 with
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
+    val Max0.mAX' = Max0.mAX'
+  let rec cfg eval_formula [#"../NewDB/src/lib.rs" 200 4 200 51] [@cfg:stackify] [@cfg:subregion_analysis] (self : NewDb_Formula_Type.t_formula) (a : NewDb_Assignments_Type.t_assignments) : bool
+    requires {[#"../NewDB/src/lib.rs" 197 15 197 31] Invariant0.invariant' self}
+    requires {[#"../NewDB/src/lib.rs" 198 15 198 45] Seq.length (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 a)) = UIntSize.to_int (NewDb_Formula_Type.formula_num_vars self)}
+    ensures { [#"../NewDB/src/lib.rs" 199 14 199 36] result = Sat0.sat self a }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : bool;
+  var self_1 : NewDb_Formula_Type.t_formula;
+  var a_2 : NewDb_Assignments_Type.t_assignments;
+  var i_6 : usize;
+  var _7 : ();
+  var _9 : ();
+  var _10 : bool;
+  var _11 : usize;
+  var _12 : usize;
+  var _13 : Alloc_Vec_Vec_Type.t_vec (NewDb_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global);
+  var _14 : ();
+  var _15 : bool;
+  var _16 : bool;
+  var _17 : NewDb_Clause_Type.t_clause;
+  var _18 : NewDb_Clause_Type.t_clause;
+  var _19 : Alloc_Vec_Vec_Type.t_vec (NewDb_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global);
+  var _20 : usize;
+  var _21 : NewDb_Assignments_Type.t_assignments;
+  var _22 : ();
+  var _23 : ();
+  var _24 : ();
+  var _25 : ();
+  {
+    self_1 <- self;
+    a_2 <- a;
+    goto BB0
+  }
+  BB0 {
+    i_6 <- ([#"../NewDB/src/lib.rs" 201 27 201 28] (0 : usize));
+    goto BB1
+  }
+  BB1 {
+    invariant prev_sat { [#"../NewDB/src/lib.rs" 202 8 203 89] forall j : int . 0 <= j /\ j < UIntSize.to_int i_6 -> ClauseSatLogic0.clause_sat_logic (Seq.get (ShallowModel1.shallow_model (NewDb_Formula_Type.formula_clauses self_1)) j) a_2 };
+    _11 <- i_6;
+    _13 <- NewDb_Formula_Type.formula_clauses self_1;
+    _12 <- ([#"../NewDB/src/lib.rs" 204 18 204 36] Len0.len _13);
+    goto BB2
+  }
+  BB2 {
+    _10 <- ([#"../NewDB/src/lib.rs" 204 14 204 36] _11 < _12);
+    switch (_10)
+      | False -> goto BB8
+      | True -> goto BB3
+      end
+  }
+  BB3 {
+    _19 <- NewDb_Formula_Type.formula_clauses self_1;
+    _20 <- i_6;
+    _18 <- ([#"../NewDB/src/lib.rs" 205 16 205 31] Index0.index _19 _20);
+    goto BB4
+  }
+  BB4 {
+    _17 <- _18;
+    _21 <- a_2;
+    _16 <- ([#"../NewDB/src/lib.rs" 205 16 205 46] EvalClause0.eval_clause _17 _21);
+    goto BB5
+  }
+  BB5 {
+    _15 <- not _16;
+    switch (_15)
+      | False -> goto BB7
+      | True -> goto BB6
+      end
+  }
+  BB6 {
+    _0 <- ([#"../NewDB/src/lib.rs" 206 23 206 28] false);
+    goto BB9
+  }
+  BB7 {
+    _14 <- ();
+    i_6 <- ([#"../NewDB/src/lib.rs" 208 12 208 18] i_6 + ([#"../NewDB/src/lib.rs" 208 17 208 18] (1 : usize)));
+    _9 <- ();
+    goto BB1
+  }
+  BB8 {
+    _7 <- ();
+    _0 <- ([#"../NewDB/src/lib.rs" 210 8 210 12] true);
+    goto BB9
+  }
+  BB9 {
+    return _0
+  }
+  
+end
+module Core_Usize_Max_Stub
+  use prelude.Int
+  use prelude.UIntSize
+  val constant mAX'  : usize
+end
+module Core_Usize_Max
+  use prelude.Int
+  use prelude.UIntSize
+  let constant mAX'  : usize = [@vc:do_not_keep_trace] [@vc:sp]
+    (18446744073709551615 : usize)
+end
+module CreusotContracts_Model_Impl3_ShallowModel_Stub
+  type t
+  use prelude.Borrow
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  function shallow_model (self : borrowed t) : ShallowModelTy0.shallowModelTy
+end
+module CreusotContracts_Model_Impl3_ShallowModel_Interface
+  type t
+  use prelude.Borrow
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  function shallow_model (self : borrowed t) : ShallowModelTy0.shallowModelTy
+end
+module CreusotContracts_Model_Impl3_ShallowModel
+  type t
+  use prelude.Borrow
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  clone CreusotContracts_Model_ShallowModel_ShallowModel_Stub as ShallowModel0 with
+    type self = t,
+    type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy
+  function shallow_model (self : borrowed t) : ShallowModelTy0.shallowModelTy =
+    ShallowModel0.shallow_model ( * self)
+  val shallow_model (self : borrowed t) : ShallowModelTy0.shallowModelTy
+    ensures { result = shallow_model self }
+    
+end
+module CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere_Stub
+  type self
+  type t
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  predicate resolve_elswhere (self : self) (old' : ShallowModelTy0.shallowModelTy) (fin : ShallowModelTy0.shallowModelTy)
+    
+end
+module CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere_Interface
+  type self
+  type t
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  predicate resolve_elswhere (self : self) (old' : ShallowModelTy0.shallowModelTy) (fin : ShallowModelTy0.shallowModelTy)
+    
+end
+module CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere
+  type self
+  type t
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  predicate resolve_elswhere (self : self) (old' : ShallowModelTy0.shallowModelTy) (fin : ShallowModelTy0.shallowModelTy)
+    
+  val resolve_elswhere (self : self) (old' : ShallowModelTy0.shallowModelTy) (fin : ShallowModelTy0.shallowModelTy) : bool
+    ensures { result = resolve_elswhere self old' fin }
+    
+end
+module Alloc_Vec_Impl16_IndexMut_Interface
+  type t
+  type i
+  type a
+  use prelude.Borrow
+  use seq.Seq
+  use prelude.Slice
+  use prelude.Seq
+  clone Core_Num_Impl12_Max_Stub as Max0
+  use seq.Seq
+  clone Core_Slice_Index_SliceIndex_Output_Type as Output0 with
+    type self = i,
+    type t = seq t
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere_Stub as ResolveElswhere0 with
+    type self = i,
+    type t = seq t,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel1 with
+    type t = t,
+    type a = a,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Std1_Slice_SliceIndex_HasValue_Stub as HasValue0 with
+    type self = i,
+    type t = seq t,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t,
+    type Output0.output = Output0.output
+  clone CreusotContracts_Std1_Slice_SliceIndex_InBounds_Stub as InBounds0 with
+    type self = i,
+    type t = seq t,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
+  clone CreusotContracts_Model_Impl3_ShallowModel_Stub as ShallowModel0 with
+    type t = Alloc_Vec_Vec_Type.t_vec t a,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
+  val index_mut (self : borrowed (Alloc_Vec_Vec_Type.t_vec t a)) (index : i) : borrowed Output0.output
+    requires {InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
+    ensures { HasValue0.has_value index (ShallowModel0.shallow_model self) ( * result) }
+    ensures { HasValue0.has_value index (ShallowModel1.shallow_model ( ^ self)) ( ^ result) }
+    ensures { ResolveElswhere0.resolve_elswhere index (ShallowModel0.shallow_model self) (ShallowModel1.shallow_model ( ^ self)) }
+    ensures { Seq.length (ShallowModel1.shallow_model ( ^ self)) = Seq.length (ShallowModel0.shallow_model self) }
+    
+end
+module CreusotContracts_Resolve_Impl1_Resolve_Stub
+  type t
+  use prelude.Borrow
+  predicate resolve (self : borrowed t)
+end
+module CreusotContracts_Resolve_Impl1_Resolve_Interface
+  type t
+  use prelude.Borrow
+  predicate resolve (self : borrowed t)
+end
+module CreusotContracts_Resolve_Impl1_Resolve
+  type t
+  use prelude.Borrow
+  predicate resolve (self : borrowed t) =
+     ^ self =  * self
+  val resolve (self : borrowed t) : bool
+    ensures { result = resolve self }
+    
+end
+module CreusotContracts_Std1_Slice_Impl5_ResolveElswhere_Stub
+  type t
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  predicate resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t)
+end
+module CreusotContracts_Std1_Slice_Impl5_ResolveElswhere_Interface
+  type t
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  predicate resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t)
+end
+module CreusotContracts_Std1_Slice_Impl5_ResolveElswhere
+  type t
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  predicate resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t) =
+    forall i : int . 0 <= i /\ i <> UIntSize.to_int self /\ i < Seq.length old' -> Seq.get old' i = Seq.get fin i
+  val resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t) : bool
+    ensures { result = resolve_elswhere self old' fin }
+    
+end
+module NewDb_SetNext_Interface
+  use prelude.UIntSize
+  use seq.Seq
+  use prelude.Int
+  use prelude.UInt8
+  use prelude.Borrow
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max_Stub as Max1
+  use NewDb_Pasn_Type as NewDb_Pasn_Type
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  clone NewDb_Impl6_Compatible_Stub as Compatible0
+  clone NewDb_Impl7_Invariant_Stub as Invariant0
+  clone NewDb_Impl0_ShallowModel_Stub as ShallowModel1
+  clone Core_Usize_Max_Stub as Max0
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max1.mAX',
+    axiom .
+  val set_next [#"../NewDB/src/lib.rs" 222 0 222 48] (pa : NewDb_Pasn_Type.t_pasn) (b : uint8) : NewDb_Pasn_Type.t_pasn
+    requires {[#"../NewDB/src/lib.rs" 214 11 214 40] UIntSize.to_int (NewDb_Pasn_Type.pasn_ix pa) < Seq.length (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 (NewDb_Pasn_Type.pasn_assign pa)))}
+    requires {[#"../NewDB/src/lib.rs" 215 11 215 46] Seq.length (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 (NewDb_Pasn_Type.pasn_assign pa))) <= UIntSize.to_int Max0.mAX'}
+    requires {[#"../NewDB/src/lib.rs" 216 11 216 43] Invariant0.invariant' pa (Seq.length (ShallowModel1.shallow_model (NewDb_Pasn_Type.pasn_assign pa)))}
+    requires {[#"../NewDB/src/lib.rs" 217 11 217 17] UInt8.to_int b < 2}
+    ensures { [#"../NewDB/src/lib.rs" 218 10 218 46] Invariant0.invariant' result (Seq.length (ShallowModel1.shallow_model (NewDb_Pasn_Type.pasn_assign pa))) }
+    ensures { [#"../NewDB/src/lib.rs" 219 0 219 41] Compatible0.compatible (NewDb_Pasn_Type.pasn_assign result) pa }
+    ensures { [#"../NewDB/src/lib.rs" 220 10 220 41] Seq.get (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 (NewDb_Pasn_Type.pasn_assign result))) (UIntSize.to_int (NewDb_Pasn_Type.pasn_ix pa)) = b }
+    ensures { [#"../NewDB/src/lib.rs" 221 10 221 34] UIntSize.to_int (NewDb_Pasn_Type.pasn_ix result) = UIntSize.to_int (NewDb_Pasn_Type.pasn_ix pa) + 1 }
+    
+end
+module NewDb_SetNext
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UInt8
+  use prelude.UIntSize
+  use seq.Seq
+  use seq.Seq
+  clone CreusotContracts_Std1_Slice_Impl5_ResolveElswhere as ResolveElswhere0 with
+    type t = uint8
+  clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
+    type t = uint8
+  clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
+    type t = uint8
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max as Max1
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max1.mAX',
+    axiom .
+  clone CreusotContracts_Model_Impl3_ShallowModel as ShallowModel2 with
+    type t = Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global),
+    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  clone NewDb_Impl0_ShallowModel as ShallowModel1 with
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    val Max0.mAX' = Max1.mAX'
+  clone NewDb_Impl6_Invariant as Invariant1 with
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model
+  clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
+    type t = uint8
+  clone Alloc_Vec_Impl16_IndexMut_Interface as IndexMut0 with
+    type t = uint8,
+    type i = usize,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
+    predicate InBounds0.in_bounds = InBounds0.in_bounds,
+    predicate HasValue0.has_value = HasValue0.has_value,
+    function ShallowModel1.shallow_model = ShallowModel0.shallow_model,
+    predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
+    type Output0.output = uint8,
+    val Max0.mAX' = Max1.mAX'
+  use NewDb_Pasn_Type as NewDb_Pasn_Type
+  clone NewDb_Impl14_Clone_Interface as Clone0
+  clone NewDb_Impl6_Compatible as Compatible0 with
+    predicate Invariant0.invariant' = Invariant1.invariant',
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    val Max0.mAX' = Max1.mAX'
+  clone NewDb_Impl7_Invariant as Invariant0 with
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    predicate Invariant0.invariant' = Invariant1.invariant',
+    val Max0.mAX' = Max1.mAX'
+  clone Core_Usize_Max as Max0
+  let rec cfg set_next [#"../NewDB/src/lib.rs" 222 0 222 48] [@cfg:stackify] [@cfg:subregion_analysis] (pa : NewDb_Pasn_Type.t_pasn) (b : uint8) : NewDb_Pasn_Type.t_pasn
+    requires {[#"../NewDB/src/lib.rs" 214 11 214 40] UIntSize.to_int (NewDb_Pasn_Type.pasn_ix pa) < Seq.length (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 (NewDb_Pasn_Type.pasn_assign pa)))}
+    requires {[#"../NewDB/src/lib.rs" 215 11 215 46] Seq.length (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 (NewDb_Pasn_Type.pasn_assign pa))) <= UIntSize.to_int Max0.mAX'}
+    requires {[#"../NewDB/src/lib.rs" 216 11 216 43] Invariant0.invariant' pa (Seq.length (ShallowModel1.shallow_model (NewDb_Pasn_Type.pasn_assign pa)))}
+    requires {[#"../NewDB/src/lib.rs" 217 11 217 17] UInt8.to_int b < 2}
+    ensures { [#"../NewDB/src/lib.rs" 218 10 218 46] Invariant0.invariant' result (Seq.length (ShallowModel1.shallow_model (NewDb_Pasn_Type.pasn_assign pa))) }
+    ensures { [#"../NewDB/src/lib.rs" 219 0 219 41] Compatible0.compatible (NewDb_Pasn_Type.pasn_assign result) pa }
+    ensures { [#"../NewDB/src/lib.rs" 220 10 220 41] Seq.get (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 (NewDb_Pasn_Type.pasn_assign result))) (UIntSize.to_int (NewDb_Pasn_Type.pasn_ix pa)) = b }
+    ensures { [#"../NewDB/src/lib.rs" 221 10 221 34] UIntSize.to_int (NewDb_Pasn_Type.pasn_ix result) = UIntSize.to_int (NewDb_Pasn_Type.pasn_ix pa) + 1 }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : NewDb_Pasn_Type.t_pasn;
+  var pa_1 : NewDb_Pasn_Type.t_pasn;
+  var b_2 : uint8;
+  var new_pa_11 : NewDb_Pasn_Type.t_pasn;
+  var _12 : NewDb_Pasn_Type.t_pasn;
+  var _13 : uint8;
+  var _14 : borrowed uint8;
+  var _15 : borrowed (Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global));
+  var _16 : usize;
+  {
+    pa_1 <- pa;
+    b_2 <- b;
+    goto BB0
+  }
+  BB0 {
+    _12 <- pa_1;
+    new_pa_11 <- ([#"../NewDB/src/lib.rs" 223 21 223 31] Clone0.clone' _12);
+    goto BB1
+  }
+  BB1 {
+    _13 <- b_2;
+    _15 <- borrow_mut (NewDb_Assignments_Type.assignments_0 (NewDb_Pasn_Type.pasn_assign new_pa_11));
+    new_pa_11 <- (let NewDb_Pasn_Type.C_Pasn a b = new_pa_11 in NewDb_Pasn_Type.C_Pasn (let NewDb_Assignments_Type.C_Assignments a = NewDb_Pasn_Type.pasn_assign new_pa_11 in NewDb_Assignments_Type.C_Assignments ( ^ _15)) b);
+    _16 <- NewDb_Pasn_Type.pasn_ix pa_1;
+    _14 <- ([#"../NewDB/src/lib.rs" 224 4 224 26] IndexMut0.index_mut _15 _16);
+    goto BB2
+  }
+  BB2 {
+    _14 <- { _14 with current = _13 };
+    _13 <- any uint8;
+    assume { Resolve0.resolve _14 };
+    new_pa_11 <- (let NewDb_Pasn_Type.C_Pasn a b = new_pa_11 in NewDb_Pasn_Type.C_Pasn a ([#"../NewDB/src/lib.rs" 225 4 225 18] NewDb_Pasn_Type.pasn_ix new_pa_11 + ([#"../NewDB/src/lib.rs" 225 17 225 18] (1 : usize))));
+    _0 <- new_pa_11;
+    new_pa_11 <- any NewDb_Pasn_Type.t_pasn;
+    goto BB3
+  }
+  BB3 {
+    return _0
+  }
+  
+end
+module NewDb_Solve_Interface
+  use prelude.UIntSize
+  use prelude.Int
+  use prelude.Borrow
+  use NewDb_Pasn_Type as NewDb_Pasn_Type
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  use NewDb_Formula_Type as NewDb_Formula_Type
+  clone NewDb_Impl4_Sat_Stub as Sat0
+  clone NewDb_Impl6_Compatible_Stub as Compatible0
+  clone NewDb_Impl4_Invariant_Stub as Invariant1
+  clone NewDb_Impl7_Invariant_Stub as Invariant0
+  val solve [#"../NewDB/src/lib.rs" 233 0 233 39] (f : NewDb_Formula_Type.t_formula) (pa : NewDb_Pasn_Type.t_pasn) : bool
+    requires {[#"../NewDB/src/lib.rs" 230 11 230 36] Invariant0.invariant' pa (UIntSize.to_int (NewDb_Formula_Type.formula_num_vars f))}
+    requires {[#"../NewDB/src/lib.rs" 231 11 231 24] Invariant1.invariant' f}
+    ensures { [#"../NewDB/src/lib.rs" 232 10 232 76] (not result) = (forall a : NewDb_Assignments_Type.t_assignments . Compatible0.compatible a pa -> not Sat0.sat f a) }
+    
+end
+module NewDb_Solve
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.UInt8
+  use seq.Seq
+  clone NewDb_BoolAsU8 as BoolAsU80
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  clone NewDb_Impl1_IsPositiveLogic as IsPositiveLogic0
+  clone NewDb_Impl1_IndexLogic as IndexLogic0
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max as Max0
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  clone NewDb_Impl0_ShallowModel as ShallowModel3 with
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_Impl2_LitSatLogic as LitSatLogic0 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    function IndexLogic0.index_logic = IndexLogic0.index_logic,
+    function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
+    function BoolAsU80.bool_as_u8 = BoolAsU80.bool_as_u8
+  clone NewDb_Impl2_VarInRange as VarInRange0 with
+    function IndexLogic0.index_logic = IndexLogic0.index_logic
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel4 with
+    type t = NewDb_Lit_Type.t_lit,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone Core_Usize_Max as Max1
+  use seq.Seq
+  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel2 with
+    type t = Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global),
+    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model
+  use NewDb_Clause_Type as NewDb_Clause_Type
+  clone NewDb_Impl8_ClauseSatLogic as ClauseSatLogic0 with
+    function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
+    predicate LitSatLogic0.lit_sat_logic = LitSatLogic0.lit_sat_logic,
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_Impl5_VarsInRange as VarsInRange0 with
+    function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
+    predicate VarInRange0.var_in_range = VarInRange0.var_in_range,
+    val Max0.mAX' = Max0.mAX'
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel1 with
+    type t = NewDb_Clause_Type.t_clause,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone NewDb_Impl6_Invariant as Invariant2 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model
+  use NewDb_Pasn_Type as NewDb_Pasn_Type
+  clone NewDb_Impl6_Compatible as Compatible0 with
+    predicate Invariant0.invariant' = Invariant2.invariant',
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_Impl7_Invariant as Invariant0 with
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    predicate Invariant0.invariant' = Invariant2.invariant',
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_SetNext_Interface as SetNext0 with
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    val Max0.mAX' = Max1.mAX',
+    function ShallowModel1.shallow_model = ShallowModel3.shallow_model,
+    predicate Invariant0.invariant' = Invariant0.invariant',
+    predicate Compatible0.compatible = Compatible0.compatible,
+    val Max1.mAX' = Max0.mAX'
+  use NewDb_Formula_Type as NewDb_Formula_Type
+  clone NewDb_Impl4_Sat as Sat0 with
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    predicate ClauseSatLogic0.clause_sat_logic = ClauseSatLogic0.clause_sat_logic,
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_Impl4_Invariant as Invariant1 with
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_Impl10_EvalFormula_Interface as EvalFormula0 with
+    predicate Invariant0.invariant' = Invariant1.invariant',
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    predicate Sat0.sat = Sat0.sat,
+    val Max0.mAX' = Max0.mAX'
+  clone Alloc_Vec_Impl1_Len_Interface as Len0 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model
+  let rec cfg solve [#"../NewDB/src/lib.rs" 233 0 233 39] [@cfg:stackify] [@cfg:subregion_analysis] (f : NewDb_Formula_Type.t_formula) (pa : NewDb_Pasn_Type.t_pasn) : bool
+    requires {[#"../NewDB/src/lib.rs" 230 11 230 36] Invariant0.invariant' pa (UIntSize.to_int (NewDb_Formula_Type.formula_num_vars f))}
+    requires {[#"../NewDB/src/lib.rs" 231 11 231 24] Invariant1.invariant' f}
+    ensures { [#"../NewDB/src/lib.rs" 232 10 232 76] (not result) = (forall a : NewDb_Assignments_Type.t_assignments . Compatible0.compatible a pa -> not Sat0.sat f a) }
+    variant {[#"../NewDB/src/lib.rs" 229 0 229 32] UIntSize.to_int (NewDb_Formula_Type.formula_num_vars f) - UIntSize.to_int (NewDb_Pasn_Type.pasn_ix pa)}
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : bool;
+  var f_1 : NewDb_Formula_Type.t_formula;
+  var pa_2 : NewDb_Pasn_Type.t_pasn;
+  var _7 : ();
+  var _8 : bool;
+  var _9 : usize;
+  var _10 : usize;
+  var _11 : Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global);
+  var _12 : ();
+  var _13 : NewDb_Formula_Type.t_formula;
+  var _14 : NewDb_Assignments_Type.t_assignments;
+  var _15 : NewDb_Assignments_Type.t_assignments;
+  var _16 : bool;
+  var _17 : NewDb_Formula_Type.t_formula;
+  var _18 : NewDb_Pasn_Type.t_pasn;
+  var _19 : NewDb_Pasn_Type.t_pasn;
+  var _20 : NewDb_Pasn_Type.t_pasn;
+  var _21 : bool;
+  var _22 : NewDb_Formula_Type.t_formula;
+  var _23 : NewDb_Pasn_Type.t_pasn;
+  var _24 : NewDb_Pasn_Type.t_pasn;
+  var _25 : NewDb_Pasn_Type.t_pasn;
+  {
+    f_1 <- f;
+    pa_2 <- pa;
+    goto BB0
+  }
+  BB0 {
+    goto BB1
+  }
+  BB1 {
+    goto BB2
+  }
+  BB2 {
+    _9 <- NewDb_Pasn_Type.pasn_ix pa_2;
+    _11 <- NewDb_Assignments_Type.assignments_0 (NewDb_Pasn_Type.pasn_assign pa_2);
+    _10 <- ([#"../NewDB/src/lib.rs" 234 16 234 33] Len0.len _11);
+    goto BB3
+  }
+  BB3 {
+    _8 <- ([#"../NewDB/src/lib.rs" 234 7 234 33] _9 = _10);
+    switch (_8)
+      | False -> goto BB6
+      | True -> goto BB4
+      end
+  }
+  BB4 {
+    _13 <- f_1;
+    _15 <- NewDb_Pasn_Type.pasn_assign pa_2;
+    _14 <- _15;
+    _0 <- ([#"../NewDB/src/lib.rs" 235 15 235 41] EvalFormula0.eval_formula _13 _14);
+    goto BB5
+  }
+  BB5 {
+    goto BB14
+  }
+  BB6 {
+    _7 <- ();
+    _17 <- f_1;
+    _20 <- pa_2;
+    _19 <- _20;
+    _18 <- ([#"../NewDB/src/lib.rs" 237 13 237 29] SetNext0.set_next _19 ([#"../NewDB/src/lib.rs" 237 27 237 28] (1 : uint8)));
+    goto BB10
+  }
+  BB7 {
+    _0 <- ([#"../NewDB/src/lib.rs" 237 4 237 60] true);
+    goto BB9
+  }
+  BB8 {
+    _22 <- f_1;
+    _25 <- pa_2;
+    _24 <- _25;
+    _23 <- ([#"../NewDB/src/lib.rs" 237 43 237 59] SetNext0.set_next _24 ([#"../NewDB/src/lib.rs" 237 57 237 58] (0 : uint8)));
+    goto BB12
+  }
+  BB9 {
+    goto BB14
+  }
+  BB10 {
+    _16 <- ([#"../NewDB/src/lib.rs" 237 4 237 30] solve _17 _18);
+    goto BB11
+  }
+  BB11 {
+    switch (_16)
+      | False -> goto BB8
+      | True -> goto BB7
+      end
+  }
+  BB12 {
+    _21 <- ([#"../NewDB/src/lib.rs" 237 34 237 60] solve _22 _23);
+    goto BB13
+  }
+  BB13 {
+    _0 <- _21;
+    _21 <- any bool;
+    goto BB9
+  }
+  BB14 {
+    return _0
+  }
+  
+end
+module Alloc_Vec_FromElem_Interface
+  type t
+  use seq.Seq
+  use prelude.UIntSize
+  use prelude.Int
+  clone Core_Num_Impl12_Max_Stub as Max0
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+    type t = t,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  val from_elem (elem : t) (n : usize) : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)
+    ensures { Seq.length (ShallowModel0.shallow_model result) = UIntSize.to_int n }
+    ensures { forall i : int . 0 <= i /\ i < UIntSize.to_int n -> Seq.get (ShallowModel0.shallow_model result) i = elem }
+    
+end
+module NewDb_Solver_Interface
+  use seq.Seq
+  use prelude.UIntSize
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UInt8
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max_Stub as Max0
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  use NewDb_Formula_Type as NewDb_Formula_Type
+  clone NewDb_Impl4_Sat_Stub as Sat0
+  clone NewDb_Impl6_Invariant_Stub as Invariant1
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone NewDb_Impl4_Invariant_Stub as Invariant0
+  val solver [#"../NewDB/src/lib.rs" 244 0 244 34] (f : NewDb_Formula_Type.t_formula) : bool
+    requires {[#"../NewDB/src/lib.rs" 240 11 240 24] Invariant0.invariant' f}
+    ensures { [#"../NewDB/src/lib.rs" 241 0 242 33] not result -> (forall a : NewDb_Assignments_Type.t_assignments . Seq.length (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 a)) = UIntSize.to_int (NewDb_Formula_Type.formula_num_vars f) /\ Invariant1.invariant' a -> not Sat0.sat f a) }
+    ensures { [#"../NewDB/src/lib.rs" 243 0 243 55] result -> (exists a : NewDb_Assignments_Type.t_assignments . Sat0.sat f a) }
+    
+end
+module NewDb_Solver
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UInt8
+  use prelude.UIntSize
+  use seq.Seq
+  clone NewDb_BoolAsU8 as BoolAsU80
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  clone NewDb_Impl1_IsPositiveLogic as IsPositiveLogic0
+  clone NewDb_Impl1_IndexLogic as IndexLogic0
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl12_Max as Max0
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  clone NewDb_Impl0_ShallowModel as ShallowModel2 with
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_Impl2_LitSatLogic as LitSatLogic0 with
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
+    function IndexLogic0.index_logic = IndexLogic0.index_logic,
+    function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
+    function BoolAsU80.bool_as_u8 = BoolAsU80.bool_as_u8
+  clone NewDb_Impl2_VarInRange as VarInRange0 with
+    function IndexLogic0.index_logic = IndexLogic0.index_logic
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
+    type t = NewDb_Lit_Type.t_lit,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone NewDb_Impl6_Invariant as Invariant1 with
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model
+  use NewDb_Pasn_Type as NewDb_Pasn_Type
+  clone NewDb_Impl6_Compatible as Compatible0 with
+    predicate Invariant0.invariant' = Invariant1.invariant',
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_Impl7_Invariant as Invariant2 with
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    predicate Invariant0.invariant' = Invariant1.invariant',
+    val Max0.mAX' = Max0.mAX'
+  use NewDb_Clause_Type as NewDb_Clause_Type
+  clone NewDb_Impl8_ClauseSatLogic as ClauseSatLogic0 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    predicate LitSatLogic0.lit_sat_logic = LitSatLogic0.lit_sat_logic,
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_Impl5_VarsInRange as VarsInRange0 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    predicate VarInRange0.var_in_range = VarInRange0.var_in_range,
+    val Max0.mAX' = Max0.mAX'
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel1 with
+    type t = NewDb_Clause_Type.t_clause,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  use NewDb_Formula_Type as NewDb_Formula_Type
+  clone NewDb_Impl4_Sat as Sat0 with
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    predicate ClauseSatLogic0.clause_sat_logic = ClauseSatLogic0.clause_sat_logic,
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_Impl4_Invariant as Invariant0 with
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
+    val Max0.mAX' = Max0.mAX'
+  clone NewDb_Solve_Interface as Solve0 with
+    predicate Invariant0.invariant' = Invariant2.invariant',
+    predicate Invariant1.invariant' = Invariant0.invariant',
+    predicate Compatible0.compatible = Compatible0.compatible,
+    predicate Sat0.sat = Sat0.sat
+  clone Alloc_Vec_FromElem_Interface as FromElem0 with
+    type t = uint8,
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  let rec cfg solver [#"../NewDB/src/lib.rs" 244 0 244 34] [@cfg:stackify] [@cfg:subregion_analysis] (f : NewDb_Formula_Type.t_formula) : bool
+    requires {[#"../NewDB/src/lib.rs" 240 11 240 24] Invariant0.invariant' f}
+    ensures { [#"../NewDB/src/lib.rs" 241 0 242 33] not result -> (forall a : NewDb_Assignments_Type.t_assignments . Seq.length (ShallowModel0.shallow_model (NewDb_Assignments_Type.assignments_0 a)) = UIntSize.to_int (NewDb_Formula_Type.formula_num_vars f) /\ Invariant1.invariant' a -> not Sat0.sat f a) }
+    ensures { [#"../NewDB/src/lib.rs" 243 0 243 55] result -> (exists a : NewDb_Assignments_Type.t_assignments . Sat0.sat f a) }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : bool;
+  var f_1 : NewDb_Formula_Type.t_formula;
+  var _5 : NewDb_Formula_Type.t_formula;
+  var _6 : NewDb_Pasn_Type.t_pasn;
+  var _7 : NewDb_Assignments_Type.t_assignments;
+  var _8 : Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global);
+  var _9 : usize;
+  {
+    f_1 <- f;
+    goto BB0
+  }
+  BB0 {
+    _5 <- f_1;
+    _9 <- NewDb_Formula_Type.formula_num_vars f_1;
+    _8 <- ([#"../NewDB/src/lib.rs" 245 40 245 59] FromElem0.from_elem ([#"../NewDB/src/lib.rs" 245 45 245 46] (0 : uint8)) _9);
+    goto BB1
+  }
+  BB1 {
+    _7 <- NewDb_Assignments_Type.C_Assignments _8;
+    goto BB2
+  }
+  BB2 {
+    _6 <- NewDb_Pasn_Type.C_Pasn _7 ([#"../NewDB/src/lib.rs" 245 66 245 67] (0 : usize));
+    goto BB3
+  }
+  BB3 {
+    _0 <- ([#"../NewDB/src/lib.rs" 245 4 245 70] Solve0.solve _5 _6);
+    goto BB4
+  }
+  BB4 {
+    return _0
+  }
+  
+end
+module NewDb_Impl11
+  use prelude.Borrow
+  use NewDb_Assignments_Type as NewDb_Assignments_Type
+  goal clone'_refn : [#"../NewDB/src/lib.rs" 10 9 10 14] forall self : NewDb_Assignments_Type.t_assignments . forall result : NewDb_Assignments_Type.t_assignments . result = self -> result = self
+end
+module NewDb_Impl13
+  use prelude.Borrow
+  use NewDb_Lit_Type as NewDb_Lit_Type
+  goal clone'_refn : [#"../NewDB/src/lib.rs" 23 15 23 20] forall self : NewDb_Lit_Type.t_lit . forall result : NewDb_Lit_Type.t_lit . result = self -> result = self
+end
+module NewDb_Impl14
+  use prelude.Borrow
+  use NewDb_Pasn_Type as NewDb_Pasn_Type
+  goal clone'_refn : [#"../NewDB/src/lib.rs" 29 9 29 14] forall self : NewDb_Pasn_Type.t_pasn . forall result : NewDb_Pasn_Type.t_pasn . result = self -> result = self
+end
+module NewDb_Impl0
+  
+end
+module NewDb_Impl12
+  
+end

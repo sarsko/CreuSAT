@@ -230,3 +230,36 @@ workspace = false
 script = '''
 rm -rf mlcfgs/Scratch*
 '''
+
+
+[tasks.creusot-NewDB]
+workspace = false
+command = "cargo"
+args = ["creusot", "--", "-p", "NewDB", "--features=${@}"]
+
+[tasks.move-NewDB]
+workspace = false
+script = '''
+[ ! -f ./target/debug/NewDB-rlib.mlcfg ] || cp ./target/debug/NewDB-rlib.mlcfg ./mlcfgs/NewDB.mlcfg
+'''
+
+[tasks.gen-cfg-NewDB]
+workspace = false
+dependencies = ["creusot-NewDB", "move-NewDB"]
+
+[tasks.ide-NewDB]
+workspace = false
+script = '''
+./ide ./mlcfgs/NewDB.mlcfg
+'''
+
+[tasks.prove-NewDB]
+workspace = false
+dependencies = ["gen-cfg-NewDB", "ide-NewDB"]
+
+
+[tasks.clean-NewDB]
+workspace = false
+script = '''
+rm -rf mlcfgs/NewDB*
+'''
