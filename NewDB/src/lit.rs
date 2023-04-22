@@ -40,6 +40,15 @@ impl Lit {
             (@a)[self.index_logic()] == bool_as_u8(self.is_positive_logic())
         }
     }
+
+    // This is the one that is supposed to stay
+    #[predicate]
+    #[why3::attr = "inline:trivial"]
+    pub(crate) fn sat(self, a: Seq<AssignedState>) -> bool {
+        pearlite! {
+            a[self.index_logic()] == bool_as_u8(self.is_positive_logic())
+        }
+    }
 }
 
 impl Lit {

@@ -7,6 +7,21 @@ use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
 pub type AssignedState = u8;
 
+#[logic]
+fn pos() -> AssignedState {
+    1u8
+}
+
+#[logic]
+fn neg() -> AssignedState {
+    0u8
+}
+
+#[predicate]
+pub fn unset(v: AssignedState) -> bool {
+    pearlite! { @v >= 2 }
+}
+
 #[derive(Clone)]
 pub struct Assignments(pub Vec<AssignedState>);
 
@@ -27,5 +42,12 @@ impl Assignments {
             forall<i: Int> 0 <= i && i < (@self).len() ==>
                 @(@self)[i] < 2
         }
+    }
+}
+
+#[predicate]
+pub fn complete_inner(a: Seq<AssignedState>) -> bool {
+    pearlite! {
+        forall<i: Int> 0 <= i && i < a.len() ==> !unset(a[i])
     }
 }
