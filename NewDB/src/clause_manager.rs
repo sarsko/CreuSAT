@@ -45,9 +45,9 @@ fn lemma_implied_by_stable_on_extension(
 #[logic]
 #[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
 #[requires(ca.num_vars == ca2.num_vars)]
-#[requires(forall<i : Int> 0 <= i && i < (@ca.buffer).len() ==> (@ca)[i] == (@ca2)[i])]
-#[requires(forall<i : Int> 0 <= i && i < (@ca2.buffer).len() ==> (@ca)[i] == (@ca2)[i])]
-#[requires((@ca2.buffer).len() == (@ca.buffer).len())]
+#[requires(forall<i : Int> 0 <= i && i < ca.buffer@.len() ==> ca@[i] == ca2@[i])]
+#[requires(forall<i : Int> 0 <= i && i < ca2.buffer@.len() ==> ca@[i] == ca2@[i])]
+#[requires(ca2.buffer@.len() == ca.buffer@.len())]
 #[ensures(learnt_clauses.are_implied_by(original_clauses, ca2))]
 fn lemma_implied_by_stable_on_blim(
     original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator,
@@ -58,11 +58,11 @@ fn lemma_implied_by_stable_on_blim(
 // anything, and one for binding a clause which is implied maintains the invariant.
 impl ClauseManager {
     #[maintains((mut self).invariant())]
-    #[requires((@lits).len() > 0)]
-    #[requires((@self.clause_allocator).len() + (@lits).len() + @HEADER_LEN <= @u32::MAX)] // TODO: May have to move this to a runtime check
-    #[requires(Formula::from(@self.original_clauses, self.clause_allocator, @self.clause_allocator.num_vars).implies(seq_to_fset(@lits)))]
+    #[requires(lits@.len() > 0)]
+    #[requires(self.clause_allocator@.len() + lits@.len() + HEADER_LEN@ <= u32::MAX@)] // TODO: May have to move this to a runtime check
+    #[requires(Formula::from(self.original_clauses@, self.clause_allocator, self.clause_allocator.num_vars@).implies(seq_to_fset(lits@)))]
     //#[requires((@self).len() + (@lits).len() + @HEADER_LEN <= @u32::MAX)] // TODO: May have to move this to a runtime check
-    #[requires(clause_invariant_seq(@lits, @self.clause_allocator.num_vars))]
+    #[requires(clause_invariant_seq(lits@, self.clause_allocator.num_vars@))]
     pub(crate) fn learn_clause(&mut self, lits: &[Lit]) -> CRef {
         let old_self: Ghost<&mut ClauseManager> = ghost!(self);
         proof_assert!(self.learnt_core.are_implied_by(self.original_clauses, self.clause_allocator));

@@ -35,10 +35,10 @@ impl Formula {
     #[logic]
     #[requires(clause_allocator.invariant())]
     #[requires(forall<i: Int> 0 <= i && i < crefs.len() ==>
-                cref_invariant(@crefs[i], clause_allocator, num_vars))] // CRefManager.invariant unwrapped -> TODO: refactor?
+                cref_invariant(crefs[i]@, clause_allocator, num_vars))] // CRefManager.invariant unwrapped -> TODO: refactor?
     #[ensures(result.num_vars == num_vars)]
-    #[ensures(forall<i: Int> 0 <= i && i < crefs.len() ==> exists<c: _> result.formula.contains(c) && clause_allocator.get_clause_fset(@crefs[i]) == c)]
-    #[ensures(forall<c: _> result.formula.contains(c) ==> exists<i: Int> 0 <= i && i < crefs.len() && clause_allocator.get_clause_fset(@crefs[i]) == c)]
+    #[ensures(forall<i: Int> 0 <= i && i < crefs.len() ==> exists<c: _> result.formula.contains(c) && clause_allocator.get_clause_fset(crefs[i]@) == c)]
+    #[ensures(forall<c: _> result.formula.contains(c) ==> exists<i: Int> 0 <= i && i < crefs.len() && clause_allocator.get_clause_fset(crefs[i]@) == c)]
     pub(crate) fn from(crefs: Seq<CRef>, clause_allocator: ClauseAllocator, num_vars: Int) -> Formula {
         Formula { formula: Formula::from_internal(crefs, clause_allocator, 0, num_vars), num_vars }
     }
@@ -54,15 +54,15 @@ impl Formula {
     #[requires(idx >= 0)]
     #[requires(clause_allocator.invariant())]
     #[requires(forall<i: Int> 0 <= i && i < crefs.len() ==>
-                cref_invariant(@crefs[i], clause_allocator, _num_vars))] // CRefManager.invariant unwrapped -> TODO: refactor?
-    #[ensures(forall<i: Int> idx <= i && i < crefs.len() ==> exists<c: _> result.contains(c) && clause_allocator.get_clause_fset(@crefs[i]) == c)]
-    #[ensures(forall<c: _> result.contains(c) ==> exists<i: Int> idx <= i && i < crefs.len() && clause_allocator.get_clause_fset(@crefs[i]) == c)]
+                cref_invariant(crefs[i]@, clause_allocator, _num_vars))] // CRefManager.invariant unwrapped -> TODO: refactor?
+    #[ensures(forall<i: Int> idx <= i && i < crefs.len() ==> exists<c: _> result.contains(c) && clause_allocator.get_clause_fset(crefs[i]@) == c)]
+    #[ensures(forall<c: _> result.contains(c) ==> exists<i: Int> idx <= i && i < crefs.len() && clause_allocator.get_clause_fset(crefs[i]@) == c)]
     fn from_internal(crefs: Seq<CRef>, clause_allocator: ClauseAllocator, idx: Int, _num_vars: Int) -> FSet<FSet<Lit>> {
         pearlite! {
             //if idx < (@clause_allocator).len() {
             if idx < crefs.len() {
                 let set = Formula::from_internal(crefs, clause_allocator, idx + 1, _num_vars);
-                let clause = clause_allocator.get_clause_fset(@crefs[idx]);
+                let clause = clause_allocator.get_clause_fset(crefs[idx]@);
                 set.insert(clause)
             } else {
                 FSet::EMPTY

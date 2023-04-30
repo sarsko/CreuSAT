@@ -19,7 +19,7 @@ fn neg() -> AssignedState {
 
 #[predicate]
 pub fn unset(v: AssignedState) -> bool {
-    pearlite! { @v >= 2 }
+    pearlite! { v@ >= 2 }
 }
 
 #[derive(Clone)]
@@ -39,8 +39,8 @@ impl Assignments {
     #[predicate]
     pub fn invariant(self) -> bool {
         pearlite! {
-            forall<i: Int> 0 <= i && i < (@self).len() ==>
-                @(@self)[i] < 2
+            forall<i: Int> 0 <= i && i < self@.len() ==>
+                self@[i]@ < 2
         }
     }
 }

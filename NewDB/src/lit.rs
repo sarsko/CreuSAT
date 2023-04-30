@@ -15,13 +15,13 @@ impl Lit {
     #[logic]
     #[why3::attr = "inline:trivial"]
     pub fn index_logic(self) -> Int {
-        pearlite! { @self.code / 2 }
+        pearlite! { self.code@ / 2 }
     }
 
     #[logic]
     #[why3::attr = "inline:trivial"]
     pub fn is_positive_logic(self) -> bool {
-        pearlite! { @self.code % 2 == 0 }
+        pearlite! { self.code@ % 2 == 0 }
     }
 }
 
@@ -37,7 +37,7 @@ impl Lit {
     #[why3::attr = "inline:trivial"]
     pub(crate) fn lit_sat_logic(self, a: Assignments) -> bool {
         pearlite! {
-            (@a)[self.index_logic()] == bool_as_u8(self.is_positive_logic())
+            a@[self.index_logic()] == bool_as_u8(self.is_positive_logic())
         }
     }
 
@@ -52,14 +52,14 @@ impl Lit {
 }
 
 impl Lit {
-    #[ensures(@result.code == @code)]
+    #[ensures(result.code@ == code@)]
     pub(crate) fn raw(code: u32) -> Lit {
         Lit { code }
     }
 
     // TODO: Add support for shr
     #[inline(always)]
-    #[ensures(@result == self.index_logic())]
+    #[ensures(result@ == self.index_logic())]
     pub fn index(self) -> usize {
         //(self.code >> 1) as usize
         (self.code / 2) as usize
@@ -74,7 +74,7 @@ impl Lit {
     }
 
     #[inline(always)]
-    #[requires(self.index_logic() < (@a).len())]
+    #[requires(self.index_logic() < a@.len())]
     #[ensures(result == self.lit_sat_logic(*a))]
     pub fn lit_sat(self, a: &Assignments) -> bool {
         a.0[self.index()] == self.is_positive() as u8
