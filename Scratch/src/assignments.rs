@@ -47,15 +47,15 @@ impl Assignments {
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
-            @f.num_vars == (@self).len()
-            && forall<i : Int> 0 <= i && i < (@self).len() ==> @(@self)[i] <= 3
+            f.num_vars@ == self@.len()
+            && forall<i : Int> 0 <= i && i < self@.len() ==> @self@[i] <= 3
         }
     }
 
     #[predicate]
     pub fn complete(self) -> bool {
         pearlite! {
-            forall<i: Int> 0 <= i && i < (@self).len() ==> !unset((@self)[i])
+            forall<i: Int> 0 <= i && i < self@.len() ==> !unset(self@[i])
         }
     }
 }

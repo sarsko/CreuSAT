@@ -20,21 +20,21 @@ fn partition_rev(v: Seq<(usize, usize)>, i: Int) -> bool {
 
 // Selection sort with larger elements first. Based on the one in Creusot repo by Xavier and me.
 #[cfg_attr(feature = "trust_util", trusted)]
-#[ensures(sorted_rev(@^v))]
-#[ensures((@^v).permutation_of(@v))]
+#[ensures(sorted_rev((^v)@))]
+#[ensures((^v)@.permutation_of(v@))]
 pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
     let mut i: usize = 0;
     let _old_v: Ghost<&mut Vec<(usize, usize)>> = ghost!(v);
-    #[invariant(proph_const, ^v == ^_old_v.inner())]
-    #[invariant(permutation, (@v).permutation_of(@_old_v.inner()))]
-    #[invariant(sorted, sorted_range_rev(@v, 0, @i))]
-    #[invariant(partition, partition_rev(@v, @i))]
+    #[invariant(^v == ^_old_v.inner())]
+    #[invariant(v@.permutation_of(_old_v.inner()@))]
+    #[invariant(sorted_range_rev(v@, 0, i@))]
+    #[invariant(partition_rev(v@, i@))]
     while i < v.len() {
         let mut max = i;
         let mut j = i + 1;
-        #[invariant(max_is_max, forall<k: Int> @i <= k && k < @j ==> (@v)[@max].0 >= (@v)[k].0)]
-        #[invariant(j_bound, @i <= @j && @j <= (@v).len())]
-        #[invariant(max_bound, @i <= @max && @max < @j)]
+        #[invariant(forall<k: Int> i@ <= k && k < j@ ==> v@[max@].0 >= v@[k].0)]
+        #[invariant(i@ <= j@ && j@ <= v@.len())]
+        #[invariant(i@ <= max@ && max@ < j@)]
         while j < v.len() {
             if v[j].0 > v[max].0 {
                 max = j;

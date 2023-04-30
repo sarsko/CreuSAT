@@ -11,7 +11,7 @@ pub enum SatResult {
 
 #[requires(f.invariant())]
 #[requires(a.invariant(*f))]
-#[requires(d.invariant(@f.num_vars))]
+#[requires(d.invariant(f.num_vars@))]
 #[ensures(result == true ==> f.eventually_sat(a))]
 #[ensures(result == false ==> !f.eventually_sat_complete(a))]
 fn inner(f: &Formula, mut a: Assignments, d: &Decisions) -> bool {
@@ -34,11 +34,11 @@ fn inner(f: &Formula, mut a: Assignments, d: &Decisions) -> bool {
 }
 
 #[cfg_attr(feature = "trust_solver", trusted)]
-#[requires(forall<i: Int> 0 <= i && i < (@formula.clauses).len() ==>
-        (@formula.clauses)[i].vars_in_range(@usize::MAX))]
+#[requires(forall<i: Int> 0 <= i && i < formula.clauses@.len() ==>
+        formula.clauses@[i].vars_in_range(usize::MAX@))]
 #[ensures(match result {
     SatResult::Sat(_assn) => { (^formula).eventually_sat_no_ass()
-                               //&& formula.sat_inner(@assn) // TODO on returning satisfying assignment
+                               //&& formula.sat_inner(assn@) // TODO on returning satisfying assignment
     },
     SatResult::Unsat     => { !(^formula).eventually_sat_complete_no_ass() },
     _                    => { false }, // We are complete

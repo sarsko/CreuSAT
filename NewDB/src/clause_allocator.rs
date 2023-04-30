@@ -39,8 +39,8 @@ pub(crate) struct ClauseAllocator {
 
 impl ClauseAllocator {
     #[logic]
-    //#[ensures(forall<i: Int> 0 <= i && i < (@self.buffer).len() ==> (@self.buffer)[i] == (@result.buffer)[i])]
-    //#[ensures(@result.num_vars == @self.num_vars)]
+    //#[ensures(forall<i: Int> 0 <= i && i < (self@.buffer).len() ==> (self@.buffer)[i] == (result@.buffer)[i])]
+    //#[ensures(result@.num_vars == self@.num_vars)]
     pub(crate) fn push(self, lit: Lit) -> Self {
         self
     }
@@ -132,9 +132,9 @@ impl ClauseAllocator {
                     self@[cref@ + HEADER_LEN@ + i] == lits@[i])]
         #[invariant(forall<i: Int> 0 <= i && i < self@.len() - old_self@.len() ==>
                     self@[cref@ + HEADER_LEN@ + i].var_in_range(self.num_vars@))]
-        //#[invariant(extended2, forall<i: Int> 0 <= i && i < (produced).len() ==> (@self)[@cref + HEADER_LEN@ + i] == *(produced)[i])]
-        //#[invariant(extended, forall<i: Int> 0 <= i && i < (produced).len() ==> (@self)[@cref + HEADER_LEN@ + i] == (@lits)[i]
-        //            && (@self)[@cref + HEADER_LEN@ + i].var_in_range(@self.num_vars))]
+        //#[invariant(extended2, forall<i: Int> 0 <= i && i < (produced).len() ==> self@[@cref + HEADER_LEN@ + i] == *(produced)[i])]
+        //#[invariant(extended, forall<i: Int> 0 <= i && i < (produced).len() ==> self@[@cref + HEADER_LEN@ + i] == (@lits)[i]
+        //            && self@[@cref + HEADER_LEN@ + i].var_in_range(self@.num_vars))]
         for lit in lits {
             self.buffer.push(*lit);
         }

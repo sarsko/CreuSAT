@@ -38,7 +38,7 @@ impl DeepModel for Lit {
 impl Lit {
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[ensures(@result == self.index_logic())]
+    #[ensures(result@ == self.index_logic())]
     pub fn index(self) -> usize {
         self.idx
     }
@@ -59,7 +59,7 @@ impl Lit {
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[requires(self.invariant((@a).len()))]
+    #[requires(self.invariant((a@).len()))]
     #[ensures(result == self.sat(*a))]
     pub fn lit_sat(self, a: &Assignments) -> bool {
         match self.is_positive() {
@@ -70,7 +70,7 @@ impl Lit {
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[requires(self.invariant((@a).len()))]
+    #[requires(self.invariant((a@).len()))]
     #[ensures(result == self.unsat(*a))]
     pub fn lit_unsat(self, a: &Assignments) -> bool {
         match self.is_positive() {
@@ -81,7 +81,7 @@ impl Lit {
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[requires(self.invariant((@a).len()))]
+    #[requires(self.invariant((a@).len()))]
     #[ensures(result == self.unset(*a))]
     pub fn lit_unset(self, a: &Assignments) -> bool {
         a[self.index()] >= 2
@@ -89,7 +89,7 @@ impl Lit {
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[requires(self.invariant((@a).len()))]
+    #[requires(self.invariant((a@).len()))]
     #[ensures(result == !self.unset(*a))]
     pub fn lit_set(self, a: &Assignments) -> bool {
         a[self.index()] < 2
@@ -97,25 +97,25 @@ impl Lit {
 
     // Gets the index of the literal in the representation used for the watchlist
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[requires(self.index_logic() < @usize::MAX/2)]
-    #[ensures(@result == self.to_watchidx_logic())]
-    #[ensures(@result == self.index_logic() * 2 + if self.is_positive_logic() { 0 } else { 1 })]
+    #[requires(self.index_logic() < usize::MAX@/2)]
+    #[ensures(result@ == self.to_watchidx_logic())]
+    #[ensures(result@ == self.index_logic() * 2 + if self.is_positive_logic() { 0 } else { 1 })]
     pub fn to_watchidx(self) -> usize {
         self.index() * 2 + if self.is_positive() { 0 } else { 1 }
     }
     // Gets the index of the literal of the opposite polarity(-self) in the representation used for the watchlist
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[requires(self.index_logic() < @usize::MAX/2)]
-    #[ensures(@result == self.to_neg_watchidx_logic())]
-    #[ensures(@result == self.index_logic() * 2 + if self.is_positive_logic() { 1 } else { 0 })]
+    #[requires(self.index_logic() < usize::MAX@/2)]
+    #[ensures(result@ == self.to_neg_watchidx_logic())]
+    #[ensures(result@ == self.index_logic() * 2 + if self.is_positive_logic() { 1 } else { 0 })]
     pub fn to_neg_watchidx(self) -> usize {
         self.index() * 2 + if self.is_positive() { 1 } else { 0 }
     }
 
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[requires(@idx < (@assignments).len())]
-    #[ensures(result.index_logic() == @idx)]
-    #[ensures(result.is_positive_logic() == (@(@assignments)[@idx] == 1))]
+    #[requires(i@dx < (a@ssignments).len())]
+    #[ensures(result.index_logic() == i@dx)]
+    #[ensures(result.is_positive_logic() == (@(a@ssignments)[i@dx] == 1))]
     pub fn phase_saved(idx: usize, assignments: &Assignments) -> Lit {
         Lit { idx: idx, polarity: if assignments[idx] == 1 { true } else { false } }
     }

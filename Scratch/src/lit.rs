@@ -48,7 +48,7 @@ impl Lit {
     #[logic]
     #[why3::attr = "inline:trivial"]
     pub fn index_logic(self) -> Int {
-        pearlite! { @self.idx }
+        pearlite! { self@.idx }
     }
 
     #[logic]
@@ -106,8 +106,8 @@ impl Lit {
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             match self.is_positive_logic() {
-                true  =>  (@a[self.index_logic()] == 1),
-                false =>  (@a[self.index_logic()] == 0),
+                true  =>  (a@[self.index_logic()] == 1),
+                false =>  (a@[self.index_logic()] == 0),
             }
         }
     }
@@ -116,8 +116,8 @@ impl Lit {
     pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             match self.is_positive_logic() {
-                true  =>  (@a[self.index_logic()] == 0),
-                false =>  (@a[self.index_logic()] == 1),
+                true  =>  (a@[self.index_logic()] == 0),
+                false =>  (a@[self.index_logic()] == 1),
             }
         }
     }
@@ -129,17 +129,17 @@ impl Lit {
 
     #[predicate]
     pub fn sat(self, a: Assignments) -> bool {
-        pearlite! { self.sat_inner(@a) }
+        pearlite! { self.sat_inner(a@) }
     }
 
     #[predicate]
     pub fn unset(self, a: Assignments) -> bool {
-        pearlite! { self.unset_inner(@a) }
+        pearlite! { self.unset_inner(a@) }
     }
 
     #[predicate]
     pub fn unsat(self, a: Assignments) -> bool {
-        pearlite! { self.unsat_inner(@a) }
+        pearlite! { self.unsat_inner(a@) }
     }
 
     /*

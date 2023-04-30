@@ -25,13 +25,13 @@ pub struct Watches {
 // #10 and #19 just take some time, but check out on Mac
 #[cfg_attr(all(feature = "trust_watches", not(feature = "problem_child")), trusted)]
 #[maintains((mut watches).invariant(*f))]
-#[requires(@f.num_vars < @usize::MAX/2)]
-#[requires(lit.index_logic() < @f.num_vars)]
+#[requires(f.num_vars@ < usize::MAX@/2)]
+#[requires(lit.index_logic() < f.num_vars@)]
 #[requires(f.invariant())]
 #[requires(trail.invariant(*f))]
-#[requires(@cref < (@f.clauses).len())]
-#[requires(0 <= @k && @k < (@(@f.clauses)[@cref]).len())] // Changed
-#[requires((@(@f.clauses)[@cref]).len() >= 2)] // This was > 2 before ?
+#[requires(@cref < f.clauses@.len())]
+#[requires(0 <= @k && @k < (@f.clauses@[@cref]).len())] // Changed
+#[requires((@f.clauses@[@cref]).len() >= 2)] // This was > 2 before ?
 #[requires((@(@watches.watches)[lit.to_watchidx_logic()]).len() > @j)]
 pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit) {
     let watchidx = lit.to_watchidx();
@@ -49,7 +49,7 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
             proof_assert!(watches.invariant(*f));
             proof_assert!(curr_lit.to_neg_watchidx_logic() < (@watches.watches).len());
             proof_assert!(watcher_crefs_in_range(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f));
-            proof_assert!(@w.cref < (@f.clauses).len());
+            proof_assert!(@w.cref < f.clauses@.len());
             proof_assert!(lemma_push_maintains_watcher_invariant(@(@watches.watches)[curr_lit.to_neg_watchidx_logic()], *f, w); true);
 
             let watch_lit = curr_lit.to_neg_watchidx();
@@ -72,8 +72,8 @@ impl Watches {
     pub fn new(f: &Formula) -> Watches {
         let mut i: usize = 0;
         let mut watches = Vec::new();
-        #[invariant(i_less, @i <= @f.num_vars)]
-        #[invariant(maintains_inv, watches_invariant_internal(@watches, @i, *f))]
+        #[invariant(i_less, i@ <= f.num_vars@)]
+        #[invariant(maintains_inv, watches_invariant_internal(@watches, i@, *f))]
         while i < f.num_vars {
             watches.push(Vec::new());
             watches.push(Vec::new());
@@ -89,10 +89,10 @@ impl Watches {
     #[cfg_attr(feature = "trust_watches", trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(@cref < (@_f.clauses).len())]
-    #[requires(lit.index_logic() < @usize::MAX/2)]
-    #[requires(lit.to_neg_watchidx_logic() < (@self.watches).len())]
+    #[requires(lit.index_logic() < usize::MAX@/2)]
+    #[requires(lit.to_neg_watchidx_logic() < (self@.watches).len())]
     #[requires((@(@_f.clauses)[@cref]).len() > 1)]
-    #[ensures((@self.watches).len() == (@(^self).watches).len())]
+    #[ensures((self@.watches).len() == (@(^self).watches).len())]
     pub fn add_watcher(&mut self, lit: Lit, cref: usize, _f: &Formula) {
         self.watches[lit.to_neg_watchidx()].push(Watcher { cref });
     }
@@ -101,11 +101,11 @@ impl Watches {
     #[cfg_attr(feature = "trust_watches", trusted)]
     #[maintains((mut self).invariant(*_f))]
     #[requires(@cref < (@_f.clauses).len())]
-    #[requires(lit.index_logic() < @usize::MAX/2)]
+    #[requires(lit.index_logic() < usize::MAX@/2)]
     #[requires(blocker.index_logic() < @_f.num_vars)]
-    #[requires(lit.to_neg_watchidx_logic() < (@self.watches).len())]
+    #[requires(lit.to_neg_watchidx_logic() < (self@.watches).len())]
     #[requires((@(@_f.clauses)[@cref]).len() > 1)]
-    #[ensures((@self.watches).len() == (@(^self).watches).len())]
+    #[ensures((self@.watches).len() == (@(^self).watches).len())]
     pub fn add_watcher(&mut self, lit: Lit, cref: usize, _f: &Formula, blocker: Lit) {
         self.watches[lit.to_neg_watchidx()].push(Watcher { cref, blocker });
     }
@@ -113,11 +113,11 @@ impl Watches {
     // OK
     #[cfg_attr(feature = "trust_watches", trusted)]
     #[maintains((mut self).invariant(*_f))]
-    #[requires(new_lit.index_logic() < @usize::MAX/2)]
-    #[requires(new_lit.to_neg_watchidx_logic() < (@self.watches).len())]
-    #[requires(@old_idx < (@self.watches).len())]
-    #[requires(@old_pos < (@(@self.watches)[@old_idx]).len())]
-    #[ensures((@(@(^self).watches)[@old_idx]).len() == ((@(@self.watches)[@old_idx]).len()))]
+    #[requires(new_lit.index_logic() < usize::MAX@/2)]
+    #[requires(new_lit.to_neg_watchidx_logic() < (self@.watches).len())]
+    #[requires(@old_idx < (self@.watches).len())]
+    #[requires(@old_pos < (@(self@.watches)[@old_idx]).len())]
+    #[ensures((@(@(^self).watches)[@old_idx]).len() == ((@(self@.watches)[@old_idx]).len()))]
     pub fn move_to_end(&mut self, old_idx: usize, old_pos: usize, new_lit: Lit, _f: &Formula) {
         let end = self.watches[old_idx].len() - 1;
         self.watches[old_idx].swap(old_pos, end);
@@ -127,13 +127,13 @@ impl Watches {
     // OK
     #[cfg_attr(feature = "trust_watches", trusted)]
     #[maintains((mut self).invariant(*f))]
-    #[requires(@f.num_vars < @usize::MAX/2)]
+    #[requires(f.num_vars@ < usize::MAX@/2)]
     #[requires(f.invariant())]
     pub fn init_watches(&mut self, f: &Formula) {
         let old_w: Ghost<&mut Watches> = ghost! { self };
         let mut i = 0;
         #[invariant(watch_inv, self.invariant(*f))]
-        #[invariant(same_len, (@self.watches).len() == 2 * @f.num_vars)]
+        #[invariant(same_len, (self@.watches).len() == 2 * f.num_vars@)]
         #[invariant(proph, ^self == ^old_w.inner())]
         while i < f.clauses.len() {
             let clause = &f[i];
@@ -150,12 +150,12 @@ impl Watches {
     // This is just the first half of update_watch.
     #[cfg_attr(all(feature = "trust_watches", not(feature = "problem_child")), trusted)]
     #[maintains((mut self).invariant(*f))]
-    #[requires(@f.num_vars < @usize::MAX/2)]
-    #[requires(lit.index_logic() < @f.num_vars)]
+    #[requires(f.num_vars@ < usize::MAX@/2)]
+    #[requires(lit.index_logic() < f.num_vars@)]
     #[requires(f.invariant())]
     #[requires(trail.invariant(*f))]
-    #[requires(@cref < (@f.clauses).len())]
-    #[requires((@(@f.clauses)[@cref]).len() >= 2)]
+    #[requires(@cref < f.clauses@.len())]
+    #[requires((@f.clauses@[@cref]).len() >= 2)]
     pub fn unwatch(&mut self, f: &Formula, trail: &Trail, cref: usize, lit: Lit) {
         let watchidx = lit.to_neg_watchidx();
         let mut i: usize = 0;

@@ -13,15 +13,15 @@ pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
     let old_v: Ghost<&mut Vec<(usize, usize)>> = ghost! { v };
     #[invariant(proph_const, ^v == ^old_v.inner())]
     #[invariant(permutation, (@v).permutation_of(@*old_v.inner()))]
-    #[invariant(i_bound, @i <= (@v).len())]
-    #[invariant(sorted, sorted_range_rev(@v, 0, @i))]
-    #[invariant(partition, partition_rev(@v, @i))]
+    #[invariant(i_bound, i@ <= (@v).len())]
+    #[invariant(sorted, sorted_range_rev(@v, 0, i@))]
+    #[invariant(partition, partition_rev(@v, i@))]
     while i < v.len() {
         let mut max = i;
         let mut j = i + 1;
-        #[invariant(max_is_max, forall<k: Int> @i <= k && k < @j ==> (@v)[@max].0 >= (@v)[k].0)]
-        #[invariant(j_bound, @i <= @j && @j <= (@v).len())]
-        #[invariant(max_bound, @i <= @max && @max < @j)]
+        #[invariant(max_is_max, forall<k: Int> i@ <= k && k < @j ==> (@v)[@max].0 >= (@v)[k].0)]
+        #[invariant(j_bound, i@ <= @j && @j <= (@v).len())]
+        #[invariant(max_bound, i@ <= @max && @max < @j)]
         while j < v.len() {
             if v[j].0 > v[max].0 {
                 max = j;
@@ -62,15 +62,15 @@ pub fn sort(v: &mut Vec<(usize, usize)>) {
     let old_v: Ghost<&mut Vec<(usize, usize)>> = ghost! { v };
     #[invariant(proph_const, ^v == ^old_v.inner())]
     #[invariant(permutation, (@v).permutation_of(@*old_v.inner()))]
-    #[invariant(i_bound, @i <= (@v).len())]
-    #[invariant(sorted, sorted_range_tuple_zeroth(@v, 0, @i))]
-    #[invariant(partition, partition(@v, @i))]
+    #[invariant(i_bound, i@ <= (@v).len())]
+    #[invariant(sorted, sorted_range_tuple_zeroth(@v, 0, i@))]
+    #[invariant(partition, partition(@v, i@))]
     while i < v.len() {
         let mut max = i;
         let mut j = i + 1;
-        #[invariant(max_is_max, forall<k: Int> @i <= k && k < @j ==> (@v)[@max].0 <= (@v)[k].0)]
-        #[invariant(j_bound, @i <= @j && @j <= (@v).len())]
-        #[invariant(max_bound, @i <= @max && @max < @j)]
+        #[invariant(max_is_max, forall<k: Int> i@ <= k && k < @j ==> (@v)[@max].0 <= (@v)[k].0)]
+        #[invariant(j_bound, i@ <= @j && @j <= (@v).len())]
+        #[invariant(max_bound, i@ <= @max && @max < @j)]
         while j < v.len() {
             if v[j].0 < v[max].0 {
                 max = j;
@@ -92,10 +92,10 @@ fn min_log(a: Int, b: Int) -> Int {
 }
 
 #[cfg_attr(feature = "trust_util", trusted)]
-#[ensures(@result == min_log(@a, @b))]
-#[ensures(@a <= @b ==> @result == @a)]
-#[ensures(@b < @a ==> @result == @b)]
-#[ensures(@result <= @b && @result <= @a)]
+#[ensures(result@ == min_log(a@, @b))]
+#[ensures(a@ <= @b ==> result@ == a@)]
+#[ensures(@b < a@ ==> result@ == @b)]
+#[ensures(result@ <= @b && result@ <= a@)]
 pub fn min(a: usize, b: usize) -> usize {
     if a <= b {
         a
@@ -114,7 +114,7 @@ fn max_log(a: Int, b: Int) -> Int {
 }
 
 #[cfg_attr(feature = "trust_util", trusted)]
-#[ensures(@result == max_log(@a, @b))]
+#[ensures(result@ == max_log(a@, @b))]
 pub fn max(a: usize, b: usize) -> usize {
     if a >= b {
         a

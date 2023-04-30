@@ -15,10 +15,10 @@ pub(crate) struct Formula {
 #[logic]
 #[variant(just.len() - ix)]
 #[requires(ix >= 0)]
-#[requires(forall<i : _> 0 <= i && i < just.len() ==> @just[i] < (@self.assignments).len())]
-#[ensures(forall<a : _> result.contains(a) ==> exists<i : _> 0 <= i && i < (@self.assignments).len() && a == (@self.assignments)[i].term_value())]
-#[ensures(forall<a : _> result.contains(a) ==> exists<i : _> ix <= i && i < just.len() && a == (@self.assignments)[@just[i]].term_value())]
-#[ensures(forall<i : _ > ix <= i && i < just.len() ==> result.contains((@self.assignments)[@just[i]].term_value()))]
+#[requires(forall<i : _> 0 <= i && i < just.len() ==> @just[i] < (self@.assignments).len())]
+#[ensures(forall<a : _> result.contains(a) ==> exists<i : _> 0 <= i && i < (self@.assignments).len() && a == (self@.assignments)[i].term_value())]
+#[ensures(forall<a : _> result.contains(a) ==> exists<i : _> ix <= i && i < just.len() && a == (self@.assignments)[@just[i]].term_value())]
+#[ensures(forall<i : _ > ix <= i && i < just.len() ==> result.contains((self@.assignments)[@just[i]].term_value()))]
 pub fn abs_just_inner(self, just: Seq<usize>, ix: Int) -> FSet<(theory::Term, theory::Value)> {
     if ix < just.len() {
         let set = self.abs_just_inner(just, ix + 1);

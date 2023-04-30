@@ -27,8 +27,8 @@ pub fn unset(v: AssignedState) -> bool {
 
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
-#[ensures(b ==> @result == 1)]
-#[ensures(!b ==> @result == 0)]
+#[ensures(b ==> result@ == 1)]
+#[ensures(!b ==> result@ == 0)]
 pub fn bool_to_assignedstate(b: bool) -> AssignedState {
     if b {
         1u8

@@ -57,12 +57,12 @@ module Robinson_Assignments_Assignments_Type
       | C_Assignments _ a -> a
       end
 end
-module Core_Num_Impl12_Max_Stub
+module Core_Num_Impl11_Max_Stub
   use prelude.Int
   use prelude.UIntSize
   val constant mAX'  : usize
 end
-module Core_Num_Impl12_Max
+module Core_Num_Impl11_Max
   use prelude.Int
   use prelude.UIntSize
   let constant mAX'  : usize = [@vc:do_not_keep_trace] [@vc:sp]
@@ -75,7 +75,7 @@ module CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub
   use prelude.UIntSize
   use prelude.Int
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   function shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
 end
 module CreusotContracts_Std1_Vec_Impl0_ShallowModel_Interface
@@ -85,7 +85,7 @@ module CreusotContracts_Std1_Vec_Impl0_ShallowModel_Interface
   use prelude.UIntSize
   use prelude.Int
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   function shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
   axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
 end
@@ -96,7 +96,7 @@ module CreusotContracts_Std1_Vec_Impl0_ShallowModel
   use prelude.UIntSize
   use prelude.Int
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   function shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
   val shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
     ensures { result = shallow_model self }
@@ -125,7 +125,7 @@ module Robinson_Assignments_Impl0_ShallowModel
   use prelude.UInt8
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = uint8,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -334,7 +334,7 @@ module Robinson_Assignments_Impl1_Invariant
   predicate invariant' [#"../Robinson/src/assignments.rs" 52 4 52 46] (self : Robinson_Assignments_Assignments_Type.t_assignments) (f : Robinson_Formula_Formula_Type.t_formula)
     
    =
-    [#"../Robinson/src/assignments.rs" 54 12 54 66] UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f) = Seq.length (ShallowModel0.shallow_model self) /\ UIntSize.to_int (Robinson_Assignments_Assignments_Type.assignments_1 self) <= UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f)
+    [#"../Robinson/src/assignments.rs" 54 12 54 64] UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f) = Seq.length (ShallowModel0.shallow_model self) /\ UIntSize.to_int (Robinson_Assignments_Assignments_Type.assignments_1 self) <= UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f)
   val invariant' [#"../Robinson/src/assignments.rs" 52 4 52 46] (self : Robinson_Assignments_Assignments_Type.t_assignments) (f : Robinson_Formula_Formula_Type.t_formula) : bool
     ensures { result = invariant' self f }
     
@@ -460,10 +460,87 @@ module CreusotContracts_Model_Impl1_ShallowModel
     ensures { result = shallow_model self }
     
 end
+module CreusotContracts_Logic_Ops_Impl0_IndexLogic_Stub
+  type t
+  type s
+  use prelude.Int
+  function index_logic [@inline:trivial] (self : s) (ix : int) : t
+end
+module CreusotContracts_Logic_Ops_Impl0_IndexLogic_Interface
+  type t
+  type s
+  use prelude.Int
+  function index_logic [@inline:trivial] (self : s) (ix : int) : t
+end
+module CreusotContracts_Logic_Ops_Impl0_IndexLogic
+  type t
+  type s
+  use prelude.Int
+  use seq.Seq
+  use seq.Seq
+  clone CreusotContracts_Model_ShallowModel_ShallowModel_Stub as ShallowModel0 with
+    type self = s,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
+  function index_logic [@inline:trivial] (self : s) (ix : int) : t =
+    [#"../Robinson/src/clause.rs" 193 9 195 11] Seq.get (ShallowModel0.shallow_model self) ix
+  val index_logic [@inline:trivial] (self : s) (ix : int) : t
+    ensures { result = index_logic self ix }
+    
+end
+module CreusotContracts_Resolve_Resolve_Resolve_Stub
+  type self
+  predicate resolve (self : self)
+end
+module CreusotContracts_Resolve_Resolve_Resolve_Interface
+  type self
+  predicate resolve (self : self)
+end
+module CreusotContracts_Resolve_Resolve_Resolve
+  type self
+  predicate resolve (self : self)
+  val resolve (self : self) : bool
+    ensures { result = resolve self }
+    
+end
+module CreusotContracts_Std1_Vec_Impl10_Resolve_Stub
+  type t
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  predicate resolve (self : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global))
+end
+module CreusotContracts_Std1_Vec_Impl10_Resolve_Interface
+  type t
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  predicate resolve (self : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global))
+end
+module CreusotContracts_Std1_Vec_Impl10_Resolve
+  type t
+  use prelude.Int
+  use seq.Seq
+  clone Core_Num_Impl11_Max_Stub as Max0
+  clone CreusotContracts_Resolve_Resolve_Resolve_Stub as Resolve0 with
+    type self = t
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone CreusotContracts_Logic_Ops_Impl0_IndexLogic_Stub as IndexLogic0 with
+    type t = t,
+    type s = Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+    type t = t,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  predicate resolve (self : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)) =
+    forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) -> Resolve0.resolve (IndexLogic0.index_logic self i)
+  val resolve (self : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)) : bool
+    ensures { result = resolve self }
+    
+end
 module Alloc_Vec_Impl0_New_Interface
   type t
   use seq.Seq
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
@@ -553,27 +630,26 @@ module CreusotContracts_Std1_Slice_SliceIndex_HasValue
     ensures { result = has_value self seq out }
     
 end
-module Alloc_Vec_Impl15_Index_Interface
+module Alloc_Vec_Impl13_Index_Interface
   type t
   type i
   type a
   use prelude.Borrow
   use prelude.Slice
-  use prelude.Seq
   use seq.Seq
   use seq.Seq
   clone Core_Slice_Index_SliceIndex_Output_Type as Output0 with
     type self = i,
-    type t = seq t
+    type t = slice t
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Std1_Slice_SliceIndex_HasValue_Stub as HasValue0 with
     type self = i,
-    type t = seq t,
+    type t = slice t,
     type ShallowModelTy0.shallowModelTy = Seq.seq t,
     type Output0.output = Output0.output
   clone CreusotContracts_Std1_Slice_SliceIndex_InBounds_Stub as InBounds0 with
     type self = i,
-    type t = seq t,
+    type t = slice t,
     type ShallowModelTy0.shallowModelTy = Seq.seq t
   clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
     type t = Alloc_Vec_Vec_Type.t_vec t a,
@@ -617,7 +693,7 @@ module Alloc_Vec_Impl1_Push_Interface
   use prelude.Borrow
   use seq.Seq
   use seq.Seq
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Model_Impl3_ShallowModel_Stub as ShallowModel1 with
     type t = Alloc_Vec_Vec_Type.t_vec t a,
@@ -629,53 +705,6 @@ module Alloc_Vec_Impl1_Push_Interface
     axiom .
   val push (self : borrowed (Alloc_Vec_Vec_Type.t_vec t a)) (value : t) : ()
     ensures { ShallowModel0.shallow_model ( ^ self) = Seq.snoc (ShallowModel1.shallow_model self) value }
-    
-end
-module CreusotContracts_Resolve_Resolve_Resolve_Stub
-  type self
-  predicate resolve (self : self)
-end
-module CreusotContracts_Resolve_Resolve_Resolve_Interface
-  type self
-  predicate resolve (self : self)
-end
-module CreusotContracts_Resolve_Resolve_Resolve
-  type self
-  predicate resolve (self : self)
-  val resolve (self : self) : bool
-    ensures { result = resolve self }
-    
-end
-module CreusotContracts_Std1_Vec_Impl10_Resolve_Stub
-  type t
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  predicate resolve (self : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global))
-end
-module CreusotContracts_Std1_Vec_Impl10_Resolve_Interface
-  type t
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  predicate resolve (self : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global))
-end
-module CreusotContracts_Std1_Vec_Impl10_Resolve
-  type t
-  use prelude.Int
-  use seq.Seq
-  clone Core_Num_Impl12_Max_Stub as Max0
-  clone CreusotContracts_Resolve_Resolve_Resolve_Stub as Resolve0 with
-    type self = t
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
-    type t = t,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  predicate resolve (self : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)) =
-    forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) -> Resolve0.resolve (Seq.get (ShallowModel0.shallow_model self) i)
-  val resolve (self : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)) : bool
-    ensures { result = resolve self }
     
 end
 module CreusotContracts_Std1_Slice_Impl5_InBounds_Stub
@@ -757,8 +786,8 @@ module Robinson_Assignments_Impl2_Clone_Interface
     type t = Robinson_Assignments_Assignments_Type.t_assignments,
     type ShallowModelTy0.shallowModelTy = Seq.seq uint8
   val clone' [#"../Robinson/src/assignments.rs" 81 4 81 31] (self : Robinson_Assignments_Assignments_Type.t_assignments) : Robinson_Assignments_Assignments_Type.t_assignments
-    ensures { [#"../Robinson/src/assignments.rs" 78 4 78 89] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) -> Seq.get (ShallowModel0.shallow_model self) i = Seq.get (ShallowModel1.shallow_model result) i }
-    ensures { [#"../Robinson/src/assignments.rs" 79 14 79 46] Seq.length (ShallowModel0.shallow_model self) = Seq.length (ShallowModel1.shallow_model result) }
+    ensures { [#"../Robinson/src/assignments.rs" 78 4 78 83] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) -> Seq.get (ShallowModel0.shallow_model self) i = Seq.get (ShallowModel1.shallow_model result) i }
+    ensures { [#"../Robinson/src/assignments.rs" 79 14 79 42] Seq.length (ShallowModel0.shallow_model self) = Seq.length (ShallowModel1.shallow_model result) }
     ensures { [#"../Robinson/src/assignments.rs" 80 14 80 34] UIntSize.to_int (Robinson_Assignments_Assignments_Type.assignments_1 result) = UIntSize.to_int (Robinson_Assignments_Assignments_Type.assignments_1 self) }
     
 end
@@ -770,15 +799,19 @@ module Robinson_Assignments_Impl2_Clone
   use seq.Seq
   clone CreusotContracts_Resolve_Impl2_Resolve as Resolve1 with
     type t = uint8
+  use seq.Seq
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
     type t = uint8,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
-  use seq.Seq
+  clone CreusotContracts_Logic_Ops_Impl0_IndexLogic as IndexLogic0 with
+    type t = uint8,
+    type s = Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global),
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model
   clone CreusotContracts_Model_Impl3_ShallowModel as ShallowModel4 with
     type t = Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global),
     type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
@@ -794,6 +827,7 @@ module Robinson_Assignments_Impl2_Clone
   clone CreusotContracts_Std1_Vec_Impl10_Resolve as Resolve0 with
     type t = uint8,
     function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
+    function IndexLogic0.index_logic = IndexLogic0.index_logic,
     predicate Resolve0.resolve = Resolve1.resolve,
     val Max0.mAX' = Max0.mAX'
   clone Alloc_Vec_Impl1_Push_Interface as Push0 with
@@ -802,7 +836,7 @@ module Robinson_Assignments_Impl2_Clone
     function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
     function ShallowModel1.shallow_model = ShallowModel4.shallow_model,
     val Max0.mAX' = Max0.mAX'
-  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
+  clone Alloc_Vec_Impl13_Index_Interface as Index0 with
     type t = uint8,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -827,8 +861,8 @@ module Robinson_Assignments_Impl2_Clone
     type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model
   let rec cfg clone' [#"../Robinson/src/assignments.rs" 81 4 81 31] [@cfg:stackify] [@cfg:subregion_analysis] (self : Robinson_Assignments_Assignments_Type.t_assignments) : Robinson_Assignments_Assignments_Type.t_assignments
-    ensures { [#"../Robinson/src/assignments.rs" 78 4 78 89] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) -> Seq.get (ShallowModel0.shallow_model self) i = Seq.get (ShallowModel1.shallow_model result) i }
-    ensures { [#"../Robinson/src/assignments.rs" 79 14 79 46] Seq.length (ShallowModel0.shallow_model self) = Seq.length (ShallowModel1.shallow_model result) }
+    ensures { [#"../Robinson/src/assignments.rs" 78 4 78 83] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) -> Seq.get (ShallowModel0.shallow_model self) i = Seq.get (ShallowModel1.shallow_model result) i }
+    ensures { [#"../Robinson/src/assignments.rs" 79 14 79 42] Seq.length (ShallowModel0.shallow_model self) = Seq.length (ShallowModel1.shallow_model result) }
     ensures { [#"../Robinson/src/assignments.rs" 80 14 80 34] UIntSize.to_int (Robinson_Assignments_Assignments_Type.assignments_1 result) = UIntSize.to_int (Robinson_Assignments_Assignments_Type.assignments_1 self) }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
@@ -872,9 +906,9 @@ module Robinson_Assignments_Impl2_Clone
     goto BB4
   }
   BB4 {
-    invariant loop_invariant { [#"../Robinson/src/assignments.rs" 84 36 84 55] UIntSize.to_int i_6 <= Seq.length (ShallowModel0.shallow_model self_1) };
-    invariant equality { [#"../Robinson/src/assignments.rs" 84 8 84 57] forall j : int . 0 <= j /\ j < UIntSize.to_int i_6 -> Seq.get (ShallowModel2.shallow_model out_5) j = Seq.get (ShallowModel0.shallow_model self_1) j };
-    invariant len { [#"../Robinson/src/assignments.rs" 86 25 86 43] Seq.length (ShallowModel2.shallow_model out_5) = UIntSize.to_int i_6 };
+    invariant { [#"../Robinson/src/assignments.rs" 84 20 84 37] UIntSize.to_int i_6 <= Seq.length (ShallowModel0.shallow_model self_1) };
+    invariant { [#"../Robinson/src/assignments.rs" 84 8 84 39] forall j : int . 0 <= j /\ j < UIntSize.to_int i_6 -> Seq.get (ShallowModel2.shallow_model out_5) j = Seq.get (ShallowModel0.shallow_model self_1) j };
+    invariant { [#"../Robinson/src/assignments.rs" 86 20 86 36] Seq.length (ShallowModel2.shallow_model out_5) = UIntSize.to_int i_6 };
     _13 <- i_6;
     _15 <- Robinson_Assignments_Assignments_Type.assignments_0 self_1;
     _14 <- ([#"../Robinson/src/assignments.rs" 87 18 87 30] Len0.len _15);
@@ -941,7 +975,7 @@ module Robinson_Clause_Impl0_ShallowModel
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = Robinson_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -1039,7 +1073,7 @@ module Robinson_Formula_Impl1_Invariant
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   clone Robinson_Clause_Impl1_Invariant_Stub as Invariant0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = Robinson_Clause_Clause_Type.t_clause,
@@ -1058,9 +1092,12 @@ module Alloc_Vec_FromElem_Interface
   use seq.Seq
   use prelude.UIntSize
   use prelude.Int
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone CreusotContracts_Logic_Ops_Impl0_IndexLogic_Stub as IndexLogic0 with
+    type t = t,
+    type s = Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = t,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -1068,7 +1105,7 @@ module Alloc_Vec_FromElem_Interface
     axiom .
   val from_elem (elem : t) (n : usize) : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)
     ensures { Seq.length (ShallowModel0.shallow_model result) = UIntSize.to_int n }
-    ensures { forall i : int . 0 <= i /\ i < UIntSize.to_int n -> Seq.get (ShallowModel0.shallow_model result) i = elem }
+    ensures { forall i : int . 0 <= i /\ i < UIntSize.to_int n -> IndexLogic0.index_logic result i = elem }
     
 end
 module Robinson_Assignments_Impl2_New_Interface
@@ -1084,7 +1121,7 @@ module Robinson_Assignments_Impl2_New_Interface
   val new [#"../Robinson/src/assignments.rs" 98 4 98 35] (f : Robinson_Formula_Formula_Type.t_formula) : Robinson_Assignments_Assignments_Type.t_assignments
     requires {[#"../Robinson/src/assignments.rs" 95 15 95 28] Invariant0.invariant' f}
     ensures { [#"../Robinson/src/assignments.rs" 96 14 96 34] Invariant1.invariant' result f }
-    ensures { [#"../Robinson/src/assignments.rs" 97 4 97 84] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model result) -> Unset0.unset (Seq.get (ShallowModel0.shallow_model result) i) }
+    ensures { [#"../Robinson/src/assignments.rs" 97 4 97 80] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model result) -> Unset0.unset (Seq.get (ShallowModel0.shallow_model result) i) }
     
 end
 module Robinson_Assignments_Impl2_New
@@ -1096,7 +1133,7 @@ module Robinson_Assignments_Impl2_New
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel4 with
     type t = Robinson_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -1107,6 +1144,7 @@ module Robinson_Assignments_Impl2_New
   clone Robinson_Clause_Impl0_ShallowModel as ShallowModel3 with
     function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
     val Max0.mAX' = Max0.mAX'
+  use seq.Seq
   clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with
     function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
     predicate Invariant0.invariant' = Invariant3.invariant'
@@ -1115,6 +1153,10 @@ module Robinson_Assignments_Impl2_New
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
+  clone CreusotContracts_Logic_Ops_Impl0_IndexLogic as IndexLogic0 with
+    type t = uint8,
+    type s = Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global),
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model
   clone Robinson_Clause_Impl1_Invariant as Invariant2 with
     predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel1 with
@@ -1125,6 +1167,7 @@ module Robinson_Assignments_Impl2_New
   clone Alloc_Vec_FromElem_Interface as FromElem0 with
     type t = uint8,
     function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
+    function IndexLogic0.index_logic = IndexLogic0.index_logic,
     val Max0.mAX' = Max0.mAX'
   clone Robinson_Logic_Unset as Unset0
   use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
@@ -1141,7 +1184,7 @@ module Robinson_Assignments_Impl2_New
   let rec cfg new [#"../Robinson/src/assignments.rs" 98 4 98 35] [@cfg:stackify] [@cfg:subregion_analysis] (f : Robinson_Formula_Formula_Type.t_formula) : Robinson_Assignments_Assignments_Type.t_assignments
     requires {[#"../Robinson/src/assignments.rs" 95 15 95 28] Invariant0.invariant' f}
     ensures { [#"../Robinson/src/assignments.rs" 96 14 96 34] Invariant1.invariant' result f }
-    ensures { [#"../Robinson/src/assignments.rs" 97 4 97 84] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model result) -> Unset0.unset (Seq.get (ShallowModel0.shallow_model result) i) }
+    ensures { [#"../Robinson/src/assignments.rs" 97 4 97 80] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model result) -> Unset0.unset (Seq.get (ShallowModel0.shallow_model result) i) }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : Robinson_Assignments_Assignments_Type.t_assignments;
@@ -1199,7 +1242,7 @@ module Robinson_Decision_Impl0_Invariant
   use prelude.UIntSize
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -1254,10 +1297,10 @@ module Robinson_Assignments_Impl2_FindUnassigned_Interface
   val find_unassigned [#"../Robinson/src/assignments.rs" 108 4 108 75] (self : borrowed (Robinson_Assignments_Assignments_Type.t_assignments)) (d : Robinson_Decision_Decisions_Type.t_decisions) (_f : Robinson_Formula_Formula_Type.t_formula) : usize
     requires {[#"../Robinson/src/assignments.rs" 103 4 103 43] Invariant0.invariant' ( * self) _f}
     requires {[#"../Robinson/src/assignments.rs" 104 15 104 31] not Complete0.complete ( * self)}
-    requires {[#"../Robinson/src/assignments.rs" 105 15 105 41] Invariant1.invariant' d (Seq.length (ShallowModel0.shallow_model self))}
+    requires {[#"../Robinson/src/assignments.rs" 105 15 105 39] Invariant1.invariant' d (Seq.length (ShallowModel0.shallow_model self))}
     ensures { [#"../Robinson/src/assignments.rs" 103 4 103 43] Invariant0.invariant' ( ^ self) _f }
-    ensures { [#"../Robinson/src/assignments.rs" 106 14 106 64] UIntSize.to_int result < Seq.length (ShallowModel0.shallow_model self) /\ Unset0.unset (Seq.get (ShallowModel0.shallow_model self) (UIntSize.to_int result)) }
-    ensures { [#"../Robinson/src/assignments.rs" 107 14 107 29] ShallowModel0.shallow_model self = ShallowModel1.shallow_model ( ^ self) }
+    ensures { [#"../Robinson/src/assignments.rs" 106 14 106 60] UIntSize.to_int result < Seq.length (ShallowModel0.shallow_model self) /\ Unset0.unset (Seq.get (ShallowModel0.shallow_model self) (UIntSize.to_int result)) }
+    ensures { [#"../Robinson/src/assignments.rs" 107 14 107 31] ShallowModel0.shallow_model self = ShallowModel1.shallow_model ( ^ self) }
     
 end
 module Robinson_Assignments_Impl2_FindUnassigned
@@ -1271,7 +1314,7 @@ module Robinson_Assignments_Impl2_FindUnassigned
   clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds1 with
     type t = uint8
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
     type t = uint8,
@@ -1303,7 +1346,7 @@ module Robinson_Assignments_Impl2_FindUnassigned
   use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
     type t = Robinson_Assignments_Assignments_Type.t_assignments
-  clone Alloc_Vec_Impl15_Index_Interface as Index1 with
+  clone Alloc_Vec_Impl13_Index_Interface as Index1 with
     type t = uint8,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -1311,7 +1354,7 @@ module Robinson_Assignments_Impl2_FindUnassigned
     predicate InBounds0.in_bounds = InBounds1.in_bounds,
     predicate HasValue0.has_value = HasValue1.has_value,
     type Output0.output = uint8
-  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
+  clone Alloc_Vec_Impl13_Index_Interface as Index0 with
     type t = usize,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -1344,10 +1387,10 @@ module Robinson_Assignments_Impl2_FindUnassigned
   let rec cfg find_unassigned [#"../Robinson/src/assignments.rs" 108 4 108 75] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Robinson_Assignments_Assignments_Type.t_assignments)) (d : Robinson_Decision_Decisions_Type.t_decisions) (_f : Robinson_Formula_Formula_Type.t_formula) : usize
     requires {[#"../Robinson/src/assignments.rs" 103 4 103 43] Invariant0.invariant' ( * self) _f}
     requires {[#"../Robinson/src/assignments.rs" 104 15 104 31] not Complete0.complete ( * self)}
-    requires {[#"../Robinson/src/assignments.rs" 105 15 105 41] Invariant1.invariant' d (Seq.length (ShallowModel0.shallow_model self))}
+    requires {[#"../Robinson/src/assignments.rs" 105 15 105 39] Invariant1.invariant' d (Seq.length (ShallowModel0.shallow_model self))}
     ensures { [#"../Robinson/src/assignments.rs" 103 4 103 43] Invariant0.invariant' ( ^ self) _f }
-    ensures { [#"../Robinson/src/assignments.rs" 106 14 106 64] UIntSize.to_int result < Seq.length (ShallowModel0.shallow_model self) /\ Unset0.unset (Seq.get (ShallowModel0.shallow_model self) (UIntSize.to_int result)) }
-    ensures { [#"../Robinson/src/assignments.rs" 107 14 107 29] ShallowModel0.shallow_model self = ShallowModel1.shallow_model ( ^ self) }
+    ensures { [#"../Robinson/src/assignments.rs" 106 14 106 60] UIntSize.to_int result < Seq.length (ShallowModel0.shallow_model self) /\ Unset0.unset (Seq.get (ShallowModel0.shallow_model self) (UIntSize.to_int result)) }
+    ensures { [#"../Robinson/src/assignments.rs" 107 14 107 31] ShallowModel0.shallow_model self = ShallowModel1.shallow_model ( ^ self) }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : usize;
@@ -1407,7 +1450,7 @@ module Robinson_Assignments_Impl2_FindUnassigned
     goto BB1
   }
   BB1 {
-    invariant i_bound { [#"../Robinson/src/assignments.rs" 110 29 110 55] UIntSize.to_int i_11 <= Seq.length (ShallowModel2.shallow_model (Robinson_Decision_Decisions_Type.decisions_lit_order d_2)) };
+    invariant { [#"../Robinson/src/assignments.rs" 110 20 110 44] UIntSize.to_int i_11 <= Seq.length (ShallowModel2.shallow_model (Robinson_Decision_Decisions_Type.decisions_lit_order d_2)) };
     _16 <- i_11;
     _18 <- Robinson_Decision_Decisions_Type.decisions_lit_order d_2;
     _17 <- ([#"../Robinson/src/assignments.rs" 111 18 111 35] Len0.len _18);
@@ -1466,7 +1509,7 @@ module Robinson_Assignments_Impl2_FindUnassigned
     goto BB10
   }
   BB10 {
-    invariant prev { [#"../Robinson/src/assignments.rs" 122 8 122 82] forall j : int . 0 <= j /\ j < UIntSize.to_int i_11 -> not Unset0.unset (Seq.get (ShallowModel0.shallow_model self_1) j) };
+    invariant { [#"../Robinson/src/assignments.rs" 122 8 122 74] forall j : int . 0 <= j /\ j < UIntSize.to_int i_11 -> not Unset0.unset (Seq.get (ShallowModel0.shallow_model self_1) j) };
     _40 <- i_11;
     _42 <- Robinson_Assignments_Assignments_Type.assignments_0 ( * self_1);
     _41 <- ([#"../Robinson/src/assignments.rs" 123 18 123 30] Len1.len _42);
@@ -1599,7 +1642,7 @@ module Robinson_Formula_Impl1_SatInner
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   clone Robinson_Clause_Impl1_SatInner_Stub as SatInner0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = Robinson_Clause_Clause_Type.t_clause,
@@ -1702,7 +1745,7 @@ module Robinson_Lit_Impl1_UnsetInner
   use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
   predicate unset_inner [#"../Robinson/src/lit.rs" 60 4 60 59] (self : Robinson_Lit_Lit_Type.t_lit) (a : Seq.seq uint8)
    =
-    [#"../Robinson/src/lit.rs" 62 12 62 32] UInt8.to_int (Seq.get a (UIntSize.to_int (Robinson_Lit_Lit_Type.lit_idx self))) >= 2
+    [#"../Robinson/src/lit.rs" 62 12 62 30] UInt8.to_int (Seq.get a (UIntSize.to_int (Robinson_Lit_Lit_Type.lit_idx self))) >= 2
   val unset_inner [#"../Robinson/src/lit.rs" 60 4 60 59] (self : Robinson_Lit_Lit_Type.t_lit) (a : Seq.seq uint8) : bool
     ensures { result = unset_inner self a }
     
@@ -1879,612 +1922,6 @@ module Robinson_Clause_Impl1_Unsat
     ensures { result = unsat self a }
     
 end
-module Robinson_Lit_Impl1_Sat_Stub
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  predicate sat [#"../Robinson/src/lit.rs" 67 4 67 44] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
-    
-end
-module Robinson_Lit_Impl1_Sat_Interface
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  predicate sat [#"../Robinson/src/lit.rs" 67 4 67 44] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
-    
-end
-module Robinson_Lit_Impl1_Sat
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  clone Robinson_Lit_Impl1_SatInner_Stub as SatInner0
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  clone Robinson_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
-  predicate sat [#"../Robinson/src/lit.rs" 67 4 67 44] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
-    
-   =
-    [#"../Robinson/src/lit.rs" 69 12 69 30] SatInner0.sat_inner self (ShallowModel0.shallow_model a)
-  val sat [#"../Robinson/src/lit.rs" 67 4 67 44] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments) : bool
-    ensures { result = sat self a }
-    
-end
-module Robinson_Lit_Impl2_LitSat_Interface
-  use seq.Seq
-  use prelude.Borrow
-  use prelude.Int
-  use prelude.UInt8
-  use seq.Seq
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  clone Robinson_Lit_Impl1_Sat_Stub as Sat0
-  clone Robinson_Lit_Impl1_Invariant_Stub as Invariant0
-  clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
-    type t = Robinson_Assignments_Assignments_Type.t_assignments,
-    type ShallowModelTy0.shallowModelTy = Seq.seq uint8
-  val lit_sat [#"../Robinson/src/lit.rs" 95 4 95 49] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments) : bool
-    requires {[#"../Robinson/src/lit.rs" 93 15 93 41] Invariant0.invariant' self (Seq.length (ShallowModel0.shallow_model a))}
-    ensures { [#"../Robinson/src/lit.rs" 94 14 94 36] result = Sat0.sat self a }
-    
-end
-module Robinson_Lit_Impl2_LitSat
-  use prelude.Borrow
-  use prelude.Int
-  use prelude.UInt8
-  use prelude.UIntSize
-  use seq.Seq
-  clone Core_Num_Impl12_Max as Max0
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
-    type t = uint8,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
-    type t = uint8
-  clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
-    type t = uint8
-  use seq.Seq
-  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel2 with
-    type t = Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global),
-    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  clone Robinson_Lit_Impl1_SatInner as SatInner0
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  clone Robinson_Assignments_Impl0_ShallowModel as ShallowModel1 with
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
-    val Max0.mAX' = Max0.mAX'
-  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
-    type t = uint8,
-    type i = usize,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
-    predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = uint8
-  clone Robinson_Lit_Impl1_Sat as Sat0 with
-    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
-    predicate SatInner0.sat_inner = SatInner0.sat_inner
-  clone Robinson_Lit_Impl1_Invariant as Invariant0
-  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel0 with
-    type t = Robinson_Assignments_Assignments_Type.t_assignments,
-    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
-    function ShallowModel0.shallow_model = ShallowModel1.shallow_model
-  let rec cfg lit_sat [#"../Robinson/src/lit.rs" 95 4 95 49] [@cfg:stackify] [@cfg:subregion_analysis] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments) : bool
-    requires {[#"../Robinson/src/lit.rs" 93 15 93 41] Invariant0.invariant' self (Seq.length (ShallowModel0.shallow_model a))}
-    ensures { [#"../Robinson/src/lit.rs" 94 14 94 36] result = Sat0.sat self a }
-    
-   = [@vc:do_not_keep_trace] [@vc:sp]
-  var _0 : bool;
-  var self_1 : Robinson_Lit_Lit_Type.t_lit;
-  var a_2 : Robinson_Assignments_Assignments_Type.t_assignments;
-  var _5 : uint8;
-  var _6 : uint8;
-  var _7 : Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global);
-  var _8 : usize;
-  var _9 : uint8;
-  var _10 : uint8;
-  var _11 : Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global);
-  var _12 : usize;
-  {
-    self_1 <- self;
-    a_2 <- a;
-    goto BB0
-  }
-  BB0 {
-    switch (Robinson_Lit_Lit_Type.lit_polarity self_1)
-      | False -> goto BB1
-      | True -> goto BB2
-      end
-  }
-  BB1 {
-    _11 <- Robinson_Assignments_Assignments_Type.assignments_0 a_2;
-    _12 <- Robinson_Lit_Lit_Type.lit_idx self_1;
-    _10 <- ([#"../Robinson/src/lit.rs" 98 22 98 35] Index0.index _11 _12);
-    goto BB4
-  }
-  BB2 {
-    _7 <- Robinson_Assignments_Assignments_Type.assignments_0 a_2;
-    _8 <- Robinson_Lit_Lit_Type.lit_idx self_1;
-    _6 <- ([#"../Robinson/src/lit.rs" 97 21 97 34] Index0.index _7 _8);
-    goto BB3
-  }
-  BB3 {
-    _5 <- _6;
-    _0 <- ([#"../Robinson/src/lit.rs" 97 20 97 40] _5 = ([#"../Robinson/src/lit.rs" 97 38 97 39] (1 : uint8)));
-    goto BB5
-  }
-  BB4 {
-    _9 <- _10;
-    _0 <- ([#"../Robinson/src/lit.rs" 98 21 98 41] _9 = ([#"../Robinson/src/lit.rs" 98 39 98 40] (0 : uint8)));
-    goto BB5
-  }
-  BB5 {
-    return _0
-  }
-  
-end
-module Robinson_Lit_Impl1_Unset_Stub
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  predicate unset [#"../Robinson/src/lit.rs" 74 4 74 46] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
-    
-end
-module Robinson_Lit_Impl1_Unset_Interface
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  predicate unset [#"../Robinson/src/lit.rs" 74 4 74 46] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
-    
-end
-module Robinson_Lit_Impl1_Unset
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  clone Robinson_Lit_Impl1_UnsetInner_Stub as UnsetInner0
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  clone Robinson_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
-  predicate unset [#"../Robinson/src/lit.rs" 74 4 74 46] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
-    
-   =
-    [#"../Robinson/src/lit.rs" 75 20 75 40] UnsetInner0.unset_inner self (ShallowModel0.shallow_model a)
-  val unset [#"../Robinson/src/lit.rs" 74 4 74 46] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments) : bool
-    ensures { result = unset self a }
-    
-end
-module Robinson_Lit_Impl2_LitUnset_Interface
-  use seq.Seq
-  use prelude.Borrow
-  use prelude.Int
-  use prelude.UInt8
-  use seq.Seq
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  clone Robinson_Lit_Impl1_Unset_Stub as Unset0
-  clone Robinson_Lit_Impl1_Invariant_Stub as Invariant0
-  clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
-    type t = Robinson_Assignments_Assignments_Type.t_assignments,
-    type ShallowModelTy0.shallowModelTy = Seq.seq uint8
-  val lit_unset [#"../Robinson/src/lit.rs" 116 4 116 51] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments) : bool
-    requires {[#"../Robinson/src/lit.rs" 114 15 114 41] Invariant0.invariant' self (Seq.length (ShallowModel0.shallow_model a))}
-    ensures { [#"../Robinson/src/lit.rs" 115 14 115 38] result = Unset0.unset self a }
-    
-end
-module Robinson_Lit_Impl2_LitUnset
-  use prelude.Borrow
-  use prelude.Int
-  use prelude.UInt8
-  use prelude.UIntSize
-  use seq.Seq
-  clone Core_Num_Impl12_Max as Max0
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
-    type t = uint8,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
-    type t = uint8
-  clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
-    type t = uint8
-  use seq.Seq
-  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel2 with
-    type t = Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global),
-    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  clone Robinson_Lit_Impl1_UnsetInner as UnsetInner0
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  clone Robinson_Assignments_Impl0_ShallowModel as ShallowModel1 with
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
-    val Max0.mAX' = Max0.mAX'
-  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
-    type t = uint8,
-    type i = usize,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
-    predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = uint8
-  clone Robinson_Lit_Impl1_Unset as Unset0 with
-    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
-    predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
-  clone Robinson_Lit_Impl1_Invariant as Invariant0
-  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel0 with
-    type t = Robinson_Assignments_Assignments_Type.t_assignments,
-    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
-    function ShallowModel0.shallow_model = ShallowModel1.shallow_model
-  let rec cfg lit_unset [#"../Robinson/src/lit.rs" 116 4 116 51] [@cfg:stackify] [@cfg:subregion_analysis] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments) : bool
-    requires {[#"../Robinson/src/lit.rs" 114 15 114 41] Invariant0.invariant' self (Seq.length (ShallowModel0.shallow_model a))}
-    ensures { [#"../Robinson/src/lit.rs" 115 14 115 38] result = Unset0.unset self a }
-    
-   = [@vc:do_not_keep_trace] [@vc:sp]
-  var _0 : bool;
-  var self_1 : Robinson_Lit_Lit_Type.t_lit;
-  var a_2 : Robinson_Assignments_Assignments_Type.t_assignments;
-  var _5 : uint8;
-  var _6 : uint8;
-  var _7 : Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global);
-  var _8 : usize;
-  {
-    self_1 <- self;
-    a_2 <- a;
-    goto BB0
-  }
-  BB0 {
-    _7 <- Robinson_Assignments_Assignments_Type.assignments_0 a_2;
-    _8 <- Robinson_Lit_Lit_Type.lit_idx self_1;
-    _6 <- ([#"../Robinson/src/lit.rs" 117 8 117 21] Index0.index _7 _8);
-    goto BB1
-  }
-  BB1 {
-    _5 <- _6;
-    _0 <- ([#"../Robinson/src/lit.rs" 117 8 117 26] _5 >= ([#"../Robinson/src/lit.rs" 117 25 117 26] (2 : uint8)));
-    return _0
-  }
-  
-end
-module Robinson_Lit_Impl1_Unsat_Stub
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  predicate unsat [#"../Robinson/src/lit.rs" 79 4 79 46] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
-    
-end
-module Robinson_Lit_Impl1_Unsat_Interface
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  predicate unsat [#"../Robinson/src/lit.rs" 79 4 79 46] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
-    
-end
-module Robinson_Lit_Impl1_Unsat
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  clone Robinson_Lit_Impl1_UnsatInner_Stub as UnsatInner0
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  clone Robinson_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
-  predicate unsat [#"../Robinson/src/lit.rs" 79 4 79 46] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
-    
-   =
-    [#"../Robinson/src/lit.rs" 80 20 80 40] UnsatInner0.unsat_inner self (ShallowModel0.shallow_model a)
-  val unsat [#"../Robinson/src/lit.rs" 79 4 79 46] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments) : bool
-    ensures { result = unsat self a }
-    
-end
-module Robinson_Clause_Impl2_CheckIfUnit_Interface
-  use seq.Seq
-  use prelude.Borrow
-  use prelude.Int
-  use prelude.UInt8
-  use seq.Seq
-  use Robinson_Formula_Formula_Type as Robinson_Formula_Formula_Type
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
-  clone Robinson_Assignments_Impl1_Complete_Stub as Complete0
-  clone Robinson_Clause_Impl1_Unit_Stub as Unit0
-  clone Robinson_Clause_Impl1_Unsat_Stub as Unsat0
-  clone Robinson_Clause_Impl1_Sat_Stub as Sat0
-  use Robinson_Clause_ClauseState_Type as Robinson_Clause_ClauseState_Type
-  clone Robinson_Assignments_Impl1_Invariant_Stub as Invariant2
-  clone Robinson_Formula_Impl1_Invariant_Stub as Invariant1
-  clone Robinson_Clause_Impl1_Invariant_Stub as Invariant0
-  clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
-    type t = Robinson_Assignments_Assignments_Type.t_assignments,
-    type ShallowModelTy0.shallowModelTy = Seq.seq uint8
-  val check_if_unit [#"../Robinson/src/clause.rs" 121 4 121 77] (self : Robinson_Clause_Clause_Type.t_clause) (a : Robinson_Assignments_Assignments_Type.t_assignments) (_f : Robinson_Formula_Formula_Type.t_formula) : Robinson_Clause_ClauseState_Type.t_clausestate
-    requires {[#"../Robinson/src/clause.rs" 114 15 114 41] Invariant0.invariant' self (Seq.length (ShallowModel0.shallow_model a))}
-    requires {[#"../Robinson/src/clause.rs" 115 15 115 29] Invariant1.invariant' _f}
-    requires {[#"../Robinson/src/clause.rs" 116 15 116 31] Invariant2.invariant' a _f}
-    ensures { [#"../Robinson/src/clause.rs" 117 4 117 65] result = Robinson_Clause_ClauseState_Type.C_Sat -> Sat0.sat self a }
-    ensures { [#"../Robinson/src/clause.rs" 118 4 118 67] result = Robinson_Clause_ClauseState_Type.C_Unsat -> Unsat0.unsat self a }
-    ensures { [#"../Robinson/src/clause.rs" 119 4 119 83] result = Robinson_Clause_ClauseState_Type.C_Unit -> Unit0.unit self a /\ not Complete0.complete a }
-    ensures { [#"../Robinson/src/clause.rs" 120 4 120 66] result = Robinson_Clause_ClauseState_Type.C_Unknown -> not Complete0.complete a }
-    
-end
-module Robinson_Clause_Impl2_CheckIfUnit
-  use prelude.Borrow
-  use prelude.Int
-  use prelude.UIntSize
-  use seq.Seq
-  use prelude.UInt8
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  clone Robinson_Lit_Impl1_SatInner as SatInner1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max as Max0
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel7 with
-    type t = uint8,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  clone Robinson_Assignments_Impl0_ShallowModel as ShallowModel3 with
-    function ShallowModel0.shallow_model = ShallowModel7.shallow_model,
-    val Max0.mAX' = Max0.mAX'
-  clone Robinson_Lit_Impl1_Sat as Sat1 with
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
-    predicate SatInner0.sat_inner = SatInner1.sat_inner
-  clone Robinson_Lit_Impl1_Invariant as Invariant3
-  clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
-    type t = Robinson_Lit_Lit_Type.t_lit
-  clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
-    type t = Robinson_Lit_Lit_Type.t_lit
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel1 with
-    type t = Robinson_Lit_Lit_Type.t_lit,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  use seq.Seq
-  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel6 with
-    type t = Alloc_Vec_Vec_Type.t_vec (Robinson_Lit_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global),
-    type ShallowModelTy0.shallowModelTy = Seq.seq (Robinson_Lit_Lit_Type.t_lit),
-    function ShallowModel0.shallow_model = ShallowModel1.shallow_model
-  clone Robinson_Lit_Impl1_UnsatInner as UnsatInner1
-  clone Robinson_Lit_Impl1_UnsetInner as UnsetInner0
-  use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
-  clone Robinson_Clause_Impl0_ShallowModel as ShallowModel5 with
-    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
-    val Max0.mAX' = Max0.mAX'
-  clone Robinson_Logic_Unset as Unset1
-  clone Robinson_Clause_Impl1_SatInner as SatInner0 with
-    function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
-    predicate SatInner0.sat_inner = SatInner1.sat_inner
-  clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with
-    function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
-    predicate Invariant0.invariant' = Invariant3.invariant'
-  clone Robinson_Clause_Impl1_UnitInner as UnitInner0 with
-    predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
-    predicate SatInner0.sat_inner = SatInner0.sat_inner,
-    function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
-    predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
-  clone Robinson_Clause_Impl1_UnsatInner as UnsatInner0 with
-    function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
-    predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel4 with
-    type t = Robinson_Clause_Clause_Type.t_clause,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  clone Robinson_Lit_Impl1_Unset as Unset0 with
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
-    predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
-  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel0 with
-    type t = Robinson_Assignments_Assignments_Type.t_assignments,
-    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model
-  clone Robinson_Lit_Impl2_LitUnset_Interface as LitUnset0 with
-    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
-    predicate Invariant0.invariant' = Invariant3.invariant',
-    predicate Unset0.unset = Unset0.unset
-  clone Robinson_Lit_Impl2_LitSat_Interface as LitSat0 with
-    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
-    predicate Invariant0.invariant' = Invariant3.invariant',
-    predicate Sat0.sat = Sat1.sat
-  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
-    type t = Robinson_Lit_Lit_Type.t_lit,
-    type i = usize,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    function ShallowModel0.shallow_model = ShallowModel6.shallow_model,
-    predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = Robinson_Lit_Lit_Type.t_lit
-  clone Alloc_Vec_Impl1_Len_Interface as Len0 with
-    type t = Robinson_Lit_Lit_Type.t_lit,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    function ShallowModel0.shallow_model = ShallowModel6.shallow_model
-  clone Robinson_Lit_Impl1_Unsat as Unsat1 with
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
-    predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
-  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel2 with
-    type t = Robinson_Clause_Clause_Type.t_clause,
-    type ShallowModelTy0.shallowModelTy = Seq.seq (Robinson_Lit_Lit_Type.t_lit),
-    function ShallowModel0.shallow_model = ShallowModel5.shallow_model
-  clone Robinson_Assignments_Impl1_Complete as Complete0 with
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
-    predicate Unset0.unset = Unset1.unset
-  clone Robinson_Clause_Impl1_Unit as Unit0 with
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
-    predicate UnitInner0.unit_inner = UnitInner0.unit_inner
-  clone Robinson_Clause_Impl1_Unsat as Unsat0 with
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
-    predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
-  clone Robinson_Clause_Impl1_Sat as Sat0 with
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
-    predicate SatInner0.sat_inner = SatInner0.sat_inner
-  use Robinson_Formula_Formula_Type as Robinson_Formula_Formula_Type
-  clone Robinson_Assignments_Impl1_Invariant as Invariant2 with
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model
-  clone Robinson_Clause_Impl1_Invariant as Invariant0 with
-    predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range
-  clone Robinson_Formula_Impl1_Invariant as Invariant1 with
-    function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
-    predicate Invariant0.invariant' = Invariant0.invariant',
-    val Max0.mAX' = Max0.mAX'
-  use Robinson_Clause_ClauseState_Type as Robinson_Clause_ClauseState_Type
-  let rec cfg check_if_unit [#"../Robinson/src/clause.rs" 121 4 121 77] [@cfg:stackify] [@cfg:subregion_analysis] (self : Robinson_Clause_Clause_Type.t_clause) (a : Robinson_Assignments_Assignments_Type.t_assignments) (_f : Robinson_Formula_Formula_Type.t_formula) : Robinson_Clause_ClauseState_Type.t_clausestate
-    requires {[#"../Robinson/src/clause.rs" 114 15 114 41] Invariant0.invariant' self (Seq.length (ShallowModel0.shallow_model a))}
-    requires {[#"../Robinson/src/clause.rs" 115 15 115 29] Invariant1.invariant' _f}
-    requires {[#"../Robinson/src/clause.rs" 116 15 116 31] Invariant2.invariant' a _f}
-    ensures { [#"../Robinson/src/clause.rs" 117 4 117 65] result = Robinson_Clause_ClauseState_Type.C_Sat -> Sat0.sat self a }
-    ensures { [#"../Robinson/src/clause.rs" 118 4 118 67] result = Robinson_Clause_ClauseState_Type.C_Unsat -> Unsat0.unsat self a }
-    ensures { [#"../Robinson/src/clause.rs" 119 4 119 83] result = Robinson_Clause_ClauseState_Type.C_Unit -> Unit0.unit self a /\ not Complete0.complete a }
-    ensures { [#"../Robinson/src/clause.rs" 120 4 120 66] result = Robinson_Clause_ClauseState_Type.C_Unknown -> not Complete0.complete a }
-    
-   = [@vc:do_not_keep_trace] [@vc:sp]
-  var _0 : Robinson_Clause_ClauseState_Type.t_clausestate;
-  var self_1 : Robinson_Clause_Clause_Type.t_clause;
-  var a_2 : Robinson_Assignments_Assignments_Type.t_assignments;
-  var _f_3 : Robinson_Formula_Formula_Type.t_formula;
-  var i_11 : usize;
-  var _k_12 : usize;
-  var unassigned_13 : usize;
-  var _14 : ();
-  var _23 : ();
-  var _24 : bool;
-  var _25 : usize;
-  var _26 : usize;
-  var _27 : Alloc_Vec_Vec_Type.t_vec (Robinson_Lit_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global);
-  var lit_28 : Robinson_Lit_Lit_Type.t_lit;
-  var _29 : Robinson_Lit_Lit_Type.t_lit;
-  var _30 : Alloc_Vec_Vec_Type.t_vec (Robinson_Lit_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global);
-  var _31 : usize;
-  var _32 : ();
-  var _33 : bool;
-  var _34 : Robinson_Lit_Lit_Type.t_lit;
-  var _35 : Robinson_Assignments_Assignments_Type.t_assignments;
-  var _36 : ();
-  var _37 : bool;
-  var _38 : Robinson_Lit_Lit_Type.t_lit;
-  var _39 : Robinson_Assignments_Assignments_Type.t_assignments;
-  var _40 : ();
-  var _41 : bool;
-  var _42 : usize;
-  var _43 : ();
-  var _44 : usize;
-  var _45 : ();
-  var _46 : ();
-  var _47 : ();
-  var _48 : bool;
-  var _49 : usize;
-  {
-    self_1 <- self;
-    a_2 <- a;
-    _f_3 <- _f;
-    goto BB0
-  }
-  BB0 {
-    i_11 <- ([#"../Robinson/src/clause.rs" 122 27 122 28] (0 : usize));
-    _k_12 <- ([#"../Robinson/src/clause.rs" 123 28 123 29] (0 : usize));
-    unassigned_13 <- ([#"../Robinson/src/clause.rs" 124 36 124 37] (0 : usize));
-    goto BB1
-  }
-  BB1 {
-    invariant loop_invariant { [#"../Robinson/src/clause.rs" 125 36 125 71] 0 <= UIntSize.to_int i_11 /\ UIntSize.to_int i_11 <= Seq.length (ShallowModel1.shallow_model (Robinson_Clause_Clause_Type.clause_rest self_1)) };
-    invariant unass { [#"../Robinson/src/clause.rs" 126 27 126 43] UIntSize.to_int unassigned_13 <= 1 };
-    invariant k_is_unass { [#"../Robinson/src/clause.rs" 127 32 127 76] UIntSize.to_int unassigned_13 = 0 \/ Unset0.unset (Seq.get (ShallowModel2.shallow_model self_1) (UIntSize.to_int _k_12)) a_2 };
-    invariant kk { [#"../Robinson/src/clause.rs" 125 8 125 73] UIntSize.to_int unassigned_13 > 0 -> Unset0.unset (Seq.get (ShallowModel2.shallow_model self_1) (UIntSize.to_int _k_12)) a_2 };
-    invariant not_sat { [#"../Robinson/src/clause.rs" 125 8 125 73] forall j : int . 0 <= j /\ j < UIntSize.to_int i_11 -> Unsat1.unsat (Seq.get (ShallowModel2.shallow_model self_1) j) a_2 \/ Unset0.unset (Seq.get (ShallowModel2.shallow_model self_1) j) a_2 /\ UIntSize.to_int unassigned_13 >= 1 };
-    invariant k_in_bounds { [#"../Robinson/src/clause.rs" 131 33 131 84] UIntSize.to_int unassigned_13 = 0 \/ 0 <= UIntSize.to_int _k_12 /\ UIntSize.to_int _k_12 < Seq.length (ShallowModel2.shallow_model self_1) };
-    invariant k_only { [#"../Robinson/src/clause.rs" 125 8 125 73] UIntSize.to_int unassigned_13 = 1 -> (forall j : int . 0 <= j /\ j < UIntSize.to_int i_11 /\ j <> UIntSize.to_int _k_12 -> not Unset0.unset (Seq.get (ShallowModel2.shallow_model self_1) j) a_2) };
-    invariant k_unset { [#"../Robinson/src/clause.rs" 125 8 125 73] UIntSize.to_int unassigned_13 = 0 -> UIntSize.to_int _k_12 = 0 };
-    _25 <- i_11;
-    _27 <- Robinson_Clause_Clause_Type.clause_rest self_1;
-    _26 <- ([#"../Robinson/src/clause.rs" 135 18 135 33] Len0.len _27);
-    goto BB2
-  }
-  BB2 {
-    _24 <- ([#"../Robinson/src/clause.rs" 135 14 135 33] _25 < _26);
-    switch (_24)
-      | False -> goto BB14
-      | True -> goto BB3
-      end
-  }
-  BB3 {
-    _30 <- Robinson_Clause_Clause_Type.clause_rest self_1;
-    _31 <- i_11;
-    _29 <- ([#"../Robinson/src/clause.rs" 136 22 136 34] Index0.index _30 _31);
-    goto BB4
-  }
-  BB4 {
-    lit_28 <- _29;
-    _34 <- lit_28;
-    _35 <- a_2;
-    _33 <- ([#"../Robinson/src/clause.rs" 137 15 137 29] LitSat0.lit_sat _34 _35);
-    goto BB5
-  }
-  BB5 {
-    switch (_33)
-      | False -> goto BB7
-      | True -> goto BB6
-      end
-  }
-  BB6 {
-    _0 <- Robinson_Clause_ClauseState_Type.C_Sat;
-    goto BB18
-  }
-  BB7 {
-    _38 <- lit_28;
-    _39 <- a_2;
-    _37 <- ([#"../Robinson/src/clause.rs" 139 22 139 38] LitUnset0.lit_unset _38 _39);
-    goto BB8
-  }
-  BB8 {
-    switch (_37)
-      | False -> goto BB12
-      | True -> goto BB9
-      end
-  }
-  BB9 {
-    _42 <- unassigned_13;
-    _41 <- ([#"../Robinson/src/clause.rs" 141 19 141 33] _42 > ([#"../Robinson/src/clause.rs" 141 32 141 33] (0 : usize)));
-    switch (_41)
-      | False -> goto BB11
-      | True -> goto BB10
-      end
-  }
-  BB10 {
-    _0 <- Robinson_Clause_ClauseState_Type.C_Unknown;
-    goto BB18
-  }
-  BB11 {
-    _40 <- ();
-    _44 <- i_11;
-    _k_12 <- _44;
-    _44 <- any usize;
-    unassigned_13 <- ([#"../Robinson/src/clause.rs" 145 16 145 31] unassigned_13 + ([#"../Robinson/src/clause.rs" 145 30 145 31] (1 : usize)));
-    _32 <- ();
-    goto BB13
-  }
-  BB12 {
-    _32 <- ();
-    goto BB13
-  }
-  BB13 {
-    i_11 <- ([#"../Robinson/src/clause.rs" 147 12 147 18] i_11 + ([#"../Robinson/src/clause.rs" 147 17 147 18] (1 : usize)));
-    _23 <- ();
-    goto BB1
-  }
-  BB14 {
-    _14 <- ();
-    _49 <- unassigned_13;
-    _48 <- ([#"../Robinson/src/clause.rs" 149 11 149 26] _49 = ([#"../Robinson/src/clause.rs" 149 25 149 26] (1 : usize)));
-    switch (_48)
-      | False -> goto BB16
-      | True -> goto BB15
-      end
-  }
-  BB15 {
-    _0 <- Robinson_Clause_ClauseState_Type.C_Unit;
-    goto BB17
-  }
-  BB16 {
-    _0 <- Robinson_Clause_ClauseState_Type.C_Unsat;
-    goto BB17
-  }
-  BB17 {
-    goto BB19
-  }
-  BB18 {
-    goto BB19
-  }
-  BB19 {
-    return _0
-  }
-  
-end
 module Robinson_Lit_Impl0_IndexLogic_Stub
   use prelude.Int
   use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
@@ -2507,326 +1944,6 @@ module Robinson_Lit_Impl0_IndexLogic
     [#"../Robinson/src/lit.rs" 21 8 21 31] UIntSize.to_int (Robinson_Lit_Lit_Type.lit_idx self)
   val index_logic [@inline:trivial] [#"../Robinson/src/lit.rs" 20 4 20 35] (self : Robinson_Lit_Lit_Type.t_lit) : int
     ensures { result = index_logic self }
-    
-end
-module Robinson_Clause_Impl2_GetUnit_Interface
-  use prelude.Int
-  use seq.Seq
-  use prelude.Borrow
-  use prelude.UInt8
-  use seq.Seq
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  use Robinson_Formula_Formula_Type as Robinson_Formula_Formula_Type
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
-  clone Robinson_Logic_Unset_Stub as Unset0
-  clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel1 with
-    type t = Robinson_Assignments_Assignments_Type.t_assignments,
-    type ShallowModelTy0.shallowModelTy = Seq.seq uint8
-  clone Robinson_Lit_Impl0_IndexLogic_Stub as IndexLogic0
-  clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
-    type t = Robinson_Clause_Clause_Type.t_clause,
-    type ShallowModelTy0.shallowModelTy = Seq.seq (Robinson_Lit_Lit_Type.t_lit)
-  clone Robinson_Assignments_Impl1_Invariant_Stub as Invariant1
-  clone Robinson_Formula_Impl1_Invariant_Stub as Invariant0
-  clone Robinson_Clause_Impl1_Unit_Stub as Unit0
-  val get_unit [#"../Robinson/src/clause.rs" 163 4 163 64] (self : Robinson_Clause_Clause_Type.t_clause) (a : Robinson_Assignments_Assignments_Type.t_assignments) (_f : Robinson_Formula_Formula_Type.t_formula) : Robinson_Lit_Lit_Type.t_lit
-    requires {[#"../Robinson/src/clause.rs" 157 15 157 28] Unit0.unit self a}
-    requires {[#"../Robinson/src/clause.rs" 158 15 158 29] Invariant0.invariant' _f}
-    requires {[#"../Robinson/src/clause.rs" 159 15 159 31] Invariant1.invariant' a _f}
-    ensures { [#"../Robinson/src/clause.rs" 160 4 160 82] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model self) /\ Seq.get (ShallowModel0.shallow_model self) j = result }
-    ensures { [#"../Robinson/src/clause.rs" 161 14 161 47] IndexLogic0.index_logic result < Seq.length (ShallowModel1.shallow_model a) }
-    ensures { [#"../Robinson/src/clause.rs" 162 14 162 47] Unset0.unset (Seq.get (ShallowModel1.shallow_model a) (IndexLogic0.index_logic result)) }
-    
-end
-module Robinson_Clause_Impl2_GetUnit
-  use prelude.Borrow
-  use prelude.Int
-  use prelude.UIntSize
-  use seq.Seq
-  use prelude.UInt8
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  clone Robinson_Lit_Impl1_SatInner as SatInner1
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel7 with
-    type t = Robinson_Lit_Lit_Type.t_lit,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
-  clone Robinson_Clause_Impl0_ShallowModel as ShallowModel4 with
-    function ShallowModel0.shallow_model = ShallowModel7.shallow_model,
-    val Max0.mAX' = Max0.mAX'
-  clone Robinson_Clause_Impl1_SatInner as SatInner0 with
-    function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
-    predicate SatInner0.sat_inner = SatInner1.sat_inner
-  clone Robinson_Lit_Impl1_Invariant as Invariant3
-  clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with
-    function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
-    predicate Invariant0.invariant' = Invariant3.invariant'
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel6 with
-    type t = uint8,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
-    type t = Robinson_Lit_Lit_Type.t_lit
-  clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
-    type t = Robinson_Lit_Lit_Type.t_lit
-  use seq.Seq
-  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel5 with
-    type t = Alloc_Vec_Vec_Type.t_vec (Robinson_Lit_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global),
-    type ShallowModelTy0.shallowModelTy = Seq.seq (Robinson_Lit_Lit_Type.t_lit),
-    function ShallowModel0.shallow_model = ShallowModel7.shallow_model
-  clone Robinson_Lit_Impl1_UnsetInner as UnsetInner0
-  clone Robinson_Clause_Impl1_Invariant as Invariant2 with
-    predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
-    type t = Robinson_Clause_Clause_Type.t_clause,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  clone Robinson_Clause_Impl1_UnitInner as UnitInner0 with
-    predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
-    predicate SatInner0.sat_inner = SatInner0.sat_inner,
-    function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
-    predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
-  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
-  clone Robinson_Assignments_Impl0_ShallowModel as ShallowModel2 with
-    function ShallowModel0.shallow_model = ShallowModel6.shallow_model,
-    val Max0.mAX' = Max0.mAX'
-  clone Robinson_Lit_Impl1_Unset as Unset1 with
-    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
-    predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
-  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel1 with
-    type t = Robinson_Assignments_Assignments_Type.t_assignments,
-    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
-    function ShallowModel0.shallow_model = ShallowModel2.shallow_model
-  clone Robinson_Lit_Impl2_LitUnset_Interface as LitUnset0 with
-    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
-    predicate Invariant0.invariant' = Invariant3.invariant',
-    predicate Unset0.unset = Unset1.unset
-  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
-    type t = Robinson_Lit_Lit_Type.t_lit,
-    type i = usize,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
-    predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = Robinson_Lit_Lit_Type.t_lit
-  clone Alloc_Vec_Impl1_Len_Interface as Len0 with
-    type t = Robinson_Lit_Lit_Type.t_lit,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    function ShallowModel0.shallow_model = ShallowModel5.shallow_model
-  clone Robinson_Logic_Unset as Unset0
-  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
-  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel0 with
-    type t = Robinson_Clause_Clause_Type.t_clause,
-    type ShallowModelTy0.shallowModelTy = Seq.seq (Robinson_Lit_Lit_Type.t_lit),
-    function ShallowModel0.shallow_model = ShallowModel4.shallow_model
-  use Robinson_Formula_Formula_Type as Robinson_Formula_Formula_Type
-  clone Robinson_Assignments_Impl1_Invariant as Invariant1 with
-    function ShallowModel0.shallow_model = ShallowModel2.shallow_model
-  clone Robinson_Formula_Impl1_Invariant as Invariant0 with
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
-    predicate Invariant0.invariant' = Invariant2.invariant',
-    val Max0.mAX' = Max0.mAX'
-  clone Robinson_Clause_Impl1_Unit as Unit0 with
-    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
-    predicate UnitInner0.unit_inner = UnitInner0.unit_inner
-  let rec cfg get_unit [#"../Robinson/src/clause.rs" 163 4 163 64] [@cfg:stackify] [@cfg:subregion_analysis] (self : Robinson_Clause_Clause_Type.t_clause) (a : Robinson_Assignments_Assignments_Type.t_assignments) (_f : Robinson_Formula_Formula_Type.t_formula) : Robinson_Lit_Lit_Type.t_lit
-    requires {[#"../Robinson/src/clause.rs" 157 15 157 28] Unit0.unit self a}
-    requires {[#"../Robinson/src/clause.rs" 158 15 158 29] Invariant0.invariant' _f}
-    requires {[#"../Robinson/src/clause.rs" 159 15 159 31] Invariant1.invariant' a _f}
-    ensures { [#"../Robinson/src/clause.rs" 160 4 160 82] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model self) /\ Seq.get (ShallowModel0.shallow_model self) j = result }
-    ensures { [#"../Robinson/src/clause.rs" 161 14 161 47] IndexLogic0.index_logic result < Seq.length (ShallowModel1.shallow_model a) }
-    ensures { [#"../Robinson/src/clause.rs" 162 14 162 47] Unset0.unset (Seq.get (ShallowModel1.shallow_model a) (IndexLogic0.index_logic result)) }
-    
-   = [@vc:do_not_keep_trace] [@vc:sp]
-  var _0 : Robinson_Lit_Lit_Type.t_lit;
-  var self_1 : Robinson_Clause_Clause_Type.t_clause;
-  var a_2 : Robinson_Assignments_Assignments_Type.t_assignments;
-  var _f_3 : Robinson_Formula_Formula_Type.t_formula;
-  var _4 : ();
-  var i_11 : usize;
-  var _12 : ();
-  var _14 : ();
-  var _15 : bool;
-  var _16 : usize;
-  var _17 : usize;
-  var _18 : Alloc_Vec_Vec_Type.t_vec (Robinson_Lit_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global);
-  var lit_19 : Robinson_Lit_Lit_Type.t_lit;
-  var _20 : Robinson_Lit_Lit_Type.t_lit;
-  var _21 : Alloc_Vec_Vec_Type.t_vec (Robinson_Lit_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global);
-  var _22 : usize;
-  var _23 : ();
-  var _24 : bool;
-  var _25 : Robinson_Lit_Lit_Type.t_lit;
-  var _26 : Robinson_Assignments_Assignments_Type.t_assignments;
-  var _27 : ();
-  var _28 : ();
-  var _29 : ();
-  var _30 : ();
-  var _31 : ();
-  {
-    self_1 <- self;
-    a_2 <- a;
-    _f_3 <- _f;
-    goto BB0
-  }
-  BB0 {
-    i_11 <- ([#"../Robinson/src/clause.rs" 164 27 164 28] (0 : usize));
-    goto BB1
-  }
-  BB1 {
-    invariant not_unset { [#"../Robinson/src/clause.rs" 165 8 165 90] forall j : int . 0 <= j /\ j < UIntSize.to_int i_11 -> not Unset1.unset (Seq.get (ShallowModel0.shallow_model self_1) j) a_2 };
-    _16 <- i_11;
-    _18 <- Robinson_Clause_Clause_Type.clause_rest self_1;
-    _17 <- ([#"../Robinson/src/clause.rs" 166 18 166 33] Len0.len _18);
-    goto BB2
-  }
-  BB2 {
-    _15 <- ([#"../Robinson/src/clause.rs" 166 14 166 33] _16 < _17);
-    switch (_15)
-      | False -> goto BB8
-      | True -> goto BB3
-      end
-  }
-  BB3 {
-    _21 <- Robinson_Clause_Clause_Type.clause_rest self_1;
-    _22 <- i_11;
-    _20 <- ([#"../Robinson/src/clause.rs" 167 22 167 34] Index0.index _21 _22);
-    goto BB4
-  }
-  BB4 {
-    lit_19 <- _20;
-    _25 <- lit_19;
-    _26 <- a_2;
-    _24 <- ([#"../Robinson/src/clause.rs" 168 15 168 31] LitUnset0.lit_unset _25 _26);
-    goto BB5
-  }
-  BB5 {
-    switch (_24)
-      | False -> goto BB7
-      | True -> goto BB6
-      end
-  }
-  BB6 {
-    _0 <- lit_19;
-    return _0
-  }
-  BB7 {
-    _23 <- ();
-    i_11 <- ([#"../Robinson/src/clause.rs" 171 12 171 18] i_11 + ([#"../Robinson/src/clause.rs" 171 17 171 18] (1 : usize)));
-    _14 <- ();
-    goto BB1
-  }
-  BB8 {
-    _12 <- ();
-    absurd
-  }
-  
-end
-module Robinson_Lit_Impl2_Index_Interface
-  use prelude.UIntSize
-  use prelude.Int
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  clone Robinson_Lit_Impl0_IndexLogic_Stub as IndexLogic0
-  val index [#"../Robinson/src/lit.rs" 88 4 88 31] (self : Robinson_Lit_Lit_Type.t_lit) : usize
-    ensures { [#"../Robinson/src/lit.rs" 87 14 87 43] UIntSize.to_int result = IndexLogic0.index_logic self }
-    
-end
-module Robinson_Lit_Impl2_Index
-  use prelude.Int
-  use prelude.UIntSize
-  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
-  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
-  let rec cfg index [#"../Robinson/src/lit.rs" 88 4 88 31] [@cfg:stackify] [@cfg:subregion_analysis] (self : Robinson_Lit_Lit_Type.t_lit) : usize
-    ensures { [#"../Robinson/src/lit.rs" 87 14 87 43] UIntSize.to_int result = IndexLogic0.index_logic self }
-    
-   = [@vc:do_not_keep_trace] [@vc:sp]
-  var _0 : usize;
-  var self_1 : Robinson_Lit_Lit_Type.t_lit;
-  {
-    self_1 <- self;
-    goto BB0
-  }
-  BB0 {
-    _0 <- Robinson_Lit_Lit_Type.lit_idx self_1;
-    return _0
-  }
-  
-end
-module CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere_Stub
-  type self
-  type t
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
-    type self = t
-  predicate resolve_elswhere (self : self) (old' : ShallowModelTy0.shallowModelTy) (fin : ShallowModelTy0.shallowModelTy)
-    
-end
-module CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere_Interface
-  type self
-  type t
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
-    type self = t
-  predicate resolve_elswhere (self : self) (old' : ShallowModelTy0.shallowModelTy) (fin : ShallowModelTy0.shallowModelTy)
-    
-end
-module CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere
-  type self
-  type t
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
-    type self = t
-  predicate resolve_elswhere (self : self) (old' : ShallowModelTy0.shallowModelTy) (fin : ShallowModelTy0.shallowModelTy)
-    
-  val resolve_elswhere (self : self) (old' : ShallowModelTy0.shallowModelTy) (fin : ShallowModelTy0.shallowModelTy) : bool
-    ensures { result = resolve_elswhere self old' fin }
-    
-end
-module Alloc_Vec_Impl16_IndexMut_Interface
-  type t
-  type i
-  type a
-  use prelude.Borrow
-  use seq.Seq
-  use prelude.Slice
-  use prelude.Seq
-  clone Core_Num_Impl12_Max_Stub as Max0
-  use seq.Seq
-  clone Core_Slice_Index_SliceIndex_Output_Type as Output0 with
-    type self = i,
-    type t = seq t
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere_Stub as ResolveElswhere0 with
-    type self = i,
-    type t = seq t,
-    type ShallowModelTy0.shallowModelTy = Seq.seq t
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel1 with
-    type t = t,
-    type a = a,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  clone CreusotContracts_Std1_Slice_SliceIndex_HasValue_Stub as HasValue0 with
-    type self = i,
-    type t = seq t,
-    type ShallowModelTy0.shallowModelTy = Seq.seq t,
-    type Output0.output = Output0.output
-  clone CreusotContracts_Std1_Slice_SliceIndex_InBounds_Stub as InBounds0 with
-    type self = i,
-    type t = seq t,
-    type ShallowModelTy0.shallowModelTy = Seq.seq t
-  clone CreusotContracts_Model_Impl3_ShallowModel_Stub as ShallowModel0 with
-    type t = Alloc_Vec_Vec_Type.t_vec t a,
-    type ShallowModelTy0.shallowModelTy = Seq.seq t
-  val index_mut (self : borrowed (Alloc_Vec_Vec_Type.t_vec t a)) (index : i) : borrowed Output0.output
-    requires {InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
-    ensures { HasValue0.has_value index (ShallowModel0.shallow_model self) ( * result) }
-    ensures { HasValue0.has_value index (ShallowModel1.shallow_model ( ^ self)) ( ^ result) }
-    ensures { ResolveElswhere0.resolve_elswhere index (ShallowModel0.shallow_model self) (ShallowModel1.shallow_model ( ^ self)) }
-    ensures { Seq.length (ShallowModel1.shallow_model ( ^ self)) = Seq.length (ShallowModel0.shallow_model self) }
     
 end
 module Robinson_Logic_BoolToAssignedstate_Stub
@@ -2878,7 +1995,7 @@ module Robinson_Clause_Impl1_InFormula
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = Robinson_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -2939,7 +2056,7 @@ module Robinson_Formula_Impl1_UnsatInner
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   clone Robinson_Clause_Impl1_UnsatInner_Stub as UnsatInner0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = Robinson_Clause_Clause_Type.t_clause,
@@ -3002,7 +2119,7 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Interface
   clone Robinson_Formula_Impl1_Invariant_Stub as Invariant0
   function lemma_unit_wrong_polarity_unsat_formula [#"../Robinson/src/logic.rs" 73 0 75 1] (c : Robinson_Clause_Clause_Type.t_clause) (f : Robinson_Formula_Formula_Type.t_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
-  axiom lemma_unit_wrong_polarity_unsat_formula_spec : forall c : Robinson_Clause_Clause_Type.t_clause, f : Robinson_Formula_Formula_Type.t_formula, a : Seq.seq uint8, ix : int, v : uint8 . ([#"../Robinson/src/logic.rs" 62 11 62 24] Invariant0.invariant' f) -> ([#"../Robinson/src/logic.rs" 63 11 63 33] UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f) = Seq.length a) -> ([#"../Robinson/src/logic.rs" 64 11 64 50] 0 <= ix /\ ix < Seq.length a /\ Unset0.unset (Seq.get a ix)) -> ([#"../Robinson/src/logic.rs" 65 11 65 20] not Unset0.unset v) -> ([#"../Robinson/src/logic.rs" 66 11 66 26] UnitInner0.unit_inner c a) -> ([#"../Robinson/src/logic.rs" 67 11 67 26] InFormula0.in_formula c f) -> ([#"../Robinson/src/logic.rs" 68 11 68 31] Invariant1.invariant' c (Seq.length a)) -> ([#"../Robinson/src/logic.rs" 69 0 69 133] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix /\ BoolToAssignedstate0.bool_to_assignedstate (Robinson_Lit_Lit_Type.lit_polarity (Seq.get (ShallowModel0.shallow_model c) j)) = v) -> ([#"../Robinson/src/logic.rs" 70 0 70 113] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ not IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix -> UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model c) j) a) -> ([#"../Robinson/src/logic.rs" 72 10 72 45] UnsatInner1.unsat_inner f (Seq.set a ix (FlipV0.flip_v v))) && ([#"../Robinson/src/logic.rs" 71 10 71 64] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v)))
+  axiom lemma_unit_wrong_polarity_unsat_formula_spec : forall c : Robinson_Clause_Clause_Type.t_clause, f : Robinson_Formula_Formula_Type.t_formula, a : Seq.seq uint8, ix : int, v : uint8 . ([#"../Robinson/src/logic.rs" 62 11 62 24] Invariant0.invariant' f) -> ([#"../Robinson/src/logic.rs" 63 11 63 33] UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f) = Seq.length a) -> ([#"../Robinson/src/logic.rs" 64 11 64 50] 0 <= ix /\ ix < Seq.length a /\ Unset0.unset (Seq.get a ix)) -> ([#"../Robinson/src/logic.rs" 65 11 65 20] not Unset0.unset v) -> ([#"../Robinson/src/logic.rs" 66 11 66 26] UnitInner0.unit_inner c a) -> ([#"../Robinson/src/logic.rs" 67 11 67 26] InFormula0.in_formula c f) -> ([#"../Robinson/src/logic.rs" 68 11 68 31] Invariant1.invariant' c (Seq.length a)) -> ([#"../Robinson/src/logic.rs" 69 0 69 127] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix /\ BoolToAssignedstate0.bool_to_assignedstate (Robinson_Lit_Lit_Type.lit_polarity (Seq.get (ShallowModel0.shallow_model c) j)) = v) -> ([#"../Robinson/src/logic.rs" 70 0 70 107] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ not IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix -> UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model c) j) a) -> ([#"../Robinson/src/logic.rs" 72 10 72 45] UnsatInner1.unsat_inner f (Seq.set a ix (FlipV0.flip_v v))) && ([#"../Robinson/src/logic.rs" 71 10 71 64] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v)))
 end
 module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula
   use prelude.UIntSize
@@ -3037,11 +2154,11 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula
     requires {[#"../Robinson/src/logic.rs" 66 11 66 26] UnitInner0.unit_inner c a}
     requires {[#"../Robinson/src/logic.rs" 67 11 67 26] InFormula0.in_formula c f}
     requires {[#"../Robinson/src/logic.rs" 68 11 68 31] Invariant1.invariant' c (Seq.length a)}
-    requires {[#"../Robinson/src/logic.rs" 69 0 69 133] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix /\ BoolToAssignedstate0.bool_to_assignedstate (Robinson_Lit_Lit_Type.lit_polarity (Seq.get (ShallowModel0.shallow_model c) j)) = v}
-    requires {[#"../Robinson/src/logic.rs" 70 0 70 113] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ not IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix -> UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model c) j) a}
+    requires {[#"../Robinson/src/logic.rs" 69 0 69 127] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix /\ BoolToAssignedstate0.bool_to_assignedstate (Robinson_Lit_Lit_Type.lit_polarity (Seq.get (ShallowModel0.shallow_model c) j)) = v}
+    requires {[#"../Robinson/src/logic.rs" 70 0 70 107] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ not IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix -> UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model c) j) a}
     ensures { result = lemma_unit_wrong_polarity_unsat_formula c f a ix v }
     
-  axiom lemma_unit_wrong_polarity_unsat_formula_spec : forall c : Robinson_Clause_Clause_Type.t_clause, f : Robinson_Formula_Formula_Type.t_formula, a : Seq.seq uint8, ix : int, v : uint8 . ([#"../Robinson/src/logic.rs" 62 11 62 24] Invariant0.invariant' f) -> ([#"../Robinson/src/logic.rs" 63 11 63 33] UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f) = Seq.length a) -> ([#"../Robinson/src/logic.rs" 64 11 64 50] 0 <= ix /\ ix < Seq.length a /\ Unset0.unset (Seq.get a ix)) -> ([#"../Robinson/src/logic.rs" 65 11 65 20] not Unset0.unset v) -> ([#"../Robinson/src/logic.rs" 66 11 66 26] UnitInner0.unit_inner c a) -> ([#"../Robinson/src/logic.rs" 67 11 67 26] InFormula0.in_formula c f) -> ([#"../Robinson/src/logic.rs" 68 11 68 31] Invariant1.invariant' c (Seq.length a)) -> ([#"../Robinson/src/logic.rs" 69 0 69 133] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix /\ BoolToAssignedstate0.bool_to_assignedstate (Robinson_Lit_Lit_Type.lit_polarity (Seq.get (ShallowModel0.shallow_model c) j)) = v) -> ([#"../Robinson/src/logic.rs" 70 0 70 113] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ not IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix -> UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model c) j) a) -> ([#"../Robinson/src/logic.rs" 72 10 72 45] UnsatInner1.unsat_inner f (Seq.set a ix (FlipV0.flip_v v))) && ([#"../Robinson/src/logic.rs" 71 10 71 64] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v)))
+  axiom lemma_unit_wrong_polarity_unsat_formula_spec : forall c : Robinson_Clause_Clause_Type.t_clause, f : Robinson_Formula_Formula_Type.t_formula, a : Seq.seq uint8, ix : int, v : uint8 . ([#"../Robinson/src/logic.rs" 62 11 62 24] Invariant0.invariant' f) -> ([#"../Robinson/src/logic.rs" 63 11 63 33] UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f) = Seq.length a) -> ([#"../Robinson/src/logic.rs" 64 11 64 50] 0 <= ix /\ ix < Seq.length a /\ Unset0.unset (Seq.get a ix)) -> ([#"../Robinson/src/logic.rs" 65 11 65 20] not Unset0.unset v) -> ([#"../Robinson/src/logic.rs" 66 11 66 26] UnitInner0.unit_inner c a) -> ([#"../Robinson/src/logic.rs" 67 11 67 26] InFormula0.in_formula c f) -> ([#"../Robinson/src/logic.rs" 68 11 68 31] Invariant1.invariant' c (Seq.length a)) -> ([#"../Robinson/src/logic.rs" 69 0 69 127] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix /\ BoolToAssignedstate0.bool_to_assignedstate (Robinson_Lit_Lit_Type.lit_polarity (Seq.get (ShallowModel0.shallow_model c) j)) = v) -> ([#"../Robinson/src/logic.rs" 70 0 70 107] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ not IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix -> UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model c) j) a) -> ([#"../Robinson/src/logic.rs" 72 10 72 45] UnsatInner1.unsat_inner f (Seq.set a ix (FlipV0.flip_v v))) && ([#"../Robinson/src/logic.rs" 71 10 71 64] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v)))
 end
 module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Impl
   use prelude.UIntSize
@@ -3058,7 +2175,7 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Impl
   clone Robinson_Lit_Impl1_Invariant as Invariant2
   clone Robinson_Lit_Impl1_UnsatInner as UnsatInner0
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
     type t = Robinson_Lit_Lit_Type.t_lit,
@@ -3125,8 +2242,8 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Impl
     requires {[#"../Robinson/src/logic.rs" 66 11 66 26] UnitInner0.unit_inner c a}
     requires {[#"../Robinson/src/logic.rs" 67 11 67 26] InFormula0.in_formula c f}
     requires {[#"../Robinson/src/logic.rs" 68 11 68 31] Invariant1.invariant' c (Seq.length a)}
-    requires {[#"../Robinson/src/logic.rs" 69 0 69 133] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix /\ BoolToAssignedstate0.bool_to_assignedstate (Robinson_Lit_Lit_Type.lit_polarity (Seq.get (ShallowModel0.shallow_model c) j)) = v}
-    requires {[#"../Robinson/src/logic.rs" 70 0 70 113] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ not IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix -> UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model c) j) a}
+    requires {[#"../Robinson/src/logic.rs" 69 0 69 127] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix /\ BoolToAssignedstate0.bool_to_assignedstate (Robinson_Lit_Lit_Type.lit_polarity (Seq.get (ShallowModel0.shallow_model c) j)) = v}
+    requires {[#"../Robinson/src/logic.rs" 70 0 70 107] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ not IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix -> UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model c) j) a}
     ensures { [#"../Robinson/src/logic.rs" 71 10 71 64] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v)) }
     ensures { [#"../Robinson/src/logic.rs" 72 10 72 45] UnsatInner1.unsat_inner f (Seq.set a ix (FlipV0.flip_v v)) }
     
@@ -3193,7 +2310,7 @@ module Robinson_Logic_LemmaUnitForces_Impl
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
     type t = Robinson_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -3297,7 +2414,7 @@ module Robinson_Logic_LemmaExtensionSatBaseSat_Impl
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
     type t = Robinson_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -3431,7 +2548,7 @@ module Robinson_Logic_LemmaExtensionsUnsatBaseUnsat_Impl
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
     type t = Robinson_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -3477,6 +2594,931 @@ module Robinson_Logic_LemmaExtensionsUnsatBaseUnsat_Impl
    = [@vc:do_not_keep_trace] [@vc:sp]
     [#"../Robinson/src/logic.rs" 84 0 84 8] ()
 end
+module Robinson_Lit_Impl1_Unset_Stub
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  predicate unset [#"../Robinson/src/lit.rs" 74 4 74 46] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
+    
+end
+module Robinson_Lit_Impl1_Unset_Interface
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  predicate unset [#"../Robinson/src/lit.rs" 74 4 74 46] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
+    
+end
+module Robinson_Lit_Impl1_Unset
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  clone Robinson_Lit_Impl1_UnsetInner_Stub as UnsetInner0
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  clone Robinson_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
+  predicate unset [#"../Robinson/src/lit.rs" 74 4 74 46] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
+    
+   =
+    [#"../Robinson/src/lit.rs" 75 20 75 40] UnsetInner0.unset_inner self (ShallowModel0.shallow_model a)
+  val unset [#"../Robinson/src/lit.rs" 74 4 74 46] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments) : bool
+    ensures { result = unset self a }
+    
+end
+module Robinson_Lit_Impl1_Unsat_Stub
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  predicate unsat [#"../Robinson/src/lit.rs" 79 4 79 46] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
+    
+end
+module Robinson_Lit_Impl1_Unsat_Interface
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  predicate unsat [#"../Robinson/src/lit.rs" 79 4 79 46] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
+    
+end
+module Robinson_Lit_Impl1_Unsat
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  clone Robinson_Lit_Impl1_UnsatInner_Stub as UnsatInner0
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  clone Robinson_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
+  predicate unsat [#"../Robinson/src/lit.rs" 79 4 79 46] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
+    
+   =
+    [#"../Robinson/src/lit.rs" 80 20 80 40] UnsatInner0.unsat_inner self (ShallowModel0.shallow_model a)
+  val unsat [#"../Robinson/src/lit.rs" 79 4 79 46] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments) : bool
+    ensures { result = unsat self a }
+    
+end
+module Robinson_Lit_Impl1_Sat_Stub
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  predicate sat [#"../Robinson/src/lit.rs" 67 4 67 44] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
+    
+end
+module Robinson_Lit_Impl1_Sat_Interface
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  predicate sat [#"../Robinson/src/lit.rs" 67 4 67 44] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
+    
+end
+module Robinson_Lit_Impl1_Sat
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  clone Robinson_Lit_Impl1_SatInner_Stub as SatInner0
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  clone Robinson_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
+  predicate sat [#"../Robinson/src/lit.rs" 67 4 67 44] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments)
+    
+   =
+    [#"../Robinson/src/lit.rs" 69 12 69 30] SatInner0.sat_inner self (ShallowModel0.shallow_model a)
+  val sat [#"../Robinson/src/lit.rs" 67 4 67 44] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments) : bool
+    ensures { result = sat self a }
+    
+end
+module Robinson_Lit_Impl2_LitSat_Interface
+  use seq.Seq
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UInt8
+  use seq.Seq
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  clone Robinson_Lit_Impl1_Sat_Stub as Sat0
+  clone Robinson_Lit_Impl1_Invariant_Stub as Invariant0
+  clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
+    type t = Robinson_Assignments_Assignments_Type.t_assignments,
+    type ShallowModelTy0.shallowModelTy = Seq.seq uint8
+  val lit_sat [#"../Robinson/src/lit.rs" 95 4 95 49] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments) : bool
+    requires {[#"../Robinson/src/lit.rs" 93 15 93 39] Invariant0.invariant' self (Seq.length (ShallowModel0.shallow_model a))}
+    ensures { [#"../Robinson/src/lit.rs" 94 14 94 36] result = Sat0.sat self a }
+    
+end
+module Robinson_Lit_Impl2_LitSat
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UInt8
+  use prelude.UIntSize
+  use seq.Seq
+  clone Core_Num_Impl11_Max as Max0
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
+    type t = uint8
+  clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
+    type t = uint8
+  use seq.Seq
+  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel2 with
+    type t = Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global),
+    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  clone Robinson_Lit_Impl1_SatInner as SatInner0
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  clone Robinson_Assignments_Impl0_ShallowModel as ShallowModel1 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  clone Alloc_Vec_Impl13_Index_Interface as Index0 with
+    type t = uint8,
+    type i = usize,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
+    predicate InBounds0.in_bounds = InBounds0.in_bounds,
+    predicate HasValue0.has_value = HasValue0.has_value,
+    type Output0.output = uint8
+  clone Robinson_Lit_Impl1_Sat as Sat0 with
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    predicate SatInner0.sat_inner = SatInner0.sat_inner
+  clone Robinson_Lit_Impl1_Invariant as Invariant0
+  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel0 with
+    type t = Robinson_Assignments_Assignments_Type.t_assignments,
+    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model
+  let rec cfg lit_sat [#"../Robinson/src/lit.rs" 95 4 95 49] [@cfg:stackify] [@cfg:subregion_analysis] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments) : bool
+    requires {[#"../Robinson/src/lit.rs" 93 15 93 39] Invariant0.invariant' self (Seq.length (ShallowModel0.shallow_model a))}
+    ensures { [#"../Robinson/src/lit.rs" 94 14 94 36] result = Sat0.sat self a }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : bool;
+  var self_1 : Robinson_Lit_Lit_Type.t_lit;
+  var a_2 : Robinson_Assignments_Assignments_Type.t_assignments;
+  var _5 : uint8;
+  var _6 : uint8;
+  var _7 : Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global);
+  var _8 : usize;
+  var _9 : uint8;
+  var _10 : uint8;
+  var _11 : Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global);
+  var _12 : usize;
+  {
+    self_1 <- self;
+    a_2 <- a;
+    goto BB0
+  }
+  BB0 {
+    switch (Robinson_Lit_Lit_Type.lit_polarity self_1)
+      | False -> goto BB1
+      | True -> goto BB2
+      end
+  }
+  BB1 {
+    _11 <- Robinson_Assignments_Assignments_Type.assignments_0 a_2;
+    _12 <- Robinson_Lit_Lit_Type.lit_idx self_1;
+    _10 <- ([#"../Robinson/src/lit.rs" 98 22 98 35] Index0.index _11 _12);
+    goto BB4
+  }
+  BB2 {
+    _7 <- Robinson_Assignments_Assignments_Type.assignments_0 a_2;
+    _8 <- Robinson_Lit_Lit_Type.lit_idx self_1;
+    _6 <- ([#"../Robinson/src/lit.rs" 97 21 97 34] Index0.index _7 _8);
+    goto BB3
+  }
+  BB3 {
+    _5 <- _6;
+    _0 <- ([#"../Robinson/src/lit.rs" 97 20 97 40] _5 = ([#"../Robinson/src/lit.rs" 97 38 97 39] (1 : uint8)));
+    goto BB5
+  }
+  BB4 {
+    _9 <- _10;
+    _0 <- ([#"../Robinson/src/lit.rs" 98 21 98 41] _9 = ([#"../Robinson/src/lit.rs" 98 39 98 40] (0 : uint8)));
+    goto BB5
+  }
+  BB5 {
+    return _0
+  }
+  
+end
+module Robinson_Lit_Impl2_LitUnset_Interface
+  use seq.Seq
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UInt8
+  use seq.Seq
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  clone Robinson_Lit_Impl1_Unset_Stub as Unset0
+  clone Robinson_Lit_Impl1_Invariant_Stub as Invariant0
+  clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
+    type t = Robinson_Assignments_Assignments_Type.t_assignments,
+    type ShallowModelTy0.shallowModelTy = Seq.seq uint8
+  val lit_unset [#"../Robinson/src/lit.rs" 116 4 116 51] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments) : bool
+    requires {[#"../Robinson/src/lit.rs" 114 15 114 39] Invariant0.invariant' self (Seq.length (ShallowModel0.shallow_model a))}
+    ensures { [#"../Robinson/src/lit.rs" 115 14 115 38] result = Unset0.unset self a }
+    
+end
+module Robinson_Lit_Impl2_LitUnset
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UInt8
+  use prelude.UIntSize
+  use seq.Seq
+  clone Core_Num_Impl11_Max as Max0
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
+    type t = uint8
+  clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
+    type t = uint8
+  use seq.Seq
+  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel2 with
+    type t = Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global),
+    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  clone Robinson_Lit_Impl1_UnsetInner as UnsetInner0
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  clone Robinson_Assignments_Impl0_ShallowModel as ShallowModel1 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  clone Alloc_Vec_Impl13_Index_Interface as Index0 with
+    type t = uint8,
+    type i = usize,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
+    predicate InBounds0.in_bounds = InBounds0.in_bounds,
+    predicate HasValue0.has_value = HasValue0.has_value,
+    type Output0.output = uint8
+  clone Robinson_Lit_Impl1_Unset as Unset0 with
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
+  clone Robinson_Lit_Impl1_Invariant as Invariant0
+  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel0 with
+    type t = Robinson_Assignments_Assignments_Type.t_assignments,
+    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model
+  let rec cfg lit_unset [#"../Robinson/src/lit.rs" 116 4 116 51] [@cfg:stackify] [@cfg:subregion_analysis] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments) : bool
+    requires {[#"../Robinson/src/lit.rs" 114 15 114 39] Invariant0.invariant' self (Seq.length (ShallowModel0.shallow_model a))}
+    ensures { [#"../Robinson/src/lit.rs" 115 14 115 38] result = Unset0.unset self a }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : bool;
+  var self_1 : Robinson_Lit_Lit_Type.t_lit;
+  var a_2 : Robinson_Assignments_Assignments_Type.t_assignments;
+  var _5 : uint8;
+  var _6 : uint8;
+  var _7 : Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global);
+  var _8 : usize;
+  {
+    self_1 <- self;
+    a_2 <- a;
+    goto BB0
+  }
+  BB0 {
+    _7 <- Robinson_Assignments_Assignments_Type.assignments_0 a_2;
+    _8 <- Robinson_Lit_Lit_Type.lit_idx self_1;
+    _6 <- ([#"../Robinson/src/lit.rs" 117 8 117 21] Index0.index _7 _8);
+    goto BB1
+  }
+  BB1 {
+    _5 <- _6;
+    _0 <- ([#"../Robinson/src/lit.rs" 117 8 117 26] _5 >= ([#"../Robinson/src/lit.rs" 117 25 117 26] (2 : uint8)));
+    return _0
+  }
+  
+end
+module Robinson_Clause_Impl2_CheckIfUnit_Interface
+  use seq.Seq
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UInt8
+  use seq.Seq
+  use Robinson_Formula_Formula_Type as Robinson_Formula_Formula_Type
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
+  clone Robinson_Assignments_Impl1_Complete_Stub as Complete0
+  clone Robinson_Clause_Impl1_Unit_Stub as Unit0
+  clone Robinson_Clause_Impl1_Unsat_Stub as Unsat0
+  clone Robinson_Clause_Impl1_Sat_Stub as Sat0
+  use Robinson_Clause_ClauseState_Type as Robinson_Clause_ClauseState_Type
+  clone Robinson_Assignments_Impl1_Invariant_Stub as Invariant2
+  clone Robinson_Formula_Impl1_Invariant_Stub as Invariant1
+  clone Robinson_Clause_Impl1_Invariant_Stub as Invariant0
+  clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
+    type t = Robinson_Assignments_Assignments_Type.t_assignments,
+    type ShallowModelTy0.shallowModelTy = Seq.seq uint8
+  val check_if_unit [#"../Robinson/src/clause.rs" 121 4 121 77] (self : Robinson_Clause_Clause_Type.t_clause) (a : Robinson_Assignments_Assignments_Type.t_assignments) (_f : Robinson_Formula_Formula_Type.t_formula) : Robinson_Clause_ClauseState_Type.t_clausestate
+    requires {[#"../Robinson/src/clause.rs" 114 15 114 41] Invariant0.invariant' self (Seq.length (ShallowModel0.shallow_model a))}
+    requires {[#"../Robinson/src/clause.rs" 115 15 115 29] Invariant1.invariant' _f}
+    requires {[#"../Robinson/src/clause.rs" 116 15 116 31] Invariant2.invariant' a _f}
+    ensures { [#"../Robinson/src/clause.rs" 117 4 117 65] result = Robinson_Clause_ClauseState_Type.C_Sat -> Sat0.sat self a }
+    ensures { [#"../Robinson/src/clause.rs" 118 4 118 67] result = Robinson_Clause_ClauseState_Type.C_Unsat -> Unsat0.unsat self a }
+    ensures { [#"../Robinson/src/clause.rs" 119 4 119 83] result = Robinson_Clause_ClauseState_Type.C_Unit -> Unit0.unit self a /\ not Complete0.complete a }
+    ensures { [#"../Robinson/src/clause.rs" 120 4 120 66] result = Robinson_Clause_ClauseState_Type.C_Unknown -> not Complete0.complete a }
+    
+end
+module Robinson_Clause_Impl2_CheckIfUnit
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  use prelude.UInt8
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  clone Robinson_Lit_Impl1_SatInner as SatInner1
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl11_Max as Max0
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel7 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  clone Robinson_Assignments_Impl0_ShallowModel as ShallowModel3 with
+    function ShallowModel0.shallow_model = ShallowModel7.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  clone Robinson_Lit_Impl1_Sat as Sat1 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    predicate SatInner0.sat_inner = SatInner1.sat_inner
+  clone Robinson_Lit_Impl1_Invariant as Invariant3
+  clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
+    type t = Robinson_Lit_Lit_Type.t_lit
+  clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
+    type t = Robinson_Lit_Lit_Type.t_lit
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel1 with
+    type t = Robinson_Lit_Lit_Type.t_lit,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  use seq.Seq
+  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel6 with
+    type t = Alloc_Vec_Vec_Type.t_vec (Robinson_Lit_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global),
+    type ShallowModelTy0.shallowModelTy = Seq.seq (Robinson_Lit_Lit_Type.t_lit),
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model
+  clone Robinson_Lit_Impl1_UnsatInner as UnsatInner1
+  clone Robinson_Lit_Impl1_UnsetInner as UnsetInner0
+  use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
+  clone Robinson_Clause_Impl0_ShallowModel as ShallowModel5 with
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  clone Robinson_Logic_Unset as Unset1
+  clone Robinson_Clause_Impl1_SatInner as SatInner0 with
+    function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
+    predicate SatInner0.sat_inner = SatInner1.sat_inner
+  clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with
+    function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
+    predicate Invariant0.invariant' = Invariant3.invariant'
+  clone Robinson_Clause_Impl1_UnitInner as UnitInner0 with
+    predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
+    predicate SatInner0.sat_inner = SatInner0.sat_inner,
+    function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
+    predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
+  clone Robinson_Clause_Impl1_UnsatInner as UnsatInner0 with
+    function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
+    predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel4 with
+    type t = Robinson_Clause_Clause_Type.t_clause,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone Robinson_Lit_Impl1_Unset as Unset0 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
+  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel0 with
+    type t = Robinson_Assignments_Assignments_Type.t_assignments,
+    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model
+  clone Robinson_Lit_Impl2_LitUnset_Interface as LitUnset0 with
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    predicate Invariant0.invariant' = Invariant3.invariant',
+    predicate Unset0.unset = Unset0.unset
+  clone Robinson_Lit_Impl2_LitSat_Interface as LitSat0 with
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    predicate Invariant0.invariant' = Invariant3.invariant',
+    predicate Sat0.sat = Sat1.sat
+  clone Alloc_Vec_Impl13_Index_Interface as Index0 with
+    type t = Robinson_Lit_Lit_Type.t_lit,
+    type i = usize,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    function ShallowModel0.shallow_model = ShallowModel6.shallow_model,
+    predicate InBounds0.in_bounds = InBounds0.in_bounds,
+    predicate HasValue0.has_value = HasValue0.has_value,
+    type Output0.output = Robinson_Lit_Lit_Type.t_lit
+  clone Alloc_Vec_Impl1_Len_Interface as Len0 with
+    type t = Robinson_Lit_Lit_Type.t_lit,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    function ShallowModel0.shallow_model = ShallowModel6.shallow_model
+  clone Robinson_Lit_Impl1_Unsat as Unsat1 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
+  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel2 with
+    type t = Robinson_Clause_Clause_Type.t_clause,
+    type ShallowModelTy0.shallowModelTy = Seq.seq (Robinson_Lit_Lit_Type.t_lit),
+    function ShallowModel0.shallow_model = ShallowModel5.shallow_model
+  clone Robinson_Assignments_Impl1_Complete as Complete0 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    predicate Unset0.unset = Unset1.unset
+  clone Robinson_Clause_Impl1_Unit as Unit0 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    predicate UnitInner0.unit_inner = UnitInner0.unit_inner
+  clone Robinson_Clause_Impl1_Unsat as Unsat0 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
+  clone Robinson_Clause_Impl1_Sat as Sat0 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    predicate SatInner0.sat_inner = SatInner0.sat_inner
+  use Robinson_Formula_Formula_Type as Robinson_Formula_Formula_Type
+  clone Robinson_Assignments_Impl1_Invariant as Invariant2 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model
+  clone Robinson_Clause_Impl1_Invariant as Invariant0 with
+    predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range
+  clone Robinson_Formula_Impl1_Invariant as Invariant1 with
+    function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
+    predicate Invariant0.invariant' = Invariant0.invariant',
+    val Max0.mAX' = Max0.mAX'
+  use Robinson_Clause_ClauseState_Type as Robinson_Clause_ClauseState_Type
+  let rec cfg check_if_unit [#"../Robinson/src/clause.rs" 121 4 121 77] [@cfg:stackify] [@cfg:subregion_analysis] (self : Robinson_Clause_Clause_Type.t_clause) (a : Robinson_Assignments_Assignments_Type.t_assignments) (_f : Robinson_Formula_Formula_Type.t_formula) : Robinson_Clause_ClauseState_Type.t_clausestate
+    requires {[#"../Robinson/src/clause.rs" 114 15 114 41] Invariant0.invariant' self (Seq.length (ShallowModel0.shallow_model a))}
+    requires {[#"../Robinson/src/clause.rs" 115 15 115 29] Invariant1.invariant' _f}
+    requires {[#"../Robinson/src/clause.rs" 116 15 116 31] Invariant2.invariant' a _f}
+    ensures { [#"../Robinson/src/clause.rs" 117 4 117 65] result = Robinson_Clause_ClauseState_Type.C_Sat -> Sat0.sat self a }
+    ensures { [#"../Robinson/src/clause.rs" 118 4 118 67] result = Robinson_Clause_ClauseState_Type.C_Unsat -> Unsat0.unsat self a }
+    ensures { [#"../Robinson/src/clause.rs" 119 4 119 83] result = Robinson_Clause_ClauseState_Type.C_Unit -> Unit0.unit self a /\ not Complete0.complete a }
+    ensures { [#"../Robinson/src/clause.rs" 120 4 120 66] result = Robinson_Clause_ClauseState_Type.C_Unknown -> not Complete0.complete a }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Robinson_Clause_ClauseState_Type.t_clausestate;
+  var self_1 : Robinson_Clause_Clause_Type.t_clause;
+  var a_2 : Robinson_Assignments_Assignments_Type.t_assignments;
+  var _f_3 : Robinson_Formula_Formula_Type.t_formula;
+  var i_11 : usize;
+  var _k_12 : usize;
+  var unassigned_13 : usize;
+  var _14 : ();
+  var _23 : ();
+  var _24 : bool;
+  var _25 : usize;
+  var _26 : usize;
+  var _27 : Alloc_Vec_Vec_Type.t_vec (Robinson_Lit_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global);
+  var lit_28 : Robinson_Lit_Lit_Type.t_lit;
+  var _29 : Robinson_Lit_Lit_Type.t_lit;
+  var _30 : Alloc_Vec_Vec_Type.t_vec (Robinson_Lit_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global);
+  var _31 : usize;
+  var _32 : ();
+  var _33 : bool;
+  var _34 : Robinson_Lit_Lit_Type.t_lit;
+  var _35 : Robinson_Assignments_Assignments_Type.t_assignments;
+  var _36 : ();
+  var _37 : bool;
+  var _38 : Robinson_Lit_Lit_Type.t_lit;
+  var _39 : Robinson_Assignments_Assignments_Type.t_assignments;
+  var _40 : ();
+  var _41 : bool;
+  var _42 : usize;
+  var _43 : ();
+  var _44 : usize;
+  var _45 : ();
+  var _46 : ();
+  var _47 : ();
+  var _48 : bool;
+  var _49 : usize;
+  {
+    self_1 <- self;
+    a_2 <- a;
+    _f_3 <- _f;
+    goto BB0
+  }
+  BB0 {
+    i_11 <- ([#"../Robinson/src/clause.rs" 122 27 122 28] (0 : usize));
+    _k_12 <- ([#"../Robinson/src/clause.rs" 123 28 123 29] (0 : usize));
+    unassigned_13 <- ([#"../Robinson/src/clause.rs" 124 36 124 37] (0 : usize));
+    goto BB1
+  }
+  BB1 {
+    invariant { [#"../Robinson/src/clause.rs" 125 20 125 55] 0 <= UIntSize.to_int i_11 /\ UIntSize.to_int i_11 <= Seq.length (ShallowModel1.shallow_model (Robinson_Clause_Clause_Type.clause_rest self_1)) };
+    invariant { [#"../Robinson/src/clause.rs" 126 20 126 36] UIntSize.to_int unassigned_13 <= 1 };
+    invariant { [#"../Robinson/src/clause.rs" 125 8 125 57] UIntSize.to_int unassigned_13 = 0 \/ Unset0.unset (Seq.get (ShallowModel2.shallow_model self_1) (UIntSize.to_int _k_12)) a_2 };
+    invariant { [#"../Robinson/src/clause.rs" 125 8 125 57] UIntSize.to_int unassigned_13 > 0 -> Unset0.unset (Seq.get (ShallowModel2.shallow_model self_1) (UIntSize.to_int _k_12)) a_2 };
+    invariant { [#"../Robinson/src/clause.rs" 125 8 125 57] forall j : int . 0 <= j /\ j < UIntSize.to_int i_11 -> Unsat1.unsat (Seq.get (ShallowModel2.shallow_model self_1) j) a_2 \/ Unset0.unset (Seq.get (ShallowModel2.shallow_model self_1) j) a_2 /\ UIntSize.to_int unassigned_13 >= 1 };
+    invariant { [#"../Robinson/src/clause.rs" 131 20 131 69] UIntSize.to_int unassigned_13 = 0 \/ 0 <= UIntSize.to_int _k_12 /\ UIntSize.to_int _k_12 < Seq.length (ShallowModel2.shallow_model self_1) };
+    invariant { [#"../Robinson/src/clause.rs" 125 8 125 57] UIntSize.to_int unassigned_13 = 1 -> (forall j : int . 0 <= j /\ j < UIntSize.to_int i_11 /\ j <> UIntSize.to_int _k_12 -> not Unset0.unset (Seq.get (ShallowModel2.shallow_model self_1) j) a_2) };
+    invariant { [#"../Robinson/src/clause.rs" 125 8 125 57] UIntSize.to_int unassigned_13 = 0 -> UIntSize.to_int _k_12 = 0 };
+    _25 <- i_11;
+    _27 <- Robinson_Clause_Clause_Type.clause_rest self_1;
+    _26 <- ([#"../Robinson/src/clause.rs" 135 18 135 33] Len0.len _27);
+    goto BB2
+  }
+  BB2 {
+    _24 <- ([#"../Robinson/src/clause.rs" 135 14 135 33] _25 < _26);
+    switch (_24)
+      | False -> goto BB14
+      | True -> goto BB3
+      end
+  }
+  BB3 {
+    _30 <- Robinson_Clause_Clause_Type.clause_rest self_1;
+    _31 <- i_11;
+    _29 <- ([#"../Robinson/src/clause.rs" 136 22 136 34] Index0.index _30 _31);
+    goto BB4
+  }
+  BB4 {
+    lit_28 <- _29;
+    _34 <- lit_28;
+    _35 <- a_2;
+    _33 <- ([#"../Robinson/src/clause.rs" 137 15 137 29] LitSat0.lit_sat _34 _35);
+    goto BB5
+  }
+  BB5 {
+    switch (_33)
+      | False -> goto BB7
+      | True -> goto BB6
+      end
+  }
+  BB6 {
+    _0 <- Robinson_Clause_ClauseState_Type.C_Sat;
+    goto BB18
+  }
+  BB7 {
+    _38 <- lit_28;
+    _39 <- a_2;
+    _37 <- ([#"../Robinson/src/clause.rs" 139 22 139 38] LitUnset0.lit_unset _38 _39);
+    goto BB8
+  }
+  BB8 {
+    switch (_37)
+      | False -> goto BB12
+      | True -> goto BB9
+      end
+  }
+  BB9 {
+    _42 <- unassigned_13;
+    _41 <- ([#"../Robinson/src/clause.rs" 141 19 141 33] _42 > ([#"../Robinson/src/clause.rs" 141 32 141 33] (0 : usize)));
+    switch (_41)
+      | False -> goto BB11
+      | True -> goto BB10
+      end
+  }
+  BB10 {
+    _0 <- Robinson_Clause_ClauseState_Type.C_Unknown;
+    goto BB18
+  }
+  BB11 {
+    _40 <- ();
+    _44 <- i_11;
+    _k_12 <- _44;
+    _44 <- any usize;
+    unassigned_13 <- ([#"../Robinson/src/clause.rs" 145 16 145 31] unassigned_13 + ([#"../Robinson/src/clause.rs" 145 30 145 31] (1 : usize)));
+    _32 <- ();
+    goto BB13
+  }
+  BB12 {
+    _32 <- ();
+    goto BB13
+  }
+  BB13 {
+    i_11 <- ([#"../Robinson/src/clause.rs" 147 12 147 18] i_11 + ([#"../Robinson/src/clause.rs" 147 17 147 18] (1 : usize)));
+    _23 <- ();
+    goto BB1
+  }
+  BB14 {
+    _14 <- ();
+    _49 <- unassigned_13;
+    _48 <- ([#"../Robinson/src/clause.rs" 149 11 149 26] _49 = ([#"../Robinson/src/clause.rs" 149 25 149 26] (1 : usize)));
+    switch (_48)
+      | False -> goto BB16
+      | True -> goto BB15
+      end
+  }
+  BB15 {
+    _0 <- Robinson_Clause_ClauseState_Type.C_Unit;
+    goto BB17
+  }
+  BB16 {
+    _0 <- Robinson_Clause_ClauseState_Type.C_Unsat;
+    goto BB17
+  }
+  BB17 {
+    goto BB19
+  }
+  BB18 {
+    goto BB19
+  }
+  BB19 {
+    return _0
+  }
+  
+end
+module Robinson_Clause_Impl2_GetUnit_Interface
+  use prelude.Int
+  use seq.Seq
+  use prelude.Borrow
+  use prelude.UInt8
+  use seq.Seq
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  use Robinson_Formula_Formula_Type as Robinson_Formula_Formula_Type
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
+  clone Robinson_Logic_Unset_Stub as Unset0
+  clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel1 with
+    type t = Robinson_Assignments_Assignments_Type.t_assignments,
+    type ShallowModelTy0.shallowModelTy = Seq.seq uint8
+  clone Robinson_Lit_Impl0_IndexLogic_Stub as IndexLogic0
+  clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
+    type t = Robinson_Clause_Clause_Type.t_clause,
+    type ShallowModelTy0.shallowModelTy = Seq.seq (Robinson_Lit_Lit_Type.t_lit)
+  clone Robinson_Assignments_Impl1_Invariant_Stub as Invariant1
+  clone Robinson_Formula_Impl1_Invariant_Stub as Invariant0
+  clone Robinson_Clause_Impl1_Unit_Stub as Unit0
+  val get_unit [#"../Robinson/src/clause.rs" 163 4 163 64] (self : Robinson_Clause_Clause_Type.t_clause) (a : Robinson_Assignments_Assignments_Type.t_assignments) (_f : Robinson_Formula_Formula_Type.t_formula) : Robinson_Lit_Lit_Type.t_lit
+    requires {[#"../Robinson/src/clause.rs" 157 15 157 28] Unit0.unit self a}
+    requires {[#"../Robinson/src/clause.rs" 158 15 158 29] Invariant0.invariant' _f}
+    requires {[#"../Robinson/src/clause.rs" 159 15 159 31] Invariant1.invariant' a _f}
+    ensures { [#"../Robinson/src/clause.rs" 160 4 160 78] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model self) /\ Seq.get (ShallowModel0.shallow_model self) j = result }
+    ensures { [#"../Robinson/src/clause.rs" 161 14 161 47] IndexLogic0.index_logic result < Seq.length (ShallowModel1.shallow_model a) }
+    ensures { [#"../Robinson/src/clause.rs" 162 14 162 47] Unset0.unset (Seq.get (ShallowModel1.shallow_model a) (IndexLogic0.index_logic result)) }
+    
+end
+module Robinson_Clause_Impl2_GetUnit
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  use prelude.UInt8
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  clone Robinson_Lit_Impl1_SatInner as SatInner1
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl11_Max as Max0
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel7 with
+    type t = Robinson_Lit_Lit_Type.t_lit,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
+  clone Robinson_Clause_Impl0_ShallowModel as ShallowModel4 with
+    function ShallowModel0.shallow_model = ShallowModel7.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  clone Robinson_Clause_Impl1_SatInner as SatInner0 with
+    function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
+    predicate SatInner0.sat_inner = SatInner1.sat_inner
+  clone Robinson_Lit_Impl1_Invariant as Invariant3
+  clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with
+    function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
+    predicate Invariant0.invariant' = Invariant3.invariant'
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel6 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
+    type t = Robinson_Lit_Lit_Type.t_lit
+  clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
+    type t = Robinson_Lit_Lit_Type.t_lit
+  use seq.Seq
+  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel5 with
+    type t = Alloc_Vec_Vec_Type.t_vec (Robinson_Lit_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global),
+    type ShallowModelTy0.shallowModelTy = Seq.seq (Robinson_Lit_Lit_Type.t_lit),
+    function ShallowModel0.shallow_model = ShallowModel7.shallow_model
+  clone Robinson_Lit_Impl1_UnsetInner as UnsetInner0
+  clone Robinson_Clause_Impl1_Invariant as Invariant2 with
+    predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
+    type t = Robinson_Clause_Clause_Type.t_clause,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone Robinson_Clause_Impl1_UnitInner as UnitInner0 with
+    predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range,
+    predicate SatInner0.sat_inner = SatInner0.sat_inner,
+    function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
+    predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
+  use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
+  clone Robinson_Assignments_Impl0_ShallowModel as ShallowModel2 with
+    function ShallowModel0.shallow_model = ShallowModel6.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  clone Robinson_Lit_Impl1_Unset as Unset1 with
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
+    predicate UnsetInner0.unset_inner = UnsetInner0.unset_inner
+  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel1 with
+    type t = Robinson_Assignments_Assignments_Type.t_assignments,
+    type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model
+  clone Robinson_Lit_Impl2_LitUnset_Interface as LitUnset0 with
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    predicate Invariant0.invariant' = Invariant3.invariant',
+    predicate Unset0.unset = Unset1.unset
+  clone Alloc_Vec_Impl13_Index_Interface as Index0 with
+    type t = Robinson_Lit_Lit_Type.t_lit,
+    type i = usize,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
+    predicate InBounds0.in_bounds = InBounds0.in_bounds,
+    predicate HasValue0.has_value = HasValue0.has_value,
+    type Output0.output = Robinson_Lit_Lit_Type.t_lit
+  clone Alloc_Vec_Impl1_Len_Interface as Len0 with
+    type t = Robinson_Lit_Lit_Type.t_lit,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    function ShallowModel0.shallow_model = ShallowModel5.shallow_model
+  clone Robinson_Logic_Unset as Unset0
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
+  clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel0 with
+    type t = Robinson_Clause_Clause_Type.t_clause,
+    type ShallowModelTy0.shallowModelTy = Seq.seq (Robinson_Lit_Lit_Type.t_lit),
+    function ShallowModel0.shallow_model = ShallowModel4.shallow_model
+  use Robinson_Formula_Formula_Type as Robinson_Formula_Formula_Type
+  clone Robinson_Assignments_Impl1_Invariant as Invariant1 with
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model
+  clone Robinson_Formula_Impl1_Invariant as Invariant0 with
+    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    predicate Invariant0.invariant' = Invariant2.invariant',
+    val Max0.mAX' = Max0.mAX'
+  clone Robinson_Clause_Impl1_Unit as Unit0 with
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
+    predicate UnitInner0.unit_inner = UnitInner0.unit_inner
+  let rec cfg get_unit [#"../Robinson/src/clause.rs" 163 4 163 64] [@cfg:stackify] [@cfg:subregion_analysis] (self : Robinson_Clause_Clause_Type.t_clause) (a : Robinson_Assignments_Assignments_Type.t_assignments) (_f : Robinson_Formula_Formula_Type.t_formula) : Robinson_Lit_Lit_Type.t_lit
+    requires {[#"../Robinson/src/clause.rs" 157 15 157 28] Unit0.unit self a}
+    requires {[#"../Robinson/src/clause.rs" 158 15 158 29] Invariant0.invariant' _f}
+    requires {[#"../Robinson/src/clause.rs" 159 15 159 31] Invariant1.invariant' a _f}
+    ensures { [#"../Robinson/src/clause.rs" 160 4 160 78] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model self) /\ Seq.get (ShallowModel0.shallow_model self) j = result }
+    ensures { [#"../Robinson/src/clause.rs" 161 14 161 47] IndexLogic0.index_logic result < Seq.length (ShallowModel1.shallow_model a) }
+    ensures { [#"../Robinson/src/clause.rs" 162 14 162 47] Unset0.unset (Seq.get (ShallowModel1.shallow_model a) (IndexLogic0.index_logic result)) }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Robinson_Lit_Lit_Type.t_lit;
+  var self_1 : Robinson_Clause_Clause_Type.t_clause;
+  var a_2 : Robinson_Assignments_Assignments_Type.t_assignments;
+  var _f_3 : Robinson_Formula_Formula_Type.t_formula;
+  var _4 : ();
+  var i_11 : usize;
+  var _12 : ();
+  var _14 : ();
+  var _15 : bool;
+  var _16 : usize;
+  var _17 : usize;
+  var _18 : Alloc_Vec_Vec_Type.t_vec (Robinson_Lit_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global);
+  var lit_19 : Robinson_Lit_Lit_Type.t_lit;
+  var _20 : Robinson_Lit_Lit_Type.t_lit;
+  var _21 : Alloc_Vec_Vec_Type.t_vec (Robinson_Lit_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global);
+  var _22 : usize;
+  var _23 : ();
+  var _24 : bool;
+  var _25 : Robinson_Lit_Lit_Type.t_lit;
+  var _26 : Robinson_Assignments_Assignments_Type.t_assignments;
+  var _27 : ();
+  var _28 : ();
+  var _29 : ();
+  var _30 : ();
+  var _31 : ();
+  {
+    self_1 <- self;
+    a_2 <- a;
+    _f_3 <- _f;
+    goto BB0
+  }
+  BB0 {
+    i_11 <- ([#"../Robinson/src/clause.rs" 164 27 164 28] (0 : usize));
+    goto BB1
+  }
+  BB1 {
+    invariant { [#"../Robinson/src/clause.rs" 165 8 165 77] forall j : int . 0 <= j /\ j < UIntSize.to_int i_11 -> not Unset1.unset (Seq.get (ShallowModel0.shallow_model self_1) j) a_2 };
+    _16 <- i_11;
+    _18 <- Robinson_Clause_Clause_Type.clause_rest self_1;
+    _17 <- ([#"../Robinson/src/clause.rs" 166 18 166 33] Len0.len _18);
+    goto BB2
+  }
+  BB2 {
+    _15 <- ([#"../Robinson/src/clause.rs" 166 14 166 33] _16 < _17);
+    switch (_15)
+      | False -> goto BB8
+      | True -> goto BB3
+      end
+  }
+  BB3 {
+    _21 <- Robinson_Clause_Clause_Type.clause_rest self_1;
+    _22 <- i_11;
+    _20 <- ([#"../Robinson/src/clause.rs" 167 22 167 34] Index0.index _21 _22);
+    goto BB4
+  }
+  BB4 {
+    lit_19 <- _20;
+    _25 <- lit_19;
+    _26 <- a_2;
+    _24 <- ([#"../Robinson/src/clause.rs" 168 15 168 31] LitUnset0.lit_unset _25 _26);
+    goto BB5
+  }
+  BB5 {
+    switch (_24)
+      | False -> goto BB7
+      | True -> goto BB6
+      end
+  }
+  BB6 {
+    _0 <- lit_19;
+    return _0
+  }
+  BB7 {
+    _23 <- ();
+    i_11 <- ([#"../Robinson/src/clause.rs" 171 12 171 18] i_11 + ([#"../Robinson/src/clause.rs" 171 17 171 18] (1 : usize)));
+    _14 <- ();
+    goto BB1
+  }
+  BB8 {
+    _12 <- ();
+    absurd
+  }
+  
+end
+module Robinson_Lit_Impl2_Index_Interface
+  use prelude.UIntSize
+  use prelude.Int
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  clone Robinson_Lit_Impl0_IndexLogic_Stub as IndexLogic0
+  val index [#"../Robinson/src/lit.rs" 88 4 88 31] (self : Robinson_Lit_Lit_Type.t_lit) : usize
+    ensures { [#"../Robinson/src/lit.rs" 87 14 87 43] UIntSize.to_int result = IndexLogic0.index_logic self }
+    
+end
+module Robinson_Lit_Impl2_Index
+  use prelude.Int
+  use prelude.UIntSize
+  use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  clone Robinson_Lit_Impl0_IndexLogic as IndexLogic0
+  let rec cfg index [#"../Robinson/src/lit.rs" 88 4 88 31] [@cfg:stackify] [@cfg:subregion_analysis] (self : Robinson_Lit_Lit_Type.t_lit) : usize
+    ensures { [#"../Robinson/src/lit.rs" 87 14 87 43] UIntSize.to_int result = IndexLogic0.index_logic self }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : usize;
+  var self_1 : Robinson_Lit_Lit_Type.t_lit;
+  {
+    self_1 <- self;
+    goto BB0
+  }
+  BB0 {
+    _0 <- Robinson_Lit_Lit_Type.lit_idx self_1;
+    return _0
+  }
+  
+end
+module CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere_Stub
+  type self
+  type t
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  predicate resolve_elswhere (self : self) (old' : ShallowModelTy0.shallowModelTy) (fin : ShallowModelTy0.shallowModelTy)
+    
+end
+module CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere_Interface
+  type self
+  type t
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  predicate resolve_elswhere (self : self) (old' : ShallowModelTy0.shallowModelTy) (fin : ShallowModelTy0.shallowModelTy)
+    
+end
+module CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere
+  type self
+  type t
+  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+    type self = t
+  predicate resolve_elswhere (self : self) (old' : ShallowModelTy0.shallowModelTy) (fin : ShallowModelTy0.shallowModelTy)
+    
+  val resolve_elswhere (self : self) (old' : ShallowModelTy0.shallowModelTy) (fin : ShallowModelTy0.shallowModelTy) : bool
+    ensures { result = resolve_elswhere self old' fin }
+    
+end
+module Alloc_Vec_Impl14_IndexMut_Interface
+  type t
+  type i
+  type a
+  use prelude.Borrow
+  use seq.Seq
+  use prelude.Slice
+  clone Core_Num_Impl11_Max_Stub as Max0
+  use seq.Seq
+  clone Core_Slice_Index_SliceIndex_Output_Type as Output0 with
+    type self = i,
+    type t = slice t
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere_Stub as ResolveElswhere0 with
+    type self = i,
+    type t = slice t,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel1 with
+    type t = t,
+    type a = a,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Std1_Slice_SliceIndex_HasValue_Stub as HasValue0 with
+    type self = i,
+    type t = slice t,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t,
+    type Output0.output = Output0.output
+  clone CreusotContracts_Std1_Slice_SliceIndex_InBounds_Stub as InBounds0 with
+    type self = i,
+    type t = slice t,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
+  clone CreusotContracts_Model_Impl3_ShallowModel_Stub as ShallowModel0 with
+    type t = Alloc_Vec_Vec_Type.t_vec t a,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
+  val index_mut (self : borrowed (Alloc_Vec_Vec_Type.t_vec t a)) (index : i) : borrowed Output0.output
+    requires {InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
+    ensures { HasValue0.has_value index (ShallowModel0.shallow_model self) ( * result) }
+    ensures { HasValue0.has_value index (ShallowModel1.shallow_model ( ^ self)) ( ^ result) }
+    ensures { ResolveElswhere0.resolve_elswhere index (ShallowModel0.shallow_model self) (ShallowModel1.shallow_model ( ^ self)) }
+    ensures { Seq.length (ShallowModel1.shallow_model ( ^ self)) = Seq.length (ShallowModel0.shallow_model self) }
+    
+end
 module CreusotContracts_Std1_Slice_Impl5_ResolveElswhere_Stub
   type t
   use prelude.Int
@@ -3512,7 +3554,7 @@ module Robinson_Assignments_Impl2_UnitPropOnce_Interface
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
   clone Robinson_Clause_Impl1_Unsat_Stub as Unsat0
   clone Robinson_Assignments_Impl0_ShallowModel_Stub as ShallowModel2
@@ -3536,7 +3578,7 @@ module Robinson_Assignments_Impl2_UnitPropOnce_Interface
   val unit_prop_once [#"../Robinson/src/assignments.rs" 151 4 151 74] (self : borrowed (Robinson_Assignments_Assignments_Type.t_assignments)) (i : usize) (f : Robinson_Formula_Formula_Type.t_formula) : Robinson_Clause_ClauseState_Type.t_clausestate
     requires {[#"../Robinson/src/assignments.rs" 133 4 133 42] Invariant0.invariant' ( * self) f}
     requires {[#"../Robinson/src/assignments.rs" 134 15 134 28] Invariant1.invariant' f}
-    requires {[#"../Robinson/src/assignments.rs" 135 15 135 49] 0 <= UIntSize.to_int i /\ UIntSize.to_int i < Seq.length (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f))}
+    requires {[#"../Robinson/src/assignments.rs" 135 15 135 47] 0 <= UIntSize.to_int i /\ UIntSize.to_int i < Seq.length (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f))}
     ensures { [#"../Robinson/src/assignments.rs" 133 4 133 42] Invariant0.invariant' ( ^ self) f }
     ensures { [#"../Robinson/src/assignments.rs" 136 14 136 39] Compatible0.compatible ( * self) ( ^ self) }
     ensures { [#"../Robinson/src/assignments.rs" 137 14 137 82] EventuallySatComplete0.eventually_sat_complete f ( * self) = EventuallySatComplete0.eventually_sat_complete f ( ^ self) }
@@ -3564,7 +3606,7 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   clone Robinson_Lit_Impl1_Invariant as Invariant3
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel9 with
     type t = Robinson_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -3669,7 +3711,7 @@ module Robinson_Assignments_Impl2_UnitPropOnce
     axiom .
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve1 with
     type t = uint8
-  clone Alloc_Vec_Impl16_IndexMut_Interface as IndexMut0 with
+  clone Alloc_Vec_Impl14_IndexMut_Interface as IndexMut0 with
     type t = uint8,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -3743,7 +3785,7 @@ module Robinson_Assignments_Impl2_UnitPropOnce
     predicate Unsat0.unsat = Unsat0.unsat,
     predicate Unit0.unit = Unit0.unit,
     predicate Complete0.complete = Complete0.complete
-  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
+  clone Alloc_Vec_Impl13_Index_Interface as Index0 with
     type t = Robinson_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -3764,7 +3806,7 @@ module Robinson_Assignments_Impl2_UnitPropOnce
   let rec cfg unit_prop_once [#"../Robinson/src/assignments.rs" 151 4 151 74] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Robinson_Assignments_Assignments_Type.t_assignments)) (i : usize) (f : Robinson_Formula_Formula_Type.t_formula) : Robinson_Clause_ClauseState_Type.t_clausestate
     requires {[#"../Robinson/src/assignments.rs" 133 4 133 42] Invariant0.invariant' ( * self) f}
     requires {[#"../Robinson/src/assignments.rs" 134 15 134 28] Invariant1.invariant' f}
-    requires {[#"../Robinson/src/assignments.rs" 135 15 135 49] 0 <= UIntSize.to_int i /\ UIntSize.to_int i < Seq.length (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f))}
+    requires {[#"../Robinson/src/assignments.rs" 135 15 135 47] 0 <= UIntSize.to_int i /\ UIntSize.to_int i < Seq.length (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f))}
     ensures { [#"../Robinson/src/assignments.rs" 133 4 133 42] Invariant0.invariant' ( ^ self) f }
     ensures { [#"../Robinson/src/assignments.rs" 136 14 136 39] Compatible0.compatible ( * self) ( ^ self) }
     ensures { [#"../Robinson/src/assignments.rs" 137 14 137 82] EventuallySatComplete0.eventually_sat_complete f ( * self) = EventuallySatComplete0.eventually_sat_complete f ( ^ self) }
@@ -4035,7 +4077,7 @@ module Robinson_Assignments_Impl2_UnitPropagate
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel6 with
     type t = Robinson_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -4219,15 +4261,15 @@ module Robinson_Assignments_Impl2_UnitPropagate
     goto BB2
   }
   BB2 {
-    invariant assignment_invariant { [#"../Robinson/src/assignments.rs" 194 42 194 60] Invariant1.invariant' ( * self_1) f_2 };
-    invariant proph { [#"../Robinson/src/assignments.rs" 195 27 195 51]  ^ self_1 =  ^ Ghost.inner _old_a_11 };
-    invariant maintains_compat { [#"../Robinson/src/assignments.rs" 196 38 196 62] Compatible0.compatible ( * Ghost.inner _old_a_11) ( * self_1) };
-    invariant maintains_sat { [#"../Robinson/src/assignments.rs" 197 35 197 113] EventuallySatComplete0.eventually_sat_complete f_2 ( * Ghost.inner _old_a_11) = EventuallySatComplete0.eventually_sat_complete f_2 ( * self_1) };
-    invariant out_not_unsat { [#"../Robinson/src/assignments.rs" 198 35 198 63] not out_15 = Robinson_Clause_ClauseState_Type.C_Unsat };
-    invariant inv { [#"../Robinson/src/assignments.rs" 194 8 194 62] Complete0.complete ( * Ghost.inner _old_a_11) ->  * Ghost.inner _old_a_11 =  * self_1 /\ (forall j : int . 0 <= j /\ j < UIntSize.to_int i_14 -> not Unknown0.unknown (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ not Unit0.unit (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ Sat1.sat (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1)) };
-    invariant inv2 { [#"../Robinson/src/assignments.rs" 194 8 194 62] out_15 = Robinson_Clause_ClauseState_Type.C_Sat -> (forall j : int . 0 <= j /\ j < UIntSize.to_int i_14 -> not Unsat1.unsat (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ not Unknown0.unknown (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ not Unit0.unit (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ Sat1.sat (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1)) };
-    invariant inv3 { [#"../Robinson/src/assignments.rs" 194 8 194 62] out_15 = Robinson_Clause_ClauseState_Type.C_Unit -> not Complete0.complete ( * Ghost.inner _old_a_11) };
-    invariant inv4 { [#"../Robinson/src/assignments.rs" 194 8 194 62] out_15 = Robinson_Clause_ClauseState_Type.C_Unknown -> not Complete0.complete ( * self_1) };
+    invariant { [#"../Robinson/src/assignments.rs" 194 20 194 38] Invariant1.invariant' ( * self_1) f_2 };
+    invariant { [#"../Robinson/src/assignments.rs" 195 20 195 44]  ^ self_1 =  ^ Ghost.inner _old_a_11 };
+    invariant { [#"../Robinson/src/assignments.rs" 196 20 196 44] Compatible0.compatible ( * Ghost.inner _old_a_11) ( * self_1) };
+    invariant { [#"../Robinson/src/assignments.rs" 197 20 197 98] EventuallySatComplete0.eventually_sat_complete f_2 ( * Ghost.inner _old_a_11) = EventuallySatComplete0.eventually_sat_complete f_2 ( * self_1) };
+    invariant { [#"../Robinson/src/assignments.rs" 198 20 198 48] not out_15 = Robinson_Clause_ClauseState_Type.C_Unsat };
+    invariant { [#"../Robinson/src/assignments.rs" 194 8 194 40] Complete0.complete ( * Ghost.inner _old_a_11) ->  * Ghost.inner _old_a_11 =  * self_1 /\ (forall j : int . 0 <= j /\ j < UIntSize.to_int i_14 -> not Unknown0.unknown (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ not Unit0.unit (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ Sat1.sat (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1)) };
+    invariant { [#"../Robinson/src/assignments.rs" 194 8 194 40] out_15 = Robinson_Clause_ClauseState_Type.C_Sat -> (forall j : int . 0 <= j /\ j < UIntSize.to_int i_14 -> not Unsat1.unsat (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ not Unknown0.unknown (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ not Unit0.unit (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ Sat1.sat (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1)) };
+    invariant { [#"../Robinson/src/assignments.rs" 194 8 194 40] out_15 = Robinson_Clause_ClauseState_Type.C_Unit -> not Complete0.complete ( * Ghost.inner _old_a_11) };
+    invariant { [#"../Robinson/src/assignments.rs" 194 8 194 40] out_15 = Robinson_Clause_ClauseState_Type.C_Unknown -> not Complete0.complete ( * self_1) };
     _28 <- i_14;
     _30 <- Robinson_Formula_Formula_Type.formula_clauses f_2;
     _29 <- ([#"../Robinson/src/assignments.rs" 209 18 209 33] Len0.len _30);
@@ -4353,7 +4395,7 @@ module Robinson_Assignments_Impl2_DoUnitPropagation
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel4 with
     type t = Robinson_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -4483,10 +4525,10 @@ module Robinson_Assignments_Impl2_DoUnitPropagation
     goto BB2
   }
   BB2 {
-    invariant assignments_invariant { [#"../Robinson/src/assignments.rs" 240 43 240 61] Invariant1.invariant' ( * self_1) f_2 };
-    invariant proph { [#"../Robinson/src/assignments.rs" 241 27 241 51]  ^ self_1 =  ^ Ghost.inner _old_a_11 };
-    invariant maintains_compat { [#"../Robinson/src/assignments.rs" 242 38 242 62] Compatible0.compatible ( * Ghost.inner _old_a_11) ( * self_1) };
-    invariant maintains_sat { [#"../Robinson/src/assignments.rs" 240 8 240 63] EventuallySatComplete0.eventually_sat_complete f_2 ( * Ghost.inner _old_a_11) -> EventuallySatComplete0.eventually_sat_complete f_2 ( * self_1) };
+    invariant { [#"../Robinson/src/assignments.rs" 240 20 240 38] Invariant1.invariant' ( * self_1) f_2 };
+    invariant { [#"../Robinson/src/assignments.rs" 241 20 241 44]  ^ self_1 =  ^ Ghost.inner _old_a_11 };
+    invariant { [#"../Robinson/src/assignments.rs" 242 20 242 44] Compatible0.compatible ( * Ghost.inner _old_a_11) ( * self_1) };
+    invariant { [#"../Robinson/src/assignments.rs" 240 8 240 40] EventuallySatComplete0.eventually_sat_complete f_2 ( * Ghost.inner _old_a_11) -> EventuallySatComplete0.eventually_sat_complete f_2 ( * self_1) };
     _21 <- borrow_mut ( * self_1);
     self_1 <- { self_1 with current = ( ^ _21) };
     _22 <- f_2;
@@ -4560,8 +4602,9 @@ module Robinson_Clause_Impl2_ClauseFromVec_Interface
     
 end
 module Robinson_Clause_Impl2_ClauseFromVec
-  clone Core_Num_Impl12_Max as Max0
   use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
+  use seq.Seq
+  clone Core_Num_Impl11_Max as Max0
   clone CreusotContracts_Resolve_Impl2_Resolve as Resolve1 with
     type t = Robinson_Lit_Lit_Type.t_lit
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
@@ -4571,9 +4614,14 @@ module Robinson_Clause_Impl2_ClauseFromVec
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
+  clone CreusotContracts_Logic_Ops_Impl0_IndexLogic as IndexLogic0 with
+    type t = Robinson_Lit_Lit_Type.t_lit,
+    type s = Alloc_Vec_Vec_Type.t_vec (Robinson_Lit_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global),
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model
   clone CreusotContracts_Std1_Vec_Impl10_Resolve as Resolve0 with
     type t = Robinson_Lit_Lit_Type.t_lit,
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    function IndexLogic0.index_logic = IndexLogic0.index_logic,
     predicate Resolve0.resolve = Resolve1.resolve,
     val Max0.mAX' = Max0.mAX'
   use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
@@ -4625,7 +4673,7 @@ module Robinson_Clause_Impl2_Len_Interface
     type t = Robinson_Clause_Clause_Type.t_clause,
     type ShallowModelTy0.shallowModelTy = Seq.seq (Robinson_Lit_Lit_Type.t_lit)
   val len [#"../Robinson/src/clause.rs" 224 4 224 30] (self : Robinson_Clause_Clause_Type.t_clause) : usize
-    ensures { [#"../Robinson/src/clause.rs" 223 14 223 38] UIntSize.to_int result = Seq.length (ShallowModel0.shallow_model self) }
+    ensures { [#"../Robinson/src/clause.rs" 223 14 223 36] UIntSize.to_int result = Seq.length (ShallowModel0.shallow_model self) }
     
 end
 module Robinson_Clause_Impl2_Len
@@ -4633,7 +4681,7 @@ module Robinson_Clause_Impl2_Len
   use prelude.UIntSize
   use prelude.Borrow
   use seq.Seq
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
@@ -4660,7 +4708,7 @@ module Robinson_Clause_Impl2_Len
     type ShallowModelTy0.shallowModelTy = Seq.seq (Robinson_Lit_Lit_Type.t_lit),
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model
   let rec cfg len [#"../Robinson/src/clause.rs" 224 4 224 30] [@cfg:stackify] [@cfg:subregion_analysis] (self : Robinson_Clause_Clause_Type.t_clause) : usize
-    ensures { [#"../Robinson/src/clause.rs" 223 14 223 38] UIntSize.to_int result = Seq.length (ShallowModel0.shallow_model self) }
+    ensures { [#"../Robinson/src/clause.rs" 223 14 223 36] UIntSize.to_int result = Seq.length (ShallowModel0.shallow_model self) }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : usize;
@@ -4738,7 +4786,7 @@ module Robinson_Clause_Impl2_CheckClauseInvariant
   use prelude.UIntSize
   use prelude.Borrow
   use seq.Seq
-  clone Core_Num_Impl12_Max as Max1
+  clone Core_Num_Impl11_Max as Max1
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
@@ -4763,7 +4811,7 @@ module Robinson_Clause_Impl2_CheckClauseInvariant
   clone Robinson_Lit_Impl1_Invariant as Invariant1
   clone Robinson_Lit_Impl2_CheckLitInvariant_Interface as CheckLitInvariant0 with
     predicate Invariant0.invariant' = Invariant1.invariant'
-  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
+  clone Alloc_Vec_Impl13_Index_Interface as Index0 with
     type t = Robinson_Lit_Lit_Type.t_lit,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -4825,8 +4873,8 @@ module Robinson_Clause_Impl2_CheckClauseInvariant
     goto BB1
   }
   BB1 {
-    invariant inv { [#"../Robinson/src/clause.rs" 182 8 182 91] forall j : int . 0 <= j /\ j < UIntSize.to_int i_5 -> Invariant1.invariant' (Seq.get (ShallowModel0.shallow_model self_1) j) (UIntSize.to_int new_n_6) };
-    invariant new_n_inv { [#"../Robinson/src/clause.rs" 183 31 183 43] UIntSize.to_int new_n_6 >= UIntSize.to_int n_2 };
+    invariant { [#"../Robinson/src/clause.rs" 182 8 182 84] forall j : int . 0 <= j /\ j < UIntSize.to_int i_5 -> Invariant1.invariant' (Seq.get (ShallowModel0.shallow_model self_1) j) (UIntSize.to_int new_n_6) };
+    invariant { [#"../Robinson/src/clause.rs" 183 20 183 32] UIntSize.to_int new_n_6 >= UIntSize.to_int n_2 };
     _12 <- i_5;
     _14 <- self_1;
     _13 <- ([#"../Robinson/src/clause.rs" 184 18 184 28] Len0.len _14);
@@ -4899,7 +4947,7 @@ module Robinson_Clause_Impl2_NoDuplicates
   use prelude.Int
   use prelude.UIntSize
   use seq.Seq
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
@@ -4922,7 +4970,7 @@ module Robinson_Clause_Impl2_NoDuplicates
   clone Robinson_Clause_Impl0_ShallowModel as ShallowModel1 with
     function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
     val Max0.mAX' = Max0.mAX'
-  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
+  clone Alloc_Vec_Impl13_Index_Interface as Index0 with
     type t = Robinson_Lit_Lit_Type.t_lit,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -4988,7 +5036,7 @@ module Robinson_Clause_Impl2_NoDuplicates
     goto BB1
   }
   BB1 {
-    invariant no_dups { [#"../Robinson/src/clause.rs" 202 8 204 67] forall k : int . forall j : int . 0 <= j /\ j < UIntSize.to_int i_4 /\ 0 <= k /\ k < j -> Robinson_Lit_Lit_Type.lit_idx (Seq.get (ShallowModel0.shallow_model self_1) j) <> Robinson_Lit_Lit_Type.lit_idx (Seq.get (ShallowModel0.shallow_model self_1) k) };
+    invariant { [#"../Robinson/src/clause.rs" 202 8 204 63] forall k : int . forall j : int . 0 <= j /\ j < UIntSize.to_int i_4 /\ 0 <= k /\ k < j -> Robinson_Lit_Lit_Type.lit_idx (Seq.get (ShallowModel0.shallow_model self_1) j) <> Robinson_Lit_Lit_Type.lit_idx (Seq.get (ShallowModel0.shallow_model self_1) k) };
     _9 <- i_4;
     _11 <- Robinson_Clause_Clause_Type.clause_rest self_1;
     _10 <- ([#"../Robinson/src/clause.rs" 205 18 205 33] Len0.len _11);
@@ -5013,7 +5061,7 @@ module Robinson_Clause_Impl2_NoDuplicates
     goto BB5
   }
   BB5 {
-    invariant inv { [#"../Robinson/src/clause.rs" 208 12 208 93] forall k : int . 0 <= k /\ k < UIntSize.to_int j_16 -> Robinson_Lit_Lit_Type.lit_idx lit1_12 <> Robinson_Lit_Lit_Type.lit_idx (Seq.get (ShallowModel0.shallow_model self_1) k) };
+    invariant { [#"../Robinson/src/clause.rs" 208 12 208 86] forall k : int . 0 <= k /\ k < UIntSize.to_int j_16 -> Robinson_Lit_Lit_Type.lit_idx lit1_12 <> Robinson_Lit_Lit_Type.lit_idx (Seq.get (ShallowModel0.shallow_model self_1) k) };
     _20 <- j_16;
     _21 <- i_4;
     _19 <- ([#"../Robinson/src/clause.rs" 209 18 209 23] _20 < _21);
@@ -5124,98 +5172,9 @@ module CreusotContracts_Logic_Seq_Impl0_PermutationOf
   use seq.Seq
   use seq.Permut
   predicate permutation_of (self : Seq.seq t) (o : Seq.seq t) =
-    [#"../Robinson/src/lit.rs" 19 27 20 19] Permut.permut self o 0 (Seq.length self)
+    [#"../Robinson/src/lit.rs" 44 44 47 1] Permut.permut self o 0 (Seq.length self)
   val permutation_of (self : Seq.seq t) (o : Seq.seq t) : bool
     ensures { result = permutation_of self o }
-    
-end
-module CreusotContracts_Std1_Slice_Impl0_ShallowModel_Stub
-  type t
-  use seq.Seq
-  use prelude.UIntSize
-  use prelude.Int
-  use prelude.Slice
-  use prelude.Seq
-  clone Core_Num_Impl12_Max_Stub as Max0
-  function shallow_model (self : seq t) : Seq.seq t
-end
-module CreusotContracts_Std1_Slice_Impl0_ShallowModel_Interface
-  type t
-  use seq.Seq
-  use prelude.UIntSize
-  use prelude.Int
-  use prelude.Slice
-  use prelude.Seq
-  clone Core_Num_Impl12_Max_Stub as Max0
-  function shallow_model (self : seq t) : Seq.seq t
-  axiom shallow_model_spec : forall self : seq t . shallow_model self = Slice.id self && Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
-end
-module CreusotContracts_Std1_Slice_Impl0_ShallowModel
-  type t
-  use seq.Seq
-  use prelude.UIntSize
-  use prelude.Int
-  use prelude.Slice
-  use prelude.Seq
-  clone Core_Num_Impl12_Max_Stub as Max0
-  function shallow_model (self : seq t) : Seq.seq t
-  val shallow_model (self : seq t) : Seq.seq t
-    ensures { result = shallow_model self }
-    
-  axiom shallow_model_spec : forall self : seq t . shallow_model self = Slice.id self && Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
-end
-module Alloc_Vec_Impl10_DerefMut_Interface
-  type t
-  type a
-  use prelude.Borrow
-  use prelude.Slice
-  use prelude.Seq
-  use seq.Seq
-  clone Core_Num_Impl12_Max_Stub as Max0
-  use seq.Seq
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel3 with
-    type t = t,
-    type a = a,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  clone CreusotContracts_Std1_Slice_Impl0_ShallowModel_Stub as ShallowModel2 with
-    type t = t,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  clone CreusotContracts_Model_Impl3_ShallowModel_Stub as ShallowModel1 with
-    type t = Alloc_Vec_Vec_Type.t_vec t a,
-    type ShallowModelTy0.shallowModelTy = Seq.seq t
-  clone CreusotContracts_Model_Impl3_ShallowModel_Stub as ShallowModel0 with
-    type t = seq t,
-    type ShallowModelTy0.shallowModelTy = Seq.seq t
-  val deref_mut (self : borrowed (Alloc_Vec_Vec_Type.t_vec t a)) : borrowed (seq t)
-    ensures { ShallowModel0.shallow_model result = ShallowModel1.shallow_model self }
-    ensures { ShallowModel2.shallow_model ( ^ result) = ShallowModel3.shallow_model ( ^ self) }
-    
-end
-module Core_Slice_Impl0_Swap_Interface
-  type t
-  use prelude.UIntSize
-  use seq.Seq
-  use prelude.Int
-  use prelude.Borrow
-  use seq.Permut
-  use prelude.Slice
-  use prelude.Seq
-  clone Core_Num_Impl12_Max_Stub as Max0
-  use seq.Seq
-  clone CreusotContracts_Std1_Slice_Impl0_ShallowModel_Stub as ShallowModel1 with
-    type t = t,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  clone CreusotContracts_Model_Impl3_ShallowModel_Stub as ShallowModel0 with
-    type t = seq t,
-    type ShallowModelTy0.shallowModelTy = Seq.seq t
-  val swap (self : borrowed (seq t)) (a : usize) (b : usize) : ()
-    requires {UIntSize.to_int a < Seq.length (ShallowModel0.shallow_model self)}
-    requires {UIntSize.to_int b < Seq.length (ShallowModel0.shallow_model self)}
-    ensures { Permut.exchange (ShallowModel1.shallow_model ( ^ self)) (ShallowModel0.shallow_model self) (UIntSize.to_int a) (UIntSize.to_int b) }
     
 end
 module Robinson_Util_PartitionRev_Stub
@@ -5240,13 +5199,97 @@ module Robinson_Util_PartitionRev
     ensures { result = partition_rev v i }
     
 end
+module CreusotContracts_Std1_Slice_Impl0_ShallowModel_Stub
+  type t
+  use seq.Seq
+  use prelude.UIntSize
+  use prelude.Int
+  use prelude.Slice
+  clone Core_Num_Impl11_Max_Stub as Max0
+  function shallow_model (self : slice t) : Seq.seq t
+end
+module CreusotContracts_Std1_Slice_Impl0_ShallowModel_Interface
+  type t
+  use seq.Seq
+  use prelude.UIntSize
+  use prelude.Int
+  use prelude.Slice
+  clone Core_Num_Impl11_Max_Stub as Max0
+  function shallow_model (self : slice t) : Seq.seq t
+  axiom shallow_model_spec : forall self : slice t . shallow_model self = Slice.id self && Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
+end
+module CreusotContracts_Std1_Slice_Impl0_ShallowModel
+  type t
+  use seq.Seq
+  use prelude.UIntSize
+  use prelude.Int
+  use prelude.Slice
+  clone Core_Num_Impl11_Max_Stub as Max0
+  function shallow_model (self : slice t) : Seq.seq t
+  val shallow_model (self : slice t) : Seq.seq t
+    ensures { result = shallow_model self }
+    
+  axiom shallow_model_spec : forall self : slice t . shallow_model self = Slice.id self && Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
+end
+module Alloc_Vec_Impl10_DerefMut_Interface
+  type t
+  type a
+  use prelude.Borrow
+  use prelude.Slice
+  use seq.Seq
+  clone Core_Num_Impl11_Max_Stub as Max0
+  use seq.Seq
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel3 with
+    type t = t,
+    type a = a,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Std1_Slice_Impl0_ShallowModel_Stub as ShallowModel2 with
+    type t = t,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Model_Impl3_ShallowModel_Stub as ShallowModel1 with
+    type t = Alloc_Vec_Vec_Type.t_vec t a,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
+  clone CreusotContracts_Model_Impl3_ShallowModel_Stub as ShallowModel0 with
+    type t = slice t,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
+  val deref_mut (self : borrowed (Alloc_Vec_Vec_Type.t_vec t a)) : borrowed (slice t)
+    ensures { ShallowModel0.shallow_model result = ShallowModel1.shallow_model self }
+    ensures { ShallowModel2.shallow_model ( ^ result) = ShallowModel3.shallow_model ( ^ self) }
+    
+end
+module Core_Slice_Impl0_Swap_Interface
+  type t
+  use prelude.UIntSize
+  use seq.Seq
+  use prelude.Int
+  use prelude.Borrow
+  use seq.Permut
+  use prelude.Slice
+  clone Core_Num_Impl11_Max_Stub as Max0
+  use seq.Seq
+  clone CreusotContracts_Std1_Slice_Impl0_ShallowModel_Stub as ShallowModel1 with
+    type t = t,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Model_Impl3_ShallowModel_Stub as ShallowModel0 with
+    type t = slice t,
+    type ShallowModelTy0.shallowModelTy = Seq.seq t
+  val swap (self : borrowed (slice t)) (a : usize) (b : usize) : ()
+    requires {UIntSize.to_int a < Seq.length (ShallowModel0.shallow_model self)}
+    requires {UIntSize.to_int b < Seq.length (ShallowModel0.shallow_model self)}
+    ensures { Permut.exchange (ShallowModel1.shallow_model ( ^ self)) (ShallowModel0.shallow_model self) (UIntSize.to_int a) (UIntSize.to_int b) }
+    
+end
 module Robinson_Util_SortReverse_Interface
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
   use seq.Seq
   use seq.Seq
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Logic_Seq_Impl0_PermutationOf_Stub as PermutationOf0 with
@@ -5261,8 +5304,8 @@ module Robinson_Util_SortReverse_Interface
     val Max0.mAX' = Max0.mAX',
     axiom .
   val sort_reverse [#"../Robinson/src/util.rs" 25 0 25 48] (v : borrowed (Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global))) : ()
-    ensures { [#"../Robinson/src/util.rs" 23 10 23 25] SortedRev0.sorted_rev (ShallowModel0.shallow_model ( ^ v)) }
-    ensures { [#"../Robinson/src/util.rs" 24 10 24 34] PermutationOf0.permutation_of (ShallowModel0.shallow_model ( ^ v)) (ShallowModel1.shallow_model v) }
+    ensures { [#"../Robinson/src/util.rs" 23 10 23 27] SortedRev0.sorted_rev (ShallowModel0.shallow_model ( ^ v)) }
+    ensures { [#"../Robinson/src/util.rs" 24 0 24 36] PermutationOf0.permutation_of (ShallowModel0.shallow_model ( ^ v)) (ShallowModel1.shallow_model v) }
     
 end
 module Robinson_Util_SortReverse
@@ -5271,16 +5314,15 @@ module Robinson_Util_SortReverse
   use prelude.UIntSize
   use prelude.Ghost
   use prelude.Slice
-  use prelude.Seq
   use seq.Seq
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   clone CreusotContracts_Std1_Slice_Impl0_ShallowModel as ShallowModel4 with
     type t = (usize, usize),
     val Max0.mAX' = Max0.mAX',
     axiom .
   use seq.Seq
   clone CreusotContracts_Model_Impl3_ShallowModel as ShallowModel3 with
-    type t = seq (usize, usize),
+    type t = slice (usize, usize),
     type ShallowModelTy0.shallowModelTy = Seq.seq (usize, usize),
     function ShallowModel0.shallow_model = ShallowModel4.shallow_model
   clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
@@ -5306,7 +5348,7 @@ module Robinson_Util_SortReverse
     function ShallowModel1.shallow_model = ShallowModel4.shallow_model,
     val Max0.mAX' = Max0.mAX'
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
-    type t = seq (usize, usize)
+    type t = slice (usize, usize)
   clone CreusotContracts_Model_Impl3_ShallowModel as ShallowModel1 with
     type t = Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global),
     type ShallowModelTy0.shallowModelTy = Seq.seq (usize, usize),
@@ -5319,7 +5361,7 @@ module Robinson_Util_SortReverse
     function ShallowModel2.shallow_model = ShallowModel4.shallow_model,
     function ShallowModel3.shallow_model = ShallowModel0.shallow_model,
     val Max0.mAX' = Max0.mAX'
-  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
+  clone Alloc_Vec_Impl13_Index_Interface as Index0 with
     type t = (usize, usize),
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -5338,8 +5380,8 @@ module Robinson_Util_SortReverse
   clone Robinson_Util_SortedRev as SortedRev0 with
     predicate SortedRangeRev0.sorted_range_rev = SortedRangeRev0.sorted_range_rev
   let rec cfg sort_reverse [#"../Robinson/src/util.rs" 25 0 25 48] [@cfg:stackify] [@cfg:subregion_analysis] (v : borrowed (Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global))) : ()
-    ensures { [#"../Robinson/src/util.rs" 23 10 23 25] SortedRev0.sorted_rev (ShallowModel0.shallow_model ( ^ v)) }
-    ensures { [#"../Robinson/src/util.rs" 24 10 24 34] PermutationOf0.permutation_of (ShallowModel0.shallow_model ( ^ v)) (ShallowModel1.shallow_model v) }
+    ensures { [#"../Robinson/src/util.rs" 23 10 23 27] SortedRev0.sorted_rev (ShallowModel0.shallow_model ( ^ v)) }
+    ensures { [#"../Robinson/src/util.rs" 24 0 24 36] PermutationOf0.permutation_of (ShallowModel0.shallow_model ( ^ v)) (ShallowModel1.shallow_model v) }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : ();
@@ -5375,8 +5417,8 @@ module Robinson_Util_SortReverse
   var _40 : ();
   var _41 : ();
   var _42 : ();
-  var _43 : borrowed (seq (usize, usize));
-  var _44 : borrowed (seq (usize, usize));
+  var _43 : borrowed (slice (usize, usize));
+  var _44 : borrowed (slice (usize, usize));
   var _45 : borrowed (Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global));
   var _46 : usize;
   var _47 : usize;
@@ -5397,10 +5439,10 @@ module Robinson_Util_SortReverse
     goto BB2
   }
   BB2 {
-    invariant proph_const { [#"../Robinson/src/util.rs" 28 29 28 50]  ^ v_1 =  ^ Ghost.inner _old_v_5 };
-    invariant permutation { [#"../Robinson/src/util.rs" 29 29 29 65] PermutationOf0.permutation_of (ShallowModel1.shallow_model v_1) (ShallowModel1.shallow_model (Ghost.inner _old_v_5)) };
-    invariant sorted { [#"../Robinson/src/util.rs" 30 24 30 51] SortedRangeRev0.sorted_range_rev (ShallowModel1.shallow_model v_1) 0 (UIntSize.to_int i_4) };
-    invariant partition { [#"../Robinson/src/util.rs" 31 27 31 48] PartitionRev0.partition_rev (ShallowModel1.shallow_model v_1) (UIntSize.to_int i_4) };
+    invariant { [#"../Robinson/src/util.rs" 28 16 28 37]  ^ v_1 =  ^ Ghost.inner _old_v_5 };
+    invariant { [#"../Robinson/src/util.rs" 28 4 28 39] PermutationOf0.permutation_of (ShallowModel1.shallow_model v_1) (ShallowModel1.shallow_model (Ghost.inner _old_v_5)) };
+    invariant { [#"../Robinson/src/util.rs" 30 16 30 43] SortedRangeRev0.sorted_range_rev (ShallowModel1.shallow_model v_1) 0 (UIntSize.to_int i_4) };
+    invariant { [#"../Robinson/src/util.rs" 31 16 31 37] PartitionRev0.partition_rev (ShallowModel1.shallow_model v_1) (UIntSize.to_int i_4) };
     _14 <- i_4;
     _16 <-  * v_1;
     _15 <- ([#"../Robinson/src/util.rs" 32 14 32 21] Len0.len _16);
@@ -5420,9 +5462,9 @@ module Robinson_Util_SortReverse
     goto BB5
   }
   BB5 {
-    invariant max_is_max { [#"../Robinson/src/util.rs" 35 8 35 96] forall k : int . UIntSize.to_int i_4 <= k /\ k < UIntSize.to_int j_18 -> (let (a, _) = Seq.get (ShallowModel1.shallow_model v_1) (UIntSize.to_int max_17) in a) >= (let (a, _) = Seq.get (ShallowModel1.shallow_model v_1) k in a) };
-    invariant j_bound { [#"../Robinson/src/util.rs" 36 29 36 57] UIntSize.to_int i_4 <= UIntSize.to_int j_18 /\ UIntSize.to_int j_18 <= Seq.length (ShallowModel1.shallow_model v_1) };
-    invariant max_bound { [#"../Robinson/src/util.rs" 37 31 37 54] UIntSize.to_int i_4 <= UIntSize.to_int max_17 /\ UIntSize.to_int max_17 < UIntSize.to_int j_18 };
+    invariant { [#"../Robinson/src/util.rs" 35 8 35 80] forall k : int . UIntSize.to_int i_4 <= k /\ k < UIntSize.to_int j_18 -> (let (a, _) = Seq.get (ShallowModel1.shallow_model v_1) (UIntSize.to_int max_17) in a) >= (let (a, _) = Seq.get (ShallowModel1.shallow_model v_1) k in a) };
+    invariant { [#"../Robinson/src/util.rs" 36 20 36 46] UIntSize.to_int i_4 <= UIntSize.to_int j_18 /\ UIntSize.to_int j_18 <= Seq.length (ShallowModel1.shallow_model v_1) };
+    invariant { [#"../Robinson/src/util.rs" 37 20 37 43] UIntSize.to_int i_4 <= UIntSize.to_int max_17 /\ UIntSize.to_int max_17 < UIntSize.to_int j_18 };
     _25 <- j_18;
     _27 <-  * v_1;
     _26 <- ([#"../Robinson/src/util.rs" 38 18 38 25] Len0.len _27);
@@ -5543,7 +5585,7 @@ module Robinson_Decision_Impl1_New
   use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
   clone Robinson_Lit_Impl1_Invariant as Invariant3
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel9 with
     type t = Robinson_Lit_Lit_Type.t_lit,
@@ -5629,14 +5671,23 @@ module Robinson_Decision_Impl1_New
     type t = Alloc_Vec_Vec_Type.t_vec (Robinson_Clause_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global),
     type ShallowModelTy0.shallowModelTy = Seq.seq (Robinson_Clause_Clause_Type.t_clause),
     function ShallowModel0.shallow_model = ShallowModel2.shallow_model
+  clone CreusotContracts_Logic_Ops_Impl0_IndexLogic as IndexLogic1 with
+    type t = (usize, usize),
+    type s = Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global),
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model
+  clone CreusotContracts_Logic_Ops_Impl0_IndexLogic as IndexLogic0 with
+    type t = usize,
+    type s = Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global),
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model
   clone Robinson_Clause_Impl1_Invariant as Invariant2 with
     predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range
   clone CreusotContracts_Std1_Vec_Impl10_Resolve as Resolve4 with
     type t = (usize, usize),
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    function IndexLogic0.index_logic = IndexLogic1.index_logic,
     predicate Resolve0.resolve = Resolve6.resolve,
     val Max0.mAX' = Max0.mAX'
-  clone Alloc_Vec_Impl15_Index_Interface as Index3 with
+  clone Alloc_Vec_Impl13_Index_Interface as Index3 with
     type t = (usize, usize),
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -5655,11 +5706,12 @@ module Robinson_Decision_Impl1_New
   clone CreusotContracts_Std1_Vec_Impl10_Resolve as Resolve2 with
     type t = usize,
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    function IndexLogic0.index_logic = IndexLogic0.index_logic,
     predicate Resolve0.resolve = Resolve5.resolve,
     val Max0.mAX' = Max0.mAX'
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve1 with
     type t = (usize, usize)
-  clone Alloc_Vec_Impl16_IndexMut_Interface as IndexMut1 with
+  clone Alloc_Vec_Impl14_IndexMut_Interface as IndexMut1 with
     type t = (usize, usize),
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -5672,7 +5724,7 @@ module Robinson_Decision_Impl1_New
     val Max0.mAX' = Max0.mAX'
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
     type t = usize
-  clone Alloc_Vec_Impl16_IndexMut_Interface as IndexMut0 with
+  clone Alloc_Vec_Impl14_IndexMut_Interface as IndexMut0 with
     type t = usize,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -5683,7 +5735,7 @@ module Robinson_Decision_Impl1_New
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
     type Output0.output = usize,
     val Max0.mAX' = Max0.mAX'
-  clone Alloc_Vec_Impl15_Index_Interface as Index2 with
+  clone Alloc_Vec_Impl13_Index_Interface as Index2 with
     type t = usize,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -5691,7 +5743,7 @@ module Robinson_Decision_Impl1_New
     predicate InBounds0.in_bounds = InBounds2.in_bounds,
     predicate HasValue0.has_value = HasValue2.has_value,
     type Output0.output = usize
-  clone Alloc_Vec_Impl15_Index_Interface as Index1 with
+  clone Alloc_Vec_Impl13_Index_Interface as Index1 with
     type t = Robinson_Lit_Lit_Type.t_lit,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -5703,7 +5755,7 @@ module Robinson_Decision_Impl1_New
     type t = Robinson_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
     function ShallowModel0.shallow_model = ShallowModel4.shallow_model
-  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
+  clone Alloc_Vec_Impl13_Index_Interface as Index0 with
     type t = Robinson_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -5718,10 +5770,12 @@ module Robinson_Decision_Impl1_New
   clone Alloc_Vec_FromElem_Interface as FromElem1 with
     type t = (usize, usize),
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    function IndexLogic0.index_logic = IndexLogic1.index_logic,
     val Max0.mAX' = Max0.mAX'
   clone Alloc_Vec_FromElem_Interface as FromElem0 with
     type t = usize,
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    function IndexLogic0.index_logic = IndexLogic0.index_logic,
     val Max0.mAX' = Max0.mAX'
   use Robinson_Decision_Decisions_Type as Robinson_Decision_Decisions_Type
   clone Robinson_Decision_Impl0_Invariant as Invariant1 with
@@ -5845,7 +5899,7 @@ module Robinson_Decision_Impl1_New
     goto BB5
   }
   BB5 {
-    invariant counts_len1 { [#"../Robinson/src/decision.rs" 31 33 31 63] Seq.length (ShallowModel0.shallow_model counts_6) = UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f_1) };
+    invariant { [#"../Robinson/src/decision.rs" 31 20 31 48] Seq.length (ShallowModel0.shallow_model counts_6) = UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f_1) };
     _16 <- i_11;
     _18 <- Robinson_Formula_Formula_Type.formula_clauses f_1;
     _17 <- ([#"../Robinson/src/decision.rs" 32 18 32 33] Len0.len _18);
@@ -5873,7 +5927,7 @@ module Robinson_Decision_Impl1_New
     goto BB10
   }
   BB10 {
-    invariant counts_len { [#"../Robinson/src/decision.rs" 35 36 35 66] Seq.length (ShallowModel0.shallow_model counts_6) = UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f_1) };
+    invariant { [#"../Robinson/src/decision.rs" 35 24 35 52] Seq.length (ShallowModel0.shallow_model counts_6) = UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f_1) };
     _27 <- j_23;
     _29 <- Robinson_Clause_Clause_Type.clause_rest curr_clause_19;
     _28 <- ([#"../Robinson/src/decision.rs" 36 22 36 44] Len1.len _29);
@@ -5952,8 +6006,8 @@ module Robinson_Decision_Impl1_New
     goto BB24
   }
   BB24 {
-    invariant counts_with_idx_len { [#"../Robinson/src/decision.rs" 49 41 49 82] Seq.length (ShallowModel1.shallow_model counts_with_index_8) = UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f_1) };
-    invariant second_ok { [#"../Robinson/src/decision.rs" 49 8 49 84] forall j : int . 0 <= j /\ j < UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f_1) -> UIntSize.to_int (let (_, a) = Seq.get (ShallowModel1.shallow_model counts_with_index_8) j in a) < UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f_1) };
+    invariant { [#"../Robinson/src/decision.rs" 49 20 49 59] Seq.length (ShallowModel1.shallow_model counts_with_index_8) = UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f_1) };
+    invariant { [#"../Robinson/src/decision.rs" 49 8 49 61] forall j : int . 0 <= j /\ j < UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f_1) -> UIntSize.to_int (let (_, a) = Seq.get (ShallowModel1.shallow_model counts_with_index_8) j in a) < UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f_1) };
     _55 <- i_11;
     _56 <- Robinson_Formula_Formula_Type.formula_num_vars f_1;
     _54 <- ([#"../Robinson/src/decision.rs" 52 14 52 28] _55 < _56);
@@ -6006,8 +6060,8 @@ module Robinson_Decision_Impl1_New
     goto BB32
   }
   BB32 {
-    invariant lit_order_len { [#"../Robinson/src/decision.rs" 58 35 58 68] Seq.length (ShallowModel0.shallow_model lit_order_4) = UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f_1) };
-    invariant second_ok { [#"../Robinson/src/decision.rs" 58 8 58 70] forall j : int . 0 <= j /\ j < UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f_1) -> UIntSize.to_int (Seq.get (ShallowModel0.shallow_model lit_order_4) j) < UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f_1) };
+    invariant { [#"../Robinson/src/decision.rs" 58 20 58 51] Seq.length (ShallowModel0.shallow_model lit_order_4) = UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f_1) };
+    invariant { [#"../Robinson/src/decision.rs" 58 8 58 53] forall j : int . 0 <= j /\ j < UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f_1) -> UIntSize.to_int (Seq.get (ShallowModel0.shallow_model lit_order_4) j) < UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f_1) };
     _75 <- i_11;
     _76 <- Robinson_Formula_Formula_Type.formula_num_vars f_1;
     _74 <- ([#"../Robinson/src/decision.rs" 60 14 60 28] _75 < _76);
@@ -6084,7 +6138,7 @@ module Robinson_Formula_Impl0_ShallowModel
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = Robinson_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -6253,7 +6307,7 @@ module Robinson_Formula_Impl1_ContainsEmptyClause
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   clone Robinson_Clause_Impl0_ShallowModel_Stub as ShallowModel1
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = Robinson_Clause_Clause_Type.t_clause,
@@ -6294,7 +6348,7 @@ module Robinson_Formula_Impl2_CheckAndEstablishFormulaInvariant_Interface
   clone Robinson_Formula_Impl1_EventuallySatCompleteNoAss_Stub as EventuallySatCompleteNoAss0
   clone Robinson_Formula_Impl1_ContainsEmptyClause_Stub as ContainsEmptyClause0
   clone Robinson_Formula_FormulaSatInner_Stub as FormulaSatInner0
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel2 with
     type t = uint8,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -6312,7 +6366,7 @@ module Robinson_Formula_Impl2_CheckAndEstablishFormulaInvariant_Interface
     val Max0.mAX' = Max0.mAX',
     axiom .
   val check_and_establish_formula_invariant [#"../Robinson/src/formula.rs" 124 4 124 72] (self : borrowed (Robinson_Formula_Formula_Type.t_formula)) : Robinson_Solver_SatResult_Type.t_satresult
-    requires {[#"../Robinson/src/formula.rs" 116 4 117 59] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * self))) -> VarsInRange0.vars_in_range (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * self))) i) (UIntSize.to_int Max0.mAX')}
+    requires {[#"../Robinson/src/formula.rs" 116 4 117 57] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * self))) -> VarsInRange0.vars_in_range (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * self))) i) (UIntSize.to_int Max0.mAX')}
     ensures { [#"../Robinson/src/formula.rs" 118 14 122 5] match (result) with
       | Robinson_Solver_SatResult_Type.C_Sat assn -> EventuallySatNoAss0.eventually_sat_no_ass ( ^ self) /\ FormulaSatInner0.formula_sat_inner (ShallowModel1.shallow_model self) (ShallowModel2.shallow_model assn)
       | Robinson_Solver_SatResult_Type.C_Unsat -> ContainsEmptyClause0.contains_empty_clause ( ^ self) /\ not EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass ( * self)
@@ -6328,13 +6382,13 @@ module Robinson_Formula_Impl2_CheckAndEstablishFormulaInvariant
   use prelude.UInt8
   use prelude.Ghost
   use seq.Seq
+  use seq.Seq
   clone Robinson_Logic_Unset as Unset0
   use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
   clone Robinson_Lit_Impl1_SatInner as SatInner2
   clone Core_Usize_Max as Max1
-  use seq.Seq
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel6 with
     type t = Robinson_Lit_Lit_Type.t_lit,
@@ -6355,6 +6409,15 @@ module Robinson_Formula_Impl2_CheckAndEstablishFormulaInvariant
     type t = Robinson_Clause_Clause_Type.t_clause
   clone CreusotContracts_Resolve_Impl2_Resolve as Resolve2 with
     type t = uint8
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
+    type t = uint8,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Logic_Ops_Impl0_IndexLogic as IndexLogic0 with
+    type t = uint8,
+    type s = Alloc_Vec_Vec_Type.t_vec uint8 (Alloc_Alloc_Global_Type.t_global),
+    function ShallowModel0.shallow_model = ShallowModel2.shallow_model
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
     type t = Robinson_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -6385,7 +6448,7 @@ module Robinson_Formula_Impl2_CheckAndEstablishFormulaInvariant
     predicate Invariant0.invariant' = Invariant1.invariant'
   clone Robinson_Clause_Impl2_Len_Interface as Len1 with
     function ShallowModel0.shallow_model = ShallowModel7.shallow_model
-  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
+  clone Alloc_Vec_Impl13_Index_Interface as Index0 with
     type t = Robinson_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -6393,14 +6456,10 @@ module Robinson_Formula_Impl2_CheckAndEstablishFormulaInvariant
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
     type Output0.output = Robinson_Clause_Clause_Type.t_clause
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
-    type t = uint8,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
   clone CreusotContracts_Std1_Vec_Impl10_Resolve as Resolve1 with
     type t = uint8,
     function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
+    function IndexLogic0.index_logic = IndexLogic0.index_logic,
     predicate Resolve0.resolve = Resolve2.resolve,
     val Max0.mAX' = Max0.mAX'
   clone Robinson_Formula_Impl1_SatInner as SatInner0 with
@@ -6438,7 +6497,7 @@ module Robinson_Formula_Impl2_CheckAndEstablishFormulaInvariant
     predicate SatInner0.sat_inner = SatInner0.sat_inner
   use Robinson_Solver_SatResult_Type as Robinson_Solver_SatResult_Type
   let rec cfg check_and_establish_formula_invariant [#"../Robinson/src/formula.rs" 124 4 124 72] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Robinson_Formula_Formula_Type.t_formula)) : Robinson_Solver_SatResult_Type.t_satresult
-    requires {[#"../Robinson/src/formula.rs" 116 4 117 59] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * self))) -> VarsInRange0.vars_in_range (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * self))) i) (UIntSize.to_int Max0.mAX')}
+    requires {[#"../Robinson/src/formula.rs" 116 4 117 57] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * self))) -> VarsInRange0.vars_in_range (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * self))) i) (UIntSize.to_int Max0.mAX')}
     ensures { [#"../Robinson/src/formula.rs" 118 14 122 5] match (result) with
       | Robinson_Solver_SatResult_Type.C_Sat assn -> EventuallySatNoAss0.eventually_sat_no_ass ( ^ self) /\ FormulaSatInner0.formula_sat_inner (ShallowModel1.shallow_model self) (ShallowModel2.shallow_model assn)
       | Robinson_Solver_SatResult_Type.C_Unsat -> ContainsEmptyClause0.contains_empty_clause ( ^ self) /\ not EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass ( * self)
@@ -6539,11 +6598,11 @@ module Robinson_Formula_Impl2_CheckAndEstablishFormulaInvariant
     goto BB8
   }
   BB8 {
-    invariant inv { [#"../Robinson/src/formula.rs" 134 8 134 107] forall j : int . 0 <= j /\ j < UIntSize.to_int i_20 -> Invariant1.invariant' (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * self_1))) j) (UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars ( * self_1))) };
-    invariant inv { [#"../Robinson/src/formula.rs" 134 8 134 107] forall j : int . 0 <= j /\ j < UIntSize.to_int i_20 -> Seq.length (ShallowModel3.shallow_model (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * self_1))) j)) > 0 };
-    invariant unch { [#"../Robinson/src/formula.rs" 136 26 136 60] (let (a, _) = ShallowModel1.shallow_model self_1 in a) = (let (a, _) = ShallowModel1.shallow_model (Ghost.inner old_self_17) in a) };
-    invariant unch { [#"../Robinson/src/formula.rs" 137 26 137 58] Robinson_Formula_Formula_Type.formula_clauses ( * self_1) = Robinson_Formula_Formula_Type.formula_clauses ( * Ghost.inner old_self_17) };
-    invariant proph { [#"../Robinson/src/formula.rs" 138 27 138 53]  ^ self_1 =  ^ Ghost.inner old_self_17 };
+    invariant { [#"../Robinson/src/formula.rs" 134 8 134 100] forall j : int . 0 <= j /\ j < UIntSize.to_int i_20 -> Invariant1.invariant' (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * self_1))) j) (UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars ( * self_1))) };
+    invariant { [#"../Robinson/src/formula.rs" 134 8 134 100] forall j : int . 0 <= j /\ j < UIntSize.to_int i_20 -> Seq.length (ShallowModel3.shallow_model (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * self_1))) j)) > 0 };
+    invariant { [#"../Robinson/src/formula.rs" 136 20 136 50] (let (a, _) = ShallowModel1.shallow_model self_1 in a) = (let (a, _) = ShallowModel1.shallow_model (Ghost.inner old_self_17) in a) };
+    invariant { [#"../Robinson/src/formula.rs" 137 20 137 52] Robinson_Formula_Formula_Type.formula_clauses ( * self_1) = Robinson_Formula_Formula_Type.formula_clauses ( * Ghost.inner old_self_17) };
+    invariant { [#"../Robinson/src/formula.rs" 138 20 138 46]  ^ self_1 =  ^ Ghost.inner old_self_17 };
     _29 <- i_20;
     _31 <- Robinson_Formula_Formula_Type.formula_clauses ( * self_1);
     _30 <- ([#"../Robinson/src/formula.rs" 139 18 139 36] Len0.len _31);
@@ -6639,13 +6698,13 @@ module Core_Clone_Impls_Impl5_Clone_Interface
   use prelude.Int
   use prelude.UIntSize
   val clone' (self : usize) : usize
-    ensures { [#"../Robinson/src/parser.rs" 36 33 43 98] result = self }
+    ensures { [#"../Robinson/src/parser.rs" 68 37 84 44] result = self }
     
 end
 module Core_Clone_Impls_Impl19_Clone_Interface
   use prelude.Borrow
   val clone' (self : bool) : bool
-    ensures { [#"../Robinson/src/parser.rs" 36 33 43 98] result = self }
+    ensures { [#"../Robinson/src/parser.rs" 68 37 84 44] result = self }
     
 end
 module Robinson_Lit_Impl3_Clone_Interface
@@ -6732,7 +6791,7 @@ module Robinson_Lit_Impl2_LitUnsat_Interface
     type t = Robinson_Assignments_Assignments_Type.t_assignments,
     type ShallowModelTy0.shallowModelTy = Seq.seq uint8
   val lit_unsat [#"../Robinson/src/lit.rs" 106 4 106 51] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments) : bool
-    requires {[#"../Robinson/src/lit.rs" 104 15 104 41] Invariant0.invariant' self (Seq.length (ShallowModel0.shallow_model a))}
+    requires {[#"../Robinson/src/lit.rs" 104 15 104 39] Invariant0.invariant' self (Seq.length (ShallowModel0.shallow_model a))}
     ensures { [#"../Robinson/src/lit.rs" 105 14 105 38] result = Unsat0.unsat self a }
     
 end
@@ -6742,7 +6801,7 @@ module Robinson_Lit_Impl2_LitUnsat
   use prelude.UInt8
   use prelude.UIntSize
   use seq.Seq
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
@@ -6765,7 +6824,7 @@ module Robinson_Lit_Impl2_LitUnsat
   clone Robinson_Assignments_Impl0_ShallowModel as ShallowModel1 with
     function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
     val Max0.mAX' = Max0.mAX'
-  clone Alloc_Vec_Impl15_Index_Interface as Index0 with
+  clone Alloc_Vec_Impl13_Index_Interface as Index0 with
     type t = uint8,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -6782,7 +6841,7 @@ module Robinson_Lit_Impl2_LitUnsat
     type ShallowModelTy0.shallowModelTy = Seq.seq uint8,
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model
   let rec cfg lit_unsat [#"../Robinson/src/lit.rs" 106 4 106 51] [@cfg:stackify] [@cfg:subregion_analysis] (self : Robinson_Lit_Lit_Type.t_lit) (a : Robinson_Assignments_Assignments_Type.t_assignments) : bool
-    requires {[#"../Robinson/src/lit.rs" 104 15 104 41] Invariant0.invariant' self (Seq.length (ShallowModel0.shallow_model a))}
+    requires {[#"../Robinson/src/lit.rs" 104 15 104 39] Invariant0.invariant' self (Seq.length (ShallowModel0.shallow_model a))}
     ensures { [#"../Robinson/src/lit.rs" 105 14 105 38] result = Unsat0.unsat self a }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
@@ -6866,7 +6925,7 @@ module Robinson_Solver_Inner
   clone Robinson_Lit_Impl1_SatInner as SatInner2
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel8 with
     type t = Robinson_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -6963,7 +7022,7 @@ module Robinson_Solver_Inner
     predicate VarsInRange0.vars_in_range = VarsInRange0.vars_in_range
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
     type t = uint8
-  clone Alloc_Vec_Impl16_IndexMut_Interface as IndexMut0 with
+  clone Alloc_Vec_Impl14_IndexMut_Interface as IndexMut0 with
     type t = uint8,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -7178,14 +7237,14 @@ module Robinson_Solver_Solver_Interface
   clone Robinson_Formula_Impl1_EventuallySatNoAss_Stub as EventuallySatNoAss0
   use Robinson_Solver_SatResult_Type as Robinson_Solver_SatResult_Type
   clone Robinson_Clause_Impl1_VarsInRange_Stub as VarsInRange0
-  clone Core_Num_Impl12_Max_Stub as Max0
+  clone Core_Num_Impl11_Max_Stub as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = Robinson_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
   val solver [#"../Robinson/src/solver.rs" 47 0 47 49] (formula : borrowed (Robinson_Formula_Formula_Type.t_formula)) : Robinson_Solver_SatResult_Type.t_satresult
-    requires {[#"../Robinson/src/solver.rs" 37 0 38 58] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * formula))) -> VarsInRange0.vars_in_range (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * formula))) i) (UIntSize.to_int Max0.mAX')}
+    requires {[#"../Robinson/src/solver.rs" 37 0 38 56] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * formula))) -> VarsInRange0.vars_in_range (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * formula))) i) (UIntSize.to_int Max0.mAX')}
     ensures { [#"../Robinson/src/solver.rs" 39 10 45 1] match (result) with
       | Robinson_Solver_SatResult_Type.C_Sat _assn -> EventuallySatNoAss0.eventually_sat_no_ass ( ^ formula)
       | Robinson_Solver_SatResult_Type.C_Unsat -> not EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass ( ^ formula)
@@ -7213,7 +7272,7 @@ module Robinson_Solver_Solver
   use Robinson_Lit_Lit_Type as Robinson_Lit_Lit_Type
   clone Robinson_Lit_Impl1_SatInner as SatInner2
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl12_Max as Max0
+  clone Core_Num_Impl11_Max as Max0
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Robinson_Clause_Clause_Type as Robinson_Clause_Clause_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel5 with
@@ -7330,7 +7389,7 @@ module Robinson_Solver_Solver
     predicate EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass = EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass,
     predicate Invariant0.invariant' = Invariant1.invariant'
   let rec cfg solver [#"../Robinson/src/solver.rs" 47 0 47 49] [@cfg:stackify] [@cfg:subregion_analysis] (formula : borrowed (Robinson_Formula_Formula_Type.t_formula)) : Robinson_Solver_SatResult_Type.t_satresult
-    requires {[#"../Robinson/src/solver.rs" 37 0 38 58] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * formula))) -> VarsInRange0.vars_in_range (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * formula))) i) (UIntSize.to_int Max0.mAX')}
+    requires {[#"../Robinson/src/solver.rs" 37 0 38 56] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * formula))) -> VarsInRange0.vars_in_range (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * formula))) i) (UIntSize.to_int Max0.mAX')}
     ensures { [#"../Robinson/src/solver.rs" 39 10 45 1] match (result) with
       | Robinson_Solver_SatResult_Type.C_Sat _assn -> EventuallySatNoAss0.eventually_sat_no_ass ( ^ formula)
       | Robinson_Solver_SatResult_Type.C_Unsat -> not EventuallySatCompleteNoAss0.eventually_sat_complete_no_ass ( ^ formula)

@@ -61,7 +61,7 @@ impl ClauseManager {
     #[requires(lits@.len() > 0)]
     #[requires(self.clause_allocator@.len() + lits@.len() + HEADER_LEN@ <= u32::MAX@)] // TODO: May have to move this to a runtime check
     #[requires(Formula::from(self.original_clauses@, self.clause_allocator, self.clause_allocator.num_vars@).implies(seq_to_fset(lits@)))]
-    //#[requires((@self).len() + (@lits).len() + @HEADER_LEN <= @u32::MAX)] // TODO: May have to move this to a runtime check
+    //#[requires(self@.len() + (@lits).len() + @HEADER_LEN <= @u32::MAX)] // TODO: May have to move this to a runtime check
     #[requires(clause_invariant_seq(lits@, self.clause_allocator.num_vars@))]
     pub(crate) fn learn_clause(&mut self, lits: &[Lit]) -> CRef {
         let old_self: Ghost<&mut ClauseManager> = ghost!(self);
