@@ -1,9 +1,8 @@
-
 extern crate creusot_contracts;
 
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
-use crate::{assignments::*, lit::*, clause_allocator::*, cref_manager::*};
+use crate::{assignments::*, clause_allocator::*, cref_manager::*, lit::*};
 
 use crate::{clause::*, formula::*, logic_util::*};
 
@@ -28,14 +27,20 @@ impl ClauseManager {
 #[logic]
 #[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
 #[ensures(learnt_clauses.are_implied_by(original_clauses, ca.push(lit)))]
-fn lemma_implied_by_stable_on_push(original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, lit: Lit) {}
+fn lemma_implied_by_stable_on_push(
+    original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, lit: Lit,
+) {
+}
 
 #[logic]
 #[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
 #[requires(ca.extended(ca2))]
 #[requires(ca2.extended(ca))]
 #[ensures(learnt_clauses.are_implied_by(original_clauses, ca2))]
-fn lemma_implied_by_stable_on_extension(original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator) {}
+fn lemma_implied_by_stable_on_extension(
+    original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator,
+) {
+}
 
 #[logic]
 #[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
@@ -44,7 +49,10 @@ fn lemma_implied_by_stable_on_extension(original_clauses: CRefManager, learnt_cl
 #[requires(forall<i : Int> 0 <= i && i < (@ca2.buffer).len() ==> (@ca)[i] == (@ca2)[i])]
 #[requires((@ca2.buffer).len() == (@ca.buffer).len())]
 #[ensures(learnt_clauses.are_implied_by(original_clauses, ca2))]
-fn lemma_implied_by_stable_on_blim(original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator) {}
+fn lemma_implied_by_stable_on_blim(
+    original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator,
+) {
+}
 
 // Going to need two lemmas here it seems: one for adding a clause without binding it cannot change
 // anything, and one for binding a clause which is implied maintains the invariant.

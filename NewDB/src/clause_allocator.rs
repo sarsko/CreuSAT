@@ -3,7 +3,7 @@ extern crate creusot_contracts;
 use creusot_contracts::logic::FSet;
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
-use crate::{lit::*, clause::*};
+use crate::{clause::*, lit::*};
 
 use crate::logic_util::*;
 
@@ -128,12 +128,12 @@ impl ClauseAllocator {
         #[invariant(vec_proph, ^*old_self == ^self)]
         #[invariant(len, (@self).len() == (@old_self).len() + produced.len())]
         #[invariant(start_unchanged, forall<i: Int> 0 <= i && i < (@old_self).len() ==> (@self)[i] == (@old_self)[i])] // TODO: Refactor ?
-        #[invariant(end_is_lits, forall<i: Int> 0 <= i && i < (@self).len() - (@old_self).len() ==> 
+        #[invariant(end_is_lits, forall<i: Int> 0 <= i && i < (@self).len() - (@old_self).len() ==>
                     (@self)[@cref + @HEADER_LEN + i] == (@lits)[i])]
-        #[invariant(end_is_lits2, forall<i: Int> 0 <= i && i < (@self).len() - (@old_self).len() ==> 
+        #[invariant(end_is_lits2, forall<i: Int> 0 <= i && i < (@self).len() - (@old_self).len() ==>
                     (@self)[@cref + @HEADER_LEN + i].var_in_range(@self.num_vars))]
         //#[invariant(extended2, forall<i: Int> 0 <= i && i < (produced).len() ==> (@self)[@cref + @HEADER_LEN + i] == *(produced)[i])]
-        //#[invariant(extended, forall<i: Int> 0 <= i && i < (produced).len() ==> (@self)[@cref + @HEADER_LEN + i] == (@lits)[i] 
+        //#[invariant(extended, forall<i: Int> 0 <= i && i < (produced).len() ==> (@self)[@cref + @HEADER_LEN + i] == (@lits)[i]
         //            && (@self)[@cref + @HEADER_LEN + i].var_in_range(@self.num_vars))]
         for lit in lits {
             self.buffer.push(*lit);

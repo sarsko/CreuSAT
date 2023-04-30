@@ -2,7 +2,7 @@ extern crate creusot_contracts;
 
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
-use crate::{assignments::*, lit::*, clause_allocator::*};
+use crate::{assignments::*, clause_allocator::*, lit::*};
 
 use crate::formula::*;
 
@@ -26,7 +26,7 @@ impl CRefManager {
     pub(crate) fn invariant(self, clause_allocator: ClauseAllocator) -> bool {
         pearlite! {
             clause_allocator.invariant()
-            && @self.num_vars == @clause_allocator.num_vars && // TODO: Fix the double storing 
+            && @self.num_vars == @clause_allocator.num_vars && // TODO: Fix the double storing
             forall<i: Int> 0 <= i && i < (@self).len() ==>
                 cref_invariant(@(@self)[i], clause_allocator, @clause_allocator.num_vars)
         }
@@ -53,5 +53,3 @@ impl CRefManager {
         self.crefs.push(cref);
     }
 }
-
-

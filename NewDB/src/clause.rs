@@ -1,6 +1,6 @@
 extern crate creusot_contracts;
-use creusot_contracts::{std::*, logic::FSet};
 use creusot_contracts::*;
+use creusot_contracts::{logic::FSet, std::*};
 
 use crate::{assignments::*, lit::*};
 
@@ -33,5 +33,3 @@ pub(crate) fn no_duplicate_indexes_inner(clause: Seq<Lit>) -> bool {
                 0 <= k && k < j ==> !(clause[k].index_logic() == clause[j].index_logic())
     }
 }
-
-

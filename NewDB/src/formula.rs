@@ -4,7 +4,7 @@ use creusot_contracts::logic::FSet;
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
 use crate::assignments::AssignedState;
-use crate::{lit::*, clause_allocator::*, assignments::*, clause::*};
+use crate::{assignments::*, clause::*, clause_allocator::*, lit::*};
 
 pub(crate) struct Formula {
     formula: FSet<FSet<Lit>>,

@@ -8,13 +8,11 @@ use creusot_contracts::logic::FSet;
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
 mod assignments;
-mod friday;
-mod lit;
-mod logic_util;
-mod formula;
+mod clause;
 mod clause_allocator;
 mod clause_manager;
 mod cref_manager;
-mod clause;
-
-
+mod formula;
+mod friday;
+mod lit;
+mod logic_util;
