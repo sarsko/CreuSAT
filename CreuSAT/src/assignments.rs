@@ -17,8 +17,8 @@ impl Index<usize> for Assignments {
     type Output = AssignedState;
     #[inline]
     #[cfg_attr(feature = "trust_assignments", trusted)]
-    #[requires(i@x < self@.len())]
-    #[ensures(self@[i@x] == *result)]
+    #[requires(ix@ < self@.len())]
+    #[ensures(self@[ix@] == *result)]
     fn index(&self, ix: usize) -> &AssignedState {
         #[cfg(not(creusot))]
         unsafe {
@@ -32,11 +32,11 @@ impl Index<usize> for Assignments {
 impl IndexMut<usize> for Assignments {
     #[inline]
     #[cfg_attr(feature = "trust_assignments", trusted)]
-    #[requires(i@x < self@.len())]
-    #[ensures((@*self)[i@x] == *result)]
-    #[ensures((@^self)[i@x] == ^result)]
-    #[ensures(forall<i : Int> 0 <= i && i != i@x && i < self@.len() ==> self@[i] == (@^self)[i])]
-    #[ensures((@^self).len() == (@*self).len())]
+    #[requires(ix@ < self@.len())]
+    #[ensures((*self)@[ix@] == *result)]
+    #[ensures((^self)@[ix@] == ^result)]
+    #[ensures(forall<i : Int> 0 <= i && i != ix@ && i < self@.len() ==> self@[i] == (^self)@[i])]
+    #[ensures((^self)@.len() == (*self)@.len())]
     fn index_mut(&mut self, ix: usize) -> &mut AssignedState {
         #[cfg(not(creusot))]
         unsafe {
@@ -59,16 +59,16 @@ impl Assignments {
     #[inline(always)]
     #[cfg_attr(feature = "trust_assignments", trusted)]
     #[maintains((mut self).invariant(*_f))]
-    #[requires(lit.invariant(@_f.num_vars))]
+    #[requires(lit.invariant(_f.num_vars@))]
     #[requires(_f.invariant())]
-    #[requires(trail_invariant(@_t, *_f))]
+    #[requires(trail_invariant(_t@, *_f))]
     #[requires(unset(self@[lit.index_logic()]))]
-    #[requires(long_are_post_unit_inner(@_t, *_f, self@))]
-    #[ensures(long_are_post_unit_inner(@_t, *_f, @^self))]
-    #[ensures(!unset((@^self)[lit.index_logic()]))]
-    #[ensures((@^self).len() == self@.len())]
+    #[requires(long_are_post_unit_inner(_t@, *_f, self@))]
+    #[ensures(long_are_post_unit_inner(_t@, *_f, (^self)@))]
+    #[ensures(!unset((^self)@[lit.index_logic()]))]
+    #[ensures((^self)@.len() == self@.len())]
     #[ensures((forall<j : Int> 0 <= j && j < self@.len()
-            && j != lit.index_logic() ==> (@*self)[j] == (@^self)[j]))]
+            && j != lit.index_logic() ==> (*self)@[j] == (^self)@[j]))]
     #[ensures(lit.sat(^self))]
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {
         let old_self: Ghost<&mut Assignments> = ghost! { self };

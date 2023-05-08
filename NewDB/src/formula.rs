@@ -49,7 +49,7 @@ impl Formula {
     }
 
     #[logic]
-    //#[variant((@clause_allocator).len() - idx)]
+    //#[variant((clause@_allocator).len() - idx)]
     #[variant(crefs.len() - idx)]
     #[requires(idx >= 0)]
     #[requires(clause_allocator.invariant())]
@@ -59,7 +59,7 @@ impl Formula {
     #[ensures(forall<c: _> result.contains(c) ==> exists<i: Int> idx <= i && i < crefs.len() && clause_allocator.get_clause_fset(crefs[i]@) == c)]
     fn from_internal(crefs: Seq<CRef>, clause_allocator: ClauseAllocator, idx: Int, _num_vars: Int) -> FSet<FSet<Lit>> {
         pearlite! {
-            //if idx < (@clause_allocator).len() {
+            //if idx < (clause@_allocator).len() {
             if idx < crefs.len() {
                 let set = Formula::from_internal(crefs, clause_allocator, idx + 1, _num_vars);
                 let clause = clause_allocator.get_clause_fset(crefs[idx]@);

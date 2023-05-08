@@ -48,7 +48,7 @@ pub fn partition_rev(v: Seq<(usize, usize)>, i: Int) -> bool {
 
 #[predicate]
 pub fn elems_less_than(v: Seq<usize>, n: Int) -> bool {
-    pearlite! { forall<i: Int> 0 <= i && i < v.len() ==> @v[i] < n }
+    pearlite! { forall<i: Int> 0 <= i && i < v.len() ==> v[i]@ < n }
 }
 
 #[logic]

@@ -34,7 +34,7 @@ impl DeepModel for Lit {
 }
 
 #[predicate]
-//#[ensures(result == self.lit_in_internal(@c))]
+//#[ensures(result == self.lit_in_internalc@)]
 #[why3::attr = "inline:trivial"]
 pub fn idx_in_logic(idx: Int, c: Seq<Lit>) -> bool {
     pearlite! {
@@ -86,14 +86,14 @@ impl Lit {
 
     #[predicate]
     pub fn lit_in(self, c: Clause) -> bool {
-        pearlite! { exists<i: Int> 0 <= i && i < (@c).len() && (@c)[i] == self }
+        pearlite! { exists<i: Int> 0 <= i && i < c@.len() && c@[i] == self }
     }
 
     #[predicate]
     pub fn lit_idx_in(self, c: Clause) -> bool {
         pearlite! {
-            exists<i: Int> 0 <= i && i < (@c).len() &&
-                (@c)[i].index_logic() == self.index_logic()
+            exists<i: Int> 0 <= i && i < c@.len() &&
+                c@[i].index_logic() == self.index_logic()
         }
     }
 

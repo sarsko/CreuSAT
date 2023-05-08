@@ -31,14 +31,14 @@ pub fn lemma_clause_permuted_maintains_sat(c: Clause, a: Assignments) {}
 pub fn lemma_clause_permuted_maintains_unsat(c: Clause, a: Assignments) {}
 
 #[maintains((mut f).invariant())]
-#[requires((@f.clauses@[@cref]).len() >= 2)]
-#[requires(@cref < f.clauses@.len())]
-#[requires((@f.clauses@[@cref]).len() > @j)]
-#[requires((@f.clauses@[@cref]).len() > @k)]
-#[requires(!(@f.clauses@[@cref])[0].sat_inner(a@ssignments))]
-#[ensures(((@(@(^f).clauses)[@cref]).exchange(@f.clauses@[@cref], @j, @k)))]
-#[ensures(f.num_vars@ == @(^f).num_vars)]
-#[ensures(f.clauses@.len() == (@(^f).clauses).len())]
+#[requires(f.clauses@[cref@]@.len() >= 2)]
+#[requires(cref@ < f.clauses@.len())]
+#[requires(f.clauses@[cref@]@.len() > j@)]
+#[requires(f.clauses@[cref@]@.len() > k@)]
+#[requires(!f.clauses@[cref@]@[0].sat_inner(a@ssignments))]
+#[ensures(((^f).clauses@[cref@]@.exchange(f.clauses@[cref@]@, j@, k@)))]
+#[ensures(f.num_vars@ == (^f).num_vars@)]
+#[ensures(f.clauses@.len() == (^f).clauses@.len())]
 #[ensures(f.equisat(^f))] // This one is hard (both ways equisat)
 fn swap(f: &mut Formula, cref: usize, j: usize, k: usize, assignments: Assignments) {
     let old_f: Ghost<&mut Formula> = ghost! { f };

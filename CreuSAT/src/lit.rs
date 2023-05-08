@@ -52,7 +52,7 @@ impl Lit {
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[ensures(result == self.invariant(@n))]
+    #[ensures(result == self.invariant(n@))]
     pub fn check_lit_invariant(&self, n: usize) -> bool {
         self.index() < n
     }
@@ -113,9 +113,9 @@ impl Lit {
     }
 
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[requires(i@dx < (a@ssignments).len())]
-    #[ensures(result.index_logic() == i@dx)]
-    #[ensures(result.is_positive_logic() == (@(a@ssignments)[i@dx] == 1))]
+    #[requires(idx@ < assignments@.len())]
+    #[ensures(result.index_logic() == idx@)]
+    #[ensures(result.is_positive_logic() == (assignments@[idx@]@ == 1))]
     pub fn phase_saved(idx: usize, assignments: &Assignments) -> Lit {
         Lit { idx: idx, polarity: if assignments[idx] == 1 { true } else { false } }
     }

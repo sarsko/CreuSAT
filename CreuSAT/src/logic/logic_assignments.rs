@@ -46,7 +46,7 @@ impl Assignments {
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
             f.num_vars@ == self@.len()
-            && forall<i : Int> 0 <= i && i < self@.len() ==> @self@[i] <= 3
+            && forall<i : Int> 0 <= i && i < self@.len() ==> self@[i]@ <= 3
         }
     }
 

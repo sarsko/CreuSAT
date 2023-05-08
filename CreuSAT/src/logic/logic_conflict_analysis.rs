@@ -9,9 +9,9 @@ use crate::logic::{logic_assignments::*, logic_clause::*, logic_formula::*};
 #[logic]
 #[requires(f2.0 == f.0.push(c))]
 #[requires(formula_invariant(f))]
-#[ensures((f.0).len() + 1 == (f2.0).len())]
-#[ensures(forall<i: Int> 0 <= i && i < (f.0).len() ==> ((f.0)[i]).equals((f2.0)[i]))]
-#[ensures(@(f2.0)[(f2.0).len()-1] == @c)]
+#[ensures(f.0.len() + 1 == f2.0.len())]
+#[ensures(forall<i: Int> 0 <= i && i < f.0.len() ==> f.0[i].equals(f2.0[i]))]
+#[ensures(f2.0[f2.0.len()-1]@ == c@)]
 //#[ensures(formula_invariant(f2))]
 //#[ensures(f.1 == f2.1)]
 fn lemma_eq_formulas(f: (Seq<Clause>, Int), f2: (Seq<Clause>, Int), c: Clause) {}

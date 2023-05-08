@@ -5,7 +5,7 @@ use creusot_contracts::*;
 use crate::{assignments::*, clause::*, lit::*, trail::*};
 
 #[predicate]
-//#[ensures(result == self.lit_in_internal(@c))]
+//#[ensures(result == self.lit_in_internal(c))]
 #[why3::attr = "inline:trivial"]
 pub fn idx_in_logic(idx: Int, c: Seq<Lit>) -> bool {
     pearlite! {
@@ -19,7 +19,7 @@ impl Lit {
     #[logic]
     #[why3::attr = "inline:trivial"]
     pub fn index_logic(self) -> Int {
-        pearlite! { self@.idx }
+        pearlite! { self.idx@ }
     }
 
     #[logic]
@@ -57,14 +57,14 @@ impl Lit {
 
     #[predicate]
     pub fn lit_in(self, c: Clause) -> bool {
-        pearlite! { exists<i: Int> 0 <= i && i < (@c).len() && (@c)[i] == self }
+        pearlite! { exists<i: Int> 0 <= i && i < c@.len() && c@[i] == self }
     }
 
     #[predicate]
     pub fn lit_idx_in(self, c: Clause) -> bool {
         pearlite! {
-            exists<i: Int> 0 <= i && i < (@c).len() &&
-                (@c)[i].index_logic() == self.index_logic()
+            exists<i: Int> 0 <= i && i < c@.len() &&
+                c@[i].index_logic() == self.index_logic()
         }
     }
 
@@ -77,8 +77,8 @@ impl Lit {
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             match self.is_positive_logic() {
-                true  =>  (a@[self.index_logic()] == 1),
-                false =>  (a@[self.index_logic()] == 0),
+                true  =>  (a[self.index_logic()]@ == 1),
+                false =>  (a[self.index_logic()]@ == 0),
             }
         }
     }
@@ -87,15 +87,15 @@ impl Lit {
     pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             match self.is_positive_logic() {
-                true  =>  (a@[self.index_logic()] == 0),
-                false =>  (a@[self.index_logic()] == 1),
+                true  =>  (a[self.index_logic()]@ == 0),
+                false =>  (a[self.index_logic()]@ == 1),
             }
         }
     }
 
     #[predicate]
     pub fn unset_inner(self, a: Seq<AssignedState>) -> bool {
-        pearlite! { @(a)[self.index_logic()] >= 2 }
+        pearlite! { a[self.index_logic()]@ >= 2 }
     }
 
     #[predicate]
@@ -116,8 +116,8 @@ impl Lit {
     #[predicate]
     pub fn idx_in_trail(self, t: Vec<Step>) -> bool {
         pearlite! {
-            exists<i: Int> 0 <= i && i < (@t).len() &&
-                (@t)[i].lit.index_logic() == self.index_logic()
+            exists<i: Int> 0 <= i && i < t@.len() &&
+                t@[i].lit.index_logic() == self.index_logic()
         }
     }
 }

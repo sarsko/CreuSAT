@@ -17,7 +17,7 @@ fn neg() -> AssignedState {
 #[predicate]
 pub fn unset(v: AssignedState) -> bool {
     pearlite! {
-        if @v >= 2 {
+        if v@ >= 2 {
             true
         } else {
             false
@@ -40,9 +40,9 @@ pub fn bool_to_assignedstate(b: bool) -> AssignedState {
 #[logic]
 fn flip_v(v: AssignedState) -> AssignedState {
     pearlite! {
-        if @v == 0 {
+        if v@ == 0 {
             1u8
-        } else if @v == 1 {
+        } else if v@ == 1 {
             0u8
         } else {
             v
