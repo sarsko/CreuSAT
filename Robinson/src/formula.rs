@@ -43,19 +43,19 @@ impl Formula {
     #[predicate]
     pub fn eventually_sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
-            exists<a2 : Seq<AssignedState>> a2.len() == self.num_vars@ && compatible_inner(a, a2) && self.sat_inner(a2)
+            exists<a2: Seq<AssignedState>> a2.len() == self.num_vars@ && compatible_inner(a, a2) && self.sat_inner(a2)
         }
     }
 
     #[predicate]
     pub fn eventually_sat_no_ass(self) -> bool {
-        pearlite! { exists<a2 : Seq<AssignedState>> self.sat_inner(a2) }
+        pearlite! { exists<a2: Seq<AssignedState>> self.sat_inner(a2) }
     }
 
     #[predicate]
     pub fn eventually_sat_complete_no_ass(self) -> bool {
         pearlite! {
-            exists<a2 : Seq<AssignedState>> a2.len() == self.num_vars@ && complete_inner(a2) && self.sat_inner(a2)
+            exists<a2: Seq<AssignedState>> a2.len() == self.num_vars@ && complete_inner(a2) && self.sat_inner(a2)
         }
     }
 
@@ -135,7 +135,6 @@ impl Formula {
         #[invariant(forall<j: Int> 0 <= j && j < i@ ==> self.clauses@[j]@.len() > 0)]
         #[invariant(self@.0 == old_self.inner()@.0)]
         #[invariant(self.clauses == old_self.clauses)]
-        #[invariant(^self == ^old_self.inner())]
         while i < self.clauses.len() {
             if self.clauses[i].len() == 0 {
                 return SatResult::Unsat;

@@ -140,7 +140,6 @@ impl Decisions {
         let mut i: usize = 0;
         let mut curr = self.start;
         #[invariant(curr == usize::MAX || curr@ < self.linked_list@.len())]
-        #[invariant(^old_self.inner() == ^self)]
         #[invariant(forall<j: Int> 0 <= j && j < self.linked_list@.len() ==>
             (self.linked_list@[j].next == old_self.linked_list@[j].next
             && self.linked_list@[j].prev == old_self.linked_list@[j].prev)
@@ -207,7 +206,6 @@ impl Decisions {
         let old_self: Ghost<&mut Decisions> = ghost! { self };
         let mut i: usize = 0;
         #[invariant(old_self.inner() == self)]
-        #[invariant(^old_self.inner() == ^self)]
         #[invariant(v@.len() == counts_with_index@.len())]
         #[invariant(forall<j: Int> 0 <= j && j < i@ ==> counts_with_index@[j].1@ < self.linked_list@.len())]
         while i < v.len() {
@@ -220,7 +218,6 @@ impl Decisions {
         //counts_with_index.sort_unstable_by_key(|k| k.0);
         //counts_with_index.sort_by_key(|k| k.0);
         i = 0;
-        #[invariant(^old_self.inner() == ^self)]
         #[invariant(self.invariant(f.num_vars@))]
         #[invariant(v@.len() == counts_with_index@.len())]
         while i < counts_with_index.len() {

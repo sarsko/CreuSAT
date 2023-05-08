@@ -175,9 +175,8 @@ impl Assignments {
     }
 
     #[cfg_attr(feature = "trust_assignments", trusted)]
+    #[maintains((mut self).invariant(*f))]
     #[requires(f.invariant())]
-    #[requires(self.invariant(*f))]
-    #[ensures((^self).invariant(*f))]
     #[ensures(f.eventually_sat_complete(^self) == f.eventually_sat_complete(*self))]
     #[ensures((*self).compatible(^self))]
     #[ensures(match result {
@@ -192,16 +191,13 @@ impl Assignments {
         let mut i: usize = 0;
         let mut out = ClauseState::Sat;
         #[invariant(self.invariant(*f))]
-        #[invariant(^self == ^_old_a.inner())]
         #[invariant(_old_a.compatible(*self))]
         #[invariant(f.eventually_sat_complete(*_old_a.inner()) == f.eventually_sat_complete(*self))]
         #[invariant(!(out == ClauseState::Unsat))]
-        #[invariant(_old_a.complete() ==>
-            *_old_a.inner() == *self && forall<j: Int> 0 <= j && j < i@ ==>
+        #[invariant(_old_a.complete() ==> *_old_a.inner() == *self && forall<j: Int> 0 <= j && j < i@ ==>
             !f.clauses@[j].unknown(*self) && !f.clauses@[j].unit(*self) && f.clauses@[j].sat(*self)
         )]
-        #[invariant(
-            out == ClauseState::Sat ==> forall<j: Int> 0 <= j && j < i@ ==>
+        #[invariant(out == ClauseState::Sat ==> forall<j: Int> 0 <= j && j < i@ ==>
             !f.clauses@[j].unsat(*self) && !f.clauses@[j].unknown(*self) && !f.clauses@[j].unit(*self) && f.clauses@[j].sat(*self)
         )]
         #[invariant(out == ClauseState::Unit ==> !_old_a.complete())]
@@ -238,7 +234,6 @@ impl Assignments {
     pub fn do_unit_propagation(&mut self, f: &Formula) -> Option<bool> {
         let _old_a: Ghost<&mut Assignments> = ghost!(self);
         #[invariant(self.invariant(*f))]
-        #[invariant(^self == ^_old_a.inner())]
         #[invariant(_old_a.compatible(*self))]
         #[invariant(f.eventually_sat_complete(*_old_a.inner()) ==> f.eventually_sat_complete(*self))]
         loop {

@@ -158,8 +158,8 @@ impl Clause {
     #[requires(_f.invariant())]
     #[requires(a.invariant(*_f))]
     #[ensures(exists<j: Int> 0 <= j && j < self@.len() && self@[j] == result)]
-    #[ensures(result.index_logic() < (a@).len())]
-    #[ensures(unset((a@)[result.index_logic()]))]
+    #[ensures(result.index_logic() < a@.len())]
+    #[ensures(unset(a@[result.index_logic()]))]
     pub fn get_unit(&self, a: &Assignments, _f: &Formula) -> Lit {
         let mut i: usize = 0;
         #[invariant(forall<j: Int> 0 <= j && j < i@ ==> !self@[j].unset(*a))]
@@ -199,9 +199,7 @@ impl Clause {
     #[ensures(result == self.no_duplicate_indexes())]
     pub fn no_duplicates(&self) -> bool {
         let mut i: usize = 0;
-        #[invariant(
-            forall<j: Int, k: Int> 0 <= j && j < i@ &&
-             0 <= k && k < j ==> self@[j].idx != self@[k].idx)]
+        #[invariant(forall<j: Int, k: Int> 0 <= j && j < i@ && 0 <= k && k < j ==> self@[j].idx != self@[k].idx)]
         while i < self.rest.len() {
             let lit1 = self.rest[i];
             let mut j: usize = 0;

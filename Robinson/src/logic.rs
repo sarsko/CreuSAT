@@ -66,7 +66,7 @@ pub fn lemma_unit_forces(f: Formula, a: Seq<AssignedState>, ix: Int, v: Assigned
 #[requires(c.unit_inner(a))]
 #[requires(c.in_formula(f))]
 #[requires(c.invariant(a.len()))]
-#[requires(exists<j: Int> 0 <= j && j < c@.len() && c@[j].index_logic() == ix && bool_to_assignedstate((c@[j].polarity)) == v)]
+#[requires(exists<j: Int> 0 <= j && j < c@.len() && c@[j].index_logic() == ix && bool_to_assignedstate(c@[j].polarity) == v)]
 #[requires(forall<j: Int> 0 <= j && j < c@.len() && !(c@[j].index_logic() == ix) ==> c@[j].unsat_inner(a))]
 #[ensures(!f.eventually_sat_complete_inner(a.set(ix, flip_v(v))))]
 #[ensures(f.unsat_inner(a.set(ix, flip_v(v))))]

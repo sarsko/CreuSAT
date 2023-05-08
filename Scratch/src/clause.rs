@@ -105,10 +105,10 @@ impl Clause {
     #[predicate]
     pub fn resolvent_of(self, c: Clause, c2: Clause, k: Int, m: Int) -> bool {
         pearlite! {
-            (forall<i: Int> 0 <= i && i < c @.len() && i != m ==> (@c   )[i].lit_in(self)) &&
-            (forall<i: Int> 0 <= i && i < c2@.len() && i != k ==> (@c2  )[i].lit_in(self)) &&
-            (forall<i: Int> 0 <= i && i < self@.len()           ==> (self@[i] .lit_in(c)
-                                                                ||   self@[i] .lit_in(c2))) &&
+            (forall<i: Int> 0 <= i && i < c @.len() && i != m ==>  c   @[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < c2@.len() && i != k ==>  c2  @[i].lit_in(self)) &&
+            (forall<i: Int> 0 <= i && i < self@.len()         ==> (self@[i].lit_in(c)
+                                                                || self@[i].lit_in(c2))) &&
             !c@[m].lit_in(self) && !c2@[k].lit_in(self) &&
             c2@[k].is_opp(c@[m])
         }
@@ -185,12 +185,12 @@ impl Clause {
 
     #[predicate]
     pub fn no_duplicate_indexes(self) -> bool {
-        pearlite! { no_duplicate_indexes_innerself@ }
+        pearlite! { no_duplicate_indexes_inner(self@) }
     }
 
     #[predicate]
     pub fn search_idx_in_range(self) -> bool {
-        pearlite! { 2 <= self@.search && self@.search <= self@.len() }
+        pearlite! { 2 <= self.search@ && self.search@ <= self@.len() }
     }
 
     #[predicate]
@@ -201,8 +201,8 @@ impl Clause {
     #[predicate]
     pub fn clause_is_seen(self, seen: Vec<bool>) -> bool {
         pearlite! {
-            forall<idx: Int> 0 <= idx && idx < (seen@).len() ==>
-                ((seen@)[idx] == idx_in_logic(idx, self@))
+            forall<idx: Int> 0 <= idx && idx < seen@.len() ==>
+                (seen@[idx] == idx_in_logic(idx, self@))
         }
     }
 

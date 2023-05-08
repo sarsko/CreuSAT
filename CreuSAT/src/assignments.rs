@@ -35,7 +35,7 @@ impl IndexMut<usize> for Assignments {
     #[requires(ix@ < self@.len())]
     #[ensures((*self)@[ix@] == *result)]
     #[ensures((^self)@[ix@] == ^result)]
-    #[ensures(forall<i : Int> 0 <= i && i != ix@ && i < self@.len() ==> self@[i] == (^self)@[i])]
+    #[ensures(forall<i: Int> 0 <= i && i != ix@ && i < self@.len() ==> self@[i] == (^self)@[i])]
     #[ensures((^self)@.len() == (*self)@.len())]
     fn index_mut(&mut self, ix: usize) -> &mut AssignedState {
         #[cfg(not(creusot))]
@@ -67,8 +67,7 @@ impl Assignments {
     #[ensures(long_are_post_unit_inner(_t@, *_f, (^self)@))]
     #[ensures(!unset((^self)@[lit.index_logic()]))]
     #[ensures((^self)@.len() == self@.len())]
-    #[ensures((forall<j : Int> 0 <= j && j < self@.len()
-            && j != lit.index_logic() ==> (*self)@[j] == (^self)@[j]))]
+    #[ensures((forall<j: Int> 0 <= j && j < self@.len() && j != lit.index_logic() ==> self@[j] == (^self)@[j]))]
     #[ensures(lit.sat(^self))]
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {
         let old_self: Ghost<&mut Assignments> = ghost! { self };

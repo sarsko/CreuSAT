@@ -73,7 +73,7 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
     proof_assert!(vars_in_range_inner(f.clauses@[cref@]@, f.num_vars@));
     proof_assert!(no_duplicate_indexes_inner(f.clauses@[cref@]@));
 
-    proof_assert!(forall<a2 : Seq<AssignedState>> a2.len() == f.num_vars@ && complete_inner(a2) && old_f.clauses@[cref@].sat_inner(a2) ==> f.clauses@[cref@].sat_inner(a2));
+    proof_assert!(forall<a2: Seq<AssignedState>> a2.len() == f.num_vars@ && complete_inner(a2) && old_f.clauses@[cref@].sat_inner(a2) ==> f.clauses@[cref@].sat_inner(a2));
     proof_assert!(eventually_sat_complete(old_f@) ==> eventually_sat_complete(f@));
     proof_assert!(^f == ^old_f.inner());
 }
@@ -250,9 +250,6 @@ fn propagate_literal(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, 
     #[invariant(f.invariant())]
     #[invariant(trail.decisions@ == old_trail.decisions@)]
     #[invariant(f.num_vars@ == old_f.num_vars@)]
-    #[invariant(^trail == ^old_trail.inner())]
-    #[invariant(^f == ^old_f.inner())]
-    #[invariant(^watches == ^old_w.inner())]
     while j < watches.watches[watchidx].len() {
         let curr_watch = &watches.watches[watchidx][j];
         if curr_watch.blocker.lit_sat(&trail.assignments) {
@@ -295,9 +292,6 @@ pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches)
     #[invariant(watches.invariant(*f))]
     #[invariant(old_f.equisat(*f))]
     #[invariant(f.num_vars@ == old_f.num_vars@)]
-    #[invariant(^trail == ^old_trail.inner())]
-    #[invariant(^f == ^old_f.inner())]
-    #[invariant(^watches == ^old_w.inner())]
     while i < trail.trail.len() {
         let lit = trail.trail[i].lit;
         match propagate_literal(f, trail, watches, lit) {

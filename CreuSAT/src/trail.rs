@@ -129,8 +129,6 @@ impl Trail {
         #[invariant(self.invariant_no_decision(*f))]
         #[invariant(d.invariant(f.num_vars@))]
         //#[invariant((self@.trail).len() == old_t.trail@.len() - i@)] // we don't care anymore
-        #[invariant(^old_t.inner() == ^self)]
-        #[invariant(^old_d.inner() == ^d)]
         #[invariant(curr@ < d.linked_list@.len() || curr@ == usize::MAX@)]
         // Hmm maybe change invariant
         while i < how_many {
@@ -147,7 +145,6 @@ impl Trail {
 
         #[invariant(long_are_post_unit_inner(self.trail@, *f, self.assignments@))]
         #[invariant(self.invariant_no_decision(*f))]
-        #[invariant(^old_t.inner() == ^self)]
         while self.decisions.len() > level {
             let old_t2: Ghost<&mut Trail> = ghost! { self };
             proof_assert!(sorted(self.decisions@));
@@ -167,7 +164,6 @@ impl Trail {
         // This is a noop, and should be proven away.
         #[invariant(long_are_post_unit_inner(self.trail@, *f, self.assignments@))]
         #[invariant(self.invariant_no_decision(*f))]
-        #[invariant(^old_t.inner() == ^self)]
         while self.decisions.len() > 0 && self.decisions[self.decisions.len() - 1] > self.trail.len() {
             let old_t3: Ghost<&mut Trail> = ghost! { self };
             proof_assert!(sorted(self.decisions@));
@@ -225,7 +221,7 @@ impl Trail {
     #[requires(!step.lit.idx_in_trail(self.trail))]
     #[requires(unset(self.assignments@[step.lit.index_logic()]))] // Should not be needed anymore
     #[requires(long_are_post_unit_inner(self.trail@, *_f, self.assignments@))]
-    #[ensures((forall<j : Int> 0 <= j && j < self.assignments@.len() &&
+    #[ensures((forall<j: Int> 0 <= j && j < self.assignments@.len() &&
         j != step.lit.index_logic() ==> self.assignments@[j] == (^self).assignments@[j]))]
     #[ensures(step.lit.sat((^self).assignments))]
     #[ensures(long_are_post_unit_inner((^self).trail@, *_f, (^self).assignments@))]
@@ -256,7 +252,7 @@ impl Trail {
     #[maintains((mut self).invariant(*_f))]
     #[requires(idx@ < _f.num_vars@)]
     #[requires(unset(self.assignments@[idx@]))]
-    #[ensures((forall<j : Int> 0 <= j && j < self.assignments@.len() &&
+    #[ensures((forall<j: Int> 0 <= j && j < self.assignments@.len() &&
         j != idx@ ==> self.assignments@[j] == (^self).assignments@[j]))]
     #[ensures((^self).assignments@[idx@]@ == 1 || (^self).assignments@[idx@]@ == 0)] // Is this needed?
     #[requires(long_are_post_unit_inner(self.trail@, *_f, self.assignments@))]
@@ -316,8 +312,6 @@ impl Trail {
         let old_d: Ghost<&mut Decisions> = ghost! { d };
         let old_self: Ghost<&mut Trail> = ghost! { self };
         #[invariant(self.invariant(*f))]
-        #[invariant(^old_self.inner() == ^self)]
-        #[invariant(^old_d.inner() == ^d)]
         #[invariant(d.invariant(f.num_vars@))]
         while i < f.clauses.len() {
             let clause = &f[i];

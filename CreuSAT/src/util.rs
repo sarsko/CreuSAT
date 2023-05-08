@@ -11,9 +11,8 @@ use crate::logic::logic_util::*;
 pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
     let mut i: usize = 0;
     let old_v: Ghost<&mut Vec<(usize, usize)>> = ghost! { v };
-    #[invariant(^v == ^old_v.inner())]
-    #[invariant((v@).permutation_of((*old_v.inner())@))]
-    #[invariant(i@ <= (v@).len())]
+    #[invariant(v@.permutation_of(old_v@))]
+    #[invariant(i@ <= v@.len())]
     #[invariant(sorted_range_rev(v@, 0, i@))]
     #[invariant(partition_rev(v@, i@))]
     while i < v.len() {
@@ -60,7 +59,6 @@ pub fn update_slow(slow: &mut usize, lbd: usize) {
 pub fn sort(v: &mut Vec<(usize, usize)>) {
     let mut i: usize = 0;
     let old_v: Ghost<&mut Vec<(usize, usize)>> = ghost! { v };
-    //#[invariant(^v == ^old_v.inner())] // not needed?
     #[invariant(v@.permutation_of(old_v@))]
     #[invariant(i@ <= v@.len())]
     #[invariant(sorted_range_tuple_zeroth(v@, 0, i@))]
@@ -68,8 +66,8 @@ pub fn sort(v: &mut Vec<(usize, usize)>) {
     while i < v.len() {
         let mut max = i;
         let mut j = i + 1;
-        #[invariant(forall<k: Int> i@ <= k && k < j@ ==> (v@)[max@].0 <= (v@)[k].0)]
-        #[invariant(i@ <= j@ && j@ <= (v@).len())]
+        #[invariant(forall<k: Int> i@ <= k && k < j@ ==> v@[max@].0 <= v@[k].0)]
+        #[invariant(i@ <= j@ && j@ <= v@.len())]
         #[invariant(i@ <= max@ && max@ < j@)]
         while j < v.len() {
             if v[j].0 < v[max].0 {

@@ -237,10 +237,6 @@ impl Solver {
         #[invariant(d.invariant(f.num_vars@))]
         #[invariant(old_f.inner().equisat(*f))]
         #[invariant(f.num_vars@ == old_f.num_vars@)]
-        #[invariant(^f == ^old_f.inner())]
-        #[invariant(^t == ^old_t.inner())]
-        #[invariant(^w == ^old_w.inner())]
-        #[invariant(^d == ^old_d.inner())]
         loop {
             match self.unit_prop_step(f, d, t, w) {
                 ConflictResult::Ok => {
@@ -331,7 +327,6 @@ impl Solver {
         #[invariant(trail.invariant(*formula))]
         #[invariant(watches.invariant(*formula))]
         #[invariant(decisions.invariant(formula.num_vars@))]
-        #[invariant(^formula == ^old_f.inner())]
         loop {
             match self.outer_loop(formula, &mut decisions, &mut trail, &mut watches) {
                 SatResult::Unknown => {} // continue

@@ -35,9 +35,9 @@ impl IndexMut<usize> for Clause {
     #[inline]
     #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires(ix@ < self@.len())]
-    #[ensures((*self)@[ix@] == *result)]
+    #[ensures(self@[ix@] == *result)]
     #[ensures((^self)@[ix@] == ^result)]
-    #[ensures(forall<i : Int> 0 <= i && i != ix@ && i < self@.len() ==> self@[i] == (^self)@[i])]
+    #[ensures(forall<i: Int> 0 <= i && i != ix@ && i < self@.len() ==> self@[i] == (^self)@[i])]
     #[ensures((^self)@.len() == (*self)@.len())]
     fn index_mut(&mut self, ix: usize) -> &mut Lit {
         #[cfg(not(creusot))]

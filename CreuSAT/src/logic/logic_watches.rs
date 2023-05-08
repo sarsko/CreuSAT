@@ -24,7 +24,7 @@ pub fn watches_invariant_internal(w: Seq<Vec<Watcher>>, n: Int, f: Formula) -> b
 #[predicate]
 pub fn watch_valid(w: Seq<Watcher>, f: Formula) -> bool {
     pearlite! {
-        forall<j : Int> 0 <= j && j < w.len() ==>
+        forall<j: Int> 0 <= j && j < w.len() ==>
                 w[j].cref@ < f.clauses@.len() // all clauses are valid
             &&  f.clauses@[w[j].cref@]@.len() > 1 // the clauses have at least two litearls
             && w[j].blocker.index_logic() < f.num_vars@ // something about blocking lits

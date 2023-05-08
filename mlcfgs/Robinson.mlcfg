@@ -482,7 +482,7 @@ module CreusotContracts_Logic_Ops_Impl0_IndexLogic
     type self = s,
     type ShallowModelTy0.shallowModelTy = Seq.seq t
   function index_logic [@inline:trivial] (self : s) (ix : int) : t =
-    [#"../Robinson/src/clause.rs" 193 9 195 11] Seq.get (ShallowModel0.shallow_model self) ix
+    [#"../Robinson/src/clause.rs" 200 16 200 39] Seq.get (ShallowModel0.shallow_model self) ix
   val index_logic [@inline:trivial] (self : s) (ix : int) : t
     ensures { result = index_logic self ix }
     
@@ -2119,7 +2119,7 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Interface
   clone Robinson_Formula_Impl1_Invariant_Stub as Invariant0
   function lemma_unit_wrong_polarity_unsat_formula [#"../Robinson/src/logic.rs" 73 0 75 1] (c : Robinson_Clause_Clause_Type.t_clause) (f : Robinson_Formula_Formula_Type.t_formula) (a : Seq.seq uint8) (ix : int) (v : uint8) : ()
     
-  axiom lemma_unit_wrong_polarity_unsat_formula_spec : forall c : Robinson_Clause_Clause_Type.t_clause, f : Robinson_Formula_Formula_Type.t_formula, a : Seq.seq uint8, ix : int, v : uint8 . ([#"../Robinson/src/logic.rs" 62 11 62 24] Invariant0.invariant' f) -> ([#"../Robinson/src/logic.rs" 63 11 63 33] UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f) = Seq.length a) -> ([#"../Robinson/src/logic.rs" 64 11 64 50] 0 <= ix /\ ix < Seq.length a /\ Unset0.unset (Seq.get a ix)) -> ([#"../Robinson/src/logic.rs" 65 11 65 20] not Unset0.unset v) -> ([#"../Robinson/src/logic.rs" 66 11 66 26] UnitInner0.unit_inner c a) -> ([#"../Robinson/src/logic.rs" 67 11 67 26] InFormula0.in_formula c f) -> ([#"../Robinson/src/logic.rs" 68 11 68 31] Invariant1.invariant' c (Seq.length a)) -> ([#"../Robinson/src/logic.rs" 69 0 69 127] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix /\ BoolToAssignedstate0.bool_to_assignedstate (Robinson_Lit_Lit_Type.lit_polarity (Seq.get (ShallowModel0.shallow_model c) j)) = v) -> ([#"../Robinson/src/logic.rs" 70 0 70 107] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ not IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix -> UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model c) j) a) -> ([#"../Robinson/src/logic.rs" 72 10 72 45] UnsatInner1.unsat_inner f (Seq.set a ix (FlipV0.flip_v v))) && ([#"../Robinson/src/logic.rs" 71 10 71 64] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v)))
+  axiom lemma_unit_wrong_polarity_unsat_formula_spec : forall c : Robinson_Clause_Clause_Type.t_clause, f : Robinson_Formula_Formula_Type.t_formula, a : Seq.seq uint8, ix : int, v : uint8 . ([#"../Robinson/src/logic.rs" 62 11 62 24] Invariant0.invariant' f) -> ([#"../Robinson/src/logic.rs" 63 11 63 33] UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f) = Seq.length a) -> ([#"../Robinson/src/logic.rs" 64 11 64 50] 0 <= ix /\ ix < Seq.length a /\ Unset0.unset (Seq.get a ix)) -> ([#"../Robinson/src/logic.rs" 65 11 65 20] not Unset0.unset v) -> ([#"../Robinson/src/logic.rs" 66 11 66 26] UnitInner0.unit_inner c a) -> ([#"../Robinson/src/logic.rs" 67 11 67 26] InFormula0.in_formula c f) -> ([#"../Robinson/src/logic.rs" 68 11 68 31] Invariant1.invariant' c (Seq.length a)) -> ([#"../Robinson/src/logic.rs" 69 0 69 125] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix /\ BoolToAssignedstate0.bool_to_assignedstate (Robinson_Lit_Lit_Type.lit_polarity (Seq.get (ShallowModel0.shallow_model c) j)) = v) -> ([#"../Robinson/src/logic.rs" 70 0 70 107] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ not IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix -> UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model c) j) a) -> ([#"../Robinson/src/logic.rs" 72 10 72 45] UnsatInner1.unsat_inner f (Seq.set a ix (FlipV0.flip_v v))) && ([#"../Robinson/src/logic.rs" 71 10 71 64] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v)))
 end
 module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula
   use prelude.UIntSize
@@ -2154,11 +2154,11 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula
     requires {[#"../Robinson/src/logic.rs" 66 11 66 26] UnitInner0.unit_inner c a}
     requires {[#"../Robinson/src/logic.rs" 67 11 67 26] InFormula0.in_formula c f}
     requires {[#"../Robinson/src/logic.rs" 68 11 68 31] Invariant1.invariant' c (Seq.length a)}
-    requires {[#"../Robinson/src/logic.rs" 69 0 69 127] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix /\ BoolToAssignedstate0.bool_to_assignedstate (Robinson_Lit_Lit_Type.lit_polarity (Seq.get (ShallowModel0.shallow_model c) j)) = v}
+    requires {[#"../Robinson/src/logic.rs" 69 0 69 125] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix /\ BoolToAssignedstate0.bool_to_assignedstate (Robinson_Lit_Lit_Type.lit_polarity (Seq.get (ShallowModel0.shallow_model c) j)) = v}
     requires {[#"../Robinson/src/logic.rs" 70 0 70 107] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ not IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix -> UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model c) j) a}
     ensures { result = lemma_unit_wrong_polarity_unsat_formula c f a ix v }
     
-  axiom lemma_unit_wrong_polarity_unsat_formula_spec : forall c : Robinson_Clause_Clause_Type.t_clause, f : Robinson_Formula_Formula_Type.t_formula, a : Seq.seq uint8, ix : int, v : uint8 . ([#"../Robinson/src/logic.rs" 62 11 62 24] Invariant0.invariant' f) -> ([#"../Robinson/src/logic.rs" 63 11 63 33] UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f) = Seq.length a) -> ([#"../Robinson/src/logic.rs" 64 11 64 50] 0 <= ix /\ ix < Seq.length a /\ Unset0.unset (Seq.get a ix)) -> ([#"../Robinson/src/logic.rs" 65 11 65 20] not Unset0.unset v) -> ([#"../Robinson/src/logic.rs" 66 11 66 26] UnitInner0.unit_inner c a) -> ([#"../Robinson/src/logic.rs" 67 11 67 26] InFormula0.in_formula c f) -> ([#"../Robinson/src/logic.rs" 68 11 68 31] Invariant1.invariant' c (Seq.length a)) -> ([#"../Robinson/src/logic.rs" 69 0 69 127] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix /\ BoolToAssignedstate0.bool_to_assignedstate (Robinson_Lit_Lit_Type.lit_polarity (Seq.get (ShallowModel0.shallow_model c) j)) = v) -> ([#"../Robinson/src/logic.rs" 70 0 70 107] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ not IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix -> UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model c) j) a) -> ([#"../Robinson/src/logic.rs" 72 10 72 45] UnsatInner1.unsat_inner f (Seq.set a ix (FlipV0.flip_v v))) && ([#"../Robinson/src/logic.rs" 71 10 71 64] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v)))
+  axiom lemma_unit_wrong_polarity_unsat_formula_spec : forall c : Robinson_Clause_Clause_Type.t_clause, f : Robinson_Formula_Formula_Type.t_formula, a : Seq.seq uint8, ix : int, v : uint8 . ([#"../Robinson/src/logic.rs" 62 11 62 24] Invariant0.invariant' f) -> ([#"../Robinson/src/logic.rs" 63 11 63 33] UIntSize.to_int (Robinson_Formula_Formula_Type.formula_num_vars f) = Seq.length a) -> ([#"../Robinson/src/logic.rs" 64 11 64 50] 0 <= ix /\ ix < Seq.length a /\ Unset0.unset (Seq.get a ix)) -> ([#"../Robinson/src/logic.rs" 65 11 65 20] not Unset0.unset v) -> ([#"../Robinson/src/logic.rs" 66 11 66 26] UnitInner0.unit_inner c a) -> ([#"../Robinson/src/logic.rs" 67 11 67 26] InFormula0.in_formula c f) -> ([#"../Robinson/src/logic.rs" 68 11 68 31] Invariant1.invariant' c (Seq.length a)) -> ([#"../Robinson/src/logic.rs" 69 0 69 125] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix /\ BoolToAssignedstate0.bool_to_assignedstate (Robinson_Lit_Lit_Type.lit_polarity (Seq.get (ShallowModel0.shallow_model c) j)) = v) -> ([#"../Robinson/src/logic.rs" 70 0 70 107] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ not IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix -> UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model c) j) a) -> ([#"../Robinson/src/logic.rs" 72 10 72 45] UnsatInner1.unsat_inner f (Seq.set a ix (FlipV0.flip_v v))) && ([#"../Robinson/src/logic.rs" 71 10 71 64] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v)))
 end
 module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Impl
   use prelude.UIntSize
@@ -2242,7 +2242,7 @@ module Robinson_Logic_LemmaUnitWrongPolarityUnsatFormula_Impl
     requires {[#"../Robinson/src/logic.rs" 66 11 66 26] UnitInner0.unit_inner c a}
     requires {[#"../Robinson/src/logic.rs" 67 11 67 26] InFormula0.in_formula c f}
     requires {[#"../Robinson/src/logic.rs" 68 11 68 31] Invariant1.invariant' c (Seq.length a)}
-    requires {[#"../Robinson/src/logic.rs" 69 0 69 127] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix /\ BoolToAssignedstate0.bool_to_assignedstate (Robinson_Lit_Lit_Type.lit_polarity (Seq.get (ShallowModel0.shallow_model c) j)) = v}
+    requires {[#"../Robinson/src/logic.rs" 69 0 69 125] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix /\ BoolToAssignedstate0.bool_to_assignedstate (Robinson_Lit_Lit_Type.lit_polarity (Seq.get (ShallowModel0.shallow_model c) j)) = v}
     requires {[#"../Robinson/src/logic.rs" 70 0 70 107] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c) /\ not IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) j) = ix -> UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model c) j) a}
     ensures { [#"../Robinson/src/logic.rs" 71 10 71 64] not EventuallySatCompleteInner0.eventually_sat_complete_inner f (Seq.set a ix (FlipV0.flip_v v)) }
     ensures { [#"../Robinson/src/logic.rs" 72 10 72 45] UnsatInner1.unsat_inner f (Seq.set a ix (FlipV0.flip_v v)) }
@@ -3226,8 +3226,8 @@ module Robinson_Clause_Impl2_GetUnit_Interface
     requires {[#"../Robinson/src/clause.rs" 158 15 158 29] Invariant0.invariant' _f}
     requires {[#"../Robinson/src/clause.rs" 159 15 159 31] Invariant1.invariant' a _f}
     ensures { [#"../Robinson/src/clause.rs" 160 4 160 78] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model self) /\ Seq.get (ShallowModel0.shallow_model self) j = result }
-    ensures { [#"../Robinson/src/clause.rs" 161 14 161 47] IndexLogic0.index_logic result < Seq.length (ShallowModel1.shallow_model a) }
-    ensures { [#"../Robinson/src/clause.rs" 162 14 162 47] Unset0.unset (Seq.get (ShallowModel1.shallow_model a) (IndexLogic0.index_logic result)) }
+    ensures { [#"../Robinson/src/clause.rs" 161 14 161 45] IndexLogic0.index_logic result < Seq.length (ShallowModel1.shallow_model a) }
+    ensures { [#"../Robinson/src/clause.rs" 162 14 162 45] Unset0.unset (Seq.get (ShallowModel1.shallow_model a) (IndexLogic0.index_logic result)) }
     
 end
 module Robinson_Clause_Impl2_GetUnit
@@ -3332,8 +3332,8 @@ module Robinson_Clause_Impl2_GetUnit
     requires {[#"../Robinson/src/clause.rs" 158 15 158 29] Invariant0.invariant' _f}
     requires {[#"../Robinson/src/clause.rs" 159 15 159 31] Invariant1.invariant' a _f}
     ensures { [#"../Robinson/src/clause.rs" 160 4 160 78] exists j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model self) /\ Seq.get (ShallowModel0.shallow_model self) j = result }
-    ensures { [#"../Robinson/src/clause.rs" 161 14 161 47] IndexLogic0.index_logic result < Seq.length (ShallowModel1.shallow_model a) }
-    ensures { [#"../Robinson/src/clause.rs" 162 14 162 47] Unset0.unset (Seq.get (ShallowModel1.shallow_model a) (IndexLogic0.index_logic result)) }
+    ensures { [#"../Robinson/src/clause.rs" 161 14 161 45] IndexLogic0.index_logic result < Seq.length (ShallowModel1.shallow_model a) }
+    ensures { [#"../Robinson/src/clause.rs" 162 14 162 45] Unset0.unset (Seq.get (ShallowModel1.shallow_model a) (IndexLogic0.index_logic result)) }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : Robinson_Lit_Lit_Type.t_lit;
@@ -4049,21 +4049,21 @@ module Robinson_Assignments_Impl2_UnitPropagate_Interface
   use Robinson_Clause_ClauseState_Type as Robinson_Clause_ClauseState_Type
   clone Robinson_Assignments_Impl1_Compatible_Stub as Compatible0
   clone Robinson_Formula_Impl1_EventuallySatComplete_Stub as EventuallySatComplete0
-  clone Robinson_Assignments_Impl1_Invariant_Stub as Invariant1
-  clone Robinson_Formula_Impl1_Invariant_Stub as Invariant0
-  val unit_propagate [#"../Robinson/src/assignments.rs" 190 4 190 64] (self : borrowed (Robinson_Assignments_Assignments_Type.t_assignments)) (f : Robinson_Formula_Formula_Type.t_formula) : Robinson_Clause_ClauseState_Type.t_clausestate
-    requires {[#"../Robinson/src/assignments.rs" 178 15 178 28] Invariant0.invariant' f}
-    requires {[#"../Robinson/src/assignments.rs" 179 15 179 33] Invariant1.invariant' ( * self) f}
-    ensures { [#"../Robinson/src/assignments.rs" 180 14 180 35] Invariant1.invariant' ( ^ self) f }
-    ensures { [#"../Robinson/src/assignments.rs" 181 14 181 82] EventuallySatComplete0.eventually_sat_complete f ( ^ self) = EventuallySatComplete0.eventually_sat_complete f ( * self) }
-    ensures { [#"../Robinson/src/assignments.rs" 182 14 182 39] Compatible0.compatible ( * self) ( ^ self) }
-    ensures { [#"../Robinson/src/assignments.rs" 183 14 188 5] match (result) with
+  clone Robinson_Formula_Impl1_Invariant_Stub as Invariant1
+  clone Robinson_Assignments_Impl1_Invariant_Stub as Invariant0
+  val unit_propagate [#"../Robinson/src/assignments.rs" 189 4 189 64] (self : borrowed (Robinson_Assignments_Assignments_Type.t_assignments)) (f : Robinson_Formula_Formula_Type.t_formula) : Robinson_Clause_ClauseState_Type.t_clausestate
+    requires {[#"../Robinson/src/assignments.rs" 178 4 178 42] Invariant0.invariant' ( * self) f}
+    requires {[#"../Robinson/src/assignments.rs" 179 15 179 28] Invariant1.invariant' f}
+    ensures { [#"../Robinson/src/assignments.rs" 178 4 178 42] Invariant0.invariant' ( ^ self) f }
+    ensures { [#"../Robinson/src/assignments.rs" 180 14 180 82] EventuallySatComplete0.eventually_sat_complete f ( ^ self) = EventuallySatComplete0.eventually_sat_complete f ( * self) }
+    ensures { [#"../Robinson/src/assignments.rs" 181 14 181 39] Compatible0.compatible ( * self) ( ^ self) }
+    ensures { [#"../Robinson/src/assignments.rs" 182 14 187 5] match (result) with
       | Robinson_Clause_ClauseState_Type.C_Sat -> Sat0.sat f ( ^ self)
       | Robinson_Clause_ClauseState_Type.C_Unsat -> Unsat0.unsat f ( ^ self)
       | Robinson_Clause_ClauseState_Type.C_Unknown -> not Complete0.complete ( ^ self)
       | Robinson_Clause_ClauseState_Type.C_Unit -> not Complete0.complete ( * self)
       end }
-    ensures { [#"../Robinson/src/assignments.rs" 189 4 189 106] Complete0.complete ( * self) ->  * self =  ^ self /\ (result = Robinson_Clause_ClauseState_Type.C_Unsat \/ Sat0.sat f ( * self)) }
+    ensures { [#"../Robinson/src/assignments.rs" 188 4 188 106] Complete0.complete ( * self) ->  * self =  ^ self /\ (result = Robinson_Clause_ClauseState_Type.C_Unsat \/ Sat0.sat f ( * self)) }
     
 end
 module Robinson_Assignments_Impl2_UnitPropagate
@@ -4099,14 +4099,14 @@ module Robinson_Assignments_Impl2_UnitPropagate
   clone Robinson_Assignments_CompatibleCompleteInner as CompatibleCompleteInner0 with
     predicate CompatibleInner0.compatible_inner = CompatibleInner0.compatible_inner,
     predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner
+  clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with
+    function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
+    predicate Invariant0.invariant' = Invariant3.invariant'
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel4 with
     type t = uint8,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
-  clone Robinson_Clause_Impl1_VarsInRange as VarsInRange0 with
-    function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
-    predicate Invariant0.invariant' = Invariant3.invariant'
   use seq.Seq
   use Robinson_Assignments_Assignments_Type as Robinson_Assignments_Assignments_Type
   clone Robinson_Assignments_Impl0_ShallowModel as ShallowModel1 with
@@ -4171,15 +4171,15 @@ module Robinson_Assignments_Impl2_UnitPropagate
   clone Robinson_Assignments_Impl1_Compatible as Compatible0 with
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
     predicate CompatibleInner0.compatible_inner = CompatibleInner0.compatible_inner
-  clone Robinson_Formula_Impl1_Invariant as Invariant0 with
+  clone Robinson_Formula_Impl1_Invariant as Invariant1 with
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
     predicate Invariant0.invariant' = Invariant2.invariant',
     val Max0.mAX' = Max0.mAX'
-  clone Robinson_Assignments_Impl1_Invariant as Invariant1 with
+  clone Robinson_Assignments_Impl1_Invariant as Invariant0 with
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model
   clone Robinson_Assignments_Impl2_UnitPropOnce_Interface as UnitPropOnce0 with
-    predicate Invariant0.invariant' = Invariant1.invariant',
-    predicate Invariant1.invariant' = Invariant0.invariant',
+    predicate Invariant0.invariant' = Invariant0.invariant',
+    predicate Invariant1.invariant' = Invariant1.invariant',
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
     predicate Compatible0.compatible = Compatible0.compatible,
     predicate EventuallySatComplete0.eventually_sat_complete = EventuallySatComplete0.eventually_sat_complete,
@@ -4203,19 +4203,19 @@ module Robinson_Assignments_Impl2_UnitPropagate
   clone Robinson_Formula_Impl1_Sat as Sat0 with
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
     predicate SatInner0.sat_inner = SatInner0.sat_inner
-  let rec cfg unit_propagate [#"../Robinson/src/assignments.rs" 190 4 190 64] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Robinson_Assignments_Assignments_Type.t_assignments)) (f : Robinson_Formula_Formula_Type.t_formula) : Robinson_Clause_ClauseState_Type.t_clausestate
-    requires {[#"../Robinson/src/assignments.rs" 178 15 178 28] Invariant0.invariant' f}
-    requires {[#"../Robinson/src/assignments.rs" 179 15 179 33] Invariant1.invariant' ( * self) f}
-    ensures { [#"../Robinson/src/assignments.rs" 180 14 180 35] Invariant1.invariant' ( ^ self) f }
-    ensures { [#"../Robinson/src/assignments.rs" 181 14 181 82] EventuallySatComplete0.eventually_sat_complete f ( ^ self) = EventuallySatComplete0.eventually_sat_complete f ( * self) }
-    ensures { [#"../Robinson/src/assignments.rs" 182 14 182 39] Compatible0.compatible ( * self) ( ^ self) }
-    ensures { [#"../Robinson/src/assignments.rs" 183 14 188 5] match (result) with
+  let rec cfg unit_propagate [#"../Robinson/src/assignments.rs" 189 4 189 64] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Robinson_Assignments_Assignments_Type.t_assignments)) (f : Robinson_Formula_Formula_Type.t_formula) : Robinson_Clause_ClauseState_Type.t_clausestate
+    requires {[#"../Robinson/src/assignments.rs" 178 4 178 42] Invariant0.invariant' ( * self) f}
+    requires {[#"../Robinson/src/assignments.rs" 179 15 179 28] Invariant1.invariant' f}
+    ensures { [#"../Robinson/src/assignments.rs" 178 4 178 42] Invariant0.invariant' ( ^ self) f }
+    ensures { [#"../Robinson/src/assignments.rs" 180 14 180 82] EventuallySatComplete0.eventually_sat_complete f ( ^ self) = EventuallySatComplete0.eventually_sat_complete f ( * self) }
+    ensures { [#"../Robinson/src/assignments.rs" 181 14 181 39] Compatible0.compatible ( * self) ( ^ self) }
+    ensures { [#"../Robinson/src/assignments.rs" 182 14 187 5] match (result) with
       | Robinson_Clause_ClauseState_Type.C_Sat -> Sat0.sat f ( ^ self)
       | Robinson_Clause_ClauseState_Type.C_Unsat -> Unsat0.unsat f ( ^ self)
       | Robinson_Clause_ClauseState_Type.C_Unknown -> not Complete0.complete ( ^ self)
       | Robinson_Clause_ClauseState_Type.C_Unit -> not Complete0.complete ( * self)
       end }
-    ensures { [#"../Robinson/src/assignments.rs" 189 4 189 106] Complete0.complete ( * self) ->  * self =  ^ self /\ (result = Robinson_Clause_ClauseState_Type.C_Unsat \/ Sat0.sat f ( * self)) }
+    ensures { [#"../Robinson/src/assignments.rs" 188 4 188 106] Complete0.complete ( * self) ->  * self =  ^ self /\ (result = Robinson_Clause_ClauseState_Type.C_Unsat \/ Sat0.sat f ( * self)) }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : Robinson_Clause_ClauseState_Type.t_clausestate;
@@ -4227,24 +4227,24 @@ module Robinson_Assignments_Impl2_UnitPropagate
   var i_14 : usize;
   var out_15 : Robinson_Clause_ClauseState_Type.t_clausestate;
   var _16 : ();
-  var _26 : ();
-  var _27 : bool;
+  var _25 : ();
+  var _26 : bool;
+  var _27 : usize;
   var _28 : usize;
-  var _29 : usize;
-  var _30 : Alloc_Vec_Vec_Type.t_vec (Robinson_Clause_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global);
-  var _31 : ();
-  var _32 : Robinson_Clause_ClauseState_Type.t_clausestate;
-  var _33 : borrowed (Robinson_Assignments_Assignments_Type.t_assignments);
-  var _34 : usize;
-  var _35 : Robinson_Formula_Formula_Type.t_formula;
-  var _36 : isize;
-  var _37 : ();
-  var _38 : Robinson_Clause_ClauseState_Type.t_clausestate;
-  var _39 : isize;
-  var _40 : Robinson_Clause_ClauseState_Type.t_clausestate;
+  var _29 : Alloc_Vec_Vec_Type.t_vec (Robinson_Clause_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global);
+  var _30 : ();
+  var _31 : Robinson_Clause_ClauseState_Type.t_clausestate;
+  var _32 : borrowed (Robinson_Assignments_Assignments_Type.t_assignments);
+  var _33 : usize;
+  var _34 : Robinson_Formula_Formula_Type.t_formula;
+  var _35 : isize;
+  var _36 : ();
+  var _37 : Robinson_Clause_ClauseState_Type.t_clausestate;
+  var _38 : isize;
+  var _39 : Robinson_Clause_ClauseState_Type.t_clausestate;
+  var _40 : ();
   var _41 : ();
   var _42 : ();
-  var _43 : ();
   {
     self_1 <- self;
     f_2 <- f;
@@ -4252,46 +4252,45 @@ module Robinson_Assignments_Impl2_UnitPropagate
   }
   BB0 {
     _13 <- ();
-    _old_a_11 <- ([#"../Robinson/src/assignments.rs" 191 46 191 58] Ghost.new self_1);
+    _old_a_11 <- ([#"../Robinson/src/assignments.rs" 190 46 190 58] Ghost.new self_1);
     goto BB1
   }
   BB1 {
-    i_14 <- ([#"../Robinson/src/assignments.rs" 192 27 192 28] (0 : usize));
+    i_14 <- ([#"../Robinson/src/assignments.rs" 191 27 191 28] (0 : usize));
     out_15 <- Robinson_Clause_ClauseState_Type.C_Sat;
     goto BB2
   }
   BB2 {
-    invariant { [#"../Robinson/src/assignments.rs" 194 20 194 38] Invariant1.invariant' ( * self_1) f_2 };
-    invariant { [#"../Robinson/src/assignments.rs" 195 20 195 44]  ^ self_1 =  ^ Ghost.inner _old_a_11 };
-    invariant { [#"../Robinson/src/assignments.rs" 196 20 196 44] Compatible0.compatible ( * Ghost.inner _old_a_11) ( * self_1) };
-    invariant { [#"../Robinson/src/assignments.rs" 197 20 197 98] EventuallySatComplete0.eventually_sat_complete f_2 ( * Ghost.inner _old_a_11) = EventuallySatComplete0.eventually_sat_complete f_2 ( * self_1) };
-    invariant { [#"../Robinson/src/assignments.rs" 198 20 198 48] not out_15 = Robinson_Clause_ClauseState_Type.C_Unsat };
-    invariant { [#"../Robinson/src/assignments.rs" 194 8 194 40] Complete0.complete ( * Ghost.inner _old_a_11) ->  * Ghost.inner _old_a_11 =  * self_1 /\ (forall j : int . 0 <= j /\ j < UIntSize.to_int i_14 -> not Unknown0.unknown (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ not Unit0.unit (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ Sat1.sat (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1)) };
-    invariant { [#"../Robinson/src/assignments.rs" 194 8 194 40] out_15 = Robinson_Clause_ClauseState_Type.C_Sat -> (forall j : int . 0 <= j /\ j < UIntSize.to_int i_14 -> not Unsat1.unsat (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ not Unknown0.unknown (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ not Unit0.unit (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ Sat1.sat (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1)) };
-    invariant { [#"../Robinson/src/assignments.rs" 194 8 194 40] out_15 = Robinson_Clause_ClauseState_Type.C_Unit -> not Complete0.complete ( * Ghost.inner _old_a_11) };
-    invariant { [#"../Robinson/src/assignments.rs" 194 8 194 40] out_15 = Robinson_Clause_ClauseState_Type.C_Unknown -> not Complete0.complete ( * self_1) };
-    _28 <- i_14;
-    _30 <- Robinson_Formula_Formula_Type.formula_clauses f_2;
-    _29 <- ([#"../Robinson/src/assignments.rs" 209 18 209 33] Len0.len _30);
+    invariant { [#"../Robinson/src/assignments.rs" 193 20 193 38] Invariant0.invariant' ( * self_1) f_2 };
+    invariant { [#"../Robinson/src/assignments.rs" 194 20 194 44] Compatible0.compatible ( * Ghost.inner _old_a_11) ( * self_1) };
+    invariant { [#"../Robinson/src/assignments.rs" 195 20 195 98] EventuallySatComplete0.eventually_sat_complete f_2 ( * Ghost.inner _old_a_11) = EventuallySatComplete0.eventually_sat_complete f_2 ( * self_1) };
+    invariant { [#"../Robinson/src/assignments.rs" 196 20 196 48] not out_15 = Robinson_Clause_ClauseState_Type.C_Unsat };
+    invariant { [#"../Robinson/src/assignments.rs" 193 8 193 40] Complete0.complete ( * Ghost.inner _old_a_11) ->  * Ghost.inner _old_a_11 =  * self_1 /\ (forall j : int . 0 <= j /\ j < UIntSize.to_int i_14 -> not Unknown0.unknown (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ not Unit0.unit (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ Sat1.sat (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1)) };
+    invariant { [#"../Robinson/src/assignments.rs" 193 8 193 40] out_15 = Robinson_Clause_ClauseState_Type.C_Sat -> (forall j : int . 0 <= j /\ j < UIntSize.to_int i_14 -> not Unsat1.unsat (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ not Unknown0.unknown (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ not Unit0.unit (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1) /\ Sat1.sat (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses f_2)) j) ( * self_1)) };
+    invariant { [#"../Robinson/src/assignments.rs" 193 8 193 40] out_15 = Robinson_Clause_ClauseState_Type.C_Unit -> not Complete0.complete ( * Ghost.inner _old_a_11) };
+    invariant { [#"../Robinson/src/assignments.rs" 193 8 193 40] out_15 = Robinson_Clause_ClauseState_Type.C_Unknown -> not Complete0.complete ( * self_1) };
+    _27 <- i_14;
+    _29 <- Robinson_Formula_Formula_Type.formula_clauses f_2;
+    _28 <- ([#"../Robinson/src/assignments.rs" 205 18 205 33] Len0.len _29);
     goto BB3
   }
   BB3 {
-    _27 <- ([#"../Robinson/src/assignments.rs" 209 14 209 33] _28 < _29);
-    switch (_27)
+    _26 <- ([#"../Robinson/src/assignments.rs" 205 14 205 33] _27 < _28);
+    switch (_26)
       | False -> goto BB14
       | True -> goto BB4
       end
   }
   BB4 {
-    _33 <- borrow_mut ( * self_1);
-    self_1 <- { self_1 with current = ( ^ _33) };
-    _34 <- i_14;
-    _35 <- f_2;
-    _32 <- ([#"../Robinson/src/assignments.rs" 210 18 210 43] UnitPropOnce0.unit_prop_once _33 _34 _35);
+    _32 <- borrow_mut ( * self_1);
+    self_1 <- { self_1 with current = ( ^ _32) };
+    _33 <- i_14;
+    _34 <- f_2;
+    _31 <- ([#"../Robinson/src/assignments.rs" 206 18 206 43] UnitPropOnce0.unit_prop_once _32 _33 _34);
     goto BB5
   }
   BB5 {
-    switch (_32)
+    switch (_31)
       | Robinson_Clause_ClauseState_Type.C_Sat -> goto BB8
       | Robinson_Clause_ClauseState_Type.C_Unsat -> goto BB9
       | Robinson_Clause_ClauseState_Type.C_Unit -> goto BB10
@@ -4309,7 +4308,7 @@ module Robinson_Assignments_Impl2_UnitPropagate
     absurd
   }
   BB8 {
-    _31 <- ();
+    _30 <- ();
     goto BB13
   }
   BB9 {
@@ -4318,26 +4317,26 @@ module Robinson_Assignments_Impl2_UnitPropagate
     goto BB15
   }
   BB10 {
-    _38 <- Robinson_Clause_ClauseState_Type.C_Unit;
-    out_15 <- _38;
-    _38 <- any Robinson_Clause_ClauseState_Type.t_clausestate;
-    _31 <- ();
+    _37 <- Robinson_Clause_ClauseState_Type.C_Unit;
+    out_15 <- _37;
+    _37 <- any Robinson_Clause_ClauseState_Type.t_clausestate;
+    _30 <- ();
     goto BB13
   }
   BB11 {
-    _31 <- ();
+    _30 <- ();
     goto BB13
   }
   BB12 {
-    _40 <- Robinson_Clause_ClauseState_Type.C_Unknown;
-    out_15 <- _40;
-    _40 <- any Robinson_Clause_ClauseState_Type.t_clausestate;
-    _31 <- ();
+    _39 <- Robinson_Clause_ClauseState_Type.C_Unknown;
+    out_15 <- _39;
+    _39 <- any Robinson_Clause_ClauseState_Type.t_clausestate;
+    _30 <- ();
     goto BB13
   }
   BB13 {
-    i_14 <- ([#"../Robinson/src/assignments.rs" 225 12 225 18] i_14 + ([#"../Robinson/src/assignments.rs" 225 17 225 18] (1 : usize)));
-    _26 <- ();
+    i_14 <- ([#"../Robinson/src/assignments.rs" 221 12 221 18] i_14 + ([#"../Robinson/src/assignments.rs" 221 17 221 18] (1 : usize)));
+    _25 <- ();
     goto BB2
   }
   BB14 {
@@ -4375,15 +4374,15 @@ module Robinson_Assignments_Impl2_DoUnitPropagation_Interface
   clone Robinson_Formula_Impl1_EventuallySatComplete_Stub as EventuallySatComplete0
   clone Robinson_Assignments_Impl1_Invariant_Stub as Invariant1
   clone Robinson_Formula_Impl1_Invariant_Stub as Invariant0
-  val do_unit_propagation [#"../Robinson/src/assignments.rs" 238 4 238 70] (self : borrowed (Robinson_Assignments_Assignments_Type.t_assignments)) (f : Robinson_Formula_Formula_Type.t_formula) : Core_Option_Option_Type.t_option bool
-    requires {[#"../Robinson/src/assignments.rs" 231 15 231 28] Invariant0.invariant' f}
-    requires {[#"../Robinson/src/assignments.rs" 232 4 232 42] Invariant1.invariant' ( * self) f}
-    ensures { [#"../Robinson/src/assignments.rs" 232 4 232 42] Invariant1.invariant' ( ^ self) f }
-    ensures { [#"../Robinson/src/assignments.rs" 233 14 233 82] EventuallySatComplete0.eventually_sat_complete f ( * self) = EventuallySatComplete0.eventually_sat_complete f ( ^ self) }
-    ensures { [#"../Robinson/src/assignments.rs" 234 14 234 39] Compatible0.compatible ( * self) ( ^ self) }
-    ensures { [#"../Robinson/src/assignments.rs" 235 4 235 56] result = Core_Option_Option_Type.C_Some false -> Unsat0.unsat f ( ^ self) }
-    ensures { [#"../Robinson/src/assignments.rs" 236 4 236 53] result = Core_Option_Option_Type.C_Some true -> Sat0.sat f ( ^ self) }
-    ensures { [#"../Robinson/src/assignments.rs" 237 4 237 54] result = Core_Option_Option_Type.C_None -> not Complete0.complete ( ^ self) }
+  val do_unit_propagation [#"../Robinson/src/assignments.rs" 234 4 234 70] (self : borrowed (Robinson_Assignments_Assignments_Type.t_assignments)) (f : Robinson_Formula_Formula_Type.t_formula) : Core_Option_Option_Type.t_option bool
+    requires {[#"../Robinson/src/assignments.rs" 227 15 227 28] Invariant0.invariant' f}
+    requires {[#"../Robinson/src/assignments.rs" 228 4 228 42] Invariant1.invariant' ( * self) f}
+    ensures { [#"../Robinson/src/assignments.rs" 228 4 228 42] Invariant1.invariant' ( ^ self) f }
+    ensures { [#"../Robinson/src/assignments.rs" 229 14 229 82] EventuallySatComplete0.eventually_sat_complete f ( * self) = EventuallySatComplete0.eventually_sat_complete f ( ^ self) }
+    ensures { [#"../Robinson/src/assignments.rs" 230 14 230 39] Compatible0.compatible ( * self) ( ^ self) }
+    ensures { [#"../Robinson/src/assignments.rs" 231 4 231 56] result = Core_Option_Option_Type.C_Some false -> Unsat0.unsat f ( ^ self) }
+    ensures { [#"../Robinson/src/assignments.rs" 232 4 232 53] result = Core_Option_Option_Type.C_Some true -> Sat0.sat f ( ^ self) }
+    ensures { [#"../Robinson/src/assignments.rs" 233 4 233 54] result = Core_Option_Option_Type.C_None -> not Complete0.complete ( ^ self) }
     
 end
 module Robinson_Assignments_Impl2_DoUnitPropagation
@@ -4471,30 +4470,30 @@ module Robinson_Assignments_Impl2_DoUnitPropagation
   clone Robinson_Formula_Impl1_EventuallySatComplete as EventuallySatComplete0 with
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
     predicate EventuallySatCompleteInner0.eventually_sat_complete_inner = EventuallySatCompleteInner0.eventually_sat_complete_inner
-  clone Robinson_Assignments_Impl1_Invariant as Invariant1 with
-    function ShallowModel0.shallow_model = ShallowModel1.shallow_model
   clone Robinson_Formula_Impl1_Invariant as Invariant0 with
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
     predicate Invariant0.invariant' = Invariant2.invariant',
     val Max0.mAX' = Max0.mAX'
+  clone Robinson_Assignments_Impl1_Invariant as Invariant1 with
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model
   clone Robinson_Assignments_Impl2_UnitPropagate_Interface as UnitPropagate0 with
-    predicate Invariant0.invariant' = Invariant0.invariant',
-    predicate Invariant1.invariant' = Invariant1.invariant',
+    predicate Invariant0.invariant' = Invariant1.invariant',
+    predicate Invariant1.invariant' = Invariant0.invariant',
     predicate EventuallySatComplete0.eventually_sat_complete = EventuallySatComplete0.eventually_sat_complete,
     predicate Compatible0.compatible = Compatible0.compatible,
     predicate Sat0.sat = Sat0.sat,
     predicate Unsat0.unsat = Unsat0.unsat,
     predicate Complete0.complete = Complete0.complete
   use Core_Option_Option_Type as Core_Option_Option_Type
-  let rec cfg do_unit_propagation [#"../Robinson/src/assignments.rs" 238 4 238 70] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Robinson_Assignments_Assignments_Type.t_assignments)) (f : Robinson_Formula_Formula_Type.t_formula) : Core_Option_Option_Type.t_option bool
-    requires {[#"../Robinson/src/assignments.rs" 231 15 231 28] Invariant0.invariant' f}
-    requires {[#"../Robinson/src/assignments.rs" 232 4 232 42] Invariant1.invariant' ( * self) f}
-    ensures { [#"../Robinson/src/assignments.rs" 232 4 232 42] Invariant1.invariant' ( ^ self) f }
-    ensures { [#"../Robinson/src/assignments.rs" 233 14 233 82] EventuallySatComplete0.eventually_sat_complete f ( * self) = EventuallySatComplete0.eventually_sat_complete f ( ^ self) }
-    ensures { [#"../Robinson/src/assignments.rs" 234 14 234 39] Compatible0.compatible ( * self) ( ^ self) }
-    ensures { [#"../Robinson/src/assignments.rs" 235 4 235 56] result = Core_Option_Option_Type.C_Some false -> Unsat0.unsat f ( ^ self) }
-    ensures { [#"../Robinson/src/assignments.rs" 236 4 236 53] result = Core_Option_Option_Type.C_Some true -> Sat0.sat f ( ^ self) }
-    ensures { [#"../Robinson/src/assignments.rs" 237 4 237 54] result = Core_Option_Option_Type.C_None -> not Complete0.complete ( ^ self) }
+  let rec cfg do_unit_propagation [#"../Robinson/src/assignments.rs" 234 4 234 70] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Robinson_Assignments_Assignments_Type.t_assignments)) (f : Robinson_Formula_Formula_Type.t_formula) : Core_Option_Option_Type.t_option bool
+    requires {[#"../Robinson/src/assignments.rs" 227 15 227 28] Invariant0.invariant' f}
+    requires {[#"../Robinson/src/assignments.rs" 228 4 228 42] Invariant1.invariant' ( * self) f}
+    ensures { [#"../Robinson/src/assignments.rs" 228 4 228 42] Invariant1.invariant' ( ^ self) f }
+    ensures { [#"../Robinson/src/assignments.rs" 229 14 229 82] EventuallySatComplete0.eventually_sat_complete f ( * self) = EventuallySatComplete0.eventually_sat_complete f ( ^ self) }
+    ensures { [#"../Robinson/src/assignments.rs" 230 14 230 39] Compatible0.compatible ( * self) ( ^ self) }
+    ensures { [#"../Robinson/src/assignments.rs" 231 4 231 56] result = Core_Option_Option_Type.C_Some false -> Unsat0.unsat f ( ^ self) }
+    ensures { [#"../Robinson/src/assignments.rs" 232 4 232 53] result = Core_Option_Option_Type.C_Some true -> Sat0.sat f ( ^ self) }
+    ensures { [#"../Robinson/src/assignments.rs" 233 4 233 54] result = Core_Option_Option_Type.C_None -> not Complete0.complete ( ^ self) }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : Core_Option_Option_Type.t_option bool;
@@ -4502,15 +4501,15 @@ module Robinson_Assignments_Impl2_DoUnitPropagation
   var f_2 : Robinson_Formula_Formula_Type.t_formula;
   var _old_a_11 : Ghost.ghost_ty (borrowed (Robinson_Assignments_Assignments_Type.t_assignments));
   var _13 : ();
+  var _17 : ();
   var _18 : ();
-  var _19 : ();
-  var _20 : Robinson_Clause_ClauseState_Type.t_clausestate;
-  var _21 : borrowed (Robinson_Assignments_Assignments_Type.t_assignments);
-  var _22 : Robinson_Formula_Formula_Type.t_formula;
-  var _23 : isize;
+  var _19 : Robinson_Clause_ClauseState_Type.t_clausestate;
+  var _20 : borrowed (Robinson_Assignments_Assignments_Type.t_assignments);
+  var _21 : Robinson_Formula_Formula_Type.t_formula;
+  var _22 : isize;
+  var _23 : ();
   var _24 : ();
   var _25 : ();
-  var _26 : ();
   {
     self_1 <- self;
     f_2 <- f;
@@ -4518,25 +4517,24 @@ module Robinson_Assignments_Impl2_DoUnitPropagation
   }
   BB0 {
     _13 <- ();
-    _old_a_11 <- ([#"../Robinson/src/assignments.rs" 239 46 239 58] Ghost.new self_1);
+    _old_a_11 <- ([#"../Robinson/src/assignments.rs" 235 46 235 58] Ghost.new self_1);
     goto BB1
   }
   BB1 {
     goto BB2
   }
   BB2 {
-    invariant { [#"../Robinson/src/assignments.rs" 240 20 240 38] Invariant1.invariant' ( * self_1) f_2 };
-    invariant { [#"../Robinson/src/assignments.rs" 241 20 241 44]  ^ self_1 =  ^ Ghost.inner _old_a_11 };
-    invariant { [#"../Robinson/src/assignments.rs" 242 20 242 44] Compatible0.compatible ( * Ghost.inner _old_a_11) ( * self_1) };
-    invariant { [#"../Robinson/src/assignments.rs" 240 8 240 40] EventuallySatComplete0.eventually_sat_complete f_2 ( * Ghost.inner _old_a_11) -> EventuallySatComplete0.eventually_sat_complete f_2 ( * self_1) };
-    _21 <- borrow_mut ( * self_1);
-    self_1 <- { self_1 with current = ( ^ _21) };
-    _22 <- f_2;
-    _20 <- ([#"../Robinson/src/assignments.rs" 245 18 245 40] UnitPropagate0.unit_propagate _21 _22);
+    invariant { [#"../Robinson/src/assignments.rs" 236 20 236 38] Invariant1.invariant' ( * self_1) f_2 };
+    invariant { [#"../Robinson/src/assignments.rs" 237 20 237 44] Compatible0.compatible ( * Ghost.inner _old_a_11) ( * self_1) };
+    invariant { [#"../Robinson/src/assignments.rs" 236 8 236 40] EventuallySatComplete0.eventually_sat_complete f_2 ( * Ghost.inner _old_a_11) -> EventuallySatComplete0.eventually_sat_complete f_2 ( * self_1) };
+    _20 <- borrow_mut ( * self_1);
+    self_1 <- { self_1 with current = ( ^ _20) };
+    _21 <- f_2;
+    _19 <- ([#"../Robinson/src/assignments.rs" 240 18 240 40] UnitPropagate0.unit_propagate _20 _21);
     goto BB3
   }
   BB3 {
-    switch (_20)
+    switch (_19)
       | Robinson_Clause_ClauseState_Type.C_Sat -> goto BB6
       | Robinson_Clause_ClauseState_Type.C_Unsat -> goto BB7
       | Robinson_Clause_ClauseState_Type.C_Unit -> goto BB4
@@ -4544,7 +4542,7 @@ module Robinson_Assignments_Impl2_DoUnitPropagation
       end
   }
   BB4 {
-    _19 <- ();
+    _18 <- ();
     goto BB2
   }
   BB5 {
@@ -4553,12 +4551,12 @@ module Robinson_Assignments_Impl2_DoUnitPropagation
   }
   BB6 {
     assume { Resolve0.resolve self_1 };
-    _0 <- Core_Option_Option_Type.C_Some ([#"../Robinson/src/assignments.rs" 247 32 247 36] true);
+    _0 <- Core_Option_Option_Type.C_Some ([#"../Robinson/src/assignments.rs" 242 32 242 36] true);
     goto BB9
   }
   BB7 {
     assume { Resolve0.resolve self_1 };
-    _0 <- Core_Option_Option_Type.C_Some ([#"../Robinson/src/assignments.rs" 250 32 250 37] false);
+    _0 <- Core_Option_Option_Type.C_Some ([#"../Robinson/src/assignments.rs" 245 32 245 37] false);
     goto BB9
   }
   BB8 {
@@ -4672,8 +4670,8 @@ module Robinson_Clause_Impl2_Len_Interface
   clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
     type t = Robinson_Clause_Clause_Type.t_clause,
     type ShallowModelTy0.shallowModelTy = Seq.seq (Robinson_Lit_Lit_Type.t_lit)
-  val len [#"../Robinson/src/clause.rs" 224 4 224 30] (self : Robinson_Clause_Clause_Type.t_clause) : usize
-    ensures { [#"../Robinson/src/clause.rs" 223 14 223 36] UIntSize.to_int result = Seq.length (ShallowModel0.shallow_model self) }
+  val len [#"../Robinson/src/clause.rs" 222 4 222 30] (self : Robinson_Clause_Clause_Type.t_clause) : usize
+    ensures { [#"../Robinson/src/clause.rs" 221 14 221 36] UIntSize.to_int result = Seq.length (ShallowModel0.shallow_model self) }
     
 end
 module Robinson_Clause_Impl2_Len
@@ -4707,8 +4705,8 @@ module Robinson_Clause_Impl2_Len
     type t = Robinson_Clause_Clause_Type.t_clause,
     type ShallowModelTy0.shallowModelTy = Seq.seq (Robinson_Lit_Lit_Type.t_lit),
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model
-  let rec cfg len [#"../Robinson/src/clause.rs" 224 4 224 30] [@cfg:stackify] [@cfg:subregion_analysis] (self : Robinson_Clause_Clause_Type.t_clause) : usize
-    ensures { [#"../Robinson/src/clause.rs" 223 14 223 36] UIntSize.to_int result = Seq.length (ShallowModel0.shallow_model self) }
+  let rec cfg len [#"../Robinson/src/clause.rs" 222 4 222 30] [@cfg:stackify] [@cfg:subregion_analysis] (self : Robinson_Clause_Clause_Type.t_clause) : usize
+    ensures { [#"../Robinson/src/clause.rs" 221 14 221 36] UIntSize.to_int result = Seq.length (ShallowModel0.shallow_model self) }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : usize;
@@ -4720,7 +4718,7 @@ module Robinson_Clause_Impl2_Len
   }
   BB0 {
     _3 <- Robinson_Clause_Clause_Type.clause_rest self_1;
-    _0 <- ([#"../Robinson/src/clause.rs" 225 8 225 23] Len0.len _3);
+    _0 <- ([#"../Robinson/src/clause.rs" 223 8 223 23] Len0.len _3);
     goto BB1
   }
   BB1 {
@@ -5036,14 +5034,14 @@ module Robinson_Clause_Impl2_NoDuplicates
     goto BB1
   }
   BB1 {
-    invariant { [#"../Robinson/src/clause.rs" 202 8 204 63] forall k : int . forall j : int . 0 <= j /\ j < UIntSize.to_int i_4 /\ 0 <= k /\ k < j -> Robinson_Lit_Lit_Type.lit_idx (Seq.get (ShallowModel0.shallow_model self_1) j) <> Robinson_Lit_Lit_Type.lit_idx (Seq.get (ShallowModel0.shallow_model self_1) k) };
+    invariant { [#"../Robinson/src/clause.rs" 202 8 202 113] forall k : int . forall j : int . 0 <= j /\ j < UIntSize.to_int i_4 /\ 0 <= k /\ k < j -> Robinson_Lit_Lit_Type.lit_idx (Seq.get (ShallowModel0.shallow_model self_1) j) <> Robinson_Lit_Lit_Type.lit_idx (Seq.get (ShallowModel0.shallow_model self_1) k) };
     _9 <- i_4;
     _11 <- Robinson_Clause_Clause_Type.clause_rest self_1;
-    _10 <- ([#"../Robinson/src/clause.rs" 205 18 205 33] Len0.len _11);
+    _10 <- ([#"../Robinson/src/clause.rs" 203 18 203 33] Len0.len _11);
     goto BB2
   }
   BB2 {
-    _8 <- ([#"../Robinson/src/clause.rs" 205 14 205 33] _9 < _10);
+    _8 <- ([#"../Robinson/src/clause.rs" 203 14 203 33] _9 < _10);
     switch (_8)
       | False -> goto BB11
       | True -> goto BB3
@@ -5052,19 +5050,19 @@ module Robinson_Clause_Impl2_NoDuplicates
   BB3 {
     _14 <- Robinson_Clause_Clause_Type.clause_rest self_1;
     _15 <- i_4;
-    _13 <- ([#"../Robinson/src/clause.rs" 206 23 206 35] Index0.index _14 _15);
+    _13 <- ([#"../Robinson/src/clause.rs" 204 23 204 35] Index0.index _14 _15);
     goto BB4
   }
   BB4 {
     lit1_12 <- _13;
-    j_16 <- ([#"../Robinson/src/clause.rs" 207 31 207 32] (0 : usize));
+    j_16 <- ([#"../Robinson/src/clause.rs" 205 31 205 32] (0 : usize));
     goto BB5
   }
   BB5 {
-    invariant { [#"../Robinson/src/clause.rs" 208 12 208 86] forall k : int . 0 <= k /\ k < UIntSize.to_int j_16 -> Robinson_Lit_Lit_Type.lit_idx lit1_12 <> Robinson_Lit_Lit_Type.lit_idx (Seq.get (ShallowModel0.shallow_model self_1) k) };
+    invariant { [#"../Robinson/src/clause.rs" 206 12 206 86] forall k : int . 0 <= k /\ k < UIntSize.to_int j_16 -> Robinson_Lit_Lit_Type.lit_idx lit1_12 <> Robinson_Lit_Lit_Type.lit_idx (Seq.get (ShallowModel0.shallow_model self_1) k) };
     _20 <- j_16;
     _21 <- i_4;
-    _19 <- ([#"../Robinson/src/clause.rs" 209 18 209 23] _20 < _21);
+    _19 <- ([#"../Robinson/src/clause.rs" 207 18 207 23] _20 < _21);
     switch (_19)
       | False -> goto BB10
       | True -> goto BB6
@@ -5073,38 +5071,38 @@ module Robinson_Clause_Impl2_NoDuplicates
   BB6 {
     _24 <- Robinson_Clause_Clause_Type.clause_rest self_1;
     _25 <- j_16;
-    _23 <- ([#"../Robinson/src/clause.rs" 210 27 210 39] Index0.index _24 _25);
+    _23 <- ([#"../Robinson/src/clause.rs" 208 27 208 39] Index0.index _24 _25);
     goto BB7
   }
   BB7 {
     lit2_22 <- _23;
     _28 <- Robinson_Lit_Lit_Type.lit_idx lit1_12;
     _29 <- Robinson_Lit_Lit_Type.lit_idx lit2_22;
-    _27 <- ([#"../Robinson/src/clause.rs" 211 19 211 39] _28 = _29);
+    _27 <- ([#"../Robinson/src/clause.rs" 209 19 209 39] _28 = _29);
     switch (_27)
       | False -> goto BB9
       | True -> goto BB8
       end
   }
   BB8 {
-    _0 <- ([#"../Robinson/src/clause.rs" 212 27 212 32] false);
+    _0 <- ([#"../Robinson/src/clause.rs" 210 27 210 32] false);
     goto BB12
   }
   BB9 {
     _26 <- ();
-    j_16 <- ([#"../Robinson/src/clause.rs" 214 16 214 22] j_16 + ([#"../Robinson/src/clause.rs" 214 21 214 22] (1 : usize)));
+    j_16 <- ([#"../Robinson/src/clause.rs" 212 16 212 22] j_16 + ([#"../Robinson/src/clause.rs" 212 21 212 22] (1 : usize)));
     _7 <- ();
     goto BB5
   }
   BB10 {
     _17 <- ();
-    i_4 <- ([#"../Robinson/src/clause.rs" 216 12 216 18] i_4 + ([#"../Robinson/src/clause.rs" 216 17 216 18] (1 : usize)));
+    i_4 <- ([#"../Robinson/src/clause.rs" 214 12 214 18] i_4 + ([#"../Robinson/src/clause.rs" 214 17 214 18] (1 : usize)));
     _7 <- ();
     goto BB1
   }
   BB11 {
     _5 <- ();
-    _0 <- ([#"../Robinson/src/clause.rs" 218 15 218 19] true);
+    _0 <- ([#"../Robinson/src/clause.rs" 216 15 216 19] true);
     goto BB12
   }
   BB12 {
@@ -5172,7 +5170,7 @@ module CreusotContracts_Logic_Seq_Impl0_PermutationOf
   use seq.Seq
   use seq.Permut
   predicate permutation_of (self : Seq.seq t) (o : Seq.seq t) =
-    [#"../Robinson/src/lit.rs" 44 44 47 1] Permut.permut self o 0 (Seq.length self)
+    [#"../Robinson/src/lit.rs" 54 16 54 45] Permut.permut self o 0 (Seq.length self)
   val permutation_of (self : Seq.seq t) (o : Seq.seq t) : bool
     ensures { result = permutation_of self o }
     
@@ -5194,7 +5192,7 @@ module Robinson_Util_PartitionRev
   use prelude.Int
   use prelude.UIntSize
   predicate partition_rev [#"../Robinson/src/util.rs" 17 0 17 56] (v : Seq.seq (usize, usize)) (i : int) =
-    [#"../Robinson/src/util.rs" 18 4 18 110] forall k2 : int . forall k1 : int . 0 <= k1 /\ k1 < i /\ i <= k2 /\ k2 < Seq.length v -> (let (a, _) = Seq.get v k1 in a) >= (let (a, _) = Seq.get v k2 in a)
+    [#"../Robinson/src/util.rs" 18 4 18 109] forall k2 : int . forall k1 : int . 0 <= k1 /\ k1 < i /\ i <= k2 /\ k2 < Seq.length v -> (let (a, _) = Seq.get v k1 in a) >= (let (a, _) = Seq.get v k2 in a)
   val partition_rev [#"../Robinson/src/util.rs" 17 0 17 56] (v : Seq.seq (usize, usize)) (i : int) : bool
     ensures { result = partition_rev v i }
     
@@ -5389,42 +5387,42 @@ module Robinson_Util_SortReverse
   var i_4 : usize;
   var _old_v_5 : Ghost.ghost_ty (borrowed (Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global)));
   var _7 : ();
-  var _12 : ();
-  var _13 : bool;
+  var _11 : ();
+  var _12 : bool;
+  var _13 : usize;
   var _14 : usize;
-  var _15 : usize;
-  var _16 : Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global);
-  var max_17 : usize;
-  var j_18 : usize;
-  var _19 : usize;
-  var _20 : ();
-  var _24 : bool;
+  var _15 : Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global);
+  var max_16 : usize;
+  var j_17 : usize;
+  var _18 : usize;
+  var _19 : ();
+  var _23 : bool;
+  var _24 : usize;
   var _25 : usize;
-  var _26 : usize;
-  var _27 : Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global);
-  var _28 : ();
-  var _29 : bool;
-  var _30 : usize;
-  var _31 : (usize, usize);
-  var _32 : Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global);
+  var _26 : Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global);
+  var _27 : ();
+  var _28 : bool;
+  var _29 : usize;
+  var _30 : (usize, usize);
+  var _31 : Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global);
+  var _32 : usize;
   var _33 : usize;
-  var _34 : usize;
-  var _35 : (usize, usize);
-  var _36 : Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global);
+  var _34 : (usize, usize);
+  var _35 : Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global);
+  var _36 : usize;
   var _37 : usize;
-  var _38 : usize;
+  var _38 : ();
   var _39 : ();
   var _40 : ();
   var _41 : ();
-  var _42 : ();
+  var _42 : borrowed (slice (usize, usize));
   var _43 : borrowed (slice (usize, usize));
-  var _44 : borrowed (slice (usize, usize));
-  var _45 : borrowed (Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global));
+  var _44 : borrowed (Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global));
+  var _45 : usize;
   var _46 : usize;
-  var _47 : usize;
+  var _47 : ();
   var _48 : ();
   var _49 : ();
-  var _50 : ();
   {
     v_1 <- v;
     goto BB0
@@ -5439,100 +5437,99 @@ module Robinson_Util_SortReverse
     goto BB2
   }
   BB2 {
-    invariant { [#"../Robinson/src/util.rs" 28 16 28 37]  ^ v_1 =  ^ Ghost.inner _old_v_5 };
-    invariant { [#"../Robinson/src/util.rs" 28 4 28 39] PermutationOf0.permutation_of (ShallowModel1.shallow_model v_1) (ShallowModel1.shallow_model (Ghost.inner _old_v_5)) };
-    invariant { [#"../Robinson/src/util.rs" 30 16 30 43] SortedRangeRev0.sorted_range_rev (ShallowModel1.shallow_model v_1) 0 (UIntSize.to_int i_4) };
-    invariant { [#"../Robinson/src/util.rs" 31 16 31 37] PartitionRev0.partition_rev (ShallowModel1.shallow_model v_1) (UIntSize.to_int i_4) };
-    _14 <- i_4;
-    _16 <-  * v_1;
-    _15 <- ([#"../Robinson/src/util.rs" 32 14 32 21] Len0.len _16);
+    invariant { [#"../Robinson/src/util.rs" 28 4 28 52] PermutationOf0.permutation_of (ShallowModel1.shallow_model v_1) (ShallowModel1.shallow_model (Ghost.inner _old_v_5)) };
+    invariant { [#"../Robinson/src/util.rs" 29 16 29 43] SortedRangeRev0.sorted_range_rev (ShallowModel1.shallow_model v_1) 0 (UIntSize.to_int i_4) };
+    invariant { [#"../Robinson/src/util.rs" 30 16 30 37] PartitionRev0.partition_rev (ShallowModel1.shallow_model v_1) (UIntSize.to_int i_4) };
+    _13 <- i_4;
+    _15 <-  * v_1;
+    _14 <- ([#"../Robinson/src/util.rs" 31 14 31 21] Len0.len _15);
     goto BB3
   }
   BB3 {
-    _13 <- ([#"../Robinson/src/util.rs" 32 10 32 21] _14 < _15);
-    switch (_13)
+    _12 <- ([#"../Robinson/src/util.rs" 31 10 31 21] _13 < _14);
+    switch (_12)
       | False -> goto BB16
       | True -> goto BB4
       end
   }
   BB4 {
-    max_17 <- i_4;
-    _19 <- i_4;
-    j_18 <- ([#"../Robinson/src/util.rs" 34 20 34 25] _19 + ([#"../Robinson/src/util.rs" 34 24 34 25] (1 : usize)));
+    max_16 <- i_4;
+    _18 <- i_4;
+    j_17 <- ([#"../Robinson/src/util.rs" 33 20 33 25] _18 + ([#"../Robinson/src/util.rs" 33 24 33 25] (1 : usize)));
     goto BB5
   }
   BB5 {
-    invariant { [#"../Robinson/src/util.rs" 35 8 35 80] forall k : int . UIntSize.to_int i_4 <= k /\ k < UIntSize.to_int j_18 -> (let (a, _) = Seq.get (ShallowModel1.shallow_model v_1) (UIntSize.to_int max_17) in a) >= (let (a, _) = Seq.get (ShallowModel1.shallow_model v_1) k in a) };
-    invariant { [#"../Robinson/src/util.rs" 36 20 36 46] UIntSize.to_int i_4 <= UIntSize.to_int j_18 /\ UIntSize.to_int j_18 <= Seq.length (ShallowModel1.shallow_model v_1) };
-    invariant { [#"../Robinson/src/util.rs" 37 20 37 43] UIntSize.to_int i_4 <= UIntSize.to_int max_17 /\ UIntSize.to_int max_17 < UIntSize.to_int j_18 };
-    _25 <- j_18;
-    _27 <-  * v_1;
-    _26 <- ([#"../Robinson/src/util.rs" 38 18 38 25] Len0.len _27);
+    invariant { [#"../Robinson/src/util.rs" 34 8 34 80] forall k : int . UIntSize.to_int i_4 <= k /\ k < UIntSize.to_int j_17 -> (let (a, _) = Seq.get (ShallowModel1.shallow_model v_1) (UIntSize.to_int max_16) in a) >= (let (a, _) = Seq.get (ShallowModel1.shallow_model v_1) k in a) };
+    invariant { [#"../Robinson/src/util.rs" 35 20 35 46] UIntSize.to_int i_4 <= UIntSize.to_int j_17 /\ UIntSize.to_int j_17 <= Seq.length (ShallowModel1.shallow_model v_1) };
+    invariant { [#"../Robinson/src/util.rs" 36 20 36 43] UIntSize.to_int i_4 <= UIntSize.to_int max_16 /\ UIntSize.to_int max_16 < UIntSize.to_int j_17 };
+    _24 <- j_17;
+    _26 <-  * v_1;
+    _25 <- ([#"../Robinson/src/util.rs" 37 18 37 25] Len0.len _26);
     goto BB6
   }
   BB6 {
-    _24 <- ([#"../Robinson/src/util.rs" 38 14 38 25] _25 < _26);
-    switch (_24)
+    _23 <- ([#"../Robinson/src/util.rs" 37 14 37 25] _24 < _25);
+    switch (_23)
       | False -> goto BB13
       | True -> goto BB7
       end
   }
   BB7 {
-    _32 <-  * v_1;
-    _33 <- j_18;
-    _31 <- ([#"../Robinson/src/util.rs" 39 15 39 19] Index0.index _32 _33);
+    _31 <-  * v_1;
+    _32 <- j_17;
+    _30 <- ([#"../Robinson/src/util.rs" 38 15 38 19] Index0.index _31 _32);
     goto BB8
   }
   BB8 {
-    _30 <- (let (a, _) = _31 in a);
-    _36 <-  * v_1;
-    _37 <- max_17;
-    _35 <- ([#"../Robinson/src/util.rs" 39 24 39 30] Index0.index _36 _37);
+    _29 <- (let (a, _) = _30 in a);
+    _35 <-  * v_1;
+    _36 <- max_16;
+    _34 <- ([#"../Robinson/src/util.rs" 38 24 38 30] Index0.index _35 _36);
     goto BB9
   }
   BB9 {
-    _34 <- (let (a, _) = _35 in a);
-    _29 <- ([#"../Robinson/src/util.rs" 39 15 39 32] _30 > _34);
-    switch (_29)
+    _33 <- (let (a, _) = _34 in a);
+    _28 <- ([#"../Robinson/src/util.rs" 38 15 38 32] _29 > _33);
+    switch (_28)
       | False -> goto BB11
       | True -> goto BB10
       end
   }
   BB10 {
-    _38 <- j_18;
-    max_17 <- _38;
-    _38 <- any usize;
-    _28 <- ();
+    _37 <- j_17;
+    max_16 <- _37;
+    _37 <- any usize;
+    _27 <- ();
     goto BB12
   }
   BB11 {
-    _28 <- ();
+    _27 <- ();
     goto BB12
   }
   BB12 {
-    j_18 <- ([#"../Robinson/src/util.rs" 42 12 42 18] j_18 + ([#"../Robinson/src/util.rs" 42 17 42 18] (1 : usize)));
-    _12 <- ();
+    j_17 <- ([#"../Robinson/src/util.rs" 41 12 41 18] j_17 + ([#"../Robinson/src/util.rs" 41 17 41 18] (1 : usize)));
+    _11 <- ();
     goto BB5
   }
   BB13 {
-    _20 <- ();
-    _45 <- borrow_mut ( * v_1);
-    v_1 <- { v_1 with current = ( ^ _45) };
-    _44 <- ([#"../Robinson/src/util.rs" 44 8 44 22] DerefMut0.deref_mut _45);
+    _19 <- ();
+    _44 <- borrow_mut ( * v_1);
+    v_1 <- { v_1 with current = ( ^ _44) };
+    _43 <- ([#"../Robinson/src/util.rs" 43 8 43 22] DerefMut0.deref_mut _44);
     goto BB14
   }
   BB14 {
-    _43 <- borrow_mut ( * _44);
-    _44 <- { _44 with current = ( ^ _43) };
-    assume { Resolve0.resolve _44 };
-    _46 <- i_4;
-    _47 <- max_17;
-    _42 <- ([#"../Robinson/src/util.rs" 44 8 44 22] Swap0.swap _43 _46 _47);
+    _42 <- borrow_mut ( * _43);
+    _43 <- { _43 with current = ( ^ _42) };
+    assume { Resolve0.resolve _43 };
+    _45 <- i_4;
+    _46 <- max_16;
+    _41 <- ([#"../Robinson/src/util.rs" 43 8 43 22] Swap0.swap _42 _45 _46);
     goto BB15
   }
   BB15 {
-    i_4 <- ([#"../Robinson/src/util.rs" 45 8 45 14] i_4 + ([#"../Robinson/src/util.rs" 45 13 45 14] (1 : usize)));
-    _12 <- ();
+    i_4 <- ([#"../Robinson/src/util.rs" 44 8 44 14] i_4 + ([#"../Robinson/src/util.rs" 44 13 44 14] (1 : usize)));
+    _11 <- ();
     goto BB2
   }
   BB16 {
@@ -6234,7 +6231,7 @@ module Robinson_Formula_Impl1_EventuallySatNoAss
   predicate eventually_sat_no_ass [#"../Robinson/src/formula.rs" 51 4 51 46] (self : Robinson_Formula_Formula_Type.t_formula)
     
    =
-    [#"../Robinson/src/formula.rs" 52 8 52 72] exists a2 : Seq.seq uint8 . SatInner0.sat_inner self a2
+    [#"../Robinson/src/formula.rs" 52 8 52 71] exists a2 : Seq.seq uint8 . SatInner0.sat_inner self a2
   val eventually_sat_no_ass [#"../Robinson/src/formula.rs" 51 4 51 46] (self : Robinson_Formula_Formula_Type.t_formula) : bool
     ensures { result = eventually_sat_no_ass self }
     
@@ -6522,33 +6519,33 @@ module Robinson_Formula_Impl2_CheckAndEstablishFormulaInvariant
   var _19 : ();
   var i_20 : usize;
   var _21 : ();
-  var _27 : ();
-  var _28 : bool;
+  var _26 : ();
+  var _27 : bool;
+  var _28 : usize;
   var _29 : usize;
-  var _30 : usize;
-  var _31 : Alloc_Vec_Vec_Type.t_vec (Robinson_Clause_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global);
-  var _32 : ();
-  var _33 : bool;
-  var _34 : usize;
+  var _30 : Alloc_Vec_Vec_Type.t_vec (Robinson_Clause_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global);
+  var _31 : ();
+  var _32 : bool;
+  var _33 : usize;
+  var _34 : Robinson_Clause_Clause_Type.t_clause;
   var _35 : Robinson_Clause_Clause_Type.t_clause;
-  var _36 : Robinson_Clause_Clause_Type.t_clause;
-  var _37 : Alloc_Vec_Vec_Type.t_vec (Robinson_Clause_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global);
-  var _38 : usize;
-  var _39 : ();
-  var new_n_40 : usize;
+  var _36 : Alloc_Vec_Vec_Type.t_vec (Robinson_Clause_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global);
+  var _37 : usize;
+  var _38 : ();
+  var new_n_39 : usize;
+  var _40 : Robinson_Clause_Clause_Type.t_clause;
   var _41 : Robinson_Clause_Clause_Type.t_clause;
-  var _42 : Robinson_Clause_Clause_Type.t_clause;
-  var _43 : Alloc_Vec_Vec_Type.t_vec (Robinson_Clause_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global);
+  var _42 : Alloc_Vec_Vec_Type.t_vec (Robinson_Clause_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global);
+  var _43 : usize;
   var _44 : usize;
-  var _45 : usize;
-  var _46 : ();
-  var _47 : bool;
+  var _45 : ();
+  var _46 : bool;
+  var _47 : usize;
   var _48 : usize;
   var _49 : usize;
-  var _50 : usize;
+  var _50 : ();
   var _51 : ();
   var _52 : ();
-  var _53 : ();
   {
     self_1 <- self;
     goto BB0
@@ -6602,33 +6599,32 @@ module Robinson_Formula_Impl2_CheckAndEstablishFormulaInvariant
     invariant { [#"../Robinson/src/formula.rs" 134 8 134 100] forall j : int . 0 <= j /\ j < UIntSize.to_int i_20 -> Seq.length (ShallowModel3.shallow_model (Seq.get (ShallowModel0.shallow_model (Robinson_Formula_Formula_Type.formula_clauses ( * self_1))) j)) > 0 };
     invariant { [#"../Robinson/src/formula.rs" 136 20 136 50] (let (a, _) = ShallowModel1.shallow_model self_1 in a) = (let (a, _) = ShallowModel1.shallow_model (Ghost.inner old_self_17) in a) };
     invariant { [#"../Robinson/src/formula.rs" 137 20 137 52] Robinson_Formula_Formula_Type.formula_clauses ( * self_1) = Robinson_Formula_Formula_Type.formula_clauses ( * Ghost.inner old_self_17) };
-    invariant { [#"../Robinson/src/formula.rs" 138 20 138 46]  ^ self_1 =  ^ Ghost.inner old_self_17 };
-    _29 <- i_20;
-    _31 <- Robinson_Formula_Formula_Type.formula_clauses ( * self_1);
-    _30 <- ([#"../Robinson/src/formula.rs" 139 18 139 36] Len0.len _31);
+    _28 <- i_20;
+    _30 <- Robinson_Formula_Formula_Type.formula_clauses ( * self_1);
+    _29 <- ([#"../Robinson/src/formula.rs" 138 18 138 36] Len0.len _30);
     goto BB9
   }
   BB9 {
-    _28 <- ([#"../Robinson/src/formula.rs" 139 14 139 36] _29 < _30);
-    switch (_28)
+    _27 <- ([#"../Robinson/src/formula.rs" 138 14 138 36] _28 < _29);
+    switch (_27)
       | False -> goto BB20
       | True -> goto BB10
       end
   }
   BB10 {
-    _37 <- Robinson_Formula_Formula_Type.formula_clauses ( * self_1);
-    _38 <- i_20;
-    _36 <- ([#"../Robinson/src/formula.rs" 140 15 140 30] Index0.index _37 _38);
+    _36 <- Robinson_Formula_Formula_Type.formula_clauses ( * self_1);
+    _37 <- i_20;
+    _35 <- ([#"../Robinson/src/formula.rs" 139 15 139 30] Index0.index _36 _37);
     goto BB11
   }
   BB11 {
-    _35 <- _36;
-    _34 <- ([#"../Robinson/src/formula.rs" 140 15 140 36] Len1.len _35);
+    _34 <- _35;
+    _33 <- ([#"../Robinson/src/formula.rs" 139 15 139 36] Len1.len _34);
     goto BB12
   }
   BB12 {
-    _33 <- ([#"../Robinson/src/formula.rs" 140 15 140 41] _34 = ([#"../Robinson/src/formula.rs" 140 40 140 41] (0 : usize)));
-    switch (_33)
+    _32 <- ([#"../Robinson/src/formula.rs" 139 15 139 41] _33 = ([#"../Robinson/src/formula.rs" 139 40 139 41] (0 : usize)));
+    switch (_32)
       | False -> goto BB14
       | True -> goto BB13
       end
@@ -6639,41 +6635,41 @@ module Robinson_Formula_Impl2_CheckAndEstablishFormulaInvariant
     goto BB21
   }
   BB14 {
-    _32 <- ();
-    _43 <- Robinson_Formula_Formula_Type.formula_clauses ( * self_1);
-    _44 <- i_20;
-    _42 <- ([#"../Robinson/src/formula.rs" 143 24 143 39] Index0.index _43 _44);
+    _31 <- ();
+    _42 <- Robinson_Formula_Formula_Type.formula_clauses ( * self_1);
+    _43 <- i_20;
+    _41 <- ([#"../Robinson/src/formula.rs" 142 24 142 39] Index0.index _42 _43);
     goto BB15
   }
   BB15 {
-    _41 <- _42;
-    _45 <- Robinson_Formula_Formula_Type.formula_num_vars ( * self_1);
-    new_n_40 <- ([#"../Robinson/src/formula.rs" 143 24 143 77] CheckClauseInvariant0.check_clause_invariant _41 _45);
+    _40 <- _41;
+    _44 <- Robinson_Formula_Formula_Type.formula_num_vars ( * self_1);
+    new_n_39 <- ([#"../Robinson/src/formula.rs" 142 24 142 77] CheckClauseInvariant0.check_clause_invariant _40 _44);
     goto BB16
   }
   BB16 {
-    _48 <- new_n_40;
-    _49 <- Robinson_Formula_Formula_Type.formula_num_vars ( * self_1);
-    _47 <- ([#"../Robinson/src/formula.rs" 144 15 144 36] _48 > _49);
-    switch (_47)
+    _47 <- new_n_39;
+    _48 <- Robinson_Formula_Formula_Type.formula_num_vars ( * self_1);
+    _46 <- ([#"../Robinson/src/formula.rs" 143 15 143 36] _47 > _48);
+    switch (_46)
       | False -> goto BB18
       | True -> goto BB17
       end
   }
   BB17 {
-    _50 <- new_n_40;
-    self_1 <- { self_1 with current = (let Robinson_Formula_Formula_Type.C_Formula a b =  * self_1 in Robinson_Formula_Formula_Type.C_Formula a _50) };
-    _50 <- any usize;
-    _46 <- ();
+    _49 <- new_n_39;
+    self_1 <- { self_1 with current = (let Robinson_Formula_Formula_Type.C_Formula a b =  * self_1 in Robinson_Formula_Formula_Type.C_Formula a _49) };
+    _49 <- any usize;
+    _45 <- ();
     goto BB19
   }
   BB18 {
-    _46 <- ();
+    _45 <- ();
     goto BB19
   }
   BB19 {
-    i_20 <- ([#"../Robinson/src/formula.rs" 147 12 147 18] i_20 + ([#"../Robinson/src/formula.rs" 147 17 147 18] (1 : usize)));
-    _27 <- ();
+    i_20 <- ([#"../Robinson/src/formula.rs" 146 12 146 18] i_20 + ([#"../Robinson/src/formula.rs" 146 17 146 18] (1 : usize)));
+    _26 <- ();
     goto BB8
   }
   BB20 {
@@ -6698,13 +6694,13 @@ module Core_Clone_Impls_Impl5_Clone_Interface
   use prelude.Int
   use prelude.UIntSize
   val clone' (self : usize) : usize
-    ensures { [#"../Robinson/src/parser.rs" 68 37 84 44] result = self }
+    ensures { [#"../Robinson/src/parser.rs" 79 7 91 68] result = self }
     
 end
 module Core_Clone_Impls_Impl19_Clone_Interface
   use prelude.Borrow
   val clone' (self : bool) : bool
-    ensures { [#"../Robinson/src/parser.rs" 68 37 84 44] result = self }
+    ensures { [#"../Robinson/src/parser.rs" 79 7 91 68] result = self }
     
 end
 module Robinson_Lit_Impl3_Clone_Interface

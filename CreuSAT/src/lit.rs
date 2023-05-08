@@ -59,7 +59,7 @@ impl Lit {
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[requires(self.invariant((a@).len()))]
+    #[requires(self.invariant(a@.len()))]
     #[ensures(result == self.sat(*a))]
     pub fn lit_sat(self, a: &Assignments) -> bool {
         match self.is_positive() {
@@ -70,7 +70,7 @@ impl Lit {
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[requires(self.invariant((a@).len()))]
+    #[requires(self.invariant(a@.len()))]
     #[ensures(result == self.unsat(*a))]
     pub fn lit_unsat(self, a: &Assignments) -> bool {
         match self.is_positive() {
@@ -81,7 +81,7 @@ impl Lit {
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[requires(self.invariant((a@).len()))]
+    #[requires(self.invariant(a@.len()))]
     #[ensures(result == self.unset(*a))]
     pub fn lit_unset(self, a: &Assignments) -> bool {
         a[self.index()] >= 2
@@ -89,7 +89,7 @@ impl Lit {
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[requires(self.invariant((a@).len()))]
+    #[requires(self.invariant(a@.len()))]
     #[ensures(result == !self.unset(*a))]
     pub fn lit_set(self, a: &Assignments) -> bool {
         a[self.index()] < 2

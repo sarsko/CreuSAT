@@ -40,7 +40,7 @@ pub fn formula_sat_inner(f: (Seq<Clause>, Int), a: Seq<AssignedState>) -> bool {
 #[predicate]
 pub fn eventually_sat_complete(f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
-        exists<a2 : Seq<AssignedState>> a2.len() == f.1 && complete_inner(a2) && formula_sat_inner(f, a2)
+        exists<a2: Seq<AssignedState>> a2.len() == f.1 && complete_inner(a2) && formula_sat_inner(f, a2)
     }
 }
 
@@ -56,7 +56,7 @@ impl Formula {
     #[predicate]
     pub fn eventually_sat_complete(self) -> bool {
         pearlite! {
-            exists<a2 : Seq<AssignedState>> a2.len() == self.num_vars@ && complete_inner(a2) && self.sat_inner(a2)
+            exists<a2: Seq<AssignedState>> a2.len() == self.num_vars@ && complete_inner(a2) && self.sat_inner(a2)
         }
     }
 
@@ -69,17 +69,17 @@ impl Formula {
     #[cfg_attr(feature = "trust_formula_logic", trusted)]
     #[ensures(result == self.invariant_mirror())] // Removing this makes a bunch of seemingly unrelated things fail
     pub fn invariant(self) -> bool {
-        pearlite! { formula_invariantself@ }
+        pearlite! { formula_invariant(self@) }
     }
 
     #[predicate]
     fn invariant_mirror(self) -> bool {
         pearlite! {
-            (forall<i: Int> 0 <= i && i < (self.clauses@).len() ==>
-                (self.clauses@)[i].invariant(self.num_vars@))
+            (forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
+                self.clauses@[i].invariant(self.num_vars@))
             &&
-            (forall<i: Int> 0 <= i && i < (self.clauses@).len() ==>
-                (@(self.clauses@)[i]).len() >= 1)
+            (forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
+                self.clauses@[i]@.len() >= 1)
 
         }
     }
@@ -87,14 +87,14 @@ impl Formula {
     #[predicate]
     fn eventually_sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
-            exists<a2 : Seq<AssignedState>> a2.len() == self.num_vars@ && compatible_inner(a, a2) && self.sat_inner(a2)
+            exists<a2: Seq<AssignedState>> a2.len() == self.num_vars@ && compatible_inner(a, a2) && self.sat_inner(a2)
         }
     }
 
     #[predicate]
     fn eventually_sat_complete_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
-            exists<a2 : Seq<AssignedState>> a2.len() == self.num_vars@ && compatible_complete_inner(a, a2) && self.sat_inner(a2)
+            exists<a2: Seq<AssignedState>> a2.len() == self.num_vars@ && compatible_complete_inner(a, a2) && self.sat_inner(a2)
         }
     }
 
@@ -106,8 +106,8 @@ impl Formula {
     #[predicate]
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
-            forall<i: Int> 0 <= i && i < (self.clauses@).len() ==>
-                (self.clauses@)[i].sat_inner(a)
+            forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
+                self.clauses@[i].sat_inner(a)
         }
     }
 
@@ -119,8 +119,8 @@ impl Formula {
     #[predicate]
     fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
-            exists<i: Int> 0 <= i && i < (self.clauses@).len() &&
-                (self.clauses@)[i].unsat_inner(a)
+            exists<i: Int> 0 <= i && i < self.clauses@.len() &&
+                self.clauses@[i].unsat_inner(a)
         }
     }
 

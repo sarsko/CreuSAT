@@ -41,9 +41,9 @@ impl IndexMut<usize> for Formula {
     #[inline]
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[requires(ix@ < self@.0.len())]
-    #[ensures((*self)@.0[ix@] == *result)]
+    #[ensures(self@.0[ix@] == *result)]
     #[ensures((^self)@.0[ix@] == ^result)]
-    #[ensures(forall<i : Int> 0 <= i && i != ix@ && i < self@.0.len() ==> self@.0[i] == (^self)@.0[i])]
+    #[ensures(forall<i: Int> 0 <= i && i != ix@ && i < self@.0.len() ==> self@.0[i] == (^self)@.0[i])]
     #[ensures((^self)@.0.len() == (*self)@.0.len())]
     fn index_mut(&mut self, ix: usize) -> &mut Clause {
         #[cfg(not(creusot))]
@@ -91,12 +91,12 @@ impl Formula {
     #[cfg_attr(feature = "trust_formula", trusted)]
     #[requires(self.invariant())]
     #[requires(a.invariant(*self))]
-    #[requires(idx@ < (self.clauses@).len())]
-    #[ensures(result == (self.clauses@)[idx@].sat(*a))]
+    #[requires(idx@ < self.clauses@.len())]
+    #[ensures(result == self.clauses@[idx@].sat(*a))]
     pub fn is_clause_sat(&self, idx: usize, a: &Assignments) -> bool {
         let clause = &self.clauses[idx];
         let mut i: usize = 0;
-        #[invariant(forall<j: Int> 0 <= j && j < i@ ==> !(clause@)[j].sat(*a))]
+        #[invariant(forall<j: Int> 0 <= j && j < i@ ==> !clause@[j].sat(*a))]
         while i < clause.len() {
             if clause[i].lit_sat(a) {
                 return true;
@@ -118,9 +118,9 @@ impl Formula {
     #[requires(equisat_extension_inner(clause, self@))]
     #[ensures(self.num_vars@ == (^self).num_vars@)]
     #[ensures(self.equisat(^self))]
-    #[ensures(result@ == (self.clauses@).len())]
+    #[ensures(result@ == self.clauses@.len())]
     #[ensures((^self).clauses@[result@] == clause)]
-    #[ensures((self.clauses@).len() + 1 == (^self).clauses@.len())]
+    #[ensures(self.clauses@.len() + 1 == (^self).clauses@.len())]
     pub fn add_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
         let old_self: Ghost<&mut Formula> = ghost! { self };
         let cref = self.clauses.len();
@@ -144,15 +144,15 @@ impl Formula {
     #[maintains((mut self).invariant())]
     #[maintains(_t.invariant(mut self))]
     #[maintains((mut watches).invariant(mut self))]
-    #[requires((clause@).len() >= 2)]
+    #[requires(clause@.len() >= 2)]
     #[requires(self.num_vars@ < usize::MAX@/2)]
     #[requires(clause.invariant(self.num_vars@))]
     #[requires(equisat_extension_inner(clause, self@))]
     #[ensures(self.num_vars@ == (^self).num_vars@)]
     #[ensures(self.equisat(^self))]
-    #[ensures(result@ == (self.clauses@).len())]
+    #[ensures(result@ == self.clauses@.len())]
     #[ensures((^self).clauses@[result@] == clause)]
-    #[ensures((self.clauses@).len() + 1 == (^self).clauses@.len())]
+    #[ensures(self.clauses@.len() + 1 == (^self).clauses@.len())]
     pub fn add_unwatched_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
         let old_self: Ghost<&mut Formula> = ghost! { self };
         let cref = self.clauses.len();
@@ -171,8 +171,7 @@ impl Formula {
     #[requires(equisat_extension_inner(clause, self@))]
     #[ensures(self.num_vars@ == (^self).num_vars@)]
     //#[ensures(self.equisat_compatible(^self))]
-    #[ensures(forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
-        self.clauses@[i] == (^self).clauses@[i])] // This or equisat_compatible is needed for the watch invariant.
+    #[ensures(forall<i: Int> 0 <= i && i < self.clauses@.len() ==> self.clauses@[i] == (^self).clauses@[i])] // This or equisat_compatible is needed for the watch invariant.
     #[ensures(self.equisat(^self))] // Added/changed
     #[ensures(result@ == self.clauses@.len())]
     #[ensures((^self).clauses@[result@]@.len() == 1)]
@@ -190,7 +189,7 @@ impl Formula {
     #[ensures(result == self.sat(*a))]
     pub fn is_sat(&self, a: &Assignments) -> bool {
         let mut i: usize = 0;
-        #[invariant(forall<k: Int> 0 <= k && k < i@ ==> (self.clauses@)[k].sat(*a))]
+        #[invariant(forall<k: Int> 0 <= k && k < i@ ==> self.clauses@[k].sat(*a))]
         while i < self.clauses.len() {
             if !self.is_clause_sat(i, a) {
                 return false;
@@ -237,8 +236,6 @@ impl Formula {
         #[invariant(watches.invariant(*self))]
         #[invariant(t.invariant(*self))]
         #[invariant(self.invariant())]
-        #[invariant(^watches == ^old_w.inner())]
-        #[invariant(^self == ^old_f.inner())]
         #[invariant(self.num_vars@ == old_f.num_vars@)]
         #[invariant(self.equisat(*old_f.inner()))]
         while i < self.clauses.len() {
@@ -295,8 +292,6 @@ impl Formula {
         #[invariant(watches.invariant(*self))]
         #[invariant(t.invariant(*self))]
         #[invariant(self.invariant())]
-        #[invariant(^watches == ^old_w.inner())]
-        #[invariant(^self == ^old_f.inner())]
         #[invariant(self.num_vars@ == old_f.num_vars@)]
         #[invariant(self.equisat(*old_f.inner()))]
         while i < self.clauses.len() {

@@ -15,7 +15,7 @@ pub fn sorted_rev(s: Seq<(usize, usize)>) -> bool {
 
 #[predicate]
 fn partition_rev(v: Seq<(usize, usize)>, i: Int) -> bool {
-    pearlite! { forall<k1 : Int, k2: Int> 0 <= k1 && k1 < i && i <= k2 && k2 < v.len() ==> v[k1].0 >= v[k2].0}
+    pearlite! { forall<k1: Int, k2: Int> 0 <= k1 && k1 < i && i <= k2 && k2 < v.len() ==> v[k1].0 >= v[k2].0}
 }
 
 // Selection sort with larger elements first. Based on the one in Creusot repo by Xavier and me.
@@ -25,7 +25,6 @@ fn partition_rev(v: Seq<(usize, usize)>, i: Int) -> bool {
 pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
     let mut i: usize = 0;
     let _old_v: Ghost<&mut Vec<(usize, usize)>> = ghost!(v);
-    #[invariant(^v == ^_old_v.inner())]
     #[invariant(v@.permutation_of(_old_v.inner()@))]
     #[invariant(sorted_range_rev(v@, 0, i@))]
     #[invariant(partition_rev(v@, i@))]

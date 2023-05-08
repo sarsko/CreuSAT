@@ -43,7 +43,7 @@ pub fn partition(v: Seq<(usize, usize)>, i: Int) -> bool {
 
 #[predicate]
 pub fn partition_rev(v: Seq<(usize, usize)>, i: Int) -> bool {
-    pearlite! { forall<k1 : Int, k2: Int> 0 <= k1 && k1 < i && i <= k2 && k2 < v.len() ==> v[k1].0 >= v[k2].0 }
+    pearlite! { forall<k1: Int, k2: Int> 0 <= k1 && k1 < i && i <= k2 && k2 < v.len() ==> v[k1].0 >= v[k2].0 }
 }
 
 #[predicate]

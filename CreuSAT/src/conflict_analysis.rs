@@ -83,16 +83,11 @@ fn resolve(
     #[invariant(forall<j: Int> 1 <= j && j < i@ ==> o@[j].lit_in(*c))]
     #[invariant(forall<j: Int> 0 <= j && j < old_c@.len()
         && j != c_idx@ ==> old_c@[j].lit_in(*c))]
-    #[invariant((forall<j: Int> 0 <= j && j < c@.len() ==>
-                    (c@[j].lit_in(*old_c.inner()) ||  c@[j].lit_in(*o))))]
+    #[invariant(forall<j: Int> 0 <= j && j < c@.len() ==> (c@[j].lit_in(*old_c.inner()) || c@[j].lit_in(*o)))]
     #[invariant(path_c@ <= c@.len())]
     #[invariant(c.clause_is_seen(*seen))]
     #[invariant(seen@.len() == _f.num_vars@)]
     #[invariant(elems_less_than(to_bump@, _f.num_vars@))]
-    #[invariant(^c == ^old_c.inner())]
-    #[invariant(^seen == ^old_seen.inner())]
-    #[invariant(^path_c == ^old_path_c.inner())]
-    #[invariant(^to_bump == ^old_to_bump.inner())]
     while i < o.len() {
         let old_c3: Ghost<&mut Clause> = ghost!(c);
         proof_assert!(^c == ^old_c3.inner());
@@ -124,8 +119,8 @@ fn resolve(
 #[requires((seen@).len() == _f.num_vars@)]
 #[ensures(match result {
     Some(r) =>  r@ < c@.len()
-                && c@[r@].is_opp((trail.trail@)[(^i)@].lit)
-                && c@[r@].index_logic() == (trail.trail@)[(^i)@].lit.index_logic()
+                && c@[r@].is_opp(trail.trail@[(^i)@].lit)
+                && c@[r@].index_logic() == trail.trail@[(^i)@].lit.index_logic()
                 && (^i)@ < trail.trail@.len()
                 //&& c.same_idx_same_polarity_except(*o, r@)
                 ,
@@ -134,14 +129,12 @@ fn resolve(
 fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula, seen: &Vec<bool>) -> Option<usize> {
     let old_i: Ghost<&mut usize> = ghost! {i};
     #[invariant(0 <= i@ && i@ <= trail.trail@.len())]
-    #[invariant(^i == ^old_i.inner())]
     while *i > 0 {
         *i -= 1;
         if seen[trail.trail[*i].lit.index()] {
             let mut k: usize = 0;
             #[invariant(0 <= i@ && i@ < trail.trail@.len())]
             #[invariant(0 <= k@ && k@ <= c@.len())]
-            #[invariant(^i == ^old_i.inner())]
             while k < c.len() {
                 if trail.trail[*i].lit.index() == c[k].index() {
                     return Some(k);
@@ -195,7 +188,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
     let clause = f[cref].clone();
     let mut j: usize = 0;
     #[invariant(forall<idx: Int> 0 <= idx && idx < seen@.len() ==>
-        (seen@[idx] == (exists<i: Int> 0 <= i && i < j@ && (clause@)[i].index_logic() == idx)))]
+        (seen@[idx] == (exists<i: Int> 0 <= i && i < j@ && clause@[i].index_logic() == idx)))]
     #[invariant(seen@.len() == f.num_vars@)]
     #[invariant(path_c@ <= j@)]
     #[invariant(j@ <= clause@.len())] // This is needed to establish the loop invariant for the next loop
@@ -209,9 +202,8 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
         j += 1;
     }
     let mut clause = clause;
-    #[invariant((seen@).len() == f.num_vars@)]
-    #[invariant(forall<idx: Int> 0 <= idx && idx < seen@.len() ==>
-        ((seen@)[idx] == idx_in_logic(idx, clause@)))]
+    #[invariant(seen@.len() == f.num_vars@)]
+    #[invariant(forall<idx: Int> 0 <= idx && idx < seen@.len() ==> (seen@[idx] == idx_in_logic(idx, clause@)))]
     #[invariant(clause.invariant(f.num_vars@))]
     #[invariant(equisat_extension_inner(clause, f@))]
     #[invariant(clause.unsat(trail.assignments))]
@@ -271,9 +263,9 @@ pub fn resolve_empty_clause(f: &Formula, trail: &Trail, cref: usize) -> bool {
     let clause = f[cref].clone();
     let mut to_bump = Vec::new();
     let mut j: usize = 0;
-    #[invariant(forall<idx: Int> 0 <= idx && idx < (seen@).len() ==>
-        ((seen@)[idx] == (exists<i: Int> 0 <= i && i < j@ && (clause@)[i].index_logic() == idx)))]
-    #[invariant((seen@).len() == f.num_vars@)]
+    #[invariant(forall<idx: Int> 0 <= idx && idx < seen@.len() ==>
+        ((seen@)[idx] == (exists<i: Int> 0 <= i && i < j@ && clause@[i].index_logic() == idx)))]
+    #[invariant(seen@.len() == f.num_vars@)]
     #[invariant(j@ <= (clause@).len())]
     // This is needed to establish the loop invariant for the next loop
     while j < clause.len() {

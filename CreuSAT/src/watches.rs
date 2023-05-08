@@ -134,7 +134,6 @@ impl Watches {
         let mut i = 0;
         #[invariant(self.invariant(*f))]
         #[invariant(self.watches@.len() == 2 * f.num_vars@)]
-        #[invariant(^self == ^old_w.inner())]
         while i < f.clauses.len() {
             let clause = &f[i];
             if clause.len() > 1 {
