@@ -23,31 +23,33 @@ pub fn unset(v: AssignedState) -> bool {
 }
 
 #[derive(Clone)]
-pub struct Assignments(pub Vec<AssignedState>);
+pub(crate) struct Assignments(pub Vec<AssignedState>);
 
 #[cfg(creusot)]
 impl ShallowModel for Assignments {
-    type ShallowModelTy = Seq<AssignedState>;
+    type ShallowModelTy = AssignmentsModel;
 
     #[logic]
     fn shallow_model(self) -> Self::ShallowModelTy {
-        self.0.shallow_model()
+        AssignmentsModel(self.0.shallow_model())
     }
 }
 
-impl Assignments {
+pub struct AssignmentsModel(pub Seq<AssignedState>);
+
+impl AssignmentsModel {
     #[predicate]
     pub fn invariant(self) -> bool {
         pearlite! {
-            forall<i: Int> 0 <= i && i < self@.len() ==>
-                self@[i]@ < 2
+            forall<i: Int> 0 <= i && i < self.0.len() ==>
+                self.0[i]@ < 2
         }
     }
-}
 
-#[predicate]
-pub fn complete_inner(a: Seq<AssignedState>) -> bool {
-    pearlite! {
-        forall<i: Int> 0 <= i && i < a.len() ==> !unset(a[i])
+    #[predicate]
+    pub fn complete(self) -> bool {
+        pearlite! {
+            forall<i: Int> 0 <= i && i < self.0.len() ==> !unset(self.0[i])
+        }
     }
 }

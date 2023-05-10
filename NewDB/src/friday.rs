@@ -1,3 +1,4 @@
+/*
 extern crate creusot_contracts;
 
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
@@ -16,7 +17,7 @@ impl Assignments {
     #[predicate]
     fn compatible(self, pa: Pasn) -> bool {
         pearlite! {
-            self.invariant() &&
+            self@.invariant() &&
             pa.assign.0@.len() == self.0@.len() &&
                 forall<i: Int> 0 <= i && i < pa.ix@ ==>
                     pa.assign.0@[i] == self.0@[i]
@@ -146,3 +147,5 @@ fn solve(f: &Formula, pa: Pasn) -> bool {
 pub fn solver(f: &Formula) -> bool {
     solve(f, Pasn { assign: Assignments(vec![0; f.num_vars]), ix: 0 })
 }
+
+*/

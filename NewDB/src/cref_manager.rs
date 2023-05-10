@@ -11,45 +11,63 @@ pub struct CRefManager {
     pub(crate) num_vars: usize,
 }
 
+// Should crefs be Seq<Int>?
+// TODO: Impl Index?
+pub struct CRefManagerModel {
+    pub(crate) crefs: Seq<CRef>,
+    pub(crate) num_vars: Int,
+}
+
 #[cfg(creusot)]
 impl ShallowModel for CRefManager {
-    type ShallowModelTy = Seq<CRef>;
+    type ShallowModelTy = CRefManagerModel;
 
     #[logic]
     fn shallow_model(self) -> Self::ShallowModelTy {
-        self.crefs.shallow_model()
-    }
-}
-
-impl CRefManager {
-    #[predicate]
-    pub(crate) fn invariant(self, clause_allocator: ClauseAllocator) -> bool {
-        pearlite! {
-            clause_allocator.invariant()
-            && self.num_vars@ == clause_allocator.num_vars@ && // TODO: Fix the double storing
-            forall<i: Int> 0 <= i && i < self@.len() ==>
-                cref_invariant(self@[i]@, clause_allocator, clause_allocator.num_vars@)
-        }
-    }
-
-    #[predicate]
-    pub(crate) fn are_implied_by(self, original_clauses: CRefManager, clause_allocator: ClauseAllocator) -> bool {
-        pearlite! {
-            let formula = Formula::from(self@, clause_allocator, self.num_vars@);
-            forall<i: Int> 0 <= i && i < self@.len() ==>
-                    formula.implies(clause_allocator.get_clause_fset(self@[i]@))
-        }
+        CRefManagerModel { crefs: self.crefs.shallow_model(), num_vars: self.num_vars.shallow_model() }
     }
 }
 
 impl CRefManager {
     // TODO: Passing the clause allocator is super ugly and I should refactor
-    #[maintains((mut self).invariant(*_clause_allocator))]
-    #[requires(cref_invariant(cref@, *_clause_allocator, self.num_vars@))]
+    // TODO: maintains is broken by "new" scheme
+    #[requires(self@.invariant(_clause_allocator@))]
+    #[requires(cref_invariant(cref@, _clause_allocator@, self.num_vars@))]
+    //#[ensures((^self)@.invariant(_clause_allocator@))] // Get this from push
     #[ensures((^self)@ == self@.push(cref))]
-    #[ensures(forall<i: Int> 0 <= i && i < self@.len() ==> self@[i] == (^self)@[i])]
-    #[ensures((^self)@[self@.len()] == cref)]
+    //#[ensures(forall<i: Int> 0 <= i && i < self@.crefs.len() ==> self@.crefs[i] == (^self)@.crefs[i])] // Get this from push as well.
+    //#[ensures((^self)@.crefs[self@.crefs.len()] == cref)] // TODO: Refactor to (^self).last() == cref ? // No, just get it from push
     pub(crate) fn add_cref(&mut self, cref: CRef, _clause_allocator: &ClauseAllocator) {
         self.crefs.push(cref);
+    }
+}
+
+impl CRefManagerModel {
+    #[predicate]
+    pub(crate) fn invariant(self, clause_allocator: ClauseAllocatorModel) -> bool {
+        pearlite! {
+            clause_allocator.invariant()
+            && self.num_vars == clause_allocator.num_vars && // TODO: Fix the double storing
+            forall<i: Int> 0 <= i && i < self.crefs.len() ==>
+                cref_invariant(self.crefs[i]@, clause_allocator, clause_allocator.num_vars)
+        }
+    }
+
+    #[predicate]
+    pub(crate) fn are_implied_by(
+        self, original_clauses: CRefManagerModel, clause_allocator: ClauseAllocatorModel,
+    ) -> bool {
+        pearlite! {
+            let formula = Formula::from(self.crefs, clause_allocator, self.num_vars);
+            forall<i: Int> 0 <= i && i < self.crefs.len() ==>
+                    formula.implies(clause_allocator.get_clause_fset(self.crefs[i]@))
+        }
+    }
+}
+
+impl CRefManagerModel {
+    #[logic]
+    pub(crate) fn push(self, cref: CRef) -> Self {
+        Self { crefs: self.crefs.push(cref), num_vars: self.num_vars }
     }
 }

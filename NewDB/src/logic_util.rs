@@ -28,8 +28,8 @@ pub(crate) fn seq_to_fset(seq: Seq<Lit>) -> FSet<Lit> {
 #[logic]
 #[variant(seq.len() - idx)]
 #[requires(idx >= 0)]
-#[ensures(forall<l : _> result.contains(l) ==> exists<i : _> idx <= i && i < seq.len() && seq[i] == l)]
-#[ensures(forall<i : Int> idx <= i && i < seq.len() ==> result.contains(seq[i]))]
+#[ensures(forall<l: _> result.contains(l) ==> exists<i: _> idx <= i && i < seq.len() && seq[i] == l)]
+#[ensures(forall<i: Int> idx <= i && i < seq.len() ==> result.contains(seq[i]))]
 fn seq_to_fset_internal(seq: Seq<Lit>, idx: Int) -> FSet<Lit> {
     pearlite! {
         if idx < seq.len() {

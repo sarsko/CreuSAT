@@ -12,7 +12,52 @@ pub struct ClauseManager {
     learnt_core: CRefManager,
 }
 
+#[cfg(creusot)]
+impl ShallowModel for ClauseManager {
+    type ShallowModelTy = ClauseManagerModel;
+
+    #[logic]
+    fn shallow_model(self) -> Self::ShallowModelTy {
+        ClauseManagerModel {
+            clause_allocator: self.clause_allocator.shallow_model(),
+            original_clauses: self.original_clauses.shallow_model(),
+            learnt_core: self.learnt_core.shallow_model(),
+        }
+    }
+}
+
+// Going to need two lemmas here it seems: one for adding a clause without binding it cannot change
+// anything, and one for binding a clause which is implied maintains the invariant.
 impl ClauseManager {
+    // TODO: Maintains broken by "new scheme"
+    #[requires(self@.invariant())]
+    #[ensures((^self)@.invariant())]
+    #[requires(lits@.len() > 0)]
+    #[requires(self@.clause_allocator.buffer.len() + lits@.len() + HEADER_LEN@ <= u32::MAX@)] // TODO: May have to move this to a runtime check
+    #[requires(Formula::from(self@.original_clauses.crefs, self@.clause_allocator, self@.clause_allocator.num_vars).implies(ClauseFSet { lits: seq_to_fset(lits@) }))]
+    // TODO: Not get crefs from original_clauses?
+    //#[requires(self@.len() + (@lits).len() + @HEADER_LEN <= @u32::MAX)] // TODO: May have to move this to a runtime check
+    #[requires(ClauseSeq { lits: lits@ }.invariant(self.clause_allocator.num_vars@))]
+    pub(crate) fn learn_clause(&mut self, lits: &[Lit]) -> CRef {
+        let old_self: Ghost<&mut ClauseManager> = ghost!(self);
+        proof_assert!(self@.learnt_core.are_implied_by(self@.original_clauses, self@.clause_allocator));
+        let cref = self.clause_allocator.add_clause(lits);
+        proof_assert!(^*old_self == ^self);
+        let ca = &self.clause_allocator;
+        proof_assert!(self@.learnt_core.are_implied_by(self@.original_clauses, self@.clause_allocator));
+        self.learnt_core.add_cref(cref, &ca);
+        //proof_assert!(self.learnt_core.are_implied_by(self.original_clauses, self.clause_allocator));
+        cref
+    }
+}
+
+pub struct ClauseManagerModel {
+    clause_allocator: ClauseAllocatorModel,
+    original_clauses: CRefManagerModel,
+    learnt_core: CRefManagerModel,
+}
+
+impl ClauseManagerModel {
     #[predicate]
     pub(crate) fn invariant(self) -> bool {
         pearlite! {
@@ -24,6 +69,7 @@ impl ClauseManager {
     }
 }
 
+/*
 #[logic]
 #[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
 #[ensures(learnt_clauses.are_implied_by(original_clauses, ca.push(lit)))]
@@ -32,15 +78,64 @@ fn lemma_implied_by_stable_on_push(
 ) {
 }
 
+/*
+#[logic]
+#[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
+#[requires(ca.extended(ca2))]
+#[requires(ca2
+//#[requires(ca2.extended(ca))]
+#[ensures(learnt_clauses.are_implied_by(original_clauses, ca2))]
+fn lemma_implied_by_stable_on_extension(
+    original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator, lit: Lit,
+) {}
+*/
+
+#[logic]
+#[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
+#[requires(ca.extended(ca2))]
+//#[requires(ca2.extended(ca))]
+#[ensures(learnt_clauses.are_implied_by(original_clauses, ca2))]
+fn lemma_implied_by_stable_on_extension(
+    original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator,
+) {}
+
 #[logic]
 #[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
 #[requires(ca.extended(ca2))]
 #[requires(ca2.extended(ca))]
-#[ensures(learnt_clauses.are_implied_by(original_clauses, ca2))]
-fn lemma_implied_by_stable_on_extension(
+#[ensures(ca == ca2)]
+fn lemma_extended_means_eq(
     original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator,
-) {
-}
+) {}
+
+#[logic]
+#[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
+#[requires(ca.extended(ca2))]
+#[requires(ca2.extended(ca))]
+#[ensures(ca@.len() == ca2@.len())]
+fn lemma_extended_means_eq_len(
+    original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator,
+) {}
+
+#[logic]
+#[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
+#[requires(ca.extended(ca2))]
+#[requires(ca2.extended(ca))]
+#[ensures(ca.buffer@ == ca2.buffer@)]
+fn lemma_extended_means_eq_buffer(
+    original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator,
+) {}
+
+#[logic]
+#[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
+#[requires(ca.buffer@.len() > 0)]
+#[requires(ca2@ == ca@.subsequence(0, ca.buffer@.len()))]
+#[requires(ca@ == ca2@.subsequence(0, ca.buffer@.len()))]
+#[requires(ca2.buffer@.len() == ca.buffer@.len())]
+#[ensures(ca.buffer@ == ca2.buffer@)]
+fn lemma_subseq(
+    original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator,
+) {}
 
 #[logic]
 #[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
@@ -54,24 +149,5 @@ fn lemma_implied_by_stable_on_blim(
 ) {
 }
 
-// Going to need two lemmas here it seems: one for adding a clause without binding it cannot change
-// anything, and one for binding a clause which is implied maintains the invariant.
-impl ClauseManager {
-    #[maintains((mut self).invariant())]
-    #[requires(lits@.len() > 0)]
-    #[requires(self.clause_allocator@.len() + lits@.len() + HEADER_LEN@ <= u32::MAX@)] // TODO: May have to move this to a runtime check
-    #[requires(Formula::from(self.original_clauses@, self.clause_allocator, self.clause_allocator.num_vars@).implies(seq_to_fset(lits@)))]
-    //#[requires(self@.len() + (@lits).len() + @HEADER_LEN <= @u32::MAX)] // TODO: May have to move this to a runtime check
-    #[requires(clause_invariant_seq(lits@, self.clause_allocator.num_vars@))]
-    pub(crate) fn learn_clause(&mut self, lits: &[Lit]) -> CRef {
-        let old_self: Ghost<&mut ClauseManager> = ghost!(self);
-        proof_assert!(self.learnt_core.are_implied_by(self.original_clauses, self.clause_allocator));
-        let cref = self.clause_allocator.add_clause(lits);
-        proof_assert!(^*old_self == ^self);
-        let ca = &self.clause_allocator;
-        proof_assert!(self.learnt_core.are_implied_by(self.original_clauses, self.clause_allocator));
-        self.learnt_core.add_cref(cref, &ca);
-        //proof_assert!(self.learnt_core.are_implied_by(self.original_clauses, self.clause_allocator));
-        cref
-    }
-}
+
+*/

@@ -6,8 +6,8 @@ use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 use crate::assignments::AssignedState;
 use crate::{assignments::*, clause::*, clause_allocator::*, lit::*};
 
-pub(crate) struct Formula {
-    formula: FSet<FSet<Lit>>,
+pub struct Formula {
+    formula: FSet<ClauseFSet>,
     num_vars: Int,
 }
 
@@ -32,6 +32,7 @@ pub fn abs_just_inner(self, just: Seq<usize>, ix: Int) -> FSet<(theory::Term, th
 
 impl Formula {
     // TODO: Look at actually implementing from
+    // TODO: Have crefs be a CRefManager instead, I think we always get from it
     #[logic]
     #[requires(clause_allocator.invariant())]
     #[requires(forall<i: Int> 0 <= i && i < crefs.len() ==>
@@ -39,12 +40,12 @@ impl Formula {
     #[ensures(result.num_vars == num_vars)]
     #[ensures(forall<i: Int> 0 <= i && i < crefs.len() ==> exists<c: _> result.formula.contains(c) && clause_allocator.get_clause_fset(crefs[i]@) == c)]
     #[ensures(forall<c: _> result.formula.contains(c) ==> exists<i: Int> 0 <= i && i < crefs.len() && clause_allocator.get_clause_fset(crefs[i]@) == c)]
-    pub(crate) fn from(crefs: Seq<CRef>, clause_allocator: ClauseAllocator, num_vars: Int) -> Formula {
+    pub(crate) fn from(crefs: Seq<CRef>, clause_allocator: ClauseAllocatorModel, num_vars: Int) -> Formula {
         Formula { formula: Formula::from_internal(crefs, clause_allocator, 0, num_vars), num_vars }
     }
 
     #[logic]
-    fn insert(self, clause: FSet<Lit>) -> Formula {
+    fn insert(self, clause: ClauseFSet) -> Formula {
         Formula { formula: self.formula.insert(clause), num_vars: self.num_vars }
     }
 
@@ -57,7 +58,9 @@ impl Formula {
                 cref_invariant(crefs[i]@, clause_allocator, _num_vars))] // CRefManager.invariant unwrapped -> TODO: refactor?
     #[ensures(forall<i: Int> idx <= i && i < crefs.len() ==> exists<c: _> result.contains(c) && clause_allocator.get_clause_fset(crefs[i]@) == c)]
     #[ensures(forall<c: _> result.contains(c) ==> exists<i: Int> idx <= i && i < crefs.len() && clause_allocator.get_clause_fset(crefs[i]@) == c)]
-    fn from_internal(crefs: Seq<CRef>, clause_allocator: ClauseAllocator, idx: Int, _num_vars: Int) -> FSet<FSet<Lit>> {
+    fn from_internal(
+        crefs: Seq<CRef>, clause_allocator: ClauseAllocatorModel, idx: Int, _num_vars: Int,
+    ) -> FSet<ClauseFSet> {
         pearlite! {
             //if idx < (clause@_allocator).len() {
             if idx < crefs.len() {
@@ -71,7 +74,7 @@ impl Formula {
     }
 
     #[predicate]
-    pub(crate) fn implies(self, clause: FSet<Lit>) -> bool {
+    pub(crate) fn implies(self, clause: ClauseFSet) -> bool {
         pearlite! {
             self.eventually_sat_complete() ==> self.insert(clause).eventually_sat_complete()
         }
@@ -80,16 +83,16 @@ impl Formula {
     #[predicate]
     pub(crate) fn eventually_sat_complete(self) -> bool {
         pearlite! {
-            exists<a: Seq<AssignedState>> a.len() == self.num_vars
-            && complete_inner(a)
+            exists<a: AssignmentsModel> a.0.len() == self.num_vars
+            && a.complete()
             && self.sat(a)
         }
     }
 
     #[predicate]
-    pub(crate) fn sat(self, a: Seq<AssignedState>) -> bool {
+    pub(crate) fn sat(self, a: AssignmentsModel) -> bool {
         pearlite! {
-            forall<c: _> self.formula.contains(c) ==> clause_sat(c, a)
+            forall<c: _> self.formula.contains(c) ==> c.sat(a)
         }
     }
 }
