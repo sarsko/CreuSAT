@@ -8,7 +8,7 @@ use crate::{clause::*, lit::*};
 use crate::logic_util::*;
 
 // TODO: Decide on whether to have it as a type or a struct
-pub type CRef = u32;
+//pub type CRef = u32;
 
 // TODO: This seems to be a non-ideal invariant
 // TODO: Add more
@@ -16,7 +16,7 @@ pub type CRef = u32;
 pub(crate) fn cref_invariant(cref: Int, clause_allocator: ClauseAllocatorModel, num_vars: Int) -> bool {
     pearlite! {
         cref < clause_allocator.buffer.len()
-        && clause_allocator.buffer[cref].code@ + cref + HEADER_LEN@ <= clause_allocator.buffer.len() // TODO: < or <= ?
+        && clause_allocator.buffer[cref].code + cref + HEADER_LEN@ <= clause_allocator.buffer.len() // TODO: Do I need this?
         && clause_allocator.get_clause_seq(cref).invariant(num_vars)
     }
 }
@@ -25,11 +25,12 @@ pub(crate) fn cref_invariant(cref: Int, clause_allocator: ClauseAllocatorModel, 
 pub(crate) fn cref_invariant_fset(cref: Int, clause_allocator: ClauseAllocatorModel, num_vars: Int) -> bool {
     pearlite! {
         cref < clause_allocator.buffer.len()
-        && clause_allocator.buffer[cref].code@ + cref + HEADER_LEN@ <= clause_allocator.buffer.len() // TODO: < or <= ?
+        && clause_allocator.buffer[cref].code + cref + HEADER_LEN@ <= clause_allocator.buffer.len() // TODO: Do I need this?
         && clause_allocator.get_clause_fset(cref).invariant(num_vars)
     }
 }
 
+/*
 // TODO: unpub buffer
 pub(crate) struct ClauseAllocator {
     pub(crate) buffer: Vec<Lit>,
@@ -45,9 +46,11 @@ impl ShallowModel for ClauseAllocator {
         ClauseAllocatorModel { buffer: self.buffer.shallow_model(), num_vars: self.num_vars.shallow_model() }
     }
 }
+*/
 
 pub const HEADER_LEN: usize = 1;
 
+/*
 impl ClauseAllocator {
     // TODO: This is struggling with no_duplicate_indexes and FSet/Seq stuff
     // TODO: Maintains is broken by "new scheme"
@@ -101,17 +104,24 @@ impl ClauseAllocator {
         &self.buffer[idx + HEADER_LEN..idx + HEADER_LEN + len]
     }
 }
+*/
 
 pub struct ClauseAllocatorModel {
-    pub(crate) buffer: Seq<Lit>,
+    pub(crate) buffer: Seq<LitModel>,
     pub(crate) num_vars: Int, // TODO: Look for a way to not have to store this everywhere
 }
 
 impl ClauseAllocatorModel {
     #[predicate]
     pub(crate) fn invariant(self) -> bool {
+        true
+    }
+    /*
+    #[predicate]
+    pub(crate) fn invariant(self) -> bool {
         pearlite! { self.buffer.len() <= u32::MAX@ }
     }
+    */
 
     #[predicate]
     //#[requires(self.invariant())]
@@ -131,7 +141,7 @@ impl ClauseAllocatorModel {
     //#[requires(cref_invariant(cref, self))]
     pub(crate) fn get_clause_seq(self, cref: Int) -> ClauseSeq {
         pearlite! {
-            ClauseSeq { lits: self.buffer.subsequence(cref + HEADER_LEN@, cref + HEADER_LEN@ + self.buffer[cref].code@) }
+            ClauseSeq { lits: self.buffer.subsequence(cref + HEADER_LEN@, cref + HEADER_LEN@ + self.buffer[cref].code) }
         }
     }
 
@@ -139,7 +149,7 @@ impl ClauseAllocatorModel {
     //#[requires(cref_invariant(cref, self))]
     pub(crate) fn get_clause_fset(self, cref: Int) -> ClauseFSet {
         pearlite! {
-            ClauseFSet { lits: self.get_clause_fset_internal(cref, cref + HEADER_LEN@, cref + HEADER_LEN@ + self.buffer[cref].code@) }
+            ClauseFSet { lits: self.get_clause_fset_internal(cref, cref + HEADER_LEN@, cref + HEADER_LEN@ + self.buffer[cref].code) }
         }
     }
 
@@ -147,7 +157,7 @@ impl ClauseAllocatorModel {
     //#[requires(cref_invariant(cref, self))]
     #[variant(upper - idx)]
     #[requires(idx >= 0 && upper <= self.buffer.len())]
-    fn get_clause_fset_internal(self, cref: Int, idx: Int, upper: Int) -> FSet<Lit> {
+    fn get_clause_fset_internal(self, cref: Int, idx: Int, upper: Int) -> FSet<LitModel> {
         pearlite! {
             if idx < upper {
                 let set = self.get_clause_fset_internal(cref, idx + 1, upper);

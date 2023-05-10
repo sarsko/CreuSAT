@@ -6,6 +6,7 @@ use crate::{assignments::*, clause_allocator::*, cref_manager::*, lit::*};
 
 use crate::{clause::*, formula::*, logic_util::*};
 
+/*
 pub struct ClauseManager {
     clause_allocator: ClauseAllocator,
     original_clauses: CRefManager,
@@ -51,6 +52,7 @@ impl ClauseManager {
         cref
     }
 }
+*/
 
 pub struct ClauseManagerModel {
     clause_allocator: ClauseAllocatorModel,

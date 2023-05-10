@@ -268,3 +268,41 @@ rm -rf mlcfgs/NewDB*
 workspace = false
 dependencies = ["prove-NewDB"]
 args = ["${@}"]
+
+
+[tasks.creusot-Abstract]
+workspace = false
+command = "cargo"
+args = ["creusot", "--", "-p", "Abstract", "--features=${@}"]
+
+[tasks.move-Abstract]
+workspace = false
+script = '''
+[ ! -f ./target/debug/Abstract-rlib.mlcfg ] || cp ./target/debug/Abstract-rlib.mlcfg ./mlcfgs/Abstract.mlcfg
+'''
+
+[tasks.gen-cfg-Abstract]
+workspace = false
+dependencies = ["creusot-Abstract", "move-Abstract"]
+
+[tasks.ide-Abstract]
+workspace = false
+script = '''
+./ide ./mlcfgs/Abstract.mlcfg
+'''
+
+[tasks.prove-Abstract]
+workspace = false
+dependencies = ["gen-cfg-Abstract", "ide-Abstract"]
+
+
+[tasks.clean-Abstract]
+workspace = false
+script = '''
+rm -rf mlcfgs/Abstract*
+'''
+
+[tasks.a]
+workspace = false
+dependencies = ["prove-Abstract"]
+args = ["${@}"]

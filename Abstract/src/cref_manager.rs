@@ -6,18 +6,15 @@ use crate::{assignments::*, clause_allocator::{*, self}, lit::*};
 
 use crate::formula::*;
 
+/*
 pub struct CRefManager {
     crefs: Vec<CRef>,
     pub(crate) num_vars: usize,
 }
+*/
 
-// Should crefs be Seq<Int>?
-// TODO: Impl Index?
-pub struct CRefManagerModel {
-    pub(crate) crefs: Seq<CRef>,
-    pub(crate) num_vars: Int,
-}
 
+/*
 #[cfg(creusot)]
 impl ShallowModel for CRefManager {
     type ShallowModelTy = CRefManagerModel;
@@ -41,6 +38,13 @@ impl CRefManager {
         self.crefs.push(cref);
     }
 }
+*/
+
+// TODO: Impl Index?
+pub struct CRefManagerModel {
+    pub(crate) crefs: Seq<Int>,
+    pub(crate) num_vars: Int,
+}
 
 impl CRefManagerModel {
     #[predicate]
@@ -49,7 +53,7 @@ impl CRefManagerModel {
             clause_allocator.invariant()
             && self.num_vars == clause_allocator.num_vars && // TODO: Fix the double storing
             forall<i: Int> 0 <= i && i < self.crefs.len() ==>
-                cref_invariant(self.crefs[i]@, clause_allocator, clause_allocator.num_vars)
+                cref_invariant(self.crefs[i], clause_allocator, clause_allocator.num_vars)
         }
     }
 
@@ -60,7 +64,7 @@ impl CRefManagerModel {
         pearlite! {
             let formula = Formula::from(self.crefs, clause_allocator, self.num_vars);
             forall<i: Int> 0 <= i && i < self.crefs.len() ==>
-                    formula.implies(clause_allocator.get_clause_fset(self.crefs[i]@))
+                    formula.implies(clause_allocator.get_clause_fset(self.crefs[i]))
         }
     }
 }
@@ -68,9 +72,9 @@ impl CRefManagerModel {
 impl CRefManagerModel {
     #[logic]
     #[requires(self.invariant(clause_allocator))]
-    #[requires(cref_invariant(cref@, clause_allocator, clause_allocator.num_vars))]
+    #[requires(cref_invariant(cref, clause_allocator, clause_allocator.num_vars))]
     #[ensures(result.invariant(clause_allocator))]
-    pub(crate) fn push(self, cref: CRef, clause_allocator: ClauseAllocatorModel) -> Self {
+    pub(crate) fn push(self, cref: Int, clause_allocator: ClauseAllocatorModel) -> Self {
         Self { crefs: self.crefs.push(cref), num_vars: self.num_vars }
     }
 }

@@ -1,0 +1,1416 @@
+
+module Abstract_Assignments_Unset_Stub
+  use prelude.Int
+  predicate unset [#"../Abstract/src/assignments.rs" 42 0 42 28] (v : int)
+end
+module Abstract_Assignments_Unset_Interface
+  use prelude.Int
+  predicate unset [#"../Abstract/src/assignments.rs" 42 0 42 28] (v : int)
+end
+module Abstract_Assignments_Unset
+  use prelude.Int
+  predicate unset [#"../Abstract/src/assignments.rs" 42 0 42 28] (v : int) =
+    [#"../Abstract/src/assignments.rs" 43 16 43 22] v >= 2
+  val unset [#"../Abstract/src/assignments.rs" 42 0 42 28] (v : int) : bool
+    ensures { result = unset v }
+    
+end
+module Abstract_Assignments_AssignmentsModel_Type
+  use seq.Seq
+  use prelude.Int
+  type t_assignmentsmodel  =
+    | C_AssignmentsModel (Seq.seq int)
+    
+  let function assignmentsmodel_0 (self : t_assignmentsmodel) : Seq.seq int = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_AssignmentsModel a -> a
+      end
+end
+module Abstract_Assignments_Impl0_Invariant_Stub
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  predicate invariant' [#"../Abstract/src/assignments.rs" 50 4 50 34] (self : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel)
+    
+end
+module Abstract_Assignments_Impl0_Invariant_Interface
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  predicate invariant' [#"../Abstract/src/assignments.rs" 50 4 50 34] (self : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel)
+    
+end
+module Abstract_Assignments_Impl0_Invariant
+  use prelude.Int
+  use seq.Seq
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  predicate invariant' [#"../Abstract/src/assignments.rs" 50 4 50 34] (self : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel)
+    
+   =
+    [#"../Abstract/src/assignments.rs" 51 8 54 9] forall i : int . 0 <= i /\ i < Seq.length (Abstract_Assignments_AssignmentsModel_Type.assignmentsmodel_0 self) -> Seq.get (Abstract_Assignments_AssignmentsModel_Type.assignmentsmodel_0 self) i < 2
+  val invariant' [#"../Abstract/src/assignments.rs" 50 4 50 34] (self : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel) : bool
+    ensures { result = invariant' self }
+    
+end
+module Abstract_Assignments_Impl0_Complete_Stub
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  predicate complete [#"../Abstract/src/assignments.rs" 58 4 58 33] (self : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel)
+    
+end
+module Abstract_Assignments_Impl0_Complete_Interface
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  predicate complete [#"../Abstract/src/assignments.rs" 58 4 58 33] (self : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel)
+    
+end
+module Abstract_Assignments_Impl0_Complete
+  use prelude.Int
+  use seq.Seq
+  clone Abstract_Assignments_Unset_Stub as Unset0
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  predicate complete [#"../Abstract/src/assignments.rs" 58 4 58 33] (self : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel)
+    
+   =
+    [#"../Abstract/src/assignments.rs" 59 8 61 9] forall i : int . 0 <= i /\ i < Seq.length (Abstract_Assignments_AssignmentsModel_Type.assignmentsmodel_0 self) -> not Unset0.unset (Seq.get (Abstract_Assignments_AssignmentsModel_Type.assignmentsmodel_0 self) i)
+  val complete [#"../Abstract/src/assignments.rs" 58 4 58 33] (self : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel) : bool
+    ensures { result = complete self }
+    
+end
+module Abstract_Lit_LitModel_Type
+  use prelude.Int
+  type t_litmodel  =
+    | C_LitModel int
+    
+  let function litmodel_code (self : t_litmodel) : int = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_LitModel a -> a
+      end
+end
+module Abstract_Clause_ClauseFSet_Type
+  use set.Fset
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  type t_clausefset  =
+    | C_ClauseFSet (Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel))
+    
+  let function clausefset_lits (self : t_clausefset) : Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel)
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_ClauseFSet a -> a
+      end
+end
+module CreusotContracts_Logic_Fset_Impl0_Contains_Stub
+  type t
+  use set.Fset
+  predicate contains [@inline:trivial] (self : Fset.fset t) (e : t)
+end
+module CreusotContracts_Logic_Fset_Impl0_Contains_Interface
+  type t
+  use set.Fset
+  predicate contains [@inline:trivial] (self : Fset.fset t) (e : t)
+end
+module CreusotContracts_Logic_Fset_Impl0_Contains
+  type t
+  use set.Fset
+  predicate contains [@inline:trivial] (self : Fset.fset t) (e : t) =
+    [#"../Abstract/src/clause_manager.rs" 45 14 45 32] Fset.mem e self
+  val contains [@inline:trivial] (self : Fset.fset t) (e : t) : bool
+    ensures { result = contains self e }
+    
+end
+module Abstract_Lit_Impl0_IndexLogic_Stub
+  use prelude.Int
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  function index_logic [@inline:trivial] [#"../Abstract/src/lit.rs" 63 4 63 35] (self : Abstract_Lit_LitModel_Type.t_litmodel) : int
+    
+end
+module Abstract_Lit_Impl0_IndexLogic_Interface
+  use prelude.Int
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  function index_logic [@inline:trivial] [#"../Abstract/src/lit.rs" 63 4 63 35] (self : Abstract_Lit_LitModel_Type.t_litmodel) : int
+    
+end
+module Abstract_Lit_Impl0_IndexLogic
+  use prelude.Int
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  function index_logic [@inline:trivial] [#"../Abstract/src/lit.rs" 63 4 63 35] (self : Abstract_Lit_LitModel_Type.t_litmodel) : int
+    
+   =
+    [#"../Abstract/src/lit.rs" 61 4 61 12] div (Abstract_Lit_LitModel_Type.litmodel_code self) 2
+  val index_logic [@inline:trivial] [#"../Abstract/src/lit.rs" 63 4 63 35] (self : Abstract_Lit_LitModel_Type.t_litmodel) : int
+    ensures { result = index_logic self }
+    
+end
+module Abstract_Lit_Impl0_IsPositiveLogic_Stub
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  function is_positive_logic [@inline:trivial] [#"../Abstract/src/lit.rs" 69 4 69 42] (self : Abstract_Lit_LitModel_Type.t_litmodel) : bool
+    
+end
+module Abstract_Lit_Impl0_IsPositiveLogic_Interface
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  function is_positive_logic [@inline:trivial] [#"../Abstract/src/lit.rs" 69 4 69 42] (self : Abstract_Lit_LitModel_Type.t_litmodel) : bool
+    
+end
+module Abstract_Lit_Impl0_IsPositiveLogic
+  use prelude.Int
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  function is_positive_logic [@inline:trivial] [#"../Abstract/src/lit.rs" 69 4 69 42] (self : Abstract_Lit_LitModel_Type.t_litmodel) : bool
+    
+   =
+    [#"../Abstract/src/lit.rs" 70 8 70 26] mod (Abstract_Lit_LitModel_Type.litmodel_code self) 2 = 0
+  val is_positive_logic [@inline:trivial] [#"../Abstract/src/lit.rs" 69 4 69 42] (self : Abstract_Lit_LitModel_Type.t_litmodel) : bool
+    ensures { result = is_positive_logic self }
+    
+end
+module Abstract_LogicUtil_BoolAsInt_Stub
+  use prelude.Int
+  function bool_as_int [@inline:trivial] [#"../Abstract/src/logic_util.rs" 21 0 21 41] (b : bool) : int
+end
+module Abstract_LogicUtil_BoolAsInt_Interface
+  use prelude.Int
+  function bool_as_int [@inline:trivial] [#"../Abstract/src/logic_util.rs" 21 0 21 41] (b : bool) : int
+end
+module Abstract_LogicUtil_BoolAsInt
+  use prelude.Int
+  function bool_as_int [@inline:trivial] [#"../Abstract/src/logic_util.rs" 21 0 21 41] (b : bool) : int =
+    [#"../Abstract/src/logic_util.rs" 23 7 26 8] if b then 1 else 0
+  val bool_as_int [@inline:trivial] [#"../Abstract/src/logic_util.rs" 21 0 21 41] (b : bool) : int
+    ensures { result = bool_as_int b }
+    
+end
+module Abstract_Lit_Impl1_Sat_Stub
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  predicate sat [@inline:trivial] [#"../Abstract/src/lit.rs" 85 4 85 56] (self : Abstract_Lit_LitModel_Type.t_litmodel) (a : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel)
+    
+end
+module Abstract_Lit_Impl1_Sat_Interface
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  predicate sat [@inline:trivial] [#"../Abstract/src/lit.rs" 85 4 85 56] (self : Abstract_Lit_LitModel_Type.t_litmodel) (a : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel)
+    
+end
+module Abstract_Lit_Impl1_Sat
+  use seq.Seq
+  clone Abstract_LogicUtil_BoolAsInt_Stub as BoolAsInt0
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone Abstract_Lit_Impl0_IsPositiveLogic_Stub as IsPositiveLogic0
+  clone Abstract_Lit_Impl0_IndexLogic_Stub as IndexLogic0
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  predicate sat [@inline:trivial] [#"../Abstract/src/lit.rs" 85 4 85 56] (self : Abstract_Lit_LitModel_Type.t_litmodel) (a : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel)
+    
+   =
+    [#"../Abstract/src/lit.rs" 87 12 87 76] Seq.get (Abstract_Assignments_AssignmentsModel_Type.assignmentsmodel_0 a) (IndexLogic0.index_logic self) = BoolAsInt0.bool_as_int (IsPositiveLogic0.is_positive_logic self)
+  val sat [@inline:trivial] [#"../Abstract/src/lit.rs" 85 4 85 56] (self : Abstract_Lit_LitModel_Type.t_litmodel) (a : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel) : bool
+    ensures { result = sat self a }
+    
+end
+module Abstract_Clause_Impl0_Sat_Stub
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  predicate sat [#"../Abstract/src/clause.rs" 13 4 13 66] (self : Abstract_Clause_ClauseFSet_Type.t_clausefset) (assignments : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel)
+    
+end
+module Abstract_Clause_Impl0_Sat_Interface
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  predicate sat [#"../Abstract/src/clause.rs" 13 4 13 66] (self : Abstract_Clause_ClauseFSet_Type.t_clausefset) (assignments : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel)
+    
+end
+module Abstract_Clause_Impl0_Sat
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone Abstract_Lit_Impl1_Sat_Stub as Sat0
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  predicate sat [#"../Abstract/src/clause.rs" 13 4 13 66] (self : Abstract_Clause_ClauseFSet_Type.t_clausefset) (assignments : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel)
+    
+   =
+    [#"../Abstract/src/clause.rs" 14 8 16 9] exists l : Abstract_Lit_LitModel_Type.t_litmodel . Contains0.contains (Abstract_Clause_ClauseFSet_Type.clausefset_lits self) l /\ Sat0.sat l assignments
+  val sat [#"../Abstract/src/clause.rs" 13 4 13 66] (self : Abstract_Clause_ClauseFSet_Type.t_clausefset) (assignments : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel) : bool
+    ensures { result = sat self assignments }
+    
+end
+module Abstract_Lit_Impl1_VarInRange_Stub
+  use prelude.Int
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  predicate var_in_range [#"../Abstract/src/lit.rs" 76 4 76 52] (self : Abstract_Lit_LitModel_Type.t_litmodel) (n : int)
+end
+module Abstract_Lit_Impl1_VarInRange_Interface
+  use prelude.Int
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  predicate var_in_range [#"../Abstract/src/lit.rs" 76 4 76 52] (self : Abstract_Lit_LitModel_Type.t_litmodel) (n : int)
+end
+module Abstract_Lit_Impl1_VarInRange
+  use prelude.Int
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone Abstract_Lit_Impl0_IndexLogic_Stub as IndexLogic0
+  predicate var_in_range [#"../Abstract/src/lit.rs" 76 4 76 52] (self : Abstract_Lit_LitModel_Type.t_litmodel) (n : int)
+   =
+    [#"../Abstract/src/lit.rs" 78 12 78 34] IndexLogic0.index_logic self < n
+  val var_in_range [#"../Abstract/src/lit.rs" 76 4 76 52] (self : Abstract_Lit_LitModel_Type.t_litmodel) (n : int) : bool
+    ensures { result = var_in_range self n }
+    
+end
+module Abstract_Clause_Impl0_Invariant_Stub
+  use prelude.Int
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  predicate invariant' [#"../Abstract/src/clause.rs" 21 4 21 56] (self : Abstract_Clause_ClauseFSet_Type.t_clausefset) (num_vars : int)
+    
+end
+module Abstract_Clause_Impl0_Invariant_Interface
+  use prelude.Int
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  predicate invariant' [#"../Abstract/src/clause.rs" 21 4 21 56] (self : Abstract_Clause_ClauseFSet_Type.t_clausefset) (num_vars : int)
+    
+end
+module Abstract_Clause_Impl0_Invariant
+  use prelude.Int
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone Abstract_Lit_Impl1_VarInRange_Stub as VarInRange0
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  predicate invariant' [#"../Abstract/src/clause.rs" 21 4 21 56] (self : Abstract_Clause_ClauseFSet_Type.t_clausefset) (num_vars : int)
+    
+   =
+    [#"../Abstract/src/clause.rs" 22 8 24 9] forall l : Abstract_Lit_LitModel_Type.t_litmodel . Contains0.contains (Abstract_Clause_ClauseFSet_Type.clausefset_lits self) l -> VarInRange0.var_in_range l num_vars
+  val invariant' [#"../Abstract/src/clause.rs" 21 4 21 56] (self : Abstract_Clause_ClauseFSet_Type.t_clausefset) (num_vars : int) : bool
+    ensures { result = invariant' self num_vars }
+    
+end
+module Abstract_Clause_ClauseSeq_Type
+  use seq.Seq
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  type t_clauseseq  =
+    | C_ClauseSeq (Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel))
+    
+  let function clauseseq_lits (self : t_clauseseq) : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel)
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_ClauseSeq a -> a
+      end
+end
+module Abstract_Clause_Impl1_Invariant_Stub
+  use prelude.Int
+  use Abstract_Clause_ClauseSeq_Type as Abstract_Clause_ClauseSeq_Type
+  predicate invariant' [#"../Abstract/src/clause.rs" 35 4 35 56] (self : Abstract_Clause_ClauseSeq_Type.t_clauseseq) (num_vars : int)
+    
+end
+module Abstract_Clause_Impl1_Invariant_Interface
+  use prelude.Int
+  use Abstract_Clause_ClauseSeq_Type as Abstract_Clause_ClauseSeq_Type
+  predicate invariant' [#"../Abstract/src/clause.rs" 35 4 35 56] (self : Abstract_Clause_ClauseSeq_Type.t_clauseseq) (num_vars : int)
+    
+end
+module Abstract_Clause_Impl1_Invariant
+  use prelude.Int
+  use seq.Seq
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone Abstract_Lit_Impl1_VarInRange_Stub as VarInRange0
+  use Abstract_Clause_ClauseSeq_Type as Abstract_Clause_ClauseSeq_Type
+  predicate invariant' [#"../Abstract/src/clause.rs" 35 4 35 56] (self : Abstract_Clause_ClauseSeq_Type.t_clauseseq) (num_vars : int)
+    
+   =
+    [#"../Abstract/src/clause.rs" 36 8 39 9] forall i : int . 0 <= i /\ i < Seq.length (Abstract_Clause_ClauseSeq_Type.clauseseq_lits self) -> VarInRange0.var_in_range (Seq.get (Abstract_Clause_ClauseSeq_Type.clauseseq_lits self) i) num_vars
+  val invariant' [#"../Abstract/src/clause.rs" 35 4 35 56] (self : Abstract_Clause_ClauseSeq_Type.t_clauseseq) (num_vars : int) : bool
+    ensures { result = invariant' self num_vars }
+    
+end
+module Abstract_Clause_Impl1_NoDuplicateIndexes_Stub
+  use Abstract_Clause_ClauseSeq_Type as Abstract_Clause_ClauseSeq_Type
+  predicate no_duplicate_indexes [#"../Abstract/src/clause.rs" 43 4 43 52] (self : Abstract_Clause_ClauseSeq_Type.t_clauseseq)
+    
+end
+module Abstract_Clause_Impl1_NoDuplicateIndexes_Interface
+  use Abstract_Clause_ClauseSeq_Type as Abstract_Clause_ClauseSeq_Type
+  predicate no_duplicate_indexes [#"../Abstract/src/clause.rs" 43 4 43 52] (self : Abstract_Clause_ClauseSeq_Type.t_clauseseq)
+    
+end
+module Abstract_Clause_Impl1_NoDuplicateIndexes
+  use prelude.Int
+  use seq.Seq
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone Abstract_Lit_Impl0_IndexLogic_Stub as IndexLogic0
+  use Abstract_Clause_ClauseSeq_Type as Abstract_Clause_ClauseSeq_Type
+  predicate no_duplicate_indexes [#"../Abstract/src/clause.rs" 43 4 43 52] (self : Abstract_Clause_ClauseSeq_Type.t_clauseseq)
+    
+   =
+    [#"../Abstract/src/clause.rs" 44 8 47 9] forall k : int . forall j : int . 0 <= j /\ j < Seq.length (Abstract_Clause_ClauseSeq_Type.clauseseq_lits self) /\ 0 <= k /\ k < j -> not IndexLogic0.index_logic (Seq.get (Abstract_Clause_ClauseSeq_Type.clauseseq_lits self) k) = IndexLogic0.index_logic (Seq.get (Abstract_Clause_ClauseSeq_Type.clauseseq_lits self) j)
+  val no_duplicate_indexes [#"../Abstract/src/clause.rs" 43 4 43 52] (self : Abstract_Clause_ClauseSeq_Type.t_clauseseq) : bool
+    ensures { result = no_duplicate_indexes self }
+    
+end
+module Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  use seq.Seq
+  use prelude.Int
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  type t_clauseallocatormodel  =
+    | C_ClauseAllocatorModel (Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel)) int
+    
+  let function clauseallocatormodel_buffer (self : t_clauseallocatormodel) : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel)
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_ClauseAllocatorModel a _ -> a
+      end
+  let function clauseallocatormodel_num_vars (self : t_clauseallocatormodel) : int = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_ClauseAllocatorModel _ a -> a
+      end
+end
+module Abstract_ClauseAllocator_HeaderLen_Stub
+  use prelude.Int
+  use prelude.UIntSize
+  val constant hEADER_LEN' [#"../Abstract/src/clause_allocator.rs" 51 0 51 27]  : usize
+end
+module Abstract_ClauseAllocator_HeaderLen
+  use prelude.Int
+  use prelude.UIntSize
+  let constant hEADER_LEN' [#"../Abstract/src/clause_allocator.rs" 51 0 51 27]  : usize
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    [#"../Abstract/src/clause_allocator.rs" 51 0 51 27] (1 : usize)
+end
+module Abstract_ClauseAllocator_Impl1_GetClauseSeq_Stub
+  use prelude.Int
+  use Abstract_Clause_ClauseSeq_Type as Abstract_Clause_ClauseSeq_Type
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  function get_clause_seq [#"../Abstract/src/clause_allocator.rs" 142 4 142 62] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (cref : int) : Abstract_Clause_ClauseSeq_Type.t_clauseseq
+    
+end
+module Abstract_ClauseAllocator_Impl1_GetClauseSeq_Interface
+  use prelude.Int
+  use Abstract_Clause_ClauseSeq_Type as Abstract_Clause_ClauseSeq_Type
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  function get_clause_seq [#"../Abstract/src/clause_allocator.rs" 142 4 142 62] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (cref : int) : Abstract_Clause_ClauseSeq_Type.t_clauseseq
+    
+end
+module Abstract_ClauseAllocator_Impl1_GetClauseSeq
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  use seq_ext.SeqExt
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone Abstract_ClauseAllocator_HeaderLen_Stub as HeaderLen0
+  use Abstract_Clause_ClauseSeq_Type as Abstract_Clause_ClauseSeq_Type
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  function get_clause_seq [#"../Abstract/src/clause_allocator.rs" 142 4 142 62] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (cref : int) : Abstract_Clause_ClauseSeq_Type.t_clauseseq
+    
+   =
+    [#"../Abstract/src/clause_allocator.rs" 144 12 144 120] Abstract_Clause_ClauseSeq_Type.C_ClauseSeq (SeqExt.subsequence (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer self) (cref + UIntSize.to_int HeaderLen0.hEADER_LEN') (cref + UIntSize.to_int HeaderLen0.hEADER_LEN' + Abstract_Lit_LitModel_Type.litmodel_code (Seq.get (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer self) cref)))
+  val get_clause_seq [#"../Abstract/src/clause_allocator.rs" 142 4 142 62] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (cref : int) : Abstract_Clause_ClauseSeq_Type.t_clauseseq
+    ensures { result = get_clause_seq self cref }
+    
+end
+module Abstract_ClauseAllocator_CrefInvariant_Stub
+  use prelude.Int
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  predicate cref_invariant [#"../Abstract/src/clause_allocator.rs" 16 0 16 102] (cref : int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (num_vars : int)
+    
+end
+module Abstract_ClauseAllocator_CrefInvariant_Interface
+  use prelude.Int
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  predicate cref_invariant [#"../Abstract/src/clause_allocator.rs" 16 0 16 102] (cref : int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (num_vars : int)
+    
+end
+module Abstract_ClauseAllocator_CrefInvariant
+  use prelude.Int
+  use seq.Seq
+  use prelude.UIntSize
+  use Abstract_Clause_ClauseSeq_Type as Abstract_Clause_ClauseSeq_Type
+  clone Abstract_Clause_Impl1_Invariant_Stub as Invariant0
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  clone Abstract_ClauseAllocator_Impl1_GetClauseSeq_Stub as GetClauseSeq0
+  clone Abstract_ClauseAllocator_HeaderLen_Stub as HeaderLen0
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  predicate cref_invariant [#"../Abstract/src/clause_allocator.rs" 16 0 16 102] (cref : int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (num_vars : int)
+    
+   =
+    [#"../Abstract/src/clause_allocator.rs" 18 8 20 68] cref < Seq.length (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer clause_allocator) /\ Abstract_Lit_LitModel_Type.litmodel_code (Seq.get (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer clause_allocator) cref) + cref + UIntSize.to_int HeaderLen0.hEADER_LEN' <= Seq.length (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer clause_allocator) /\ Invariant0.invariant' (GetClauseSeq0.get_clause_seq clause_allocator cref) num_vars
+  val cref_invariant [#"../Abstract/src/clause_allocator.rs" 16 0 16 102] (cref : int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (num_vars : int) : bool
+    ensures { result = cref_invariant cref clause_allocator num_vars }
+    
+end
+module CreusotContracts_Logic_Fset_Impl0_Insert_Stub
+  type t
+  use set.Fset
+  function insert [@inline:trivial] (self : Fset.fset t) (e : t) : Fset.fset t
+end
+module CreusotContracts_Logic_Fset_Impl0_Insert_Interface
+  type t
+  use set.Fset
+  function insert [@inline:trivial] (self : Fset.fset t) (e : t) : Fset.fset t
+end
+module CreusotContracts_Logic_Fset_Impl0_Insert
+  type t
+  use set.Fset
+  function insert [@inline:trivial] (self : Fset.fset t) (e : t) : Fset.fset t =
+    [#"../Abstract/src/clause_manager.rs" 49 12 49 30] Fset.add e self
+  val insert [@inline:trivial] (self : Fset.fset t) (e : t) : Fset.fset t
+    ensures { result = insert self e }
+    
+end
+module Abstract_ClauseAllocator_Impl1_GetClauseFsetInternal_Stub
+  use prelude.Int
+  use seq.Seq
+  use set.Fset
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  function get_clause_fset_internal [#"../Abstract/src/clause_allocator.rs" 160 4 160 88] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (cref : int) (idx : int) (upper : int) : Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel)
+    
+end
+module Abstract_ClauseAllocator_Impl1_GetClauseFsetInternal_Interface
+  use prelude.Int
+  use seq.Seq
+  use set.Fset
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  function get_clause_fset_internal [#"../Abstract/src/clause_allocator.rs" 160 4 160 88] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (cref : int) (idx : int) (upper : int) : Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel)
+    
+end
+module Abstract_ClauseAllocator_Impl1_GetClauseFsetInternal
+  use prelude.Int
+  use seq.Seq
+  use set.Fset
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone CreusotContracts_Logic_Fset_Impl0_Insert_Stub as Insert0 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  function get_clause_fset_internal [#"../Abstract/src/clause_allocator.rs" 160 4 160 88] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (cref : int) (idx : int) (upper : int) : Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel)
+    
+  val get_clause_fset_internal [#"../Abstract/src/clause_allocator.rs" 160 4 160 88] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (cref : int) (idx : int) (upper : int) : Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel)
+    requires {[#"../Abstract/src/clause_allocator.rs" 159 15 159 53] idx >= 0 /\ upper <= Seq.length (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer self)}
+    ensures { result = get_clause_fset_internal self cref idx upper }
+    
+  axiom def : forall self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel, cref : int, idx : int, upper : int . get_clause_fset_internal self cref idx upper = ([#"../Abstract/src/clause_allocator.rs" 161 8 168 9] if idx < upper then
+    let set = get_clause_fset_internal self cref (idx + 1) upper in Insert0.insert set (Seq.get (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer self) (cref + idx))
+  else
+    Fset.empty 
+  )
+end
+module Abstract_ClauseAllocator_Impl1_GetClauseFsetInternal_Impl
+  use prelude.Int
+  use seq.Seq
+  use set.Fset
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone CreusotContracts_Logic_Fset_Impl0_Insert as Insert0 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  let rec ghost function get_clause_fset_internal [#"../Abstract/src/clause_allocator.rs" 160 4 160 88] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (cref : int) (idx : int) (upper : int) : Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel)
+    requires {[#"../Abstract/src/clause_allocator.rs" 159 15 159 53] idx >= 0 /\ upper <= Seq.length (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer self)}
+    variant {[#"../Abstract/src/clause_allocator.rs" 158 14 158 25] upper - idx}
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    [#"../Abstract/src/clause_allocator.rs" 161 8 168 9] if pure {idx < upper} then
+      let set = get_clause_fset_internal self cref (idx + 1) upper in Insert0.insert set (Seq.get (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer self) (cref + idx))
+    else
+      Fset.empty 
+    
+end
+module Abstract_ClauseAllocator_Impl1_GetClauseFset_Stub
+  use prelude.Int
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  function get_clause_fset [#"../Abstract/src/clause_allocator.rs" 150 4 150 64] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (cref : int) : Abstract_Clause_ClauseFSet_Type.t_clausefset
+    
+end
+module Abstract_ClauseAllocator_Impl1_GetClauseFset_Interface
+  use prelude.Int
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  function get_clause_fset [#"../Abstract/src/clause_allocator.rs" 150 4 150 64] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (cref : int) : Abstract_Clause_ClauseFSet_Type.t_clausefset
+    
+end
+module Abstract_ClauseAllocator_Impl1_GetClauseFset
+  use prelude.Int
+  use prelude.UIntSize
+  use seq.Seq
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  clone Abstract_ClauseAllocator_Impl1_GetClauseFsetInternal_Stub as GetClauseFsetInternal0 with
+    axiom .
+  clone Abstract_ClauseAllocator_HeaderLen_Stub as HeaderLen0
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  function get_clause_fset [#"../Abstract/src/clause_allocator.rs" 150 4 150 64] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (cref : int) : Abstract_Clause_ClauseFSet_Type.t_clausefset
+    
+   =
+    [#"../Abstract/src/clause_allocator.rs" 152 12 152 133] Abstract_Clause_ClauseFSet_Type.C_ClauseFSet (GetClauseFsetInternal0.get_clause_fset_internal self cref (cref + UIntSize.to_int HeaderLen0.hEADER_LEN') (cref + UIntSize.to_int HeaderLen0.hEADER_LEN' + Abstract_Lit_LitModel_Type.litmodel_code (Seq.get (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer self) cref)))
+  val get_clause_fset [#"../Abstract/src/clause_allocator.rs" 150 4 150 64] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (cref : int) : Abstract_Clause_ClauseFSet_Type.t_clausefset
+    ensures { result = get_clause_fset self cref }
+    
+end
+module Abstract_ClauseAllocator_CrefInvariantFset_Stub
+  use prelude.Int
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  predicate cref_invariant_fset [#"../Abstract/src/clause_allocator.rs" 25 0 25 107] (cref : int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (num_vars : int)
+    
+end
+module Abstract_ClauseAllocator_CrefInvariantFset_Interface
+  use prelude.Int
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  predicate cref_invariant_fset [#"../Abstract/src/clause_allocator.rs" 25 0 25 107] (cref : int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (num_vars : int)
+    
+end
+module Abstract_ClauseAllocator_CrefInvariantFset
+  use prelude.Int
+  use seq.Seq
+  use prelude.UIntSize
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  clone Abstract_Clause_Impl0_Invariant_Stub as Invariant0
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  clone Abstract_ClauseAllocator_Impl1_GetClauseFset_Stub as GetClauseFset0
+  clone Abstract_ClauseAllocator_HeaderLen_Stub as HeaderLen0
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  predicate cref_invariant_fset [#"../Abstract/src/clause_allocator.rs" 25 0 25 107] (cref : int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (num_vars : int)
+    
+   =
+    [#"../Abstract/src/clause_allocator.rs" 27 8 29 69] cref < Seq.length (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer clause_allocator) /\ Abstract_Lit_LitModel_Type.litmodel_code (Seq.get (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer clause_allocator) cref) + cref + UIntSize.to_int HeaderLen0.hEADER_LEN' <= Seq.length (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer clause_allocator) /\ Invariant0.invariant' (GetClauseFset0.get_clause_fset clause_allocator cref) num_vars
+  val cref_invariant_fset [#"../Abstract/src/clause_allocator.rs" 25 0 25 107] (cref : int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (num_vars : int) : bool
+    ensures { result = cref_invariant_fset cref clause_allocator num_vars }
+    
+end
+module Abstract_ClauseAllocator_Impl0_Invariant_Stub
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  predicate invariant' [#"../Abstract/src/clause_allocator.rs" 116 4 116 41] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel)
+    
+end
+module Abstract_ClauseAllocator_Impl0_Invariant_Interface
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  predicate invariant' [#"../Abstract/src/clause_allocator.rs" 116 4 116 41] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel)
+    
+end
+module Abstract_ClauseAllocator_Impl0_Invariant
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  predicate invariant' [#"../Abstract/src/clause_allocator.rs" 116 4 116 41] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel)
+    
+   =
+    [#"../Abstract/src/clause_allocator.rs" 117 8 117 12] true
+  val invariant' [#"../Abstract/src/clause_allocator.rs" 116 4 116 41] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) : bool
+    ensures { result = invariant' self }
+    
+end
+module Abstract_ClauseAllocator_Impl0_Extended_Stub
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  predicate extended [#"../Abstract/src/clause_allocator.rs" 129 4 129 67] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (new : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel)
+    
+end
+module Abstract_ClauseAllocator_Impl0_Extended_Interface
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  predicate extended [#"../Abstract/src/clause_allocator.rs" 129 4 129 67] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (new : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel)
+    
+end
+module Abstract_ClauseAllocator_Impl0_Extended
+  use seq.Seq
+  use prelude.Int
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  predicate extended [#"../Abstract/src/clause_allocator.rs" 129 4 129 67] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (new : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel)
+    
+   =
+    [#"../Abstract/src/clause_allocator.rs" 130 8 135 9] Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars self = Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars new /\ Seq.length (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer self) < Seq.length (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer new) /\ (forall i : int . 0 <= i /\ i < Seq.length (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer self) -> Seq.get (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer self) i = Seq.get (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer new) i)
+  val extended [#"../Abstract/src/clause_allocator.rs" 129 4 129 67] (self : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (new : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) : bool
+    ensures { result = extended self new }
+    
+end
+module Abstract_CrefManager_CRefManagerModel_Type
+  use seq.Seq
+  use prelude.Int
+  type t_crefmanagermodel  =
+    | C_CRefManagerModel (Seq.seq int) int
+    
+  let function crefmanagermodel_num_vars (self : t_crefmanagermodel) : int = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_CRefManagerModel _ a -> a
+      end
+  let function crefmanagermodel_crefs (self : t_crefmanagermodel) : Seq.seq int = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_CRefManagerModel a _ -> a
+      end
+end
+module Abstract_ClauseManager_ClauseManagerModel_Type
+  use Abstract_CrefManager_CRefManagerModel_Type as Abstract_CrefManager_CRefManagerModel_Type
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  type t_clausemanagermodel  =
+    | C_ClauseManagerModel (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel)
+    
+  let function clausemanagermodel_clause_allocator (self : t_clausemanagermodel) : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_ClauseManagerModel a _ _ -> a
+      end
+  let function clausemanagermodel_original_clauses (self : t_clausemanagermodel) : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_ClauseManagerModel _ a _ -> a
+      end
+  let function clausemanagermodel_learnt_core (self : t_clausemanagermodel) : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_ClauseManagerModel _ _ a -> a
+      end
+end
+module Abstract_CrefManager_Impl0_Invariant_Stub
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  use Abstract_CrefManager_CRefManagerModel_Type as Abstract_CrefManager_CRefManagerModel_Type
+  predicate invariant' [#"../Abstract/src/cref_manager.rs" 51 4 51 81] (self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel)
+    
+end
+module Abstract_CrefManager_Impl0_Invariant_Interface
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  use Abstract_CrefManager_CRefManagerModel_Type as Abstract_CrefManager_CRefManagerModel_Type
+  predicate invariant' [#"../Abstract/src/cref_manager.rs" 51 4 51 81] (self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel)
+    
+end
+module Abstract_CrefManager_Impl0_Invariant
+  use prelude.Int
+  use seq.Seq
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  clone Abstract_ClauseAllocator_CrefInvariant_Stub as CrefInvariant0
+  clone Abstract_ClauseAllocator_Impl0_Invariant_Stub as Invariant0
+  use Abstract_CrefManager_CRefManagerModel_Type as Abstract_CrefManager_CRefManagerModel_Type
+  predicate invariant' [#"../Abstract/src/cref_manager.rs" 51 4 51 81] (self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel)
+    
+   =
+    [#"../Abstract/src/cref_manager.rs" 52 8 57 9] Invariant0.invariant' clause_allocator /\ Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_num_vars self = Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars clause_allocator /\ (forall i : int . 0 <= i /\ i < Seq.length (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs self) -> CrefInvariant0.cref_invariant (Seq.get (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs self) i) clause_allocator (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars clause_allocator))
+  val invariant' [#"../Abstract/src/cref_manager.rs" 51 4 51 81] (self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) : bool
+    ensures { result = invariant' self clause_allocator }
+    
+end
+module Abstract_Formula_Formula_Type
+  use set.Fset
+  use prelude.Int
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  type t_formula  =
+    | C_Formula (Fset.fset (Abstract_Clause_ClauseFSet_Type.t_clausefset)) int
+    
+  let function formula_num_vars (self : t_formula) : int = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Formula _ a -> a
+      end
+  let function formula_formula (self : t_formula) : Fset.fset (Abstract_Clause_ClauseFSet_Type.t_clausefset)
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Formula a _ -> a
+      end
+end
+module Abstract_Formula_Impl0_FromInternal_Stub
+  use prelude.Int
+  use seq.Seq
+  use set.Fset
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  clone Abstract_ClauseAllocator_Impl1_GetClauseFset_Stub as GetClauseFset0
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  clone Abstract_ClauseAllocator_CrefInvariant_Stub as CrefInvariant0
+  clone Abstract_ClauseAllocator_Impl0_Invariant_Stub as Invariant0
+  function from_internal [#"../Abstract/src/formula.rs" 61 4 61 123] (crefs : Seq.seq int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (idx : int) (_num_vars : int) : Fset.fset (Abstract_Clause_ClauseFSet_Type.t_clausefset)
+    
+end
+module Abstract_Formula_Impl0_FromInternal_Interface
+  use prelude.Int
+  use seq.Seq
+  use set.Fset
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  clone Abstract_ClauseAllocator_Impl1_GetClauseFset_Stub as GetClauseFset0
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  clone Abstract_ClauseAllocator_CrefInvariant_Stub as CrefInvariant0
+  clone Abstract_ClauseAllocator_Impl0_Invariant_Stub as Invariant0
+  function from_internal [#"../Abstract/src/formula.rs" 61 4 61 123] (crefs : Seq.seq int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (idx : int) (_num_vars : int) : Fset.fset (Abstract_Clause_ClauseFSet_Type.t_clausefset)
+    
+  axiom from_internal_spec : forall crefs : Seq.seq int, clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel, idx : int, _num_vars : int . ([#"../Abstract/src/formula.rs" 55 15 55 23] idx >= 0) -> ([#"../Abstract/src/formula.rs" 56 15 56 43] Invariant0.invariant' clause_allocator) -> ([#"../Abstract/src/formula.rs" 57 4 58 71] forall i : int . 0 <= i /\ i < Seq.length crefs -> CrefInvariant0.cref_invariant (Seq.get crefs i) clause_allocator _num_vars) -> ([#"../Abstract/src/formula.rs" 60 4 60 145] forall c : Abstract_Clause_ClauseFSet_Type.t_clausefset . Contains0.contains (from_internal crefs clause_allocator idx _num_vars) c -> (exists i : int . idx <= i /\ i < Seq.length crefs /\ GetClauseFset0.get_clause_fset clause_allocator (Seq.get crefs i) = c)) && ([#"../Abstract/src/formula.rs" 59 4 59 145] forall i : int . idx <= i /\ i < Seq.length crefs -> (exists c : Abstract_Clause_ClauseFSet_Type.t_clausefset . Contains0.contains (from_internal crefs clause_allocator idx _num_vars) c /\ GetClauseFset0.get_clause_fset clause_allocator (Seq.get crefs i) = c))
+end
+module Abstract_Formula_Impl0_FromInternal
+  use prelude.Int
+  use seq.Seq
+  use set.Fset
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  clone CreusotContracts_Logic_Fset_Impl0_Insert_Stub as Insert0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  clone Abstract_ClauseAllocator_Impl1_GetClauseFset_Stub as GetClauseFset0
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  clone Abstract_ClauseAllocator_CrefInvariant_Stub as CrefInvariant0
+  clone Abstract_ClauseAllocator_Impl0_Invariant_Stub as Invariant0
+  function from_internal [#"../Abstract/src/formula.rs" 61 4 61 123] (crefs : Seq.seq int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (idx : int) (_num_vars : int) : Fset.fset (Abstract_Clause_ClauseFSet_Type.t_clausefset)
+    
+  val from_internal [#"../Abstract/src/formula.rs" 61 4 61 123] (crefs : Seq.seq int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (idx : int) (_num_vars : int) : Fset.fset (Abstract_Clause_ClauseFSet_Type.t_clausefset)
+    requires {[#"../Abstract/src/formula.rs" 55 15 55 23] idx >= 0}
+    requires {[#"../Abstract/src/formula.rs" 56 15 56 43] Invariant0.invariant' clause_allocator}
+    requires {[#"../Abstract/src/formula.rs" 57 4 58 71] forall i : int . 0 <= i /\ i < Seq.length crefs -> CrefInvariant0.cref_invariant (Seq.get crefs i) clause_allocator _num_vars}
+    ensures { result = from_internal crefs clause_allocator idx _num_vars }
+    
+  axiom def : forall crefs : Seq.seq int, clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel, idx : int, _num_vars : int . from_internal crefs clause_allocator idx _num_vars = ([#"../Abstract/src/formula.rs" 62 8 71 9] if idx < Seq.length crefs then
+    let set = from_internal crefs clause_allocator (idx + 1) _num_vars in let clause = GetClauseFset0.get_clause_fset clause_allocator (Seq.get crefs idx) in Insert0.insert set clause
+  else
+    Fset.empty 
+  )
+  axiom from_internal_spec : forall crefs : Seq.seq int, clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel, idx : int, _num_vars : int . ([#"../Abstract/src/formula.rs" 55 15 55 23] idx >= 0) -> ([#"../Abstract/src/formula.rs" 56 15 56 43] Invariant0.invariant' clause_allocator) -> ([#"../Abstract/src/formula.rs" 57 4 58 71] forall i : int . 0 <= i /\ i < Seq.length crefs -> CrefInvariant0.cref_invariant (Seq.get crefs i) clause_allocator _num_vars) -> ([#"../Abstract/src/formula.rs" 60 4 60 145] forall c : Abstract_Clause_ClauseFSet_Type.t_clausefset . Contains0.contains (from_internal crefs clause_allocator idx _num_vars) c -> (exists i : int . idx <= i /\ i < Seq.length crefs /\ GetClauseFset0.get_clause_fset clause_allocator (Seq.get crefs i) = c)) && ([#"../Abstract/src/formula.rs" 59 4 59 145] forall i : int . idx <= i /\ i < Seq.length crefs -> (exists c : Abstract_Clause_ClauseFSet_Type.t_clausefset . Contains0.contains (from_internal crefs clause_allocator idx _num_vars) c /\ GetClauseFset0.get_clause_fset clause_allocator (Seq.get crefs i) = c))
+end
+module Abstract_Formula_Impl0_FromInternal_Impl
+  use prelude.Int
+  use seq.Seq
+  use set.Fset
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone Abstract_Lit_Impl0_IndexLogic as IndexLogic0
+  clone CreusotContracts_Logic_Fset_Impl0_Insert as Insert1 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  clone Abstract_Lit_Impl1_VarInRange as VarInRange0 with
+    function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  clone Abstract_ClauseAllocator_Impl1_GetClauseFsetInternal as GetClauseFsetInternal0 with
+    function Insert0.insert = Insert1.insert,
+    axiom .
+  use Abstract_Clause_ClauseSeq_Type as Abstract_Clause_ClauseSeq_Type
+  clone Abstract_Clause_Impl1_Invariant as Invariant1 with
+    predicate VarInRange0.var_in_range = VarInRange0.var_in_range
+  clone Abstract_ClauseAllocator_HeaderLen as HeaderLen0
+  clone Abstract_ClauseAllocator_Impl1_GetClauseSeq as GetClauseSeq0 with
+    val HeaderLen0.hEADER_LEN' = HeaderLen0.hEADER_LEN'
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  clone CreusotContracts_Logic_Fset_Impl0_Insert as Insert0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  clone Abstract_ClauseAllocator_Impl1_GetClauseFset as GetClauseFset0 with
+    val HeaderLen0.hEADER_LEN' = HeaderLen0.hEADER_LEN',
+    function GetClauseFsetInternal0.get_clause_fset_internal = GetClauseFsetInternal0.get_clause_fset_internal
+  clone CreusotContracts_Logic_Fset_Impl0_Contains as Contains0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  clone Abstract_ClauseAllocator_CrefInvariant as CrefInvariant0 with
+    val HeaderLen0.hEADER_LEN' = HeaderLen0.hEADER_LEN',
+    function GetClauseSeq0.get_clause_seq = GetClauseSeq0.get_clause_seq,
+    predicate Invariant0.invariant' = Invariant1.invariant'
+  clone Abstract_ClauseAllocator_Impl0_Invariant as Invariant0
+  let rec ghost function from_internal [#"../Abstract/src/formula.rs" 61 4 61 123] (crefs : Seq.seq int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (idx : int) (_num_vars : int) : Fset.fset (Abstract_Clause_ClauseFSet_Type.t_clausefset)
+    requires {[#"../Abstract/src/formula.rs" 55 15 55 23] idx >= 0}
+    requires {[#"../Abstract/src/formula.rs" 56 15 56 43] Invariant0.invariant' clause_allocator}
+    requires {[#"../Abstract/src/formula.rs" 57 4 58 71] forall i : int . 0 <= i /\ i < Seq.length crefs -> CrefInvariant0.cref_invariant (Seq.get crefs i) clause_allocator _num_vars}
+    ensures { [#"../Abstract/src/formula.rs" 59 4 59 145] forall i : int . idx <= i /\ i < Seq.length crefs -> (exists c : Abstract_Clause_ClauseFSet_Type.t_clausefset . Contains0.contains result c /\ GetClauseFset0.get_clause_fset clause_allocator (Seq.get crefs i) = c) }
+    ensures { [#"../Abstract/src/formula.rs" 60 4 60 145] forall c : Abstract_Clause_ClauseFSet_Type.t_clausefset . Contains0.contains result c -> (exists i : int . idx <= i /\ i < Seq.length crefs /\ GetClauseFset0.get_clause_fset clause_allocator (Seq.get crefs i) = c) }
+    variant {[#"../Abstract/src/formula.rs" 54 14 54 31] Seq.length crefs - idx}
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    [#"../Abstract/src/formula.rs" 62 8 71 9] if pure {idx < Seq.length crefs} then
+      let set = from_internal crefs clause_allocator (idx + 1) _num_vars in let clause = GetClauseFset0.get_clause_fset clause_allocator (Seq.get crefs idx) in Insert0.insert set clause
+    else
+      Fset.empty 
+    
+end
+module Abstract_Formula_Impl0_From_Stub
+  use prelude.Int
+  use seq.Seq
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  clone Abstract_ClauseAllocator_Impl1_GetClauseFset_Stub as GetClauseFset0
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  clone Abstract_ClauseAllocator_CrefInvariant_Stub as CrefInvariant0
+  clone Abstract_ClauseAllocator_Impl0_Invariant_Stub as Invariant0
+  function from [#"../Abstract/src/formula.rs" 43 4 43 105] (crefs : Seq.seq int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (num_vars : int) : Abstract_Formula_Formula_Type.t_formula
+    
+end
+module Abstract_Formula_Impl0_From_Interface
+  use prelude.Int
+  use seq.Seq
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  clone Abstract_ClauseAllocator_Impl1_GetClauseFset_Stub as GetClauseFset0
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  clone Abstract_ClauseAllocator_CrefInvariant_Stub as CrefInvariant0
+  clone Abstract_ClauseAllocator_Impl0_Invariant_Stub as Invariant0
+  function from [#"../Abstract/src/formula.rs" 43 4 43 105] (crefs : Seq.seq int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (num_vars : int) : Abstract_Formula_Formula_Type.t_formula
+    
+  axiom from_spec : forall crefs : Seq.seq int, clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel, num_vars : int . ([#"../Abstract/src/formula.rs" 37 15 37 43] Invariant0.invariant' clause_allocator) -> ([#"../Abstract/src/formula.rs" 38 4 39 70] forall i : int . 0 <= i /\ i < Seq.length crefs -> CrefInvariant0.cref_invariant (Seq.get crefs i) clause_allocator num_vars) -> ([#"../Abstract/src/formula.rs" 42 4 42 151] forall c : Abstract_Clause_ClauseFSet_Type.t_clausefset . Contains0.contains (Abstract_Formula_Formula_Type.formula_formula (from crefs clause_allocator num_vars)) c -> (exists i : int . 0 <= i /\ i < Seq.length crefs /\ GetClauseFset0.get_clause_fset clause_allocator (Seq.get crefs i) = c)) && ([#"../Abstract/src/formula.rs" 41 4 41 151] forall i : int . 0 <= i /\ i < Seq.length crefs -> (exists c : Abstract_Clause_ClauseFSet_Type.t_clausefset . Contains0.contains (Abstract_Formula_Formula_Type.formula_formula (from crefs clause_allocator num_vars)) c /\ GetClauseFset0.get_clause_fset clause_allocator (Seq.get crefs i) = c)) && ([#"../Abstract/src/formula.rs" 40 14 40 41] Abstract_Formula_Formula_Type.formula_num_vars (from crefs clause_allocator num_vars) = num_vars)
+end
+module Abstract_Formula_Impl0_From
+  use prelude.Int
+  use seq.Seq
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  clone Abstract_ClauseAllocator_Impl1_GetClauseFset_Stub as GetClauseFset0
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  clone Abstract_ClauseAllocator_CrefInvariant_Stub as CrefInvariant0
+  clone Abstract_ClauseAllocator_Impl0_Invariant_Stub as Invariant0
+  clone Abstract_Formula_Impl0_FromInternal_Stub as FromInternal0 with
+    predicate Invariant0.invariant' = Invariant0.invariant',
+    predicate CrefInvariant0.cref_invariant = CrefInvariant0.cref_invariant,
+    predicate Contains0.contains = Contains0.contains,
+    function GetClauseFset0.get_clause_fset = GetClauseFset0.get_clause_fset,
+    axiom .
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  function from [#"../Abstract/src/formula.rs" 43 4 43 105] (crefs : Seq.seq int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (num_vars : int) : Abstract_Formula_Formula_Type.t_formula
+    
+   =
+    [#"../Abstract/src/formula.rs" 44 8 44 99] Abstract_Formula_Formula_Type.C_Formula (FromInternal0.from_internal crefs clause_allocator 0 num_vars) num_vars
+  val from [#"../Abstract/src/formula.rs" 43 4 43 105] (crefs : Seq.seq int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (num_vars : int) : Abstract_Formula_Formula_Type.t_formula
+    requires {[#"../Abstract/src/formula.rs" 37 15 37 43] Invariant0.invariant' clause_allocator}
+    requires {[#"../Abstract/src/formula.rs" 38 4 39 70] forall i : int . 0 <= i /\ i < Seq.length crefs -> CrefInvariant0.cref_invariant (Seq.get crefs i) clause_allocator num_vars}
+    ensures { result = from crefs clause_allocator num_vars }
+    
+  axiom from_spec : forall crefs : Seq.seq int, clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel, num_vars : int . ([#"../Abstract/src/formula.rs" 37 15 37 43] Invariant0.invariant' clause_allocator) -> ([#"../Abstract/src/formula.rs" 38 4 39 70] forall i : int . 0 <= i /\ i < Seq.length crefs -> CrefInvariant0.cref_invariant (Seq.get crefs i) clause_allocator num_vars) -> ([#"../Abstract/src/formula.rs" 42 4 42 151] forall c : Abstract_Clause_ClauseFSet_Type.t_clausefset . Contains0.contains (Abstract_Formula_Formula_Type.formula_formula (from crefs clause_allocator num_vars)) c -> (exists i : int . 0 <= i /\ i < Seq.length crefs /\ GetClauseFset0.get_clause_fset clause_allocator (Seq.get crefs i) = c)) && ([#"../Abstract/src/formula.rs" 41 4 41 151] forall i : int . 0 <= i /\ i < Seq.length crefs -> (exists c : Abstract_Clause_ClauseFSet_Type.t_clausefset . Contains0.contains (Abstract_Formula_Formula_Type.formula_formula (from crefs clause_allocator num_vars)) c /\ GetClauseFset0.get_clause_fset clause_allocator (Seq.get crefs i) = c)) && ([#"../Abstract/src/formula.rs" 40 14 40 41] Abstract_Formula_Formula_Type.formula_num_vars (from crefs clause_allocator num_vars) = num_vars)
+end
+module Abstract_Formula_Impl0_From_Impl
+  use prelude.Int
+  use seq.Seq
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone Abstract_Lit_Impl0_IndexLogic as IndexLogic0
+  clone CreusotContracts_Logic_Fset_Impl0_Insert as Insert1 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  clone Abstract_Lit_Impl1_VarInRange as VarInRange0 with
+    function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  clone CreusotContracts_Logic_Fset_Impl0_Insert as Insert0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  clone Abstract_ClauseAllocator_Impl1_GetClauseFsetInternal as GetClauseFsetInternal0 with
+    function Insert0.insert = Insert1.insert,
+    axiom .
+  use Abstract_Clause_ClauseSeq_Type as Abstract_Clause_ClauseSeq_Type
+  clone Abstract_Clause_Impl1_Invariant as Invariant1 with
+    predicate VarInRange0.var_in_range = VarInRange0.var_in_range
+  clone Abstract_ClauseAllocator_HeaderLen as HeaderLen0
+  clone Abstract_ClauseAllocator_Impl1_GetClauseSeq as GetClauseSeq0 with
+    val HeaderLen0.hEADER_LEN' = HeaderLen0.hEADER_LEN'
+  clone Abstract_ClauseAllocator_Impl1_GetClauseFset as GetClauseFset0 with
+    val HeaderLen0.hEADER_LEN' = HeaderLen0.hEADER_LEN',
+    function GetClauseFsetInternal0.get_clause_fset_internal = GetClauseFsetInternal0.get_clause_fset_internal
+  clone CreusotContracts_Logic_Fset_Impl0_Contains as Contains0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  clone Abstract_ClauseAllocator_CrefInvariant as CrefInvariant0 with
+    val HeaderLen0.hEADER_LEN' = HeaderLen0.hEADER_LEN',
+    function GetClauseSeq0.get_clause_seq = GetClauseSeq0.get_clause_seq,
+    predicate Invariant0.invariant' = Invariant1.invariant'
+  clone Abstract_ClauseAllocator_Impl0_Invariant as Invariant0
+  clone Abstract_Formula_Impl0_FromInternal as FromInternal0 with
+    predicate Invariant0.invariant' = Invariant0.invariant',
+    predicate CrefInvariant0.cref_invariant = CrefInvariant0.cref_invariant,
+    predicate Contains0.contains = Contains0.contains,
+    function GetClauseFset0.get_clause_fset = GetClauseFset0.get_clause_fset,
+    function Insert0.insert = Insert0.insert,
+    axiom .
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  let rec ghost function from [#"../Abstract/src/formula.rs" 43 4 43 105] (crefs : Seq.seq int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (num_vars : int) : Abstract_Formula_Formula_Type.t_formula
+    requires {[#"../Abstract/src/formula.rs" 37 15 37 43] Invariant0.invariant' clause_allocator}
+    requires {[#"../Abstract/src/formula.rs" 38 4 39 70] forall i : int . 0 <= i /\ i < Seq.length crefs -> CrefInvariant0.cref_invariant (Seq.get crefs i) clause_allocator num_vars}
+    ensures { [#"../Abstract/src/formula.rs" 40 14 40 41] Abstract_Formula_Formula_Type.formula_num_vars result = num_vars }
+    ensures { [#"../Abstract/src/formula.rs" 41 4 41 151] forall i : int . 0 <= i /\ i < Seq.length crefs -> (exists c : Abstract_Clause_ClauseFSet_Type.t_clausefset . Contains0.contains (Abstract_Formula_Formula_Type.formula_formula result) c /\ GetClauseFset0.get_clause_fset clause_allocator (Seq.get crefs i) = c) }
+    ensures { [#"../Abstract/src/formula.rs" 42 4 42 151] forall c : Abstract_Clause_ClauseFSet_Type.t_clausefset . Contains0.contains (Abstract_Formula_Formula_Type.formula_formula result) c -> (exists i : int . 0 <= i /\ i < Seq.length crefs /\ GetClauseFset0.get_clause_fset clause_allocator (Seq.get crefs i) = c) }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    [#"../Abstract/src/formula.rs" 44 8 44 99] Abstract_Formula_Formula_Type.C_Formula (FromInternal0.from_internal crefs clause_allocator 0 num_vars) num_vars
+end
+module Abstract_Formula_Impl0_Sat_Stub
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  predicate sat [#"../Abstract/src/formula.rs" 91 4 91 56] (self : Abstract_Formula_Formula_Type.t_formula) (a : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel)
+    
+end
+module Abstract_Formula_Impl0_Sat_Interface
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  predicate sat [#"../Abstract/src/formula.rs" 91 4 91 56] (self : Abstract_Formula_Formula_Type.t_formula) (a : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel)
+    
+end
+module Abstract_Formula_Impl0_Sat
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  clone Abstract_Clause_Impl0_Sat_Stub as Sat0
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  predicate sat [#"../Abstract/src/formula.rs" 91 4 91 56] (self : Abstract_Formula_Formula_Type.t_formula) (a : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel)
+    
+   =
+    [#"../Abstract/src/formula.rs" 92 8 94 9] forall c : Abstract_Clause_ClauseFSet_Type.t_clausefset . Contains0.contains (Abstract_Formula_Formula_Type.formula_formula self) c -> Sat0.sat c a
+  val sat [#"../Abstract/src/formula.rs" 91 4 91 56] (self : Abstract_Formula_Formula_Type.t_formula) (a : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel) : bool
+    ensures { result = sat self a }
+    
+end
+module Abstract_Formula_Impl0_EventuallySatComplete_Stub
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  predicate eventually_sat_complete [#"../Abstract/src/formula.rs" 82 4 82 55] (self : Abstract_Formula_Formula_Type.t_formula)
+    
+end
+module Abstract_Formula_Impl0_EventuallySatComplete_Interface
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  predicate eventually_sat_complete [#"../Abstract/src/formula.rs" 82 4 82 55] (self : Abstract_Formula_Formula_Type.t_formula)
+    
+end
+module Abstract_Formula_Impl0_EventuallySatComplete
+  use seq.Seq
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  clone Abstract_Formula_Impl0_Sat_Stub as Sat0
+  clone Abstract_Assignments_Impl0_Complete_Stub as Complete0
+  predicate eventually_sat_complete [#"../Abstract/src/formula.rs" 82 4 82 55] (self : Abstract_Formula_Formula_Type.t_formula)
+    
+   =
+    [#"../Abstract/src/formula.rs" 83 8 87 9] exists a : Abstract_Assignments_AssignmentsModel_Type.t_assignmentsmodel . Seq.length (Abstract_Assignments_AssignmentsModel_Type.assignmentsmodel_0 a) = Abstract_Formula_Formula_Type.formula_num_vars self /\ Complete0.complete a /\ Sat0.sat self a
+  val eventually_sat_complete [#"../Abstract/src/formula.rs" 82 4 82 55] (self : Abstract_Formula_Formula_Type.t_formula) : bool
+    ensures { result = eventually_sat_complete self }
+    
+end
+module Abstract_Formula_Impl0_Insert_Stub
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  function insert [#"../Abstract/src/formula.rs" 48 4 48 50] (self : Abstract_Formula_Formula_Type.t_formula) (clause : Abstract_Clause_ClauseFSet_Type.t_clausefset) : Abstract_Formula_Formula_Type.t_formula
+    
+end
+module Abstract_Formula_Impl0_Insert_Interface
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  function insert [#"../Abstract/src/formula.rs" 48 4 48 50] (self : Abstract_Formula_Formula_Type.t_formula) (clause : Abstract_Clause_ClauseFSet_Type.t_clausefset) : Abstract_Formula_Formula_Type.t_formula
+    
+end
+module Abstract_Formula_Impl0_Insert
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  clone CreusotContracts_Logic_Fset_Impl0_Insert_Stub as Insert0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  function insert [#"../Abstract/src/formula.rs" 48 4 48 50] (self : Abstract_Formula_Formula_Type.t_formula) (clause : Abstract_Clause_ClauseFSet_Type.t_clausefset) : Abstract_Formula_Formula_Type.t_formula
+    
+   =
+    [#"../Abstract/src/formula.rs" 49 8 49 81] Abstract_Formula_Formula_Type.C_Formula (Insert0.insert (Abstract_Formula_Formula_Type.formula_formula self) clause) (Abstract_Formula_Formula_Type.formula_num_vars self)
+  val insert [#"../Abstract/src/formula.rs" 48 4 48 50] (self : Abstract_Formula_Formula_Type.t_formula) (clause : Abstract_Clause_ClauseFSet_Type.t_clausefset) : Abstract_Formula_Formula_Type.t_formula
+    ensures { result = insert self clause }
+    
+end
+module Abstract_Formula_Impl0_Implies_Stub
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  predicate implies [#"../Abstract/src/formula.rs" 75 4 75 59] (self : Abstract_Formula_Formula_Type.t_formula) (clause : Abstract_Clause_ClauseFSet_Type.t_clausefset)
+    
+end
+module Abstract_Formula_Impl0_Implies_Interface
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  predicate implies [#"../Abstract/src/formula.rs" 75 4 75 59] (self : Abstract_Formula_Formula_Type.t_formula) (clause : Abstract_Clause_ClauseFSet_Type.t_clausefset)
+    
+end
+module Abstract_Formula_Impl0_Implies
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  clone Abstract_Formula_Impl0_Insert_Stub as Insert0
+  clone Abstract_Formula_Impl0_EventuallySatComplete_Stub as EventuallySatComplete0
+  predicate implies [#"../Abstract/src/formula.rs" 75 4 75 59] (self : Abstract_Formula_Formula_Type.t_formula) (clause : Abstract_Clause_ClauseFSet_Type.t_clausefset)
+    
+   =
+    [#"../Abstract/src/formula.rs" 76 8 78 9] EventuallySatComplete0.eventually_sat_complete self -> EventuallySatComplete0.eventually_sat_complete (Insert0.insert self clause)
+  val implies [#"../Abstract/src/formula.rs" 75 4 75 59] (self : Abstract_Formula_Formula_Type.t_formula) (clause : Abstract_Clause_ClauseFSet_Type.t_clausefset) : bool
+    ensures { result = implies self clause }
+    
+end
+module Abstract_CrefManager_Impl0_AreImpliedBy_Stub
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  use Abstract_CrefManager_CRefManagerModel_Type as Abstract_CrefManager_CRefManagerModel_Type
+  predicate are_implied_by [#"../Abstract/src/cref_manager.rs" 61 4 63 13] (self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (original_clauses : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel)
+    
+end
+module Abstract_CrefManager_Impl0_AreImpliedBy_Interface
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  use Abstract_CrefManager_CRefManagerModel_Type as Abstract_CrefManager_CRefManagerModel_Type
+  predicate are_implied_by [#"../Abstract/src/cref_manager.rs" 61 4 63 13] (self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (original_clauses : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel)
+    
+end
+module Abstract_CrefManager_Impl0_AreImpliedBy
+  use prelude.Int
+  use seq.Seq
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  clone Abstract_ClauseAllocator_CrefInvariant_Stub as CrefInvariant0
+  clone Abstract_ClauseAllocator_Impl0_Invariant_Stub as Invariant0
+  clone Abstract_Formula_Impl0_Implies_Stub as Implies0
+  clone Abstract_ClauseAllocator_Impl1_GetClauseFset_Stub as GetClauseFset0
+  clone Abstract_Formula_Impl0_From_Stub as From0 with
+    predicate Invariant0.invariant' = Invariant0.invariant',
+    predicate CrefInvariant0.cref_invariant = CrefInvariant0.cref_invariant,
+    predicate Contains0.contains = Contains0.contains,
+    function GetClauseFset0.get_clause_fset = GetClauseFset0.get_clause_fset,
+    axiom .
+  use Abstract_CrefManager_CRefManagerModel_Type as Abstract_CrefManager_CRefManagerModel_Type
+  predicate are_implied_by [#"../Abstract/src/cref_manager.rs" 61 4 63 13] (self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (original_clauses : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel)
+    
+   =
+    [#"../Abstract/src/cref_manager.rs" 64 8 68 9] let formula = From0.from (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs self) clause_allocator (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_num_vars self) in forall i : int . 0 <= i /\ i < Seq.length (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs self) -> Implies0.implies formula (GetClauseFset0.get_clause_fset clause_allocator (Seq.get (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs self) i))
+  val are_implied_by [#"../Abstract/src/cref_manager.rs" 61 4 63 13] (self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (original_clauses : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) : bool
+    ensures { result = are_implied_by self original_clauses clause_allocator }
+    
+end
+module Abstract_ClauseManager_Impl0_Invariant_Stub
+  use Abstract_ClauseManager_ClauseManagerModel_Type as Abstract_ClauseManager_ClauseManagerModel_Type
+  predicate invariant' [#"../Abstract/src/clause_manager.rs" 65 4 65 41] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel)
+    
+end
+module Abstract_ClauseManager_Impl0_Invariant_Interface
+  use Abstract_ClauseManager_ClauseManagerModel_Type as Abstract_ClauseManager_ClauseManagerModel_Type
+  predicate invariant' [#"../Abstract/src/clause_manager.rs" 65 4 65 41] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel)
+    
+end
+module Abstract_ClauseManager_Impl0_Invariant
+  use Abstract_CrefManager_CRefManagerModel_Type as Abstract_CrefManager_CRefManagerModel_Type
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  clone Abstract_CrefManager_Impl0_AreImpliedBy_Stub as AreImpliedBy0
+  clone Abstract_CrefManager_Impl0_Invariant_Stub as Invariant1
+  clone Abstract_ClauseAllocator_Impl0_Invariant_Stub as Invariant0
+  use Abstract_ClauseManager_ClauseManagerModel_Type as Abstract_ClauseManager_ClauseManagerModel_Type
+  predicate invariant' [#"../Abstract/src/clause_manager.rs" 65 4 65 41] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel)
+    
+   =
+    [#"../Abstract/src/clause_manager.rs" 66 8 71 9] Invariant0.invariant' (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) /\ Invariant1.invariant' (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) /\ Invariant1.invariant' (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_learnt_core self) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) /\ AreImpliedBy0.are_implied_by (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_learnt_core self) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self)
+  val invariant' [#"../Abstract/src/clause_manager.rs" 65 4 65 41] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : bool
+    ensures { result = invariant' self }
+    
+end
+module Abstract_ClauseManager_Impl1_OriginalClauses_Stub
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  use Abstract_ClauseManager_ClauseManagerModel_Type as Abstract_ClauseManager_ClauseManagerModel_Type
+  clone Abstract_ClauseManager_Impl0_Invariant_Stub as Invariant0
+  function original_clauses [#"../Abstract/src/clause_manager.rs" 84 4 84 51] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : Abstract_Formula_Formula_Type.t_formula
+    
+end
+module Abstract_ClauseManager_Impl1_OriginalClauses_Interface
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  use Abstract_ClauseManager_ClauseManagerModel_Type as Abstract_ClauseManager_ClauseManagerModel_Type
+  clone Abstract_ClauseManager_Impl0_Invariant_Stub as Invariant0
+  function original_clauses [#"../Abstract/src/clause_manager.rs" 84 4 84 51] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : Abstract_Formula_Formula_Type.t_formula
+    
+end
+module Abstract_ClauseManager_Impl1_OriginalClauses
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  clone Abstract_ClauseAllocator_Impl1_GetClauseFset_Stub as GetClauseFset0
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  clone Abstract_ClauseAllocator_CrefInvariant_Stub as CrefInvariant0
+  clone Abstract_ClauseAllocator_Impl0_Invariant_Stub as Invariant1
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  clone Abstract_Formula_Impl0_From_Stub as From0 with
+    predicate Invariant0.invariant' = Invariant1.invariant',
+    predicate CrefInvariant0.cref_invariant = CrefInvariant0.cref_invariant,
+    predicate Contains0.contains = Contains0.contains,
+    function GetClauseFset0.get_clause_fset = GetClauseFset0.get_clause_fset,
+    axiom .
+  use Abstract_CrefManager_CRefManagerModel_Type as Abstract_CrefManager_CRefManagerModel_Type
+  use Abstract_ClauseManager_ClauseManagerModel_Type as Abstract_ClauseManager_ClauseManagerModel_Type
+  clone Abstract_ClauseManager_Impl0_Invariant_Stub as Invariant0
+  function original_clauses [#"../Abstract/src/clause_manager.rs" 84 4 84 51] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : Abstract_Formula_Formula_Type.t_formula
+    
+   =
+    [#"../Abstract/src/clause_manager.rs" 85 8 85 105] From0.from (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self)) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self))
+  val original_clauses [#"../Abstract/src/clause_manager.rs" 84 4 84 51] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : Abstract_Formula_Formula_Type.t_formula
+    requires {[#"../Abstract/src/clause_manager.rs" 83 15 83 31] Invariant0.invariant' self}
+    ensures { result = original_clauses self }
+    
+end
+module Abstract_ClauseManager_Impl1_OriginalClauses_Impl
+  clone Abstract_LogicUtil_BoolAsInt as BoolAsInt0
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone Abstract_Lit_Impl0_IsPositiveLogic as IsPositiveLogic0
+  clone Abstract_Lit_Impl0_IndexLogic as IndexLogic0
+  use Abstract_Assignments_AssignmentsModel_Type as Abstract_Assignments_AssignmentsModel_Type
+  clone Abstract_Lit_Impl1_Sat as Sat2 with
+    function IndexLogic0.index_logic = IndexLogic0.index_logic,
+    function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
+    function BoolAsInt0.bool_as_int = BoolAsInt0.bool_as_int
+  clone CreusotContracts_Logic_Fset_Impl0_Contains as Contains1 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  use Abstract_Clause_ClauseFSet_Type as Abstract_Clause_ClauseFSet_Type
+  clone Abstract_Clause_Impl0_Sat as Sat1 with
+    predicate Contains0.contains = Contains1.contains,
+    predicate Sat0.sat = Sat2.sat
+  clone Abstract_Assignments_Unset as Unset0
+  clone CreusotContracts_Logic_Fset_Impl0_Contains as Contains0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
+  clone Abstract_Formula_Impl0_Sat as Sat0 with
+    predicate Contains0.contains = Contains0.contains,
+    predicate Sat0.sat = Sat1.sat
+  clone Abstract_Assignments_Impl0_Complete as Complete0 with
+    predicate Unset0.unset = Unset0.unset
+  clone CreusotContracts_Logic_Fset_Impl0_Insert as Insert2 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  clone Abstract_Lit_Impl1_VarInRange as VarInRange0 with
+    function IndexLogic0.index_logic = IndexLogic0.index_logic
+  clone CreusotContracts_Logic_Fset_Impl0_Insert as Insert0 with
+    type t = Abstract_Clause_ClauseFSet_Type.t_clausefset
+  clone Abstract_Formula_Impl0_Insert as Insert1 with
+    function Insert0.insert = Insert0.insert
+  clone Abstract_Formula_Impl0_EventuallySatComplete as EventuallySatComplete0 with
+    predicate Complete0.complete = Complete0.complete,
+    predicate Sat0.sat = Sat0.sat
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  clone Abstract_ClauseAllocator_Impl1_GetClauseFsetInternal as GetClauseFsetInternal0 with
+    function Insert0.insert = Insert2.insert,
+    axiom .
+  use Abstract_Clause_ClauseSeq_Type as Abstract_Clause_ClauseSeq_Type
+  clone Abstract_Clause_Impl1_Invariant as Invariant3 with
+    predicate VarInRange0.var_in_range = VarInRange0.var_in_range
+  clone Abstract_ClauseAllocator_HeaderLen as HeaderLen0
+  clone Abstract_ClauseAllocator_Impl1_GetClauseSeq as GetClauseSeq0 with
+    val HeaderLen0.hEADER_LEN' = HeaderLen0.hEADER_LEN'
+  clone Abstract_Formula_Impl0_Implies as Implies0 with
+    predicate EventuallySatComplete0.eventually_sat_complete = EventuallySatComplete0.eventually_sat_complete,
+    function Insert0.insert = Insert1.insert
+  clone Abstract_ClauseAllocator_Impl1_GetClauseFset as GetClauseFset0 with
+    val HeaderLen0.hEADER_LEN' = HeaderLen0.hEADER_LEN',
+    function GetClauseFsetInternal0.get_clause_fset_internal = GetClauseFsetInternal0.get_clause_fset_internal
+  clone Abstract_ClauseAllocator_CrefInvariant as CrefInvariant0 with
+    val HeaderLen0.hEADER_LEN' = HeaderLen0.hEADER_LEN',
+    function GetClauseSeq0.get_clause_seq = GetClauseSeq0.get_clause_seq,
+    predicate Invariant0.invariant' = Invariant3.invariant'
+  clone Abstract_ClauseAllocator_Impl0_Invariant as Invariant1
+  clone Abstract_Formula_Impl0_FromInternal as FromInternal0 with
+    predicate Invariant0.invariant' = Invariant1.invariant',
+    predicate CrefInvariant0.cref_invariant = CrefInvariant0.cref_invariant,
+    predicate Contains0.contains = Contains0.contains,
+    function GetClauseFset0.get_clause_fset = GetClauseFset0.get_clause_fset,
+    function Insert0.insert = Insert0.insert,
+    axiom .
+  clone Abstract_Formula_Impl0_From as From0 with
+    predicate Invariant0.invariant' = Invariant1.invariant',
+    predicate CrefInvariant0.cref_invariant = CrefInvariant0.cref_invariant,
+    predicate Contains0.contains = Contains0.contains,
+    function GetClauseFset0.get_clause_fset = GetClauseFset0.get_clause_fset,
+    function FromInternal0.from_internal = FromInternal0.from_internal,
+    axiom .
+  use Abstract_CrefManager_CRefManagerModel_Type as Abstract_CrefManager_CRefManagerModel_Type
+  clone Abstract_CrefManager_Impl0_AreImpliedBy as AreImpliedBy0 with
+    function From0.from = From0.from,
+    function GetClauseFset0.get_clause_fset = GetClauseFset0.get_clause_fset,
+    predicate Implies0.implies = Implies0.implies,
+    predicate Invariant0.invariant' = Invariant1.invariant',
+    predicate CrefInvariant0.cref_invariant = CrefInvariant0.cref_invariant,
+    predicate Contains0.contains = Contains0.contains
+  clone Abstract_CrefManager_Impl0_Invariant as Invariant2 with
+    predicate Invariant0.invariant' = Invariant1.invariant',
+    predicate CrefInvariant0.cref_invariant = CrefInvariant0.cref_invariant
+  use Abstract_ClauseManager_ClauseManagerModel_Type as Abstract_ClauseManager_ClauseManagerModel_Type
+  clone Abstract_ClauseManager_Impl0_Invariant as Invariant0 with
+    predicate Invariant0.invariant' = Invariant1.invariant',
+    predicate Invariant1.invariant' = Invariant2.invariant',
+    predicate AreImpliedBy0.are_implied_by = AreImpliedBy0.are_implied_by
+  let rec ghost function original_clauses [#"../Abstract/src/clause_manager.rs" 84 4 84 51] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : Abstract_Formula_Formula_Type.t_formula
+    requires {[#"../Abstract/src/clause_manager.rs" 83 15 83 31] Invariant0.invariant' self}
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    [#"../Abstract/src/clause_manager.rs" 85 8 85 105] From0.from (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self)) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self))
+end
+module Abstract_CrefManager_Impl1_Push_Stub
+  use prelude.Int
+  use Abstract_CrefManager_CRefManagerModel_Type as Abstract_CrefManager_CRefManagerModel_Type
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  clone Abstract_ClauseAllocator_CrefInvariant_Stub as CrefInvariant0
+  clone Abstract_CrefManager_Impl0_Invariant_Stub as Invariant0
+  function push [#"../Abstract/src/cref_manager.rs" 77 4 77 87] (self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (cref : int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel
+    
+end
+module Abstract_CrefManager_Impl1_Push_Interface
+  use prelude.Int
+  use Abstract_CrefManager_CRefManagerModel_Type as Abstract_CrefManager_CRefManagerModel_Type
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  clone Abstract_ClauseAllocator_CrefInvariant_Stub as CrefInvariant0
+  clone Abstract_CrefManager_Impl0_Invariant_Stub as Invariant0
+  function push [#"../Abstract/src/cref_manager.rs" 77 4 77 87] (self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (cref : int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel
+    
+  axiom push_spec : forall self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel, cref : int, clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel . ([#"../Abstract/src/cref_manager.rs" 74 15 74 47] Invariant0.invariant' self clause_allocator) -> ([#"../Abstract/src/cref_manager.rs" 75 15 75 80] CrefInvariant0.cref_invariant cref clause_allocator (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars clause_allocator)) -> ([#"../Abstract/src/cref_manager.rs" 76 14 76 48] Invariant0.invariant' (push self cref clause_allocator) clause_allocator)
+end
+module Abstract_CrefManager_Impl1_Push
+  use prelude.Int
+  use seq.Seq
+  use Abstract_CrefManager_CRefManagerModel_Type as Abstract_CrefManager_CRefManagerModel_Type
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  clone Abstract_ClauseAllocator_CrefInvariant_Stub as CrefInvariant0
+  clone Abstract_CrefManager_Impl0_Invariant_Stub as Invariant0
+  function push [#"../Abstract/src/cref_manager.rs" 77 4 77 87] (self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (cref : int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel
+    
+   =
+    [#"../Abstract/src/cref_manager.rs" 78 8 78 70] Abstract_CrefManager_CRefManagerModel_Type.C_CRefManagerModel (Seq.snoc (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs self) cref) (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_num_vars self)
+  val push [#"../Abstract/src/cref_manager.rs" 77 4 77 87] (self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (cref : int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel
+    requires {[#"../Abstract/src/cref_manager.rs" 74 15 74 47] Invariant0.invariant' self clause_allocator}
+    requires {[#"../Abstract/src/cref_manager.rs" 75 15 75 80] CrefInvariant0.cref_invariant cref clause_allocator (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars clause_allocator)}
+    ensures { result = push self cref clause_allocator }
+    
+  axiom push_spec : forall self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel, cref : int, clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel . ([#"../Abstract/src/cref_manager.rs" 74 15 74 47] Invariant0.invariant' self clause_allocator) -> ([#"../Abstract/src/cref_manager.rs" 75 15 75 80] CrefInvariant0.cref_invariant cref clause_allocator (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars clause_allocator)) -> ([#"../Abstract/src/cref_manager.rs" 76 14 76 48] Invariant0.invariant' (push self cref clause_allocator) clause_allocator)
+end
+module Abstract_CrefManager_Impl1_Push_Impl
+  use prelude.Int
+  use seq.Seq
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone Abstract_Lit_Impl0_IndexLogic as IndexLogic0
+  clone Abstract_Lit_Impl1_VarInRange as VarInRange0 with
+    function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Abstract_Clause_ClauseSeq_Type as Abstract_Clause_ClauseSeq_Type
+  clone Abstract_Clause_Impl1_Invariant as Invariant2 with
+    predicate VarInRange0.var_in_range = VarInRange0.var_in_range
+  clone Abstract_ClauseAllocator_HeaderLen as HeaderLen0
+  use Abstract_ClauseAllocator_ClauseAllocatorModel_Type as Abstract_ClauseAllocator_ClauseAllocatorModel_Type
+  clone Abstract_ClauseAllocator_Impl1_GetClauseSeq as GetClauseSeq0 with
+    val HeaderLen0.hEADER_LEN' = HeaderLen0.hEADER_LEN'
+  clone Abstract_ClauseAllocator_Impl0_Invariant as Invariant1
+  use Abstract_CrefManager_CRefManagerModel_Type as Abstract_CrefManager_CRefManagerModel_Type
+  clone Abstract_ClauseAllocator_CrefInvariant as CrefInvariant0 with
+    val HeaderLen0.hEADER_LEN' = HeaderLen0.hEADER_LEN',
+    function GetClauseSeq0.get_clause_seq = GetClauseSeq0.get_clause_seq,
+    predicate Invariant0.invariant' = Invariant2.invariant'
+  clone Abstract_CrefManager_Impl0_Invariant as Invariant0 with
+    predicate Invariant0.invariant' = Invariant1.invariant',
+    predicate CrefInvariant0.cref_invariant = CrefInvariant0.cref_invariant
+  let rec ghost function push [#"../Abstract/src/cref_manager.rs" 77 4 77 87] (self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (cref : int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel
+    requires {[#"../Abstract/src/cref_manager.rs" 74 15 74 47] Invariant0.invariant' self clause_allocator}
+    requires {[#"../Abstract/src/cref_manager.rs" 75 15 75 80] CrefInvariant0.cref_invariant cref clause_allocator (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars clause_allocator)}
+    ensures { [#"../Abstract/src/cref_manager.rs" 76 14 76 48] Invariant0.invariant' result clause_allocator }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    [#"../Abstract/src/cref_manager.rs" 78 8 78 70] Abstract_CrefManager_CRefManagerModel_Type.C_CRefManagerModel (Seq.snoc (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs self) cref) (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_num_vars self)
+end
+module Abstract_LogicUtil_BoolAsU8_Stub
+  use prelude.Int
+  use prelude.UInt8
+  function bool_as_u8 [@inline:trivial] [#"../Abstract/src/logic_util.rs" 10 0 10 39] (b : bool) : uint8
+end
+module Abstract_LogicUtil_BoolAsU8_Interface
+  use prelude.Int
+  use prelude.UInt8
+  function bool_as_u8 [@inline:trivial] [#"../Abstract/src/logic_util.rs" 10 0 10 39] (b : bool) : uint8
+end
+module Abstract_LogicUtil_BoolAsU8
+  use prelude.Int
+  use prelude.UInt8
+  function bool_as_u8 [@inline:trivial] [#"../Abstract/src/logic_util.rs" 10 0 10 39] (b : bool) : uint8 =
+    [#"../Abstract/src/logic_util.rs" 12 7 15 8] if b then (1 : uint8) else (0 : uint8)
+  val bool_as_u8 [@inline:trivial] [#"../Abstract/src/logic_util.rs" 10 0 10 39] (b : bool) : uint8
+    ensures { result = bool_as_u8 b }
+    
+end
+module Abstract_LogicUtil_SeqToFsetInternal_Stub
+  use prelude.Int
+  use seq.Seq
+  use set.Fset
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  function seq_to_fset_internal [#"../Abstract/src/logic_util.rs" 44 0 44 71] (seq : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel)) (idx : int) : Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel)
+    
+end
+module Abstract_LogicUtil_SeqToFsetInternal_Interface
+  use prelude.Int
+  use seq.Seq
+  use set.Fset
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  function seq_to_fset_internal [#"../Abstract/src/logic_util.rs" 44 0 44 71] (seq : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel)) (idx : int) : Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel)
+    
+  axiom seq_to_fset_internal_spec : forall seq : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel), idx : int . ([#"../Abstract/src/logic_util.rs" 41 11 41 19] idx >= 0) -> ([#"../Abstract/src/logic_util.rs" 43 0 43 80] forall i : int . idx <= i /\ i < Seq.length seq -> Contains0.contains (seq_to_fset_internal seq idx) (Seq.get seq i)) && ([#"../Abstract/src/logic_util.rs" 42 0 42 101] forall l : Abstract_Lit_LitModel_Type.t_litmodel . Contains0.contains (seq_to_fset_internal seq idx) l -> (exists i : int . idx <= i /\ i < Seq.length seq /\ Seq.get seq i = l))
+end
+module Abstract_LogicUtil_SeqToFsetInternal
+  use prelude.Int
+  use seq.Seq
+  use set.Fset
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone CreusotContracts_Logic_Fset_Impl0_Insert_Stub as Insert0 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  function seq_to_fset_internal [#"../Abstract/src/logic_util.rs" 44 0 44 71] (seq : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel)) (idx : int) : Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel)
+    
+  val seq_to_fset_internal [#"../Abstract/src/logic_util.rs" 44 0 44 71] (seq : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel)) (idx : int) : Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel)
+    requires {[#"../Abstract/src/logic_util.rs" 41 11 41 19] idx >= 0}
+    ensures { result = seq_to_fset_internal seq idx }
+    
+  axiom def : forall seq : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel), idx : int . seq_to_fset_internal seq idx = ([#"../Abstract/src/logic_util.rs" 45 4 52 5] if idx < Seq.length seq then
+    let set = seq_to_fset_internal seq (idx + 1) in Insert0.insert set (Seq.get seq idx)
+  else
+    Fset.empty 
+  )
+  axiom seq_to_fset_internal_spec : forall seq : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel), idx : int . ([#"../Abstract/src/logic_util.rs" 41 11 41 19] idx >= 0) -> ([#"../Abstract/src/logic_util.rs" 43 0 43 80] forall i : int . idx <= i /\ i < Seq.length seq -> Contains0.contains (seq_to_fset_internal seq idx) (Seq.get seq i)) && ([#"../Abstract/src/logic_util.rs" 42 0 42 101] forall l : Abstract_Lit_LitModel_Type.t_litmodel . Contains0.contains (seq_to_fset_internal seq idx) l -> (exists i : int . idx <= i /\ i < Seq.length seq /\ Seq.get seq i = l))
+end
+module Abstract_LogicUtil_SeqToFsetInternal_Impl
+  use prelude.Int
+  use seq.Seq
+  use set.Fset
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone CreusotContracts_Logic_Fset_Impl0_Insert as Insert0 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  clone CreusotContracts_Logic_Fset_Impl0_Contains as Contains0 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  let rec ghost function seq_to_fset_internal [#"../Abstract/src/logic_util.rs" 44 0 44 71] (seq : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel)) (idx : int) : Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel)
+    requires {[#"../Abstract/src/logic_util.rs" 41 11 41 19] idx >= 0}
+    ensures { [#"../Abstract/src/logic_util.rs" 42 0 42 101] forall l : Abstract_Lit_LitModel_Type.t_litmodel . Contains0.contains result l -> (exists i : int . idx <= i /\ i < Seq.length seq /\ Seq.get seq i = l) }
+    ensures { [#"../Abstract/src/logic_util.rs" 43 0 43 80] forall i : int . idx <= i /\ i < Seq.length seq -> Contains0.contains result (Seq.get seq i) }
+    variant {[#"../Abstract/src/logic_util.rs" 40 10 40 25] Seq.length seq - idx}
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    [#"../Abstract/src/logic_util.rs" 45 4 52 5] if pure {idx < Seq.length seq} then
+      let set = seq_to_fset_internal seq (idx + 1) in Insert0.insert set (Seq.get seq idx)
+    else
+      Fset.empty 
+    
+end
+module Abstract_LogicUtil_SeqToFset_Stub
+  use prelude.Int
+  use seq.Seq
+  use set.Fset
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  function seq_to_fset [#"../Abstract/src/logic_util.rs" 33 0 33 63] (seq : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel)) : Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel)
+    
+end
+module Abstract_LogicUtil_SeqToFset_Interface
+  use prelude.Int
+  use seq.Seq
+  use set.Fset
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  function seq_to_fset [#"../Abstract/src/logic_util.rs" 33 0 33 63] (seq : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel)) : Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel)
+    
+  axiom seq_to_fset_spec : forall seq : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel) . ([#"../Abstract/src/logic_util.rs" 32 0 32 101] forall l : Abstract_Lit_LitModel_Type.t_litmodel . Contains0.contains (seq_to_fset seq) l -> (exists i : int . 0 <= i /\ i < Seq.length seq /\ Seq.get seq i = l)) && ([#"../Abstract/src/logic_util.rs" 31 0 31 78] forall i : int . 0 <= i /\ i < Seq.length seq -> Contains0.contains (seq_to_fset seq) (Seq.get seq i))
+end
+module Abstract_LogicUtil_SeqToFset
+  use prelude.Int
+  use seq.Seq
+  use set.Fset
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone CreusotContracts_Logic_Fset_Impl0_Contains_Stub as Contains0 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  clone Abstract_LogicUtil_SeqToFsetInternal_Stub as SeqToFsetInternal0 with
+    predicate Contains0.contains = Contains0.contains,
+    axiom .
+  function seq_to_fset [#"../Abstract/src/logic_util.rs" 33 0 33 63] (seq : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel)) : Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel)
+    
+   =
+    [#"../Abstract/src/logic_util.rs" 35 8 35 36] SeqToFsetInternal0.seq_to_fset_internal seq 0
+  val seq_to_fset [#"../Abstract/src/logic_util.rs" 33 0 33 63] (seq : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel)) : Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel)
+    ensures { result = seq_to_fset seq }
+    
+  axiom seq_to_fset_spec : forall seq : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel) . ([#"../Abstract/src/logic_util.rs" 32 0 32 101] forall l : Abstract_Lit_LitModel_Type.t_litmodel . Contains0.contains (seq_to_fset seq) l -> (exists i : int . 0 <= i /\ i < Seq.length seq /\ Seq.get seq i = l)) && ([#"../Abstract/src/logic_util.rs" 31 0 31 78] forall i : int . 0 <= i /\ i < Seq.length seq -> Contains0.contains (seq_to_fset seq) (Seq.get seq i))
+end
+module Abstract_LogicUtil_SeqToFset_Impl
+  use prelude.Int
+  use seq.Seq
+  use set.Fset
+  use Abstract_Lit_LitModel_Type as Abstract_Lit_LitModel_Type
+  clone CreusotContracts_Logic_Fset_Impl0_Insert as Insert0 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  clone CreusotContracts_Logic_Fset_Impl0_Contains as Contains0 with
+    type t = Abstract_Lit_LitModel_Type.t_litmodel
+  clone Abstract_LogicUtil_SeqToFsetInternal as SeqToFsetInternal0 with
+    predicate Contains0.contains = Contains0.contains,
+    function Insert0.insert = Insert0.insert,
+    axiom .
+  let rec ghost function seq_to_fset [#"../Abstract/src/logic_util.rs" 33 0 33 63] (seq : Seq.seq (Abstract_Lit_LitModel_Type.t_litmodel)) : Fset.fset (Abstract_Lit_LitModel_Type.t_litmodel)
+    ensures { [#"../Abstract/src/logic_util.rs" 31 0 31 78] forall i : int . 0 <= i /\ i < Seq.length seq -> Contains0.contains result (Seq.get seq i) }
+    ensures { [#"../Abstract/src/logic_util.rs" 32 0 32 101] forall l : Abstract_Lit_LitModel_Type.t_litmodel . Contains0.contains result l -> (exists i : int . 0 <= i /\ i < Seq.length seq /\ Seq.get seq i = l) }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    [#"../Abstract/src/logic_util.rs" 35 8 35 36] SeqToFsetInternal0.seq_to_fset_internal seq 0
+end
