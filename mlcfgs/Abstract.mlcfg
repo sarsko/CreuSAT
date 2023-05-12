@@ -107,7 +107,7 @@ module CreusotContracts_Logic_Fset_Impl0_Contains
   type t
   use set.Fset
   predicate contains [@inline:trivial] (self : Fset.fset t) (e : t) =
-    [#"../Abstract/src/clause_manager.rs" 17 13 17 31] Fset.mem e self
+    [#"../Abstract/src/clause_manager.rs" 17 0 17 18] Fset.mem e self
   val contains [@inline:trivial] (self : Fset.fset t) (e : t) : bool
     ensures { result = contains self e }
     
@@ -430,7 +430,7 @@ module CreusotContracts_Logic_Fset_Impl0_Insert
   type t
   use set.Fset
   function insert [@inline:trivial] (self : Fset.fset t) (e : t) : Fset.fset t =
-    [#"../Abstract/src/clause_manager.rs" 24 15 24 33] Fset.add e self
+    [#"../Abstract/src/clause_manager.rs" 24 2 24 20] Fset.add e self
   val insert [@inline:trivial] (self : Fset.fset t) (e : t) : Fset.fset t
     ensures { result = insert self e }
     
@@ -549,7 +549,7 @@ module Abstract_ClauseAllocator_CrefInvariantFset
   predicate cref_invariant_fset [#"../Abstract/src/clause_allocator.rs" 27 0 27 107] (cref : int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (num_vars : int)
     
    =
-    [#"../Abstract/src/clause_allocator.rs" 29 8 31 69] cref < Seq.length (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer clause_allocator) /\ Abstract_Lit_LitModel_Type.litmodel_code (Seq.get (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer clause_allocator) cref) + cref + UIntSize.to_int HeaderLen0.hEADER_LEN' <= Seq.length (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer clause_allocator) /\ Invariant0.invariant' (GetClauseFset0.get_clause_fset clause_allocator cref) num_vars
+    [#"../Abstract/src/clause_allocator.rs" 29 8 31 69] 0 <= cref /\ cref < Seq.length (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer clause_allocator) /\ Abstract_Lit_LitModel_Type.litmodel_code (Seq.get (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer clause_allocator) cref) + cref + UIntSize.to_int HeaderLen0.hEADER_LEN' <= Seq.length (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_buffer clause_allocator) /\ Invariant0.invariant' (GetClauseFset0.get_clause_fset clause_allocator cref) num_vars
   val cref_invariant_fset [#"../Abstract/src/clause_allocator.rs" 27 0 27 107] (cref : int) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) (num_vars : int) : bool
     ensures { result = cref_invariant_fset cref clause_allocator num_vars }
     
@@ -1116,7 +1116,7 @@ module Abstract_CrefManager_Impl0_AreImpliedBy
   predicate are_implied_by [#"../Abstract/src/cref_manager.rs" 65 4 67 13] (self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (original_clauses : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel)
     
    =
-    [#"../Abstract/src/cref_manager.rs" 68 8 72 9] let formula = From0.from (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs self) clause_allocator (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_num_vars self) in forall i : int . 0 <= i /\ i < Seq.length (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs self) -> Implies0.implies formula (GetClauseFset0.get_clause_fset clause_allocator (Seq.get (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs self) i))
+    [#"../Abstract/src/cref_manager.rs" 68 8 72 9] let formula = From0.from (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs original_clauses) clause_allocator (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_num_vars self) in forall i : int . 0 <= i /\ i < Seq.length (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs self) -> Implies0.implies formula (GetClauseFset0.get_clause_fset clause_allocator (Seq.get (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs self) i))
   val are_implied_by [#"../Abstract/src/cref_manager.rs" 65 4 67 13] (self : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (original_clauses : Abstract_CrefManager_CRefManagerModel_Type.t_crefmanagermodel) (clause_allocator : Abstract_ClauseAllocator_ClauseAllocatorModel_Type.t_clauseallocatormodel) : bool
     ensures { result = are_implied_by self original_clauses clause_allocator }
     
@@ -1141,7 +1141,7 @@ module Abstract_ClauseManager_Impl0_Invariant
   predicate invariant' [#"../Abstract/src/clause_manager.rs" 65 4 65 41] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel)
     
    =
-    [#"../Abstract/src/clause_manager.rs" 66 8 72 9] Invariant0.invariant' (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) /\ Invariant1.invariant' (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) /\ Invariant1.invariant' (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_learnt_core self) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) /\ AreImpliedBy0.are_implied_by (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_learnt_core self) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) /\ AreImpliedBy0.are_implied_by (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_learnt_core self) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self)
+    [#"../Abstract/src/clause_manager.rs" 66 8 71 9] Invariant0.invariant' (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) /\ Invariant1.invariant' (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) /\ Invariant1.invariant' (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_learnt_core self) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) /\ AreImpliedBy0.are_implied_by (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_learnt_core self) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self)
   val invariant' [#"../Abstract/src/clause_manager.rs" 65 4 65 41] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : bool
     ensures { result = invariant' self }
     
@@ -1213,7 +1213,7 @@ module Abstract_ClauseManager_Impl1_LearnClause_Stub
   clone Abstract_Clause_Impl2_Invariant_Stub as Invariant1
   use Abstract_ClauseManager_ClauseManagerModel_Type as Abstract_ClauseManager_ClauseManagerModel_Type
   clone Abstract_ClauseManager_Impl0_Invariant_Stub as Invariant0
-  function learn_clause [#"../Abstract/src/clause_manager.rs" 84 4 84 70] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) (clause : Abstract_Clause_ClauseSeq_Type.t_clauseseq) : (Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel, int)
+  function learn_clause [#"../Abstract/src/clause_manager.rs" 82 4 82 70] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) (clause : Abstract_Clause_ClauseSeq_Type.t_clauseseq) : (Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel, int)
     
 end
 module Abstract_ClauseManager_Impl1_LearnClause_Interface
@@ -1225,9 +1225,9 @@ module Abstract_ClauseManager_Impl1_LearnClause_Interface
   clone Abstract_Clause_Impl2_Invariant_Stub as Invariant1
   use Abstract_ClauseManager_ClauseManagerModel_Type as Abstract_ClauseManager_ClauseManagerModel_Type
   clone Abstract_ClauseManager_Impl0_Invariant_Stub as Invariant0
-  function learn_clause [#"../Abstract/src/clause_manager.rs" 84 4 84 70] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) (clause : Abstract_Clause_ClauseSeq_Type.t_clauseseq) : (Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel, int)
+  function learn_clause [#"../Abstract/src/clause_manager.rs" 82 4 82 70] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) (clause : Abstract_Clause_ClauseSeq_Type.t_clauseseq) : (Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel, int)
     
-  axiom learn_clause_spec : forall self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel, clause : Abstract_Clause_ClauseSeq_Type.t_clauseseq . ([#"../Abstract/src/clause_manager.rs" 79 15 79 31] Invariant0.invariant' self) -> ([#"../Abstract/src/clause_manager.rs" 80 15 80 36] Seq.length (Abstract_Clause_ClauseSeq_Type.clauseseq_lits clause) > 0) -> ([#"../Abstract/src/clause_manager.rs" 81 15 81 63] Invariant1.invariant' clause (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self))) -> ([#"../Abstract/src/clause_manager.rs" 83 14 83 101] CrefInvariant0.cref_invariant (let (_, a) = learn_clause self clause in a) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator (let (a, _) = learn_clause self clause in a)) (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator (let (a, _) = learn_clause self clause in a)))) && ([#"../Abstract/src/clause_manager.rs" 82 4 82 36] Invariant0.invariant' (let (a, _) = learn_clause self clause in a))
+  axiom learn_clause_spec : forall self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel, clause : Abstract_Clause_ClauseSeq_Type.t_clauseseq . ([#"../Abstract/src/clause_manager.rs" 77 15 77 31] Invariant0.invariant' self) -> ([#"../Abstract/src/clause_manager.rs" 78 15 78 36] Seq.length (Abstract_Clause_ClauseSeq_Type.clauseseq_lits clause) > 0) -> ([#"../Abstract/src/clause_manager.rs" 79 15 79 63] Invariant1.invariant' clause (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self))) -> ([#"../Abstract/src/clause_manager.rs" 81 14 81 101] CrefInvariant0.cref_invariant (let (_, a) = learn_clause self clause in a) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator (let (a, _) = learn_clause self clause in a)) (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator (let (a, _) = learn_clause self clause in a)))) && ([#"../Abstract/src/clause_manager.rs" 80 4 80 36] Invariant0.invariant' (let (a, _) = learn_clause self clause in a))
 end
 module Abstract_ClauseManager_Impl1_LearnClause
   use seq.Seq
@@ -1252,17 +1252,17 @@ module Abstract_ClauseManager_Impl1_LearnClause
     axiom .
   use Abstract_ClauseManager_ClauseManagerModel_Type as Abstract_ClauseManager_ClauseManagerModel_Type
   clone Abstract_ClauseManager_Impl0_Invariant_Stub as Invariant0
-  function learn_clause [#"../Abstract/src/clause_manager.rs" 84 4 84 70] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) (clause : Abstract_Clause_ClauseSeq_Type.t_clauseseq) : (Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel, int)
+  function learn_clause [#"../Abstract/src/clause_manager.rs" 82 4 82 70] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) (clause : Abstract_Clause_ClauseSeq_Type.t_clauseseq) : (Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel, int)
     
    =
-    [#"../Abstract/src/clause_manager.rs" 78 4 78 12] let (new_clause_allocator, cref) = AddClause0.add_clause (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) clause in let new_learnt_core = Push0.push (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_learnt_core self) cref new_clause_allocator in (Abstract_ClauseManager_ClauseManagerModel_Type.C_ClauseManagerModel new_clause_allocator (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self) new_learnt_core, cref)
-  val learn_clause [#"../Abstract/src/clause_manager.rs" 84 4 84 70] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) (clause : Abstract_Clause_ClauseSeq_Type.t_clauseseq) : (Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel, int)
-    requires {[#"../Abstract/src/clause_manager.rs" 79 15 79 31] Invariant0.invariant' self}
-    requires {[#"../Abstract/src/clause_manager.rs" 80 15 80 36] Seq.length (Abstract_Clause_ClauseSeq_Type.clauseseq_lits clause) > 0}
-    requires {[#"../Abstract/src/clause_manager.rs" 81 15 81 63] Invariant1.invariant' clause (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self))}
+    [#"../Abstract/src/clause_manager.rs" 76 4 76 12] let (new_clause_allocator, cref) = AddClause0.add_clause (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) clause in let new_learnt_core = Push0.push (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_learnt_core self) cref new_clause_allocator in (Abstract_ClauseManager_ClauseManagerModel_Type.C_ClauseManagerModel new_clause_allocator (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self) new_learnt_core, cref)
+  val learn_clause [#"../Abstract/src/clause_manager.rs" 82 4 82 70] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) (clause : Abstract_Clause_ClauseSeq_Type.t_clauseseq) : (Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel, int)
+    requires {[#"../Abstract/src/clause_manager.rs" 77 15 77 31] Invariant0.invariant' self}
+    requires {[#"../Abstract/src/clause_manager.rs" 78 15 78 36] Seq.length (Abstract_Clause_ClauseSeq_Type.clauseseq_lits clause) > 0}
+    requires {[#"../Abstract/src/clause_manager.rs" 79 15 79 63] Invariant1.invariant' clause (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self))}
     ensures { result = learn_clause self clause }
     
-  axiom learn_clause_spec : forall self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel, clause : Abstract_Clause_ClauseSeq_Type.t_clauseseq . ([#"../Abstract/src/clause_manager.rs" 79 15 79 31] Invariant0.invariant' self) -> ([#"../Abstract/src/clause_manager.rs" 80 15 80 36] Seq.length (Abstract_Clause_ClauseSeq_Type.clauseseq_lits clause) > 0) -> ([#"../Abstract/src/clause_manager.rs" 81 15 81 63] Invariant1.invariant' clause (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self))) -> ([#"../Abstract/src/clause_manager.rs" 83 14 83 101] CrefInvariant0.cref_invariant (let (_, a) = learn_clause self clause in a) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator (let (a, _) = learn_clause self clause in a)) (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator (let (a, _) = learn_clause self clause in a)))) && ([#"../Abstract/src/clause_manager.rs" 82 4 82 36] Invariant0.invariant' (let (a, _) = learn_clause self clause in a))
+  axiom learn_clause_spec : forall self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel, clause : Abstract_Clause_ClauseSeq_Type.t_clauseseq . ([#"../Abstract/src/clause_manager.rs" 77 15 77 31] Invariant0.invariant' self) -> ([#"../Abstract/src/clause_manager.rs" 78 15 78 36] Seq.length (Abstract_Clause_ClauseSeq_Type.clauseseq_lits clause) > 0) -> ([#"../Abstract/src/clause_manager.rs" 79 15 79 63] Invariant1.invariant' clause (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self))) -> ([#"../Abstract/src/clause_manager.rs" 81 14 81 101] CrefInvariant0.cref_invariant (let (_, a) = learn_clause self clause in a) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator (let (a, _) = learn_clause self clause in a)) (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator (let (a, _) = learn_clause self clause in a)))) && ([#"../Abstract/src/clause_manager.rs" 80 4 80 36] Invariant0.invariant' (let (a, _) = learn_clause self clause in a))
 end
 module Abstract_ClauseManager_Impl1_LearnClause_Impl
   use seq.Seq
@@ -1364,28 +1364,28 @@ module Abstract_ClauseManager_Impl1_LearnClause_Impl
     predicate Invariant0.invariant' = Invariant2.invariant',
     predicate Invariant1.invariant' = Invariant3.invariant',
     predicate AreImpliedBy0.are_implied_by = AreImpliedBy0.are_implied_by
-  let rec ghost function learn_clause [#"../Abstract/src/clause_manager.rs" 84 4 84 70] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) (clause : Abstract_Clause_ClauseSeq_Type.t_clauseseq) : (Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel, int)
-    requires {[#"../Abstract/src/clause_manager.rs" 79 15 79 31] Invariant0.invariant' self}
-    requires {[#"../Abstract/src/clause_manager.rs" 80 15 80 36] Seq.length (Abstract_Clause_ClauseSeq_Type.clauseseq_lits clause) > 0}
-    requires {[#"../Abstract/src/clause_manager.rs" 81 15 81 63] Invariant1.invariant' clause (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self))}
-    ensures { [#"../Abstract/src/clause_manager.rs" 82 4 82 36] Invariant0.invariant' (let (a, _) = result in a) }
-    ensures { [#"../Abstract/src/clause_manager.rs" 83 14 83 101] CrefInvariant0.cref_invariant (let (_, a) = result in a) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator (let (a, _) = result in a)) (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator (let (a, _) = result in a))) }
+  let rec ghost function learn_clause [#"../Abstract/src/clause_manager.rs" 82 4 82 70] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) (clause : Abstract_Clause_ClauseSeq_Type.t_clauseseq) : (Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel, int)
+    requires {[#"../Abstract/src/clause_manager.rs" 77 15 77 31] Invariant0.invariant' self}
+    requires {[#"../Abstract/src/clause_manager.rs" 78 15 78 36] Seq.length (Abstract_Clause_ClauseSeq_Type.clauseseq_lits clause) > 0}
+    requires {[#"../Abstract/src/clause_manager.rs" 79 15 79 63] Invariant1.invariant' clause (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self))}
+    ensures { [#"../Abstract/src/clause_manager.rs" 80 4 80 36] Invariant0.invariant' (let (a, _) = result in a) }
+    ensures { [#"../Abstract/src/clause_manager.rs" 81 14 81 101] CrefInvariant0.cref_invariant (let (_, a) = result in a) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator (let (a, _) = result in a)) (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator (let (a, _) = result in a))) }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
-    [#"../Abstract/src/clause_manager.rs" 78 4 78 12] let (new_clause_allocator, cref) = AddClause0.add_clause (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) clause in let new_learnt_core = Push0.push (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_learnt_core self) cref new_clause_allocator in (Abstract_ClauseManager_ClauseManagerModel_Type.C_ClauseManagerModel new_clause_allocator (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self) new_learnt_core, cref)
+    [#"../Abstract/src/clause_manager.rs" 76 4 76 12] let (new_clause_allocator, cref) = AddClause0.add_clause (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) clause in let new_learnt_core = Push0.push (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_learnt_core self) cref new_clause_allocator in (Abstract_ClauseManager_ClauseManagerModel_Type.C_ClauseManagerModel new_clause_allocator (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self) new_learnt_core, cref)
 end
 module Abstract_ClauseManager_Impl1_OriginalClauses_Stub
   use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
   use Abstract_ClauseManager_ClauseManagerModel_Type as Abstract_ClauseManager_ClauseManagerModel_Type
   clone Abstract_ClauseManager_Impl0_Invariant_Stub as Invariant0
-  function original_clauses [#"../Abstract/src/clause_manager.rs" 99 4 99 51] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : Abstract_Formula_Formula_Type.t_formula
+  function original_clauses [#"../Abstract/src/clause_manager.rs" 97 4 97 51] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : Abstract_Formula_Formula_Type.t_formula
     
 end
 module Abstract_ClauseManager_Impl1_OriginalClauses_Interface
   use Abstract_Formula_Formula_Type as Abstract_Formula_Formula_Type
   use Abstract_ClauseManager_ClauseManagerModel_Type as Abstract_ClauseManager_ClauseManagerModel_Type
   clone Abstract_ClauseManager_Impl0_Invariant_Stub as Invariant0
-  function original_clauses [#"../Abstract/src/clause_manager.rs" 99 4 99 51] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : Abstract_Formula_Formula_Type.t_formula
+  function original_clauses [#"../Abstract/src/clause_manager.rs" 97 4 97 51] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : Abstract_Formula_Formula_Type.t_formula
     
 end
 module Abstract_ClauseManager_Impl1_OriginalClauses
@@ -1406,12 +1406,12 @@ module Abstract_ClauseManager_Impl1_OriginalClauses
   use Abstract_CrefManager_CRefManagerModel_Type as Abstract_CrefManager_CRefManagerModel_Type
   use Abstract_ClauseManager_ClauseManagerModel_Type as Abstract_ClauseManager_ClauseManagerModel_Type
   clone Abstract_ClauseManager_Impl0_Invariant_Stub as Invariant0
-  function original_clauses [#"../Abstract/src/clause_manager.rs" 99 4 99 51] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : Abstract_Formula_Formula_Type.t_formula
+  function original_clauses [#"../Abstract/src/clause_manager.rs" 97 4 97 51] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : Abstract_Formula_Formula_Type.t_formula
     
    =
-    [#"../Abstract/src/clause_manager.rs" 100 8 100 105] From0.from (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self)) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self))
-  val original_clauses [#"../Abstract/src/clause_manager.rs" 99 4 99 51] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : Abstract_Formula_Formula_Type.t_formula
-    requires {[#"../Abstract/src/clause_manager.rs" 98 15 98 31] Invariant0.invariant' self}
+    [#"../Abstract/src/clause_manager.rs" 98 8 98 105] From0.from (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self)) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self))
+  val original_clauses [#"../Abstract/src/clause_manager.rs" 97 4 97 51] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : Abstract_Formula_Formula_Type.t_formula
+    requires {[#"../Abstract/src/clause_manager.rs" 96 15 96 31] Invariant0.invariant' self}
     ensures { result = original_clauses self }
     
 end
@@ -1495,11 +1495,11 @@ module Abstract_ClauseManager_Impl1_OriginalClauses_Impl
     predicate Invariant0.invariant' = Invariant1.invariant',
     predicate Invariant1.invariant' = Invariant2.invariant',
     predicate AreImpliedBy0.are_implied_by = AreImpliedBy0.are_implied_by
-  let rec ghost function original_clauses [#"../Abstract/src/clause_manager.rs" 99 4 99 51] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : Abstract_Formula_Formula_Type.t_formula
-    requires {[#"../Abstract/src/clause_manager.rs" 98 15 98 31] Invariant0.invariant' self}
+  let rec ghost function original_clauses [#"../Abstract/src/clause_manager.rs" 97 4 97 51] (self : Abstract_ClauseManager_ClauseManagerModel_Type.t_clausemanagermodel) : Abstract_Formula_Formula_Type.t_formula
+    requires {[#"../Abstract/src/clause_manager.rs" 96 15 96 31] Invariant0.invariant' self}
     
    = [@vc:do_not_keep_trace] [@vc:sp]
-    [#"../Abstract/src/clause_manager.rs" 100 8 100 105] From0.from (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self)) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self))
+    [#"../Abstract/src/clause_manager.rs" 98 8 98 105] From0.from (Abstract_CrefManager_CRefManagerModel_Type.crefmanagermodel_crefs (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_original_clauses self)) (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self) (Abstract_ClauseAllocator_ClauseAllocatorModel_Type.clauseallocatormodel_num_vars (Abstract_ClauseManager_ClauseManagerModel_Type.clausemanagermodel_clause_allocator self))
 end
 module Abstract_LogicUtil_BoolAsU8_Stub
   use prelude.Int

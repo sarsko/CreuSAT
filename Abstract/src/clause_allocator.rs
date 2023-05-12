@@ -26,7 +26,7 @@ pub(crate) fn cref_invariant(cref: Int, clause_allocator: ClauseAllocatorModel, 
 #[predicate]
 pub(crate) fn cref_invariant_fset(cref: Int, clause_allocator: ClauseAllocatorModel, num_vars: Int) -> bool {
     pearlite! {
-        cref < clause_allocator.buffer.len()
+        0 <= cref && cref < clause_allocator.buffer.len()
         && clause_allocator.buffer[cref].code + cref + HEADER_LEN@ <= clause_allocator.buffer.len() // TODO: Do I need this?
         && clause_allocator.get_clause_fset(cref).invariant(num_vars)
     }

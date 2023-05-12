@@ -67,16 +67,12 @@ impl ClauseManagerModel {
             self.clause_allocator.invariant()
             && self.original_clauses.invariant(self.clause_allocator)
             && self.learnt_core.invariant(self.clause_allocator)
-            // TODO: fix issue
-            // These two should definitely not be passing at the same time
             && self.learnt_core.are_implied_by(self.original_clauses, self.clause_allocator)
-            && self.original_clauses.are_implied_by(self.learnt_core, self.clause_allocator)
         }
     }
 }
 
 impl ClauseManagerModel {
-    // TODO?: Do I need something about that learn_clause is eq to learning a clause? (or is that captured by the invariant?)
     #[logic]
     #[requires(self.invariant())]
     #[requires(clause.lits.len() > 0)]

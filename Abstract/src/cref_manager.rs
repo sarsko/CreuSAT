@@ -66,7 +66,7 @@ impl CRefManagerModel {
         self, original_clauses: CRefManagerModel, clause_allocator: ClauseAllocatorModel,
     ) -> bool {
         pearlite! {
-            let formula = Formula::from(self.crefs, clause_allocator, self.num_vars);
+            let formula = Formula::from(original_clauses.crefs, clause_allocator, self.num_vars);
             forall<i: Int> 0 <= i && i < self.crefs.len() ==>
                     formula.implies(clause_allocator.get_clause_fset(self.crefs[i]))
         }
