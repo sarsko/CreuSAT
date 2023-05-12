@@ -3,6 +3,7 @@ extern crate creusot_contracts;
 use creusot_contracts::logic::FSet;
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
+use crate::cref_manager::CRefManagerModel;
 use crate::{clause::*, lit::*};
 
 use crate::logic_util::*;
@@ -15,9 +16,10 @@ use crate::logic_util::*;
 #[predicate]
 pub(crate) fn cref_invariant(cref: Int, clause_allocator: ClauseAllocatorModel, num_vars: Int) -> bool {
     pearlite! {
-        cref < clause_allocator.buffer.len()
+        0 <= cref && cref < clause_allocator.buffer.len()
         && clause_allocator.buffer[cref].code + cref + HEADER_LEN@ <= clause_allocator.buffer.len() // TODO: Do I need this?
-        && clause_allocator.get_clause_seq(cref).invariant(num_vars)
+        //&& clause_allocator.get_clause_seq(cref).invariant(num_vars)
+        //clause_allocator.buffer.subsequence(cref + HEADER_LEN@, cref + HEADER_LEN@ + self.buffer[cref].code)
     }
 }
 
@@ -48,7 +50,7 @@ impl ShallowModel for ClauseAllocator {
 }
 */
 
-pub const HEADER_LEN: usize = 1;
+pub const HEADER_LEN: usize = 2;
 
 /*
 impl ClauseAllocator {
@@ -168,15 +170,23 @@ impl ClauseAllocatorModel {
         }
     }
 
-    /*
+    // TODO: Increase header size and store header as well.
+    // NOTE: If the ClauseManagers are passed then things pass quicker
     #[logic]
     #[requires(self.invariant())]
-    #[requires(lits@.len() > 0)]
-    #[requires(clause.invariant())]
-    #[ensures(cref_invariant(result.1@, result.0, self.num_vars@))]
+    #[requires(clause.lits.len() > 0)]
+    #[requires(clause.invariant(self.num_vars))]
+    #[ensures(self.extended(result.0))]
+    #[ensures(cref_invariant(result.1, result.0, result.0.num_vars))]
     #[ensures(result.0.invariant())]
-    pub(crate) fn add_clause(self, clause: ClauseSeq) -> (Self, CRef) {
+    #[ensures(forall<i: Int> 0 <= i && i < self.buffer.len() ==> self.buffer[i] == result.0.buffer[i])]
+    pub(crate) fn add_clause(self, clause: ClauseSeq) -> (Self, Int) {
+        let cref = self.buffer.len();
+        let tmp_buffer = self.buffer.push(LitModel { code: clause.lits.len() });
 
+        let header = clause.calc_header();
+        let tmp_buffer = tmp_buffer.push(LitModel { code: header });
+
+        (Self { buffer: tmp_buffer.concat(clause.lits), num_vars: self.num_vars }, cref)
     }
-    */
 }

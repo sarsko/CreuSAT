@@ -58,7 +58,9 @@ impl Formula {
                 cref_invariant(crefs[i]@, clause_allocator, _num_vars))] // CRefManager.invariant unwrapped -> TODO: refactor?
     #[ensures(forall<i: Int> idx <= i && i < crefs.len() ==> exists<c: _> result.contains(c) && clause_allocator.get_clause_fset(crefs[i]@) == c)]
     #[ensures(forall<c: _> result.contains(c) ==> exists<i: Int> idx <= i && i < crefs.len() && clause_allocator.get_clause_fset(crefs[i]@) == c)]
-    fn from_internal(crefs: Seq<CRef>, clause_allocator: ClauseAllocatorModel, idx: Int, _num_vars: Int) -> FSet<ClauseFSet> {
+    fn from_internal(
+        crefs: Seq<CRef>, clause_allocator: ClauseAllocatorModel, idx: Int, _num_vars: Int,
+    ) -> FSet<ClauseFSet> {
         pearlite! {
             //if idx < (clause@_allocator).len() {
             if idx < crefs.len() {

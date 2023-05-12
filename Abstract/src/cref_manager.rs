@@ -2,7 +2,11 @@ extern crate creusot_contracts;
 
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
-use crate::{assignments::*, clause_allocator::{*, self}, lit::*};
+use crate::{
+    assignments::*,
+    clause_allocator::{self, *},
+    lit::*,
+};
 
 use crate::formula::*;
 
@@ -12,7 +16,6 @@ pub struct CRefManager {
     pub(crate) num_vars: usize,
 }
 */
-
 
 /*
 #[cfg(creusot)]
@@ -39,6 +42,7 @@ impl CRefManager {
     }
 }
 */
+
 
 // TODO: Impl Index?
 pub struct CRefManagerModel {

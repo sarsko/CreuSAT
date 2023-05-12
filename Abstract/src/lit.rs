@@ -79,7 +79,6 @@ impl LitModel {
         }
     }
 
-    // This is the one that is supposed to stay
     #[predicate]
     #[why3::attr = "inline:trivial"]
     pub(crate) fn sat(self, a: AssignmentsModel) -> bool {

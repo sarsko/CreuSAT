@@ -4,6 +4,33 @@ use creusot_contracts::{logic::FSet, std::*};
 
 use crate::{assignments::*, lit::*};
 
+/*
+// Glucose representation of a Clause
+class Clause {
+    struct {
+        unsigned mark : 2;
+        unsigned learnt : 1;
+        unsigned has_extra : 1;
+        unsigned reloced : 1;
+        unsigned canbedel : 1;
+        unsigned location : 2;
+        unsigned simplified : 1;
+        unsigned exported : 2;
+        unsigned lbd : 21;
+        unsigned imported : 1;
+        unsigned oneWatched : 1;
+        unsigned size : 30;
+    } header;
+    union {
+        Lit      lit;
+        float    act;
+        uint32_t abs;
+        uint32_t touched;
+        CRef     rel;
+    } data[0];
+}
+*/
+
 pub(crate) struct ClauseFSet {
     pub(crate) lits: FSet<LitModel>,
 }
@@ -31,6 +58,14 @@ pub struct ClauseSeq {
 }
 
 impl ClauseSeq {
+    // TODO
+    #[logic]
+    pub(crate) fn calc_header(self) -> Int {
+        0
+    }
+}
+
+impl ClauseSeq {
     #[predicate]
     pub(crate) fn invariant(self, num_vars: Int) -> bool {
         pearlite! {
@@ -39,6 +74,7 @@ impl ClauseSeq {
         }
     }
 
+    // TODO: Not currently in use. Unsure whether it is needed.
     #[predicate]
     pub(crate) fn no_duplicate_indexes(self) -> bool {
         pearlite! {

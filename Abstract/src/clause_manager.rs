@@ -67,17 +67,34 @@ impl ClauseManagerModel {
             self.clause_allocator.invariant()
             && self.original_clauses.invariant(self.clause_allocator)
             && self.learnt_core.invariant(self.clause_allocator)
+            // TODO: fix issue
+            // These two should definitely not be passing at the same time
             && self.learnt_core.are_implied_by(self.original_clauses, self.clause_allocator)
+            && self.original_clauses.are_implied_by(self.learnt_core, self.clause_allocator)
         }
     }
 }
 
 impl ClauseManagerModel {
-    /*
+    // TODO?: Do I need something about that learn_clause is eq to learning a clause? (or is that captured by the invariant?)
     #[logic]
-    pub(crate) fn learn_clause(self) -> CRef {
+    #[requires(self.invariant())]
+    #[requires(clause.lits.len() > 0)]
+    #[requires(clause.invariant(self.clause_allocator.num_vars))]
+    #[ensures(result.0.invariant())]
+    #[ensures(cref_invariant(result.1, result.0.clause_allocator, result.0.clause_allocator.num_vars))]
+    pub(crate) fn learn_clause(self, clause: ClauseSeq) -> (Self, Int) {
+        let (new_clause_allocator, cref) = self.clause_allocator.add_clause(clause);
+        let new_learnt_core = self.learnt_core.push(cref, new_clause_allocator);
+        (
+            Self {
+                clause_allocator: new_clause_allocator,
+                original_clauses: self.original_clauses,
+                learnt_core: new_learnt_core,
+            },
+            cref,
+        )
     }
-    */
 
     #[logic]
     #[requires(self.invariant())]
@@ -86,85 +103,3 @@ impl ClauseManagerModel {
     }
 }
 
-/*
-#[logic]
-#[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
-#[ensures(learnt_clauses.are_implied_by(original_clauses, ca.push(lit)))]
-fn lemma_implied_by_stable_on_push(
-    original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, lit: Lit,
-) {
-}
-
-/*
-#[logic]
-#[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
-#[requires(ca.extended(ca2))]
-#[requires(ca2
-//#[requires(ca2.extended(ca))]
-#[ensures(learnt_clauses.are_implied_by(original_clauses, ca2))]
-fn lemma_implied_by_stable_on_extension(
-    original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator, lit: Lit,
-) {}
-*/
-
-#[logic]
-#[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
-#[requires(ca.extended(ca2))]
-//#[requires(ca2.extended(ca))]
-#[ensures(learnt_clauses.are_implied_by(original_clauses, ca2))]
-fn lemma_implied_by_stable_on_extension(
-    original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator,
-) {}
-
-#[logic]
-#[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
-#[requires(ca.extended(ca2))]
-#[requires(ca2.extended(ca))]
-#[ensures(ca == ca2)]
-fn lemma_extended_means_eq(
-    original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator,
-) {}
-
-#[logic]
-#[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
-#[requires(ca.extended(ca2))]
-#[requires(ca2.extended(ca))]
-#[ensures(ca@.len() == ca2@.len())]
-fn lemma_extended_means_eq_len(
-    original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator,
-) {}
-
-#[logic]
-#[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
-#[requires(ca.extended(ca2))]
-#[requires(ca2.extended(ca))]
-#[ensures(ca.buffer@ == ca2.buffer@)]
-fn lemma_extended_means_eq_buffer(
-    original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator,
-) {}
-
-#[logic]
-#[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
-#[requires(ca.buffer@.len() > 0)]
-#[requires(ca2@ == ca@.subsequence(0, ca.buffer@.len()))]
-#[requires(ca@ == ca2@.subsequence(0, ca.buffer@.len()))]
-#[requires(ca2.buffer@.len() == ca.buffer@.len())]
-#[ensures(ca.buffer@ == ca2.buffer@)]
-fn lemma_subseq(
-    original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator,
-) {}
-
-#[logic]
-#[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
-#[requires(ca.num_vars == ca2.num_vars)]
-#[requires(forall<i: Int> 0 <= i && i < ca.buffer@.len() ==> ca@[i] == ca2@[i])]
-#[requires(forall<i: Int> 0 <= i && i < ca2.buffer@.len() ==> ca@[i] == ca2@[i])]
-#[requires(ca2.buffer@.len() == ca.buffer@.len())]
-#[ensures(learnt_clauses.are_implied_by(original_clauses, ca2))]
-fn lemma_implied_by_stable_on_blim(
-    original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator,
-) {
-}
-
-
-*/

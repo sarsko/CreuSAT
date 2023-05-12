@@ -37,7 +37,6 @@ impl ShallowModel for Assignments {
 }
 */
 
-
 #[predicate]
 pub fn unset(v: Int) -> bool {
     pearlite! { v >= 2 }
@@ -50,7 +49,7 @@ impl AssignmentsModel {
     pub fn invariant(self) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self.0.len() ==>
-                self.0[i] < 2
+                0 <= self.0[i] && self.0[i] < 2
         }
     }
 
