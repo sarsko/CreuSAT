@@ -7,6 +7,7 @@ use crate::cref_manager::CRefManagerModel;
 use crate::{clause::*, lit::*};
 
 use crate::logic_util::*;
+#[cfg(creusot)]
 use crate::cref::cref_invariant;
 
 

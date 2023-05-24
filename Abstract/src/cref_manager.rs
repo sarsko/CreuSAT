@@ -9,6 +9,7 @@ use crate::{
 };
 
 use crate::formula::*;
+#[cfg(creusot)]
 use crate::cref::cref_invariant;
 
 /*

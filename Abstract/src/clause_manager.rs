@@ -5,6 +5,7 @@ use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 use crate::{assignments::*, clause_allocator::*, cref_manager::*, lit::*};
 
 use crate::{clause::*, formula::*, logic_util::*};
+#[cfg(creusot)]
 use crate::cref::cref_invariant;
 
 /*

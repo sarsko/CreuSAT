@@ -5,6 +5,7 @@ use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
 //use crate::assignments::AssignedState;
 use crate::{assignments::*, clause::*, clause_allocator::*, lit::*};
+#[cfg(creusot)]
 use crate::cref::cref_invariant;
 
 pub struct Formula {

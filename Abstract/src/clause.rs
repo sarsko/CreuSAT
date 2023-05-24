@@ -3,6 +3,7 @@ use creusot_contracts::*;
 use creusot_contracts::{logic::FSet, std::*};
 
 use crate::{assignments::*, lit::*};
+#[cfg(creusot)]
 use crate::logic_util::seq_to_fset;
 
 /*
