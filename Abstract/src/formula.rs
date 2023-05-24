@@ -5,10 +5,11 @@ use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
 //use crate::assignments::AssignedState;
 use crate::{assignments::*, clause::*, clause_allocator::*, lit::*};
+use crate::cref::cref_invariant;
 
 pub struct Formula {
-    formula: FSet<ClauseFSet>,
-    num_vars: Int,
+    pub(crate) formula: FSet<ClauseFSet>,
+    pub(crate) num_vars: Int,
 }
 
 /*
@@ -50,7 +51,6 @@ impl Formula {
     }
 
     #[logic]
-    //#[variant((clause@_allocator).len() - idx)]
     #[variant(crefs.len() - idx)]
     #[requires(idx >= 0)]
     #[requires(clause_allocator.invariant())]
@@ -62,7 +62,6 @@ impl Formula {
         crefs: Seq<Int>, clause_allocator: ClauseAllocatorModel, idx: Int, _num_vars: Int,
     ) -> FSet<ClauseFSet> {
         pearlite! {
-            //if idx < (clause@_allocator).len() {
             if idx < crefs.len() {
                 let set = Formula::from_internal(crefs, clause_allocator, idx + 1, _num_vars);
                 let clause = clause_allocator.get_clause_fset(crefs[idx]);

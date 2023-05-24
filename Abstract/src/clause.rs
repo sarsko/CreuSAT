@@ -3,6 +3,7 @@ use creusot_contracts::*;
 use creusot_contracts::{logic::FSet, std::*};
 
 use crate::{assignments::*, lit::*};
+use crate::logic_util::seq_to_fset;
 
 /*
 // Glucose representation of a Clause
@@ -58,10 +59,24 @@ pub struct ClauseSeq {
 }
 
 impl ClauseSeq {
-    // TODO
+    // TODO: Actually calc the header
     #[logic]
+    #[ensures(0 <= result)]
     pub(crate) fn calc_header(self) -> Int {
         0
+    }
+
+
+    #[logic]
+    #[ensures(0 <= result)]
+    #[ensures(result == self.lits.len())]
+    pub(crate) fn len(self) -> Int {
+        self.lits.len()
+    }
+
+    #[logic]
+    pub(crate) fn to_fset(self) -> ClauseFSet {
+        ClauseFSet { lits: seq_to_fset(self.lits) }
     }
 }
 

@@ -7,30 +7,8 @@ use crate::cref_manager::CRefManagerModel;
 use crate::{clause::*, lit::*};
 
 use crate::logic_util::*;
+use crate::cref::cref_invariant;
 
-// TODO: Decide on whether to have it as a type or a struct
-//pub type CRef = u32;
-
-// TODO: This seems to be a non-ideal invariant
-// TODO: Add more
-#[predicate]
-pub(crate) fn cref_invariant(cref: Int, clause_allocator: ClauseAllocatorModel, num_vars: Int) -> bool {
-    pearlite! {
-        0 <= cref && cref < clause_allocator.buffer.len()
-        && clause_allocator.buffer[cref].code + cref + HEADER_LEN@ <= clause_allocator.buffer.len() // TODO: Do I need this?
-        //&& clause_allocator.get_clause_seq(cref).invariant(num_vars)
-        //clause_allocator.buffer.subsequence(cref + HEADER_LEN@, cref + HEADER_LEN@ + self.buffer[cref].code)
-    }
-}
-
-#[predicate]
-pub(crate) fn cref_invariant_fset(cref: Int, clause_allocator: ClauseAllocatorModel, num_vars: Int) -> bool {
-    pearlite! {
-        0 <= cref && cref < clause_allocator.buffer.len()
-        && clause_allocator.buffer[cref].code + cref + HEADER_LEN@ <= clause_allocator.buffer.len() // TODO: Do I need this?
-        && clause_allocator.get_clause_fset(cref).invariant(num_vars)
-    }
-}
 
 /*
 // TODO: unpub buffer
@@ -116,7 +94,9 @@ pub struct ClauseAllocatorModel {
 impl ClauseAllocatorModel {
     #[predicate]
     pub(crate) fn invariant(self) -> bool {
-        true
+        pearlite! {
+            forall<i: Int> 0 <= i && i < self.buffer.len() ==> self.buffer[i].invariant()
+        }
     }
     /*
     #[predicate]
@@ -132,26 +112,43 @@ impl ClauseAllocatorModel {
         pearlite! {
             self.num_vars == new.num_vars
             && self.buffer.len() < new.buffer.len()
-            //&& self.buffer@ == new.buffer@.subsequence(0, self.buffer@.len())
+            //&& self.buffer == new.buffer.subsequence(0, self.buffer.len())
             && forall<i: Int> 0 <= i && i < self.buffer.len() ==> self.buffer[i] == new.buffer[i]
         }
     }
 }
 
 impl ClauseAllocatorModel {
+    // TODO: Add circularity ensures for this and fset ?
     #[logic]
-    //#[requires(cref_invariant(cref, self))]
+    // TODO: Cref invariant partially unfolded (perhaps split it up to avoid the circularity)
+    #[requires(
+        0 <= cref && cref < self.buffer.len()
+        && self.buffer[cref].code + cref + HEADER_LEN@ <= self.buffer.len()
+    )]
+    #[requires(self.invariant())]
+    #[ensures(result.lits == self.buffer.subsequence(cref + HEADER_LEN@, cref + HEADER_LEN@ + self.buffer[cref].code))]
+    #[ensures(result.lits.len() == self.buffer[cref].code)]
     pub(crate) fn get_clause_seq(self, cref: Int) -> ClauseSeq {
         pearlite! {
             ClauseSeq { lits: self.buffer.subsequence(cref + HEADER_LEN@, cref + HEADER_LEN@ + self.buffer[cref].code) }
         }
     }
 
+    // TODO: Add circularity ensures for this and seq ?
     #[logic]
-    //#[requires(cref_invariant(cref, self))]
+    // TODO: Cref invariant partially unfolded (perhaps split it up to avoid the circularity)
+    #[requires(
+        0 <= cref && cref < self.buffer.len()
+        && self.buffer[cref].code + cref + HEADER_LEN@ <= self.buffer.len()
+    )]
+    #[requires(self.invariant())]
+    #[ensures(result.lits.len() <= self.buffer[cref].code)] // Change this to eq by adding a no-duplicate bound on clauses?
+    #[ensures(result.lits == self.get_clause_seq(cref).lits.to_set())]
     pub(crate) fn get_clause_fset(self, cref: Int) -> ClauseFSet {
         pearlite! {
-            ClauseFSet { lits: self.get_clause_fset_internal(cref, cref + HEADER_LEN@, cref + HEADER_LEN@ + self.buffer[cref].code) }
+            //ClauseFSet { lits: self.get_clause_fset_internal(cref, cref + HEADER_LEN@, cref + HEADER_LEN@ + self.buffer[cref].code) }
+            ClauseFSet { lits: self.buffer.subsequence(cref + HEADER_LEN@, cref + HEADER_LEN@ + self.buffer[cref].code).to_set() }
         }
     }
 
@@ -176,17 +173,29 @@ impl ClauseAllocatorModel {
     #[requires(self.invariant())]
     #[requires(clause.lits.len() > 0)]
     #[requires(clause.invariant(self.num_vars))]
+    #[requires(oc.invariant(self))]
+    #[requires(lc.invariant(self))]
     #[ensures(self.extended(result.0))]
     #[ensures(cref_invariant(result.1, result.0, result.0.num_vars))]
     #[ensures(result.0.invariant())]
     #[ensures(forall<i: Int> 0 <= i && i < self.buffer.len() ==> self.buffer[i] == result.0.buffer[i])]
-    pub(crate) fn add_clause(self, clause: ClauseSeq) -> (Self, Int) {
+    #[ensures(result.0.get_clause_seq(result.1) == clause)]
+    //#[ensures(result.0.get_clause_seq(result.1).is_m)]
+    #[ensures(oc.invariant(result.0))]
+    #[ensures(lc.invariant(result.0))]
+    pub(crate) fn add_clause(self, clause: ClauseSeq, oc: CRefManagerModel, lc: CRefManagerModel) -> (Self, Int) {
         let cref = self.buffer.len();
-        let tmp_buffer = self.buffer.push(LitModel { code: clause.lits.len() });
+        //let tmp_buffer = self.buffer.push(LitModel { code: clause.lits.len() });
+        let tmp_buffer = self.buffer.push(LitModel { code: clause.len() });
 
         let header = clause.calc_header();
-        let tmp_buffer = tmp_buffer.push(LitModel { code: header });
+        let tmp_buffer2 = tmp_buffer.push(LitModel { code: header });
 
-        (Self { buffer: tmp_buffer.concat(clause.lits), num_vars: self.num_vars }, cref)
+        let result = (Self { buffer: tmp_buffer2.concat(clause.lits), num_vars: self.num_vars }, cref);
+
+        // Trick to get the SMT solvers to apply ext_eq so that we get ==
+        if clause.lits.ext_eq(result.0.get_clause_seq(result.1).lits) {}
+
+        result
     }
 }

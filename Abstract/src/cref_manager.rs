@@ -9,6 +9,7 @@ use crate::{
 };
 
 use crate::formula::*;
+use crate::cref::cref_invariant;
 
 /*
 pub struct CRefManager {
@@ -78,7 +79,26 @@ impl CRefManagerModel {
     #[requires(self.invariant(clause_allocator))]
     #[requires(cref_invariant(cref, clause_allocator, clause_allocator.num_vars))]
     #[ensures(result.invariant(clause_allocator))]
+    // TODO: unsure whether these are needed
+    #[ensures(result.crefs == self.crefs.push(cref))]
+    #[ensures(result.num_vars == self.num_vars)]
     pub(crate) fn push(self, cref: Int, clause_allocator: ClauseAllocatorModel) -> Self {
+        Self { crefs: self.crefs.push(cref), num_vars: self.num_vars }
+    }
+
+    #[logic]
+    #[requires(self.invariant(clause_allocator))]
+    #[requires(cref_invariant(cref, clause_allocator, clause_allocator.num_vars))]
+    #[requires(
+        Formula::from(orig.crefs, clause_allocator, clause_allocator.num_vars)
+        .implies(clause_allocator.get_clause_fset(cref)))]
+    #[ensures(result.invariant(clause_allocator))]
+
+    #[ensures(result.are_implied_by(orig, clause_allocator))]
+    // TODO: unsure whether these are needed
+    #[ensures(result.crefs == self.crefs.push(cref))]
+    #[ensures(result.num_vars == self.num_vars)]
+    pub(crate) fn push2(self, cref: Int, clause_allocator: ClauseAllocatorModel, orig: CRefManagerModel) -> Self {
         Self { crefs: self.crefs.push(cref), num_vars: self.num_vars }
     }
 }

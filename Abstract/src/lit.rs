@@ -72,10 +72,17 @@ impl LitModel {
 }
 
 impl LitModel {
+    // NOTE: This is a lesser invariant which captures just the nat property
+    #[predicate]
+    pub(crate) fn invariant(self) -> bool {
+        0 <= self.code
+    }
+    
     #[predicate]
     pub(crate) fn var_in_range(self, n: Int) -> bool {
         pearlite! {
-            self.index_logic() < n
+            self.invariant()
+            && self.index_logic() < n
         }
     }
 

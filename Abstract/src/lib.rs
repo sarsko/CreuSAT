@@ -11,6 +11,7 @@ mod assignments;
 mod clause;
 mod clause_allocator;
 mod clause_manager;
+mod cref;
 mod cref_manager;
 mod formula;
 mod lit;

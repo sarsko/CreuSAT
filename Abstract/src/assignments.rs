@@ -49,7 +49,7 @@ impl AssignmentsModel {
     pub fn invariant(self) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self.0.len() ==>
-                0 <= self.0[i] && self.0[i] < 2
+                0 <= self.0[i] //&& self.0[i] < 2 // Why did I have this? It is just wrong ?
         }
     }
 
