@@ -33,6 +33,7 @@ impl IndexMut<usize> for Formula {
     }
 }
 
+/*
 impl Formula {
     pub fn new(num_vars: usize) -> Formula {
         Formula {
@@ -251,3 +252,4 @@ impl Formula {
         false
     }
 }
+*/

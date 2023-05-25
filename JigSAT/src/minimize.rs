@@ -2,12 +2,12 @@ use crate::{
     formula::Formula,
     lit::Lit,
     solver::Solver,
-    trail::{Trail, UNSET_REASON},
+    trail::{Trail, UNSET_REASON}, clause_manager::clause_manager::ClauseManager,
 };
 
 #[inline(always)]
 pub(crate) fn lit_redundant(
-    solver: &mut Solver, trail: &Trail, formula: &Formula, lit: Lit, abstract_levels: u32, seen: &mut [bool],
+    solver: &mut Solver, trail: &Trail, clause_manager: &ClauseManager, lit: Lit, abstract_levels: u32, seen: &mut [bool],
 ) -> bool {
     solver.analyze_stack.clear();
     solver.analyze_stack.push(lit);
@@ -15,7 +15,7 @@ pub(crate) fn lit_redundant(
     while !solver.analyze_stack.is_empty() {
         //assert(reason(var(analyze_stack.last())) != CRef_Undef);
         let ante_ref = trail.lit_to_reason[solver.analyze_stack.pop().unwrap().index()];
-        let c = &formula.clauses[ante_ref];
+        let c = clause_manager.get_clause(ante_ref);
         /*
         // This should not be possible. I guess Glucose has a relaxed invariant for binary clauses.
         if c.len() == 2 && c[0].lit_unsat(assignments) {
@@ -54,7 +54,7 @@ pub(crate) fn lit_redundant(
 #[allow(unused)]
 #[inline(always)]
 pub(crate) fn recursive_minimization(
-    out_learnt: &mut Vec<Lit>, trail: &Trail, formula: &Formula, solver: &mut Solver, mut seen: Vec<bool>,
+    out_learnt: &mut Vec<Lit>, trail: &Trail, clause_manager: &ClauseManager, solver: &mut Solver, mut seen: Vec<bool>,
 ) {
     let mut abstract_levels = 0;
     let mut i = 1;
@@ -66,7 +66,7 @@ pub(crate) fn recursive_minimization(
     let mut j = 1;
     while i < out_learnt.len() {
         let ante_ref = trail.lit_to_reason[out_learnt[i].index()];
-        if ante_ref == UNSET_REASON || !lit_redundant(solver, trail, formula, out_learnt[i], abstract_levels, &mut seen)
+        if ante_ref == UNSET_REASON || !lit_redundant(solver, trail, clause_manager, out_learnt[i], abstract_levels, &mut seen)
         {
             out_learnt[j] = out_learnt[i];
             j += 1;
@@ -78,7 +78,7 @@ pub(crate) fn recursive_minimization(
 
 #[allow(unused)]
 #[inline(always)]
-pub(crate) fn local_minimization(out_learnt: &mut Vec<Lit>, trail: &Trail, formula: &Formula, seen: Vec<bool>) {
+pub(crate) fn local_minimization(out_learnt: &mut Vec<Lit>, trail: &Trail, clause_manager: &ClauseManager, seen: Vec<bool>) {
     let mut i = 1;
     let mut j = 1;
     while i < out_learnt.len() {
@@ -87,7 +87,7 @@ pub(crate) fn local_minimization(out_learnt: &mut Vec<Lit>, trail: &Trail, formu
             out_learnt[j] = out_learnt[i];
             j += 1;
         } else {
-            let ante = &formula.clauses[ante_ref];
+            let ante = clause_manager.get_clause(ante_ref);
             let mut k = if ante.len() == 2 { 0 } else { 1 };
             while k < ante.len() {
                 let idx = ante[k].index();

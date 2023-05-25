@@ -1,17 +1,18 @@
-use crate::{assignments::*, formula::*, trail::*, util::*};
-use std::ops::{Index, IndexMut};
+use crate::{assignments::*, formula::*, trail::*, clause_manager::{clause_manager::ClauseManager, common::CRef}};
+use std::{ops::{Index, IndexMut}};
 
 const INVALID: usize = usize::MAX;
+const INVALID_CREF: CRef = CRef::MAX;
 pub(crate) trait Decisions {
-    fn new(f: &Formula) -> Self
+    fn new(f: &ClauseManager) -> Self
     where
         Self: Sized;
 
     fn bump_vec_of_vars(&mut self, f: &Formula, v: Vec<usize>);
 
-    fn bump_reason_literals(&mut self, var: usize, trail: &Trail, formula: &Formula);
+    fn bump_reason_literals(&mut self, var: usize, trail: &Trail, clause_manager: &ClauseManager);
 
-    fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize>;
+    fn get_next(&mut self, a: &Assignments) -> Option<usize>;
 
     fn bump_variable(&mut self, var: usize);
 
@@ -145,6 +146,7 @@ impl VMTF {
     }
 }
 
+/*
 impl Decisions for VMTF {
     fn new(f: &Formula) -> VMTF {
         let mut lit_order: Vec<usize> = vec![0; f.num_vars];
@@ -229,6 +231,7 @@ impl Decisions for VMTF {
 
     fn insert(&mut self, _var: usize) {}
 }
+*/
 
 #[derive(Default)]
 struct Heap {
@@ -302,8 +305,10 @@ impl Heap {
         (idx + 1) * 2
     }
 
+    // TODO: in non-release mode this subtracts with overflow (0 - 1)
     fn parent(idx: usize) -> usize {
-        (idx - 1) >> 1
+        //(idx - 1) >> 1
+        if idx == 0 { 0 } else { (idx - 1) >> 1 }
     }
 
     fn len(&self) -> usize {
@@ -413,15 +418,15 @@ impl VSIDS {
 }
 
 impl Decisions for VSIDS {
-    fn new(formula: &Formula) -> Self {
+    fn new(clause_manager: &ClauseManager) -> Self {
         let mut vsids = VSIDS::default();
-        vsids.order_heap = Heap::new(formula.num_vars);
-        vsids.order_heap.build(formula.num_vars);
-        vsids.decision = vec![true; formula.num_vars];
+        vsids.order_heap = Heap::new(clause_manager.num_vars);
+        vsids.order_heap.build(clause_manager.num_vars);
+        vsids.decision = vec![true; clause_manager.num_vars];
         vsids
     }
 
-    fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize> {
+    fn get_next(&mut self, a: &Assignments) -> Option<usize> {
         while !self.empty() {
             let next = self.remove_min();
             // Don't think the self.decision check really is needed.
@@ -461,12 +466,12 @@ impl Decisions for VSIDS {
         }
     }
 
-    fn bump_reason_literals(&mut self, var: usize, trail: &Trail, formula: &Formula) {
+    fn bump_reason_literals(&mut self, var: usize, trail: &Trail, clause_manager: &ClauseManager) {
         let reason = trail.lit_to_reason[var];
-        if reason == INVALID {
+        if reason == INVALID_CREF {
             return;
         }
-        for l in formula.clauses[reason].lits.iter().skip(1) {
+        for l in clause_manager.get_clause(reason).iter().skip(1) {
             self.bump_variable(l.index());
         }
     }

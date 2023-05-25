@@ -1,19 +1,19 @@
-use crate::{formula::*, lit::*, trail::*, watches::*};
+use crate::{lit::*, trail::*, watches::*, clause_manager::{clause_manager::ClauseManager, common::CRef}};
 
 #[inline]
 fn unit_prop_check_rest(
-    f: &mut Formula, trail: &Trail, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit,
+    lits: &mut [Lit], trail: &Trail, watches: &mut Watches, cref: CRef, j: usize, k: usize, lit: Lit,
 ) -> Result<(), ()> {
-    let curr_lit = f[cref][k];
+    let curr_lit = lits[k];
     if !curr_lit.lit_unsat(&trail.assignments) {
-        if f[cref][0].index() == lit.index() {
+        if lits[0].index() == lit.index() {
             // First
-            swap(f, trail, watches, cref, k, 0);
-            update_watch(f, watches, cref, j, 0, lit);
+            swap(lits, k, 0);
+            update_watch(lits, watches, j, 0, lit);
         } else {
-            swap(f, trail, watches, cref, k, 1);
-            swap(f, trail, watches, cref, 1, 0);
-            update_watch(f, watches, cref, j, 0, lit);
+            swap(lits, k, 1);
+            swap(lits, 1, 0);
+            update_watch(lits, watches, j, 0, lit);
             //update_watch(f, trail, watches, cref, j, 1, lit);
         }
         return Ok(()); // dont increase j
@@ -22,35 +22,36 @@ fn unit_prop_check_rest(
 }
 
 #[inline(always)]
-fn swap(f: &mut Formula, _trail: &Trail, _watches: &Watches, cref: usize, j: usize, k: usize) {
-    f[cref].swap(j, k);
+fn swap(lits: &mut [Lit], j: usize, k: usize) {
+    lits.swap(j, k);
 }
 
 // The solver is included so that we can update ticks.
 #[inline]
 fn unit_prop_do_outer(
-    formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, cref: usize, lit: Lit, j: usize, ticks: &mut usize,
-) -> Result<bool, usize> {
-    let clause = &formula[cref];
+    clause_manager: &mut ClauseManager, trail: &mut Trail, watches: &mut Watches, cref: CRef, lit: Lit, j: usize, ticks: &mut usize,
+) -> Result<bool, CRef> {
+    // TODO: Move search down ? Needs to be here to avoid borrowing issues.
+    let mut search = clause_manager.get_search(cref) as u32;
+    let lits = clause_manager.get_clause_mut(cref);
 
-    let other_lit = (!lit).select_other(clause[0], clause[1]);
+    let other_lit = (!lit).select_other(lits[0], lits[1]);
     if other_lit.lit_sat(&trail.assignments) {
         watches[lit.to_watchidx()][j].blocker = other_lit;
         return Ok(true);
     }
     // At this point we know that none of the watched literals are sat
-    let mut k: usize = 2;
-    let clause_len: usize = clause.len();
-    let mut search = clause.search;
+    let mut k = 2;
+    let clause_len = lits.len() as u32;
     while k < clause_len {
         search += 1;
         if search == clause_len {
             search = 2;
         }
-        match unit_prop_check_rest(formula, trail, watches, cref, j, search, lit) {
+        match unit_prop_check_rest(lits, trail, watches, cref, j, search as usize, lit) {
             Err(_) => {}
             Ok(_) => {
-                formula[cref].search = search;
+                clause_manager.set_search(cref, search as u8);
                 return Ok(false);
             }
         }
@@ -60,20 +61,20 @@ fn unit_prop_do_outer(
     if other_lit.lit_unsat(&trail.assignments) {
         return Err(cref);
     }
-    if formula[cref][0].lit_unset(&trail.assignments) {
-        trail.enq_assignment(formula[cref][0], formula, cref);
+    if lits[0].lit_unset(&trail.assignments) {
+        trail.enq_assignment(lits[0], cref);
         Ok(true)
     } else {
-        trail.enq_assignment(formula[cref][1], formula, cref);
-        formula[cref].swap(0, 1);
+        trail.enq_assignment(lits[1], cref);
+        lits.swap(0, 1);
         Ok(true)
     }
 }
 
 #[inline]
 fn unit_prop_current_level(
-    formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, lit: Lit, ticks: &mut usize,
-) -> Result<(), usize> {
+    clause_manager: &mut ClauseManager, trail: &mut Trail, watches: &mut Watches, lit: Lit, ticks: &mut usize,
+) -> Result<(), CRef> {
     let mut j = 0;
     let watchidx = lit.to_watchidx();
     while j < watches[watchidx].len() {
@@ -82,7 +83,7 @@ fn unit_prop_current_level(
             j += 1;
         } else {
             let cref = curr_watch.cref;
-            match unit_prop_do_outer(formula, trail, watches, cref, lit, j, ticks) {
+            match unit_prop_do_outer(clause_manager, trail, watches, cref, lit, j, ticks) {
                 Ok(true) => {
                     j += 1;
                 }
@@ -98,12 +99,12 @@ fn unit_prop_current_level(
 
 #[inline]
 pub(crate) fn unit_propagate(
-    formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, ticks: &mut usize,
-) -> Result<(), usize> {
+    clause_manager: &mut ClauseManager, trail: &mut Trail, watches: &mut Watches, ticks: &mut usize,
+) -> Result<(), CRef> {
     let mut i = trail.curr_i;
     while i < trail.trail.len() {
         let lit = trail.trail[i];
-        match unit_prop_current_level(formula, trail, watches, lit, ticks) {
+        match unit_prop_current_level(clause_manager, trail, watches, lit, ticks) {
             Ok(_) => {}
             Err(cref) => {
                 return Err(cref);

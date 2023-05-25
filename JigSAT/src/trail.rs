@@ -1,4 +1,4 @@
-use crate::{assignments::*, decision::*, formula::*, lit::*, solver::*, solver_types::*, target_phase::*, watches::*};
+use crate::{assignments::*, decision::*, formula::*, lit::*, solver::*, solver_types::*, target_phase::*, watches::*, clause_manager::{clause_manager::ClauseManager, common::CRef, self}};
 
 use log::debug;
 
@@ -13,15 +13,15 @@ pub enum Reason {
 */
 
 //const DECISION: usize = usize::MAX;
-const UNIT: usize = usize::MAX;
+const UNIT: CRef = CRef::MAX;
 
-pub const UNSET_LEVEL: u32 = u32::MAX;
-pub const UNSET_REASON: usize = usize::MAX;
+pub const UNSET_LEVEL: CRef = CRef::MAX;
+pub const UNSET_REASON: CRef = CRef::MAX;
 
 pub(crate) struct Trail {
     pub assignments: Assignments,
     pub lit_to_level: Vec<u32>,    // u32::MAX if unassigned
-    pub lit_to_reason: Vec<usize>, // usize::MAX if unassigned
+    pub lit_to_reason: Vec<CRef>, // u32::MAX if unassigned
     pub trail: Vec<Lit>,
     pub curr_i: usize,
     pub decisions: Vec<usize>,
@@ -33,11 +33,12 @@ impl Trail {
         self.decisions.len() as u32
     }
 
-    pub(crate) fn new(f: &Formula, a: Assignments) -> Trail {
+    // TODO: Get num_vars from a.len() // 2 ?
+    pub(crate) fn new(num_vars: usize, a: Assignments) -> Trail {
         Trail {
             assignments: a,
-            lit_to_level: vec![UNSET_LEVEL; f.num_vars],
-            lit_to_reason: vec![UNSET_REASON; f.num_vars],
+            lit_to_level: vec![UNSET_LEVEL; num_vars],
+            lit_to_reason: vec![UNSET_REASON; num_vars],
             trail: Vec::new(),
             curr_i: 0,
             decisions: Vec::new(),
@@ -62,11 +63,11 @@ impl Trail {
     }
 
     pub(crate) fn restart(
-        &mut self, formula: &mut Formula, decisions: &mut impl Decisions, watches: &mut Watches, solver: &Solver,
+        &mut self, clause_manager: &mut ClauseManager, decisions: &mut impl Decisions, watches: &mut Watches, solver: &Solver,
         target_phase: &mut TargetPhase,
     ) {
         self.backtrack_safe(0, decisions, target_phase);
-        formula.collect_garbage_on_empty_trail(watches, solver);
+        clause_manager.collect_garbage_on_empty_trail(watches, solver);
     }
 
     pub(crate) fn backtrack_safe(
@@ -106,16 +107,16 @@ impl Trail {
         self.curr_i = self.trail.len();
     }
 
-    pub(crate) fn enq_assignment(&mut self, lit: Lit, _f: &Formula, reason: Cref) {
+    pub(crate) fn enq_assignment(&mut self, lit: Lit, reason: CRef) {
         // This should be refactored to not have to be a match (ie splitting up enq_assignment)
         self.lit_to_reason[lit.index()] = reason;
 
         self.lit_to_level[lit.index()] = self.decision_level();
-        self.assignments.set_assignment(lit, _f, &self.trail);
+        self.assignments.set_assignment(lit);
         self.trail.push(lit);
     }
 
-    pub(crate) fn enq_decision(&mut self, idx: usize, _f: &Formula, target_phase: &TargetPhase, mode_is_focus: bool) {
+    pub(crate) fn enq_decision(&mut self, idx: usize, target_phase: &TargetPhase, mode_is_focus: bool) {
         let trail_len = self.trail.len();
         self.decisions.push(trail_len);
 
@@ -131,14 +132,16 @@ impl Trail {
 
     #[inline]
     pub(crate) fn learn_unit(
-        &mut self, lit: Lit, formula: &mut Formula, decisions: &mut impl Decisions, watches: &mut Watches,
+        &mut self, lit: Lit, clause_manager: &mut ClauseManager, decisions: &mut impl Decisions, watches: &mut Watches,
         solver: &Solver, target_phase: &mut TargetPhase,
     ) {
-        self.restart(formula, decisions, watches, solver, target_phase);
-        self.enq_assignment(lit, formula, UNIT);
+        self.restart(clause_manager, decisions, watches, solver, target_phase);
+        self.enq_assignment(lit, UNIT);
     }
 
-    pub(crate) fn learn_units(&mut self, formula: &mut Formula) -> Option<usize> {
+    /*
+    // TODO: I am not sure the algorithm is correct without this
+    pub(crate) fn learn_units(&mut self, clause_manager: &mut ClauseManager) -> Option<usize> {
         let mut i = 0;
         while i < formula.len() {
             let clause = &formula[i];
@@ -156,12 +159,13 @@ impl Trail {
         }
         None
     }
+    */
 }
 
 impl Trail {
     #[inline]
     pub(crate) fn learn_unit_in_preprocessing(&mut self, lit: Lit, formula: &Formula) {
         debug!("Learned unit: {} in preproc", lit);
-        self.enq_assignment(lit, formula, UNIT);
+        self.enq_assignment(lit, UNIT);
     }
 }

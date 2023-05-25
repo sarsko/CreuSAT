@@ -1,6 +1,6 @@
 use crate::{
     assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, lit::*, modes::*, preprocess::*,
-    restart::*, target_phase::*, trail::*, unit_prop::*, watches::*,
+    restart::*, target_phase::*, trail::*, unit_prop::*, watches::*, clause_manager::{clause_manager::ClauseManager, self, common::CRef},
 };
 
 use log::debug;
@@ -79,7 +79,7 @@ pub(crate) struct Stats {
 pub(crate) struct Solver {
     pub(crate) num_conflicts: usize,
     pub(crate) num_decisions: usize,
-    pub(crate) initial_len: usize,
+    pub(crate) initial_len: u32, // changed from usize
     pub(crate) perm_diff: Vec<usize>,
     pub(crate) analyze_stack: Vec<Lit>,
     pub(crate) analyze_toclear: Vec<Lit>,
@@ -101,15 +101,15 @@ if (S->fast > (S->slow / 100) * 125) {                        // If fast average
 */
 
 impl Solver {
-    fn new(f: &Formula) -> Solver {
+    fn new(clause_manager: &ClauseManager) -> Solver {
         Solver {
             //max_len: f.len() + 2000,
             num_conflicts: 0,
             num_decisions: 0,
-            initial_len: f.len(),
+            initial_len: clause_manager.original_len() as CRef, // TODO: No cast ?
             //inc_reduce_db: 300,
             //special_inc_reduce_db: 1000,
-            perm_diff: vec![0; f.num_vars],
+            perm_diff: vec![0; clause_manager.num_vars],
             analyze_stack: Vec::new(),
             analyze_toclear: Vec::new(),
             //seen: vec![false; f.num_vars],
@@ -124,14 +124,15 @@ impl Solver {
         }
     }
 
+    // TODO: Set lbd, search etc
     #[inline]
     fn handle_long_clause(
-        &mut self, formula: &mut Formula, trail: &mut Trail, watches: &mut Watches, decisions: &mut impl Decisions,
+        &mut self, clause_manager: &mut ClauseManager, trail: &mut Trail, watches: &mut Watches, decisions: &mut impl Decisions,
         clause: Clause, level: u32, target_phase: &mut TargetPhase,
     ) {
         let clause_len = clause.len();
         let lbd = clause.lbd;
-        let cref = formula.learn_clause(clause, watches, trail);
+        let cref = clause_manager.learn_clause(&clause.lits, watches);
 
         self.restart.glucose.update(trail.trail.len(), lbd as usize);
         self.restart.block_restart(self.num_conflicts);
@@ -145,16 +146,16 @@ impl Solver {
 
         //d.increment_and_move(f, cref, &t.assignments);
         trail.backtrack_to(level, decisions, target_phase);
-        let lit = formula[cref][0];
-        trail.enq_assignment(lit, formula, cref);
+        let lit = clause[0];
+        trail.enq_assignment(lit, cref);
     }
 
     #[inline]
     fn handle_conflict(
-        &mut self, formula: &mut Formula, trail: &mut Trail, cref: usize, watches: &mut Watches,
+        &mut self, clause_manager: &mut ClauseManager, trail: &mut Trail, cref: CRef, watches: &mut Watches,
         decisions: &mut impl Decisions, target_phase: &mut TargetPhase,
     ) -> bool {
-        let res = analyze_conflict(formula, trail, cref, decisions, self);
+        let res = analyze_conflict(clause_manager, trail, cref, decisions, self);
         match res {
             Conflict::Ground => {
                 return false;
@@ -164,11 +165,11 @@ impl Solver {
                 self.restart.block_restart(self.num_conflicts);
                 self.stats.num_unary += 1;
 
-                trail.learn_unit(lit, formula, decisions, watches, self, target_phase);
-                formula.reduceDB(watches, trail, self);
+                trail.learn_unit(lit, clause_manager, decisions, watches, self, target_phase);
+                clause_manager.reduceDB(watches, trail, self);
             }
             Conflict::Learned(level, clause) => {
-                self.handle_long_clause(formula, trail, watches, decisions, clause, level, target_phase);
+                self.handle_long_clause(clause_manager, trail, watches, decisions, clause, level, target_phase);
             }
         }
 
@@ -176,7 +177,7 @@ impl Solver {
         //claDecayActivity();
 
         if self.adapt_strategies && self.num_conflicts == 100000 && adapt_solver(self, decisions) {
-            trail.restart(formula, decisions, watches, self, target_phase);
+            trail.restart(clause_manager, decisions, watches, self, target_phase);
         }
 
         true
@@ -184,10 +185,10 @@ impl Solver {
 
     #[inline]
     fn unit_prop_step(
-        &mut self, formula: &mut Formula, decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches,
+        &mut self, clause_manager: &mut ClauseManager, decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches,
         target_phase: &mut TargetPhase,
     ) -> ConflictResult {
-        match unit_propagate(formula, trail, watches, &mut self.ticks) {
+        match unit_propagate(clause_manager, trail, watches, &mut self.ticks) {
             Ok(_) => ConflictResult::Ok,
             Err(cref) => {
                 self.num_conflicts += 1;
@@ -201,7 +202,7 @@ impl Solver {
                     target_phase.update_best_phase(trail);
                 }
 
-                match self.handle_conflict(formula, trail, cref, watches, decisions, target_phase) {
+                match self.handle_conflict(clause_manager, trail, cref, watches, decisions, target_phase) {
                     true => ConflictResult::Continue,
                     false => ConflictResult::Ground,
                 }
@@ -211,11 +212,11 @@ impl Solver {
 
     #[inline]
     fn unit_prop_loop(
-        &mut self, formula: &mut Formula, decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches,
+        &mut self, clause_manager: &mut ClauseManager, decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches,
         target_phase: &mut TargetPhase,
     ) -> bool {
         loop {
-            match self.unit_prop_step(formula, decisions, trail, watches, target_phase) {
+            match self.unit_prop_step(clause_manager, decisions, trail, watches, target_phase) {
                 ConflictResult::Ok => {
                     return true;
                 }
@@ -229,15 +230,16 @@ impl Solver {
 
     #[inline]
     fn outer_loop(
-        &mut self, formula: &mut Formula, decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches,
+        &mut self, clause_manager: &mut ClauseManager, decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches,
         target_phase: &mut TargetPhase,
     ) -> SatResult {
-        match self.unit_prop_loop(formula, decisions, trail, watches, target_phase) {
+        match self.unit_prop_loop(clause_manager, decisions, trail, watches, target_phase) {
             true => {}
             false => return SatResult::Unsat,
         }
+        
         if self.restart.trigger_restart(self.num_conflicts) {
-            trail.restart(formula, decisions, watches, self, target_phase);
+            trail.restart(clause_manager, decisions, watches, self, target_phase);
             return SatResult::Unknown;
         }
         if (self.search_mode == SearchMode::Stable || self.search_mode == SearchMode::OnlyStable)
@@ -248,19 +250,21 @@ impl Solver {
                 return SatResult::Sat(Vec::new()); // TODO: Get satisfying assignment
             }
         }
-        if trail.decision_level() == 0 && !self.simplify(formula, decisions, trail, watches) {
+        // TODO
+        if trail.decision_level() == 0 && !self.simplify(clause_manager, decisions, trail, watches) {
             return SatResult::Unsat;
         }
 
-        if formula.trigger_reduce(self.num_conflicts, self.initial_len) {
-            formula.reduceDB(watches, trail, self);
+        // TODO
+        if clause_manager.trigger_reduce(self.num_conflicts) {
+            clause_manager.reduceDB(watches, trail, self);
         }
 
-        match decisions.get_next(&trail.assignments, formula) {
+        match decisions.get_next(&trail.assignments) {
             Some(next) => {
                 self.num_decisions += 1;
                 self.a_decision_was_made = true;
-                trail.enq_decision(next, formula, target_phase, self.search_mode == SearchMode::Focus);
+                trail.enq_decision(next, target_phase, self.search_mode == SearchMode::Focus);
             }
             None => {
                 debug!("SAT: no more decisions");
@@ -279,11 +283,11 @@ impl Solver {
 
     #[inline]
     fn solve(
-        mut self, mut formula: Formula, mut decisions: impl Decisions, mut trail: Trail, mut watches: Watches,
+        mut self, mut clause_manager: ClauseManager, mut decisions: impl Decisions, mut trail: Trail, mut watches: Watches,
         mut target_phase: TargetPhase,
     ) -> SatResult {
         loop {
-            match self.outer_loop(&mut formula, &mut decisions, &mut trail, &mut watches, &mut target_phase) {
+            match self.outer_loop(&mut clause_manager, &mut decisions, &mut trail, &mut watches, &mut target_phase) {
                 SatResult::Unknown => {} // continue
                 SatResult::Sat(_) => {
                     return SatResult::Sat(trail.assignments.0);
@@ -295,40 +299,47 @@ impl Solver {
         }
     }
 
+    // TODO
     fn simplify(
-        &mut self, formula: &mut Formula, _decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches,
+        &mut self, clause_manager: &mut ClauseManager, _decisions: &mut impl Decisions, trail: &mut Trail, watches: &mut Watches,
     ) -> bool {
         // TODO: Add subsumption here.
-        formula.simplify_formula(watches, trail);
+        //clause_manager.simplify(watches, trail);
         true
     }
 }
 
-pub fn solver(mut formula: Formula) -> SatResult {
-    let mut trail = Trail::new(&formula, Assignments::new(&formula));
+pub fn solver(mut clause_manager: ClauseManager) -> SatResult {
+    let mut trail = Trail::new(clause_manager.num_vars, Assignments::new(clause_manager.num_vars));
 
-    match trail.learn_units(&mut formula) {
+    /*
+    // TODO: This is needed to be correct when the original clauses contain units
+    match trail.learn_units(&mut clause_manager) {
         Some(_) => {
             println!("c UNSAT due to learn_units");
             return SatResult::Unsat;
         }
         None => {}
     }
+    */
 
-    let mut watches = Watches::new(&formula);
-    watches.init_watches(&formula);
+    let mut watches = Watches::new(clause_manager.num_vars);
+    watches.init_watches(&clause_manager);
 
-    let mut decisions: VSIDS = Decisions::new(&formula);
+    let mut decisions: VSIDS = Decisions::new(&clause_manager);
 
+    // TODO: Add
+    /*
     if !Preprocess::new().preprocess(&mut formula, &mut trail, &mut decisions, &mut watches) {
         println!("c UNSAT by preprocess");
         return SatResult::Unsat;
     }
     debug!("done with preproc");
     debug!("{:?}", &trail.trail);
+    */
 
-    let target_phase = TargetPhase::new(formula.num_vars);
-    let solver = Solver::new(&formula);
+    let target_phase = TargetPhase::new(clause_manager.num_vars);
+    let solver = Solver::new(&clause_manager);
 
-    solver.solve(formula, decisions, trail, watches, target_phase)
+    solver.solve(clause_manager, decisions, trail, watches, target_phase)
 }

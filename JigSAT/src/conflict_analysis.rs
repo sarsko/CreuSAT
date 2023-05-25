@@ -5,9 +5,10 @@ use crate::{
     lit::*,
     minimize::*,
     solver::{SearchMode, Solver},
-    trail::*,
+    trail::*, clause_manager::{clause_manager::ClauseManager, self, common::CRef},
 };
 
+// TODO: Either don't return (write directly) or return a correctly formatted clause (something which derefs to &[Lit]) rather than a `Clause`
 #[derive(Debug)]
 pub(crate) enum Conflict {
     Ground,
@@ -17,7 +18,7 @@ pub(crate) enum Conflict {
 
 #[inline]
 pub(crate) fn analyze_conflict(
-    formula: &Formula, trail: &Trail, cref: usize, decisions: &mut impl Decisions, solver: &mut Solver,
+    clause_manager: &ClauseManager, trail: &Trail, cref: CRef, decisions: &mut impl Decisions, solver: &mut Solver,
 ) -> Conflict {
     let decisionlevel = trail.decision_level();
     if decisionlevel == 0 {
@@ -25,13 +26,13 @@ pub(crate) fn analyze_conflict(
     }
     // I tried moving seen to solver, but it wasn't really any faster (+ it is nice to not have to carry the invariant that seen is all false)
     let mut to_bump = Vec::new(); // VMTF and VSIDS
-    let mut seen = vec![false; formula.num_vars];
+    let mut seen = vec![false; clause_manager.num_vars];
     let mut out_learnt: Vec<Lit> = vec![Lit::new(0, true); 1]; // I really don't like this way of reserving space.
     let mut path_c = 0;
     let mut confl = cref;
     let mut i = trail.trail.len();
     loop {
-        let clause = &formula[confl];
+        let clause = clause_manager.get_clause(confl);
         let mut k = if confl == cref { 0 } else { 1 };
         while k < clause.len() {
             let lit = clause[k];
@@ -46,7 +47,7 @@ pub(crate) fn analyze_conflict(
                 if level > 0 {
                     decisions.bump_variable(lit.index());
                     if solver.search_mode == SearchMode::Stable || solver.search_mode == SearchMode::OnlyStable {
-                        decisions.bump_reason_literals(lit.index(), trail, formula);
+                        decisions.bump_reason_literals(lit.index(), trail, clause_manager);
                     }
                     seen[lit.index()] = true;
 
@@ -86,7 +87,7 @@ pub(crate) fn analyze_conflict(
     }
     // decisions.bump_vec_of_vars(f, to_bump); // VMTF. NO-OP for VSIDS
 
-    recursive_minimization(&mut out_learnt, trail, formula, solver, seen);
+    recursive_minimization(&mut out_learnt, trail, clause_manager, solver, seen);
 
     if out_learnt.len() == 1 {
         Conflict::Unit(out_learnt[0])
@@ -111,7 +112,7 @@ pub(crate) fn analyze_conflict(
         // UPDATEVARACTIVITY trick (see competition'09 companion paper)
         if solver.search_mode == SearchMode::Focus || solver.search_mode == SearchMode::OnlyFocus {
             for var in to_bump.iter() {
-                if formula[trail.lit_to_reason[*var]].lbd < lbd {
+                if clause_manager.get_lbd(trail.lit_to_reason[*var]) < lbd {
                     decisions.bump_variable(*var);
                 }
             }

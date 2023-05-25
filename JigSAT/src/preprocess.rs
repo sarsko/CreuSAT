@@ -43,6 +43,7 @@ pub(crate) struct Preprocess {
     eliminated_vars: usize,
 }
 
+/*
 impl Preprocess {
     // Init needs to be called later.
     pub(crate) fn new() -> Preprocess {
@@ -538,3 +539,4 @@ impl Preprocess {
         }
     }
 }
+*/

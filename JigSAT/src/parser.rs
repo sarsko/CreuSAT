@@ -1,11 +1,13 @@
 use std::fs::File;
 use std::io::{self, BufRead};
+use std::num;
 use std::path::Path;
 
 use crate::clause::Clause as Clause2;
 use crate::formula::*;
 use crate::lit::Lit as Lit2;
 use crate::solver::*;
+use crate::clause_manager::clause_manager::ClauseManager;
 
 pub type Literal = i32;
 pub type Clause = Vec<Literal>;
@@ -104,6 +106,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
     Ok((out_clauses, num_literals))
 }
 
+/*
 #[cfg(not(creusot))]
 // TODO, fix it so that 0 and 1 len clauses are supported
 /// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
@@ -129,6 +132,38 @@ pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_li
         }
     }
     match solver(formula) {
+        SatResult::Sat(_) => true,
+        SatResult::Unsat => false,
+        _ => panic!("Sarek should really make the parser non-binary"),
+    }
+}
+*/
+
+
+/// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
+pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_literals: usize) -> bool {
+    let mut clause_manager = ClauseManager::new(num_literals);
+    for clause in clauses {
+        let mut currclause: Vec<Lit2> = vec![];
+        for lit in clause {
+            assert!(*lit != 0);
+            if *lit < 0 {
+                let new_lit = Lit2::new((lit.abs() - 1) as usize, false);
+                currclause.push(new_lit);
+            } else {
+                let new_lit = Lit2::new((*lit - 1) as usize, true);
+                currclause.push(new_lit);
+            }
+        }
+        if currclause.is_empty() {
+            return false;
+        } else {
+            //let clause2: Clause2 = Clause2::new(currclause);
+            //formula.clauses.push(clause2);
+            clause_manager.add_clause_parser(&currclause);
+        }
+    }
+    match solver(clause_manager) {
         SatResult::Sat(_) => true,
         SatResult::Unsat => false,
         _ => panic!("Sarek should really make the parser non-binary"),

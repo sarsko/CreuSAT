@@ -32,13 +32,13 @@ impl Assignments {
     }
 
     #[inline]
-    pub(crate) fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &[Lit]) {
+    pub(crate) fn set_assignment(&mut self, lit: Lit) {
         self[lit.index()] = lit.is_positive() as u8;
     }
 
     #[inline]
-    pub(crate) fn new(f: &Formula) -> Self {
-        Assignments(vec![2; f.num_vars])
+    pub(crate) fn new(num_vars: usize) -> Self {
+        Assignments(vec![2; num_vars])
     }
 
     #[inline]

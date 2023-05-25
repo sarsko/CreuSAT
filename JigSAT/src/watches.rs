@@ -1,10 +1,11 @@
-use crate::{formula::*, lit::*, solver::*};
-use std::ops::{Index, IndexMut};
+use crate::{formula::*, lit::*, solver::*, clause_manager::clause_manager::ClauseManager};
+use crate::clause_manager::common::CRef;
+use std::{ops::{Index, IndexMut}};
 
 // Lets try this scheme and see how well it fares
 // Watches are indexed on 2 * lit.idx for positive and 2 * lit.idx + 1 for negative
 pub(crate) struct Watcher {
-    pub cref: usize,
+    pub cref: CRef,
     pub blocker: Lit,
 }
 
@@ -34,11 +35,11 @@ impl IndexMut<usize> for Watches {
 }
 
 #[inline]
-pub(crate) fn update_watch(f: &Formula, watches: &mut Watches, cref: usize, j: usize, k: usize, lit: Lit) {
+pub(crate) fn update_watch(lits: &[Lit], watches: &mut Watches, j: usize, k: usize, lit: Lit) {
     let watchidx = lit.to_watchidx();
     let end = watches.watches[watchidx].len() - 1;
     watches.watches[watchidx].swap(j, end);
-    let curr_lit = f[cref][k];
+    let curr_lit = lits[k];
     match watches.watches[watchidx].pop() {
         Some(w) => {
             watches.watches[curr_lit.to_neg_watchidx()].push(w);
@@ -55,10 +56,10 @@ impl Watches {
         self.watches.len()
     }
 
-    pub(crate) fn new(f: &Formula) -> Watches {
+    pub(crate) fn new(num_vars: usize) -> Watches {
         let mut i: usize = 0;
         let mut watches = Vec::new();
-        while i < f.num_vars {
+        while i < num_vars {
             watches.push(Vec::new());
             watches.push(Vec::new());
             i += 1;
@@ -66,20 +67,20 @@ impl Watches {
         Watches { watches }
     }
 
-    pub(crate) fn init_watches(&mut self, f: &Formula) {
+    pub(crate) fn init_watches(&mut self, clause_manager: &ClauseManager) {
         let mut i = 0;
-        while i < f.len() {
-            let clause = &f[i];
+        for cref in clause_manager.original_crefs() {
+            let clause = &clause_manager.get_clause(*cref);
             if clause.len() > 1 {
-                self[clause[0].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause[1] });
-                self[clause[1].to_neg_watchidx()].push(Watcher { cref: i, blocker: clause[0] });
+                self[clause[0].to_neg_watchidx()].push(Watcher { cref: *cref, blocker: clause[1] });
+                self[clause[1].to_neg_watchidx()].push(Watcher { cref: *cref, blocker: clause[0] });
             }
             i += 1;
         }
     }
 
     #[inline]
-    pub(crate) fn unwatch(&mut self, cref: usize, lit: Lit) {
+    pub(crate) fn unwatch(&mut self, cref: CRef, lit: Lit) {
         let watchidx = lit.to_neg_watchidx();
         let mut i: usize = 0;
         while i < self[watchidx].len() {
