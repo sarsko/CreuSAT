@@ -3,6 +3,8 @@ use crate::{
     restart::*, target_phase::*, trail::*, unit_prop::*, watches::*,
 };
 
+use std::time::Instant;
+use std::cmp::max;
 use log::debug;
 
 pub enum SatResult {
@@ -307,7 +309,6 @@ impl Solver {
 }
 
 pub fn solver(mut formula: Formula) -> SatResult {
-    use std::time::Instant;
     let mut trail = Trail::new(&formula, Assignments::new(&formula));
 
     let now = Instant::now();
@@ -354,17 +355,17 @@ pub fn solver(mut formula: Formula) -> SatResult {
     println!(
         "c conflicts           : {}        ({} / sec)",
         solver.num_conflicts,
-        (solver.num_conflicts as u128) * 1000 / (elapsed.as_millis())
+        (solver.num_conflicts as u128) * 1000 / max(1, elapsed.as_millis())
     );
     println!(
         "c decisions           : {}        ({} / sec)",
         solver.num_decisions,
-        (solver.num_decisions as u128) * 1000 / (elapsed.as_millis())
+        (solver.num_decisions as u128) * 1000 / max(1, elapsed.as_millis())
     );
     println!(
         "c propagations        : {}        ({} / sec)",
         solver.ticks,
-        (solver.ticks as u128) * 1000 / (elapsed.as_millis())
+        (solver.ticks as u128) * 1000 / max(1, elapsed.as_millis())
     );
 
     println!("c solve time          : {:?}", elapsed);
