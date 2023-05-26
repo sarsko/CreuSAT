@@ -45,7 +45,7 @@ fn check_and_move_watch(
         }
         return true; // dont increase j
     }
-    return false;
+    false
 }
 
 // TODO: Look at strategies or look at making lemmas / assertions to make it easier.
@@ -206,7 +206,7 @@ fn propagate_lit_with_regard_to_clause(
         trail.enq_assignment(step, f);
         proof_assert!(f.clauses@[cref@].post_unit(trail.assignments) && true);
         proof_assert!(clause_post_with_regards_to_lit(f.clauses@[cref@], trail.assignments, first_lit));
-        return Ok(true);
+        Ok(true)
     } else if second_lit.lit_unset(&trail.assignments) {
         let step = Step { lit: second_lit, decision_level: trail.decision_level(), reason: Reason::Long(cref) };
         let old_c: Ghost<Clause> = ghost! { f.clauses[cref] };
@@ -217,9 +217,9 @@ fn propagate_lit_with_regard_to_clause(
         trail.enq_assignment(step, f);
         proof_assert!(f.clauses@[cref@].post_unit(trail.assignments));
         proof_assert!(clause_post_with_regards_to_lit((f.clauses@[cref@]), trail.assignments, second_lit));
-        return Ok(true);
+        Ok(true)
     } else {
-        return Err(cref);
+        Err(cref)
     }
 }
 

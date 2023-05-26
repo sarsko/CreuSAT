@@ -68,14 +68,12 @@ impl Watches {
     }
 
     pub(crate) fn init_watches(&mut self, clause_manager: &ClauseManager) {
-        let mut i = 0;
         for cref in clause_manager.original_crefs() {
             let clause = &clause_manager.get_clause(*cref);
             if clause.len() > 1 {
                 self[clause[0].to_neg_watchidx()].push(Watcher { cref: *cref, blocker: clause[1] });
                 self[clause[1].to_neg_watchidx()].push(Watcher { cref: *cref, blocker: clause[0] });
             }
-            i += 1;
         }
     }
 

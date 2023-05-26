@@ -130,6 +130,7 @@ impl Solver {
 
     // TODO: Set lbd, search etc
     #[inline]
+    #[allow(clippy::too_many_arguments)]
     fn handle_long_clause(
         &mut self, clause_manager: &mut ClauseManager, trail: &mut Trail, watches: &mut Watches, decisions: &mut impl Decisions,
         clause: Clause, level: u32, target_phase: &mut TargetPhase,

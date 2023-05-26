@@ -49,7 +49,7 @@ impl fmt::Display for Clause {
             first = false;
             to_display.push_str(&l.to_string());
         }
-        to_display.push_str(")");
+        to_display.push(')');
 
         write!(f, "{}", to_display)
     }

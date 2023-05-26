@@ -48,7 +48,7 @@ impl Default for Glucose {
     fn default() -> Self {
         Glucose {
             minimum_conflicts: 50,
-            minimum_conflicts_for_blocking_restarts: 10000,
+            minimum_conflicts_for_blocking_restarts: 10_000,
             ema_lbd_narrow: EMA::new(3e-2),
             ema_lbd_wide: EMA::new(1e-5),
             ema_trail_wide: EMA::new(3e-4),
@@ -82,7 +82,7 @@ impl Glucose {
     }
 
     pub(crate) fn block_restart(&mut self, curr_confl: usize) -> bool {
-        if self.last_trail_size as f64 > self.block as f64 * self.ema_trail_wide.value
+        if self.last_trail_size as f64 > self.block * self.ema_trail_wide.value
             && curr_confl >= self.minimum_conflicts_for_blocking_restarts
         {
             self.minimum_conflicts = curr_confl + 50;
@@ -150,13 +150,6 @@ impl Restart {
 
     pub(crate) fn set_restart_mode(&mut self, mode: RestartMode) {
         self.restart = mode;
-    }
-
-    pub(crate) fn swap_mode(&mut self) {
-        match self.restart {
-            RestartMode::Glucose => self.restart = RestartMode::Luby,
-            RestartMode::Luby => self.restart = RestartMode::Glucose,
-        }
     }
 
     pub(crate) fn trigger_restart(&mut self, curr_confl: usize) -> bool {

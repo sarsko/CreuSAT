@@ -32,13 +32,13 @@ pub(crate) fn change_mode(solver: &mut Solver, decisions: &mut impl Decisions, t
     match solver.search_mode {
         SearchMode::Stable => {
             println!("c Changing mode to Focus mode");
-            solver.restart.swap_mode();
+            solver.restart.set_restart_mode(RestartMode::Glucose);
             decisions.set_var_decay(0.95);
             solver.search_mode = SearchMode::Focus;
         }
         SearchMode::Focus => {
             println!("c Changing mode to Stable mode");
-            solver.restart.swap_mode();
+            solver.restart.set_restart_mode(RestartMode::Luby);
             decisions.set_var_decay(0.75);
             solver.search_mode = SearchMode::Stable;
             target_phase.reset();

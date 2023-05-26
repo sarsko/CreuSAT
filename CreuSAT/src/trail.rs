@@ -90,7 +90,7 @@ impl Trail {
         //proof_assert!(self.lit_is_unique());
         proof_assert!(long_are_post_unit_inner(self.trail@, *f, self.assignments@));
         //proof_assert!(self.trail_entries_are_assigned());
-        return 0;
+        0
     }
 
     #[cfg_attr(feature = "trust_trail", trusted)]
@@ -330,6 +330,6 @@ impl Trail {
             }
             i += 1;
         }
-        return None;
+        None
     }
 }
