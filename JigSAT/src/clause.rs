@@ -158,10 +158,8 @@ impl Clause {
         solver.lbd_num += 1;
         for l in &self.lits {
             let level = trail.lit_to_level[l.index()];
-            if solver.perm_diff[level as usize] != solver.num_conflicts {
-                solver.perm_diff[level as usize] = solver.num_conflicts;
-            //if solver.perm_diff[level as usize] != solver.lbd_num {
-            //    solver.perm_diff[level as usize] = solver.lbd_num;
+            if solver.perm_diff[level as usize] != solver.lbd_num {
+                solver.perm_diff[level as usize] = solver.lbd_num;
                 lbd += 1;
             }
         }
