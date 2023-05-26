@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::{self, BufRead};
-use std::num;
 use std::path::Path;
+use std::time::Instant;
 
 use crate::clause::Clause as Clause2;
 use crate::formula::*;
@@ -142,6 +142,7 @@ pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_li
 
 /// Takes a 1-indexed 2d vector and converts it to a 0-indexed formula
 pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_literals: usize) -> bool {
+    let now = Instant::now();
     let mut clause_manager = ClauseManager::new(num_literals);
     for clause in clauses {
         let mut currclause: Vec<Lit2> = vec![];
@@ -163,6 +164,8 @@ pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_li
             clause_manager.add_clause_parser(&currclause);
         }
     }
+
+    println!("c parse time: {:?}", now.elapsed());
     match solver(clause_manager) {
         SatResult::Sat(_) => true,
         SatResult::Unsat => false,
