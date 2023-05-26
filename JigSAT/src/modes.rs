@@ -10,14 +10,15 @@ pub(crate) fn adapt_solver(solver: &mut Solver, decisions: &mut impl Decisions) 
         println!("c Adjusting for low decision levels");
         solver.restart.set_restart_mode(RestartMode::Glucose);
         solver.search_mode = SearchMode::OnlyFocus;
-        // (If one adds tiered clause management: set core_upper_bound to 5 in formula.)
+        // Add this if adding tiered clause manager
+        //clause_manager.core_upper_bound = 5;
         return true;
     }
 
     if solver.stats.no_decision_conflict < 30000 {
         println!("c Adjusting for low successive conflicts");
         solver.restart.set_restart_mode(RestartMode::Luby);
-        solver.search_mode = SearchMode::OnlyStable; // OnlyFocus in Glucose
+        solver.search_mode = SearchMode::OnlyStable; // OnlyFocus in Glucose. I think it should be OnlyFocus
         decisions.set_var_decay(0.999);
         return true;
     }

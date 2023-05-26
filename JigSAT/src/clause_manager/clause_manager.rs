@@ -19,7 +19,10 @@ pub struct ClauseManager {
     cur_restart: usize,
     num_clauses_before_reduce: usize,
     special_inc_reduce_db: usize,
-    num_deleted_clauses: usize,
+
+    // Stats
+    pub(crate) num_reduced: usize,
+    pub(crate) num_deleted_clauses: usize,
 }
 
 impl ClauseManager {
@@ -33,6 +36,9 @@ impl ClauseManager {
             cur_restart: 1,
             num_clauses_before_reduce: 2000,
             special_inc_reduce_db: 1000,
+
+            // Stats
+            num_reduced: 0,
             num_deleted_clauses: 0,
         }
 

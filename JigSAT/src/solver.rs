@@ -3,6 +3,8 @@ use crate::{
     restart::*, target_phase::*, trail::*, unit_prop::*, watches::*, clause_manager::{clause_manager::ClauseManager, self, common::CRef},
 };
 
+use std::time::Instant;
+use std::cmp::max;
 use log::debug;
 
 pub enum SatResult {
@@ -91,6 +93,7 @@ pub(crate) struct Solver {
     pub(crate) num_phase_changes: usize,
     pub(crate) a_decision_was_made: bool,
     pub(crate) adapt_strategies: bool,
+    pub(crate) lbd_num: usize,
     //pub seen: Vec<bool>,
 }
 /*
@@ -121,6 +124,7 @@ impl Solver {
             num_phase_changes: 1,
             a_decision_was_made: false,
             adapt_strategies: true,
+            lbd_num: 1, // added from jigsat_improvements
         }
     }
 
@@ -174,7 +178,7 @@ impl Solver {
         }
 
         decisions.decay_var_inc();
-        //claDecayActivity();
+        //clause_manager.decay_clause_activity();
 
         if self.adapt_strategies && self.num_conflicts == 100000 && adapt_solver(self, decisions) {
             trail.restart(clause_manager, decisions, watches, self, target_phase);
@@ -255,7 +259,6 @@ impl Solver {
             return SatResult::Unsat;
         }
 
-        // TODO
         if clause_manager.trigger_reduce(self.num_conflicts) {
             clause_manager.reduceDB(watches, trail, self);
         }
@@ -283,11 +286,11 @@ impl Solver {
 
     #[inline]
     fn solve(
-        mut self, mut clause_manager: ClauseManager, mut decisions: impl Decisions, mut trail: Trail, mut watches: Watches,
+        &mut self, clause_manager: &mut ClauseManager, mut decisions: impl Decisions, mut trail: Trail, mut watches: Watches,
         mut target_phase: TargetPhase,
     ) -> SatResult {
         loop {
-            match self.outer_loop(&mut clause_manager, &mut decisions, &mut trail, &mut watches, &mut target_phase) {
+            match self.outer_loop(clause_manager, &mut decisions, &mut trail, &mut watches, &mut target_phase) {
                 SatResult::Unknown => {} // continue
                 SatResult::Sat(_) => {
                     return SatResult::Sat(trail.assignments.0);
@@ -310,6 +313,7 @@ impl Solver {
 }
 
 pub fn solver(mut clause_manager: ClauseManager) -> SatResult {
+    let now = Instant::now();
     let mut trail = Trail::new(clause_manager.num_vars, Assignments::new(clause_manager.num_vars));
 
     /*
@@ -338,8 +342,42 @@ pub fn solver(mut clause_manager: ClauseManager) -> SatResult {
     debug!("{:?}", &trail.trail);
     */
 
+    // TODO
+    //let target_phase = TargetPhase::new(formula.num_vars);
     let target_phase = TargetPhase::new(clause_manager.num_vars);
-    let solver = Solver::new(&clause_manager);
+    let elapsed = now.elapsed();
 
-    solver.solve(clause_manager, decisions, trail, watches, target_phase)
+    println!("c setup time:        : {:?}", elapsed);
+    let now = Instant::now();
+
+    let mut solver = Solver::new(&clause_manager);
+
+    let res = solver.solve(&mut clause_manager, decisions, trail, watches, target_phase);
+
+    let elapsed = now.elapsed();
+
+    println!("c restarts            : {}", solver.restart.get_number_of_restarts());
+    println!("c nb ReduceDB         : {}", clause_manager.num_reduced);
+    println!("c nb removed          : {}", clause_manager.num_deleted_clauses);
+    println!("c nb learnts glue     : {}", solver.stats.num_glues);
+    println!("c nb learnts size 2   : {}", solver.stats.num_binary);
+    println!("c nb learnts size 1   : {}", solver.stats.num_unary);
+    println!(
+        "c conflicts           : {}        ({} / sec)",
+        solver.num_conflicts,
+        (solver.num_conflicts as u128) * 1000 / max(1, elapsed.as_millis())
+    );
+    println!(
+        "c decisions           : {}        ({} / sec)",
+        solver.num_decisions,
+        (solver.num_decisions as u128) * 1000 / max(1, elapsed.as_millis())
+    );
+    println!(
+        "c propagations        : {}        ({} / sec)",
+        solver.ticks,
+        (solver.ticks as u128) * 1000 / max(1, elapsed.as_millis())
+    );
+
+    println!("c solve time          : {:?}", elapsed);
+    res
 }
