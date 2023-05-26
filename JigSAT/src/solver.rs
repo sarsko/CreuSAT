@@ -124,7 +124,7 @@ impl Solver {
             num_phase_changes: 1,
             a_decision_was_made: false,
             adapt_strategies: true,
-            lbd_num: 1, // added from jigsat_improvements
+            lbd_num: 1,
         }
     }
 
@@ -181,7 +181,7 @@ impl Solver {
         decisions.decay_var_inc();
         //clause_manager.decay_clause_activity();
 
-        if self.adapt_strategies && self.num_conflicts == 100000 && adapt_solver(self, decisions) {
+        if self.adapt_strategies && self.num_conflicts == 100_000 && adapt_solver(self, decisions) {
             trail.restart(clause_manager, decisions, watches, self, target_phase);
         }
 

@@ -171,6 +171,8 @@ impl Clause {
                       eventually_sat_complete(((_f@.0).push(*old_c.inner()), _f@.1)));
     }
 
+    // TODO !!! We are calculating the lbd wrongly.
+    // TODO: We should not use num_conflicts, but rather solver.lbd_num
     #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires(t.lit_to_level@.len() == _f.num_vars@)]
     #[requires(self.invariant(_f.num_vars@))]
