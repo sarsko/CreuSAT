@@ -307,8 +307,8 @@ impl Heap {
 
     // TODO: in non-release mode this subtracts with overflow (0 - 1)
     fn parent(idx: usize) -> usize {
-        //(idx - 1) >> 1
-        if idx == 0 { 0 } else { (idx - 1) >> 1 }
+        (idx - 1) >> 1
+        //if idx == 0 { 0 } else { (idx - 1) >> 1 }
     }
 
     fn len(&self) -> usize {

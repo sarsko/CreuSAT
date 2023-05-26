@@ -119,12 +119,15 @@ impl Lit {
         false
     }
 
-    // TODO
-    pub(crate) fn calc_header(clause: &[Lit]) -> Self {
-        Lit { code: 0 }
+    // TODO ?
+    // TODO Currently just sets the lbd and that the clause can be deleted, not sure we need more ?
+    pub(crate) fn calc_header(clause: &[Lit], lbd: u16) -> Self {
+        Lit { code: lbd as u32 + 1 << CAN_BE_DEL_BIT }
     }
 
-    // TODO
+    // TODO ?
+    // TODO: Is there anything to do here ?
+    // TODO: Verify that we don't want to set lbd for original clauses ever
     pub(crate) fn calc_header_parser(clause: &[Lit]) -> Self {
         Lit { code: 0 }
     }

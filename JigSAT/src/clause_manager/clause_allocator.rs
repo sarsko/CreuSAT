@@ -15,10 +15,10 @@ impl ClauseAllocator {
         ClauseAllocator { buffer: Vec::new() }
     }
 
-    pub(crate) fn add_clause(&mut self, lits: &[Lit]) -> CRef {
+    pub(crate) fn add_clause(&mut self, lits: &[Lit], lbd: u32) -> CRef {
         let cref = self.buffer.len() as CRef;
         self.buffer.push(Lit::raw(lits.len() as u32));
-        self.buffer.push(Lit::calc_header(lits));
+        self.buffer.push(Lit::calc_header(lits, lbd as u16));
 
         for lit in lits {
             self.buffer.push(*lit);

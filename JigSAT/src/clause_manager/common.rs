@@ -54,6 +54,10 @@ unsigned has_extra : 1;
 unsigned reloced : 1;
 // Dunno what the gain is in having this. A bit cumbersome to maintain the invariant that the location is correct.
 // Either 2 bits or 1 bit if we use learnt or cref < original.len() and then discriminate on this afterwards
+// Hmm, OK, so I think this is needed (as I needed it for the jigsat-improvements), and I think it needs to be 2 bits (Local, Core, Tiers)
+// Hierarchy is Core > Tiers > Local (meaning Core never gets deleted)
+// Could be encoded as Core-bit and then Tier-bit (if that matches access patterns)
+// I think Core has to be 11, tiers 01 and local 00 (has to have a strict double-set policy in the case of local to core)
 unsigned location : 2;
 // Why is this needed? Need to check. 1 bit.
 unsigned simplified : 1;

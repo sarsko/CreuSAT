@@ -44,14 +44,14 @@ impl ClauseManager {
 
     }
     
-    pub(crate) fn learn_clause(&mut self, lits: &[Lit], watches: &mut Watches) -> CRef {
+    pub(crate) fn learn_clause(&mut self, lits: &[Lit], watches: &mut Watches, lbd: u32) -> CRef {
         // The weird assignment to first_/second_lit is because otherwise we break the precond for
         // add_watcher that the cref should be less than f.len(). We can't update the watches
         // after the clause is added, as the value gets moved by the push. Could of course index on last
         // element of f after the push, but I prefer this.
         let first_lit = lits[0];
         let second_lit = lits[1];
-        let cref = self.clause_allocator.add_clause(lits);
+        let cref = self.clause_allocator.add_clause(lits, lbd);
         watches[first_lit.to_neg_watchidx()].push(Watcher { cref, blocker: second_lit });
         watches[second_lit.to_neg_watchidx()].push(Watcher { cref, blocker: first_lit });
         self.learnt_core.add_cref(cref);
@@ -75,6 +75,14 @@ impl ClauseManager {
 
     pub(crate) fn get_clause_mut(&mut self, cref: CRef) -> &mut [Lit] {
         self.clause_allocator.get_clause_mut(cref)
+    }
+
+    pub(crate) fn get_clause_len(&self, cref: CRef) -> u32 {
+        self.clause_allocator.get_len(cref)
+    }
+
+    pub(crate) fn get_first_lit(&self, cref: CRef) -> Lit {
+        self.clause_allocator.get_first_lit(cref)
     }
 
     pub(crate) fn original_len(&self) -> usize {

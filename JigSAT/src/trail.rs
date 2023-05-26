@@ -139,27 +139,23 @@ impl Trail {
         self.enq_assignment(lit, UNIT);
     }
 
-    /*
-    // TODO: I am not sure the algorithm is correct without this
     pub(crate) fn learn_units(&mut self, clause_manager: &mut ClauseManager) -> Option<usize> {
-        let mut i = 0;
-        while i < formula.len() {
-            let clause = &formula[i];
-            if clause.len() == 1 {
-                let lit = clause[0];
+        for (i, cref) in clause_manager.original_crefs().iter().enumerate() {
+            let len = clause_manager.get_clause_len(*cref);
+            if len == 1 {
+                let lit = clause_manager.get_first_lit(*cref);
                 // This check should be removed by an invariant that the formula only contains unique clauses
                 if lit.lit_unsat(&self.assignments) {
                     return Some(i);
                 }
-                self.enq_assignment(lit, formula, UNIT);
-                formula.remove_clause_in_preprocessing(i);
-            } else {
-                i += 1;
+                self.enq_assignment(lit, UNIT);
+                // TODO: REMOVE the clause
+                // TODO: I don't think it is wrong not to remove it, but it is wasteful
+                //clause_manager.remove_clause_in_preprocessing(i);
             }
         }
         None
     }
-    */
 }
 
 impl Trail {

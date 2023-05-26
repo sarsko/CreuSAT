@@ -137,7 +137,7 @@ impl Solver {
     ) {
         let clause_len = clause.len();
         let lbd = clause.lbd;
-        let cref = clause_manager.learn_clause(&clause.lits, watches);
+        let cref = clause_manager.learn_clause(&clause.lits, watches, lbd);
 
         self.restart.glucose.update(trail.trail.len(), lbd as usize);
         self.restart.block_restart(self.num_conflicts);
@@ -317,8 +317,6 @@ pub fn solver(mut clause_manager: ClauseManager) -> SatResult {
     let now = Instant::now();
     let mut trail = Trail::new(clause_manager.num_vars, Assignments::new(clause_manager.num_vars));
 
-    /*
-    // TODO: This is needed to be correct when the original clauses contain units
     match trail.learn_units(&mut clause_manager) {
         Some(_) => {
             println!("c UNSAT due to learn_units");
@@ -326,7 +324,6 @@ pub fn solver(mut clause_manager: ClauseManager) -> SatResult {
         }
         None => {}
     }
-    */
 
     let mut watches = Watches::new(clause_manager.num_vars);
     watches.init_watches(&clause_manager);
