@@ -387,9 +387,9 @@ module Scratch_Clause_Impl3_Clone
   use prelude.Int
   use prelude.UInt32
   use prelude.UIntSize
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Alloc_Vec_Impl11_Clone_Interface as Clone3 with
     type t = Scratch_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global
@@ -1481,8 +1481,8 @@ module Scratch_Clause_Impl2_ClauseIsSeen
   clone Scratch_Lit_IdxInLogic_Stub as IdxInLogic0
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
   clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel1
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = bool,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -2852,9 +2852,9 @@ module Scratch_Scratch_Swap
   clone Scratch_Lit_Impl3_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel4 with
     type t = Scratch_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -2949,12 +2949,12 @@ module Scratch_Scratch_Swap
     type t = Scratch_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = Scratch_Clause_Clause_Type.t_clause,
     function ShallowModel0.shallow_model = ShallowModel6.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
     function ShallowModel1.shallow_model = ShallowModel0.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-    type Output0.output = Scratch_Clause_Clause_Type.t_clause,
     val Max0.mAX' = Max0.mAX'
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
     type t = Scratch_Formula_Formula_Type.t_formula
@@ -3048,6 +3048,2275 @@ module Scratch_Scratch_Swap
     goto BB6
   }
   BB6 {
+    return _0
+  }
+  
+end
+module Scratch_Restart_Ema_Type
+  use prelude.Float64
+  use prelude.Int
+  use prelude.UIntSize
+  type t_ema  =
+    | C_EMA Float64.t Float64.t Float64.t usize usize
+    
+  let function ema_wait (self : t_ema) : usize = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_EMA _ _ _ a _ -> a
+      end
+  let function ema_period (self : t_ema) : usize = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_EMA _ _ _ _ a -> a
+      end
+  let function ema_beta (self : t_ema) : Float64.t = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_EMA _ _ a _ _ -> a
+      end
+  let function ema_value (self : t_ema) : Float64.t = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_EMA a _ _ _ _ -> a
+      end
+  let function ema_alpha (self : t_ema) : Float64.t = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_EMA _ a _ _ _ -> a
+      end
+end
+module Scratch_Restart_Impl0_Invariant_Stub
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  predicate invariant' [@inline:trivial] [#"../Scratch/src/restart.rs" 22 4 22 30] (self : Scratch_Restart_Ema_Type.t_ema)
+    
+end
+module Scratch_Restart_Impl0_Invariant_Interface
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  predicate invariant' [@inline:trivial] [#"../Scratch/src/restart.rs" 22 4 22 30] (self : Scratch_Restart_Ema_Type.t_ema)
+    
+end
+module Scratch_Restart_Impl0_Invariant
+  use prelude.Int
+  use prelude.UIntSize
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  predicate invariant' [@inline:trivial] [#"../Scratch/src/restart.rs" 22 4 22 30] (self : Scratch_Restart_Ema_Type.t_ema)
+    
+   =
+    [#"../Scratch/src/restart.rs" 24 12 25 35] Scratch_Restart_Ema_Type.ema_wait self > (0 : usize) /\ Scratch_Restart_Ema_Type.ema_period self > (0 : usize)
+  val invariant' [@inline:trivial] [#"../Scratch/src/restart.rs" 22 4 22 30] (self : Scratch_Restart_Ema_Type.t_ema) : bool
+    ensures { result = invariant' self }
+    
+end
+module CreusotContracts_Invariant_Invariant_Invariant_Stub
+  type self
+  predicate invariant' (self : self)
+end
+module CreusotContracts_Invariant_Invariant_Invariant_Interface
+  type self
+  predicate invariant' (self : self)
+end
+module CreusotContracts_Invariant_Invariant_Invariant
+  type self
+  predicate invariant' (self : self) =
+    true
+  val invariant' (self : self) : bool
+    ensures { result = invariant' self }
+    
+end
+module CreusotContracts_Invariant_Impl1_Invariant_Stub
+  type t
+  use prelude.Borrow
+  predicate invariant' (self : borrowed t)
+end
+module CreusotContracts_Invariant_Impl1_Invariant_Interface
+  type t
+  use prelude.Borrow
+  predicate invariant' (self : borrowed t)
+end
+module CreusotContracts_Invariant_Impl1_Invariant
+  type t
+  use prelude.Borrow
+  clone CreusotContracts_Invariant_Invariant_Invariant_Stub as Invariant0 with
+    type self = t
+  predicate invariant' (self : borrowed t) =
+    Invariant0.invariant' ( * self)
+  val invariant' (self : borrowed t) : bool
+    ensures { result = invariant' self }
+    
+end
+module Scratch_Restart_Impl1_Update_Interface
+  use prelude.Borrow
+  use prelude.Float64
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  clone Scratch_Restart_Impl0_Invariant_Stub as Invariant1
+  clone CreusotContracts_Invariant_Impl1_Invariant_Stub as Invariant0 with
+    type t = Scratch_Restart_Ema_Type.t_ema
+  val update [#"../Scratch/src/restart.rs" 31 4 31 35] (self : borrowed (Scratch_Restart_Ema_Type.t_ema)) (next : Float64.t) : ()
+    requires {[#"../Scratch/src/restart.rs" 31 19 31 23] Invariant0.invariant' self}
+    ensures { [#"../Scratch/src/restart.rs" 31 19 31 23] Invariant1.invariant' ( ^ self) }
+    
+end
+module Scratch_Restart_Impl1_Update
+  use prelude.Borrow
+  use prelude.Float64
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.Float32
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
+    type t = Scratch_Restart_Ema_Type.t_ema
+  clone Scratch_Restart_Impl0_Invariant as Invariant1
+  clone CreusotContracts_Invariant_Impl1_Invariant as Invariant0 with
+    type t = Scratch_Restart_Ema_Type.t_ema,
+    predicate Invariant0.invariant' = Invariant1.invariant'
+  let rec cfg update [#"../Scratch/src/restart.rs" 31 4 31 35] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Restart_Ema_Type.t_ema)) (next : Float64.t) : ()
+    requires {[#"../Scratch/src/restart.rs" 31 19 31 23] Invariant0.invariant' self}
+    ensures { [#"../Scratch/src/restart.rs" 31 19 31 23] Invariant1.invariant' ( ^ self) }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : ();
+  var self_1 : borrowed (Scratch_Restart_Ema_Type.t_ema);
+  var next_2 : Float64.t;
+  var _3 : Float64.t;
+  var _4 : Float64.t;
+  var _5 : Float64.t;
+  var _6 : Float64.t;
+  var _7 : Float64.t;
+  var _8 : bool;
+  var _9 : Float64.t;
+  var _10 : Float64.t;
+  var _11 : bool;
+  var _12 : usize;
+  var _13 : ();
+  var _14 : bool;
+  var _15 : usize;
+  var _16 : usize;
+  var _17 : bool;
+  var _18 : usize;
+  var _19 : bool;
+  var _20 : Float64.t;
+  var _21 : Float64.t;
+  var _22 : Float64.t;
+  {
+    self_1 <- self;
+    next_2 <- next;
+    goto BB0
+  }
+  BB0 {
+    _4 <- Scratch_Restart_Ema_Type.ema_beta ( * self_1);
+    _6 <- next_2;
+    _7 <- Scratch_Restart_Ema_Type.ema_value ( * self_1);
+    _5 <- ([#"../Scratch/src/restart.rs" 32 34 32 53] _6 .- _7);
+    _3 <- ([#"../Scratch/src/restart.rs" 32 22 32 53] _4 .* _5);
+    self_1 <- { self_1 with current = (let Scratch_Restart_Ema_Type.C_EMA a b c d e =  * self_1 in Scratch_Restart_Ema_Type.C_EMA ([#"../Scratch/src/restart.rs" 32 8 32 53] Scratch_Restart_Ema_Type.ema_value ( * self_1) .+ _3) b c d e) };
+    _9 <- Scratch_Restart_Ema_Type.ema_beta ( * self_1);
+    _10 <- Scratch_Restart_Ema_Type.ema_alpha ( * self_1);
+    _8 <- ([#"../Scratch/src/restart.rs" 34 11 34 33] _9 .> _10);
+    switch (_8)
+      | False -> goto BB12
+      | True -> goto BB1
+      end
+  }
+  BB1 {
+    self_1 <- { self_1 with current = (let Scratch_Restart_Ema_Type.C_EMA a b c d e =  * self_1 in Scratch_Restart_Ema_Type.C_EMA a b c ([#"../Scratch/src/restart.rs" 35 12 35 26] Scratch_Restart_Ema_Type.ema_wait ( * self_1) - ([#"../Scratch/src/restart.rs" 35 25 35 26] (1 : usize))) e) };
+    _12 <- Scratch_Restart_Ema_Type.ema_wait ( * self_1);
+    _11 <- ([#"../Scratch/src/restart.rs" 36 15 36 29] _12 = ([#"../Scratch/src/restart.rs" 36 28 36 29] (0 : usize)));
+    switch (_11)
+      | False -> goto BB10
+      | True -> goto BB2
+      end
+  }
+  BB2 {
+    _15 <- Scratch_Restart_Ema_Type.ema_period ( * self_1);
+    _17 <- ([#"../Scratch/src/restart.rs" 37 33 37 47] ([#"../Scratch/src/restart.rs" 37 46 37 47] (2 : usize)) = ([#"../Scratch/src/restart.rs" 37 33 37 47] (0 : usize)));
+    assert { [#"../Scratch/src/restart.rs" 37 33 37 47] not _17 };
+    goto BB3
+  }
+  BB3 {
+    _16 <- ([#"../Scratch/src/restart.rs" 37 33 37 47] ([#"../Scratch/src/restart.rs" 37 33 37 43] (18446744073709551615 : usize)) / ([#"../Scratch/src/restart.rs" 37 46 37 47] (2 : usize)));
+    _14 <- ([#"../Scratch/src/restart.rs" 37 19 37 47] _15 < _16);
+    switch (_14)
+      | False -> goto BB5
+      | True -> goto BB4
+      end
+  }
+  BB4 {
+    self_1 <- { self_1 with current = (let Scratch_Restart_Ema_Type.C_EMA a b c d e =  * self_1 in Scratch_Restart_Ema_Type.C_EMA a b c d ([#"../Scratch/src/restart.rs" 38 20 38 36] Scratch_Restart_Ema_Type.ema_period ( * self_1) * ([#"../Scratch/src/restart.rs" 38 35 38 36] (2 : usize)))) };
+    _13 <- ();
+    goto BB6
+  }
+  BB5 {
+    _13 <- ();
+    goto BB6
+  }
+  BB6 {
+    _18 <- Scratch_Restart_Ema_Type.ema_period ( * self_1);
+    self_1 <- { self_1 with current = (let Scratch_Restart_Ema_Type.C_EMA a b c d e =  * self_1 in Scratch_Restart_Ema_Type.C_EMA a b c _18 e) };
+    _18 <- any usize;
+    self_1 <- { self_1 with current = (let Scratch_Restart_Ema_Type.C_EMA a b c d e =  * self_1 in Scratch_Restart_Ema_Type.C_EMA a b ([#"../Scratch/src/restart.rs" 41 16 41 32] Scratch_Restart_Ema_Type.ema_beta ( * self_1) .* ([#"../Scratch/src/restart.rs" 41 29 41 32] 0.5000000000000000000000000000000000000000000000000000000000000000)) d e) };
+    _20 <- Scratch_Restart_Ema_Type.ema_beta ( * self_1);
+    _21 <- Scratch_Restart_Ema_Type.ema_alpha ( * self_1);
+    _19 <- ([#"../Scratch/src/restart.rs" 42 19 42 41] _20 .< _21);
+    switch (_19)
+      | False -> goto BB8
+      | True -> goto BB7
+      end
+  }
+  BB7 {
+    _22 <- Scratch_Restart_Ema_Type.ema_alpha ( * self_1);
+    self_1 <- { self_1 with current = (let Scratch_Restart_Ema_Type.C_EMA a b c d e =  * self_1 in Scratch_Restart_Ema_Type.C_EMA a b _22 d e) };
+    _22 <- any Float64.t;
+    assume { Resolve0.resolve self_1 };
+    _0 <- ();
+    goto BB9
+  }
+  BB8 {
+    assume { Resolve0.resolve self_1 };
+    _0 <- ();
+    goto BB9
+  }
+  BB9 {
+    goto BB11
+  }
+  BB10 {
+    assume { Resolve0.resolve self_1 };
+    _0 <- ();
+    goto BB11
+  }
+  BB11 {
+    goto BB13
+  }
+  BB12 {
+    assume { Resolve0.resolve self_1 };
+    _0 <- ();
+    goto BB13
+  }
+  BB13 {
+    return _0
+  }
+  
+end
+module Scratch_Restart_Impl1_New_Interface
+  use prelude.Float64
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  clone Scratch_Restart_Impl0_Invariant_Stub as Invariant0
+  val new [#"../Scratch/src/restart.rs" 49 4 49 30] (alpha : Float64.t) : Scratch_Restart_Ema_Type.t_ema
+    ensures { [#"../Scratch/src/restart.rs" 49 26 49 30] Invariant0.invariant' result }
+    
+end
+module Scratch_Restart_Impl1_New
+  use prelude.Float64
+  use prelude.Float32
+  use prelude.Int
+  use prelude.UIntSize
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  clone Scratch_Restart_Impl0_Invariant as Invariant0
+  let rec cfg new [#"../Scratch/src/restart.rs" 49 4 49 30] [@cfg:stackify] [@cfg:subregion_analysis] (alpha : Float64.t) : Scratch_Restart_Ema_Type.t_ema
+    ensures { [#"../Scratch/src/restart.rs" 49 26 49 30] Invariant0.invariant' result }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Scratch_Restart_Ema_Type.t_ema;
+  var alpha_1 : Float64.t;
+  var _2 : Float64.t;
+  {
+    alpha_1 <- alpha;
+    goto BB0
+  }
+  BB0 {
+    _2 <- alpha_1;
+    _0 <- Scratch_Restart_Ema_Type.C_EMA ([#"../Scratch/src/restart.rs" 50 21 50 24] 1.0000000000000000000000000000000000000000000000000000000000000000) _2 ([#"../Scratch/src/restart.rs" 50 39 50 42] 1.0000000000000000000000000000000000000000000000000000000000000000) ([#"../Scratch/src/restart.rs" 50 50 50 51] (1 : usize)) ([#"../Scratch/src/restart.rs" 50 61 50 62] (1 : usize));
+    return _0
+  }
+  
+end
+module Scratch_Restart_Glucose_Type
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.Float64
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  type t_glucose  =
+    | C_Glucose usize usize (Scratch_Restart_Ema_Type.t_ema) (Scratch_Restart_Ema_Type.t_ema) (Scratch_Restart_Ema_Type.t_ema) usize Float64.t Float64.t usize usize
+    
+  let function glucose_ema_lbd_narrow (self : t_glucose) : Scratch_Restart_Ema_Type.t_ema
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Glucose _ _ a _ _ _ _ _ _ _ -> a
+      end
+  let function glucose_ema_lbd_wide (self : t_glucose) : Scratch_Restart_Ema_Type.t_ema
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Glucose _ _ _ a _ _ _ _ _ _ -> a
+      end
+  let function glucose_ema_trail_wide (self : t_glucose) : Scratch_Restart_Ema_Type.t_ema
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Glucose _ _ _ _ a _ _ _ _ _ -> a
+      end
+  let function glucose_minimum_conflicts (self : t_glucose) : usize = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Glucose a _ _ _ _ _ _ _ _ _ -> a
+      end
+  let function glucose_force (self : t_glucose) : Float64.t = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Glucose _ _ _ _ _ _ a _ _ _ -> a
+      end
+  let function glucose_num_restarts (self : t_glucose) : usize = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Glucose _ _ _ _ _ _ _ _ a _ -> a
+      end
+  let function glucose_last_trail_size (self : t_glucose) : usize = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Glucose _ _ _ _ _ a _ _ _ _ -> a
+      end
+  let function glucose_block (self : t_glucose) : Float64.t = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Glucose _ _ _ _ _ _ _ a _ _ -> a
+      end
+  let function glucose_minimum_conflicts_for_blocking_restarts (self : t_glucose) : usize
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Glucose _ a _ _ _ _ _ _ _ _ -> a
+      end
+  let function glucose_num_blocked (self : t_glucose) : usize = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Glucose _ _ _ _ _ _ _ _ _ a -> a
+      end
+end
+module Scratch_Restart_Impl2_Invariant_Stub
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  predicate invariant' [@inline:trivial] [#"../Scratch/src/restart.rs" 69 4 69 30] (self : Scratch_Restart_Glucose_Type.t_glucose)
+    
+end
+module Scratch_Restart_Impl2_Invariant_Interface
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  predicate invariant' [@inline:trivial] [#"../Scratch/src/restart.rs" 69 4 69 30] (self : Scratch_Restart_Glucose_Type.t_glucose)
+    
+end
+module Scratch_Restart_Impl2_Invariant
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  clone Scratch_Restart_Impl0_Invariant_Stub as Invariant0
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  predicate invariant' [@inline:trivial] [#"../Scratch/src/restart.rs" 69 4 69 30] (self : Scratch_Restart_Glucose_Type.t_glucose)
+    
+   =
+    [#"../Scratch/src/restart.rs" 68 4 68 16] Invariant0.invariant' (Scratch_Restart_Glucose_Type.glucose_ema_lbd_narrow self) /\ Invariant0.invariant' (Scratch_Restart_Glucose_Type.glucose_ema_lbd_wide self) /\ Invariant0.invariant' (Scratch_Restart_Glucose_Type.glucose_ema_trail_wide self)
+  val invariant' [@inline:trivial] [#"../Scratch/src/restart.rs" 69 4 69 30] (self : Scratch_Restart_Glucose_Type.t_glucose) : bool
+    ensures { result = invariant' self }
+    
+end
+module Core_Ops_Range_Range_Type
+  type t_range 'idx =
+    | C_Range 'idx 'idx
+    
+  let function range_start (self : t_range 'idx) : 'idx = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Range a _ -> a
+      end
+  let function range_end (self : t_range 'idx) : 'idx = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Range _ a -> a
+      end
+end
+module Core_Option_Option_Type
+  type t_option 't =
+    | C_None
+    | C_Some 't
+    
+end
+module CreusotContracts_Std1_Iter_IntoIterator_IntoIterPre_Stub
+  type self
+  predicate into_iter_pre (self : self)
+end
+module CreusotContracts_Std1_Iter_IntoIterator_IntoIterPre_Interface
+  type self
+  predicate into_iter_pre (self : self)
+end
+module CreusotContracts_Std1_Iter_IntoIterator_IntoIterPre
+  type self
+  predicate into_iter_pre (self : self) =
+    true
+  val into_iter_pre (self : self) : bool
+    ensures { result = into_iter_pre self }
+    
+end
+module Core_Iter_Traits_Collect_IntoIterator_IntoIter_Type
+  type self
+  type intoIter
+end
+module CreusotContracts_Std1_Iter_IntoIterator_IntoIterPost_Stub
+  type self
+  clone Core_Iter_Traits_Collect_IntoIterator_IntoIter_Type as IntoIter0 with
+    type self = self
+  predicate into_iter_post (self : self) (res : IntoIter0.intoIter)
+end
+module CreusotContracts_Std1_Iter_IntoIterator_IntoIterPost_Interface
+  type self
+  clone Core_Iter_Traits_Collect_IntoIterator_IntoIter_Type as IntoIter0 with
+    type self = self
+  predicate into_iter_post (self : self) (res : IntoIter0.intoIter)
+end
+module CreusotContracts_Std1_Iter_IntoIterator_IntoIterPost
+  type self
+  clone Core_Iter_Traits_Collect_IntoIterator_IntoIter_Type as IntoIter0 with
+    type self = self
+  predicate into_iter_post (self : self) (res : IntoIter0.intoIter)
+  val into_iter_post (self : self) (res : IntoIter0.intoIter) : bool
+    ensures { result = into_iter_post self res }
+    
+end
+module Core_Iter_Traits_Collect_Impl0_IntoIter_Interface
+  type i
+  clone CreusotContracts_Std1_Iter_IntoIterator_IntoIterPost_Stub as IntoIterPost0 with
+    type self = i,
+    type IntoIter0.intoIter = i
+  clone CreusotContracts_Invariant_Invariant_Invariant_Stub as Invariant0 with
+    type self = i
+  clone CreusotContracts_Std1_Iter_IntoIterator_IntoIterPre_Stub as IntoIterPre0 with
+    type self = i
+  val into_iter (self : i) : i
+    requires {IntoIterPre0.into_iter_pre self}
+    requires {Invariant0.invariant' self}
+    ensures { IntoIterPost0.into_iter_post self result }
+    ensures { Invariant0.invariant' result }
+    
+end
+module CreusotContracts_Std1_Iter_Iterator_Completed_Stub
+  type self
+  use prelude.Borrow
+  predicate completed (self : borrowed self)
+end
+module CreusotContracts_Std1_Iter_Iterator_Completed_Interface
+  type self
+  use prelude.Borrow
+  predicate completed (self : borrowed self)
+end
+module CreusotContracts_Std1_Iter_Iterator_Completed
+  type self
+  use prelude.Borrow
+  predicate completed (self : borrowed self)
+  val completed (self : borrowed self) : bool
+    ensures { result = completed self }
+    
+end
+module Core_Iter_Traits_Iterator_Iterator_Item_Type
+  type self
+  type item
+end
+module CreusotContracts_Std1_Iter_Iterator_Produces_Stub
+  type self
+  use seq.Seq
+  clone Core_Iter_Traits_Iterator_Iterator_Item_Type as Item0 with
+    type self = self
+  predicate produces (self : self) (visited : Seq.seq Item0.item) (_o : self)
+end
+module CreusotContracts_Std1_Iter_Iterator_Produces_Interface
+  type self
+  use seq.Seq
+  clone Core_Iter_Traits_Iterator_Iterator_Item_Type as Item0 with
+    type self = self
+  predicate produces (self : self) (visited : Seq.seq Item0.item) (_o : self)
+end
+module CreusotContracts_Std1_Iter_Iterator_Produces
+  type self
+  use seq.Seq
+  clone Core_Iter_Traits_Iterator_Iterator_Item_Type as Item0 with
+    type self = self
+  predicate produces (self : self) (visited : Seq.seq Item0.item) (_o : self)
+  val produces (self : self) (visited : Seq.seq Item0.item) (_o : self) : bool
+    ensures { result = produces self visited _o }
+    
+end
+module Core_Iter_Range_Impl3_Next_Interface
+  type a
+  use prelude.Borrow
+  use seq.Seq
+  use Core_Option_Option_Type as Core_Option_Option_Type
+  use Core_Ops_Range_Range_Type as Core_Ops_Range_Range_Type
+  clone CreusotContracts_Std1_Iter_Iterator_Produces_Stub as Produces0 with
+    type self = Core_Ops_Range_Range_Type.t_range a,
+    type Item0.item = a
+  clone CreusotContracts_Std1_Iter_Iterator_Completed_Stub as Completed0 with
+    type self = Core_Ops_Range_Range_Type.t_range a
+  clone Core_Iter_Traits_Iterator_Iterator_Item_Type as Item0 with
+    type self = Core_Ops_Range_Range_Type.t_range a
+  val next (self : borrowed (Core_Ops_Range_Range_Type.t_range a)) : Core_Option_Option_Type.t_option a
+    ensures { match (result) with
+      | Core_Option_Option_Type.C_None -> Completed0.completed self
+      | Core_Option_Option_Type.C_Some v -> Produces0.produces ( * self) (Seq.singleton v) ( ^ self)
+      end }
+    
+end
+module CreusotContracts_Std1_Iter_Impl0_IntoIterPre_Stub
+  type i
+  predicate into_iter_pre (self : i)
+end
+module CreusotContracts_Std1_Iter_Impl0_IntoIterPre_Interface
+  type i
+  predicate into_iter_pre (self : i)
+end
+module CreusotContracts_Std1_Iter_Impl0_IntoIterPre
+  type i
+  clone CreusotContracts_Invariant_Invariant_Invariant_Stub as Invariant0 with
+    type self = i
+  predicate into_iter_pre (self : i) =
+    Invariant0.invariant' self
+  val into_iter_pre (self : i) : bool
+    ensures { result = into_iter_pre self }
+    
+end
+module CreusotContracts_Std1_Iter_Impl0_IntoIterPost_Stub
+  type i
+  predicate into_iter_post (self : i) (res : i)
+end
+module CreusotContracts_Std1_Iter_Impl0_IntoIterPost_Interface
+  type i
+  predicate into_iter_post (self : i) (res : i)
+end
+module CreusotContracts_Std1_Iter_Impl0_IntoIterPost
+  type i
+  predicate into_iter_post (self : i) (res : i) =
+    self = res
+  val into_iter_post (self : i) (res : i) : bool
+    ensures { result = into_iter_post self res }
+    
+end
+module CreusotContracts_Model_DeepModel_DeepModelTy_Type
+  type self
+  type deepModelTy
+end
+module CreusotContracts_Model_DeepModel_DeepModel_Stub
+  type self
+  clone CreusotContracts_Model_DeepModel_DeepModelTy_Type as DeepModelTy0 with
+    type self = self
+  function deep_model (self : self) : DeepModelTy0.deepModelTy
+end
+module CreusotContracts_Model_DeepModel_DeepModel_Interface
+  type self
+  clone CreusotContracts_Model_DeepModel_DeepModelTy_Type as DeepModelTy0 with
+    type self = self
+  function deep_model (self : self) : DeepModelTy0.deepModelTy
+end
+module CreusotContracts_Model_DeepModel_DeepModel
+  type self
+  clone CreusotContracts_Model_DeepModel_DeepModelTy_Type as DeepModelTy0 with
+    type self = self
+  function deep_model (self : self) : DeepModelTy0.deepModelTy
+  val deep_model (self : self) : DeepModelTy0.deepModelTy
+    ensures { result = deep_model self }
+    
+end
+module CreusotContracts_Std1_Iter_Range_Impl0_Completed_Stub
+  type idx
+  use prelude.Borrow
+  use Core_Ops_Range_Range_Type as Core_Ops_Range_Range_Type
+  predicate completed (self : borrowed (Core_Ops_Range_Range_Type.t_range idx))
+end
+module CreusotContracts_Std1_Iter_Range_Impl0_Completed_Interface
+  type idx
+  use prelude.Borrow
+  use Core_Ops_Range_Range_Type as Core_Ops_Range_Range_Type
+  predicate completed (self : borrowed (Core_Ops_Range_Range_Type.t_range idx))
+end
+module CreusotContracts_Std1_Iter_Range_Impl0_Completed
+  type idx
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.Int
+  clone CreusotContracts_Model_DeepModel_DeepModel_Stub as DeepModel0 with
+    type self = idx,
+    type DeepModelTy0.deepModelTy = int
+  use Core_Ops_Range_Range_Type as Core_Ops_Range_Range_Type
+  clone CreusotContracts_Resolve_Impl1_Resolve_Stub as Resolve0 with
+    type t = Core_Ops_Range_Range_Type.t_range idx
+  predicate completed (self : borrowed (Core_Ops_Range_Range_Type.t_range idx)) =
+    Resolve0.resolve self /\ DeepModel0.deep_model (Core_Ops_Range_Range_Type.range_start ( * self)) >= DeepModel0.deep_model (Core_Ops_Range_Range_Type.range_end ( * self))
+  val completed (self : borrowed (Core_Ops_Range_Range_Type.t_range idx)) : bool
+    ensures { result = completed self }
+    
+end
+module CreusotContracts_Std1_Iter_Range_Impl0_Produces_Stub
+  type idx
+  use seq.Seq
+  use Core_Ops_Range_Range_Type as Core_Ops_Range_Range_Type
+  predicate produces (self : Core_Ops_Range_Range_Type.t_range idx) (visited : Seq.seq idx) (o : Core_Ops_Range_Range_Type.t_range idx)
+    
+end
+module CreusotContracts_Std1_Iter_Range_Impl0_Produces_Interface
+  type idx
+  use seq.Seq
+  use Core_Ops_Range_Range_Type as Core_Ops_Range_Range_Type
+  predicate produces (self : Core_Ops_Range_Range_Type.t_range idx) (visited : Seq.seq idx) (o : Core_Ops_Range_Range_Type.t_range idx)
+    
+end
+module CreusotContracts_Std1_Iter_Range_Impl0_Produces
+  type idx
+  use seq.Seq
+  use prelude.Int
+  use prelude.Int
+  clone CreusotContracts_Model_DeepModel_DeepModel_Stub as DeepModel0 with
+    type self = idx,
+    type DeepModelTy0.deepModelTy = int
+  use Core_Ops_Range_Range_Type as Core_Ops_Range_Range_Type
+  predicate produces (self : Core_Ops_Range_Range_Type.t_range idx) (visited : Seq.seq idx) (o : Core_Ops_Range_Range_Type.t_range idx)
+    
+   =
+    Core_Ops_Range_Range_Type.range_end self = Core_Ops_Range_Range_Type.range_end o /\ DeepModel0.deep_model (Core_Ops_Range_Range_Type.range_start self) <= DeepModel0.deep_model (Core_Ops_Range_Range_Type.range_start o) /\ (Seq.length visited > 0 -> DeepModel0.deep_model (Core_Ops_Range_Range_Type.range_start o) <= DeepModel0.deep_model (Core_Ops_Range_Range_Type.range_end o)) /\ Seq.length visited = DeepModel0.deep_model (Core_Ops_Range_Range_Type.range_start o) - DeepModel0.deep_model (Core_Ops_Range_Range_Type.range_start self) /\ (forall i : int . 0 <= i /\ i < Seq.length visited -> DeepModel0.deep_model (Seq.get visited i) = DeepModel0.deep_model (Core_Ops_Range_Range_Type.range_start self) + i)
+  val produces (self : Core_Ops_Range_Range_Type.t_range idx) (visited : Seq.seq idx) (o : Core_Ops_Range_Range_Type.t_range idx) : bool
+    ensures { result = produces self visited o }
+    
+end
+module CreusotContracts_Invariant_Invariant_IsInhabited_Stub
+  type self
+  clone CreusotContracts_Invariant_Invariant_Invariant_Stub as Invariant0 with
+    type self = self
+  function is_inhabited (_1' : ()) : bool
+end
+module CreusotContracts_Invariant_Invariant_IsInhabited_Interface
+  type self
+  clone CreusotContracts_Invariant_Invariant_Invariant_Stub as Invariant0 with
+    type self = self
+  function is_inhabited (_1' : ()) : bool
+  axiom is_inhabited_spec : forall _1' : () . is_inhabited _1' && (exists x : self . Invariant0.invariant' x /\ Invariant0.invariant' x)
+end
+module CreusotContracts_Invariant_Invariant_IsInhabited
+  type self
+  clone CreusotContracts_Invariant_Invariant_Invariant_Stub as Invariant0 with
+    type self = self
+  function is_inhabited (_1' : ()) : bool =
+    true
+  val is_inhabited (_1' : ()) : bool
+    ensures { result = is_inhabited _1' }
+    
+  axiom is_inhabited_spec : forall _1' : () . is_inhabited _1' && (exists x : self . Invariant0.invariant' x /\ Invariant0.invariant' x)
+end
+module CreusotContracts_Std1_Iter_Range_Impl0_ProducesRefl_Stub
+  type idx
+  use seq.Seq
+  use Core_Ops_Range_Range_Type as Core_Ops_Range_Range_Type
+  clone CreusotContracts_Std1_Iter_Range_Impl0_Produces_Stub as Produces0 with
+    type idx = idx
+  function produces_refl (a : Core_Ops_Range_Range_Type.t_range idx) : ()
+end
+module CreusotContracts_Std1_Iter_Range_Impl0_ProducesRefl_Interface
+  type idx
+  use seq.Seq
+  use Core_Ops_Range_Range_Type as Core_Ops_Range_Range_Type
+  clone CreusotContracts_Std1_Iter_Range_Impl0_Produces_Stub as Produces0 with
+    type idx = idx
+  function produces_refl (a : Core_Ops_Range_Range_Type.t_range idx) : ()
+  axiom produces_refl_spec : forall a : Core_Ops_Range_Range_Type.t_range idx . Produces0.produces a (Seq.empty ) a
+end
+module CreusotContracts_Std1_Iter_Range_Impl0_ProducesRefl
+  type idx
+  use seq.Seq
+  use Core_Ops_Range_Range_Type as Core_Ops_Range_Range_Type
+  clone CreusotContracts_Std1_Iter_Range_Impl0_Produces_Stub as Produces0 with
+    type idx = idx
+  function produces_refl (a : Core_Ops_Range_Range_Type.t_range idx) : () =
+    ()
+  val produces_refl (a : Core_Ops_Range_Range_Type.t_range idx) : ()
+    ensures { result = produces_refl a }
+    
+  axiom produces_refl_spec : forall a : Core_Ops_Range_Range_Type.t_range idx . Produces0.produces a (Seq.empty ) a
+end
+module CreusotContracts_Std1_Iter_Range_Impl0_ProducesTrans_Stub
+  type idx
+  use seq.Seq
+  use Core_Ops_Range_Range_Type as Core_Ops_Range_Range_Type
+  clone CreusotContracts_Std1_Iter_Range_Impl0_Produces_Stub as Produces0 with
+    type idx = idx
+  function produces_trans (a : Core_Ops_Range_Range_Type.t_range idx) (ab : Seq.seq idx) (b : Core_Ops_Range_Range_Type.t_range idx) (bc : Seq.seq idx) (c : Core_Ops_Range_Range_Type.t_range idx) : ()
+    
+end
+module CreusotContracts_Std1_Iter_Range_Impl0_ProducesTrans_Interface
+  type idx
+  use seq.Seq
+  use Core_Ops_Range_Range_Type as Core_Ops_Range_Range_Type
+  clone CreusotContracts_Std1_Iter_Range_Impl0_Produces_Stub as Produces0 with
+    type idx = idx
+  function produces_trans (a : Core_Ops_Range_Range_Type.t_range idx) (ab : Seq.seq idx) (b : Core_Ops_Range_Range_Type.t_range idx) (bc : Seq.seq idx) (c : Core_Ops_Range_Range_Type.t_range idx) : ()
+    
+  axiom produces_trans_spec : forall a : Core_Ops_Range_Range_Type.t_range idx, ab : Seq.seq idx, b : Core_Ops_Range_Range_Type.t_range idx, bc : Seq.seq idx, c : Core_Ops_Range_Range_Type.t_range idx . Produces0.produces a ab b -> Produces0.produces b bc c -> Produces0.produces a (Seq.(++) ab bc) c
+end
+module CreusotContracts_Std1_Iter_Range_Impl0_ProducesTrans
+  type idx
+  use seq.Seq
+  use Core_Ops_Range_Range_Type as Core_Ops_Range_Range_Type
+  clone CreusotContracts_Std1_Iter_Range_Impl0_Produces_Stub as Produces0 with
+    type idx = idx
+  function produces_trans (a : Core_Ops_Range_Range_Type.t_range idx) (ab : Seq.seq idx) (b : Core_Ops_Range_Range_Type.t_range idx) (bc : Seq.seq idx) (c : Core_Ops_Range_Range_Type.t_range idx) : ()
+    
+   =
+    ()
+  val produces_trans (a : Core_Ops_Range_Range_Type.t_range idx) (ab : Seq.seq idx) (b : Core_Ops_Range_Range_Type.t_range idx) (bc : Seq.seq idx) (c : Core_Ops_Range_Range_Type.t_range idx) : ()
+    requires {Produces0.produces a ab b}
+    requires {Produces0.produces b bc c}
+    ensures { result = produces_trans a ab b bc c }
+    
+  axiom produces_trans_spec : forall a : Core_Ops_Range_Range_Type.t_range idx, ab : Seq.seq idx, b : Core_Ops_Range_Range_Type.t_range idx, bc : Seq.seq idx, c : Core_Ops_Range_Range_Type.t_range idx . Produces0.produces a ab b -> Produces0.produces b bc c -> Produces0.produces a (Seq.(++) ab bc) c
+end
+module CreusotContracts_Std1_Num_Impl16_DeepModel_Stub
+  use prelude.Int
+  use prelude.UIntSize
+  function deep_model (self : usize) : int
+end
+module CreusotContracts_Std1_Num_Impl16_DeepModel_Interface
+  use prelude.Int
+  use prelude.UIntSize
+  function deep_model (self : usize) : int
+end
+module CreusotContracts_Std1_Num_Impl16_DeepModel
+  use prelude.Int
+  use prelude.UIntSize
+  function deep_model (self : usize) : int =
+    UIntSize.to_int self
+  val deep_model (self : usize) : int
+    ensures { result = deep_model self }
+    
+end
+module Scratch_Restart_DivFloatWithTenNTimes_Interface
+  use prelude.Float64
+  use prelude.Int
+  use prelude.UIntSize
+  val div_float_with_ten_n_times [#"../Scratch/src/restart.rs" 76 0 76 58] (f : Float64.t) (n : usize) : Float64.t
+end
+module Scratch_Restart_DivFloatWithTenNTimes
+  use prelude.Float64
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.Borrow
+  use prelude.IntSize
+  use prelude.Float32
+  use prelude.Int
+  clone CreusotContracts_Std1_Num_Impl16_DeepModel as DeepModel0
+  use Core_Ops_Range_Range_Type as Core_Ops_Range_Range_Type
+  clone CreusotContracts_Std1_Iter_Range_Impl0_Produces as Produces0 with
+    type idx = usize,
+    function DeepModel0.deep_model = DeepModel0.deep_model
+  clone CreusotContracts_Std1_Iter_Range_Impl0_ProducesTrans as ProducesTrans0 with
+    type idx = usize,
+    predicate Produces0.produces = Produces0.produces,
+    axiom .
+  clone CreusotContracts_Std1_Iter_Range_Impl0_ProducesRefl as ProducesRefl0 with
+    type idx = usize,
+    predicate Produces0.produces = Produces0.produces,
+    axiom .
+  clone CreusotContracts_Invariant_Invariant_Invariant as Invariant0 with
+    type self = Core_Ops_Range_Range_Type.t_range usize
+  clone CreusotContracts_Invariant_Invariant_IsInhabited as IsInhabited0 with
+    type self = Core_Ops_Range_Range_Type.t_range usize,
+    predicate Invariant0.invariant' = Invariant0.invariant',
+    axiom .
+  clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
+    type t = Core_Ops_Range_Range_Type.t_range usize
+  clone CreusotContracts_Std1_Iter_Range_Impl0_Completed as Completed0 with
+    type idx = usize,
+    predicate Resolve0.resolve = Resolve0.resolve,
+    function DeepModel0.deep_model = DeepModel0.deep_model
+  clone CreusotContracts_Std1_Iter_Impl0_IntoIterPost as IntoIterPost0 with
+    type i = Core_Ops_Range_Range_Type.t_range usize
+  clone CreusotContracts_Std1_Iter_Impl0_IntoIterPre as IntoIterPre0 with
+    type i = Core_Ops_Range_Range_Type.t_range usize,
+    predicate Invariant0.invariant' = Invariant0.invariant'
+  use Core_Option_Option_Type as Core_Option_Option_Type
+  clone Core_Iter_Range_Impl3_Next_Interface as Next0 with
+    type a = usize,
+    type Item0.item = usize,
+    predicate Completed0.completed = Completed0.completed,
+    predicate Produces0.produces = Produces0.produces
+  clone Core_Iter_Traits_Collect_Impl0_IntoIter_Interface as IntoIter0 with
+    type i = Core_Ops_Range_Range_Type.t_range usize,
+    predicate IntoIterPre0.into_iter_pre = IntoIterPre0.into_iter_pre,
+    predicate Invariant0.invariant' = Invariant0.invariant',
+    predicate IntoIterPost0.into_iter_post = IntoIterPost0.into_iter_post
+  let rec cfg div_float_with_ten_n_times [#"../Scratch/src/restart.rs" 76 0 76 58] [@cfg:stackify] [@cfg:subregion_analysis] (f : Float64.t) (n : usize) : Float64.t
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Float64.t;
+  var f_1 : Float64.t;
+  var n_2 : usize;
+  var _3 : ();
+  var _4 : Core_Ops_Range_Range_Type.t_range usize;
+  var _5 : Core_Ops_Range_Range_Type.t_range usize;
+  var _6 : usize;
+  var iter_7 : Core_Ops_Range_Range_Type.t_range usize;
+  var _8 : ();
+  var _9 : ();
+  var _10 : Core_Option_Option_Type.t_option usize;
+  var _11 : borrowed (Core_Ops_Range_Range_Type.t_range usize);
+  var _12 : borrowed (Core_Ops_Range_Range_Type.t_range usize);
+  var _13 : isize;
+  var _14 : ();
+  {
+    f_1 <- f;
+    n_2 <- n;
+    goto BB0
+  }
+  BB0 {
+    _6 <- n_2;
+    _5 <- Core_Ops_Range_Range_Type.C_Range ([#"../Scratch/src/restart.rs" 77 13 77 14] (0 : usize)) _6;
+    _4 <- ([#"../Scratch/src/restart.rs" 77 13 77 17] IntoIter0.into_iter _5);
+    goto BB1
+  }
+  BB1 {
+    iter_7 <- _4;
+    _4 <- any Core_Ops_Range_Range_Type.t_range usize;
+    goto BB2
+  }
+  BB2 {
+    _12 <- borrow_mut iter_7;
+    iter_7 <-  ^ _12;
+    _11 <- borrow_mut ( * _12);
+    _12 <- { _12 with current = ( ^ _11) };
+    assume { Resolve0.resolve _12 };
+    _10 <- ([#"../Scratch/src/restart.rs" 77 13 77 17] Next0.next _11);
+    goto BB3
+  }
+  BB3 {
+    switch (_10)
+      | Core_Option_Option_Type.C_None -> goto BB6
+      | Core_Option_Option_Type.C_Some _ -> goto BB4
+      end
+  }
+  BB4 {
+    f_1 <- ([#"../Scratch/src/restart.rs" 78 8 78 17] f_1 ./ ([#"../Scratch/src/restart.rs" 78 13 78 17] 10.0000000000000000000000000000000000000000000000000000000000000000));
+    _9 <- ();
+    _8 <- ();
+    goto BB2
+  }
+  BB5 {
+    absurd
+  }
+  BB6 {
+    _3 <- ();
+    _0 <- f_1;
+    return _0
+  }
+  
+end
+module Scratch_Restart_Impl3_New_Interface
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  clone Scratch_Restart_Impl2_Invariant_Stub as Invariant0
+  val new [#"../Scratch/src/restart.rs" 85 4 85 20] (_1' : ()) : Scratch_Restart_Glucose_Type.t_glucose
+    ensures { [#"../Scratch/src/restart.rs" 85 16 85 20] Invariant0.invariant' result }
+    
+end
+module Scratch_Restart_Impl3_New
+  use prelude.Float64
+  use prelude.Float32
+  use prelude.Int
+  use prelude.UIntSize
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  clone Scratch_Restart_Impl0_Invariant as Invariant1
+  clone Scratch_Restart_DivFloatWithTenNTimes_Interface as DivFloatWithTenNTimes0
+  clone Scratch_Restart_Impl1_New_Interface as New0 with
+    predicate Invariant0.invariant' = Invariant1.invariant'
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  clone Scratch_Restart_Impl2_Invariant as Invariant0 with
+    predicate Invariant0.invariant' = Invariant1.invariant'
+  let rec cfg new [#"../Scratch/src/restart.rs" 85 4 85 20] [@cfg:stackify] [@cfg:subregion_analysis] (_1' : ()) : Scratch_Restart_Glucose_Type.t_glucose
+    ensures { [#"../Scratch/src/restart.rs" 85 16 85 20] Invariant0.invariant' result }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Scratch_Restart_Glucose_Type.t_glucose;
+  var _1 : Scratch_Restart_Ema_Type.t_ema;
+  var _2 : Scratch_Restart_Ema_Type.t_ema;
+  var _3 : Float64.t;
+  var _4 : Scratch_Restart_Ema_Type.t_ema;
+  {
+    goto BB0
+  }
+  BB0 {
+    _1 <- ([#"../Scratch/src/restart.rs" 89 28 89 42] New0.new ([#"../Scratch/src/restart.rs" 89 37 89 41] 0.0299999999999999988897769753748434595763683319091796875000000000));
+    goto BB1
+  }
+  BB1 {
+    _3 <- ([#"../Scratch/src/restart.rs" 90 35 90 70] DivFloatWithTenNTimes0.div_float_with_ten_n_times ([#"../Scratch/src/restart.rs" 90 62 90 66] 0.0010000000000000000208166817117216851329430937767028808593750000) ([#"../Scratch/src/restart.rs" 90 68 90 69] (2 : usize)));
+    goto BB2
+  }
+  BB2 {
+    _2 <- ([#"../Scratch/src/restart.rs" 90 26 90 71] New0.new _3);
+    goto BB3
+  }
+  BB3 {
+    _4 <- ([#"../Scratch/src/restart.rs" 91 28 91 42] New0.new ([#"../Scratch/src/restart.rs" 91 37 91 41] 0.0002999999999999999737189393389513725196593441069126129150390625));
+    goto BB4
+  }
+  BB4 {
+    _0 <- Scratch_Restart_Glucose_Type.C_Glucose ([#"../Scratch/src/restart.rs" 87 31 87 33] (50 : usize)) ([#"../Scratch/src/restart.rs" 88 53 88 59] (10000 : usize)) _1 _2 _4 ([#"../Scratch/src/restart.rs" 92 29 92 30] (0 : usize)) ([#"../Scratch/src/restart.rs" 93 19 93 23] 1.2500000000000000000000000000000000000000000000000000000000000000) ([#"../Scratch/src/restart.rs" 94 19 94 22] 1.3999999999999999111821580299874767661094665527343750000000000000) ([#"../Scratch/src/restart.rs" 95 26 95 27] (0 : usize)) ([#"../Scratch/src/restart.rs" 96 25 96 26] (0 : usize));
+    return _0
+  }
+  
+end
+module Scratch_Restart_UsizeToF64_Interface
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.Float64
+  val usize_to_f64 [#"../Scratch/src/restart.rs" 103 0 103 32] (u : usize) : Float64.t
+end
+module Scratch_Restart_F64ToUsize_Interface
+  use prelude.Float64
+  use prelude.Int
+  use prelude.UIntSize
+  val f64_to_usize [#"../Scratch/src/restart.rs" 109 0 109 32] (f : Float64.t) : usize
+end
+module Scratch_Restart_Powf_Interface
+  use prelude.Float64
+  use prelude.Int
+  use prelude.UIntSize
+  val powf [#"../Scratch/src/restart.rs" 113 0 113 32] (f : Float64.t) (u : usize) : Float64.t
+end
+module Scratch_Restart_Powf
+  use prelude.Float64
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.Borrow
+  use prelude.IntSize
+  use prelude.Float32
+  use prelude.Int
+  clone CreusotContracts_Std1_Num_Impl16_DeepModel as DeepModel0
+  use Core_Ops_Range_Range_Type as Core_Ops_Range_Range_Type
+  clone CreusotContracts_Std1_Iter_Range_Impl0_Produces as Produces0 with
+    type idx = usize,
+    function DeepModel0.deep_model = DeepModel0.deep_model
+  clone CreusotContracts_Std1_Iter_Range_Impl0_ProducesTrans as ProducesTrans0 with
+    type idx = usize,
+    predicate Produces0.produces = Produces0.produces,
+    axiom .
+  clone CreusotContracts_Std1_Iter_Range_Impl0_ProducesRefl as ProducesRefl0 with
+    type idx = usize,
+    predicate Produces0.produces = Produces0.produces,
+    axiom .
+  clone CreusotContracts_Invariant_Invariant_Invariant as Invariant0 with
+    type self = Core_Ops_Range_Range_Type.t_range usize
+  clone CreusotContracts_Invariant_Invariant_IsInhabited as IsInhabited0 with
+    type self = Core_Ops_Range_Range_Type.t_range usize,
+    predicate Invariant0.invariant' = Invariant0.invariant',
+    axiom .
+  clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
+    type t = Core_Ops_Range_Range_Type.t_range usize
+  clone CreusotContracts_Std1_Iter_Range_Impl0_Completed as Completed0 with
+    type idx = usize,
+    predicate Resolve0.resolve = Resolve0.resolve,
+    function DeepModel0.deep_model = DeepModel0.deep_model
+  clone CreusotContracts_Std1_Iter_Impl0_IntoIterPost as IntoIterPost0 with
+    type i = Core_Ops_Range_Range_Type.t_range usize
+  clone CreusotContracts_Std1_Iter_Impl0_IntoIterPre as IntoIterPre0 with
+    type i = Core_Ops_Range_Range_Type.t_range usize,
+    predicate Invariant0.invariant' = Invariant0.invariant'
+  use Core_Option_Option_Type as Core_Option_Option_Type
+  clone Core_Iter_Range_Impl3_Next_Interface as Next0 with
+    type a = usize,
+    type Item0.item = usize,
+    predicate Completed0.completed = Completed0.completed,
+    predicate Produces0.produces = Produces0.produces
+  clone Core_Iter_Traits_Collect_Impl0_IntoIter_Interface as IntoIter0 with
+    type i = Core_Ops_Range_Range_Type.t_range usize,
+    predicate IntoIterPre0.into_iter_pre = IntoIterPre0.into_iter_pre,
+    predicate Invariant0.invariant' = Invariant0.invariant',
+    predicate IntoIterPost0.into_iter_post = IntoIterPost0.into_iter_post
+  let rec cfg powf [#"../Scratch/src/restart.rs" 113 0 113 32] [@cfg:stackify] [@cfg:subregion_analysis] (f : Float64.t) (u : usize) : Float64.t
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Float64.t;
+  var f_1 : Float64.t;
+  var u_2 : usize;
+  var o_3 : Float64.t;
+  var _4 : ();
+  var _5 : Core_Ops_Range_Range_Type.t_range usize;
+  var _6 : Core_Ops_Range_Range_Type.t_range usize;
+  var _7 : usize;
+  var iter_8 : Core_Ops_Range_Range_Type.t_range usize;
+  var _9 : ();
+  var _10 : ();
+  var _11 : Core_Option_Option_Type.t_option usize;
+  var _12 : borrowed (Core_Ops_Range_Range_Type.t_range usize);
+  var _13 : borrowed (Core_Ops_Range_Range_Type.t_range usize);
+  var _14 : isize;
+  var _15 : ();
+  var _16 : Float64.t;
+  {
+    f_1 <- f;
+    u_2 <- u;
+    goto BB0
+  }
+  BB0 {
+    o_3 <- ([#"../Scratch/src/restart.rs" 114 16 114 19] 1.0000000000000000000000000000000000000000000000000000000000000000);
+    _7 <- u_2;
+    _6 <- Core_Ops_Range_Range_Type.C_Range ([#"../Scratch/src/restart.rs" 115 13 115 14] (0 : usize)) _7;
+    _5 <- ([#"../Scratch/src/restart.rs" 115 13 115 17] IntoIter0.into_iter _6);
+    goto BB1
+  }
+  BB1 {
+    iter_8 <- _5;
+    _5 <- any Core_Ops_Range_Range_Type.t_range usize;
+    goto BB2
+  }
+  BB2 {
+    _13 <- borrow_mut iter_8;
+    iter_8 <-  ^ _13;
+    _12 <- borrow_mut ( * _13);
+    _13 <- { _13 with current = ( ^ _12) };
+    assume { Resolve0.resolve _13 };
+    _11 <- ([#"../Scratch/src/restart.rs" 115 13 115 17] Next0.next _12);
+    goto BB3
+  }
+  BB3 {
+    switch (_11)
+      | Core_Option_Option_Type.C_None -> goto BB6
+      | Core_Option_Option_Type.C_Some _ -> goto BB4
+      end
+  }
+  BB4 {
+    _16 <- f_1;
+    o_3 <- ([#"../Scratch/src/restart.rs" 116 8 116 14] o_3 .* _16);
+    _10 <- ();
+    _9 <- ();
+    goto BB2
+  }
+  BB5 {
+    absurd
+  }
+  BB6 {
+    _4 <- ();
+    _0 <- o_3;
+    return _0
+  }
+  
+end
+module Scratch_Restart_Impl4_TriggerRestart_Interface
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  clone Scratch_Restart_Impl2_Invariant_Stub as Invariant1
+  clone CreusotContracts_Invariant_Impl1_Invariant_Stub as Invariant0 with
+    type t = Scratch_Restart_Glucose_Type.t_glucose
+  val trigger_restart [#"../Scratch/src/restart.rs" 122 4 122 71] (self : borrowed (Scratch_Restart_Glucose_Type.t_glucose)) (curr_confl : usize) : bool
+    requires {[#"../Scratch/src/restart.rs" 122 39 122 43] Invariant0.invariant' self}
+    ensures { [#"../Scratch/src/restart.rs" 122 39 122 43] Invariant1.invariant' ( ^ self) }
+    
+end
+module Scratch_Restart_Impl4_TriggerRestart
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.Float64
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  clone Scratch_Restart_Impl0_Invariant as Invariant2
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
+    type t = Scratch_Restart_Glucose_Type.t_glucose
+  clone Scratch_Restart_Impl2_Invariant as Invariant1 with
+    predicate Invariant0.invariant' = Invariant2.invariant'
+  clone CreusotContracts_Invariant_Impl1_Invariant as Invariant0 with
+    type t = Scratch_Restart_Glucose_Type.t_glucose,
+    predicate Invariant0.invariant' = Invariant1.invariant'
+  let rec cfg trigger_restart [#"../Scratch/src/restart.rs" 122 4 122 71] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Restart_Glucose_Type.t_glucose)) (curr_confl : usize) : bool
+    requires {[#"../Scratch/src/restart.rs" 122 39 122 43] Invariant0.invariant' self}
+    ensures { [#"../Scratch/src/restart.rs" 122 39 122 43] Invariant1.invariant' ( ^ self) }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : bool;
+  var self_1 : borrowed (Scratch_Restart_Glucose_Type.t_glucose);
+  var curr_confl_2 : usize;
+  var _3 : ();
+  var _4 : bool;
+  var _5 : usize;
+  var _6 : usize;
+  var _7 : ();
+  var _8 : ();
+  var _9 : bool;
+  var _10 : Float64.t;
+  var _11 : Float64.t;
+  var _12 : Float64.t;
+  var _13 : Float64.t;
+  var _14 : ();
+  var _15 : ();
+  var _16 : bool;
+  var _17 : usize;
+  var _18 : ();
+  var _19 : bool;
+  var _20 : usize;
+  var _21 : usize;
+  var _22 : usize;
+  {
+    self_1 <- self;
+    curr_confl_2 <- curr_confl;
+    goto BB0
+  }
+  BB0 {
+    _5 <- curr_confl_2;
+    _6 <- Scratch_Restart_Glucose_Type.glucose_minimum_conflicts ( * self_1);
+    _4 <- ([#"../Scratch/src/restart.rs" 123 11 123 46] _5 < _6);
+    switch (_4)
+      | False -> goto BB2
+      | True -> goto BB1
+      end
+  }
+  BB1 {
+    assume { Resolve0.resolve self_1 };
+    _0 <- ([#"../Scratch/src/restart.rs" 124 19 124 24] false);
+    goto BB11
+  }
+  BB2 {
+    _3 <- ();
+    _11 <- Scratch_Restart_Ema_Type.ema_value (Scratch_Restart_Glucose_Type.glucose_ema_lbd_narrow ( * self_1));
+    _12 <- Scratch_Restart_Ema_Type.ema_value (Scratch_Restart_Glucose_Type.glucose_ema_lbd_wide ( * self_1));
+    _10 <- ([#"../Scratch/src/restart.rs" 126 11 126 62] _11 ./ _12);
+    _13 <- Scratch_Restart_Glucose_Type.glucose_force ( * self_1);
+    _9 <- ([#"../Scratch/src/restart.rs" 126 11 126 75] _10 .> _13);
+    switch (_9)
+      | False -> goto BB4
+      | True -> goto BB3
+      end
+  }
+  BB3 {
+    _17 <- Scratch_Restart_Glucose_Type.glucose_num_restarts ( * self_1);
+    _16 <- ([#"../Scratch/src/restart.rs" 127 15 127 45] _17 < ([#"../Scratch/src/restart.rs" 127 35 127 45] (18446744073709551615 : usize)));
+    switch (_16)
+      | False -> goto BB6
+      | True -> goto BB5
+      end
+  }
+  BB4 {
+    assume { Resolve0.resolve self_1 };
+    _8 <- ();
+    _0 <- ([#"../Scratch/src/restart.rs" 135 8 135 13] false);
+    goto BB11
+  }
+  BB5 {
+    self_1 <- { self_1 with current = (let Scratch_Restart_Glucose_Type.C_Glucose a b c d e f g h i j =  * self_1 in Scratch_Restart_Glucose_Type.C_Glucose a b c d e f g h ([#"../Scratch/src/restart.rs" 128 16 128 38] Scratch_Restart_Glucose_Type.glucose_num_restarts ( * self_1) + ([#"../Scratch/src/restart.rs" 128 37 128 38] (1 : usize))) j) };
+    _15 <- ();
+    goto BB7
+  }
+  BB6 {
+    _15 <- ();
+    goto BB7
+  }
+  BB7 {
+    _20 <- curr_confl_2;
+    _21 <- ([#"../Scratch/src/restart.rs" 130 28 130 43] ([#"../Scratch/src/restart.rs" 130 28 130 38] (18446744073709551615 : usize)) - ([#"../Scratch/src/restart.rs" 130 41 130 43] (50 : usize)));
+    _19 <- ([#"../Scratch/src/restart.rs" 130 15 130 43] _20 < _21);
+    switch (_19)
+      | False -> goto BB9
+      | True -> goto BB8
+      end
+  }
+  BB8 {
+    _22 <- curr_confl_2;
+    self_1 <- { self_1 with current = (let Scratch_Restart_Glucose_Type.C_Glucose a b c d e f g h i j =  * self_1 in Scratch_Restart_Glucose_Type.C_Glucose ([#"../Scratch/src/restart.rs" 131 16 131 56] _22 + ([#"../Scratch/src/restart.rs" 131 54 131 56] (50 : usize))) b c d e f g h i j) };
+    assume { Resolve0.resolve self_1 };
+    _18 <- ();
+    goto BB10
+  }
+  BB9 {
+    assume { Resolve0.resolve self_1 };
+    _18 <- ();
+    goto BB10
+  }
+  BB10 {
+    _0 <- ([#"../Scratch/src/restart.rs" 133 19 133 23] true);
+    goto BB11
+  }
+  BB11 {
+    return _0
+  }
+  
+end
+module Scratch_Restart_Impl4_Update_Interface
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  clone Scratch_Restart_Impl2_Invariant_Stub as Invariant1
+  clone CreusotContracts_Invariant_Impl1_Invariant_Stub as Invariant0 with
+    type t = Scratch_Restart_Glucose_Type.t_glucose
+  val update [#"../Scratch/src/restart.rs" 138 4 138 65] (self : borrowed (Scratch_Restart_Glucose_Type.t_glucose)) (trail_len : usize) (lbd : usize) : ()
+    requires {[#"../Scratch/src/restart.rs" 138 30 138 34] Invariant0.invariant' self}
+    ensures { [#"../Scratch/src/restart.rs" 138 30 138 34] Invariant1.invariant' ( ^ self) }
+    
+end
+module Scratch_Restart_Impl4_Update
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.Float64
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  clone Scratch_Restart_Impl0_Invariant as Invariant2
+  clone CreusotContracts_Invariant_Impl1_Invariant as Invariant3 with
+    type t = Scratch_Restart_Ema_Type.t_ema,
+    predicate Invariant0.invariant' = Invariant2.invariant'
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
+    type t = Scratch_Restart_Glucose_Type.t_glucose
+  clone Scratch_Restart_Impl1_Update_Interface as Update0 with
+    predicate Invariant0.invariant' = Invariant3.invariant',
+    predicate Invariant1.invariant' = Invariant2.invariant'
+  clone Scratch_Restart_UsizeToF64_Interface as UsizeToF640
+  clone Scratch_Restart_Impl2_Invariant as Invariant1 with
+    predicate Invariant0.invariant' = Invariant2.invariant'
+  clone CreusotContracts_Invariant_Impl1_Invariant as Invariant0 with
+    type t = Scratch_Restart_Glucose_Type.t_glucose,
+    predicate Invariant0.invariant' = Invariant1.invariant'
+  let rec cfg update [#"../Scratch/src/restart.rs" 138 4 138 65] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Restart_Glucose_Type.t_glucose)) (trail_len : usize) (lbd : usize) : ()
+    requires {[#"../Scratch/src/restart.rs" 138 30 138 34] Invariant0.invariant' self}
+    ensures { [#"../Scratch/src/restart.rs" 138 30 138 34] Invariant1.invariant' ( ^ self) }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : ();
+  var self_1 : borrowed (Scratch_Restart_Glucose_Type.t_glucose);
+  var trail_len_2 : usize;
+  var lbd_3 : usize;
+  var _4 : ();
+  var _5 : borrowed (Scratch_Restart_Ema_Type.t_ema);
+  var _6 : Float64.t;
+  var _7 : usize;
+  var _8 : usize;
+  var _9 : ();
+  var _10 : borrowed (Scratch_Restart_Ema_Type.t_ema);
+  var _11 : Float64.t;
+  var _12 : usize;
+  var _13 : ();
+  var _14 : borrowed (Scratch_Restart_Ema_Type.t_ema);
+  var _15 : Float64.t;
+  var _16 : usize;
+  {
+    self_1 <- self;
+    trail_len_2 <- trail_len;
+    lbd_3 <- lbd;
+    goto BB0
+  }
+  BB0 {
+    _5 <- borrow_mut (Scratch_Restart_Glucose_Type.glucose_ema_trail_wide ( * self_1));
+    self_1 <- { self_1 with current = (let Scratch_Restart_Glucose_Type.C_Glucose a b c d e f g h i j =  * self_1 in Scratch_Restart_Glucose_Type.C_Glucose a b c d ( ^ _5) f g h i j) };
+    _7 <- trail_len_2;
+    _6 <- ([#"../Scratch/src/restart.rs" 139 35 139 58] UsizeToF640.usize_to_f64 _7);
+    goto BB1
+  }
+  BB1 {
+    _4 <- ([#"../Scratch/src/restart.rs" 139 8 139 59] Update0.update _5 _6);
+    goto BB2
+  }
+  BB2 {
+    _8 <- trail_len_2;
+    self_1 <- { self_1 with current = (let Scratch_Restart_Glucose_Type.C_Glucose a b c d e f g h i j =  * self_1 in Scratch_Restart_Glucose_Type.C_Glucose a b c d e _8 g h i j) };
+    _8 <- any usize;
+    _10 <- borrow_mut (Scratch_Restart_Glucose_Type.glucose_ema_lbd_narrow ( * self_1));
+    self_1 <- { self_1 with current = (let Scratch_Restart_Glucose_Type.C_Glucose a b c d e f g h i j =  * self_1 in Scratch_Restart_Glucose_Type.C_Glucose a b ( ^ _10) d e f g h i j) };
+    _12 <- lbd_3;
+    _11 <- ([#"../Scratch/src/restart.rs" 141 35 141 52] UsizeToF640.usize_to_f64 _12);
+    goto BB3
+  }
+  BB3 {
+    _9 <- ([#"../Scratch/src/restart.rs" 141 8 141 53] Update0.update _10 _11);
+    goto BB4
+  }
+  BB4 {
+    _14 <- borrow_mut (Scratch_Restart_Glucose_Type.glucose_ema_lbd_wide ( * self_1));
+    self_1 <- { self_1 with current = (let Scratch_Restart_Glucose_Type.C_Glucose a b c d e f g h i j =  * self_1 in Scratch_Restart_Glucose_Type.C_Glucose a b c ( ^ _14) e f g h i j) };
+    assume { Resolve0.resolve self_1 };
+    _16 <- lbd_3;
+    _15 <- ([#"../Scratch/src/restart.rs" 142 33 142 50] UsizeToF640.usize_to_f64 _16);
+    goto BB5
+  }
+  BB5 {
+    _13 <- ([#"../Scratch/src/restart.rs" 142 8 142 51] Update0.update _14 _15);
+    goto BB6
+  }
+  BB6 {
+    _0 <- ();
+    return _0
+  }
+  
+end
+module Scratch_Restart_Impl4_BlockRestart_Interface
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  clone Scratch_Restart_Impl2_Invariant_Stub as Invariant1
+  clone CreusotContracts_Invariant_Impl1_Invariant_Stub as Invariant0 with
+    type t = Scratch_Restart_Glucose_Type.t_glucose
+  val block_restart [#"../Scratch/src/restart.rs" 145 4 145 69] (self : borrowed (Scratch_Restart_Glucose_Type.t_glucose)) (curr_confl : usize) : bool
+    requires {[#"../Scratch/src/restart.rs" 145 37 145 41] Invariant0.invariant' self}
+    ensures { [#"../Scratch/src/restart.rs" 145 37 145 41] Invariant1.invariant' ( ^ self) }
+    
+end
+module Scratch_Restart_Impl4_BlockRestart
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.Float64
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  clone Scratch_Restart_Impl0_Invariant as Invariant2
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
+    type t = Scratch_Restart_Glucose_Type.t_glucose
+  clone Scratch_Restart_UsizeToF64_Interface as UsizeToF640
+  clone Scratch_Restart_Impl2_Invariant as Invariant1 with
+    predicate Invariant0.invariant' = Invariant2.invariant'
+  clone CreusotContracts_Invariant_Impl1_Invariant as Invariant0 with
+    type t = Scratch_Restart_Glucose_Type.t_glucose,
+    predicate Invariant0.invariant' = Invariant1.invariant'
+  let rec cfg block_restart [#"../Scratch/src/restart.rs" 145 4 145 69] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Restart_Glucose_Type.t_glucose)) (curr_confl : usize) : bool
+    requires {[#"../Scratch/src/restart.rs" 145 37 145 41] Invariant0.invariant' self}
+    ensures { [#"../Scratch/src/restart.rs" 145 37 145 41] Invariant1.invariant' ( ^ self) }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : bool;
+  var self_1 : borrowed (Scratch_Restart_Glucose_Type.t_glucose);
+  var curr_confl_2 : usize;
+  var _3 : ();
+  var _4 : bool;
+  var _5 : bool;
+  var _6 : Float64.t;
+  var _7 : usize;
+  var _8 : Float64.t;
+  var _9 : Float64.t;
+  var _10 : Float64.t;
+  var _11 : bool;
+  var _12 : usize;
+  var _13 : usize;
+  var _14 : ();
+  var _15 : ();
+  var _16 : bool;
+  var _17 : usize;
+  var _18 : usize;
+  var _19 : usize;
+  var _20 : ();
+  var _21 : bool;
+  var _22 : usize;
+  {
+    self_1 <- self;
+    curr_confl_2 <- curr_confl;
+    goto BB0
+  }
+  BB0 {
+    _7 <- Scratch_Restart_Glucose_Type.glucose_last_trail_size ( * self_1);
+    _6 <- ([#"../Scratch/src/restart.rs" 146 11 146 45] UsizeToF640.usize_to_f64 _7);
+    goto BB4
+  }
+  BB1 {
+    _4 <- ([#"../Scratch/src/restart.rs" 146 11 147 73] false);
+    goto BB3
+  }
+  BB2 {
+    _12 <- curr_confl_2;
+    _13 <- Scratch_Restart_Glucose_Type.glucose_minimum_conflicts_for_blocking_restarts ( * self_1);
+    _11 <- ([#"../Scratch/src/restart.rs" 147 15 147 73] _12 >= _13);
+    _4 <- _11;
+    _11 <- any bool;
+    goto BB3
+  }
+  BB3 {
+    switch (_4)
+      | False -> goto BB12
+      | True -> goto BB5
+      end
+  }
+  BB4 {
+    _9 <- Scratch_Restart_Glucose_Type.glucose_block ( * self_1);
+    _10 <- Scratch_Restart_Ema_Type.ema_value (Scratch_Restart_Glucose_Type.glucose_ema_trail_wide ( * self_1));
+    _8 <- ([#"../Scratch/src/restart.rs" 146 48 146 86] _9 .* _10);
+    _5 <- ([#"../Scratch/src/restart.rs" 146 11 146 86] _6 .> _8);
+    switch (_5)
+      | False -> goto BB1
+      | True -> goto BB2
+      end
+  }
+  BB5 {
+    _17 <- curr_confl_2;
+    _18 <- ([#"../Scratch/src/restart.rs" 149 28 149 43] ([#"../Scratch/src/restart.rs" 149 28 149 38] (18446744073709551615 : usize)) - ([#"../Scratch/src/restart.rs" 149 41 149 43] (50 : usize)));
+    _16 <- ([#"../Scratch/src/restart.rs" 149 15 149 43] _17 < _18);
+    switch (_16)
+      | False -> goto BB7
+      | True -> goto BB6
+      end
+  }
+  BB6 {
+    _19 <- curr_confl_2;
+    self_1 <- { self_1 with current = (let Scratch_Restart_Glucose_Type.C_Glucose a b c d e f g h i j =  * self_1 in Scratch_Restart_Glucose_Type.C_Glucose ([#"../Scratch/src/restart.rs" 150 16 150 56] _19 + ([#"../Scratch/src/restart.rs" 150 54 150 56] (50 : usize))) b c d e f g h i j) };
+    _15 <- ();
+    goto BB8
+  }
+  BB7 {
+    _15 <- ();
+    goto BB8
+  }
+  BB8 {
+    _22 <- Scratch_Restart_Glucose_Type.glucose_num_blocked ( * self_1);
+    _21 <- ([#"../Scratch/src/restart.rs" 152 15 152 44] _22 < ([#"../Scratch/src/restart.rs" 152 34 152 44] (18446744073709551615 : usize)));
+    switch (_21)
+      | False -> goto BB10
+      | True -> goto BB9
+      end
+  }
+  BB9 {
+    self_1 <- { self_1 with current = (let Scratch_Restart_Glucose_Type.C_Glucose a b c d e f g h i j =  * self_1 in Scratch_Restart_Glucose_Type.C_Glucose a b c d e f g h i ([#"../Scratch/src/restart.rs" 153 16 153 37] Scratch_Restart_Glucose_Type.glucose_num_blocked ( * self_1) + ([#"../Scratch/src/restart.rs" 153 36 153 37] (1 : usize)))) };
+    assume { Resolve0.resolve self_1 };
+    _20 <- ();
+    goto BB11
+  }
+  BB10 {
+    assume { Resolve0.resolve self_1 };
+    _20 <- ();
+    goto BB11
+  }
+  BB11 {
+    _0 <- ([#"../Scratch/src/restart.rs" 155 19 155 23] true);
+    goto BB13
+  }
+  BB12 {
+    assume { Resolve0.resolve self_1 };
+    _3 <- ();
+    _0 <- ([#"../Scratch/src/restart.rs" 157 8 157 13] false);
+    goto BB13
+  }
+  BB13 {
+    return _0
+  }
+  
+end
+module Scratch_Restart_Luby_Type
+  use prelude.Int
+  use prelude.UIntSize
+  type t_luby  =
+    | C_Luby usize usize usize
+    
+  let function luby_step (self : t_luby) : usize = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Luby a _ _ -> a
+      end
+  let function luby_limit (self : t_luby) : usize = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Luby _ _ a -> a
+      end
+  let function luby_curr_restarts (self : t_luby) : usize = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Luby _ a _ -> a
+      end
+end
+module Scratch_Restart_Impl5_Invariant_Stub
+  use Scratch_Restart_Luby_Type as Scratch_Restart_Luby_Type
+  predicate invariant' [@inline:trivial] [#"../Scratch/src/restart.rs" 173 4 173 30] (self : Scratch_Restart_Luby_Type.t_luby)
+    
+end
+module Scratch_Restart_Impl5_Invariant_Interface
+  use Scratch_Restart_Luby_Type as Scratch_Restart_Luby_Type
+  predicate invariant' [@inline:trivial] [#"../Scratch/src/restart.rs" 173 4 173 30] (self : Scratch_Restart_Luby_Type.t_luby)
+    
+end
+module Scratch_Restart_Impl5_Invariant
+  use prelude.Int
+  use prelude.UIntSize
+  use Scratch_Restart_Luby_Type as Scratch_Restart_Luby_Type
+  predicate invariant' [@inline:trivial] [#"../Scratch/src/restart.rs" 173 4 173 30] (self : Scratch_Restart_Luby_Type.t_luby)
+    
+   =
+    [#"../Scratch/src/restart.rs" 174 8 174 26] Scratch_Restart_Luby_Type.luby_step self > (0 : usize)
+  val invariant' [@inline:trivial] [#"../Scratch/src/restart.rs" 173 4 173 30] (self : Scratch_Restart_Luby_Type.t_luby) : bool
+    ensures { result = invariant' self }
+    
+end
+module Scratch_Restart_Impl6_New_Interface
+  use Scratch_Restart_Luby_Type as Scratch_Restart_Luby_Type
+  clone Scratch_Restart_Impl5_Invariant_Stub as Invariant0
+  val new [#"../Scratch/src/restart.rs" 180 4 180 20] (_1' : ()) : Scratch_Restart_Luby_Type.t_luby
+    ensures { [#"../Scratch/src/restart.rs" 180 16 180 20] Invariant0.invariant' result }
+    
+end
+module Scratch_Restart_Impl6_New
+  use prelude.Int
+  use prelude.UIntSize
+  use Scratch_Restart_Luby_Type as Scratch_Restart_Luby_Type
+  clone Scratch_Restart_Impl5_Invariant as Invariant0
+  let rec cfg new [#"../Scratch/src/restart.rs" 180 4 180 20] [@cfg:stackify] [@cfg:subregion_analysis] (_1' : ()) : Scratch_Restart_Luby_Type.t_luby
+    ensures { [#"../Scratch/src/restart.rs" 180 16 180 20] Invariant0.invariant' result }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Scratch_Restart_Luby_Type.t_luby;
+  {
+    goto BB0
+  }
+  BB0 {
+    _0 <- Scratch_Restart_Luby_Type.C_Luby ([#"../Scratch/src/restart.rs" 181 42 181 45] (100 : usize)) ([#"../Scratch/src/restart.rs" 181 62 181 63] (0 : usize)) ([#"../Scratch/src/restart.rs" 181 72 181 75] (100 : usize));
+    return _0
+  }
+  
+end
+module Scratch_Restart_Luby_Interface
+  use prelude.UIntSize
+  use prelude.Int
+  use prelude.Float64
+  val luby [#"../Scratch/src/restart.rs" 187 0 187 34] (y : Float64.t) (x : usize) : usize
+    requires {[#"../Scratch/src/restart.rs" 186 11 186 35] UIntSize.to_int x < 9223372036854775806}
+    
+end
+module Scratch_Restart_Luby
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.Float64
+  clone Scratch_Restart_F64ToUsize_Interface as F64ToUsize0
+  clone Scratch_Restart_Powf_Interface as Powf0
+  clone Core_Num_Impl11_Max as Max0
+  let rec cfg luby [#"../Scratch/src/restart.rs" 187 0 187 34] [@cfg:stackify] [@cfg:subregion_analysis] (y : Float64.t) (x : usize) : usize
+    requires {[#"../Scratch/src/restart.rs" 186 11 186 35] UIntSize.to_int x < 9223372036854775806}
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : usize;
+  var y_1 : Float64.t;
+  var x_2 : usize;
+  var size_4 : usize;
+  var seq_5 : usize;
+  var _6 : ();
+  var _10 : ();
+  var _11 : bool;
+  var _12 : usize;
+  var _13 : usize;
+  var _14 : usize;
+  var _15 : usize;
+  var _16 : usize;
+  var _17 : ();
+  var _18 : ();
+  var _19 : ();
+  var x_20 : usize;
+  var _21 : ();
+  var _22 : bool;
+  var _23 : bool;
+  var _24 : bool;
+  var _25 : usize;
+  var _26 : bool;
+  var _27 : usize;
+  var _28 : bool;
+  var _29 : usize;
+  var _30 : usize;
+  var _31 : usize;
+  var _32 : usize;
+  var _33 : usize;
+  var _34 : bool;
+  var _35 : bool;
+  var _36 : usize;
+  var _37 : usize;
+  var _38 : bool;
+  var _39 : ();
+  var _40 : ();
+  var _41 : ();
+  var _42 : Float64.t;
+  var _43 : Float64.t;
+  var _44 : usize;
+  {
+    y_1 <- y;
+    x_2 <- x;
+    goto BB0
+  }
+  BB0 {
+    size_4 <- ([#"../Scratch/src/restart.rs" 188 19 188 20] (1 : usize));
+    seq_5 <- ([#"../Scratch/src/restart.rs" 189 25 189 26] (0 : usize));
+    goto BB1
+  }
+  BB1 {
+    invariant { [#"../Scratch/src/restart.rs" 190 16 190 36] UIntSize.to_int size_4 <= UIntSize.to_int Max0.mAX' };
+    invariant { [#"../Scratch/src/restart.rs" 191 16 191 25] UIntSize.to_int size_4 > 0 };
+    invariant { [#"../Scratch/src/restart.rs" 192 16 192 28] UIntSize.to_int seq_5 < UIntSize.to_int size_4 };
+    _12 <- size_4;
+    _14 <- x_2;
+    _13 <- ([#"../Scratch/src/restart.rs" 193 17 193 22] _14 + ([#"../Scratch/src/restart.rs" 193 21 193 22] (1 : usize)));
+    _11 <- ([#"../Scratch/src/restart.rs" 193 10 193 22] _12 < _13);
+    switch (_11)
+      | False -> goto BB3
+      | True -> goto BB2
+      end
+  }
+  BB2 {
+    seq_5 <- ([#"../Scratch/src/restart.rs" 194 8 194 16] seq_5 + ([#"../Scratch/src/restart.rs" 194 15 194 16] (1 : usize)));
+    _16 <- size_4;
+    _15 <- ([#"../Scratch/src/restart.rs" 195 15 195 23] ([#"../Scratch/src/restart.rs" 195 15 195 16] (2 : usize)) * _16);
+    size_4 <- ([#"../Scratch/src/restart.rs" 195 8 195 27] _15 + ([#"../Scratch/src/restart.rs" 195 26 195 27] (1 : usize)));
+    _10 <- ();
+    goto BB1
+  }
+  BB3 {
+    _6 <- ();
+    x_20 <- x_2;
+    goto BB4
+  }
+  BB4 {
+    _25 <- size_4;
+    _24 <- ([#"../Scratch/src/restart.rs" 200 10 200 18] _25 > ([#"../Scratch/src/restart.rs" 200 17 200 18] (0 : usize)));
+    switch (_24)
+      | False -> goto BB8
+      | True -> goto BB9
+      end
+  }
+  BB5 {
+    _22 <- ([#"../Scratch/src/restart.rs" 200 10 200 46] false);
+    goto BB7
+  }
+  BB6 {
+    _30 <- size_4;
+    _29 <- ([#"../Scratch/src/restart.rs" 200 33 200 41] _30 - ([#"../Scratch/src/restart.rs" 200 40 200 41] (1 : usize)));
+    _31 <- x_20;
+    _28 <- ([#"../Scratch/src/restart.rs" 200 33 200 46] _29 <> _31);
+    _22 <- _28;
+    _28 <- any bool;
+    goto BB7
+  }
+  BB7 {
+    switch (_22)
+      | False -> goto BB17
+      | True -> goto BB11
+      end
+  }
+  BB8 {
+    _23 <- ([#"../Scratch/src/restart.rs" 200 10 200 29] false);
+    goto BB10
+  }
+  BB9 {
+    _27 <- seq_5;
+    _26 <- ([#"../Scratch/src/restart.rs" 200 22 200 29] _27 > ([#"../Scratch/src/restart.rs" 200 28 200 29] (0 : usize)));
+    _23 <- _26;
+    _26 <- any bool;
+    goto BB10
+  }
+  BB10 {
+    switch (_23)
+      | False -> goto BB5
+      | True -> goto BB6
+      end
+  }
+  BB11 {
+    _33 <- size_4;
+    _32 <- ([#"../Scratch/src/restart.rs" 203 15 203 25] _33 - ([#"../Scratch/src/restart.rs" 203 23 203 24] (1 : usize)));
+    _34 <- ([#"../Scratch/src/restart.rs" 203 15 203 29] ([#"../Scratch/src/restart.rs" 203 28 203 29] (2 : usize)) = ([#"../Scratch/src/restart.rs" 203 15 203 29] (0 : usize)));
+    assert { [#"../Scratch/src/restart.rs" 203 15 203 29] not _34 };
+    goto BB12
+  }
+  BB12 {
+    size_4 <- ([#"../Scratch/src/restart.rs" 203 8 203 29] _32 / ([#"../Scratch/src/restart.rs" 203 28 203 29] (2 : usize)));
+    seq_5 <- ([#"../Scratch/src/restart.rs" 204 8 204 16] seq_5 - ([#"../Scratch/src/restart.rs" 204 15 204 16] (1 : usize)));
+    _36 <- size_4;
+    _35 <- ([#"../Scratch/src/restart.rs" 205 11 205 19] _36 > ([#"../Scratch/src/restart.rs" 205 18 205 19] (0 : usize)));
+    switch (_35)
+      | False -> goto BB15
+      | True -> goto BB13
+      end
+  }
+  BB13 {
+    _37 <- size_4;
+    _38 <- ([#"../Scratch/src/restart.rs" 206 12 206 21] _37 = ([#"../Scratch/src/restart.rs" 206 12 206 21] (0 : usize)));
+    assert { [#"../Scratch/src/restart.rs" 206 12 206 21] not _38 };
+    goto BB14
+  }
+  BB14 {
+    x_20 <- ([#"../Scratch/src/restart.rs" 206 12 206 21] x_20 % _37);
+    _10 <- ();
+    goto BB16
+  }
+  BB15 {
+    _10 <- ();
+    goto BB16
+  }
+  BB16 {
+    goto BB4
+  }
+  BB17 {
+    _21 <- ();
+    _43 <- y_1;
+    _44 <- seq_5;
+    _42 <- ([#"../Scratch/src/restart.rs" 211 17 211 29] Powf0.powf _43 _44);
+    goto BB18
+  }
+  BB18 {
+    _0 <- ([#"../Scratch/src/restart.rs" 211 4 211 30] F64ToUsize0.f64_to_usize _42);
+    goto BB19
+  }
+  BB19 {
+    return _0
+  }
+  
+end
+module Scratch_Restart_Impl7_TriggerRestart_Interface
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use Scratch_Restart_Luby_Type as Scratch_Restart_Luby_Type
+  clone Scratch_Restart_Impl5_Invariant_Stub as Invariant1
+  clone CreusotContracts_Invariant_Impl1_Invariant_Stub as Invariant0 with
+    type t = Scratch_Restart_Luby_Type.t_luby
+  val trigger_restart [#"../Scratch/src/restart.rs" 216 4 216 71] (self : borrowed (Scratch_Restart_Luby_Type.t_luby)) (curr_confl : usize) : bool
+    requires {[#"../Scratch/src/restart.rs" 216 39 216 43] Invariant0.invariant' self}
+    ensures { [#"../Scratch/src/restart.rs" 216 39 216 43] Invariant1.invariant' ( ^ self) }
+    
+end
+module Scratch_Restart_Impl7_TriggerRestart
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.Float32
+  clone Scratch_Restart_Luby_Interface as Luby1
+  use Scratch_Restart_Luby_Type as Scratch_Restart_Luby_Type
+  clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
+    type t = Scratch_Restart_Luby_Type.t_luby
+  clone Scratch_Restart_Impl5_Invariant as Invariant1
+  clone CreusotContracts_Invariant_Impl1_Invariant as Invariant0 with
+    type t = Scratch_Restart_Luby_Type.t_luby,
+    predicate Invariant0.invariant' = Invariant1.invariant'
+  let rec cfg trigger_restart [#"../Scratch/src/restart.rs" 216 4 216 71] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Restart_Luby_Type.t_luby)) (curr_confl : usize) : bool
+    requires {[#"../Scratch/src/restart.rs" 216 39 216 43] Invariant0.invariant' self}
+    ensures { [#"../Scratch/src/restart.rs" 216 39 216 43] Invariant1.invariant' ( ^ self) }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : bool;
+  var self_1 : borrowed (Scratch_Restart_Luby_Type.t_luby);
+  var curr_confl_2 : usize;
+  var _3 : ();
+  var _4 : bool;
+  var _5 : usize;
+  var _6 : usize;
+  var _7 : ();
+  var _8 : ();
+  var _9 : bool;
+  var _10 : usize;
+  var _11 : ();
+  var incr_12 : usize;
+  var _13 : usize;
+  var _14 : ();
+  var _15 : bool;
+  var _16 : usize;
+  var _17 : usize;
+  var _18 : usize;
+  var _19 : bool;
+  var _20 : usize;
+  var _21 : ();
+  var _22 : bool;
+  var _23 : usize;
+  var _24 : usize;
+  var _25 : usize;
+  var _26 : usize;
+  var _27 : usize;
+  {
+    self_1 <- self;
+    curr_confl_2 <- curr_confl;
+    goto BB0
+  }
+  BB0 {
+    _5 <- curr_confl_2;
+    _6 <- Scratch_Restart_Luby_Type.luby_limit ( * self_1);
+    _4 <- ([#"../Scratch/src/restart.rs" 217 11 217 35] _5 <= _6);
+    switch (_4)
+      | False -> goto BB2
+      | True -> goto BB1
+      end
+  }
+  BB1 {
+    assume { Resolve0.resolve self_1 };
+    _0 <- ([#"../Scratch/src/restart.rs" 218 19 218 24] false);
+    goto BB13
+  }
+  BB2 {
+    _3 <- ();
+    _10 <- Scratch_Restart_Luby_Type.luby_curr_restarts ( * self_1);
+    _9 <- ([#"../Scratch/src/restart.rs" 222 11 222 52] _10 >= ([#"../Scratch/src/restart.rs" 222 33 222 52] (9223372036854775806 : usize)));
+    switch (_9)
+      | False -> goto BB4
+      | True -> goto BB3
+      end
+  }
+  BB3 {
+    assume { Resolve0.resolve self_1 };
+    _0 <- ([#"../Scratch/src/restart.rs" 223 19 223 23] true);
+    goto BB13
+  }
+  BB4 {
+    _8 <- ();
+    _13 <- Scratch_Restart_Luby_Type.luby_curr_restarts ( * self_1);
+    incr_12 <- ([#"../Scratch/src/restart.rs" 226 23 226 52] Luby1.luby ([#"../Scratch/src/restart.rs" 226 28 226 31] 2.0000000000000000000000000000000000000000000000000000000000000000) _13);
+    goto BB5
+  }
+  BB5 {
+    _16 <- incr_12;
+    _18 <- Scratch_Restart_Luby_Type.luby_step ( * self_1);
+    _19 <- ([#"../Scratch/src/restart.rs" 227 18 227 40] _18 = ([#"../Scratch/src/restart.rs" 227 18 227 40] (0 : usize)));
+    assert { [#"../Scratch/src/restart.rs" 227 18 227 40] not _19 };
+    goto BB6
+  }
+  BB6 {
+    _17 <- ([#"../Scratch/src/restart.rs" 227 18 227 40] ([#"../Scratch/src/restart.rs" 227 18 227 28] (18446744073709551615 : usize)) / _18);
+    _15 <- ([#"../Scratch/src/restart.rs" 227 11 227 40] _16 < _17);
+    switch (_15)
+      | False -> goto BB8
+      | True -> goto BB7
+      end
+  }
+  BB7 {
+    _20 <- Scratch_Restart_Luby_Type.luby_step ( * self_1);
+    incr_12 <- ([#"../Scratch/src/restart.rs" 228 12 228 29] incr_12 * _20);
+    _14 <- ();
+    goto BB9
+  }
+  BB8 {
+    _14 <- ();
+    goto BB9
+  }
+  BB9 {
+    _24 <- curr_confl_2;
+    _23 <- ([#"../Scratch/src/restart.rs" 230 11 230 34] ([#"../Scratch/src/restart.rs" 230 11 230 21] (18446744073709551615 : usize)) - _24);
+    _25 <- incr_12;
+    _22 <- ([#"../Scratch/src/restart.rs" 230 11 230 41] _23 > _25);
+    switch (_22)
+      | False -> goto BB11
+      | True -> goto BB10
+      end
+  }
+  BB10 {
+    _26 <- curr_confl_2;
+    _27 <- incr_12;
+    self_1 <- { self_1 with current = (let Scratch_Restart_Luby_Type.C_Luby a b c =  * self_1 in Scratch_Restart_Luby_Type.C_Luby a b ([#"../Scratch/src/restart.rs" 231 12 231 42] _26 + _27)) };
+    _21 <- ();
+    goto BB12
+  }
+  BB11 {
+    _21 <- ();
+    goto BB12
+  }
+  BB12 {
+    self_1 <- { self_1 with current = (let Scratch_Restart_Luby_Type.C_Luby a b c =  * self_1 in Scratch_Restart_Luby_Type.C_Luby a ([#"../Scratch/src/restart.rs" 233 8 233 31] Scratch_Restart_Luby_Type.luby_curr_restarts ( * self_1) + ([#"../Scratch/src/restart.rs" 233 30 233 31] (1 : usize))) c) };
+    assume { Resolve0.resolve self_1 };
+    _0 <- ([#"../Scratch/src/restart.rs" 236 8 236 12] true);
+    goto BB13
+  }
+  BB13 {
+    return _0
+  }
+  
+end
+module Scratch_Restart_RestartMode_Type
+  type t_restartmode  =
+    | C_Glucose
+    | C_Luby
+    
+end
+module Scratch_Restart_Restart_Type
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  use Scratch_Restart_Luby_Type as Scratch_Restart_Luby_Type
+  use Scratch_Restart_RestartMode_Type as Scratch_Restart_RestartMode_Type
+  type t_restart  =
+    | C_Restart (Scratch_Restart_RestartMode_Type.t_restartmode) (Scratch_Restart_Luby_Type.t_luby) (Scratch_Restart_Glucose_Type.t_glucose)
+    
+  let function restart_luby (self : t_restart) : Scratch_Restart_Luby_Type.t_luby = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Restart _ a _ -> a
+      end
+  let function restart_glucose (self : t_restart) : Scratch_Restart_Glucose_Type.t_glucose
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Restart _ _ a -> a
+      end
+  let function restart_restart (self : t_restart) : Scratch_Restart_RestartMode_Type.t_restartmode
+   = [@vc:do_not_keep_trace] [@vc:sp]
+    match (self) with
+      | C_Restart a _ _ -> a
+      end
+end
+module Scratch_Restart_Impl8_Invariant_Stub
+  use Scratch_Restart_Restart_Type as Scratch_Restart_Restart_Type
+  predicate invariant' [#"../Scratch/src/restart.rs" 249 4 249 30] (self : Scratch_Restart_Restart_Type.t_restart)
+end
+module Scratch_Restart_Impl8_Invariant_Interface
+  use Scratch_Restart_Restart_Type as Scratch_Restart_Restart_Type
+  predicate invariant' [#"../Scratch/src/restart.rs" 249 4 249 30] (self : Scratch_Restart_Restart_Type.t_restart)
+end
+module Scratch_Restart_Impl8_Invariant
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  use Scratch_Restart_Luby_Type as Scratch_Restart_Luby_Type
+  clone Scratch_Restart_Impl2_Invariant_Stub as Invariant1
+  clone Scratch_Restart_Impl5_Invariant_Stub as Invariant0
+  use Scratch_Restart_Restart_Type as Scratch_Restart_Restart_Type
+  predicate invariant' [#"../Scratch/src/restart.rs" 249 4 249 30] (self : Scratch_Restart_Restart_Type.t_restart) =
+    [#"../Scratch/src/restart.rs" 250 8 253 9] Invariant0.invariant' (Scratch_Restart_Restart_Type.restart_luby self) /\ Invariant1.invariant' (Scratch_Restart_Restart_Type.restart_glucose self)
+  val invariant' [#"../Scratch/src/restart.rs" 249 4 249 30] (self : Scratch_Restart_Restart_Type.t_restart) : bool
+    ensures { result = invariant' self }
+    
+end
+module Scratch_Restart_Impl9_New_Interface
+  use Scratch_Restart_Restart_Type as Scratch_Restart_Restart_Type
+  clone Scratch_Restart_Impl8_Invariant_Stub as Invariant0
+  val new [#"../Scratch/src/restart.rs" 258 4 258 34] (_1' : ()) : Scratch_Restart_Restart_Type.t_restart
+    ensures { [#"../Scratch/src/restart.rs" 258 27 258 34] Invariant0.invariant' result }
+    
+end
+module Scratch_Restart_Impl9_New
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  clone Scratch_Restart_Impl0_Invariant as Invariant3
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  clone Scratch_Restart_Impl2_Invariant as Invariant2 with
+    predicate Invariant0.invariant' = Invariant3.invariant'
+  use Scratch_Restart_Luby_Type as Scratch_Restart_Luby_Type
+  clone Scratch_Restart_Impl5_Invariant as Invariant1
+  clone Scratch_Restart_Impl3_New_Interface as New1 with
+    predicate Invariant0.invariant' = Invariant2.invariant'
+  clone Scratch_Restart_Impl6_New_Interface as New0 with
+    predicate Invariant0.invariant' = Invariant1.invariant'
+  use Scratch_Restart_Restart_Type as Scratch_Restart_Restart_Type
+  clone Scratch_Restart_Impl8_Invariant as Invariant0 with
+    predicate Invariant0.invariant' = Invariant1.invariant',
+    predicate Invariant1.invariant' = Invariant2.invariant'
+  use Scratch_Restart_RestartMode_Type as Scratch_Restart_RestartMode_Type
+  let rec cfg new [#"../Scratch/src/restart.rs" 258 4 258 34] [@cfg:stackify] [@cfg:subregion_analysis] (_1' : ()) : Scratch_Restart_Restart_Type.t_restart
+    ensures { [#"../Scratch/src/restart.rs" 258 27 258 34] Invariant0.invariant' result }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Scratch_Restart_Restart_Type.t_restart;
+  var _1 : Scratch_Restart_RestartMode_Type.t_restartmode;
+  var _2 : Scratch_Restart_Luby_Type.t_luby;
+  var _3 : Scratch_Restart_Glucose_Type.t_glucose;
+  {
+    goto BB0
+  }
+  BB0 {
+    _1 <- Scratch_Restart_RestartMode_Type.C_Glucose;
+    _2 <- ([#"../Scratch/src/restart.rs" 259 55 259 66] New0.new ());
+    goto BB1
+  }
+  BB1 {
+    _3 <- ([#"../Scratch/src/restart.rs" 259 77 259 91] New1.new ());
+    goto BB2
+  }
+  BB2 {
+    _0 <- Scratch_Restart_Restart_Type.C_Restart _1 _2 _3;
+    return _0
+  }
+  
+end
+module Scratch_Restart_Impl9_SetRestartMode_Interface
+  use prelude.Borrow
+  use Scratch_Restart_RestartMode_Type as Scratch_Restart_RestartMode_Type
+  use Scratch_Restart_Restart_Type as Scratch_Restart_Restart_Type
+  clone Scratch_Restart_Impl8_Invariant_Stub as Invariant1
+  clone CreusotContracts_Invariant_Impl1_Invariant_Stub as Invariant0 with
+    type t = Scratch_Restart_Restart_Type.t_restart
+  val set_restart_mode [#"../Scratch/src/restart.rs" 262 4 262 64] (self : borrowed (Scratch_Restart_Restart_Type.t_restart)) (mode : Scratch_Restart_RestartMode_Type.t_restartmode) : ()
+    requires {[#"../Scratch/src/restart.rs" 262 40 262 44] Invariant0.invariant' self}
+    ensures { [#"../Scratch/src/restart.rs" 262 40 262 44] Invariant1.invariant' ( ^ self) }
+    
+end
+module Scratch_Restart_Impl9_SetRestartMode
+  use prelude.Borrow
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  clone Scratch_Restart_Impl0_Invariant as Invariant4
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  use Scratch_Restart_Luby_Type as Scratch_Restart_Luby_Type
+  clone Scratch_Restart_Impl2_Invariant as Invariant3 with
+    predicate Invariant0.invariant' = Invariant4.invariant'
+  clone Scratch_Restart_Impl5_Invariant as Invariant2
+  use Scratch_Restart_Restart_Type as Scratch_Restart_Restart_Type
+  clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
+    type t = Scratch_Restart_Restart_Type.t_restart
+  clone Scratch_Restart_Impl8_Invariant as Invariant1 with
+    predicate Invariant0.invariant' = Invariant2.invariant',
+    predicate Invariant1.invariant' = Invariant3.invariant'
+  clone CreusotContracts_Invariant_Impl1_Invariant as Invariant0 with
+    type t = Scratch_Restart_Restart_Type.t_restart,
+    predicate Invariant0.invariant' = Invariant1.invariant'
+  use Scratch_Restart_RestartMode_Type as Scratch_Restart_RestartMode_Type
+  let rec cfg set_restart_mode [#"../Scratch/src/restart.rs" 262 4 262 64] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Restart_Restart_Type.t_restart)) (mode : Scratch_Restart_RestartMode_Type.t_restartmode) : ()
+    requires {[#"../Scratch/src/restart.rs" 262 40 262 44] Invariant0.invariant' self}
+    ensures { [#"../Scratch/src/restart.rs" 262 40 262 44] Invariant1.invariant' ( ^ self) }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : ();
+  var self_1 : borrowed (Scratch_Restart_Restart_Type.t_restart);
+  var mode_2 : Scratch_Restart_RestartMode_Type.t_restartmode;
+  var _3 : Scratch_Restart_RestartMode_Type.t_restartmode;
+  {
+    self_1 <- self;
+    mode_2 <- mode;
+    goto BB0
+  }
+  BB0 {
+    _3 <- mode_2;
+    mode_2 <- any Scratch_Restart_RestartMode_Type.t_restartmode;
+    self_1 <- { self_1 with current = (let Scratch_Restart_Restart_Type.C_Restart a b c =  * self_1 in Scratch_Restart_Restart_Type.C_Restart _3 b c) };
+    _3 <- any Scratch_Restart_RestartMode_Type.t_restartmode;
+    assume { Resolve0.resolve self_1 };
+    _0 <- ();
+    return _0
+  }
+  
+end
+module Scratch_Restart_Impl9_TriggerRestart_Interface
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use Scratch_Restart_Restart_Type as Scratch_Restart_Restart_Type
+  clone Scratch_Restart_Impl8_Invariant_Stub as Invariant1
+  clone CreusotContracts_Invariant_Impl1_Invariant_Stub as Invariant0 with
+    type t = Scratch_Restart_Restart_Type.t_restart
+  val trigger_restart [#"../Scratch/src/restart.rs" 266 4 266 71] (self : borrowed (Scratch_Restart_Restart_Type.t_restart)) (curr_confl : usize) : bool
+    requires {[#"../Scratch/src/restart.rs" 266 39 266 43] Invariant0.invariant' self}
+    ensures { [#"../Scratch/src/restart.rs" 266 39 266 43] Invariant1.invariant' ( ^ self) }
+    
+end
+module Scratch_Restart_Impl9_TriggerRestart
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.IntSize
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  clone Scratch_Restart_Impl0_Invariant as Invariant6
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  clone Scratch_Restart_Impl2_Invariant as Invariant3 with
+    predicate Invariant0.invariant' = Invariant6.invariant'
+  clone CreusotContracts_Invariant_Impl1_Invariant as Invariant5 with
+    type t = Scratch_Restart_Glucose_Type.t_glucose,
+    predicate Invariant0.invariant' = Invariant3.invariant'
+  use Scratch_Restart_Luby_Type as Scratch_Restart_Luby_Type
+  clone Scratch_Restart_Impl5_Invariant as Invariant2
+  clone CreusotContracts_Invariant_Impl1_Invariant as Invariant4 with
+    type t = Scratch_Restart_Luby_Type.t_luby,
+    predicate Invariant0.invariant' = Invariant2.invariant'
+  clone Scratch_Restart_Impl4_TriggerRestart_Interface as TriggerRestart1 with
+    predicate Invariant0.invariant' = Invariant5.invariant',
+    predicate Invariant1.invariant' = Invariant3.invariant'
+  clone Scratch_Restart_Impl7_TriggerRestart_Interface as TriggerRestart0 with
+    predicate Invariant0.invariant' = Invariant4.invariant',
+    predicate Invariant1.invariant' = Invariant2.invariant'
+  use Scratch_Restart_Restart_Type as Scratch_Restart_Restart_Type
+  clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
+    type t = Scratch_Restart_Restart_Type.t_restart
+  use Scratch_Restart_RestartMode_Type as Scratch_Restart_RestartMode_Type
+  clone Scratch_Restart_Impl8_Invariant as Invariant1 with
+    predicate Invariant0.invariant' = Invariant2.invariant',
+    predicate Invariant1.invariant' = Invariant3.invariant'
+  clone CreusotContracts_Invariant_Impl1_Invariant as Invariant0 with
+    type t = Scratch_Restart_Restart_Type.t_restart,
+    predicate Invariant0.invariant' = Invariant1.invariant'
+  let rec cfg trigger_restart [#"../Scratch/src/restart.rs" 266 4 266 71] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Restart_Restart_Type.t_restart)) (curr_confl : usize) : bool
+    requires {[#"../Scratch/src/restart.rs" 266 39 266 43] Invariant0.invariant' self}
+    ensures { [#"../Scratch/src/restart.rs" 266 39 266 43] Invariant1.invariant' ( ^ self) }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : bool;
+  var self_1 : borrowed (Scratch_Restart_Restart_Type.t_restart);
+  var curr_confl_2 : usize;
+  var _3 : isize;
+  var _4 : borrowed (Scratch_Restart_Glucose_Type.t_glucose);
+  var _5 : usize;
+  var _6 : borrowed (Scratch_Restart_Luby_Type.t_luby);
+  var _7 : usize;
+  {
+    self_1 <- self;
+    curr_confl_2 <- curr_confl;
+    goto BB0
+  }
+  BB0 {
+    switch (Scratch_Restart_Restart_Type.restart_restart ( * self_1))
+      | Scratch_Restart_RestartMode_Type.C_Glucose -> goto BB3
+      | Scratch_Restart_RestartMode_Type.C_Luby -> goto BB1
+      end
+  }
+  BB1 {
+    _6 <- borrow_mut (Scratch_Restart_Restart_Type.restart_luby ( * self_1));
+    self_1 <- { self_1 with current = (let Scratch_Restart_Restart_Type.C_Restart a b c =  * self_1 in Scratch_Restart_Restart_Type.C_Restart a ( ^ _6) c) };
+    assume { Resolve0.resolve self_1 };
+    _7 <- curr_confl_2;
+    _0 <- ([#"../Scratch/src/restart.rs" 269 33 269 70] TriggerRestart0.trigger_restart _6 _7);
+    goto BB5
+  }
+  BB2 {
+    assume { Resolve0.resolve self_1 };
+    absurd
+  }
+  BB3 {
+    _4 <- borrow_mut (Scratch_Restart_Restart_Type.restart_glucose ( * self_1));
+    self_1 <- { self_1 with current = (let Scratch_Restart_Restart_Type.C_Restart a b c =  * self_1 in Scratch_Restart_Restart_Type.C_Restart a b ( ^ _4)) };
+    assume { Resolve0.resolve self_1 };
+    _5 <- curr_confl_2;
+    _0 <- ([#"../Scratch/src/restart.rs" 268 36 268 76] TriggerRestart1.trigger_restart _4 _5);
+    goto BB4
+  }
+  BB4 {
+    goto BB6
+  }
+  BB5 {
+    goto BB6
+  }
+  BB6 {
+    return _0
+  }
+  
+end
+module Scratch_Restart_Impl9_BlockRestart_Interface
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use Scratch_Restart_Restart_Type as Scratch_Restart_Restart_Type
+  clone Scratch_Restart_Impl8_Invariant_Stub as Invariant1
+  clone CreusotContracts_Invariant_Impl1_Invariant_Stub as Invariant0 with
+    type t = Scratch_Restart_Restart_Type.t_restart
+  val block_restart [#"../Scratch/src/restart.rs" 273 4 273 69] (self : borrowed (Scratch_Restart_Restart_Type.t_restart)) (curr_confl : usize) : bool
+    requires {[#"../Scratch/src/restart.rs" 273 37 273 41] Invariant0.invariant' self}
+    ensures { [#"../Scratch/src/restart.rs" 273 37 273 41] Invariant1.invariant' ( ^ self) }
+    
+end
+module Scratch_Restart_Impl9_BlockRestart
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.IntSize
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  clone Scratch_Restart_Impl0_Invariant as Invariant5
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  clone Scratch_Restart_Impl2_Invariant as Invariant3 with
+    predicate Invariant0.invariant' = Invariant5.invariant'
+  clone CreusotContracts_Invariant_Impl1_Invariant as Invariant4 with
+    type t = Scratch_Restart_Glucose_Type.t_glucose,
+    predicate Invariant0.invariant' = Invariant3.invariant'
+  use Scratch_Restart_Luby_Type as Scratch_Restart_Luby_Type
+  clone Scratch_Restart_Impl5_Invariant as Invariant2
+  clone Scratch_Restart_Impl4_BlockRestart_Interface as BlockRestart0 with
+    predicate Invariant0.invariant' = Invariant4.invariant',
+    predicate Invariant1.invariant' = Invariant3.invariant'
+  use Scratch_Restart_Restart_Type as Scratch_Restart_Restart_Type
+  clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
+    type t = Scratch_Restart_Restart_Type.t_restart
+  use Scratch_Restart_RestartMode_Type as Scratch_Restart_RestartMode_Type
+  clone Scratch_Restart_Impl8_Invariant as Invariant1 with
+    predicate Invariant0.invariant' = Invariant2.invariant',
+    predicate Invariant1.invariant' = Invariant3.invariant'
+  clone CreusotContracts_Invariant_Impl1_Invariant as Invariant0 with
+    type t = Scratch_Restart_Restart_Type.t_restart,
+    predicate Invariant0.invariant' = Invariant1.invariant'
+  let rec cfg block_restart [#"../Scratch/src/restart.rs" 273 4 273 69] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Restart_Restart_Type.t_restart)) (curr_confl : usize) : bool
+    requires {[#"../Scratch/src/restart.rs" 273 37 273 41] Invariant0.invariant' self}
+    ensures { [#"../Scratch/src/restart.rs" 273 37 273 41] Invariant1.invariant' ( ^ self) }
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : bool;
+  var self_1 : borrowed (Scratch_Restart_Restart_Type.t_restart);
+  var curr_confl_2 : usize;
+  var _3 : isize;
+  var _4 : borrowed (Scratch_Restart_Glucose_Type.t_glucose);
+  var _5 : usize;
+  {
+    self_1 <- self;
+    curr_confl_2 <- curr_confl;
+    goto BB0
+  }
+  BB0 {
+    switch (Scratch_Restart_Restart_Type.restart_restart ( * self_1))
+      | Scratch_Restart_RestartMode_Type.C_Glucose -> goto BB3
+      | Scratch_Restart_RestartMode_Type.C_Luby -> goto BB1
+      end
+  }
+  BB1 {
+    assume { Resolve0.resolve self_1 };
+    _0 <- ([#"../Scratch/src/restart.rs" 276 33 276 37] true);
+    goto BB5
+  }
+  BB2 {
+    assume { Resolve0.resolve self_1 };
+    absurd
+  }
+  BB3 {
+    _4 <- borrow_mut (Scratch_Restart_Restart_Type.restart_glucose ( * self_1));
+    self_1 <- { self_1 with current = (let Scratch_Restart_Restart_Type.C_Restart a b c =  * self_1 in Scratch_Restart_Restart_Type.C_Restart a b ( ^ _4)) };
+    assume { Resolve0.resolve self_1 };
+    _5 <- curr_confl_2;
+    _0 <- ([#"../Scratch/src/restart.rs" 275 36 275 74] BlockRestart0.block_restart _4 _5);
+    goto BB4
+  }
+  BB4 {
+    goto BB5
+  }
+  BB5 {
+    return _0
+  }
+  
+end
+module CreusotContracts_Invariant_Impl0_Invariant_Stub
+  type t
+  use prelude.Borrow
+  predicate invariant' (self : t)
+end
+module CreusotContracts_Invariant_Impl0_Invariant_Interface
+  type t
+  use prelude.Borrow
+  predicate invariant' (self : t)
+end
+module CreusotContracts_Invariant_Impl0_Invariant
+  type t
+  use prelude.Borrow
+  clone CreusotContracts_Invariant_Invariant_Invariant_Stub as Invariant0 with
+    type self = t
+  predicate invariant' (self : t) =
+    Invariant0.invariant' self
+  val invariant' (self : t) : bool
+    ensures { result = invariant' self }
+    
+end
+module Scratch_Restart_Impl9_GetNumberOfRestarts_Interface
+  use prelude.Borrow
+  use prelude.Int
+  use prelude.UIntSize
+  use Scratch_Restart_Restart_Type as Scratch_Restart_Restart_Type
+  clone CreusotContracts_Invariant_Impl0_Invariant_Stub as Invariant0 with
+    type t = Scratch_Restart_Restart_Type.t_restart
+  val get_number_of_restarts [#"../Scratch/src/restart.rs" 280 4 280 56] (self : Scratch_Restart_Restart_Type.t_restart) : usize
+    requires {[#"../Scratch/src/restart.rs" 280 42 280 46] Invariant0.invariant' self}
+    
+end
+module Scratch_Restart_Impl9_GetNumberOfRestarts
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.Borrow
+  use Scratch_Restart_Ema_Type as Scratch_Restart_Ema_Type
+  clone Scratch_Restart_Impl0_Invariant as Invariant4
+  use Scratch_Restart_Glucose_Type as Scratch_Restart_Glucose_Type
+  clone Scratch_Restart_Impl2_Invariant as Invariant3 with
+    predicate Invariant0.invariant' = Invariant4.invariant'
+  use Scratch_Restart_Luby_Type as Scratch_Restart_Luby_Type
+  clone Scratch_Restart_Impl5_Invariant as Invariant2
+  use Scratch_Restart_Restart_Type as Scratch_Restart_Restart_Type
+  clone Scratch_Restart_Impl8_Invariant as Invariant1 with
+    predicate Invariant0.invariant' = Invariant2.invariant',
+    predicate Invariant1.invariant' = Invariant3.invariant'
+  clone CreusotContracts_Invariant_Impl0_Invariant as Invariant0 with
+    type t = Scratch_Restart_Restart_Type.t_restart,
+    predicate Invariant0.invariant' = Invariant1.invariant'
+  let rec cfg get_number_of_restarts [#"../Scratch/src/restart.rs" 280 4 280 56] [@cfg:stackify] [@cfg:subregion_analysis] (self : Scratch_Restart_Restart_Type.t_restart) : usize
+    requires {[#"../Scratch/src/restart.rs" 280 42 280 46] Invariant0.invariant' self}
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : usize;
+  var self_1 : Scratch_Restart_Restart_Type.t_restart;
+  var _2 : bool;
+  var _3 : usize;
+  var _4 : usize;
+  var _5 : usize;
+  var _6 : usize;
+  var _7 : usize;
+  {
+    self_1 <- self;
+    goto BB0
+  }
+  BB0 {
+    _4 <- Scratch_Restart_Glucose_Type.glucose_num_restarts (Scratch_Restart_Restart_Type.restart_glucose self_1);
+    _3 <- ([#"../Scratch/src/restart.rs" 281 11 281 49] ([#"../Scratch/src/restart.rs" 281 11 281 21] (18446744073709551615 : usize)) - _4);
+    _5 <- Scratch_Restart_Luby_Type.luby_curr_restarts (Scratch_Restart_Restart_Type.restart_luby self_1);
+    _2 <- ([#"../Scratch/src/restart.rs" 281 11 281 75] _3 > _5);
+    switch (_2)
+      | False -> goto BB2
+      | True -> goto BB1
+      end
+  }
+  BB1 {
+    _6 <- Scratch_Restart_Glucose_Type.glucose_num_restarts (Scratch_Restart_Restart_Type.restart_glucose self_1);
+    _7 <- Scratch_Restart_Luby_Type.luby_curr_restarts (Scratch_Restart_Restart_Type.restart_luby self_1);
+    _0 <- ([#"../Scratch/src/restart.rs" 282 12 282 63] _6 + _7);
+    goto BB3
+  }
+  BB2 {
+    _0 <- ([#"../Scratch/src/restart.rs" 284 12 284 22] (18446744073709551615 : usize));
+    goto BB3
+  }
+  BB3 {
     return _0
   }
   
@@ -3170,5 +5439,17 @@ module Scratch_Lit_Impl5
   
 end
 module Scratch_Lit_Impl1
+  
+end
+module Scratch_Restart_Impl0
+  
+end
+module Scratch_Restart_Impl2
+  
+end
+module Scratch_Restart_Impl5
+  
+end
+module Scratch_Restart_Impl8
   
 end

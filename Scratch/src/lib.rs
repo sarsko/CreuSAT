@@ -9,6 +9,7 @@ mod clause;
 mod formula;
 mod lit;
 mod scratch;
+mod restart;
 
 #[cfg(creusot)]
 mod logic;
