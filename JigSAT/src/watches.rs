@@ -17,20 +17,20 @@ impl Index<usize> for Watches {
     type Output = Vec<Watcher>;
     #[inline]
     fn index(&self, i: usize) -> &Vec<Watcher> {
-        //#[cfg(feature = "unsafe_access")]
+        #[cfg(not(feature = "safe_access"))]
         unsafe { self.watches.get_unchecked(i) }
-        //#[cfg(not(feature = "unsafe_access"))]
-        //&self.watches[i]
+        #[cfg(feature = "unsafe_access")]
+        &self.watches[i]
     }
 }
 
 impl IndexMut<usize> for Watches {
     #[inline]
     fn index_mut(&mut self, i: usize) -> &mut Vec<Watcher> {
-        //#[cfg(feature = "unsafe_access")]
+        #[cfg(not(feature = "safe_access"))]
         unsafe { self.watches.get_unchecked_mut(i) }
-        //#[cfg(not(feature = "unsafe_access"))]
-        //&mut self.watches[i]
+        #[cfg(feature = "unsafe_access")]
+        &mut self.watches[i]
     }
 }
 

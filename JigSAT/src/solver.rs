@@ -181,7 +181,7 @@ impl Solver {
         decisions.decay_var_inc();
         //clause_manager.decay_clause_activity();
 
-        if self.adapt_strategies && self.num_conflicts == 100_000 && adapt_solver(self, decisions) {
+        if self.adapt_strategies && self.num_conflicts == 100_000 && adapt_solver(self, decisions, clause_manager) {
             trail.restart(clause_manager, decisions, watches, self, target_phase);
         }
 

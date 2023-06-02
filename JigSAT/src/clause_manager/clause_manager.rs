@@ -15,10 +15,19 @@ pub struct ClauseManager {
     clause_allocator: ClauseAllocator,
     original_clauses: CRefManager,
     learnt_core: CRefManager,
+    learnt_local: CRefManager,
+    learnt_tier: CRefManager,
     pub num_vars: usize,
     cur_restart: usize,
     num_clauses_before_reduce: usize,
     special_inc_reduce_db: usize,
+
+    next_tier_reduce: usize,
+    next_local_reduce: usize,
+    pub(crate) core_upper_bound: u32,
+    tiers_upper_bound: u32,
+    clause_activity_inc: f64,
+    clause_decay: f64,
 
     // Stats
     pub(crate) num_reduced: usize,
@@ -32,10 +41,18 @@ impl ClauseManager {
             clause_allocator: ClauseAllocator::new(),
             original_clauses: CRefManager::new(),
             learnt_core: CRefManager::new(),
+            learnt_local: CRefManager::new(),
+            learnt_tier: CRefManager::new(),
             num_vars,
             cur_restart: 1,
             num_clauses_before_reduce: 2000,
             special_inc_reduce_db: 1000,
+            next_tier_reduce: 10_000,
+            next_local_reduce: 15_000,
+            core_upper_bound: 3,
+            tiers_upper_bound: 6,
+            clause_activity_inc: 1.0,
+            clause_decay: 0.999,
 
             // Stats
             num_reduced: 0,
@@ -54,7 +71,9 @@ impl ClauseManager {
         let cref = self.clause_allocator.add_clause(lits, lbd);
         watches[first_lit.to_neg_watchidx()].push(Watcher { cref, blocker: second_lit });
         watches[second_lit.to_neg_watchidx()].push(Watcher { cref, blocker: first_lit });
+
         self.learnt_core.add_cref(cref);
+
         cref
     }
 
@@ -106,7 +125,9 @@ impl ClauseManager {
     }
 
     // TODO: Implement (currently not incorrect, though bad)
-    pub(crate) fn collect_garbage_on_empty_trail(&mut self, watches: &mut Watches, solver: &Solver) {}
+    pub(crate) fn collect_garbage_on_empty_trail(&mut self, watches: &mut Watches, solver: &Solver) {
+        
+    }
 
     // TODO: Have to change this once we have multiple tiers of learnt clauses
     pub(crate) fn trigger_reduce(&mut self, num_conflicts: usize) -> bool {

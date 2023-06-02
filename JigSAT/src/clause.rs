@@ -146,7 +146,6 @@ impl Clause {
         self.lits.len()
     }
 
-    // TODO: Uncomment the lbd stuff
     fn calc_lbd(&self, trail: &Trail, solver: &mut Solver) -> u32 {
         /*
         // We don't bother calculating for long clauses.
