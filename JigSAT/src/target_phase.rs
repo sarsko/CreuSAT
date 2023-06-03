@@ -83,7 +83,7 @@ impl TargetPhase {
     #[inline]
     pub(crate) fn update_best_phase(&mut self, trail: &Trail) {
         // Just copy assignments verbatim, no?
-        let len = trail.trail.len();
+        let len = if trail.decisions.len() > 0 { trail.decisions[trail.decisions.len() - 1] } else { 0 };
         if len < self.min_len && len > 0 {
             self.min_len = len;
         }

@@ -7989,6 +7989,112 @@ module Scratch_Vsids_Impl3_Invariant
     ensures { result = invariant' self }
     
 end
+module Alloc_Vec_FromElem_Interface
+  type t
+  use seq.Seq
+  use prelude.UIntSize
+  use prelude.Int
+  clone Core_Num_Impl11_Max_Stub as Max0
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone CreusotContracts_Logic_Ops_Impl0_IndexLogic_Stub as IndexLogic0 with
+    type t = t,
+    type s = Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+    type t = t,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  val from_elem (elem : t) (n : usize) : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)
+    ensures { [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/vec.rs" 143 22 143 41] Seq.length (ShallowModel0.shallow_model result) = UIntSize.to_int n }
+    ensures { [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/vec.rs" 144 12 144 78] forall i : int . 0 <= i /\ i < UIntSize.to_int n -> IndexLogic0.index_logic result i = elem }
+    
+end
+module Scratch_Vsids_Impl4_New_Interface
+  use prelude.UIntSize
+  use prelude.Int
+  use Scratch_Vsids_Vsids_Type as Scratch_Vsids_Vsids_Type
+  val new [#"../Scratch/src/vsids.rs" 347 4 347 35] (num_vars : usize) : Scratch_Vsids_Vsids_Type.t_vsids
+    requires {[#"../Scratch/src/vsids.rs" 346 15 346 46] UIntSize.to_int num_vars < 9223372036854775807}
+    
+end
+module Scratch_Vsids_Impl4_New
+  use prelude.Int
+  use prelude.UIntSize
+  use prelude.Float32
+  use prelude.Float64
+  use seq.Seq
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl11_Max as Max0
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
+    type t = usize,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel1 with
+    type t = Float64.t,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
+    type t = bool,
+    type a = Alloc_Alloc_Global_Type.t_global,
+    val Max0.mAX' = Max0.mAX',
+    axiom .
+  clone CreusotContracts_Logic_Ops_Impl0_IndexLogic as IndexLogic0 with
+    type t = bool,
+    type s = Alloc_Vec_Vec_Type.t_vec bool (Alloc_Alloc_Global_Type.t_global),
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model
+  use Scratch_Vsids_Heap_Type as Scratch_Vsids_Heap_Type
+  clone Scratch_Vsids_Impl0_Invariant as Invariant0 with
+    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    function ShallowModel1.shallow_model = ShallowModel2.shallow_model,
+    val Max0.mAX' = Max0.mAX'
+  clone Alloc_Vec_FromElem_Interface as FromElem0 with
+    type t = bool,
+    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    function IndexLogic0.index_logic = IndexLogic0.index_logic,
+    val Max0.mAX' = Max0.mAX'
+  clone Scratch_Vsids_Impl2_New_Interface as New0 with
+    predicate Invariant0.invariant' = Invariant0.invariant'
+  use Scratch_Vsids_Vsids_Type as Scratch_Vsids_Vsids_Type
+  let rec cfg new [#"../Scratch/src/vsids.rs" 347 4 347 35] [@cfg:stackify] [@cfg:subregion_analysis] (num_vars : usize) : Scratch_Vsids_Vsids_Type.t_vsids
+    requires {[#"../Scratch/src/vsids.rs" 346 15 346 46] UIntSize.to_int num_vars < 9223372036854775807}
+    
+   = [@vc:do_not_keep_trace] [@vc:sp]
+  var _0 : Scratch_Vsids_Vsids_Type.t_vsids;
+  var num_vars_1 : usize;
+  var _3 : Scratch_Vsids_Heap_Type.t_heap;
+  var _4 : usize;
+  var _5 : Alloc_Vec_Vec_Type.t_vec bool (Alloc_Alloc_Global_Type.t_global);
+  var _6 : usize;
+  {
+    num_vars_1 <- num_vars;
+    goto BB0
+  }
+  BB0 {
+    _4 <- num_vars_1;
+    _3 <- ([#"../Scratch/src/vsids.rs" 349 24 349 43] New0.new _4);
+    goto BB1
+  }
+  BB1 {
+    _6 <- num_vars_1;
+    _5 <- ([#"../Scratch/src/vsids.rs" 352 22 352 42] FromElem0.from_elem ([#"../Scratch/src/vsids.rs" 352 27 352 31] true) _6);
+    goto BB2
+  }
+  BB2 {
+    _0 <- Scratch_Vsids_Vsids_Type.C_VSIDS _3 ([#"../Scratch/src/vsids.rs" 350 21 350 24] 1.0000000000000000000000000000000000000000000000000000000000000000) ([#"../Scratch/src/vsids.rs" 351 23 351 27] 0.9499999999999999555910790149937383830547332763671875000000000000) _5;
+    goto BB3
+  }
+  BB3 {
+    goto BB4
+  }
+  BB4 {
+    return _0
+  }
+  
+end
 module Scratch_Vsids_Impl4_RemoveMin_Interface
   use prelude.Borrow
   use seq.Seq
@@ -8005,11 +8111,11 @@ module Scratch_Vsids_Impl4_RemoveMin_Interface
   use Scratch_Vsids_Heap_Type as Scratch_Vsids_Heap_Type
   use Scratch_Vsids_Vsids_Type as Scratch_Vsids_Vsids_Type
   clone Scratch_Vsids_Impl3_Invariant_Stub as Invariant0
-  val remove_min [#"../Scratch/src/vsids.rs" 350 4 350 37] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) : usize
-    requires {[#"../Scratch/src/vsids.rs" 347 4 347 40] Invariant0.invariant' ( * self)}
-    requires {[#"../Scratch/src/vsids.rs" 349 15 349 46] Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_heap (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self)))) > 0}
-    ensures { [#"../Scratch/src/vsids.rs" 347 4 347 40] Invariant0.invariant' ( ^ self) }
-    ensures { [#"../Scratch/src/vsids.rs" 348 14 348 71] UIntSize.to_int (Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))) = UIntSize.to_int (Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( ^ self))) }
+  val remove_min [#"../Scratch/src/vsids.rs" 360 4 360 37] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) : usize
+    requires {[#"../Scratch/src/vsids.rs" 357 4 357 40] Invariant0.invariant' ( * self)}
+    requires {[#"../Scratch/src/vsids.rs" 359 15 359 46] Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_heap (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self)))) > 0}
+    ensures { [#"../Scratch/src/vsids.rs" 357 4 357 40] Invariant0.invariant' ( ^ self) }
+    ensures { [#"../Scratch/src/vsids.rs" 358 14 358 71] UIntSize.to_int (Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))) = UIntSize.to_int (Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( ^ self))) }
     
 end
 module Scratch_Vsids_Impl4_RemoveMin
@@ -8052,11 +8158,11 @@ module Scratch_Vsids_Impl4_RemoveMin
     predicate Invariant0.invariant' = Invariant1.invariant',
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
     val Max0.mAX' = Max0.mAX'
-  let rec cfg remove_min [#"../Scratch/src/vsids.rs" 350 4 350 37] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) : usize
-    requires {[#"../Scratch/src/vsids.rs" 347 4 347 40] Invariant0.invariant' ( * self)}
-    requires {[#"../Scratch/src/vsids.rs" 349 15 349 46] Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_heap (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self)))) > 0}
-    ensures { [#"../Scratch/src/vsids.rs" 347 4 347 40] Invariant0.invariant' ( ^ self) }
-    ensures { [#"../Scratch/src/vsids.rs" 348 14 348 71] UIntSize.to_int (Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))) = UIntSize.to_int (Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( ^ self))) }
+  let rec cfg remove_min [#"../Scratch/src/vsids.rs" 360 4 360 37] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) : usize
+    requires {[#"../Scratch/src/vsids.rs" 357 4 357 40] Invariant0.invariant' ( * self)}
+    requires {[#"../Scratch/src/vsids.rs" 359 15 359 46] Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_heap (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self)))) > 0}
+    ensures { [#"../Scratch/src/vsids.rs" 357 4 357 40] Invariant0.invariant' ( ^ self) }
+    ensures { [#"../Scratch/src/vsids.rs" 358 14 358 71] UIntSize.to_int (Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))) = UIntSize.to_int (Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( ^ self))) }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : usize;
@@ -8069,117 +8175,11 @@ module Scratch_Vsids_Impl4_RemoveMin
   BB0 {
     _6 <- borrow_mut (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self_1));
     self_1 <- { self_1 with current = (let Scratch_Vsids_Vsids_Type.C_VSIDS a b c d =  * self_1 in Scratch_Vsids_Vsids_Type.C_VSIDS ( ^ _6) b c d) };
-    _0 <- ([#"../Scratch/src/vsids.rs" 351 8 351 36] RemoveMin0.remove_min _6);
+    _0 <- ([#"../Scratch/src/vsids.rs" 361 8 361 36] RemoveMin0.remove_min _6);
     goto BB1
   }
   BB1 {
     assume { Resolve0.resolve self_1 };
-    return _0
-  }
-  
-end
-module Alloc_Vec_FromElem_Interface
-  type t
-  use seq.Seq
-  use prelude.UIntSize
-  use prelude.Int
-  clone Core_Num_Impl11_Max_Stub as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone CreusotContracts_Logic_Ops_Impl0_IndexLogic_Stub as IndexLogic0 with
-    type t = t,
-    type s = Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
-    type t = t,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  val from_elem (elem : t) (n : usize) : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)
-    ensures { [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/vec.rs" 143 22 143 41] Seq.length (ShallowModel0.shallow_model result) = UIntSize.to_int n }
-    ensures { [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/vec.rs" 144 12 144 78] forall i : int . 0 <= i /\ i < UIntSize.to_int n -> IndexLogic0.index_logic result i = elem }
-    
-end
-module Scratch_Vsids_Impl5_New_Interface
-  use prelude.UIntSize
-  use prelude.Int
-  use Scratch_Vsids_Vsids_Type as Scratch_Vsids_Vsids_Type
-  val new [#"../Scratch/src/vsids.rs" 357 4 357 35] (num_vars : usize) : Scratch_Vsids_Vsids_Type.t_vsids
-    requires {[#"../Scratch/src/vsids.rs" 356 15 356 46] UIntSize.to_int num_vars < 9223372036854775807}
-    
-end
-module Scratch_Vsids_Impl5_New
-  use prelude.Int
-  use prelude.UIntSize
-  use prelude.Float32
-  use prelude.Float64
-  use seq.Seq
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl11_Max as Max0
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
-    type t = usize,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel1 with
-    type t = Float64.t,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
-    type t = bool,
-    type a = Alloc_Alloc_Global_Type.t_global,
-    val Max0.mAX' = Max0.mAX',
-    axiom .
-  clone CreusotContracts_Logic_Ops_Impl0_IndexLogic as IndexLogic0 with
-    type t = bool,
-    type s = Alloc_Vec_Vec_Type.t_vec bool (Alloc_Alloc_Global_Type.t_global),
-    function ShallowModel0.shallow_model = ShallowModel0.shallow_model
-  use Scratch_Vsids_Heap_Type as Scratch_Vsids_Heap_Type
-  clone Scratch_Vsids_Impl0_Invariant as Invariant0 with
-    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
-    function ShallowModel1.shallow_model = ShallowModel2.shallow_model,
-    val Max0.mAX' = Max0.mAX'
-  clone Alloc_Vec_FromElem_Interface as FromElem0 with
-    type t = bool,
-    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
-    function IndexLogic0.index_logic = IndexLogic0.index_logic,
-    val Max0.mAX' = Max0.mAX'
-  clone Scratch_Vsids_Impl2_New_Interface as New0 with
-    predicate Invariant0.invariant' = Invariant0.invariant'
-  use Scratch_Vsids_Vsids_Type as Scratch_Vsids_Vsids_Type
-  let rec cfg new [#"../Scratch/src/vsids.rs" 357 4 357 35] [@cfg:stackify] [@cfg:subregion_analysis] (num_vars : usize) : Scratch_Vsids_Vsids_Type.t_vsids
-    requires {[#"../Scratch/src/vsids.rs" 356 15 356 46] UIntSize.to_int num_vars < 9223372036854775807}
-    
-   = [@vc:do_not_keep_trace] [@vc:sp]
-  var _0 : Scratch_Vsids_Vsids_Type.t_vsids;
-  var num_vars_1 : usize;
-  var _3 : Scratch_Vsids_Heap_Type.t_heap;
-  var _4 : usize;
-  var _5 : Alloc_Vec_Vec_Type.t_vec bool (Alloc_Alloc_Global_Type.t_global);
-  var _6 : usize;
-  {
-    num_vars_1 <- num_vars;
-    goto BB0
-  }
-  BB0 {
-    _4 <- num_vars_1;
-    _3 <- ([#"../Scratch/src/vsids.rs" 359 24 359 43] New0.new _4);
-    goto BB1
-  }
-  BB1 {
-    _6 <- num_vars_1;
-    _5 <- ([#"../Scratch/src/vsids.rs" 362 22 362 42] FromElem0.from_elem ([#"../Scratch/src/vsids.rs" 362 27 362 31] true) _6);
-    goto BB2
-  }
-  BB2 {
-    _0 <- Scratch_Vsids_Vsids_Type.C_VSIDS _3 ([#"../Scratch/src/vsids.rs" 360 21 360 24] 1.0000000000000000000000000000000000000000000000000000000000000000) ([#"../Scratch/src/vsids.rs" 361 23 361 27] 0.9499999999999999555910790149937383830547332763671875000000000000) _5;
-    goto BB3
-  }
-  BB3 {
-    goto BB4
-  }
-  BB4 {
     return _0
   }
   
@@ -8557,7 +8557,7 @@ module CreusotContracts_Std1_Slice_Impl18_ProducesTrans
     
   axiom produces_trans_spec : forall a : Core_Slice_Iter_IterMut_Type.t_itermut t, ab : Seq.seq (borrowed t), b : Core_Slice_Iter_IterMut_Type.t_itermut t, bc : Seq.seq (borrowed t), c : Core_Slice_Iter_IterMut_Type.t_itermut t . ([#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/slice.rs" 409 15 409 32] Produces0.produces a ab b) -> ([#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/slice.rs" 410 15 410 32] Produces0.produces b bc c) -> ([#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/slice.rs" 411 14 411 42] Produces0.produces a (Seq.(++) ab bc) c)
 end
-module Scratch_Vsids_Impl5_Rescale_Interface
+module Scratch_Vsids_Impl4_Rescale_Interface
   use prelude.Borrow
   use prelude.UIntSize
   use seq.Seq
@@ -8579,15 +8579,15 @@ module Scratch_Vsids_Impl5_Rescale_Interface
   use Scratch_Vsids_Heap_Type as Scratch_Vsids_Heap_Type
   use Scratch_Vsids_Vsids_Type as Scratch_Vsids_Vsids_Type
   clone Scratch_Vsids_Impl3_Invariant_Stub as Invariant0
-  val rescale [#"../Scratch/src/vsids.rs" 384 4 384 35] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (v : usize) : ()
-    requires {[#"../Scratch/src/vsids.rs" 380 4 380 40] Invariant0.invariant' ( * self)}
-    requires {[#"../Scratch/src/vsids.rs" 383 15 383 51] UIntSize.to_int v < Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_activity (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))))}
-    ensures { [#"../Scratch/src/vsids.rs" 380 4 380 40] Invariant0.invariant' ( ^ self) }
-    ensures { [#"../Scratch/src/vsids.rs" 381 14 381 75] Seq.length (ShallowModel1.shallow_model (Scratch_Vsids_Heap_Type.heap_heap (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self)))) = Seq.length (ShallowModel1.shallow_model (Scratch_Vsids_Heap_Type.heap_heap (Scratch_Vsids_Vsids_Type.vsids_order_heap ( ^ self)))) }
-    ensures { [#"../Scratch/src/vsids.rs" 382 14 382 69] Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self)) = Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( ^ self)) }
+  val rescale [#"../Scratch/src/vsids.rs" 382 4 382 35] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (v : usize) : ()
+    requires {[#"../Scratch/src/vsids.rs" 378 4 378 40] Invariant0.invariant' ( * self)}
+    requires {[#"../Scratch/src/vsids.rs" 381 15 381 51] UIntSize.to_int v < Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_activity (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))))}
+    ensures { [#"../Scratch/src/vsids.rs" 378 4 378 40] Invariant0.invariant' ( ^ self) }
+    ensures { [#"../Scratch/src/vsids.rs" 379 14 379 75] Seq.length (ShallowModel1.shallow_model (Scratch_Vsids_Heap_Type.heap_heap (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self)))) = Seq.length (ShallowModel1.shallow_model (Scratch_Vsids_Heap_Type.heap_heap (Scratch_Vsids_Vsids_Type.vsids_order_heap ( ^ self)))) }
+    ensures { [#"../Scratch/src/vsids.rs" 380 14 380 69] Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self)) = Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( ^ self)) }
     
 end
-module Scratch_Vsids_Impl5_Rescale
+module Scratch_Vsids_Impl4_Rescale
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
@@ -8732,12 +8732,12 @@ module Scratch_Vsids_Impl5_Rescale
     predicate Invariant0.invariant' = Invariant1.invariant',
     function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
     val Max0.mAX' = Max0.mAX'
-  let rec cfg rescale [#"../Scratch/src/vsids.rs" 384 4 384 35] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (v : usize) : ()
-    requires {[#"../Scratch/src/vsids.rs" 380 4 380 40] Invariant0.invariant' ( * self)}
-    requires {[#"../Scratch/src/vsids.rs" 383 15 383 51] UIntSize.to_int v < Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_activity (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))))}
-    ensures { [#"../Scratch/src/vsids.rs" 380 4 380 40] Invariant0.invariant' ( ^ self) }
-    ensures { [#"../Scratch/src/vsids.rs" 381 14 381 75] Seq.length (ShallowModel1.shallow_model (Scratch_Vsids_Heap_Type.heap_heap (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self)))) = Seq.length (ShallowModel1.shallow_model (Scratch_Vsids_Heap_Type.heap_heap (Scratch_Vsids_Vsids_Type.vsids_order_heap ( ^ self)))) }
-    ensures { [#"../Scratch/src/vsids.rs" 382 14 382 69] Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self)) = Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( ^ self)) }
+  let rec cfg rescale [#"../Scratch/src/vsids.rs" 382 4 382 35] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (v : usize) : ()
+    requires {[#"../Scratch/src/vsids.rs" 378 4 378 40] Invariant0.invariant' ( * self)}
+    requires {[#"../Scratch/src/vsids.rs" 381 15 381 51] UIntSize.to_int v < Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_activity (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))))}
+    ensures { [#"../Scratch/src/vsids.rs" 378 4 378 40] Invariant0.invariant' ( ^ self) }
+    ensures { [#"../Scratch/src/vsids.rs" 379 14 379 75] Seq.length (ShallowModel1.shallow_model (Scratch_Vsids_Heap_Type.heap_heap (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self)))) = Seq.length (ShallowModel1.shallow_model (Scratch_Vsids_Heap_Type.heap_heap (Scratch_Vsids_Vsids_Type.vsids_order_heap ( ^ self)))) }
+    ensures { [#"../Scratch/src/vsids.rs" 380 14 380 69] Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self)) = Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( ^ self)) }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : ();
@@ -8766,17 +8766,17 @@ module Scratch_Vsids_Impl5_Rescale
   BB0 {
     _13 <- borrow_mut (Scratch_Vsids_Heap_Type.heap_activity (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self_1)));
     self_1 <- { self_1 with current = (let Scratch_Vsids_Vsids_Type.C_VSIDS a b c d =  * self_1 in Scratch_Vsids_Vsids_Type.C_VSIDS (let Scratch_Vsids_Heap_Type.C_Heap a b c d = Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self_1) in Scratch_Vsids_Heap_Type.C_Heap ( ^ _13) b c d) b c d) };
-    _12 <- ([#"../Scratch/src/vsids.rs" 386 17 386 52] DerefMut0.deref_mut _13);
+    _12 <- ([#"../Scratch/src/vsids.rs" 384 17 384 52] DerefMut0.deref_mut _13);
     goto BB1
   }
   BB1 {
     _11 <- borrow_mut ( * _12);
     _12 <- { _12 with current = ( ^ _11) };
-    _10 <- ([#"../Scratch/src/vsids.rs" 386 17 386 52] IterMut1.iter_mut _11);
+    _10 <- ([#"../Scratch/src/vsids.rs" 384 17 384 52] IterMut1.iter_mut _11);
     goto BB2
   }
   BB2 {
-    _9 <- ([#"../Scratch/src/vsids.rs" 386 17 386 52] IntoIter0.into_iter _10);
+    _9 <- ([#"../Scratch/src/vsids.rs" 384 17 384 52] IntoIter0.into_iter _10);
     goto BB3
   }
   BB3 {
@@ -8792,7 +8792,7 @@ module Scratch_Vsids_Impl5_Rescale
     iter_14 <-  ^ _19;
     _18 <- borrow_mut ( * _19);
     _19 <- { _19 with current = ( ^ _18) };
-    _17 <- ([#"../Scratch/src/vsids.rs" 386 17 386 52] Next0.next _18);
+    _17 <- ([#"../Scratch/src/vsids.rs" 384 17 384 52] Next0.next _18);
     goto BB6
   }
   BB6 {
@@ -8808,7 +8808,7 @@ module Scratch_Vsids_Impl5_Rescale
   BB8 {
     e_22 <- Core_Option_Option_Type.some_0 _17;
     _17 <- (let Core_Option_Option_Type.C_Some a = _17 in Core_Option_Option_Type.C_Some (any borrowed Float64.t));
-    e_22 <- { e_22 with current = ([#"../Scratch/src/vsids.rs" 387 12 387 24]  * e_22 .* ([#"../Scratch/src/vsids.rs" 387 18 387 24] 0.0000000000000000000000000000000000000000000000000000000000000000)) };
+    e_22 <- { e_22 with current = ([#"../Scratch/src/vsids.rs" 385 12 385 24]  * e_22 .* ([#"../Scratch/src/vsids.rs" 385 18 385 24] 0.0000000000000000000000000000000000000000000000000000000000000000)) };
     assume { Resolve4.resolve e_22 };
     _16 <- ();
     _15 <- ();
@@ -8824,14 +8824,14 @@ module Scratch_Vsids_Impl5_Rescale
     assume { Resolve1.resolve iter_14 };
     _8 <- ();
     assume { Resolve3.resolve _12 };
-    self_1 <- { self_1 with current = (let Scratch_Vsids_Vsids_Type.C_VSIDS a b c d =  * self_1 in Scratch_Vsids_Vsids_Type.C_VSIDS a ([#"../Scratch/src/vsids.rs" 389 8 389 30] Scratch_Vsids_Vsids_Type.vsids_var_inc ( * self_1) .* ([#"../Scratch/src/vsids.rs" 389 24 389 30] 0.0000000000000000000000000000000000000000000000000000000000000000)) c d) };
+    self_1 <- { self_1 with current = (let Scratch_Vsids_Vsids_Type.C_VSIDS a b c d =  * self_1 in Scratch_Vsids_Vsids_Type.C_VSIDS a ([#"../Scratch/src/vsids.rs" 387 8 387 30] Scratch_Vsids_Vsids_Type.vsids_var_inc ( * self_1) .* ([#"../Scratch/src/vsids.rs" 387 24 387 30] 0.0000000000000000000000000000000000000000000000000000000000000000)) c d) };
     assume { Resolve2.resolve self_1 };
     _0 <- ();
     return _0
   }
   
 end
-module Scratch_Vsids_Impl5_BumpVariable_Interface
+module Scratch_Vsids_Impl4_BumpVariable_Interface
   use prelude.Borrow
   use prelude.UIntSize
   use seq.Seq
@@ -8848,13 +8848,13 @@ module Scratch_Vsids_Impl5_BumpVariable_Interface
   use Scratch_Vsids_Heap_Type as Scratch_Vsids_Heap_Type
   use Scratch_Vsids_Vsids_Type as Scratch_Vsids_Vsids_Type
   clone Scratch_Vsids_Impl3_Invariant_Stub as Invariant0
-  val bump_variable [#"../Scratch/src/vsids.rs" 394 4 394 41] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (v : usize) : ()
-    requires {[#"../Scratch/src/vsids.rs" 392 4 392 40] Invariant0.invariant' ( * self)}
-    requires {[#"../Scratch/src/vsids.rs" 393 15 393 51] UIntSize.to_int v < Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_activity (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))))}
-    ensures { [#"../Scratch/src/vsids.rs" 392 4 392 40] Invariant0.invariant' ( ^ self) }
+  val bump_variable [#"../Scratch/src/vsids.rs" 392 4 392 41] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (v : usize) : ()
+    requires {[#"../Scratch/src/vsids.rs" 390 4 390 40] Invariant0.invariant' ( * self)}
+    requires {[#"../Scratch/src/vsids.rs" 391 15 391 51] UIntSize.to_int v < Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_activity (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))))}
+    ensures { [#"../Scratch/src/vsids.rs" 390 4 390 40] Invariant0.invariant' ( ^ self) }
     
 end
-module Scratch_Vsids_Impl5_BumpVariable
+module Scratch_Vsids_Impl4_BumpVariable
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
@@ -8908,7 +8908,7 @@ module Scratch_Vsids_Impl5_BumpVariable
     predicate Invariant0.invariant' = Invariant1.invariant',
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
     val Max0.mAX' = Max0.mAX'
-  clone Scratch_Vsids_Impl5_Rescale_Interface as Rescale0 with
+  clone Scratch_Vsids_Impl4_Rescale_Interface as Rescale0 with
     predicate Invariant0.invariant' = Invariant0.invariant',
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
     function ShallowModel1.shallow_model = ShallowModel4.shallow_model,
@@ -8934,10 +8934,10 @@ module Scratch_Vsids_Impl5_BumpVariable
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
     type Output0.output = Float64.t,
     val Max0.mAX' = Max0.mAX'
-  let rec cfg bump_variable [#"../Scratch/src/vsids.rs" 394 4 394 41] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (v : usize) : ()
-    requires {[#"../Scratch/src/vsids.rs" 392 4 392 40] Invariant0.invariant' ( * self)}
-    requires {[#"../Scratch/src/vsids.rs" 393 15 393 51] UIntSize.to_int v < Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_activity (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))))}
-    ensures { [#"../Scratch/src/vsids.rs" 392 4 392 40] Invariant0.invariant' ( ^ self) }
+  let rec cfg bump_variable [#"../Scratch/src/vsids.rs" 392 4 392 41] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (v : usize) : ()
+    requires {[#"../Scratch/src/vsids.rs" 390 4 390 40] Invariant0.invariant' ( * self)}
+    requires {[#"../Scratch/src/vsids.rs" 391 15 391 51] UIntSize.to_int v < Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_activity (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))))}
+    ensures { [#"../Scratch/src/vsids.rs" 390 4 390 40] Invariant0.invariant' ( ^ self) }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : ();
@@ -8969,20 +8969,20 @@ module Scratch_Vsids_Impl5_BumpVariable
     _8 <- borrow_mut (Scratch_Vsids_Heap_Type.heap_activity (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self_1)));
     self_1 <- { self_1 with current = (let Scratch_Vsids_Vsids_Type.C_VSIDS a b c d =  * self_1 in Scratch_Vsids_Vsids_Type.C_VSIDS (let Scratch_Vsids_Heap_Type.C_Heap a b c d = Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self_1) in Scratch_Vsids_Heap_Type.C_Heap ( ^ _8) b c d) b c d) };
     _9 <- v_2;
-    _7 <- ([#"../Scratch/src/vsids.rs" 395 8 395 35] IndexMut0.index_mut _8 _9);
+    _7 <- ([#"../Scratch/src/vsids.rs" 393 8 393 35] IndexMut0.index_mut _8 _9);
     goto BB1
   }
   BB1 {
-    _7 <- { _7 with current = ([#"../Scratch/src/vsids.rs" 395 8 395 51]  * _7 .+ _6) };
+    _7 <- { _7 with current = ([#"../Scratch/src/vsids.rs" 393 8 393 51]  * _7 .+ _6) };
     assume { Resolve0.resolve _7 };
     _14 <- Scratch_Vsids_Heap_Type.heap_activity (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self_1));
     _15 <- v_2;
-    _13 <- ([#"../Scratch/src/vsids.rs" 396 11 396 38] Index0.index _14 _15);
+    _13 <- ([#"../Scratch/src/vsids.rs" 394 11 394 38] Index0.index _14 _15);
     goto BB2
   }
   BB2 {
     _12 <- _13;
-    _11 <- ([#"../Scratch/src/vsids.rs" 396 11 396 46] _12 .> ([#"../Scratch/src/vsids.rs" 396 41 396 46] 10000000000000000159028911097599180468360808563945281389781327557747838772170381060813469985856815104.0000000000000000000000000000000000000000000000000000000000000000));
+    _11 <- ([#"../Scratch/src/vsids.rs" 394 11 394 46] _12 .> ([#"../Scratch/src/vsids.rs" 394 41 394 46] 10000000000000000159028911097599180468360808563945281389781327557747838772170381060813469985856815104.0000000000000000000000000000000000000000000000000000000000000000));
     switch (_11)
       | False -> goto BB5
       | True -> goto BB3
@@ -8992,7 +8992,7 @@ module Scratch_Vsids_Impl5_BumpVariable
     _17 <- borrow_mut ( * self_1);
     self_1 <- { self_1 with current = ( ^ _17) };
     _18 <- v_2;
-    _16 <- ([#"../Scratch/src/vsids.rs" 397 12 397 27] Rescale0.rescale _17 _18);
+    _16 <- ([#"../Scratch/src/vsids.rs" 395 12 395 27] Rescale0.rescale _17 _18);
     goto BB4
   }
   BB4 {
@@ -9007,7 +9007,7 @@ module Scratch_Vsids_Impl5_BumpVariable
     _20 <- borrow_mut (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self_1));
     self_1 <- { self_1 with current = (let Scratch_Vsids_Vsids_Type.C_VSIDS a b c d =  * self_1 in Scratch_Vsids_Vsids_Type.C_VSIDS ( ^ _20) b c d) };
     _21 <- v_2;
-    _19 <- ([#"../Scratch/src/vsids.rs" 401 8 401 35] Decrease0.decrease _20 _21);
+    _19 <- ([#"../Scratch/src/vsids.rs" 399 8 399 35] Decrease0.decrease _20 _21);
     goto BB7
   }
   BB7 {
@@ -9017,19 +9017,19 @@ module Scratch_Vsids_Impl5_BumpVariable
   }
   
 end
-module Scratch_Vsids_Impl5_DecayVarInc_Interface
+module Scratch_Vsids_Impl4_DecayVarInc_Interface
   use prelude.Borrow
   use Scratch_Vsids_Vsids_Type as Scratch_Vsids_Vsids_Type
-  val decay_var_inc [#"../Scratch/src/vsids.rs" 405 4 405 31] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) : ()
+  val decay_var_inc [#"../Scratch/src/vsids.rs" 403 4 403 31] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) : ()
 end
-module Scratch_Vsids_Impl5_DecayVarInc
+module Scratch_Vsids_Impl4_DecayVarInc
   use prelude.Borrow
   use prelude.Float64
   use prelude.Float32
   use Scratch_Vsids_Vsids_Type as Scratch_Vsids_Vsids_Type
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
     type t = Scratch_Vsids_Vsids_Type.t_vsids
-  let rec cfg decay_var_inc [#"../Scratch/src/vsids.rs" 405 4 405 31] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) : ()
+  let rec cfg decay_var_inc [#"../Scratch/src/vsids.rs" 403 4 403 31] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) : ()
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : ();
@@ -9042,28 +9042,28 @@ module Scratch_Vsids_Impl5_DecayVarInc
   }
   BB0 {
     _3 <- Scratch_Vsids_Vsids_Type.vsids_var_decay ( * self_1);
-    _2 <- ([#"../Scratch/src/vsids.rs" 406 24 406 44] ([#"../Scratch/src/vsids.rs" 406 24 406 27] 1.0000000000000000000000000000000000000000000000000000000000000000) ./ _3);
-    self_1 <- { self_1 with current = (let Scratch_Vsids_Vsids_Type.C_VSIDS a b c d =  * self_1 in Scratch_Vsids_Vsids_Type.C_VSIDS a ([#"../Scratch/src/vsids.rs" 406 8 406 44] Scratch_Vsids_Vsids_Type.vsids_var_inc ( * self_1) .* _2) c d) };
+    _2 <- ([#"../Scratch/src/vsids.rs" 404 24 404 44] ([#"../Scratch/src/vsids.rs" 404 24 404 27] 1.0000000000000000000000000000000000000000000000000000000000000000) ./ _3);
+    self_1 <- { self_1 with current = (let Scratch_Vsids_Vsids_Type.C_VSIDS a b c d =  * self_1 in Scratch_Vsids_Vsids_Type.C_VSIDS a ([#"../Scratch/src/vsids.rs" 404 8 404 44] Scratch_Vsids_Vsids_Type.vsids_var_inc ( * self_1) .* _2) c d) };
     assume { Resolve0.resolve self_1 };
     _0 <- ();
     return _0
   }
   
 end
-module Scratch_Vsids_Impl5_SetVarDecay_Interface
+module Scratch_Vsids_Impl4_SetVarDecay_Interface
   use prelude.Borrow
   use prelude.Float64
   use Scratch_Vsids_Vsids_Type as Scratch_Vsids_Vsids_Type
-  val set_var_decay [#"../Scratch/src/vsids.rs" 410 4 410 45] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (new_val : Float64.t) : ()
+  val set_var_decay [#"../Scratch/src/vsids.rs" 408 4 408 45] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (new_val : Float64.t) : ()
     
 end
-module Scratch_Vsids_Impl5_SetVarDecay
+module Scratch_Vsids_Impl4_SetVarDecay
   use prelude.Borrow
   use prelude.Float64
   use Scratch_Vsids_Vsids_Type as Scratch_Vsids_Vsids_Type
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
     type t = Scratch_Vsids_Vsids_Type.t_vsids
-  let rec cfg set_var_decay [#"../Scratch/src/vsids.rs" 410 4 410 45] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (new_val : Float64.t) : ()
+  let rec cfg set_var_decay [#"../Scratch/src/vsids.rs" 408 4 408 45] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (new_val : Float64.t) : ()
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : ();
@@ -9085,7 +9085,7 @@ module Scratch_Vsids_Impl5_SetVarDecay
   }
   
 end
-module Scratch_Vsids_Impl5_Insert_Interface
+module Scratch_Vsids_Impl4_Insert_Interface
   use prelude.Borrow
   use seq.Seq
   use prelude.Int
@@ -9106,15 +9106,15 @@ module Scratch_Vsids_Impl5_Insert_Interface
   use Scratch_Vsids_Heap_Type as Scratch_Vsids_Heap_Type
   use Scratch_Vsids_Vsids_Type as Scratch_Vsids_Vsids_Type
   clone Scratch_Vsids_Impl3_Invariant_Stub as Invariant0
-  val insert [#"../Scratch/src/vsids.rs" 419 4 419 34] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (v : usize) : ()
-    requires {[#"../Scratch/src/vsids.rs" 415 4 415 40] Invariant0.invariant' ( * self)}
-    requires {[#"../Scratch/src/vsids.rs" 417 15 417 75] Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_heap (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self)))) < Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_indices (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))))}
-    requires {[#"../Scratch/src/vsids.rs" 418 15 418 40] UIntSize.to_int v < Seq.length (ShallowModel1.shallow_model (Scratch_Vsids_Vsids_Type.vsids_decision ( * self)))}
-    ensures { [#"../Scratch/src/vsids.rs" 415 4 415 40] Invariant0.invariant' ( ^ self) }
-    ensures { [#"../Scratch/src/vsids.rs" 416 14 416 71] UIntSize.to_int (Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))) = UIntSize.to_int (Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( ^ self))) }
+  val insert [#"../Scratch/src/vsids.rs" 417 4 417 34] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (v : usize) : ()
+    requires {[#"../Scratch/src/vsids.rs" 413 4 413 40] Invariant0.invariant' ( * self)}
+    requires {[#"../Scratch/src/vsids.rs" 415 15 415 75] Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_heap (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self)))) < Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_indices (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))))}
+    requires {[#"../Scratch/src/vsids.rs" 416 15 416 40] UIntSize.to_int v < Seq.length (ShallowModel1.shallow_model (Scratch_Vsids_Vsids_Type.vsids_decision ( * self)))}
+    ensures { [#"../Scratch/src/vsids.rs" 413 4 413 40] Invariant0.invariant' ( ^ self) }
+    ensures { [#"../Scratch/src/vsids.rs" 414 14 414 71] UIntSize.to_int (Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))) = UIntSize.to_int (Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( ^ self))) }
     
 end
-module Scratch_Vsids_Impl5_Insert
+module Scratch_Vsids_Impl4_Insert
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
@@ -9174,12 +9174,12 @@ module Scratch_Vsids_Impl5_Insert
     predicate Invariant0.invariant' = Invariant1.invariant',
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
     val Max0.mAX' = Max0.mAX'
-  let rec cfg insert [#"../Scratch/src/vsids.rs" 419 4 419 34] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (v : usize) : ()
-    requires {[#"../Scratch/src/vsids.rs" 415 4 415 40] Invariant0.invariant' ( * self)}
-    requires {[#"../Scratch/src/vsids.rs" 417 15 417 75] Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_heap (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self)))) < Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_indices (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))))}
-    requires {[#"../Scratch/src/vsids.rs" 418 15 418 40] UIntSize.to_int v < Seq.length (ShallowModel1.shallow_model (Scratch_Vsids_Vsids_Type.vsids_decision ( * self)))}
-    ensures { [#"../Scratch/src/vsids.rs" 415 4 415 40] Invariant0.invariant' ( ^ self) }
-    ensures { [#"../Scratch/src/vsids.rs" 416 14 416 71] UIntSize.to_int (Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))) = UIntSize.to_int (Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( ^ self))) }
+  let rec cfg insert [#"../Scratch/src/vsids.rs" 417 4 417 34] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (v : usize) : ()
+    requires {[#"../Scratch/src/vsids.rs" 413 4 413 40] Invariant0.invariant' ( * self)}
+    requires {[#"../Scratch/src/vsids.rs" 415 15 415 75] Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_heap (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self)))) < Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Heap_Type.heap_indices (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))))}
+    requires {[#"../Scratch/src/vsids.rs" 416 15 416 40] UIntSize.to_int v < Seq.length (ShallowModel1.shallow_model (Scratch_Vsids_Vsids_Type.vsids_decision ( * self)))}
+    ensures { [#"../Scratch/src/vsids.rs" 413 4 413 40] Invariant0.invariant' ( ^ self) }
+    ensures { [#"../Scratch/src/vsids.rs" 414 14 414 71] UIntSize.to_int (Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self))) = UIntSize.to_int (Scratch_Vsids_Heap_Type.heap_num_vars (Scratch_Vsids_Vsids_Type.vsids_order_heap ( ^ self))) }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : ();
@@ -9205,17 +9205,17 @@ module Scratch_Vsids_Impl5_Insert
   BB0 {
     _11 <- Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self_1);
     _12 <- v_2;
-    _10 <- ([#"../Scratch/src/vsids.rs" 420 12 420 38] InHeap0.in_heap _11 _12);
+    _10 <- ([#"../Scratch/src/vsids.rs" 418 12 418 38] InHeap0.in_heap _11 _12);
     goto BB4
   }
   BB1 {
-    _8 <- ([#"../Scratch/src/vsids.rs" 420 11 420 58] false);
+    _8 <- ([#"../Scratch/src/vsids.rs" 418 11 418 58] false);
     goto BB3
   }
   BB2 {
     _15 <- Scratch_Vsids_Vsids_Type.vsids_decision ( * self_1);
     _16 <- v_2;
-    _14 <- ([#"../Scratch/src/vsids.rs" 420 42 420 58] Index0.index _15 _16);
+    _14 <- ([#"../Scratch/src/vsids.rs" 418 42 418 58] Index0.index _15 _16);
     goto BB5
   }
   BB3 {
@@ -9241,7 +9241,7 @@ module Scratch_Vsids_Impl5_Insert
     _18 <- borrow_mut (Scratch_Vsids_Vsids_Type.vsids_order_heap ( * self_1));
     self_1 <- { self_1 with current = (let Scratch_Vsids_Vsids_Type.C_VSIDS a b c d =  * self_1 in Scratch_Vsids_Vsids_Type.C_VSIDS ( ^ _18) b c d) };
     _19 <- v_2;
-    _17 <- ([#"../Scratch/src/vsids.rs" 421 12 421 37] Insert0.insert _18 _19);
+    _17 <- ([#"../Scratch/src/vsids.rs" 419 12 419 37] Insert0.insert _18 _19);
     goto BB7
   }
   BB7 {
@@ -9259,7 +9259,7 @@ module Scratch_Vsids_Impl5_Insert
   }
   
 end
-module Scratch_Vsids_Impl5_TurnOffDecisionForIdx_Interface
+module Scratch_Vsids_Impl4_TurnOffDecisionForIdx_Interface
   use prelude.UIntSize
   use prelude.Borrow
   use seq.Seq
@@ -9273,11 +9273,11 @@ module Scratch_Vsids_Impl5_TurnOffDecisionForIdx_Interface
     val Max0.mAX' = Max0.mAX',
     axiom .
   use Scratch_Vsids_Vsids_Type as Scratch_Vsids_Vsids_Type
-  val turn_off_decision_for_idx [#"../Scratch/src/vsids.rs" 438 4 438 53] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (v : usize) : ()
-    requires {[#"../Scratch/src/vsids.rs" 437 15 437 40] UIntSize.to_int v < Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Vsids_Type.vsids_decision ( * self)))}
+  val turn_off_decision_for_idx [#"../Scratch/src/vsids.rs" 436 4 436 53] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (v : usize) : ()
+    requires {[#"../Scratch/src/vsids.rs" 435 15 435 40] UIntSize.to_int v < Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Vsids_Type.vsids_decision ( * self)))}
     
 end
-module Scratch_Vsids_Impl5_TurnOffDecisionForIdx
+module Scratch_Vsids_Impl4_TurnOffDecisionForIdx
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
@@ -9317,8 +9317,8 @@ module Scratch_Vsids_Impl5_TurnOffDecisionForIdx
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
     type Output0.output = bool,
     val Max0.mAX' = Max0.mAX'
-  let rec cfg turn_off_decision_for_idx [#"../Scratch/src/vsids.rs" 438 4 438 53] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (v : usize) : ()
-    requires {[#"../Scratch/src/vsids.rs" 437 15 437 40] UIntSize.to_int v < Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Vsids_Type.vsids_decision ( * self)))}
+  let rec cfg turn_off_decision_for_idx [#"../Scratch/src/vsids.rs" 436 4 436 53] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (Scratch_Vsids_Vsids_Type.t_vsids)) (v : usize) : ()
+    requires {[#"../Scratch/src/vsids.rs" 435 15 435 40] UIntSize.to_int v < Seq.length (ShallowModel0.shallow_model (Scratch_Vsids_Vsids_Type.vsids_decision ( * self)))}
     
    = [@vc:do_not_keep_trace] [@vc:sp]
   var _0 : ();
@@ -9336,11 +9336,11 @@ module Scratch_Vsids_Impl5_TurnOffDecisionForIdx
     _5 <- borrow_mut (Scratch_Vsids_Vsids_Type.vsids_decision ( * self_1));
     self_1 <- { self_1 with current = (let Scratch_Vsids_Vsids_Type.C_VSIDS a b c d =  * self_1 in Scratch_Vsids_Vsids_Type.C_VSIDS a b c ( ^ _5)) };
     _6 <- v_2;
-    _4 <- ([#"../Scratch/src/vsids.rs" 439 8 439 24] IndexMut0.index_mut _5 _6);
+    _4 <- ([#"../Scratch/src/vsids.rs" 437 8 437 24] IndexMut0.index_mut _5 _6);
     goto BB1
   }
   BB1 {
-    _4 <- { _4 with current = ([#"../Scratch/src/vsids.rs" 439 27 439 32] false) };
+    _4 <- { _4 with current = ([#"../Scratch/src/vsids.rs" 437 27 437 32] false) };
     assume { Resolve0.resolve _4 };
     assume { Resolve1.resolve self_1 };
     _0 <- ();
