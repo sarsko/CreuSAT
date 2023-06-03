@@ -60,11 +60,11 @@ impl Formula {
     #[ensures(match result {
         SatResult::Sat(assn) => { formula_sat_inner(self@, assn@) },
         SatResult::Unsat     => { self.not_satisfiable() },
-        SatResult::Unknown   => { self.invariant() && 0 < self.num_vars@ && self.num_vars@ < usize::MAX@/2 },
+        SatResult::Unknown   => { self.invariant() && 0 < self.num_vars@ && self.num_vars < MAX_NUM_VARS },
         SatResult::Err       => { true },
     })]
     pub fn check_formula_invariant(&self) -> SatResult {
-        if self.num_vars >= usize::MAX / 2 {
+        if self.num_vars >= MAX_NUM_VARS {
             return SatResult::Err;
         }
         if self.clauses.len() == 0 {

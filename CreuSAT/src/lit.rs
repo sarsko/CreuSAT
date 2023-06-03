@@ -11,8 +11,8 @@ use crate::logic::logic_lit::*;
 
 #[derive(Clone, Copy)]
 pub struct Lit {
-    pub idx: usize,
-    pub polarity: bool,
+    pub(crate) idx: usize,
+    pub(crate) polarity: bool,
 }
 
 #[cfg(creusot)]

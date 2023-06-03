@@ -12,6 +12,9 @@ use crate::{
 #[cfg(creusot)]
 use crate::logic::{logic::*, logic_clause::*, logic_formula::*};
 
+// TODO: Have the other places reference this instead of duplicating
+pub const MAX_NUM_VARS: usize = (usize::MAX - 2) / 2;
+
 pub enum SatResult {
     Sat(Vec<AssignedState>),
     Unsat,
@@ -62,12 +65,6 @@ pub struct Solver {
     pub slow: usize,
     pub perm_diff: Vec<usize>,
 }
-/*
-// MicroSat
-if (S->fast > (S->slow / 100) * 125) {                        // If fast average is substantially larger than slow average
-    S->res = 0; S->fast = (S->slow / 100) * 125; restart (S);   // Restart and update the averages
-        if (S->nLemmas > S->maxLemmas) reduceDB (S, 6); } }
-*/
 
 impl Solver {
     #[cfg_attr(feature = "trust_solver", trusted)]
@@ -195,7 +192,7 @@ impl Solver {
     #[maintains((mut w).invariant(mut f))]
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut d).invariant(f.num_vars@))]
-    #[requires(f.num_vars@ < usize::MAX@/2)]
+    #[requires(f.num_vars < MAX_NUM_VARS)]
     #[ensures(f.num_vars@ == (^f).num_vars@)]
     #[ensures(f.equisat(^f))]
     #[ensures(match result {
@@ -218,7 +215,7 @@ impl Solver {
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut w).invariant(mut f))]
     #[maintains((mut d).invariant(f.num_vars@))]
-    #[requires(f.num_vars@ < usize::MAX@/2)]
+    #[requires(f.num_vars < MAX_NUM_VARS)]
     #[ensures(match result {
         Some(false) => { (^f).not_satisfiable() },
         Some(true)  => { true },
@@ -259,7 +256,7 @@ impl Solver {
     #[maintains((mut w).invariant(mut f))]
     #[maintains((mut d).invariant(f.num_vars@))]
     #[requires(d.invariant(f.num_vars@))]
-    #[requires(f.num_vars@ < usize::MAX@/2)]
+    #[requires(f.num_vars < MAX_NUM_VARS)]
     #[ensures(f.num_vars@ == (^f).num_vars@)]
     #[ensures(f.equisat(^f))]
     #[ensures(match result {
@@ -305,7 +302,7 @@ impl Solver {
 
     // OK
     #[cfg_attr(feature = "trust_solver", trusted)]
-    #[requires(formula.num_vars@ < usize::MAX@/2)]
+    #[requires(formula.num_vars < MAX_NUM_VARS)]
     #[requires(formula.invariant())]
     #[requires(decisions.invariant(formula.num_vars@))]
     #[requires(trail.invariant(*formula))]

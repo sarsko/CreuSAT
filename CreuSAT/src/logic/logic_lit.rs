@@ -14,6 +14,7 @@ pub fn idx_in_logic(idx: Int, c: Seq<Lit>) -> bool {
     }
 }
 
+
 // Logic
 impl Lit {
     #[logic]
