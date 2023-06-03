@@ -10,6 +10,7 @@ mod formula;
 mod lit;
 mod scratch;
 mod restart;
+mod vsids;
 
 #[cfg(creusot)]
 mod logic;

@@ -47,7 +47,7 @@ module CreusotContracts_Model_Impl1_ShallowModel
     type self = t,
     type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy
   function shallow_model (self : t) : ShallowModelTy0.shallowModelTy =
-    [#"../CreuSAT/src/unit_prop.rs" 284 76 284 99] ShallowModel0.shallow_model self
+    [#"../CreuSAT/src/unit_prop.rs" 284 77 284 100] ShallowModel0.shallow_model self
   val shallow_model (self : t) : ShallowModelTy0.shallowModelTy
     ensures { result = shallow_model self }
     
@@ -192,8 +192,8 @@ module Alloc_Vec_Impl13_Index_Interface
     type t = Alloc_Vec_Vec_Type.t_vec t a,
     type ShallowModelTy0.shallowModelTy = Seq.seq t
   val index (self : Alloc_Vec_Vec_Type.t_vec t a) (index : i) : Output0.output
-    requires {[#"../CreuSAT/src/unit_prop.rs" 137 34 137 53] InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
-    ensures { [#"../CreuSAT/src/unit_prop.rs" 137 82 138 1] HasValue0.has_value index (ShallowModel0.shallow_model self) result }
+    requires {[#"../CreuSAT/src/unit_prop.rs" 137 35 137 54] InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
+    ensures { [#"../CreuSAT/src/unit_prop.rs" 137 83 138 2] HasValue0.has_value index (ShallowModel0.shallow_model self) result }
     
 end
 module Core_Num_Impl11_Max_Stub
@@ -226,7 +226,7 @@ module CreusotContracts_Std1_Vec_Impl0_ShallowModel_Interface
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max_Stub as Max0
   function shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
-  axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . [#"../CreuSAT/src/unit_prop.rs" 60 19 61 3] Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
+  axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . [#"../CreuSAT/src/unit_prop.rs" 60 20 61 4] Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
 end
 module CreusotContracts_Std1_Vec_Impl0_ShallowModel
   type t
@@ -240,7 +240,7 @@ module CreusotContracts_Std1_Vec_Impl0_ShallowModel
   val shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
     ensures { result = shallow_model self }
     
-  axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . [#"../CreuSAT/src/unit_prop.rs" 60 19 61 3] Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
+  axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . [#"../CreuSAT/src/unit_prop.rs" 60 20 61 4] Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
 end
 module CreuSat_Logic_LogicAssignments_Impl0_ShallowModel_Stub
   use seq.Seq
@@ -299,7 +299,7 @@ module CreusotContracts_Std1_Slice_Impl5_InBounds
   use prelude.UIntSize
   use seq.Seq
   predicate in_bounds [@inline:trivial] (self : usize) (seq : Seq.seq t) =
-    [#"../CreuSAT/src/solver.rs" 334 41 334 58] UIntSize.to_int self < Seq.length seq
+    [#"../CreuSAT/src/solver.rs" 334 42 334 59] UIntSize.to_int self < Seq.length seq
   val in_bounds [@inline:trivial] (self : usize) (seq : Seq.seq t) : bool
     ensures { result = in_bounds self seq }
     
@@ -324,7 +324,7 @@ module CreusotContracts_Std1_Slice_Impl5_HasValue
   use prelude.UIntSize
   use seq.Seq
   predicate has_value [@inline:trivial] (self : usize) (seq : Seq.seq t) (out : t) =
-    [#"../CreuSAT/src/solver.rs" 344 10 344 27] Seq.get seq (UIntSize.to_int self) = out
+    [#"../CreuSAT/src/solver.rs" 344 11 344 28] Seq.get seq (UIntSize.to_int self) = out
   val has_value [@inline:trivial] (self : usize) (seq : Seq.seq t) (out : t) : bool
     ensures { result = has_value self seq out }
     
@@ -352,8 +352,8 @@ module CreuSat_Assignments_Impl0_Index
   use prelude.UIntSize
   use seq.Seq
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
     type t = uint8,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -437,7 +437,7 @@ module CreusotContracts_Model_Impl3_ShallowModel
     type self = t,
     type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy
   function shallow_model (self : borrowed t) : ShallowModelTy0.shallowModelTy =
-    [#"../CreuSAT/src/unit_prop.rs" 292 39 293 22] ShallowModel0.shallow_model ( * self)
+    [#"../CreuSAT/src/unit_prop.rs" 293 0 293 23] ShallowModel0.shallow_model ( * self)
   val shallow_model (self : borrowed t) : ShallowModelTy0.shallowModelTy
     ensures { result = shallow_model self }
     
@@ -456,7 +456,7 @@ module CreusotContracts_Resolve_Impl1_Resolve
   type t
   use prelude.Borrow
   predicate resolve (self : borrowed t) =
-    [#"../CreuSAT/src/util.rs" 9 19 10 3]  ^ self =  * self
+    [#"../CreuSAT/src/util.rs" 9 20 10 4]  ^ self =  * self
   val resolve (self : borrowed t) : bool
     ensures { result = resolve self }
     
@@ -523,11 +523,11 @@ module Alloc_Vec_Impl14_IndexMut_Interface
     type t = Alloc_Vec_Vec_Type.t_vec t a,
     type ShallowModelTy0.shallowModelTy = Seq.seq t
   val index_mut (self : borrowed (Alloc_Vec_Vec_Type.t_vec t a)) (index : i) : borrowed Output0.output
-    requires {[#"../CreuSAT/src/unit_prop.rs" 130 24 130 43] InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
-    ensures { [#"../CreuSAT/src/unit_prop.rs" 131 1 131 29] HasValue0.has_value index (ShallowModel0.shallow_model self) ( * result) }
-    ensures { [#"../CreuSAT/src/unit_prop.rs" 132 25 132 56] HasValue0.has_value index (ShallowModel1.shallow_model ( ^ self)) ( ^ result) }
-    ensures { [#"../CreuSAT/src/unit_prop.rs" 133 10 133 46] ResolveElswhere0.resolve_elswhere index (ShallowModel0.shallow_model self) (ShallowModel1.shallow_model ( ^ self)) }
-    ensures { [#"../CreuSAT/src/unit_prop.rs" 134 15 134 44] Seq.length (ShallowModel1.shallow_model ( ^ self)) = Seq.length (ShallowModel0.shallow_model self) }
+    requires {[#"../CreuSAT/src/unit_prop.rs" 130 25 130 44] InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
+    ensures { [#"../CreuSAT/src/unit_prop.rs" 131 2 131 30] HasValue0.has_value index (ShallowModel0.shallow_model self) ( * result) }
+    ensures { [#"../CreuSAT/src/unit_prop.rs" 132 26 132 57] HasValue0.has_value index (ShallowModel1.shallow_model ( ^ self)) ( ^ result) }
+    ensures { [#"../CreuSAT/src/unit_prop.rs" 133 11 133 47] ResolveElswhere0.resolve_elswhere index (ShallowModel0.shallow_model self) (ShallowModel1.shallow_model ( ^ self)) }
+    ensures { [#"../CreuSAT/src/unit_prop.rs" 134 16 135 0] Seq.length (ShallowModel1.shallow_model ( ^ self)) = Seq.length (ShallowModel0.shallow_model self) }
     
 end
 module CreusotContracts_Std1_Slice_Impl5_ResolveElswhere_Stub
@@ -550,7 +550,7 @@ module CreusotContracts_Std1_Slice_Impl5_ResolveElswhere
   use prelude.UIntSize
   use seq.Seq
   predicate resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t) =
-    [#"../CreuSAT/src/solver.rs" 346 93 347 81] forall i : int . 0 <= i /\ i <> UIntSize.to_int self /\ i < Seq.length old' -> Seq.get old' i = Seq.get fin i
+    [#"../CreuSAT/src/solver.rs" 346 94 347 82] forall i : int . 0 <= i /\ i <> UIntSize.to_int self /\ i < Seq.length old' -> Seq.get old' i = Seq.get fin i
   val resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t) : bool
     ensures { result = resolve_elswhere self old' fin }
     
@@ -587,9 +587,9 @@ module CreuSat_Assignments_Impl1_IndexMut
     type t = uint8
   clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
     type t = uint8
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
     type t = uint8,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -679,7 +679,7 @@ module Alloc_Vec_Impl1_Len_Interface
     type t = Alloc_Vec_Vec_Type.t_vec t a,
     type ShallowModelTy0.shallowModelTy = Seq.seq t
   val len (self : Alloc_Vec_Vec_Type.t_vec t a) : usize
-    ensures { [#"../CreuSAT/src/unit_prop.rs" 84 34 85 17] UIntSize.to_int result = Seq.length (ShallowModel0.shallow_model self) }
+    ensures { [#"../CreuSAT/src/unit_prop.rs" 84 35 85 18] UIntSize.to_int result = Seq.length (ShallowModel0.shallow_model self) }
     
 end
 module CreuSat_Assignments_Impl2_Len_Interface
@@ -704,8 +704,8 @@ module CreuSat_Assignments_Impl2_Len
   use prelude.UInt8
   use seq.Seq
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
     type t = uint8,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -1914,8 +1914,8 @@ module Alloc_Vec_FromElem_Interface
     val Max0.mAX' = Max0.mAX',
     axiom .
   val from_elem (elem : t) (n : usize) : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)
-    ensures { [#"../CreuSAT/src/unit_prop.rs" 154 5 154 24] Seq.length (ShallowModel0.shallow_model result) = UIntSize.to_int n }
-    ensures { [#"../CreuSAT/src/unit_prop.rs" 154 39 156 3] forall i : int . 0 <= i /\ i < UIntSize.to_int n -> IndexLogic0.index_logic result i = elem }
+    ensures { [#"../CreuSAT/src/unit_prop.rs" 154 6 154 25] Seq.length (ShallowModel0.shallow_model result) = UIntSize.to_int n }
+    ensures { [#"../CreuSAT/src/unit_prop.rs" 154 40 156 4] forall i : int . 0 <= i /\ i < UIntSize.to_int n -> IndexLogic0.index_logic result i = elem }
     
 end
 module CreuSat_Assignments_Impl2_New_Interface
@@ -2076,9 +2076,9 @@ module CreuSat_Clause_Impl3_Clone
   use prelude.Int
   use prelude.UInt32
   use prelude.UIntSize
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use CreuSat_Lit_Lit_Type as CreuSat_Lit_Lit_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Alloc_Vec_Impl11_Clone_Interface as Clone3 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global
@@ -2155,9 +2155,9 @@ module CreuSat_Clause_Impl0_Index
   use prelude.UIntSize
   use seq.Seq
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use CreuSat_Lit_Lit_Type as CreuSat_Lit_Lit_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -2180,10 +2180,10 @@ module CreuSat_Clause_Impl0_Index
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Lit_Lit_Type.t_lit,
     function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = CreuSat_Lit_Lit_Type.t_lit
+    predicate HasValue0.has_value = HasValue0.has_value
   clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel0 with
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type ShallowModelTy0.shallowModelTy = Seq.seq (CreuSat_Lit_Lit_Type.t_lit),
@@ -2250,9 +2250,9 @@ module CreuSat_Clause_Impl1_IndexMut
     type t = CreuSat_Lit_Lit_Type.t_lit
   clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
     type t = CreuSat_Lit_Lit_Type.t_lit
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -2269,12 +2269,12 @@ module CreuSat_Clause_Impl1_IndexMut
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Lit_Lit_Type.t_lit,
     function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
     function ShallowModel1.shallow_model = ShallowModel2.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-    type Output0.output = CreuSat_Lit_Lit_Type.t_lit,
     val Max0.mAX' = Max0.mAX'
   use CreuSat_Clause_Clause_Type as CreuSat_Clause_Clause_Type
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
@@ -2350,9 +2350,9 @@ module CreuSat_Clause_Impl2_Len
   use prelude.Borrow
   use seq.Seq
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use CreuSat_Lit_Lit_Type as CreuSat_Lit_Lit_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -2860,7 +2860,7 @@ module CreusotContracts_Std1_Slice_Impl0_ShallowModel_Interface
   use prelude.Slice
   clone Core_Num_Impl11_Max_Stub as Max0
   function shallow_model (self : slice t) : Seq.seq t
-  axiom shallow_model_spec : forall self : slice t . ([#"../CreuSAT/src/solver.rs" 289 10 289 37] shallow_model self = Slice.id self) && ([#"../CreuSAT/src/solver.rs" 287 44 288 21] Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX')
+  axiom shallow_model_spec : forall self : slice t . ([#"../CreuSAT/src/solver.rs" 289 11 289 38] shallow_model self = Slice.id self) && ([#"../CreuSAT/src/solver.rs" 287 45 288 22] Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX')
 end
 module CreusotContracts_Std1_Slice_Impl0_ShallowModel
   type t
@@ -2873,7 +2873,7 @@ module CreusotContracts_Std1_Slice_Impl0_ShallowModel
   val shallow_model (self : slice t) : Seq.seq t
     ensures { result = shallow_model self }
     
-  axiom shallow_model_spec : forall self : slice t . ([#"../CreuSAT/src/solver.rs" 289 10 289 37] shallow_model self = Slice.id self) && ([#"../CreuSAT/src/solver.rs" 287 44 288 21] Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX')
+  axiom shallow_model_spec : forall self : slice t . ([#"../CreuSAT/src/solver.rs" 289 11 289 38] shallow_model self = Slice.id self) && ([#"../CreuSAT/src/solver.rs" 287 45 288 22] Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX')
 end
 module Alloc_Vec_Impl10_DerefMut_Interface
   type t
@@ -2900,8 +2900,8 @@ module Alloc_Vec_Impl10_DerefMut_Interface
     type t = slice t,
     type ShallowModelTy0.shallowModelTy = Seq.seq t
   val deref_mut (self : borrowed (Alloc_Vec_Vec_Type.t_vec t a)) : borrowed (slice t)
-    ensures { [#"../CreuSAT/src/unit_prop.rs" 150 36 150 52] ShallowModel0.shallow_model result = ShallowModel1.shallow_model self }
-    ensures { [#"../CreuSAT/src/unit_prop.rs" 151 14 151 36] ShallowModel2.shallow_model ( ^ result) = ShallowModel3.shallow_model ( ^ self) }
+    ensures { [#"../CreuSAT/src/unit_prop.rs" 150 37 150 53] ShallowModel0.shallow_model result = ShallowModel1.shallow_model self }
+    ensures { [#"../CreuSAT/src/unit_prop.rs" 151 15 151 37] ShallowModel2.shallow_model ( ^ result) = ShallowModel3.shallow_model ( ^ self) }
     
 end
 module Core_Slice_Impl0_Swap_Interface
@@ -2922,9 +2922,9 @@ module Core_Slice_Impl0_Swap_Interface
     type t = slice t,
     type ShallowModelTy0.shallowModelTy = Seq.seq t
   val swap (self : borrowed (slice t)) (a : usize) (b : usize) : ()
-    requires {[#"../CreuSAT/src/trail.rs" 65 15 65 31] UIntSize.to_int a < Seq.length (ShallowModel0.shallow_model self)}
-    requires {[#"../CreuSAT/src/trail.rs" 66 16 67 11] UIntSize.to_int b < Seq.length (ShallowModel0.shallow_model self)}
-    ensures { [#"../CreuSAT/src/trail.rs" 67 22 68 38] Permut.exchange (ShallowModel1.shallow_model ( ^ self)) (ShallowModel0.shallow_model self) (UIntSize.to_int a) (UIntSize.to_int b) }
+    requires {[#"../CreuSAT/src/trail.rs" 65 16 65 32] UIntSize.to_int a < Seq.length (ShallowModel0.shallow_model self)}
+    requires {[#"../CreuSAT/src/trail.rs" 66 17 67 12] UIntSize.to_int b < Seq.length (ShallowModel0.shallow_model self)}
+    ensures { [#"../CreuSAT/src/trail.rs" 67 23 68 39] Permut.exchange (ShallowModel1.shallow_model ( ^ self)) (ShallowModel0.shallow_model self) (UIntSize.to_int a) (UIntSize.to_int b) }
     
 end
 module CreuSat_Clause_Impl2_MoveToEnd_Interface
@@ -2972,8 +2972,8 @@ module CreuSat_Clause_Impl2_MoveToEnd
     type t = CreuSat_Lit_Lit_Type.t_lit,
     val Max0.mAX' = Max0.mAX',
     axiom .
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -3117,7 +3117,7 @@ module Alloc_Vec_Impl1_Pop_Interface
     axiom .
   use Core_Option_Option_Type as Core_Option_Option_Type
   val pop (self : borrowed (Alloc_Vec_Vec_Type.t_vec t a)) : Core_Option_Option_Type.t_option t
-    ensures { [#"../CreuSAT/src/unit_prop.rs" 88 36 93 31] match (result) with
+    ensures { [#"../CreuSAT/src/unit_prop.rs" 88 37 93 32] match (result) with
       | Core_Option_Option_Type.C_Some t -> ShallowModel0.shallow_model ( ^ self) = SeqExt.subsequence (ShallowModel1.shallow_model self) 0 (Seq.length (ShallowModel1.shallow_model self) - 1) /\ ShallowModel1.shallow_model self = Seq.snoc (ShallowModel0.shallow_model ( ^ self)) t
       | Core_Option_Option_Type.C_None ->  * self =  ^ self /\ Seq.length (ShallowModel1.shallow_model self) = 0
       end }
@@ -3162,9 +3162,9 @@ module CreuSat_Clause_Impl2_RemoveFromClause
     function IndexLogic0.index_logic = IndexLogic0.index_logic
   clone CreuSat_Logic_LogicClause_VarsInRangeInner as VarsInRangeInner0 with
     predicate Invariant0.invariant' = Invariant1.invariant'
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -3706,9 +3706,9 @@ module CreuSat_Clause_Impl2_UnitAndUnset
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner1 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel4 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -4067,9 +4067,9 @@ module CreuSat_Clause_Impl2_SwapLitsInClause
     function IndexLogic0.index_logic = IndexLogic0.index_logic
   clone CreuSat_Logic_LogicLit_Impl1_Invariant as Invariant1 with
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel4 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -4624,8 +4624,8 @@ module CreuSat_ConflictAnalysis_IdxIn
   clone CreuSat_Logic_LogicLit_Impl0_IndexLogic as IndexLogic0
   clone CreuSat_Logic_LogicLit_Impl1_Invariant as Invariant0 with
     function IndexLogic0.index_logic = IndexLogic0.index_logic
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
     type t = bool,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -5085,8 +5085,8 @@ module CreuSat_Logic_LogicClause_Impl2_ClauseIsSeen
   clone CreuSat_Logic_LogicLit_IdxInLogic_Stub as IdxInLogic0
   use CreuSat_Clause_Clause_Type as CreuSat_Clause_Clause_Type
   clone CreuSat_Logic_LogicClause_Impl0_ShallowModel_Stub as ShallowModel1
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = bool,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -5180,7 +5180,7 @@ module CreusotContracts_Ghost_Impl1_ShallowModel
     type t = t,
     type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy
   function shallow_model (self : Ghost.ghost_ty t) : ShallowModelTy0.shallowModelTy =
-    [#"../CreuSAT/src/unit_prop.rs" 211 51 211 79] ShallowModel0.shallow_model (Ghost.inner self)
+    [#"../CreuSAT/src/unit_prop.rs" 211 52 211 80] ShallowModel0.shallow_model (Ghost.inner self)
   val shallow_model (self : Ghost.ghost_ty t) : ShallowModelTy0.shallowModelTy
     ensures { result = shallow_model self }
     
@@ -5412,9 +5412,9 @@ module CreuSat_Logic_LogicConflictAnalysis_LemmaResolventOfEquisatExtensionIsEqu
     function IndexLogic0.index_logic = IndexLogic0.index_logic
   clone CreuSat_Logic_LogicLit_Impl1_Invariant as Invariant1 with
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel1 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -5494,7 +5494,7 @@ module Alloc_Vec_Impl1_Push_Interface
     val Max0.mAX' = Max0.mAX',
     axiom .
   val push (self : borrowed (Alloc_Vec_Vec_Type.t_vec t a)) (value : t) : ()
-    ensures { [#"../CreuSAT/src/unit_prop.rs" 87 1 87 26] ShallowModel0.shallow_model ( ^ self) = Seq.snoc (ShallowModel1.shallow_model self) value }
+    ensures { [#"../CreuSAT/src/unit_prop.rs" 87 2 87 27] ShallowModel0.shallow_model ( ^ self) = Seq.snoc (ShallowModel1.shallow_model self) value }
     
 end
 module CreuSat_Trail_Impl0_DecisionLevel_Interface
@@ -5521,9 +5521,9 @@ module CreuSat_Trail_Impl0_DecisionLevel
   use prelude.Borrow
   use seq.Seq
   use seq.Seq
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
     type t = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -5677,9 +5677,9 @@ module CreuSat_ConflictAnalysis_Resolve
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel16 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -6556,10 +6556,10 @@ module CreuSat_ConflictAnalysis_ChooseLiteral
     type t = CreuSat_Trail_Step_Type.t_step,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Trail_Step_Type.t_step,
     function ShallowModel0.shallow_model = ShallowModel9.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = CreuSat_Trail_Step_Type.t_step
+    predicate HasValue0.has_value = HasValue0.has_value
   clone CreuSat_Logic_LogicLit_Impl1_IsOpp as IsOpp0 with
     function IndexLogic0.index_logic = IndexLogic0.index_logic,
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic
@@ -6974,7 +6974,7 @@ module CreusotContracts_Std1_Vec_Impl10_Resolve
     val Max0.mAX' = Max0.mAX',
     axiom .
   predicate resolve (self : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)) =
-    [#"../CreuSAT/src/unit_prop.rs" 76 21 76 98] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) -> Resolve0.resolve (IndexLogic0.index_logic self i)
+    [#"../CreuSAT/src/unit_prop.rs" 76 22 76 99] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) -> Resolve0.resolve (IndexLogic0.index_logic self i)
   val resolve (self : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)) : bool
     ensures { result = resolve self }
     
@@ -6991,7 +6991,7 @@ module Alloc_Vec_Impl0_New_Interface
     val Max0.mAX' = Max0.mAX',
     axiom .
   val new (_1' : ()) : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)
-    ensures { [#"../CreuSAT/src/unit_prop.rs" 77 38 77 56] Seq.length (ShallowModel0.shallow_model result) = 0 }
+    ensures { [#"../CreuSAT/src/unit_prop.rs" 77 39 77 57] Seq.length (ShallowModel0.shallow_model result) = 0 }
     
 end
 module CreuSat_Formula_Impl0_Index_Interface
@@ -7015,9 +7015,9 @@ module CreuSat_Formula_Impl0_Index
   use prelude.UIntSize
   use seq.Seq
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use CreuSat_Clause_Clause_Type as CreuSat_Clause_Clause_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -7040,10 +7040,10 @@ module CreuSat_Formula_Impl0_Index
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Clause_Clause_Type.t_clause,
     function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = CreuSat_Clause_Clause_Type.t_clause
+    predicate HasValue0.has_value = HasValue0.has_value
   clone CreusotContracts_Model_Impl1_ShallowModel as ShallowModel0 with
     type t = CreuSat_Formula_Formula_Type.t_formula,
     type ShallowModelTy0.shallowModelTy = (Seq.seq (CreuSat_Clause_Clause_Type.t_clause), int),
@@ -7215,8 +7215,8 @@ module CreuSat_Util_Sort
     type t = (usize, usize)
   clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
     type t = (usize, usize)
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
     type t = (usize, usize),
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -7474,9 +7474,9 @@ module CreuSat_Decision_Impl2_Rescore
     type t = CreuSat_Decision_Node_Type.t_node
   clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
     type t = CreuSat_Decision_Node_Type.t_node
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
     type t = CreuSat_Decision_Node_Type.t_node,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -7499,22 +7499,22 @@ module CreuSat_Decision_Impl2_Rescore
     type t = CreuSat_Decision_Node_Type.t_node,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Decision_Node_Type.t_node,
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = CreuSat_Decision_Node_Type.t_node
+    predicate HasValue0.has_value = HasValue0.has_value
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
     type t = CreuSat_Decision_Node_Type.t_node
   clone Alloc_Vec_Impl14_IndexMut_Interface as IndexMut0 with
     type t = CreuSat_Decision_Node_Type.t_node,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Decision_Node_Type.t_node,
     function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
     function ShallowModel1.shallow_model = ShallowModel0.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-    type Output0.output = CreuSat_Decision_Node_Type.t_node,
     val Max0.mAX' = Max0.mAX'
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with
     type t = CreuSat_Decision_Node_Type.t_node,
@@ -7690,9 +7690,9 @@ module CreuSat_Decision_Impl2_MoveToFront
     type t = CreuSat_Decision_Node_Type.t_node
   clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
     type t = CreuSat_Decision_Node_Type.t_node
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
     type t = CreuSat_Decision_Node_Type.t_node,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -7719,12 +7719,12 @@ module CreuSat_Decision_Impl2_MoveToFront
     type t = CreuSat_Decision_Node_Type.t_node,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Decision_Node_Type.t_node,
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
     function ShallowModel1.shallow_model = ShallowModel0.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-    type Output0.output = CreuSat_Decision_Node_Type.t_node,
     val Max0.mAX' = Max0.mAX'
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
     type t = CreuSat_Decision_Decisions_Type.t_decisions
@@ -7942,7 +7942,7 @@ end
 module CreusotContracts_Resolve_Impl2_Resolve
   type t
   predicate resolve (self : t) =
-    [#"../CreuSAT/src/util.rs" 14 10 14 14] true
+    [#"../CreuSAT/src/util.rs" 14 11 14 15] true
   val resolve (self : t) : bool
     ensures { result = resolve self }
     
@@ -7965,7 +7965,7 @@ module CreusotContracts_Resolve_Impl0_Resolve
   clone CreusotContracts_Resolve_Resolve_Resolve_Stub as Resolve0 with
     type self = t1
   predicate resolve (self : (t1, t2)) =
-    [#"../CreuSAT/src/util.rs" 5 15 7 33] Resolve0.resolve (let (a, _) = self in a) /\ Resolve1.resolve (let (_, a) = self in a)
+    [#"../CreuSAT/src/util.rs" 5 16 7 34] Resolve0.resolve (let (a, _) = self in a) /\ Resolve1.resolve (let (_, a) = self in a)
   val resolve (self : (t1, t2)) : bool
     ensures { result = resolve self }
     
@@ -8175,10 +8175,10 @@ module CreuSat_Decision_Impl2_IncrementAndMove
     type t = CreuSat_Decision_Node_Type.t_node,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Decision_Node_Type.t_node,
     function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
     predicate InBounds0.in_bounds = InBounds1.in_bounds,
-    predicate HasValue0.has_value = HasValue1.has_value,
-    type Output0.output = CreuSat_Decision_Node_Type.t_node
+    predicate HasValue0.has_value = HasValue1.has_value
   clone Alloc_Vec_Impl13_Index_Interface as Index0 with
     type t = usize,
     type i = usize,
@@ -8477,9 +8477,9 @@ module CreuSat_ConflictAnalysis_AnalyzeConflict
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel9 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -8767,10 +8767,10 @@ module CreuSat_ConflictAnalysis_AnalyzeConflict
     type t = CreuSat_Trail_Step_Type.t_step,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Trail_Step_Type.t_step,
     function ShallowModel0.shallow_model = ShallowModel10.shallow_model,
     predicate InBounds0.in_bounds = InBounds2.in_bounds,
-    predicate HasValue0.has_value = HasValue2.has_value,
-    type Output0.output = CreuSat_Trail_Step_Type.t_step
+    predicate HasValue0.has_value = HasValue2.has_value
   clone CreusotContracts_Std1_Vec_Impl10_Resolve as Resolve4 with
     type t = bool,
     function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
@@ -9592,9 +9592,9 @@ module CreuSat_ConflictAnalysis_ResolveEmptyClause
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel9 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -9855,10 +9855,10 @@ module CreuSat_ConflictAnalysis_ResolveEmptyClause
     type t = CreuSat_Trail_Step_Type.t_step,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Trail_Step_Type.t_step,
     function ShallowModel0.shallow_model = ShallowModel7.shallow_model,
     predicate InBounds0.in_bounds = InBounds1.in_bounds,
-    predicate HasValue0.has_value = HasValue1.has_value,
-    type Output0.output = CreuSat_Trail_Step_Type.t_step
+    predicate HasValue0.has_value = HasValue1.has_value
   clone CreusotContracts_Std1_Vec_Impl10_Resolve as Resolve3 with
     type t = usize,
     function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
@@ -10496,12 +10496,12 @@ module CreuSat_Decision_Impl2_MakeLinkedList
     type t = CreuSat_Decision_Node_Type.t_node,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Decision_Node_Type.t_node,
     function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
     predicate InBounds0.in_bounds = InBounds1.in_bounds,
     predicate HasValue0.has_value = HasValue1.has_value,
     function ShallowModel1.shallow_model = ShallowModel1.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-    type Output0.output = CreuSat_Decision_Node_Type.t_node,
     val Max0.mAX' = Max0.mAX'
   clone Alloc_Vec_Impl13_Index_Interface as Index0 with
     type t = usize,
@@ -10979,8 +10979,8 @@ module CreuSat_Util_SortReverse
     type t = (usize, usize)
   clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
     type t = (usize, usize)
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
     type t = (usize, usize),
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -11898,10 +11898,10 @@ module CreuSat_Decision_Impl2_GetNext
     type t = CreuSat_Decision_Node_Type.t_node,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Decision_Node_Type.t_node,
     function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = CreuSat_Decision_Node_Type.t_node
+    predicate HasValue0.has_value = HasValue0.has_value
   clone CreuSat_Assignments_Impl0_Index_Interface as Index0 with
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model
   clone CreuSat_Logic_Logic_Unset as Unset0
@@ -12127,9 +12127,9 @@ module CreuSat_Formula_Impl1_IndexMut
     type t = CreuSat_Clause_Clause_Type.t_clause
   clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
     type t = CreuSat_Clause_Clause_Type.t_clause
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -12145,12 +12145,12 @@ module CreuSat_Formula_Impl1_IndexMut
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Clause_Clause_Type.t_clause,
     function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
     function ShallowModel1.shallow_model = ShallowModel2.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-    type Output0.output = CreuSat_Clause_Clause_Type.t_clause,
     val Max0.mAX' = Max0.mAX'
   use CreuSat_Formula_Formula_Type as CreuSat_Formula_Formula_Type
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
@@ -12270,9 +12270,9 @@ module CreuSat_Formula_Impl2_CheckFormulaInvariant
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner1 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel6 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -12343,10 +12343,10 @@ module CreuSat_Formula_Impl2_CheckFormulaInvariant
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Clause_Clause_Type.t_clause,
     function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = CreuSat_Clause_Clause_Type.t_clause
+    predicate HasValue0.has_value = HasValue0.has_value
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel1 with
     type t = uint8,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -12852,10 +12852,10 @@ module CreuSat_Formula_Impl2_IsClauseSat
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Clause_Clause_Type.t_clause,
     function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = CreuSat_Clause_Clause_Type.t_clause
+    predicate HasValue0.has_value = HasValue0.has_value
   clone CreuSat_Logic_LogicClause_Impl2_Sat as Sat0 with
     function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
     predicate SatInner0.sat_inner = SatInner0.sat_inner
@@ -13329,9 +13329,9 @@ module CreuSat_Watches_Impl0_AddWatcher
   use seq.Seq
   use CreuSat_Watches_Watcher_Type as CreuSat_Watches_Watcher_Type
   use seq.Seq
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel5 with
     type t = CreuSat_Watches_Watcher_Type.t_watcher,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -13392,12 +13392,12 @@ module CreuSat_Watches_Impl0_AddWatcher
     type t = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
     function ShallowModel1.shallow_model = ShallowModel1.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     val Max0.mAX' = Max1.mAX'
   clone CreuSat_Logic_LogicLit_Impl0_ToNegWatchidxLogic as ToNegWatchidxLogic0 with
     function IndexLogic0.index_logic = IndexLogic0.index_logic,
@@ -13540,9 +13540,9 @@ module CreuSat_Formula_Impl2_AddClause
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel8 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -13955,9 +13955,9 @@ module CreuSat_Formula_Impl2_AddUnwatchedClause
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel8 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -14294,9 +14294,9 @@ module CreuSat_Formula_Impl2_AddUnit
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel7 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -14834,9 +14834,9 @@ module CreuSat_Watches_Impl0_Unwatch
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel15 with
     type t = uint8,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -15014,21 +15014,21 @@ module CreuSat_Watches_Impl0_Unwatch
     type t = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     function ShallowModel0.shallow_model = ShallowModel10.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
     function ShallowModel1.shallow_model = ShallowModel2.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     val Max0.mAX' = Max1.mAX'
   clone Alloc_Vec_Impl13_Index_Interface as Index1 with
     type t = CreuSat_Watches_Watcher_Type.t_watcher,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Watches_Watcher_Type.t_watcher,
     function ShallowModel0.shallow_model = ShallowModel9.shallow_model,
     predicate InBounds0.in_bounds = InBounds1.in_bounds,
-    predicate HasValue0.has_value = HasValue1.has_value,
-    type Output0.output = CreuSat_Watches_Watcher_Type.t_watcher
+    predicate HasValue0.has_value = HasValue1.has_value
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with
     type t = CreuSat_Watches_Watcher_Type.t_watcher,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -15037,10 +15037,10 @@ module CreuSat_Watches_Impl0_Unwatch
     type t = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     function ShallowModel0.shallow_model = ShallowModel8.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global)
+    predicate HasValue0.has_value = HasValue0.has_value
   clone Core_Usize_Max as Max0
   clone CreuSat_Lit_Impl2_ToNegWatchidx_Interface as ToNegWatchidx0 with
     function IndexLogic0.index_logic = IndexLogic0.index_logic,
@@ -15352,9 +15352,9 @@ module CreuSat_Formula_Impl2_DeleteClause
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel7 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -15507,12 +15507,12 @@ module CreuSat_Formula_Impl2_DeleteClause
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Clause_Clause_Type.t_clause,
     function ShallowModel0.shallow_model = ShallowModel10.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
     function ShallowModel1.shallow_model = ShallowModel0.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-    type Output0.output = CreuSat_Clause_Clause_Type.t_clause,
     val Max0.mAX' = Max1.mAX'
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve1 with
     type t = CreuSat_Formula_Formula_Type.t_formula
@@ -15559,10 +15559,10 @@ module CreuSat_Formula_Impl2_DeleteClause
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Clause_Clause_Type.t_clause,
     function ShallowModel0.shallow_model = ShallowModel8.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = CreuSat_Clause_Clause_Type.t_clause
+    predicate HasValue0.has_value = HasValue0.has_value
   clone CreuSat_Logic_LogicFormula_Impl1_Equisat as Equisat0 with
     predicate EventuallySatComplete0.eventually_sat_complete = EventuallySatComplete0.eventually_sat_complete
   let rec cfg delete_clause [#"../CreuSAT/src/formula.rs" 211 4 211 78] [@cfg:stackify] [@cfg:subregion_analysis] (self : borrowed (CreuSat_Formula_Formula_Type.t_formula)) (cref : usize) (watches : borrowed (CreuSat_Watches_Watches_Type.t_watches)) (t : CreuSat_Trail_Trail_Type.t_trail) : ()
@@ -15938,10 +15938,10 @@ module CreuSat_Formula_Impl2_DeleteClauses
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Clause_Clause_Type.t_clause,
     function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = CreuSat_Clause_Clause_Type.t_clause
+    predicate HasValue0.has_value = HasValue0.has_value
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -16177,9 +16177,9 @@ module CreuSat_Formula_Impl2_SimplifyFormula
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel9 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -16437,9 +16437,9 @@ module CreuSat_Formula_Impl2_ReduceDb
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel12 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -16640,10 +16640,10 @@ module CreuSat_Formula_Impl2_ReduceDb
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Clause_Clause_Type.t_clause,
     function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = CreuSat_Clause_Clause_Type.t_clause
+    predicate HasValue0.has_value = HasValue0.has_value
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -18092,9 +18092,9 @@ module CreuSat_Logic_LogicLit_Impl1_IdxInTrail
   clone Core_Num_Impl11_Max_Stub as Max0
   use CreuSat_Lit_Lit_Type as CreuSat_Lit_Lit_Type
   clone CreuSat_Logic_LogicLit_Impl0_IndexLogic_Stub as IndexLogic0
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use CreuSat_Trail_Step_Type as CreuSat_Trail_Step_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = CreuSat_Trail_Step_Type.t_step,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -18777,8 +18777,8 @@ module CreuSat_Logic_LogicWatches_WatchesCrefsInRange
   use CreuSat_Formula_Formula_Type as CreuSat_Formula_Formula_Type
   use CreuSat_Watches_Watcher_Type as CreuSat_Watches_Watcher_Type
   clone CreuSat_Logic_LogicWatches_WatcherCrefsInRange_Stub as WatcherCrefsInRange0
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
     type t = CreuSat_Watches_Watcher_Type.t_watcher,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -19005,9 +19005,9 @@ module CreuSat_Solver_GetAssertingLevel
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel10 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -19331,10 +19331,10 @@ module CreuSat_Solver_Impl0_New
   use prelude.UIntSize
   use seq.Seq
   use seq.Seq
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl11_Max as Max0
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use CreuSat_Clause_Clause_Type as CreuSat_Clause_Clause_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl11_Max as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -20276,10 +20276,10 @@ module CreuSat_Trail_Impl0_BacktrackTo
     type t = CreuSat_Decision_Node_Type.t_node,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Decision_Node_Type.t_node,
     function ShallowModel0.shallow_model = ShallowModel9.shallow_model,
     predicate InBounds0.in_bounds = InBounds1.in_bounds,
-    predicate HasValue0.has_value = HasValue1.has_value,
-    type Output0.output = CreuSat_Decision_Node_Type.t_node
+    predicate HasValue0.has_value = HasValue1.has_value
   clone Alloc_Vec_Impl13_Index_Interface as Index0 with
     type t = usize,
     type i = usize,
@@ -21085,9 +21085,9 @@ module CreuSat_Trail_Impl0_EnqAssignment
     predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
     predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner
   clone CreuSat_Logic_LogicLit_Impl0_IsPositiveLogic as IsPositiveLogic0
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel6 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -21451,9 +21451,9 @@ module CreuSat_Solver_Impl0_HandleLongClause
     function IndexLogic0.index_logic = IndexLogic0.index_logic
   clone CreuSat_Logic_LogicClause_VarsInRangeInner as VarsInRangeInner0 with
     predicate Invariant0.invariant' = Invariant6.invariant'
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel8 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -22136,9 +22136,9 @@ module CreuSat_Trail_Impl0_LearnUnit
   clone CreuSat_Logic_LogicClause_VarsInRangeInner as VarsInRangeInner0 with
     predicate Invariant0.invariant' = Invariant5.invariant'
   clone CreuSat_Logic_LogicUtil_SortedRange as SortedRange0
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel7 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -22561,9 +22561,9 @@ module CreuSat_Solver_Impl0_HandleConflict
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel12 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -23366,10 +23366,10 @@ module CreuSat_UnitProp_Swap
   clone CreuSat_Logic_LogicClause_InvariantInternal as InvariantInternal0 with
     predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
     predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl11_Max as Max0
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use CreuSat_Clause_Clause_Type as CreuSat_Clause_Clause_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl11_Max as Max0
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
@@ -23554,12 +23554,12 @@ module CreuSat_UnitProp_Swap
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Clause_Clause_Type.t_clause,
     function ShallowModel0.shallow_model = ShallowModel11.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
     function ShallowModel1.shallow_model = ShallowModel0.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-    type Output0.output = CreuSat_Clause_Clause_Type.t_clause,
     val Max0.mAX' = Max0.mAX'
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
     type t = CreuSat_Formula_Formula_Type.t_formula
@@ -23763,9 +23763,9 @@ module CreuSat_Watches_UpdateWatch
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel17 with
     type t = uint8,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -23983,12 +23983,12 @@ module CreuSat_Watches_UpdateWatch
     type t = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     function ShallowModel0.shallow_model = ShallowModel11.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
     function ShallowModel1.shallow_model = ShallowModel2.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     val Max0.mAX' = Max1.mAX'
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with
     type t = CreuSat_Watches_Watcher_Type.t_watcher,
@@ -23998,10 +23998,10 @@ module CreuSat_Watches_UpdateWatch
     type t = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     function ShallowModel0.shallow_model = ShallowModel9.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global)
+    predicate HasValue0.has_value = HasValue0.has_value
   clone CreuSat_Logic_LogicLit_Impl0_ToWatchidxLogic as ToWatchidxLogic0 with
     function IndexLogic0.index_logic = IndexLogic0.index_logic,
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic
@@ -24344,9 +24344,9 @@ module CreuSat_UnitProp_CheckAndMoveWatch
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel8 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -24871,9 +24871,9 @@ module CreuSat_UnitProp_ExistsNewWatchableLit
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max2
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel8 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -25027,12 +25027,12 @@ module CreuSat_UnitProp_ExistsNewWatchableLit
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Clause_Clause_Type.t_clause,
     function ShallowModel0.shallow_model = ShallowModel13.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
     function ShallowModel1.shallow_model = ShallowModel2.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-    type Output0.output = CreuSat_Clause_Clause_Type.t_clause,
     val Max0.mAX' = Max2.mAX'
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve1 with
     type t = CreuSat_Formula_Formula_Type.t_formula
@@ -25105,10 +25105,10 @@ module CreuSat_UnitProp_ExistsNewWatchableLit
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Clause_Clause_Type.t_clause,
     function ShallowModel0.shallow_model = ShallowModel10.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = CreuSat_Clause_Clause_Type.t_clause
+    predicate HasValue0.has_value = HasValue0.has_value
   let rec cfg exists_new_watchable_lit [#"../CreuSAT/src/unit_prop.rs" 98 0 100 9] [@cfg:stackify] [@cfg:subregion_analysis] (f : borrowed (CreuSat_Formula_Formula_Type.t_formula)) (trail : CreuSat_Trail_Trail_Type.t_trail) (watches : borrowed (CreuSat_Watches_Watches_Type.t_watches)) (cref : usize) (j : usize) (lit : CreuSat_Lit_Lit_Type.t_lit) : bool
     requires {[#"../CreuSAT/src/unit_prop.rs" 83 0 83 33] Invariant0.invariant' ( * f)}
     requires {[#"../CreuSAT/src/unit_prop.rs" 84 0 84 38] Invariant1.invariant' trail ( * f)}
@@ -25502,9 +25502,9 @@ module CreuSat_UnitProp_PropagateLitWithRegardToClause
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel9 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -25743,10 +25743,10 @@ module CreuSat_UnitProp_PropagateLitWithRegardToClause
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Clause_Clause_Type.t_clause,
     function ShallowModel0.shallow_model = ShallowModel15.shallow_model,
     predicate InBounds0.in_bounds = InBounds2.in_bounds,
-    predicate HasValue0.has_value = HasValue2.has_value,
-    type Output0.output = CreuSat_Clause_Clause_Type.t_clause
+    predicate HasValue0.has_value = HasValue2.has_value
   clone CreuSat_Logic_LogicTrail_ClausePostWithRegardsToLit as ClausePostWithRegardsToLit0 with
     function ShallowModel0.shallow_model = ShallowModel8.shallow_model,
     predicate ClausePostWithRegardsToInner0.clause_post_with_regards_to_inner = ClausePostWithRegardsToInner0.clause_post_with_regards_to_inner
@@ -25812,12 +25812,12 @@ module CreuSat_UnitProp_PropagateLitWithRegardToClause
     type t = CreuSat_Watches_Watcher_Type.t_watcher,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Watches_Watcher_Type.t_watcher,
     function ShallowModel0.shallow_model = ShallowModel14.shallow_model,
     predicate InBounds0.in_bounds = InBounds1.in_bounds,
     predicate HasValue0.has_value = HasValue1.has_value,
     function ShallowModel1.shallow_model = ShallowModel1.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere1.resolve_elswhere,
-    type Output0.output = CreuSat_Watches_Watcher_Type.t_watcher,
     val Max0.mAX' = Max1.mAX'
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve3 with
     type t = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global)
@@ -25825,12 +25825,12 @@ module CreuSat_UnitProp_PropagateLitWithRegardToClause
     type t = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     function ShallowModel0.shallow_model = ShallowModel13.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
     function ShallowModel1.shallow_model = ShallowModel0.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     val Max0.mAX' = Max1.mAX'
   clone CreuSat_Lit_Impl2_ToWatchidx_Interface as ToWatchidx0 with
     function IndexLogic0.index_logic = IndexLogic0.index_logic,
@@ -26374,9 +26374,9 @@ module CreuSat_UnitProp_PropagateLiteral
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel12 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -26600,10 +26600,10 @@ module CreuSat_UnitProp_PropagateLiteral
     type t = CreuSat_Watches_Watcher_Type.t_watcher,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Watches_Watcher_Type.t_watcher,
     function ShallowModel0.shallow_model = ShallowModel7.shallow_model,
     predicate InBounds0.in_bounds = InBounds1.in_bounds,
-    predicate HasValue0.has_value = HasValue1.has_value,
-    type Output0.output = CreuSat_Watches_Watcher_Type.t_watcher
+    predicate HasValue0.has_value = HasValue1.has_value
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with
     type t = CreuSat_Watches_Watcher_Type.t_watcher,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -26612,10 +26612,10 @@ module CreuSat_UnitProp_PropagateLiteral
     type t = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     function ShallowModel0.shallow_model = ShallowModel6.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global)
+    predicate HasValue0.has_value = HasValue0.has_value
   clone CreuSat_Lit_Impl2_ToWatchidx_Interface as ToWatchidx0 with
     function IndexLogic0.index_logic = IndexLogic0.index_logic,
     val Max0.mAX' = Max0.mAX',
@@ -26917,9 +26917,9 @@ module CreuSat_UnitProp_UnitPropagate
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel10 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -27119,10 +27119,10 @@ module CreuSat_UnitProp_UnitPropagate
     type t = CreuSat_Trail_Step_Type.t_step,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = CreuSat_Trail_Step_Type.t_step,
     function ShallowModel0.shallow_model = ShallowModel6.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = CreuSat_Trail_Step_Type.t_step
+    predicate HasValue0.has_value = HasValue0.has_value
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with
     type t = CreuSat_Trail_Step_Type.t_step,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -27335,9 +27335,9 @@ module CreuSat_Solver_Impl0_UnitPropStep
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel10 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -27759,9 +27759,9 @@ module CreuSat_Solver_Impl0_UnitPropLoop
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel10 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -28542,9 +28542,9 @@ module CreuSat_Solver_Impl0_OuterLoop
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel11 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -29196,9 +29196,9 @@ module CreuSat_Solver_Impl0_Inner
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner2 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic1.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel10 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -29827,9 +29827,9 @@ module CreuSat_Watches_Impl0_New
   use seq.Seq
   clone CreusotContracts_Resolve_Impl2_Resolve as Resolve2 with
     type t = CreuSat_Watches_Watcher_Type.t_watcher
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel1 with
     type t = CreuSat_Watches_Watcher_Type.t_watcher,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -30127,12 +30127,12 @@ module CreuSat_Watches_Impl0_InitWatches
     type t = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
     function ShallowModel1.shallow_model = ShallowModel0.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     val Max0.mAX' = Max1.mAX'
   clone Core_Usize_Max as Max0
   clone CreuSat_Lit_Impl2_ToNegWatchidx_Interface as ToNegWatchidx0 with
@@ -30383,9 +30383,9 @@ module CreuSat_Trail_Impl0_LearnUnits
   clone CreuSat_Logic_LogicLit_Impl1_SatInner as SatInner0 with
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic,
     function IndexLogic0.index_logic = IndexLogic0.index_logic
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel12 with
     type t = CreuSat_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -30862,10 +30862,10 @@ module CreuSat_Solver_Solver
     function IndexLogic0.index_logic = IndexLogic0.index_logic
   clone CreuSat_Logic_LogicClause_VarsInRangeInner as VarsInRangeInner0 with
     predicate Invariant0.invariant' = Invariant6.invariant'
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone Core_Num_Impl11_Max as Max0
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use CreuSat_Watches_Watcher_Type as CreuSat_Watches_Watcher_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
+  clone Core_Num_Impl11_Max as Max0
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel11 with
     type t = CreuSat_Watches_Watcher_Type.t_watcher,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -31429,12 +31429,12 @@ module CreuSat_Watches_Impl0_MoveToEnd
     type t = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
     function ShallowModel1.shallow_model = ShallowModel0.shallow_model,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
-    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     val Max0.mAX' = Max1.mAX'
   use CreuSat_Watches_Watches_Type as CreuSat_Watches_Watches_Type
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve0 with
@@ -31447,10 +31447,10 @@ module CreuSat_Watches_Impl0_MoveToEnd
     type t = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global),
     function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = Alloc_Vec_Vec_Type.t_vec (CreuSat_Watches_Watcher_Type.t_watcher) (Alloc_Alloc_Global_Type.t_global)
+    predicate HasValue0.has_value = HasValue0.has_value
   clone CreuSat_Logic_LogicLit_Impl0_ToNegWatchidxLogic as ToNegWatchidxLogic0 with
     function IndexLogic0.index_logic = IndexLogic0.index_logic,
     function IsPositiveLogic0.is_positive_logic = IsPositiveLogic0.is_positive_logic
@@ -31653,7 +31653,7 @@ module CreusotContracts_Model_Impl0_DeepModel
     type self = t,
     type DeepModelTy0.deepModelTy = DeepModelTy0.deepModelTy
   function deep_model (self : t) : DeepModelTy0.deepModelTy =
-    [#"../CreuSAT/src/unit_prop.rs" 280 71 280 91] DeepModel0.deep_model self
+    [#"../CreuSAT/src/unit_prop.rs" 280 72 280 92] DeepModel0.deep_model self
   val deep_model (self : t) : DeepModelTy0.deepModelTy
     ensures { result = deep_model self }
     

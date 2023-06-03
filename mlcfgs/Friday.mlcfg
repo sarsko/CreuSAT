@@ -56,7 +56,7 @@ module Alloc_Vec_Impl11_Clone_Interface
   use prelude.Borrow
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   val clone' (self : Alloc_Vec_Vec_Type.t_vec t a) : Alloc_Vec_Vec_Type.t_vec t a
-    ensures { result = self }
+    ensures { [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/clone.rs" 7 0 20 1] result = self }
     
 end
 module Friday_Impl8_Clone_Interface
@@ -68,8 +68,8 @@ module Friday_Impl8_Clone_Interface
 end
 module Friday_Impl8_Clone
   use prelude.Borrow
-  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
+  use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Alloc_Vec_Impl11_Clone_Interface as Clone0 with
     type t = bool,
     type a = Alloc_Alloc_Global_Type.t_global
@@ -82,12 +82,14 @@ module Friday_Impl8_Clone
   var self_1 : Friday_Assignments_Type.t_assignments;
   var _3 : Alloc_Vec_Vec_Type.t_vec bool (Alloc_Alloc_Global_Type.t_global);
   var _4 : Alloc_Vec_Vec_Type.t_vec bool (Alloc_Alloc_Global_Type.t_global);
+  var _5 : Alloc_Vec_Vec_Type.t_vec bool (Alloc_Alloc_Global_Type.t_global);
   {
     self_1 <- self;
     goto BB0
   }
   BB0 {
-    _4 <- Friday_Assignments_Type.assignments_0 self_1;
+    _5 <- Friday_Assignments_Type.assignments_0 self_1;
+    _4 <- _5;
     _3 <- ([#"../Friday/src/lib.rs" 14 19 14 28] Clone0.clone' _4);
     goto BB1
   }
@@ -121,7 +123,7 @@ module Core_Clone_Impls_Impl5_Clone_Interface
   use prelude.Int
   use prelude.UIntSize
   val clone' (self : usize) : usize
-    ensures { result = self }
+    ensures { [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/clone.rs" 7 0 20 1] result = self }
     
 end
 module Friday_Impl9_Clone_Interface
@@ -147,24 +149,28 @@ module Friday_Impl9_Clone
   var self_1 : Friday_Pasn_Type.t_pasn;
   var _3 : Friday_Assignments_Type.t_assignments;
   var _4 : Friday_Assignments_Type.t_assignments;
-  var _5 : usize;
+  var _5 : Friday_Assignments_Type.t_assignments;
   var _6 : usize;
+  var _7 : usize;
+  var _8 : usize;
   {
     self_1 <- self;
     goto BB0
   }
   BB0 {
-    _4 <- Friday_Pasn_Type.pasn_assign self_1;
+    _5 <- Friday_Pasn_Type.pasn_assign self_1;
+    _4 <- _5;
     _3 <- ([#"../Friday/src/lib.rs" 23 4 23 23] Clone0.clone' _4);
     goto BB1
   }
   BB1 {
-    _6 <- Friday_Pasn_Type.pasn_ix self_1;
-    _5 <- ([#"../Friday/src/lib.rs" 24 4 24 13] Clone1.clone' _6);
+    _8 <- Friday_Pasn_Type.pasn_ix self_1;
+    _7 <- _8;
+    _6 <- ([#"../Friday/src/lib.rs" 24 4 24 13] Clone1.clone' _7);
     goto BB2
   }
   BB2 {
-    _0 <- Friday_Pasn_Type.C_Pasn _3 _5;
+    _0 <- Friday_Pasn_Type.C_Pasn _3 _6;
     goto BB3
   }
   BB3 {
@@ -251,7 +257,7 @@ module CreusotContracts_Std1_Vec_Impl0_ShallowModel_Interface
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max_Stub as Max0
   function shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
-  axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
+  axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/vec.rs" 17 14 17 41] Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
 end
 module CreusotContracts_Std1_Vec_Impl0_ShallowModel
   type t
@@ -265,7 +271,7 @@ module CreusotContracts_Std1_Vec_Impl0_ShallowModel
   val shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
     ensures { result = shallow_model self }
     
-  axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
+  axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/vec.rs" 17 14 17 41] Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
 end
 module Friday_Impl2_VarInRange_Stub
   use prelude.Int
@@ -561,7 +567,7 @@ module CreusotContracts_Model_Impl1_ShallowModel
     type self = t,
     type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy
   function shallow_model (self : t) : ShallowModelTy0.shallowModelTy =
-    ShallowModel0.shallow_model self
+    [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/model.rs" 38 8 38 31] ShallowModel0.shallow_model self
   val shallow_model (self : t) : ShallowModelTy0.shallowModelTy
     ensures { result = shallow_model self }
     
@@ -579,7 +585,7 @@ module Alloc_Vec_Impl1_Len_Interface
     type t = Alloc_Vec_Vec_Type.t_vec t a,
     type ShallowModelTy0.shallowModelTy = Seq.seq t
   val len (self : Alloc_Vec_Vec_Type.t_vec t a) : usize
-    ensures { UIntSize.to_int result = Seq.length (ShallowModel0.shallow_model self) }
+    ensures { [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/vec.rs" 62 26 62 48] UIntSize.to_int result = Seq.length (ShallowModel0.shallow_model self) }
     
 end
 module CreusotContracts_Std1_Slice_SliceIndex_InBounds_Stub
@@ -669,8 +675,8 @@ module Alloc_Vec_Impl13_Index_Interface
     type t = Alloc_Vec_Vec_Type.t_vec t a,
     type ShallowModelTy0.shallowModelTy = Seq.seq t
   val index (self : Alloc_Vec_Vec_Type.t_vec t a) (index : i) : Output0.output
-    requires {InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
-    ensures { HasValue0.has_value index (ShallowModel0.shallow_model self) result }
+    requires {[#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/vec.rs" 127 27 127 46] InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
+    ensures { [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/vec.rs" 128 26 128 54] HasValue0.has_value index (ShallowModel0.shallow_model self) result }
     
 end
 module CreusotContracts_Std1_Slice_Impl5_InBounds_Stub
@@ -693,7 +699,7 @@ module CreusotContracts_Std1_Slice_Impl5_InBounds
   use prelude.UIntSize
   use seq.Seq
   predicate in_bounds [@inline:trivial] (self : usize) (seq : Seq.seq t) =
-    UIntSize.to_int self < Seq.length seq
+    [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/slice.rs" 102 20 102 37] UIntSize.to_int self < Seq.length seq
   val in_bounds [@inline:trivial] (self : usize) (seq : Seq.seq t) : bool
     ensures { result = in_bounds self seq }
     
@@ -718,7 +724,7 @@ module CreusotContracts_Std1_Slice_Impl5_HasValue
   use prelude.UIntSize
   use seq.Seq
   predicate has_value [@inline:trivial] (self : usize) (seq : Seq.seq t) (out : t) =
-    Seq.get seq (UIntSize.to_int self) = out
+    [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/slice.rs" 108 20 108 37] Seq.get seq (UIntSize.to_int self) = out
   val has_value [@inline:trivial] (self : usize) (seq : Seq.seq t) (out : t) : bool
     ensures { result = has_value self seq out }
     
@@ -754,9 +760,9 @@ module Friday_Impl6_Eval
     type t = bool
   clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds1 with
     type t = bool
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
     type t = bool,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -793,10 +799,10 @@ module Friday_Impl6_Eval
     type t = Friday_Lit_Type.t_lit,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = Friday_Lit_Type.t_lit,
     function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = Friday_Lit_Type.t_lit
+    predicate HasValue0.has_value = HasValue0.has_value
   use Friday_Assignments_Type as Friday_Assignments_Type
   clone Friday_Impl2_Sat as Sat1 with
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
@@ -864,57 +870,60 @@ module Friday_Impl6_Eval
   BB2 {
     invariant { [#"../Friday/src/lib.rs" 112 8 112 77] forall j : int . 0 <= j /\ j < UIntSize.to_int i_5 -> not Sat1.sat (Seq.get (ShallowModel1.shallow_model (Friday_Clause_Type.clause_0 self_1)) j) a_2 };
     invariant { [#"../Friday/src/lib.rs" 113 20 113 37] UIntSize.to_int i_5 <= UIntSize.to_int clause_len_6 };
+    goto BB3
+  }
+  BB3 {
     _13 <- i_5;
     _14 <- clause_len_6;
     _12 <- ([#"../Friday/src/lib.rs" 114 14 114 28] _13 < _14);
     switch (_12)
-      | False -> goto BB9
-      | True -> goto BB3
+      | False -> goto BB10
+      | True -> goto BB4
       end
   }
-  BB3 {
+  BB4 {
     _19 <- Friday_Assignments_Type.assignments_0 a_2;
     _22 <- Friday_Clause_Type.clause_0 self_1;
     _23 <- i_5;
     _21 <- ([#"../Friday/src/lib.rs" 115 19 115 28] Index0.index _22 _23);
-    goto BB4
-  }
-  BB4 {
-    _20 <- Friday_Lit_Type.lit_var _21;
-    _18 <- ([#"../Friday/src/lib.rs" 115 15 115 33] Index1.index _19 _20);
     goto BB5
   }
   BB5 {
+    _20 <- Friday_Lit_Type.lit_var _21;
+    _18 <- ([#"../Friday/src/lib.rs" 115 15 115 33] Index1.index _19 _20);
+    goto BB6
+  }
+  BB6 {
     _17 <- _18;
     _26 <- Friday_Clause_Type.clause_0 self_1;
     _27 <- i_5;
     _25 <- ([#"../Friday/src/lib.rs" 115 37 115 46] Index0.index _26 _27);
-    goto BB6
+    goto BB7
   }
-  BB6 {
+  BB7 {
     _24 <- Friday_Lit_Type.lit_value _25;
     _16 <- ([#"../Friday/src/lib.rs" 115 15 115 52] Bool.eqb _17 _24);
     switch (_16)
-      | False -> goto BB8
-      | True -> goto BB7
+      | False -> goto BB9
+      | True -> goto BB8
       end
   }
-  BB7 {
-    _0 <- ([#"../Friday/src/lib.rs" 116 23 116 27] true);
-    goto BB10
-  }
   BB8 {
+    _0 <- ([#"../Friday/src/lib.rs" 116 23 116 27] true);
+    goto BB11
+  }
+  BB9 {
     _15 <- ();
     i_5 <- ([#"../Friday/src/lib.rs" 118 12 118 18] i_5 + ([#"../Friday/src/lib.rs" 118 17 118 18] (1 : usize)));
     _11 <- ();
     goto BB2
   }
-  BB9 {
+  BB10 {
     _8 <- ();
     _0 <- ([#"../Friday/src/lib.rs" 120 8 120 13] false);
-    goto BB10
+    goto BB11
   }
-  BB10 {
+  BB11 {
     return _0
   }
   
@@ -954,9 +963,9 @@ module Friday_Impl7_Eval
   clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
     type t = Friday_Clause_Type.t_clause
   use seq.Seq
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel1 with
     type t = Friday_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -997,10 +1006,10 @@ module Friday_Impl7_Eval
     type t = Friday_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
+    type Output0.output = Friday_Clause_Type.t_clause,
     function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
-    predicate HasValue0.has_value = HasValue0.has_value,
-    type Output0.output = Friday_Clause_Type.t_clause
+    predicate HasValue0.has_value = HasValue0.has_value
   clone Alloc_Vec_Impl1_Len_Interface as Len0 with
     type t = Friday_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -1053,53 +1062,56 @@ module Friday_Impl7_Eval
   }
   BB1 {
     invariant { [#"../Friday/src/lib.rs" 130 8 130 82] forall j : int . 0 <= j /\ j < UIntSize.to_int i_6 -> Sat1.sat (Seq.get (ShallowModel1.shallow_model (Friday_Formula_Type.formula_clauses self_1)) j) a_2 };
-    _11 <- i_6;
-    _13 <- Friday_Formula_Type.formula_clauses self_1;
-    _12 <- ([#"../Friday/src/lib.rs" 131 18 131 36] Len0.len _13);
     goto BB2
   }
   BB2 {
-    _10 <- ([#"../Friday/src/lib.rs" 131 14 131 36] _11 < _12);
-    switch (_10)
-      | False -> goto BB8
-      | True -> goto BB3
-      end
+    _11 <- i_6;
+    _13 <- Friday_Formula_Type.formula_clauses self_1;
+    _12 <- ([#"../Friday/src/lib.rs" 131 18 131 36] Len0.len _13);
+    goto BB3
   }
   BB3 {
+    _10 <- ([#"../Friday/src/lib.rs" 131 14 131 36] _11 < _12);
+    switch (_10)
+      | False -> goto BB9
+      | True -> goto BB4
+      end
+  }
+  BB4 {
     _19 <- Friday_Formula_Type.formula_clauses self_1;
     _20 <- i_6;
     _18 <- ([#"../Friday/src/lib.rs" 132 16 132 31] Index0.index _19 _20);
-    goto BB4
-  }
-  BB4 {
-    _17 <- _18;
-    _21 <- a_2;
-    _16 <- ([#"../Friday/src/lib.rs" 132 16 132 39] Eval0.eval _17 _21);
     goto BB5
   }
   BB5 {
-    _15 <- not _16;
-    switch (_15)
-      | False -> goto BB7
-      | True -> goto BB6
-      end
+    _17 <- _18;
+    _21 <- a_2;
+    _16 <- ([#"../Friday/src/lib.rs" 132 16 132 39] Eval0.eval _17 _21);
+    goto BB6
   }
   BB6 {
-    _0 <- ([#"../Friday/src/lib.rs" 133 23 133 28] false);
-    goto BB9
+    _15 <- not _16;
+    switch (_15)
+      | False -> goto BB8
+      | True -> goto BB7
+      end
   }
   BB7 {
+    _0 <- ([#"../Friday/src/lib.rs" 133 23 133 28] false);
+    goto BB10
+  }
+  BB8 {
     _14 <- ();
     i_6 <- ([#"../Friday/src/lib.rs" 135 12 135 18] i_6 + ([#"../Friday/src/lib.rs" 135 17 135 18] (1 : usize)));
     _9 <- ();
     goto BB1
   }
-  BB8 {
+  BB9 {
     _7 <- ();
     _0 <- ([#"../Friday/src/lib.rs" 137 8 137 12] true);
-    goto BB9
+    goto BB10
   }
-  BB9 {
+  BB10 {
     return _0
   }
   
@@ -1129,7 +1141,7 @@ module CreusotContracts_Resolve_Impl1_Resolve
   type t
   use prelude.Borrow
   predicate resolve (self : borrowed t) =
-     ^ self =  * self
+    [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/resolve.rs" 23 20 23 34]  ^ self =  * self
   val resolve (self : borrowed t) : bool
     ensures { result = resolve self }
     
@@ -1157,7 +1169,7 @@ module CreusotContracts_Model_Impl3_ShallowModel
     type self = t,
     type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy
   function shallow_model (self : borrowed t) : ShallowModelTy0.shallowModelTy =
-    ShallowModel0.shallow_model ( * self)
+    [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/model.rs" 54 8 54 31] ShallowModel0.shallow_model ( * self)
   val shallow_model (self : borrowed t) : ShallowModelTy0.shallowModelTy
     ensures { result = shallow_model self }
     
@@ -1224,11 +1236,11 @@ module Alloc_Vec_Impl14_IndexMut_Interface
     type t = Alloc_Vec_Vec_Type.t_vec t a,
     type ShallowModelTy0.shallowModelTy = Seq.seq t
   val index_mut (self : borrowed (Alloc_Vec_Vec_Type.t_vec t a)) (index : i) : borrowed Output0.output
-    requires {InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
-    ensures { HasValue0.has_value index (ShallowModel0.shallow_model self) ( * result) }
-    ensures { HasValue0.has_value index (ShallowModel1.shallow_model ( ^ self)) ( ^ result) }
-    ensures { ResolveElswhere0.resolve_elswhere index (ShallowModel0.shallow_model self) (ShallowModel1.shallow_model ( ^ self)) }
-    ensures { Seq.length (ShallowModel1.shallow_model ( ^ self)) = Seq.length (ShallowModel0.shallow_model self) }
+    requires {[#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/vec.rs" 118 27 118 46] InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
+    ensures { [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/vec.rs" 119 26 119 54] HasValue0.has_value index (ShallowModel0.shallow_model self) ( * result) }
+    ensures { [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/vec.rs" 120 26 120 57] HasValue0.has_value index (ShallowModel1.shallow_model ( ^ self)) ( ^ result) }
+    ensures { [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/vec.rs" 121 26 121 62] ResolveElswhere0.resolve_elswhere index (ShallowModel0.shallow_model self) (ShallowModel1.shallow_model ( ^ self)) }
+    ensures { [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/vec.rs" 122 26 122 55] Seq.length (ShallowModel1.shallow_model ( ^ self)) = Seq.length (ShallowModel0.shallow_model self) }
     
 end
 module CreusotContracts_Std1_Slice_Impl5_ResolveElswhere_Stub
@@ -1251,7 +1263,7 @@ module CreusotContracts_Std1_Slice_Impl5_ResolveElswhere
   use prelude.UIntSize
   use seq.Seq
   predicate resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t) =
-    forall i : int . 0 <= i /\ i <> UIntSize.to_int self /\ i < Seq.length old' -> Seq.get old' i = Seq.get fin i
+    [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/slice.rs" 114 8 114 96] forall i : int . 0 <= i /\ i <> UIntSize.to_int self /\ i < Seq.length old' -> Seq.get old' i = Seq.get fin i
   val resolve_elswhere [@inline:trivial] (self : usize) (old' : Seq.seq t) (fin : Seq.seq t) : bool
     ensures { result = resolve_elswhere self old' fin }
     
@@ -1293,9 +1305,9 @@ module Friday_SetNext
     type t = bool
   clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
     type t = bool
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max1
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
     type t = bool,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -1396,9 +1408,9 @@ module Friday_Solve
   use prelude.Int
   use prelude.UIntSize
   use seq.Seq
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
     type t = bool,
     type a = Alloc_Alloc_Global_Type.t_global,
@@ -1596,7 +1608,7 @@ module CreusotContracts_Logic_Ops_Impl0_IndexLogic
     type self = s,
     type ShallowModelTy0.shallowModelTy = Seq.seq t
   function index_logic [@inline:trivial] (self : s) (ix : int) : t =
-    Seq.get (ShallowModel0.shallow_model self) ix
+    [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/logic/ops.rs" 16 8 16 31] Seq.get (ShallowModel0.shallow_model self) ix
   val index_logic [@inline:trivial] (self : s) (ix : int) : t
     ensures { result = index_logic self ix }
     
@@ -1618,8 +1630,8 @@ module Alloc_Vec_FromElem_Interface
     val Max0.mAX' = Max0.mAX',
     axiom .
   val from_elem (elem : t) (n : usize) : Alloc_Vec_Vec_Type.t_vec t (Alloc_Alloc_Global_Type.t_global)
-    ensures { Seq.length (ShallowModel0.shallow_model result) = UIntSize.to_int n }
-    ensures { forall i : int . 0 <= i /\ i < UIntSize.to_int n -> IndexLogic0.index_logic result i = elem }
+    ensures { [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/vec.rs" 143 22 143 41] Seq.length (ShallowModel0.shallow_model result) = UIntSize.to_int n }
+    ensures { [#"../../../.cargo/git/checkouts/creusot-8bb2a9f6fb1f15ef/fc75680/creusot-contracts/src/std/vec.rs" 144 12 144 78] forall i : int . 0 <= i /\ i < UIntSize.to_int n -> IndexLogic0.index_logic result i = elem }
     
 end
 module Friday_Solver_Interface
@@ -1650,9 +1662,9 @@ module Friday_Solver
   use prelude.UIntSize
   use seq.Seq
   use seq.Seq
+  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
     type t = bool,
     type a = Alloc_Alloc_Global_Type.t_global,
