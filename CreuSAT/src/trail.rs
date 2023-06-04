@@ -111,11 +111,22 @@ impl Trail {
     #[requires(f.invariant())]
     #[maintains((mut self).invariant(*f))]
     #[maintains((mut d).invariant(f.num_vars@))]
+    #[requires(long_are_post_unit_inner(self.trail@, *f, self.assignments@))]
+    #[ensures(long_are_post_unit_inner((^self).trail@, *f, (^self).assignments@))]
+    // Backtracks to the start of level
+    pub fn backtrack_to(&mut self, level: usize, f: &Formula, d: &mut Decisions) {}
+
+    /*
+    #[cfg_attr(feature = "trust_trail", trusted)]
+    #[requires(self.decisions@.len() > level@)]
+    #[requires(f.invariant())]
+    #[maintains((mut self).invariant(*f))]
+    #[maintains((mut d).invariant(f.num_vars@))]
     //#[requires((self@.trail).len() > 0)] // removed
     #[requires(long_are_post_unit_inner(self.trail@, *f, self.assignments@))]
     #[ensures(long_are_post_unit_inner((^self).trail@, *f, (^self).assignments@))]
     // Backtracks to the start of level
-    pub fn backtrack_to(&mut self, level: usize, f: &Formula, d: &mut Decisions) {
+    pub fn backtrack_to_vmtf(&mut self, level: usize, f: &Formula, d: &mut Decisions) {
         let old_t: Ghost<&mut Trail> = ghost! { self };
         let old_d: Ghost<&mut Decisions> = ghost! { d };
         let how_many = self.trail.len() - self.decisions[level];
@@ -198,6 +209,7 @@ impl Trail {
         self.curr_i = level;
         //self.curr_i = self.trail.len();
     }
+    */
 
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[maintains((mut self).invariant(*_f))]

@@ -1,259 +1,443 @@
 extern crate creusot_contracts;
-use creusot_contracts::{ensures, ghost, invariant, maintains, proof_assert, requires, std::vec, Clone, Ghost, Int, *};
+use creusot_contracts::invariant::{Invariant, self};
+use creusot_contracts::{*, pearlite, ensures, requires, predicate, trusted, vec};
+use ::std::num;
+use ::std::ops::{Index, IndexMut};
 
-use crate::{assignments::*, formula::*, util::*};
+use crate::assignments::Assignments;
+use crate::formula::Formula;
 
-#[cfg(creusot)]
-use crate::logic::{logic::unset, logic_decision::*, logic_util::*};
+// TODO: Glucose uses 0 for invalid
+const INVALID: usize = usize::MAX;
 
-#[derive(Clone, Copy)]
-pub struct Node {
-    pub next: usize,
-    pub prev: usize,
-    pub ts: usize,
+// TODO: Add unsafe indexing for indices and activity as well.
+struct Heap {
+    activity: Vec<f64>,
+    heap: Vec<usize>,
+    indices: Vec<usize>,
+    num_vars: usize,
 }
 
-//const INVALID: usize = usize::MAX;
-
-impl ::std::default::Default for Node {
-    #[ensures(result.next@ == usize::MAX@)]
-    #[ensures(result.prev@ == usize::MAX@)]
-    #[ensures(result.ts@   == 0)]
-    fn default() -> Self {
-        Node { next: usize::MAX, prev: usize::MAX, ts: 0 }
-    }
-}
-
-impl creusot_contracts::Default for Node {
+// TODO: Change all to be some length?
+// NOTE: Heap has a manually implemented `Invariant` as it conflicts with `IndexMut` otherwise
+impl Heap {
+    #[why3::attr = "inline:trivial"]
     #[predicate]
-    fn is_default(self) -> bool {
-        pearlite! { self.next@ == usize::MAX@ && self.prev@ == usize::MAX@ && self.ts@ == 0 }
+    pub fn invariant(self) -> bool {
+        pearlite!{
+            self.num_vars@ < 9223372036854775807
+            && self.activity@.len() == self.num_vars@
+            && self.indices@.len() == self.num_vars@
+            && self.heap@.len() <= self.num_vars@
+            && forall<i: Int> 0 <= i && i < self.heap@.len() ==> 
+               self.heap@[i]@ < self.indices@.len() && self.heap@[i]@ < self.activity@.len()
+        }
     }
 }
 
+impl Index<usize> for Heap {
+    type Output = usize;
+    #[inline]
+    #[requires(ix@ < self.heap@.len())]
+    #[ensures(self.heap@[ix@] == *result)]
+    fn index(&self, ix: usize) -> &usize {
+        #[cfg(not(creusot))]
+        unsafe { self.heap.get_unchecked(ix) }
+        #[cfg(creusot)]
+        &self.heap[ix]
+    }
+}
+
+/*
+impl IndexMut<usize> for Heap {
+    #[inline]
+    #[requires(ix@ < self.heap@.len())]
+    #[ensures((*self).heap@[ix@] == *result)]
+    #[ensures((^self).heap@[ix@] == ^result)]
+    #[ensures(forall<i: Int> 0 <= i && i != ix@ && i < self.heap@.len() ==> self.heap@[i] == (^self).heap@[i])]
+    #[ensures((^self).heap@.len() == (*self).heap@.len())]
+    fn index_mut(&mut self, ix: usize) -> &mut usize {
+        #[cfg(not(creusot))]
+        unsafe { self.heap.get_unchecked_mut(ix) }
+        #[cfg(creusot)]
+        &mut self.heap[ix]
+    }
+}
+*/
+
+impl Heap {
+    // TODO: This can be simplified, but is blocked on a panic in Creusot
+    #[requires(num_vars@ < 9223372036854775807)] // (usize::MAX - 1) / 2
+    #[ensures(result.invariant())]
+    pub(crate) fn new(num_vars: usize) -> Self {
+        let mut heap = Vec::new();
+        let mut indices = Vec::new();
+        let mut activity = Vec::new();
+
+        // TODO: Swap to for-loop ?
+        let mut i = 0;
+        #[invariant(activity@.len() == i@)]
+        #[invariant(indices@.len() == i@)]
+        #[invariant(heap@.len() == i@)]
+        #[invariant(forall<i: Int> 0 <= i && i < heap@.len() ==> heap@[i]@ < indices@.len() && heap@[i]@ < activity@.len())]
+        #[invariant(i@ <= num_vars@)]
+        while i < num_vars {
+            indices.push(i);
+            heap.push(i);
+            activity.push(0.0);
+            i += 1;
+        }
+
+        let mut heap = Heap { activity, heap, indices, num_vars};
+
+        if num_vars > 1 {
+            heap.percolate_all();
+        }
+
+        heap
+    }
+
+    #[maintains((mut self).invariant())]
+    #[requires(self.heap@.len() > 1)]
+    #[requires(self.heap@.len() == self.num_vars@)] // This is strictly speaking too strong, but fits our uses
+    fn percolate_all(&mut self) {
+        let mut i = self.heap.len() / 2 - 1;
+        let old_self: Ghost<&mut Self> = ghost!(self);
+
+        #[invariant(old_self.num_vars == self.num_vars)]
+        #[invariant(self.invariant())]
+        #[invariant(i@ < self.heap@.len())]
+        loop {
+            self.percolate_down(i);
+            if i == 0 {
+                break;
+            }
+            i -= 1;
+        }
+    }
+
+    /*
+    #[requires(n@ < 9223372036854775807)] // (usize::MAX - 1) / 2
+    #[ensures(result.invariant())]
+    pub(crate) fn new_empty(n: usize) -> Self {
+        Heap { activity: vec![0.0; n], heap: Vec::new(), indices: vec![INVALID; n] }
+    }
+    */
+
+    // TODO: Add. The arguments are wrong, and should take the heap to build from.
+    /*
+    // Requires a new to have been created with n or larger before
+    // TODO: Add support for turning off decision variables (eliminating variables entirely)
+    #[maintains((mut self).invariant())]
+    pub(crate) fn build(&mut self, n: usize) {
+        if n == 0 {
+            return;
+        }
+
+        for e in &self.heap {
+            self.indices[*e] = INVALID;
+        }
+        self.heap.clear();
+
+        for i in 0..n {
+            self.indices[i] = i;
+            self.heap.push(i);
+        }
+
+        if n == 1 {
+            return;
+        }
+
+        let mut i = self.len() / 2 - 1;
+        loop {
+            self.percolate_down(i);
+            if i == 0 {
+                break;
+            }
+            i -= 1;
+        }
+    }
+    */
+
+
+    #[inline(always)] 
+    #[requires(idx@ < (usize::MAX@ - 1) / 2)]
+    #[ensures(result@ == idx@ * 2 + 1)]
+    fn left(idx: usize) -> usize {
+        idx * 2 + 1
+    }
+
+    #[requires(idx@ < (usize::MAX@ - 1) / 2)]
+    #[ensures(result@ == (idx@ + 1) * 2)]
+    fn right(idx: usize) -> usize {
+        (idx + 1) * 2
+    }
+
+    // TODO: Shr not supported
+    // TODO: The overflow should be fine when running in release -> it should be fine to have conditional compilation and have Creusot check that.
+    #[inline(always)] 
+    #[ensures(idx@ == 0 ==> result@ == usize::MAX@)]
+    #[ensures(idx@ > 0 ==> result@ == (idx@ - 1) / 2)]
+    fn parent(idx: usize) -> usize {
+        //(idx - 1) >> 1
+        if idx > 0 {
+            (idx - 1) / 2
+        } else {
+           usize::MAX 
+        }
+
+    }
+
+    // TODO: Strengthen?
+    #[ensures(result == (v@ < self.indices@.len() && self.indices@[v@]@ < self.heap@.len()))]
+    fn in_heap(&self, v: usize) -> bool {
+        v < self.indices.len() && self.indices[v] < self.heap.len()//self.indices[v] < INVALID
+    }
+
+    // TODO: This is going to need a clippy tag thingy
+    #[ensures(result == (self.heap@.len() == 0))]
+    fn empty(&self) -> bool {
+        self.heap.len() == 0
+    }
+
+    // TODO strengthen and remove check ?
+    #[maintains((mut self).invariant())]
+    #[ensures(self.num_vars@ == (^self).num_vars@)]
+    //#[requires(v@ < self.indices@.len())]
+    fn decrease(&mut self, v: usize) {
+        if self.in_heap(v) {
+            let idx = self.indices[v];
+            self.percolate_up(idx);
+        }
+    }
+
+    // This is supposed to be used in add_clause
+    // TODO strengthen and remove check ?
+    #[maintains((mut self).invariant())]
+    #[ensures(self.num_vars@ == (^self).num_vars@)]
+    //#[requires(v@ < self.indices@.len())]
+    fn increase(&mut self, v: usize) {
+        if self.in_heap(v) {
+            let idx = self.indices[v];
+            self.percolate_down(idx);
+        }
+    }
+
+
+    // TODO: Add unsafe indexing
+    #[inline(always)]
+    #[requires(x@ < self.activity@.len())]
+    #[requires(y@ < self.activity@.len())]
+    fn less_than(&self, x: usize, y: usize) -> bool {
+        self.activity[x] > self.activity[y]
+    }
+
+
+    #[maintains((mut self).invariant())]
+    #[ensures(self.num_vars@ == (^self).num_vars@)]
+    #[requires(self.heap@.len() < self.indices@.len())]
+    #[requires(v@ < self.indices@.len())]
+    fn insert(&mut self, v: usize) {
+        let old_len = self.heap.len();
+        self.indices[v] = old_len;
+        self.heap.push(v);
+        self.percolate_up(old_len);
+    }
+
+    // TODO: Swap to unsafe indexing (at least for the reads)
+    #[maintains((mut self).invariant())]
+    #[ensures(self.num_vars@ == (^self).num_vars@)]
+    #[requires(idx@ < self.heap@.len())]
+    fn percolate_up(&mut self, mut idx: usize) {
+        let x = self[idx];
+        let mut p = Self::parent(idx);
+        let old_self: Ghost<&mut Self> = ghost!(self);
+
+        #[invariant(self.invariant())]
+        #[invariant(idx@ < self.heap@.len())]
+        #[invariant(idx@ != 0 ==> p@ < self.heap@.len())]
+        #[invariant(x@ < self.activity@.len())]
+        #[invariant(old_self.num_vars@ == self.num_vars@)]
+        #[invariant(self.heap@.len() == old_self.heap@.len())]
+        while idx != 0 && self.less_than(x, self.heap[p]) {
+            self.heap[idx] = self[p]; // TODO: Swap to use IndexMut / unsafe. It is for some reason not working
+            let i = self.heap[p];
+            self.indices[i] = idx;
+            idx = p;
+            p = Self::parent(idx);
+        }
+
+        self.heap[idx] = x;
+        self.indices[x] = idx;
+    }
+
+    #[requires(idx@ < 9223372036854775807)] // (usize::MAX - 1) / 2
+    #[ensures(self.num_vars@ == (^self).num_vars@)]
+    #[ensures(self.heap@.len() == (^self).heap@.len())] // This shouldn't be needed (should be got from num_vars remaining unchanged) // Needed for now as we do <= on len
+    #[maintains((mut self).invariant())]
+    #[requires(idx@ < self.heap@.len())]
+    fn percolate_down(&mut self, mut idx: usize) {
+        let x = self[idx];
+        let old_self: Ghost<&mut Self> = ghost!(self);
+
+        #[invariant(self.invariant())]
+        #[invariant(idx@ < self.heap@.len())]
+        #[invariant(x@ < self.activity@.len())]
+        #[invariant(old_self.num_vars@ == self.num_vars@)]
+        #[invariant(self.heap@.len() == old_self.heap@.len())]
+        while Self::left(idx) < self.heap.len() {
+            let right = Self::right(idx);
+            let left = Self::left(idx);
+            let child = if right < self.heap.len() && self.less_than(self[right], self[left]) { right } else { left };
+            if !self.less_than(self[child], x) {
+                break;
+            }
+            self.heap[idx] = self[child];
+            let i = self[idx];
+            self.indices[i] = idx;
+            idx = child;
+        }
+
+        self.heap[idx] = x;
+        self.indices[x] = idx;
+    }
+
+    #[maintains((mut self).invariant())]
+    #[ensures(self.num_vars@ == (^self).num_vars@)]
+    #[requires(self.heap@.len() > 0)]
+    fn remove_min(&mut self) -> usize {
+        let x = self[0];
+        self.heap[0] = self.heap[self.heap.len() - 1];
+        let first = self[0];
+        self.indices[first] = 0;
+        self.indices[x] = INVALID;
+        self.heap.pop();
+        if self.heap.len() > 1 {
+            self.percolate_down(0);
+        }
+        x
+    }
+}
+
+#[allow(clippy::upper_case_acronyms)]
 pub struct Decisions {
-    pub linked_list: Vec<Node>,
-    timestamp: usize,
-    pub start: usize,
-    pub search: usize,
+    order_heap: Heap,
+    var_inc: f64,
+    var_decay: f64,
+    pub(crate) decision: Vec<bool>,
 }
 
 impl Decisions {
-    // It is possible to sacrifice some readability for a tad faster proofs here(by adding assertions).
-    #[cfg_attr(feature = "trust_decision", trusted)]
-    #[requires(f.invariant())]
-    #[requires(0 < f.num_vars@ && f.num_vars@ < usize::MAX@/2)]
-    #[requires(lit_order@.len() == f.num_vars@ &&
-            forall<i: Int> 0 <= i && i < lit_order@.len() ==>
-                lit_order@[i]@ < f.num_vars@)]
-    #[ensures(result.invariant(f.num_vars@))]
-    pub fn make_linked_list(f: &Formula, lit_order: Vec<usize>) -> Decisions {
-        let INVALID: usize = usize::MAX;
-        let mut linked_list: Vec<Node> = vec::from_elem(Node::default(), f.num_vars);
-        let mut i: usize = 0;
-        let mut head: usize = 0;
-        #[invariant(linked_list@.len() == f.num_vars@)]
-        #[invariant(head@ < f.num_vars@)]
-        #[invariant(forall<j: Int> 0 <= j && j < f.num_vars@ ==>
-                ((linked_list@[j].next@ == usize::MAX@ || linked_list@[j].next@ < f.num_vars@)
-                && (linked_list@[j].prev@ == usize::MAX@ || linked_list@[j].prev@ < f.num_vars@)))]
-        while i < f.num_vars {
-            let j = lit_order[i];
-            if i == 0 {
-                if f.num_vars > 1 {
-                    linked_list[j].next = lit_order[1];
-                } else {
-                    linked_list[j].next = INVALID;
-                }
-                linked_list[j].prev = INVALID;
-                head = j;
-            } else if i == f.num_vars - 1 {
-                linked_list[j].next = INVALID;
-                linked_list[j].prev = lit_order[i - 1];
-            } else {
-                linked_list[j].next = lit_order[i + 1];
-                linked_list[j].prev = lit_order[i - 1];
-            }
-            linked_list[j].ts = f.num_vars - i;
-            i += 1;
+    #[predicate]
+    pub fn invariant(self, num_vars: Int) -> bool {
+        pearlite! {
+            self.order_heap.invariant()
+            && self.decision@.len() == self.order_heap.num_vars@
+            && self.order_heap.num_vars@ == num_vars
         }
-        Decisions { linked_list: linked_list, timestamp: f.num_vars + 1, start: head, search: head }
+    }
+}
+
+impl Decisions {
+    #[requires(num_vars@ < 9223372036854775807)] // (usize::MAX - 1) / 2
+    #[ensures(result.invariant(num_vars@))]
+    pub fn new(num_vars: usize) -> Self {
+        Self {
+            order_heap: Heap::new(num_vars),
+            var_inc: 1.0,
+            var_decay: 0.95,
+            decision: vec![true; num_vars]
+        }
     }
 
-    #[cfg_attr(feature = "trust_decision", trusted)]
-    #[requires(f.invariant())]
-    #[requires(0 < f.num_vars@ && f.num_vars@ < usize::MAX@/2)]
-    #[ensures(result.invariant(f.num_vars@))]
-    pub fn new(f: &Formula) -> Decisions {
-        let mut lit_order: Vec<usize> = vec::from_elem(0, f.num_vars);
-        let mut counts: Vec<usize> = vec::from_elem(0, f.num_vars);
-        let mut counts_with_index: Vec<(usize, usize)> = vec::from_elem((0, 0), f.num_vars);
-        let mut i: usize = 0;
-        #[invariant(i@ <= f.clauses@.len())]
-        #[invariant(counts@.len() == f.num_vars@)]
-        while i < f.clauses.len() {
-            let curr_clause = &f[i];
-            let mut j: usize = 0;
-            #[invariant(i@ <= f.clauses@.len())]
-            #[invariant(j@ <= curr_clause@.len())]
-            #[invariant(counts@.len() == f.num_vars@)]
-            while j < curr_clause.len() {
-                // Okay this is obviously provable, a vector cannot be longer than usize, and we don't allow duplicates, so we will
-                // never overflow, even if every clause contains a literal,
-                if counts[curr_clause[j].index()] < usize::MAX - 1 {
-                    counts[curr_clause[j].index()] += 1;
-                }
-                j += 1;
-            }
-            i += 1;
-        }
-        i = 0;
-        #[invariant(i@ <= f.num_vars@)]
-        #[invariant(counts_with_index@.len() == f.num_vars@)]
-        #[invariant(forall<j: Int> 0 <= j && j < f.num_vars@ ==> counts_with_index@[j].1@ < f.num_vars@)]
-        while i < f.num_vars {
-            counts_with_index[i] = (counts[i], i);
-            i += 1;
-        }
-        sort_reverse(&mut counts_with_index);
-        proof_assert!(forall<j: Int> 0 <= j && j < counts_with_index@.len() ==> counts_with_index@[j].1@ < f.num_vars@);
-        i = 0;
-        #[invariant(0 <= i@ && i@ <= f.num_vars@)]
-        #[invariant(lit_order@.len() == f.num_vars@)]
-        #[invariant(forall<j: Int> 0 <= j && j < f.num_vars@ ==> lit_order@[j]@ < f.num_vars@)]
-        while i < f.num_vars {
-            lit_order[i] = counts_with_index[i].1;
-            i += 1;
-        }
-        Self::make_linked_list(f, lit_order)
+    // Has to be called on an non-empty heap
+    #[maintains((mut self).invariant(self.order_heap.num_vars@))]
+    //#[ensures(self.order_heap.num_vars@ == (^self).order_heap.num_vars@)]
+    #[requires(self.order_heap.heap@.len() > 0)]
+    pub fn remove_min(&mut self) -> usize {
+        self.order_heap.remove_min()
     }
 
-    #[cfg_attr(feature = "trust_decision", trusted)]
-    #[maintains((mut self).invariant(_f.num_vars@))]
-    #[requires(self.linked_list@.len() < usize::MAX@)]
-    #[ensures((^self).timestamp@ == self.linked_list@.len() + 1)]
-    #[ensures((^self).linked_list@.len() == self.linked_list@.len())]
-    fn rescore(&mut self, _f: &Formula) {
-        let INVALID: usize = usize::MAX;
-        let old_self: Ghost<&mut Decisions> = ghost! { self };
-        let mut curr_score = self.linked_list.len();
-        let mut i: usize = 0;
-        let mut curr = self.start;
-        #[invariant(curr == usize::MAX || curr@ < self.linked_list@.len())]
-        #[invariant(forall<j: Int> 0 <= j && j < self.linked_list@.len() ==>
-            (self.linked_list@[j].next == old_self.linked_list@[j].next
-            && self.linked_list@[j].prev == old_self.linked_list@[j].prev)
-        )]
-        #[invariant(self.invariant(_f.num_vars@))]
-        while curr != INVALID {
-            self.linked_list[curr].ts = curr_score;
-            if curr_score > 0 {
-                curr_score -= 1;
-            } else {
-                break;
-            }
-            curr = self.linked_list[curr].next;
-        }
-        self.timestamp = self.linked_list.len() + 1;
-    }
-
-    #[cfg_attr(feature = "trust_decision", trusted)]
-    #[requires(_f.num_vars@ < usize::MAX@)]
-    #[requires(tomove@ < self.linked_list@.len())]
-    #[maintains((mut self).invariant(_f.num_vars@))]
-    fn move_to_front(&mut self, tomove: usize, _f: &Formula) {
-        let INVALID: usize = usize::MAX;
-        if tomove == self.start {
-            return;
-        }
-        let mut moving = &mut self.linked_list[tomove];
-        let prev = moving.prev;
-        let old_next = moving.next;
-        moving.prev = INVALID;
-        moving.next = self.start;
-        moving.ts = self.timestamp;
-        if self.timestamp == usize::MAX {
-            self.rescore(_f);
-        } else {
-            self.timestamp += 1;
-        }
-        proof_assert!(self.start@ < _f.num_vars@);
-        self.linked_list[self.start].prev = tomove;
-        self.start = tomove;
-        if prev != INVALID {
-            // lazy, should prove
-            self.linked_list[prev].next = old_next;
-        }
-        if old_next != INVALID {
-            self.linked_list[old_next].prev = prev;
-        }
+    // TODO
+    #[maintains((mut self).invariant(self.order_heap.num_vars@))]
+    pub fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize> {
         /*
-        // Why does Satch do this? It should be impossible...?
-        if a.0.get_unchecked(tomove) >= &2 {
-            panic!();
-            self.search = tomove;
+        while !self.order_heap.heap.len() == 0 {
+            let next = self.remove_min();
+            // Don't think the self.decision check really is needed.
+            if self.decision[next] && a[next] >= 2 {
+                return Some(next);
+            }
         }
         */
-    }
-
-    #[cfg_attr(feature = "trust_decision", trusted)]
-    #[requires(elems_less_than(v@, f.num_vars@))]
-    #[requires(f.num_vars@ < usize::MAX@)]
-    #[requires(f.invariant())]
-    #[maintains((mut self).invariant(f.num_vars@))]
-    pub fn increment_and_move(&mut self, f: &Formula, v: Vec<usize>) {
-        let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); v.len()];
-        let old_self: Ghost<&mut Decisions> = ghost! { self };
-        let mut i: usize = 0;
-        #[invariant(old_self.inner() == self)]
-        #[invariant(v@.len() == counts_with_index@.len())]
-        #[invariant(forall<j: Int> 0 <= j && j < i@ ==> counts_with_index@[j].1@ < self.linked_list@.len())]
-        while i < v.len() {
-            counts_with_index[i] = (self.linked_list[v[i]].ts, v[i]);
-            i += 1;
-        }
-        // TODO: Check actual speed. I believe selection sort is the slowest. Only need permut property.
-        //insertion_sort(&mut counts_with_index);
-        sort(&mut counts_with_index);
-        //counts_with_index.sort_unstable_by_key(|k| k.0);
-        //counts_with_index.sort_by_key(|k| k.0);
-        i = 0;
-        #[invariant(self.invariant(f.num_vars@))]
-        #[invariant(v@.len() == counts_with_index@.len())]
-        while i < counts_with_index.len() {
-            self.move_to_front(counts_with_index[i].1, f);
-            i += 1;
-        }
-    }
-
-    #[cfg_attr(feature = "trust_decision", trusted)]
-    #[maintains((mut self).invariant(_f.num_vars@))]
-    #[requires(a.invariant(*_f))]
-    #[ensures(match result {
-        Some(k) => k@ < (a@).len() && unset((a@)[k@]),
-        None    => a.complete(),
-    })]
-    pub fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize> {
-        let INVALID: usize = usize::MAX;
-        let mut curr = self.search;
-        #[invariant(curr == usize::MAX || curr@ < (a@).len())]
-        while curr != INVALID {
-            if a[curr] >= 2 {
-                self.search = self.linked_list[curr].next;
-                return Some(curr);
-            }
-            curr = self.linked_list[curr].next;
-        }
-        // Strictly speaking this is an unecessary runtime check, but it only gets run at most once and it
-        // greatly simplifies the proof.
-        let mut i: usize = 0;
-        #[invariant(forall<j: Int> 0 <= j && j < i@ ==> !unset((a@)[j]))]
-        while i < a.len() {
-            if a[i] >= 2 {
-                return Some(i);
-            }
-            i += 1;
-        }
         None
+    }
+
+    #[inline(always)]
+    #[maintains((mut self).invariant(self.order_heap.num_vars@))]
+    #[ensures(self.order_heap.heap@.len() == (^self).order_heap.heap@.len())]
+    //#[ensures(self.order_heap.num_vars == (^self).order_heap.num_vars)]
+    #[requires(v@ < self.order_heap.activity@.len())]
+    fn rescale(&mut self, v: usize) {
+        // Rescale:
+        for e in self.order_heap.activity.iter_mut() {
+            *e *= 1e-100;
+        }
+        self.var_inc *= 1e-100;
+    }
+
+    //#[maintains((mut self).invariant())]
+    #[maintains((mut self).invariant(self.order_heap.num_vars@))]
+    #[requires(v@ < self.order_heap.activity@.len())]
+    pub fn bump_variable(&mut self, v: usize) {
+        self.order_heap.activity[v] += self.var_inc;
+        if self.order_heap.activity[v] > 1e100 {
+            self.rescale(v);
+        }
+
+        // decrease checks whether v is in heap internally
+        self.order_heap.decrease(v);
+    }
+
+    #[inline(always)]
+    #[maintains((mut self).invariant(self.order_heap.num_vars@))]
+    pub fn decay_var_inc(&mut self) {
+        self.var_inc *= 1.0 / self.var_decay;
+    }
+
+    #[inline(always)]
+    #[maintains((mut self).invariant(self.order_heap.num_vars@))]
+    pub fn set_var_decay(&mut self, new_val: f64) {
+        self.var_decay = new_val;
+    }
+
+
+    #[maintains((mut self).invariant(self.order_heap.num_vars@))]
+    //#[ensures(self.order_heap.num_vars@ == (^self).order_heap.num_vars@)] // TODO: embed in invariant ?
+    #[requires(self.order_heap.heap@.len() < self.order_heap.indices@.len())]
+    #[requires(v@ < self.decision@.len())]
+    pub fn insert(&mut self, v: usize) {
+        if !self.order_heap.in_heap(v) && self.decision[v] {
+            self.order_heap.insert(v);
+        }
+    }
+
+    /*
+    #[maintains((mut self).invariant(self.order_heap.num_vars@))]
+    pub fn bump_reason_literals(&mut self, var: usize, trail: &Trail, formula: &Formula) {
+        let reason = trail.lit_to_reason[var];
+        if reason == INVALID {
+            return;
+        }
+        for l in formula.clauses[reason].lits.iter().skip(1) {
+            self.bump_variable(l.index());
+        }
+    }
+    */
+
+    #[maintains((mut self).invariant(self.order_heap.num_vars@))]
+    #[requires(v@ < self.decision@.len())]
+    pub fn turn_off_decision_for_idx(&mut self, v: usize) {
+        self.decision[v] = false;
     }
 }

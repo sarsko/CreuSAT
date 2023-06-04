@@ -102,7 +102,7 @@ impl Solver {
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut w).invariant(mut f))]
     #[maintains((mut d).invariant(f.num_vars@))]
-    #[requires(f.num_vars@ < usize::MAX@/2)]
+    #[requires(f.num_vars@ < MAX_NUM_VARS@)]
     #[requires(clause.invariant(f.num_vars@))]
     #[requires(equisat_extension_inner(clause, f@))]
     #[requires((clause@).len() > 1)]
@@ -145,7 +145,7 @@ impl Solver {
     #[maintains((mut t).invariant(mut f))]
     #[maintains((mut w).invariant(mut f))]
     #[maintains((mut d).invariant(f.num_vars@))]
-    #[requires(f.num_vars@ < usize::MAX@/2)]
+    #[requires(f.num_vars@ < MAX_NUM_VARS@)]
     #[requires(cref@ < f.clauses@.len())]
     #[requires(f.clauses@[cref@].unsat(t.assignments))]
     #[ensures(f.num_vars@ == (^f).num_vars@)]
@@ -350,7 +350,7 @@ pub fn solver(formula: &mut Formula) -> SatResult {
         o => return o,
     }
     let mut trail = Trail::new(formula, Assignments::new(formula));
-    let mut decisions = Decisions::new(formula);
+    let mut decisions = Decisions::new(formula.num_vars);
     let mut watches = Watches::new(formula);
     watches.init_watches(formula);
     match trail.learn_units(formula, &mut decisions) {
