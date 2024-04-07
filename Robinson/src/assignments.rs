@@ -16,12 +16,14 @@ impl ShallowModel for Assignments {
     type ShallowModelTy = Seq<AssignedState>;
 
     #[logic]
+    #[open]
     fn shallow_model(self) -> Self::ShallowModelTy {
         self.0.shallow_model()
     }
 }
 
 #[predicate]
+#[open]
 pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     pearlite! {
         a.len() == a2.len() && (forall<i: Int> 0 <= i && i < a.len() ==>
@@ -30,6 +32,7 @@ pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
 }
 
 #[predicate]
+#[open]
 pub fn complete_inner(a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < a.len() ==> !unset(a[i])
@@ -37,11 +40,13 @@ pub fn complete_inner(a: Seq<AssignedState>) -> bool {
 }
 
 #[predicate]
+#[open]
 pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     compatible_inner(a, a2) && complete_inner(a2)
 }
 
 #[predicate]
+#[open]
 pub fn assignments_invariant(a: Seq<AssignedState>, f: Formula) -> bool {
     pearlite! { f.num_vars@ == a.len() }
 }
@@ -49,6 +54,7 @@ pub fn assignments_invariant(a: Seq<AssignedState>, f: Formula) -> bool {
 // Predicates
 impl Assignments {
     #[predicate]
+    #[open]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
             f.num_vars@ == self@.len() && self.1@ <= f.num_vars@
@@ -56,11 +62,13 @@ impl Assignments {
     }
 
     #[predicate]
+    #[open]
     pub fn compatible(self, a2: Assignments) -> bool {
         pearlite! { compatible_inner(self@, a2@) }
     }
 
     #[predicate]
+    #[open]
     pub fn complete(self) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self@.len() ==> !unset(self@[i])
@@ -68,6 +76,7 @@ impl Assignments {
     }
 
     #[predicate]
+    #[open]
     pub fn compatible_complete(self, a2: Assignments) -> bool {
         self.compatible(a2) && a2.complete()
     }
@@ -126,7 +135,7 @@ impl Assignments {
             }
             i += 1;
         }
-        panic!();
+        unreachable!();
     }
 
     #[cfg_attr(feature = "trust_assignments", trusted)]
@@ -150,7 +159,7 @@ impl Assignments {
     #[ensures((self).complete() ==> *self == ^self && ((result == ClauseState::Unsat) || (result == ClauseState::Sat)))]
     pub fn unit_prop_once(&mut self, i: usize, f: &Formula) -> ClauseState {
         let clause = &f.clauses[i];
-        let _old_a: Ghost<&mut Assignments> = ghost!(self);
+        let _old_a: Snapshot<&mut Assignments> = snapshot!(self);
         match clause.check_if_unit(self, f) {
             ClauseState::Unit => {
                 // I tried both to make ClauseState::Unit contain a usize and to return a tuple, but
@@ -187,7 +196,7 @@ impl Assignments {
     })]
     #[ensures((self).complete() ==> *self == (^self) && ((result == ClauseState::Unsat) || f.sat(*self)))]
     pub fn unit_propagate(&mut self, f: &Formula) -> ClauseState {
-        let _old_a: Ghost<&mut Assignments> = ghost!(self);
+        let _old_a: Snapshot<&mut Assignments> = snapshot!(self);
         let mut i: usize = 0;
         let mut out = ClauseState::Sat;
         #[invariant(self.invariant(*f))]
@@ -232,7 +241,7 @@ impl Assignments {
     #[ensures(result == Some(true) ==> f.sat(^self))]
     #[ensures(result == None ==> !(^self).complete())]
     pub fn do_unit_propagation(&mut self, f: &Formula) -> Option<bool> {
-        let _old_a: Ghost<&mut Assignments> = ghost!(self);
+        let _old_a: Snapshot<&mut Assignments> = snapshot!(self);
         #[invariant(self.invariant(*f))]
         #[invariant(_old_a.compatible(*self))]
         #[invariant(f.eventually_sat_complete(*_old_a.inner()) ==> f.eventually_sat_complete(*self))]
