@@ -45,13 +45,11 @@ Remember do add the `--release` as in `cargo test --release [TEST_TO_RUN]`, othe
 
 ## How do I prove the solver?
 
-I would recommend following the instructions in the [Creusot](https://github.com/xldenis/creusot#installing) directory for instructions on how to get Why3 and Creusot up and running.
+You'll need to install Creusot. This is best done by following the instructions in the [Creusot](https://github.com/creusot-rs/creusot#installing-creusot-as-a-user) repository.
 
-To prove it you'll need to do the following:
-1. Install [Rust](https://www.rust-lang.org/tools/install).
-2. Install [Creusot](https://github.com/xldenis/creusot). Clone it, and then run `cargo install --path creusot`.
-3. Install Why3. I recommend following the guide in the [Creusot](https://github.com/xldenis/creusot#installing) repository.
-4. Install some SMT solvers: [Z3](https://github.com/Z3Prover/z3) (available by `brew`, `apt`, etc.), [CVC4](https://cvc4.github.io/) (`brew`, `apt`, etc.), [Alt-Ergo](https://alt-ergo.ocamlpro.com/) (`opam`, `apt`, etc.).
+Once that is done then you could previously use Cargo Make. That is currently broken, and I have yet to fix it, so you'll for now have to do with `cd`ing into the directory of the solver you'd like to verifiy, and then run `cargo creusot why3 ide`. After a bit the Why3 IDE should appear. There you'll (hopefully) be able to choose the root note and press <kbd>3</kbd>. If you successfully installed Creusot and the Why3 toolchain then SMT solvers will be dispatched to prove the various Verification Conditions, and at some point everything will be marked with a green checkmark.
+
+### Cargo Make stuff (currently broken)
 
 CreuSAT is using [Cargo Make](https://github.com/sagiegurari/cargo-make) to make building easier. It can be installed by running:
 ```
@@ -80,7 +78,7 @@ The following `cargo make` commands are supported:
 
 ## Creusot seems really cool! How can I learn it?
 
-There are a bunch of tests in the Creusot directory which I recommend looking at.
+There are a bunch of tests in the [Creusot repository](https://github.com/xldenis/creusot) which I recommend looking at.
 
 You could also check out [Friday](/Friday/) and [Robinson](/Robinson/) for a couple of verified solvers
 which are both easier to grok algorithmically and proof-wise.
@@ -89,6 +87,7 @@ which are both easier to grok algorithmically and proof-wise.
 ## Overview of the repository
 
 **The interesting stuff:** \
+[/SarekSkotåm_thesis.pdf](/SarekSkot%C3%A5m_thesis.pdf/) - The thesis itself. \
 [/CreuSAT](/CreuSAT/) - The source code for CreuSAT. \
 [/Robinson](/Robinson/) - A fully verified DPLL-based solver. \
 [/Friday](/Friday/) - A fully verified and super naive SAT solver. 
