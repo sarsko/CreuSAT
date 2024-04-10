@@ -83,6 +83,7 @@ There are a bunch of tests in the [Creusot repository](https://github.com/xldeni
 You could also check out [Friday](/Friday/) and [Robinson](/Robinson/) for a couple of verified solvers
 which are both easier to grok algorithmically and proof-wise.
 
+Oh, and yeah, read the [thesis](/SarekSkot%C3%A5m_thesis.pdf/). You don't have to read the whole thing, but it has a pretty good introduction to Creusot, program verification, and SAT solving. At least I think it is pretty good, and I've also gotten feedback from people not all that familiar with these kinds of things that it is fairly accessible.
 
 ## Overview of the repository
 
