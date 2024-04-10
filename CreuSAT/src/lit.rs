@@ -20,6 +20,7 @@ impl ShallowModel for Lit {
     type ShallowModelTy = Lit;
 
     #[logic]
+    #[open]
     fn shallow_model(self) -> Self {
         self
     }
@@ -30,6 +31,7 @@ impl DeepModel for Lit {
     type DeepModelTy = Lit;
 
     #[logic]
+    #[open]
     fn deep_model(self) -> Self {
         self
     }

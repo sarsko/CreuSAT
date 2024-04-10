@@ -1,5 +1,5 @@
 extern crate creusot_contracts;
-use creusot_contracts::{std::*, Ghost, *};
+use creusot_contracts::{std::*, Snapshot, *};
 
 use crate::{assignments::*, decision::*, formula::*, lit::*};
 
@@ -60,7 +60,7 @@ impl Trail {
     #[ensures(result@ < f.num_vars@)]
     //#[ensures((self@.trail).len() == (@(^self).trail).len() + 1)] // added
     fn backstep(&mut self, f: &Formula) -> usize {
-        let old_t: Ghost<&mut Trail> = ghost! { self };
+        let old_t: Snapshot<&mut Trail> = snapshot! { self };
         //proof_assert!(self == old_t@);
         let last = self.trail.pop();
         match last {
@@ -116,8 +116,8 @@ impl Trail {
     #[ensures(long_are_post_unit_inner((^self).trail@, *f, (^self).assignments@))]
     // Backtracks to the start of level
     pub fn backtrack_to(&mut self, level: usize, f: &Formula, d: &mut Decisions) {
-        let old_t: Ghost<&mut Trail> = ghost! { self };
-        let old_d: Ghost<&mut Decisions> = ghost! { d };
+        let old_t: Snapshot<&mut Trail> = snapshot! { self };
+        let old_d: Snapshot<&mut Decisions> = snapshot! { d };
         let how_many = self.trail.len() - self.decisions[level];
         let des = self.decisions[level];
         let mut i: usize = 0;
@@ -146,7 +146,7 @@ impl Trail {
         #[invariant(long_are_post_unit_inner(self.trail@, *f, self.assignments@))]
         #[invariant(self.invariant_no_decision(*f))]
         while self.decisions.len() > level {
-            let old_t2: Ghost<&mut Trail> = ghost! { self };
+            let old_t2: Snapshot<&mut Trail> = snapshot! { self };
             proof_assert!(sorted(self.decisions@));
             proof_assert!(self.decisions@.len() > 0);
             proof_assert!(lemma_pop_maintains_sorted(self.decisions@); true);
@@ -165,7 +165,7 @@ impl Trail {
         #[invariant(long_are_post_unit_inner(self.trail@, *f, self.assignments@))]
         #[invariant(self.invariant_no_decision(*f))]
         while self.decisions.len() > 0 && self.decisions[self.decisions.len() - 1] > self.trail.len() {
-            let old_t3: Ghost<&mut Trail> = ghost! { self };
+            let old_t3: Snapshot<&mut Trail> = snapshot! { self };
             proof_assert!(sorted(self.decisions@));
             proof_assert!(self.decisions@.len() > 0);
             proof_assert!(lemma_pop_maintains_sorted(self.decisions@); true);
@@ -309,8 +309,8 @@ impl Trail {
     })]
     pub fn learn_units(&mut self, f: &Formula, d: &mut Decisions) -> Option<bool> {
         let mut i = 0;
-        let old_d: Ghost<&mut Decisions> = ghost! { d };
-        let old_self: Ghost<&mut Trail> = ghost! { self };
+        let old_d: Snapshot<&mut Decisions> = snapshot! { d };
+        let old_self: Snapshot<&mut Trail> = snapshot! { self };
         #[invariant(self.invariant(*f))]
         #[invariant(d.invariant(f.num_vars@))]
         while i < f.clauses.len() {

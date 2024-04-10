@@ -1,5 +1,5 @@
 extern crate creusot_contracts;
-use creusot_contracts::{std::*, Ghost, *};
+use creusot_contracts::{std::*, Snapshot, *};
 
 #[cfg(creusot)]
 use crate::logic::logic_util::*;
@@ -10,7 +10,7 @@ use crate::logic::logic_util::*;
 #[ensures((^v)@.permutation_of(v@))]
 pub fn sort_reverse(v: &mut Vec<(usize, usize)>) {
     let mut i: usize = 0;
-    let old_v: Ghost<&mut Vec<(usize, usize)>> = ghost! { v };
+    let old_v: Snapshot<&mut Vec<(usize, usize)>> = snapshot! { v };
     #[invariant(v@.permutation_of(old_v@))]
     #[invariant(i@ <= v@.len())]
     #[invariant(sorted_range_rev(v@, 0, i@))]
@@ -58,7 +58,7 @@ pub fn update_slow(slow: &mut usize, lbd: usize) {
 #[ensures((^v)@.permutation_of(v@))]
 pub fn sort(v: &mut Vec<(usize, usize)>) {
     let mut i: usize = 0;
-    let old_v: Ghost<&mut Vec<(usize, usize)>> = ghost! { v };
+    let old_v: Snapshot<&mut Vec<(usize, usize)>> = snapshot! { v };
     #[invariant(v@.permutation_of(old_v@))]
     #[invariant(i@ <= v@.len())]
     #[invariant(sorted_range_tuple_zeroth(v@, 0, i@))]
@@ -81,7 +81,8 @@ pub fn sort(v: &mut Vec<(usize, usize)>) {
 }
 
 #[logic]
-fn min_log(a: Int, b: Int) -> Int {
+#[open]
+pub fn min_log(a: Int, b: Int) -> Int {
     if a <= b {
         a
     } else {
@@ -103,7 +104,8 @@ pub fn min(a: usize, b: usize) -> usize {
 }
 
 #[logic]
-fn max_log(a: Int, b: Int) -> Int {
+#[open]
+pub fn max_log(a: Int, b: Int) -> Int {
     if a >= b {
         a
     } else {

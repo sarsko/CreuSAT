@@ -1,5 +1,5 @@
 extern crate creusot_contracts;
-use creusot_contracts::{ensures, ghost, invariant, maintains, proof_assert, requires, std::vec, Clone, Ghost, Int, *};
+use creusot_contracts::{ensures, invariant, maintains, proof_assert, requires, std::vec, Clone, Int, Snapshot, *};
 
 use crate::{assignments::*, formula::*, util::*};
 
@@ -26,6 +26,7 @@ impl ::std::default::Default for Node {
 
 impl creusot_contracts::Default for Node {
     #[predicate]
+    #[open]
     fn is_default(self) -> bool {
         pearlite! { self.next@ == usize::MAX@ && self.prev@ == usize::MAX@ && self.ts@ == 0 }
     }
@@ -135,7 +136,7 @@ impl Decisions {
     #[ensures((^self).linked_list@.len() == self.linked_list@.len())]
     fn rescore(&mut self, _f: &Formula) {
         let INVALID: usize = usize::MAX;
-        let old_self: Ghost<&mut Decisions> = ghost! { self };
+        let old_self: Snapshot<&mut Decisions> = snapshot! { self };
         let mut curr_score = self.linked_list.len();
         let mut i: usize = 0;
         let mut curr = self.start;
@@ -203,7 +204,7 @@ impl Decisions {
     #[maintains((mut self).invariant(f.num_vars@))]
     pub fn increment_and_move(&mut self, f: &Formula, v: Vec<usize>) {
         let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); v.len()];
-        let old_self: Ghost<&mut Decisions> = ghost! { self };
+        let old_self: Snapshot<&mut Decisions> = snapshot! { self };
         let mut i: usize = 0;
         #[invariant(old_self.inner() == self)]
         #[invariant(v@.len() == counts_with_index@.len())]

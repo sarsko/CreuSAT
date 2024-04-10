@@ -6,6 +6,7 @@ use crate::decision::*;
 
 impl Decisions {
     #[predicate]
+    #[open]
     pub fn invariant(self, n: Int) -> bool {
         pearlite! {
             self.linked_list@.len() == n

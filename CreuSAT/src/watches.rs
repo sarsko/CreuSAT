@@ -1,5 +1,5 @@
 extern crate creusot_contracts;
-use creusot_contracts::{std::*, Ghost, *};
+use creusot_contracts::{std::*, Snapshot, *};
 
 use crate::{formula::*, lit::*, trail::*};
 
@@ -39,7 +39,7 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
     watches.watches[watchidx].swap(j, end);
     let curr_lit = f[cref][k];
     proof_assert!(watchidx@ < watches.watches@.len());
-    let old_w: Ghost<&mut Watches> = ghost!(watches);
+    let old_w: Snapshot<&mut Watches> = snapshot!(watches);
     proof_assert!(watcher_crefs_in_range(watches.watches@[watchidx@]@, *f));
     match watches.watches[watchidx].pop() {
         Some(w) => {
@@ -130,7 +130,7 @@ impl Watches {
     #[requires(f.num_vars@ < usize::MAX@/2)]
     #[requires(f.invariant())]
     pub fn init_watches(&mut self, f: &Formula) {
-        let old_w: Ghost<&mut Watches> = ghost! { self };
+        let old_w: Snapshot<&mut Watches> = snapshot! { self };
         let mut i = 0;
         #[invariant(self.invariant(*f))]
         #[invariant(self.watches@.len() == 2 * f.num_vars@)]
@@ -165,8 +165,8 @@ impl Watches {
                 self.watches[watchidx].swap(i, end);
 
                 // TODO
-                // Ugly "ghost" match. Grr.
-                let old_w: Ghost<&mut Watches> = ghost! { self };
+                // Ugly "Snapshot" match. Grr.
+                let old_w: Snapshot<&mut Watches> = snapshot! { self };
                 match self.watches[watchidx].pop() {
                     Some(w) => {
                         proof_assert!(^old_w.inner() == ^self);

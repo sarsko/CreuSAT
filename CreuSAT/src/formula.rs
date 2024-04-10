@@ -1,7 +1,7 @@
 // Formula is Mac OK with an inline_full + split on VC #12 for add_clause 11.04 22.18
 extern crate creusot_contracts;
 
-use creusot_contracts::{std::*, Ghost, *};
+use creusot_contracts::{std::*, Snapshot, *};
 
 use crate::{assignments::*, clause::*, solver::*, trail::*, watches::*};
 use ::std::ops::{Index, IndexMut};
@@ -25,8 +25,8 @@ impl Index<usize> for Formula {
     type Output = Clause;
     #[inline]
     #[cfg_attr(feature = "trust_formula", trusted)]
-    #[requires(ix@ < self@.0.len())]
-    #[ensures(self@.0[ix@] == *result)]
+    #[requires(ix@ < self@.clauses.len())]
+    #[ensures(self@.clauses[ix@] == *result)]
     fn index(&self, ix: usize) -> &Clause {
         #[cfg(not(creusot))]
         unsafe {
@@ -40,11 +40,11 @@ impl Index<usize> for Formula {
 impl IndexMut<usize> for Formula {
     #[inline]
     #[cfg_attr(feature = "trust_formula", trusted)]
-    #[requires(ix@ < self@.0.len())]
-    #[ensures(self@.0[ix@] == *result)]
-    #[ensures((^self)@.0[ix@] == ^result)]
-    #[ensures(forall<i: Int> 0 <= i && i != ix@ && i < self@.0.len() ==> self@.0[i] == (^self)@.0[i])]
-    #[ensures((^self)@.0.len() == (*self)@.0.len())]
+    #[requires(ix@ < self@.clauses.len())]
+    #[ensures(self@.clauses[ix@] == *result)]
+    #[ensures((^self)@.clauses[ix@] == ^result)]
+    #[ensures(forall<i: Int> 0 <= i && i != ix@ && i < self@.clauses.len() ==> self@.clauses[i] == (^self)@.clauses[i])]
+    #[ensures((^self)@.clauses.len() == (*self)@.clauses.len())]
     fn index_mut(&mut self, ix: usize) -> &mut Clause {
         #[cfg(not(creusot))]
         unsafe {
@@ -122,7 +122,7 @@ impl Formula {
     #[ensures((^self).clauses@[result@] == clause)]
     #[ensures(self.clauses@.len() + 1 == (^self).clauses@.len())]
     pub fn add_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
-        let old_self: Ghost<&mut Formula> = ghost! { self };
+        let old_self: Snapshot<&mut Formula> = snapshot! { self };
         let cref = self.clauses.len();
         // The weird assignment to first_/second_lit is because otherwise we break the precond for
         // add_watcher that the cref should be less than f.clauses.len(). We can't update the watches
@@ -154,7 +154,7 @@ impl Formula {
     #[ensures((^self).clauses@[result@] == clause)]
     #[ensures(self.clauses@.len() + 1 == (^self).clauses@.len())]
     pub fn add_unwatched_clause(&mut self, clause: Clause, watches: &mut Watches, _t: &Trail) -> usize {
-        let old_self: Ghost<&mut Formula> = ghost! { self };
+        let old_self: Snapshot<&mut Formula> = snapshot! { self };
         let cref = self.clauses.len();
         self.clauses.push(clause);
         cref
@@ -177,7 +177,7 @@ impl Formula {
     #[ensures((^self).clauses@[result@]@.len() == 1)]
     #[ensures(self.clauses@.len() + 1 == (^self).clauses@.len())]
     pub fn add_unit(&mut self, clause: Clause, _t: &Trail) -> usize {
-        let old_self: Ghost<&mut Formula> = ghost! { self };
+        let old_self: Snapshot<&mut Formula> = snapshot! { self };
         let cref = self.clauses.len();
         self.clauses.push(clause);
         cref
@@ -209,7 +209,7 @@ impl Formula {
     #[ensures(self.equisat(^self))]
     #[ensures(self.num_vars == (^self).num_vars)]
     fn delete_clause(&mut self, cref: usize, watches: &mut Watches, t: &Trail) {
-        let old_f: Ghost<&mut Formula> = ghost! { self };
+        let old_f: Snapshot<&mut Formula> = snapshot! { self };
         watches.unwatch(self, t, cref, self.clauses[cref][0]);
         watches.unwatch(self, t, cref, self.clauses[cref][1]);
         self.clauses[cref].deleted = true;
@@ -229,8 +229,8 @@ impl Formula {
     #[ensures(self.num_vars == (^self).num_vars)]
     #[ensures(self.equisat(^self))]
     pub fn delete_clauses(&mut self, watches: &mut Watches, t: &Trail) {
-        let old_f: Ghost<&mut Formula> = ghost! { self };
-        let old_w: Ghost<&mut Watches> = ghost! { watches };
+        let old_f: Snapshot<&mut Formula> = snapshot! { self };
+        let old_w: Snapshot<&mut Watches> = snapshot! { watches };
         // unwatch trivially SAT
         let mut i = 0;
         #[invariant(watches.invariant(*self))]
@@ -287,8 +287,8 @@ impl Formula {
         }
         //s.num_lemmas = 0;
         let mut i = s.initial_len;
-        let old_f: Ghost<&mut Formula> = ghost! { self };
-        let old_w: Ghost<&mut Watches> = ghost! { watches };
+        let old_f: Snapshot<&mut Formula> = snapshot! { self };
+        let old_w: Snapshot<&mut Watches> = snapshot! { watches };
         #[invariant(watches.invariant(*self))]
         #[invariant(t.invariant(*self))]
         #[invariant(self.invariant())]

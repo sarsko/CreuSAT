@@ -1,7 +1,7 @@
 extern crate creusot_contracts;
 use ::std::panic;
 
-use creusot_contracts::{std::*, Ghost, *};
+use creusot_contracts::{std::*, Snapshot, *};
 
 use crate::{
     assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, trail::*, unit_prop::*, util::*,
@@ -227,10 +227,10 @@ impl Solver {
     #[ensures(f.num_vars@ == (^f).num_vars@)]
     #[ensures(f.equisat(^f))]
     fn unit_prop_loop(&mut self, f: &mut Formula, d: &mut Decisions, t: &mut Trail, w: &mut Watches) -> Option<bool> {
-        let old_f: Ghost<&mut Formula> = ghost! { f };
-        let old_t: Ghost<&mut Trail> = ghost! { t };
-        let old_w: Ghost<&mut Watches> = ghost! { w };
-        let old_d: Ghost<&mut Decisions> = ghost! { d };
+        let old_f: Snapshot<&mut Formula> = snapshot! { f };
+        let old_t: Snapshot<&mut Trail> = snapshot! { t };
+        let old_w: Snapshot<&mut Watches> = snapshot! { w };
+        let old_d: Snapshot<&mut Decisions> = snapshot! { d };
         #[invariant(f.invariant())]
         #[invariant(t.invariant(*f))]
         #[invariant(w.invariant(*f))]
@@ -320,7 +320,7 @@ impl Solver {
     fn inner(
         &mut self, formula: &mut Formula, mut decisions: Decisions, mut trail: Trail, mut watches: Watches,
     ) -> SatResult {
-        let old_f: Ghost<&mut Formula> = ghost! { formula };
+        let old_f: Snapshot<&mut Formula> = snapshot! { formula };
         #[invariant(old_f.inner().equisat(*formula))]
         #[invariant(formula.num_vars@ == old_f.num_vars@)]
         #[invariant(formula.invariant())]
