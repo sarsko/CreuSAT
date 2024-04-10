@@ -131,7 +131,7 @@ impl ClauseAllocator {
         let cref = self.buffer.len() as CRef;
         self.buffer.push(Lit::raw(lits.len() as u32));
 
-        let old_self: Ghost<&mut ClauseAllocator> = ghost!(self);
+        let old_self: Snapshot<&mut ClauseAllocator> = snapshot!(self);
 
         #[invariant(self.num_vars == old_self.num_vars)] // TODO: Don't like this
         #[invariant(^*old_self == ^self)]

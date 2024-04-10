@@ -760,7 +760,7 @@ module NewDb_ClauseAllocator_Impl1_GetClauseFsetInternal_Impl
   clone NewDb_ClauseAllocator_Impl2_ShallowModel as ShallowModel0 with
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
     val Max0.mAX' = Max0.mAX'
-  let rec ghost function get_clause_fset_internal [#"../NewDB/src/clause_allocator.rs" 84 4 84 83] (self : NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator) (cref : int) (idx : int) (upper : int) : Fset.fset (NewDb_Lit_Lit_Type.t_lit)
+  let rec Snapshot function get_clause_fset_internal [#"../NewDB/src/clause_allocator.rs" 84 4 84 83] (self : NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator) (cref : int) (idx : int) (upper : int) : Fset.fset (NewDb_Lit_Lit_Type.t_lit)
     requires {[#"../NewDB/src/clause_allocator.rs" 83 15 83 47] idx >= 0 /\ upper <= Seq.length (ShallowModel0.shallow_model self)}
     variant {[#"../NewDB/src/clause_allocator.rs" 82 14 82 25] upper - idx}
     
@@ -1193,31 +1193,31 @@ module CreusotContracts_Std1_Slice_Impl15_Produces
     ensures { result = produces self visited tl }
     
 end
-module CreusotContracts_Ghost_Impl1_ShallowModel_Stub
+module CreusotContracts_Snapshot_Impl1_ShallowModel_Stub
   type t
-  use prelude.Ghost
+  use prelude.Snapshot
   clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
     type self = t
-  function shallow_model (self : Ghost.ghost_ty t) : ShallowModelTy0.shallowModelTy
+  function shallow_model (self : Snapshot.Snapshot_ty t) : ShallowModelTy0.shallowModelTy
 end
-module CreusotContracts_Ghost_Impl1_ShallowModel_Interface
+module CreusotContracts_Snapshot_Impl1_ShallowModel_Interface
   type t
-  use prelude.Ghost
+  use prelude.Snapshot
   clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
     type self = t
-  function shallow_model (self : Ghost.ghost_ty t) : ShallowModelTy0.shallowModelTy
+  function shallow_model (self : Snapshot.Snapshot_ty t) : ShallowModelTy0.shallowModelTy
 end
-module CreusotContracts_Ghost_Impl1_ShallowModel
+module CreusotContracts_Snapshot_Impl1_ShallowModel
   type t
-  use prelude.Ghost
+  use prelude.Snapshot
   clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
     type self = t
   clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
     type t = t,
     type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy
-  function shallow_model (self : Ghost.ghost_ty t) : ShallowModelTy0.shallowModelTy =
-    ShallowModel0.shallow_model (Ghost.inner self)
-  val shallow_model (self : Ghost.ghost_ty t) : ShallowModelTy0.shallowModelTy
+  function shallow_model (self : Snapshot.Snapshot_ty t) : ShallowModelTy0.shallowModelTy =
+    ShallowModel0.shallow_model (Snapshot.inner self)
+  val shallow_model (self : Snapshot.Snapshot_ty t) : ShallowModelTy0.shallowModelTy
     ensures { result = shallow_model self }
     
 end
@@ -1612,7 +1612,7 @@ module NewDb_ClauseAllocator_Impl3_AddClause
   use prelude.Borrow
   use prelude.Slice
   use prelude.UIntSize
-  use prelude.Ghost
+  use prelude.Snapshot
   use seq.Seq
   use prelude.IntSize
   use Core_Slice_Iter_Iter_Type as Core_Slice_Iter_Iter_Type
@@ -1717,7 +1717,7 @@ module NewDb_ClauseAllocator_Impl3_AddClause
     predicate Produces0.produces = Produces0.produces
   clone NewDb_Lit_Impl1_VarInRange as VarInRange0 with
     function IndexLogic0.index_logic = IndexLogic1.index_logic
-  clone CreusotContracts_Ghost_Impl1_ShallowModel as ShallowModel3 with
+  clone CreusotContracts_Snapshot_Impl1_ShallowModel as ShallowModel3 with
     type t = borrowed (NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator),
     type ShallowModelTy0.shallowModelTy = Seq.seq (NewDb_Lit_Lit_Type.t_lit),
     function ShallowModel0.shallow_model = ShallowModel9.shallow_model
@@ -1778,14 +1778,14 @@ module NewDb_ClauseAllocator_Impl3_AddClause
   var _21 : uint32;
   var _22 : usize;
   var _23 : slice (NewDb_Lit_Lit_Type.t_lit);
-  var old_self_24 : Ghost.ghost_ty (borrowed (NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator));
+  var old_self_24 : Snapshot.Snapshot_ty (borrowed (NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator));
   var _26 : ();
   var _27 : ();
   var iter_28 : Core_Slice_Iter_Iter_Type.t_iter (NewDb_Lit_Lit_Type.t_lit);
   var _29 : slice (NewDb_Lit_Lit_Type.t_lit);
-  var iter_old_30 : Ghost.ghost_ty (Core_Slice_Iter_Iter_Type.t_iter (NewDb_Lit_Lit_Type.t_lit));
+  var iter_old_30 : Snapshot.Snapshot_ty (Core_Slice_Iter_Iter_Type.t_iter (NewDb_Lit_Lit_Type.t_lit));
   var _32 : ();
-  var produced_33 : Ghost.ghost_ty (Seq.seq (NewDb_Lit_Lit_Type.t_lit));
+  var produced_33 : Snapshot.Snapshot_ty (Seq.seq (NewDb_Lit_Lit_Type.t_lit));
   var _36 : ();
   var _45 : ();
   var _46 : Core_Option_Option_Type.t_option (NewDb_Lit_Lit_Type.t_lit);
@@ -1793,7 +1793,7 @@ module NewDb_ClauseAllocator_Impl3_AddClause
   var _48 : borrowed (Core_Slice_Iter_Iter_Type.t_iter (NewDb_Lit_Lit_Type.t_lit));
   var _49 : isize;
   var __creusot_proc_iter_elem_50 : NewDb_Lit_Lit_Type.t_lit;
-  var _51 : Ghost.ghost_ty (Seq.seq (NewDb_Lit_Lit_Type.t_lit));
+  var _51 : Snapshot.Snapshot_ty (Seq.seq (NewDb_Lit_Lit_Type.t_lit));
   var _53 : ();
   var lit_54 : NewDb_Lit_Lit_Type.t_lit;
   var _55 : ();
@@ -1829,7 +1829,7 @@ module NewDb_ClauseAllocator_Impl3_AddClause
   }
   BB4 {
     _26 <- ();
-    old_self_24 <- ([#"../NewDB/src/clause_allocator.rs" 125 52 125 64] Ghost.new self_1);
+    old_self_24 <- ([#"../NewDB/src/clause_allocator.rs" 125 52 125 64] Snapshot.new self_1);
     goto BB5
   }
   BB5 {
@@ -1839,12 +1839,12 @@ module NewDb_ClauseAllocator_Impl3_AddClause
   }
   BB6 {
     _32 <- ();
-    iter_old_30 <- ([#"../NewDB/src/clause_allocator.rs" 127 8 127 56] Ghost.new iter_28);
+    iter_old_30 <- ([#"../NewDB/src/clause_allocator.rs" 127 8 127 56] Snapshot.new iter_28);
     goto BB7
   }
   BB7 {
     _36 <- ();
-    produced_33 <- ([#"../NewDB/src/clause_allocator.rs" 127 8 127 56] Ghost.new (Seq.empty ));
+    produced_33 <- ([#"../NewDB/src/clause_allocator.rs" 127 8 127 56] Snapshot.new (Seq.empty ));
     goto BB8
   }
   BB8 {
@@ -1852,10 +1852,10 @@ module NewDb_ClauseAllocator_Impl3_AddClause
   }
   BB9 {
     invariant { [#"../NewDB/src/clause_allocator.rs" 127 8 127 56] Invariant1.invariant' iter_28 };
-    invariant { [#"../NewDB/src/clause_allocator.rs" 127 8 127 56] Produces0.produces (Ghost.inner iter_old_30) (Ghost.inner produced_33) iter_28 };
-    invariant { [#"../NewDB/src/clause_allocator.rs" 127 20 127 54] NewDb_ClauseAllocator_ClauseAllocator_Type.clauseallocator_num_vars ( * self_1) = NewDb_ClauseAllocator_ClauseAllocator_Type.clauseallocator_num_vars ( * Ghost.inner old_self_24) };
-    invariant { [#"../NewDB/src/clause_allocator.rs" 128 20 128 39]  ^ Ghost.inner old_self_24 =  ^ self_1 };
-    invariant { [#"../NewDB/src/clause_allocator.rs" 129 20 129 67] Seq.length (ShallowModel1.shallow_model self_1) = Seq.length (ShallowModel3.shallow_model old_self_24) + Seq.length (Ghost.inner produced_33) };
+    invariant { [#"../NewDB/src/clause_allocator.rs" 127 8 127 56] Produces0.produces (Snapshot.inner iter_old_30) (Snapshot.inner produced_33) iter_28 };
+    invariant { [#"../NewDB/src/clause_allocator.rs" 127 20 127 54] NewDb_ClauseAllocator_ClauseAllocator_Type.clauseallocator_num_vars ( * self_1) = NewDb_ClauseAllocator_ClauseAllocator_Type.clauseallocator_num_vars ( * Snapshot.inner old_self_24) };
+    invariant { [#"../NewDB/src/clause_allocator.rs" 128 20 128 39]  ^ Snapshot.inner old_self_24 =  ^ self_1 };
+    invariant { [#"../NewDB/src/clause_allocator.rs" 129 20 129 67] Seq.length (ShallowModel1.shallow_model self_1) = Seq.length (ShallowModel3.shallow_model old_self_24) + Seq.length (Snapshot.inner produced_33) };
     invariant { [#"../NewDB/src/clause_allocator.rs" 127 8 127 56] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel3.shallow_model old_self_24) -> Seq.get (ShallowModel1.shallow_model self_1) i = Seq.get (ShallowModel3.shallow_model old_self_24) i };
     invariant { [#"../NewDB/src/clause_allocator.rs" 127 8 127 56] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel1.shallow_model self_1) - Seq.length (ShallowModel3.shallow_model old_self_24) -> Seq.get (ShallowModel1.shallow_model self_1) (UInt32.to_int cref_15 + UIntSize.to_int HeaderLen0.hEADER_LEN' + i) = Seq.get (ShallowModel0.shallow_model lits_2) i };
     invariant { [#"../NewDB/src/clause_allocator.rs" 127 8 127 56] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel1.shallow_model self_1) - Seq.length (ShallowModel3.shallow_model old_self_24) -> VarInRange0.var_in_range (Seq.get (ShallowModel1.shallow_model self_1) (UInt32.to_int cref_15 + UIntSize.to_int HeaderLen0.hEADER_LEN' + i)) (UIntSize.to_int (NewDb_ClauseAllocator_ClauseAllocator_Type.clauseallocator_num_vars ( * self_1))) };
@@ -1886,12 +1886,12 @@ module NewDb_ClauseAllocator_Impl3_AddClause
   BB13 {
     __creusot_proc_iter_elem_50 <- Core_Option_Option_Type.some_0 _46;
     _53 <- ();
-    _51 <- ([#"../NewDB/src/clause_allocator.rs" 127 8 127 56] Ghost.new (Seq.(++) (Ghost.inner produced_33) (Seq.singleton __creusot_proc_iter_elem_50)));
+    _51 <- ([#"../NewDB/src/clause_allocator.rs" 127 8 127 56] Snapshot.new (Seq.(++) (Snapshot.inner produced_33) (Seq.singleton __creusot_proc_iter_elem_50)));
     goto BB14
   }
   BB14 {
     produced_33 <- _51;
-    _51 <- any Ghost.ghost_ty (Seq.seq (NewDb_Lit_Lit_Type.t_lit));
+    _51 <- any Snapshot.Snapshot_ty (Seq.seq (NewDb_Lit_Lit_Type.t_lit));
     lit_54 <- __creusot_proc_iter_elem_50;
     _56 <- borrow_mut (NewDb_ClauseAllocator_ClauseAllocator_Type.clauseallocator_buffer ( * self_1));
     self_1 <- { self_1 with current = (let NewDb_ClauseAllocator_ClauseAllocator_Type.C_ClauseAllocator a b =  * self_1 in NewDb_ClauseAllocator_ClauseAllocator_Type.C_ClauseAllocator ( ^ _56) b) };
@@ -2526,7 +2526,7 @@ module NewDb_Formula_Impl0_FromInternal_Impl
   clone NewDb_ClauseAllocator_Impl1_Invariant as Invariant0 with
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
     val Max0.mAX' = Max0.mAX'
-  let rec ghost function from_internal [#"../NewDB/src/formula.rs" 60 4 60 118] (crefs : Seq.seq uint32) (clause_allocator : NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator) (idx : int) (_num_vars : int) : Fset.fset (Fset.fset (NewDb_Lit_Lit_Type.t_lit))
+  let rec Snapshot function from_internal [#"../NewDB/src/formula.rs" 60 4 60 118] (crefs : Seq.seq uint32) (clause_allocator : NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator) (idx : int) (_num_vars : int) : Fset.fset (Fset.fset (NewDb_Lit_Lit_Type.t_lit))
     requires {[#"../NewDB/src/formula.rs" 54 15 54 23] idx >= 0}
     requires {[#"../NewDB/src/formula.rs" 55 15 55 43] Invariant0.invariant' clause_allocator}
     requires {[#"../NewDB/src/formula.rs" 56 4 57 72] forall i : int . 0 <= i /\ i < Seq.length crefs -> CrefInvariant0.cref_invariant (UInt32.to_int (Seq.get crefs i)) clause_allocator _num_vars}
@@ -2666,7 +2666,7 @@ module NewDb_Formula_Impl0_From_Impl
     function Insert0.insert = Insert0.insert,
     axiom .
   use NewDb_Formula_Formula_Type as NewDb_Formula_Formula_Type
-  let rec ghost function from [#"../NewDB/src/formula.rs" 42 4 42 101] (crefs : Seq.seq uint32) (clause_allocator : NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator) (num_vars : int) : NewDb_Formula_Formula_Type.t_formula
+  let rec Snapshot function from [#"../NewDB/src/formula.rs" 42 4 42 101] (crefs : Seq.seq uint32) (clause_allocator : NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator) (num_vars : int) : NewDb_Formula_Formula_Type.t_formula
     requires {[#"../NewDB/src/formula.rs" 36 15 36 43] Invariant0.invariant' clause_allocator}
     requires {[#"../NewDB/src/formula.rs" 37 4 38 71] forall i : int . 0 <= i /\ i < Seq.length crefs -> CrefInvariant0.cref_invariant (UInt32.to_int (Seq.get crefs i)) clause_allocator num_vars}
     ensures { [#"../NewDB/src/formula.rs" 39 14 39 41] NewDb_Formula_Formula_Type.formula_num_vars result = num_vars }
@@ -3005,7 +3005,7 @@ module NewDb_ClauseManager_LemmaImpliedByStableOnPush_Impl
     predicate Invariant0.invariant' = Invariant0.invariant',
     predicate CrefInvariant0.cref_invariant = CrefInvariant0.cref_invariant,
     predicate Contains0.contains = Contains0.contains
-  let rec ghost function lemma_implied_by_stable_on_push [#"../NewDB/src/clause_manager.rs" 30 0 32 1] (original_clauses : NewDb_CrefManager_CRefManager_Type.t_crefmanager) (learnt_clauses : NewDb_CrefManager_CRefManager_Type.t_crefmanager) (ca : NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator) (lit : NewDb_Lit_Lit_Type.t_lit) : ()
+  let rec Snapshot function lemma_implied_by_stable_on_push [#"../NewDB/src/clause_manager.rs" 30 0 32 1] (original_clauses : NewDb_CrefManager_CRefManager_Type.t_crefmanager) (learnt_clauses : NewDb_CrefManager_CRefManager_Type.t_crefmanager) (ca : NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator) (lit : NewDb_Lit_Lit_Type.t_lit) : ()
     requires {[#"../NewDB/src/clause_manager.rs" 28 11 28 62] AreImpliedBy0.are_implied_by learnt_clauses original_clauses ca}
     ensures { [#"../NewDB/src/clause_manager.rs" 29 10 29 71] AreImpliedBy0.are_implied_by learnt_clauses original_clauses (Push0.push ca lit) }
     
@@ -3156,7 +3156,7 @@ module NewDb_ClauseManager_LemmaImpliedByStableOnExtension_Impl
     predicate Invariant0.invariant' = Invariant0.invariant',
     predicate CrefInvariant0.cref_invariant = CrefInvariant0.cref_invariant,
     predicate Contains0.contains = Contains0.contains
-  let rec ghost function lemma_implied_by_stable_on_extension [#"../NewDB/src/clause_manager.rs" 40 0 42 1] (original_clauses : NewDb_CrefManager_CRefManager_Type.t_crefmanager) (learnt_clauses : NewDb_CrefManager_CRefManager_Type.t_crefmanager) (ca : NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator) (ca2 : NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator) : ()
+  let rec Snapshot function lemma_implied_by_stable_on_extension [#"../NewDB/src/clause_manager.rs" 40 0 42 1] (original_clauses : NewDb_CrefManager_CRefManager_Type.t_crefmanager) (learnt_clauses : NewDb_CrefManager_CRefManager_Type.t_crefmanager) (ca : NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator) (ca2 : NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator) : ()
     requires {[#"../NewDB/src/clause_manager.rs" 36 11 36 62] AreImpliedBy0.are_implied_by learnt_clauses original_clauses ca}
     requires {[#"../NewDB/src/clause_manager.rs" 37 11 37 27] Extended0.extended ca ca2}
     requires {[#"../NewDB/src/clause_manager.rs" 38 11 38 27] Extended0.extended ca2 ca}
@@ -3342,7 +3342,7 @@ module NewDb_ClauseManager_LemmaImpliedByStableOnBlim_Impl
     predicate Invariant0.invariant' = Invariant0.invariant',
     predicate CrefInvariant0.cref_invariant = CrefInvariant0.cref_invariant,
     predicate Contains0.contains = Contains0.contains
-  let rec ghost function lemma_implied_by_stable_on_blim [#"../NewDB/src/clause_manager.rs" 52 0 54 1] (original_clauses : NewDb_CrefManager_CRefManager_Type.t_crefmanager) (learnt_clauses : NewDb_CrefManager_CRefManager_Type.t_crefmanager) (ca : NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator) (ca2 : NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator) : ()
+  let rec Snapshot function lemma_implied_by_stable_on_blim [#"../NewDB/src/clause_manager.rs" 52 0 54 1] (original_clauses : NewDb_CrefManager_CRefManager_Type.t_crefmanager) (learnt_clauses : NewDb_CrefManager_CRefManager_Type.t_crefmanager) (ca : NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator) (ca2 : NewDb_ClauseAllocator_ClauseAllocator_Type.t_clauseallocator) : ()
     requires {[#"../NewDB/src/clause_manager.rs" 46 11 46 62] AreImpliedBy0.are_implied_by learnt_clauses original_clauses ca}
     requires {[#"../NewDB/src/clause_manager.rs" 47 11 47 38] NewDb_ClauseAllocator_ClauseAllocator_Type.clauseallocator_num_vars ca = NewDb_ClauseAllocator_ClauseAllocator_Type.clauseallocator_num_vars ca2}
     requires {[#"../NewDB/src/clause_manager.rs" 48 0 48 81] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (NewDb_ClauseAllocator_ClauseAllocator_Type.clauseallocator_buffer ca)) -> Seq.get (ShallowModel1.shallow_model ca) i = Seq.get (ShallowModel1.shallow_model ca2) i}
@@ -3405,7 +3405,7 @@ module NewDb_LogicUtil_SeqToFsetInternal_Impl
     type t = NewDb_Lit_Lit_Type.t_lit
   clone CreusotContracts_Logic_Fset_Impl0_Contains as Contains0 with
     type t = NewDb_Lit_Lit_Type.t_lit
-  let rec ghost function seq_to_fset_internal [#"../NewDB/src/logic_util.rs" 33 0 33 61] (seq : Seq.seq (NewDb_Lit_Lit_Type.t_lit)) (idx : int) : Fset.fset (NewDb_Lit_Lit_Type.t_lit)
+  let rec Snapshot function seq_to_fset_internal [#"../NewDB/src/logic_util.rs" 33 0 33 61] (seq : Seq.seq (NewDb_Lit_Lit_Type.t_lit)) (idx : int) : Fset.fset (NewDb_Lit_Lit_Type.t_lit)
     requires {[#"../NewDB/src/logic_util.rs" 30 11 30 19] idx >= 0}
     ensures { [#"../NewDB/src/logic_util.rs" 31 0 31 103] forall l : NewDb_Lit_Lit_Type.t_lit . Contains0.contains result l -> (exists i : int . idx <= i /\ i < Seq.length seq /\ Seq.get seq i = l) }
     ensures { [#"../NewDB/src/logic_util.rs" 32 0 32 81] forall i : int . idx <= i /\ i < Seq.length seq -> Contains0.contains result (Seq.get seq i) }
@@ -3471,7 +3471,7 @@ module NewDb_LogicUtil_SeqToFset_Impl
     predicate Contains0.contains = Contains0.contains,
     function Insert0.insert = Insert0.insert,
     axiom .
-  let rec ghost function seq_to_fset [#"../NewDB/src/logic_util.rs" 22 0 22 53] (seq : Seq.seq (NewDb_Lit_Lit_Type.t_lit)) : Fset.fset (NewDb_Lit_Lit_Type.t_lit)
+  let rec Snapshot function seq_to_fset [#"../NewDB/src/logic_util.rs" 22 0 22 53] (seq : Seq.seq (NewDb_Lit_Lit_Type.t_lit)) : Fset.fset (NewDb_Lit_Lit_Type.t_lit)
     ensures { [#"../NewDB/src/logic_util.rs" 20 0 20 78] forall i : int . 0 <= i /\ i < Seq.length seq -> Contains0.contains result (Seq.get seq i) }
     ensures { [#"../NewDB/src/logic_util.rs" 21 0 21 101] forall l : NewDb_Lit_Lit_Type.t_lit . Contains0.contains result l -> (exists i : int . 0 <= i /\ i < Seq.length seq /\ Seq.get seq i = l) }
     
@@ -3660,7 +3660,7 @@ module NewDb_ClauseManager_Impl1_LearnClause
   use prelude.UInt32
   use prelude.Borrow
   use prelude.Slice
-  use prelude.Ghost
+  use prelude.Snapshot
   use seq.Seq
   use prelude.UIntSize
   use set.Fset
@@ -3829,7 +3829,7 @@ module NewDb_ClauseManager_Impl1_LearnClause
   var _0 : uint32;
   var self_1 : borrowed (NewDb_ClauseManager_ClauseManager_Type.t_clausemanager);
   var lits_2 : slice (NewDb_Lit_Lit_Type.t_lit);
-  var old_self_9 : Ghost.ghost_ty (borrowed (NewDb_ClauseManager_ClauseManager_Type.t_clausemanager));
+  var old_self_9 : Snapshot.Snapshot_ty (borrowed (NewDb_ClauseManager_ClauseManager_Type.t_clausemanager));
   var _11 : ();
   var _12 : ();
   var cref_14 : uint32;
@@ -3850,7 +3850,7 @@ module NewDb_ClauseManager_Impl1_LearnClause
   }
   BB0 {
     _11 <- ();
-    old_self_9 <- ([#"../NewDB/src/clause_manager.rs" 67 50 67 62] Ghost.new self_1);
+    old_self_9 <- ([#"../NewDB/src/clause_manager.rs" 67 50 67 62] Snapshot.new self_1);
     goto BB1
   }
   BB1 {
@@ -3863,7 +3863,7 @@ module NewDb_ClauseManager_Impl1_LearnClause
     goto BB2
   }
   BB2 {
-    assert { [#"../NewDB/src/clause_manager.rs" 70 22 70 41]  ^ Ghost.inner old_self_9 =  ^ self_1 };
+    assert { [#"../NewDB/src/clause_manager.rs" 70 22 70 41]  ^ Snapshot.inner old_self_9 =  ^ self_1 };
     _17 <- ();
     ca_19 <- NewDb_ClauseManager_ClauseManager_Type.clausemanager_clause_allocator ( * self_1);
     assert { [#"../NewDB/src/clause_manager.rs" 72 8 72 100] AreImpliedBy0.are_implied_by (NewDb_ClauseManager_ClauseManager_Type.clausemanager_learnt_core ( * self_1)) (NewDb_ClauseManager_ClauseManager_Type.clausemanager_original_clauses ( * self_1)) (NewDb_ClauseManager_ClauseManager_Type.clausemanager_clause_allocator ( * self_1)) };

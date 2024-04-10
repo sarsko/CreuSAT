@@ -1761,7 +1761,7 @@ module Scratch_Formula_Impl1_Invariant_Impl
     predicate Invariant0.invariant' = Invariant0.invariant',
     function ShallowModel1.shallow_model = ShallowModel2.shallow_model,
     val Max0.mAX' = Max0.mAX'
-  let rec ghost predicate invariant' [#"../Scratch/src/formula.rs" 71 4 71 34] (self : Scratch_Formula_Formula_Type.t_formula)
+  let rec Snapshot predicate invariant' [#"../Scratch/src/formula.rs" 71 4 71 34] (self : Scratch_Formula_Formula_Type.t_formula)
     ensures { [#"../Scratch/src/formula.rs" 70 14 70 47] result = InvariantMirror0.invariant_mirror self }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
@@ -2336,7 +2336,7 @@ module Scratch_Scratch_LemmaClausePermutedMaintainsSat_Impl
   clone Scratch_Clause_Impl2_Sat as Sat0 with
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
     predicate SatInner0.sat_inner = SatInner0.sat_inner
-  let rec ghost function lemma_clause_permuted_maintains_sat [#"../Scratch/src/scratch.rs" 26 0 26 69] (c : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments) : ()
+  let rec Snapshot function lemma_clause_permuted_maintains_sat [#"../Scratch/src/scratch.rs" 26 0 26 69] (c : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments) : ()
     requires {[#"../Scratch/src/scratch.rs" 24 11 24 19] Sat0.sat c a}
     ensures { [#"../Scratch/src/scratch.rs" 25 0 25 67] forall c2 : Scratch_Clause_Clause_Type.t_clause . PermutationOf0.permutation_of (ShallowModel0.shallow_model c2) (ShallowModel0.shallow_model c) -> Sat0.sat c2 a }
     
@@ -2422,7 +2422,7 @@ module Scratch_Scratch_LemmaClausePermutedMaintainsUnsat_Impl
   clone Scratch_Clause_Impl2_Unsat as Unsat0 with
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
     predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
-  let rec ghost function lemma_clause_permuted_maintains_unsat [#"../Scratch/src/scratch.rs" 31 0 31 71] (c : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments) : ()
+  let rec Snapshot function lemma_clause_permuted_maintains_unsat [#"../Scratch/src/scratch.rs" 31 0 31 71] (c : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments) : ()
     requires {[#"../Scratch/src/scratch.rs" 29 11 29 21] Unsat0.unsat c a}
     ensures { [#"../Scratch/src/scratch.rs" 30 0 30 69] forall c2 : Scratch_Clause_Clause_Type.t_clause . PermutationOf0.permutation_of (ShallowModel0.shallow_model c2) (ShallowModel0.shallow_model c) -> Unsat0.unsat c2 a }
     
@@ -2835,7 +2835,7 @@ module Scratch_Scratch_Swap
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.Slice
   use seq.Seq
   use seq.Permut
@@ -2989,7 +2989,7 @@ module Scratch_Scratch_Swap
   var j_3 : usize;
   var k_4 : usize;
   var assignments_5 : Scratch_Assignments_Assignments_Type.t_assignments;
-  var old_f_17 : Ghost.ghost_ty (borrowed (Scratch_Formula_Formula_Type.t_formula));
+  var old_f_17 : Snapshot.Snapshot_ty (borrowed (Scratch_Formula_Formula_Type.t_formula));
   var _19 : ();
   var _20 : ();
   var _21 : borrowed (slice (Scratch_Lit_Lit_Type.t_lit));
@@ -3014,7 +3014,7 @@ module Scratch_Scratch_Swap
   }
   BB1 {
     _19 <- ();
-    old_f_17 <- ([#"../Scratch/src/scratch.rs" 44 37 44 49] Ghost.new f_1);
+    old_f_17 <- ([#"../Scratch/src/scratch.rs" 44 37 44 49] Snapshot.new f_1);
     goto BB2
   }
   BB2 {
@@ -3042,7 +3042,7 @@ module Scratch_Scratch_Swap
     goto BB5
   }
   BB5 {
-    assert { [#"../Scratch/src/scratch.rs" 48 18 48 38]  ^ f_1 =  ^ Ghost.inner old_f_17 };
+    assert { [#"../Scratch/src/scratch.rs" 48 18 48 38]  ^ f_1 =  ^ Snapshot.inner old_f_17 };
     _29 <- ();
     _0 <- ();
     goto BB6
@@ -3114,7 +3114,7 @@ end
 module Scratch_Logic_BoolToAssignedstate_Impl
   use prelude.UInt8
   use prelude.Int
-  let rec ghost function bool_to_assignedstate [#"../Scratch/src/logic.rs" 32 0 32 54] (b : bool) : uint8
+  let rec Snapshot function bool_to_assignedstate [#"../Scratch/src/logic.rs" 32 0 32 54] (b : bool) : uint8
     ensures { [#"../Scratch/src/logic.rs" 30 0 30 30] b -> UInt8.to_int result = 1 }
     ensures { [#"../Scratch/src/logic.rs" 31 0 31 31] not b -> UInt8.to_int result = 0 }
     

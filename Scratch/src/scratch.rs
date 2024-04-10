@@ -44,7 +44,7 @@ pub fn lemma_clause_permuted_maintains_unsat(c: Clause, a: Assignments) {}
 #[ensures(f.clauses@.len() == (^f).clauses@.len())]
 #[ensures(f.equisat(^f))] // This one is hard (both ways equisat)
 fn swap(f: &mut Formula, cref: usize, j: usize, k: usize, assignments: Assignments) {
-    let old_f: Ghost<&mut Formula> = ghost! { f };
+    let old_f: Snapshot<&mut Formula> = snapshot! { f };
 
     f.clauses[cref].lits.swap(j, k);
 

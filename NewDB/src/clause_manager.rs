@@ -68,7 +68,7 @@ impl ClauseManager {
     //#[requires(self@.len() + (@lits).len() + @HEADER_LEN <= @u32::MAX)] // TODO: May have to move this to a runtime check
     #[requires(clause_invariant_seq(lits@, self.clause_allocator.num_vars@))]
     pub(crate) fn learn_clause(&mut self, lits: &[Lit]) -> CRef {
-        let old_self: Ghost<&mut ClauseManager> = ghost!(self);
+        let old_self: Snapshot<&mut ClauseManager> = snapshot!(self);
         proof_assert!(self.learnt_core.are_implied_by(self.original_clauses, self.clause_allocator));
         let cref = self.clause_allocator.add_clause(lits);
         proof_assert!(^*old_self == ^self);
