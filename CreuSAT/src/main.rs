@@ -1,4 +1,4 @@
-use clap::{crate_authors, App, AppSettings, Arg};
+use clap::{arg, crate_authors, Command};
 
 #[cfg(creusot)]
 fn main() {}
@@ -6,22 +6,14 @@ fn main() {}
 #[cfg(not(creusot))]
 fn main() {
     use CreuSAT::parser::{parse_cnf, preproc_and_solve};
-    let matches = App::new("\nCreuSAT")
+    let matches = Command::new("\nCreuSAT")
         .author(crate_authors!("\n"))
         .about("A verified SAT solver written in Rust.")
-        .usage("cargo run -- [FLAGS] --file <file>")
-        .setting(AppSettings::ColoredHelp)
-        .setting(AppSettings::DisableVersion)
-        .arg(
-            Arg::with_name("file")
-                .short("f")
-                .long("file")
-                .takes_value(true)
-                .required(true)
-                .help("CNF file to be parsed"),
-        )
+        .disable_colored_help(false)
+        .disable_version_flag(true)
+        .arg(arg!(-f --file <FILENAME>).long("file").required(true).help("CNF file to be parsed"))
         .get_matches();
-    let filename = matches.value_of("file").unwrap();
+    let filename = matches.get_one::<String>("file").unwrap();
     println!("c Reading file '{}'", filename);
     let res = parse_cnf(filename);
     match res {

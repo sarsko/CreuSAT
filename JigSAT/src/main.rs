@@ -1,23 +1,15 @@
-use clap::{crate_authors, App, AppSettings, Arg};
+use clap::{arg, crate_authors, Command};
 
 fn main() {
     use JigSAT::parser::{parse_cnf, preproc_and_solve};
-    let matches = App::new("\nJigSAT")
+    let matches = Command::new("\nJigSAT")
         .author(crate_authors!("\n"))
-        .about("A non-verified SAT solver which acts as a playground for CreuSAT.")
-        .usage("cargo run -- [FLAGS] --file <file>")
-        .setting(AppSettings::ColoredHelp)
-        .setting(AppSettings::DisableVersion)
-        .arg(
-            Arg::with_name("file")
-                .short("f")
-                .long("file")
-                .takes_value(true)
-                .required(true)
-                .help("CNF file to be parsed"),
-        )
+        .about("An unverified SAT solver which acts as a playground for CreuSAT.")
+        .disable_colored_help(false)
+        .disable_version_flag(true)
+        .arg(arg!(-f --file <FILENAME>).long("file").required(true).help("CNF file to be parsed"))
         .get_matches();
-    let filename = matches.value_of("file").unwrap();
+    let filename = matches.get_one::<String>("file").unwrap();
     println!("c Reading file '{}'", filename);
     let res = parse_cnf(filename);
     match res {
