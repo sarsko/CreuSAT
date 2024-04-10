@@ -16,12 +16,14 @@ pub struct Assignments(pub Vec<AssignedState>);
 impl ShallowModel for Assignments {
     type ShallowModelTy = Seq<AssignedState>;
 
+    #[open]
     #[logic]
     fn shallow_model(self) -> Self::ShallowModelTy {
         self.0.shallow_model()
     }
 }
 
+#[open]
 #[predicate]
 pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     pearlite! {
@@ -30,6 +32,7 @@ pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     }
 }
 
+#[open]
 #[predicate]
 pub fn complete_inner(a: Seq<AssignedState>) -> bool {
     pearlite! {
@@ -37,6 +40,7 @@ pub fn complete_inner(a: Seq<AssignedState>) -> bool {
     }
 }
 
+#[open]
 #[predicate]
 pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     compatible_inner(a, a2) && complete_inner(a2)
@@ -44,6 +48,7 @@ pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) 
 
 // Predicates
 impl Assignments {
+    #[open]
     #[predicate]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
@@ -52,6 +57,7 @@ impl Assignments {
         }
     }
 
+    #[open]
     #[predicate]
     pub fn complete(self) -> bool {
         pearlite! {

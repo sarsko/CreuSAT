@@ -4,16 +4,19 @@ use creusot_contracts::*;
 
 use crate::assignments::*;
 
+#[open]
 #[logic]
 fn pos() -> AssignedState {
     1u8
 }
 
+#[open]
 #[logic]
 fn neg() -> AssignedState {
     0u8
 }
 
+#[open]
 #[predicate]
 pub fn unset(v: AssignedState) -> bool {
     pearlite! {
@@ -26,6 +29,7 @@ pub fn unset(v: AssignedState) -> bool {
 }
 
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
+#[open]
 #[logic]
 #[ensures(b ==> result@ == 1)]
 #[ensures(!b ==> result@ == 0)]
@@ -37,6 +41,7 @@ pub fn bool_to_assignedstate(b: bool) -> AssignedState {
     }
 }
 
+#[open]
 #[logic]
 fn flip_v(v: AssignedState) -> AssignedState {
     pearlite! {
