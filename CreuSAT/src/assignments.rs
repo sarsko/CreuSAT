@@ -70,8 +70,8 @@ impl Assignments {
     #[ensures((forall<j: Int> 0 <= j && j < self@.len() && j != lit.index_logic() ==> self@[j] == (^self)@[j]))]
     #[ensures(lit.sat(^self))]
     pub fn set_assignment(&mut self, lit: Lit, _f: &Formula, _t: &Vec<Step>) {
-        let old_self: Ghost<&mut Assignments> = ghost! { self };
-        //self.0[lit.index()] = lit.is_positive() as u8;
+        let old_self: Snapshot<&mut Assignments> = snapshot! { self };
+        //self.clauses[lit.index()] = lit.is_positive() as u8;
         if lit.is_positive() {
             self.0[lit.index()] = 1;
         } else {

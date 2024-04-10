@@ -15,12 +15,14 @@ impl ShallowModel for Assignments {
     type ShallowModelTy = Seq<AssignedState>;
 
     #[logic]
+    #[open]
     fn shallow_model(self) -> Self::ShallowModelTy {
         self.0.shallow_model()
     }
 }
 
 #[predicate]
+#[open]
 pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     pearlite! {
         a.len() == a2.len() && (forall<i: Int> 0 <= i && i < a.len() ==>
@@ -29,6 +31,7 @@ pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
 }
 
 #[predicate]
+#[open]
 pub fn complete_inner(a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < a.len() ==> !unset(a[i])
@@ -36,6 +39,7 @@ pub fn complete_inner(a: Seq<AssignedState>) -> bool {
 }
 
 #[predicate]
+#[open]
 pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     compatible_inner(a, a2) && complete_inner(a2)
 }
@@ -43,6 +47,7 @@ pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) 
 // Predicates
 impl Assignments {
     #[predicate]
+    #[open]
     pub fn invariant(self, f: Formula) -> bool {
         pearlite! {
             f.num_vars@ == self@.len()
@@ -51,6 +56,7 @@ impl Assignments {
     }
 
     #[predicate]
+    #[open]
     pub fn complete(self) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self@.len() ==> !unset(self@[i])

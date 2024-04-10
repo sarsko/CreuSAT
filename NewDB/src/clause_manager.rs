@@ -13,7 +13,8 @@ pub struct ClauseManager {
 }
 
 impl ClauseManager {
-    #[predicate]
+    #[open]
+#[predicate]
     pub(crate) fn invariant(self) -> bool {
         pearlite! {
             self.clause_allocator.invariant()
@@ -24,6 +25,7 @@ impl ClauseManager {
     }
 }
 
+#[open]
 #[logic]
 #[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
 #[ensures(learnt_clauses.are_implied_by(original_clauses, ca.push(lit)))]
@@ -32,6 +34,7 @@ fn lemma_implied_by_stable_on_push(
 ) {
 }
 
+#[open]
 #[logic]
 #[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
 #[requires(ca.extended(ca2))]
@@ -42,6 +45,7 @@ fn lemma_implied_by_stable_on_extension(
 ) {
 }
 
+#[open]
 #[logic]
 #[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
 #[requires(ca.num_vars == ca2.num_vars)]

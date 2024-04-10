@@ -16,6 +16,7 @@ pub struct Lit {
 // Logic
 impl Lit {
     #[logic]
+    #[open]
     #[why3::attr = "inline:trivial"]
     pub fn index_logic(self) -> Int {
         pearlite! { self.idx@ }
@@ -25,6 +26,7 @@ impl Lit {
 // Predicates
 impl Lit {
     #[predicate]
+    #[open]
     pub fn lit_in(self, c: Clause) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < c@.len() && c@[i] == self
@@ -32,11 +34,13 @@ impl Lit {
     }
 
     #[predicate]
+    #[open]
     pub fn invariant(self, n: Int) -> bool {
         pearlite! { self.idx@ < n }
     }
 
     #[predicate]
+    #[open]
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             match self.polarity {
@@ -47,6 +51,7 @@ impl Lit {
     }
 
     #[predicate]
+    #[open]
     pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             match self.polarity {
@@ -57,6 +62,7 @@ impl Lit {
     }
 
     #[predicate]
+    #[open]
     pub fn unset_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             a[self.idx@]@ >= 2
@@ -64,6 +70,7 @@ impl Lit {
     }
 
     #[predicate]
+    #[open]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! {
             self.sat_inner(a@)
@@ -71,11 +78,13 @@ impl Lit {
     }
 
     #[predicate]
+    #[open]
     pub fn unset(self, a: Assignments) -> bool {
         pearlite! { self.unset_inner(a@) }
     }
 
     #[predicate]
+    #[open]
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! { self.unsat_inner(a@) }
     }

@@ -16,6 +16,7 @@ impl ShallowModel for Clause {
     type ShallowModelTy = Seq<Lit>;
 
     #[logic]
+    #[open]
     fn shallow_model(self) -> Self::ShallowModelTy {
         self.rest.shallow_model()
     }
@@ -23,6 +24,7 @@ impl ShallowModel for Clause {
 
 impl Clause {
     #[predicate]
+    #[open]
     pub fn in_formula(self, f: Formula) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < f.clauses@.len() &&
@@ -31,6 +33,7 @@ impl Clause {
     }
 
     #[predicate]
+    #[open]
     pub fn unit_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             self.vars_in_range(a.len())
@@ -40,11 +43,13 @@ impl Clause {
         }
     }
     #[predicate]
+    #[open]
     pub fn unit(self, a: Assignments) -> bool {
         pearlite! { self.unit_inner(a@) }
     }
 
     #[predicate]
+    #[open]
     pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self@.len() ==>
@@ -53,11 +58,13 @@ impl Clause {
     }
 
     #[predicate]
+    #[open]
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! { self.unsat_inner(a@) }
     }
 
     #[predicate]
+    #[open]
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < self@.len() &&
@@ -66,16 +73,19 @@ impl Clause {
     }
 
     #[predicate]
+    #[open]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! { self.sat_inner(a@) }
     }
 
     #[predicate]
+    #[open]
     pub fn unknown(self, a: Assignments) -> bool {
         !self.sat(a) && !self.unsat(a)
     }
 
     #[predicate]
+    #[open]
     pub fn vars_in_range(self, n: Int) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self@.len() ==>
@@ -84,6 +94,7 @@ impl Clause {
     }
 
     #[predicate]
+    #[open]
     pub fn no_duplicate_indexes(self) -> bool {
         pearlite! {
             forall<j: Int, k: Int> 0 <= j && j < self@.len() &&
@@ -92,6 +103,7 @@ impl Clause {
     }
 
     #[predicate]
+    #[open]
     pub fn invariant(self, n: Int) -> bool {
         self.vars_in_range(n) //&& self.no_duplicate_indexes()
     }
@@ -120,7 +132,7 @@ impl Clause {
     #[ensures((result == ClauseState::Unknown) ==> !a.complete())]
     pub fn check_if_unit(&self, a: &Assignments, _f: &Formula) -> ClauseState {
         let mut i: usize = 0;
-        let mut _k: usize = 0; // _k is the "ghost" index of the unset literal
+        let mut _k: usize = 0; // _k is the "Snapshot" index of the unset literal
         let mut unassigned: usize = 0;
         #[invariant(0 <= i@ && i@ <= (self.rest@).len())]
         #[invariant(unassigned@ <= 1)]
@@ -170,7 +182,7 @@ impl Clause {
             }
             i += 1;
         }
-        panic!();
+        unreachable!();
     }
 
     #[cfg_attr(feature = "trust_clause", trusted)]

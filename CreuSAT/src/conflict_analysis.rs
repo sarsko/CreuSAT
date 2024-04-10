@@ -1,5 +1,5 @@
 extern crate creusot_contracts;
-use creusot_contracts::{std::*, vec, Ghost, *};
+use creusot_contracts::{std::*, vec, Snapshot, *};
 
 use crate::{assignments::*, clause::*, decision::*, formula::*, lit::*, trail::*};
 
@@ -54,10 +54,10 @@ fn resolve(
     _f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, trail: &Trail, seen: &mut Vec<bool>,
     path_c: &mut usize, to_bump: &mut Vec<usize>,
 ) {
-    let old_c: Ghost<&mut Clause> = ghost!(c);
-    let old_seen: Ghost<&mut Vec<bool>> = ghost!(seen);
-    let old_path_c: Ghost<&mut usize> = ghost!(path_c);
-    let old_to_bump: Ghost<&mut Vec<usize>> = ghost!(to_bump);
+    let old_c: Snapshot<&mut Clause> = snapshot!(c);
+    let old_seen: Snapshot<&mut Vec<bool>> = snapshot!(seen);
+    let old_path_c: Snapshot<&mut usize> = snapshot!(path_c);
+    let old_to_bump: Snapshot<&mut Vec<usize>> = snapshot!(to_bump);
 
     proof_assert!(c.clause_is_seen(*seen));
 
@@ -68,7 +68,7 @@ fn resolve(
 
     proof_assert!(^seen == ^old_seen.inner());
     proof_assert!(c.clause_is_seen(*seen));
-    let old_c2: Ghost<&mut Clause> = ghost!(c);
+    let old_c2: Snapshot<&mut Clause> = snapshot!(c);
     proof_assert!(!old_c@[c_idx@].lit_in(*c));
     proof_assert!(^c == ^old_c.inner());
     proof_assert!(forall<j: Int> 0 <= j && j < old_c@.len()
@@ -89,7 +89,7 @@ fn resolve(
     #[invariant(seen@.len() == _f.num_vars@)]
     #[invariant(elems_less_than(to_bump@, _f.num_vars@))]
     while i < o.len() {
-        let old_c3: Ghost<&mut Clause> = ghost!(c);
+        let old_c3: Snapshot<&mut Clause> = snapshot!(c);
         proof_assert!(^c == ^old_c3.inner());
 
         if !idx_in(&c.lits, o[i].index(), &seen) {
@@ -127,7 +127,7 @@ fn resolve(
     None => (^i)@ == 0
 })]
 fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula, seen: &Vec<bool>) -> Option<usize> {
-    let old_i: Ghost<&mut usize> = ghost! {i};
+    let old_i: Snapshot<&mut usize> = snapshot! {i};
     #[invariant(0 <= i@ && i@ <= trail.trail@.len())]
     while *i > 0 {
         *i -= 1;

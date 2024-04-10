@@ -15,12 +15,14 @@ pub struct Clause {
 impl ShallowModel for Clause {
     type ShallowModelTy = Seq<Lit>;
 
+    #[open]
     #[logic]
     fn shallow_model(self) -> Self::ShallowModelTy {
         self.lits.shallow_model() //.push(self.first)//.push(self.second)
     }
 }
 
+#[open]
 #[predicate]
 pub fn vars_in_range_inner(s: Seq<Lit>, n: Int) -> bool {
     pearlite! {
@@ -29,11 +31,13 @@ pub fn vars_in_range_inner(s: Seq<Lit>, n: Int) -> bool {
     }
 }
 
+#[open]
 #[predicate]
 pub fn invariant_internal(s: Seq<Lit>, n: Int) -> bool {
     vars_in_range_inner(s, n) && no_duplicate_indexes_inner(s)
 }
 
+#[open]
 #[predicate]
 pub fn equisat_extension_inner(c: Clause, f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
@@ -41,6 +45,7 @@ pub fn equisat_extension_inner(c: Clause, f: (Seq<Clause>, Int)) -> bool {
     }
 }
 
+#[open]
 #[predicate]
 pub fn no_duplicate_indexes_inner(s: Seq<Lit>) -> bool {
     pearlite! {
@@ -56,6 +61,7 @@ pub fn no_duplicate_indexes_inner(s: Seq<Lit>) -> bool {
 }
 
 impl Clause {
+    #[open]
     #[predicate]
     pub fn post_unit_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
@@ -65,6 +71,7 @@ impl Clause {
         }
     }
 
+    #[open]
     #[predicate]
     pub fn no_unset_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
@@ -72,11 +79,13 @@ impl Clause {
         }
     }
 
+    #[open]
     #[predicate]
     pub fn post_unit(self, a: Assignments) -> bool {
         pearlite! { self.post_unit_inner(a@) }
     }
 
+    #[open]
     #[predicate]
     pub fn eq_assn_inner(self, a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
         pearlite! {
@@ -87,11 +96,13 @@ impl Clause {
 }
 
 impl Clause {
+    #[open]
     #[predicate]
     pub fn equisat_extension(self, f: Formula) -> bool {
         pearlite! { equisat_extension_inner(self, f@) }
     }
 
+    #[open]
     #[predicate]
     pub fn same_idx_same_polarity_except(self, other: Clause, exception: Int) -> bool {
         pearlite! {
@@ -102,6 +113,7 @@ impl Clause {
         }
     }
 
+    #[open]
     #[predicate]
     pub fn resolvent_of(self, c: Clause, c2: Clause, k: Int, m: Int) -> bool {
         pearlite! {
@@ -114,6 +126,7 @@ impl Clause {
         }
     }
 
+    #[open]
     #[predicate]
     pub fn in_formula(self, f: Formula) -> bool {
         pearlite! {
@@ -122,6 +135,7 @@ impl Clause {
         }
     }
 
+    #[open]
     #[predicate]
     pub fn in_formula_inner(self, f: (Seq<Clause>, Int)) -> bool {
         pearlite! {
@@ -129,6 +143,7 @@ impl Clause {
         }
     }
 
+    #[open]
     #[predicate]
     fn unit_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
@@ -140,11 +155,13 @@ impl Clause {
                                 !self@[j].unset_inner(a))
         }
     }
+    #[open]
     #[predicate]
     pub fn unit(self, a: Assignments) -> bool {
         pearlite! { self.unit_inner(a@) }
     }
 
+    #[open]
     #[predicate]
     pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
@@ -153,11 +170,13 @@ impl Clause {
         }
     }
 
+    #[open]
     #[predicate]
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! { self.unsat_inner(a@) }
     }
 
+    #[open]
     #[predicate]
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
@@ -166,6 +185,7 @@ impl Clause {
         }
     }
 
+    #[open]
     #[predicate]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! {
@@ -173,31 +193,37 @@ impl Clause {
         }
     }
 
+    #[open]
     #[predicate]
     pub fn unknown(self, a: Assignments) -> bool {
         !self.sat(a) && !self.unsat(a)
     }
 
+    #[open]
     #[predicate]
     pub fn vars_in_range(self, n: Int) -> bool {
         pearlite! { vars_in_range_inner(self@, n) }
     }
 
+    #[open]
     #[predicate]
     pub fn no_duplicate_indexes(self) -> bool {
         pearlite! { no_duplicate_indexes_inner(self@) }
     }
 
+    #[open]
     #[predicate]
     pub fn search_idx_in_range(self) -> bool {
         pearlite! { 2 <= self.search@ && self.search@ <= self@.len() }
     }
 
+    #[open]
     #[predicate]
     pub fn invariant(self, n: Int) -> bool {
         pearlite! { invariant_internal(self@, n) }
     }
 
+    #[open]
     #[predicate]
     pub fn clause_is_seen(self, seen: Vec<bool>) -> bool {
         pearlite! {
@@ -206,6 +232,7 @@ impl Clause {
         }
     }
 
+    #[open]
     #[predicate]
     pub fn equals(self, o: Clause) -> bool {
         pearlite! {

@@ -17,12 +17,14 @@ impl ShallowModel for Formula {
     type ShallowModelTy = (Seq<Clause>, Int);
 
     #[logic]
+    #[open]
     fn shallow_model(self) -> Self::ShallowModelTy {
         (self.clauses.shallow_model(), self.num_vars.shallow_model())
     }
 }
 
 #[predicate]
+#[open]
 pub fn formula_sat_inner(f: (Seq<Clause>, Int), a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < f.0.len() ==>
@@ -33,6 +35,7 @@ pub fn formula_sat_inner(f: (Seq<Clause>, Int), a: Seq<AssignedState>) -> bool {
 // Predicates
 impl Formula {
     #[predicate]
+    #[open]
     pub fn invariant(self) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < (self.clauses@).len() ==>
@@ -41,6 +44,7 @@ impl Formula {
     }
 
     #[predicate]
+    #[open]
     pub fn eventually_sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             exists<a2: Seq<AssignedState>> a2.len() == self.num_vars@ && compatible_inner(a, a2) && self.sat_inner(a2)
@@ -48,11 +52,13 @@ impl Formula {
     }
 
     #[predicate]
+    #[open]
     pub fn eventually_sat_no_ass(self) -> bool {
         pearlite! { exists<a2: Seq<AssignedState>> self.sat_inner(a2) }
     }
 
     #[predicate]
+    #[open]
     pub fn eventually_sat_complete_no_ass(self) -> bool {
         pearlite! {
             exists<a2: Seq<AssignedState>> a2.len() == self.num_vars@ && complete_inner(a2) && self.sat_inner(a2)
@@ -60,6 +66,7 @@ impl Formula {
     }
 
     #[predicate]
+    #[open]
     pub fn eventually_sat_complete_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             exists<a2 : Seq<AssignedState>> a2.len() == self.num_vars@ && compatible_complete_inner(a, a2) && self.sat_inner(a2)
@@ -67,16 +74,19 @@ impl Formula {
     }
 
     #[predicate]
+    #[open]
     pub fn eventually_sat_complete(self, a: Assignments) -> bool {
         pearlite! { self.eventually_sat_complete_inner(a@) }
     }
 
     #[predicate]
+    #[open]
     pub fn eventually_sat(self, a: Assignments) -> bool {
         pearlite! { self.eventually_sat_inner(a@) }
     }
 
     #[predicate]
+    #[open]
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
@@ -85,11 +95,13 @@ impl Formula {
     }
 
     #[predicate]
+    #[open]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! { self.sat_inner(a@) }
     }
 
     #[predicate]
+    #[open]
     pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < self.clauses@.len() &&
@@ -98,11 +110,13 @@ impl Formula {
     }
 
     #[predicate]
+    #[open]
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! { self.unsat_inner(a@) }
     }
 
     #[predicate]
+    #[open]
     pub fn contains_empty_clause(self) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < self.clauses@.len() &&
@@ -129,7 +143,7 @@ impl Formula {
             proof_assert!(self.eventually_sat_no_ass());
             return SatResult::Sat(a);
         }
-        let old_self: Ghost<&mut Formula> = ghost!(self);
+        let old_self: Snapshot<&mut Formula> = snapshot!(self);
         let mut i: usize = 0;
         #[invariant(forall<j: Int> 0 <= j && j < i@ ==> self.clauses@[j].invariant(self.num_vars@))]
         #[invariant(forall<j: Int> 0 <= j && j < i@ ==> self.clauses@[j]@.len() > 0)]

@@ -9,6 +9,7 @@ use crate::{assignments::*, clause::*, formula::*, lit::*};
 
 //#[cfg_attr(feature = "trust_trail_logic", trusted)]
 /*
+#[open]
 #[logic]
 #[requires(f.invariant())]
 #[requires(t.invariant(f))]
@@ -20,11 +21,13 @@ use crate::{assignments::*, clause::*, formula::*, lit::*};
 pub fn lemma_push_maintains_lit_not_in_less(t: Trail, f: Formula, step: Step) {}
 */
 
+#[open]
 #[logic]
 #[requires(c.sat(a))]
 #[ensures(forall<c2: Clause> c2@.permutation_of(c@) ==> c2.sat(a))]
 pub fn lemma_clause_permuted_maintains_sat(c: Clause, a: Assignments) {}
 
+#[open]
 #[logic]
 #[requires(c.unsat(a))]
 #[ensures(forall<c2: Clause> c2@.permutation_of(c@) ==> c2.unsat(a))]

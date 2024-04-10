@@ -1,5 +1,5 @@
 extern crate creusot_contracts;
-use creusot_contracts::{std::*, Clone, Ghost, *};
+use creusot_contracts::{std::*, Clone, Snapshot, *};
 
 use crate::{assignments::*, formula::*, lit::*, solver::*, trail::*};
 use ::std::ops::{Index, IndexMut};
@@ -61,10 +61,7 @@ impl Clause {
             }
             i += 1;
         }
-        if self.no_duplicates() {
-            return true;
-        }
-        false
+        return self.no_duplicates();
     }
 
     #[cfg_attr(feature = "trust_clause", trusted)]
@@ -161,14 +158,16 @@ impl Clause {
     #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires(self@.len() > j@)]
     #[requires(self@.len() > k@)]
+    #[requires(_f.invariant())]
     #[maintains((mut self).invariant(_f.num_vars@))]
     #[maintains((mut self).equisat_extension(*_f))]
     #[ensures(self@.len() == (^self)@.len())]
+    #[ensures((^self)@.exchange(self@, j@, k@))]
     pub fn swap_lits_in_clause(&mut self, _f: &Formula, j: usize, k: usize) {
-        let old_c: Ghost<&mut Clause> = ghost! { self };
+        let old_c: Snapshot<&mut Clause> = snapshot! { self };
         self.lits.swap(j, k);
-        proof_assert!(eventually_sat_complete(((_f@.0).push(*self), _f@.1)) ==>
-                      eventually_sat_complete(((_f@.0).push(*old_c.inner()), _f@.1)));
+        proof_assert!(lemma_permuted_clause_maintains_equisat(_f@, *old_c.inner(), *self); true);
+        proof_assert!(dup_stable_on_permut(*old_c.inner(), *self); true);
     }
 
     #[cfg_attr(feature = "trust_clause", trusted)]

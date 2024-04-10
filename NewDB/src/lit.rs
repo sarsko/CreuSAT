@@ -12,13 +12,15 @@ pub struct Lit {
 }
 
 impl Lit {
-    #[logic]
+    #[open]
+#[logic]
     #[why3::attr = "inline:trivial"]
     pub fn index_logic(self) -> Int {
         pearlite! { self.code@ / 2 }
     }
 
-    #[logic]
+    #[open]
+#[logic]
     #[why3::attr = "inline:trivial"]
     pub fn is_positive_logic(self) -> bool {
         pearlite! { self.code@ % 2 == 0 }
@@ -26,14 +28,16 @@ impl Lit {
 }
 
 impl Lit {
-    #[predicate]
+    #[open]
+#[predicate]
     pub(crate) fn var_in_range(self, n: Int) -> bool {
         pearlite! {
             self.index_logic() < n
         }
     }
 
-    #[predicate]
+    #[open]
+#[predicate]
     #[why3::attr = "inline:trivial"]
     pub(crate) fn lit_sat_logic(self, a: Assignments) -> bool {
         pearlite! {
@@ -42,7 +46,8 @@ impl Lit {
     }
 
     // This is the one that is supposed to stay
-    #[predicate]
+    #[open]
+#[predicate]
     #[why3::attr = "inline:trivial"]
     pub(crate) fn sat(self, a: Seq<AssignedState>) -> bool {
         pearlite! {

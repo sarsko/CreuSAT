@@ -10,6 +10,7 @@ pub struct Decisions {
 
 impl Decisions {
     #[predicate]
+    #[open]
     pub fn invariant(self, n: Int) -> bool {
         pearlite! {
             self.lit_order@.len() == n

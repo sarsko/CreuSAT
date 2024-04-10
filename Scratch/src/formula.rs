@@ -15,12 +15,14 @@ pub struct Formula {
 impl ShallowModel for Formula {
     type ShallowModelTy = (Seq<Clause>, Int);
 
+    #[open]
     #[logic]
     fn shallow_model(self) -> Self::ShallowModelTy {
         (self.clauses.shallow_model(), self.num_vars.shallow_model())
     }
 }
 
+#[open]
 #[predicate]
 pub fn formula_invariant(f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
@@ -29,6 +31,7 @@ pub fn formula_invariant(f: (Seq<Clause>, Int)) -> bool {
     }
 }
 
+#[open]
 #[predicate]
 pub fn formula_sat_inner(f: (Seq<Clause>, Int), a: Seq<AssignedState>) -> bool {
     pearlite! {
@@ -37,6 +40,7 @@ pub fn formula_sat_inner(f: (Seq<Clause>, Int), a: Seq<AssignedState>) -> bool {
     }
 }
 
+#[open]
 #[predicate]
 pub fn eventually_sat_complete(f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
@@ -44,6 +48,7 @@ pub fn eventually_sat_complete(f: (Seq<Clause>, Int)) -> bool {
     }
 }
 
+#[open]
 #[predicate]
 fn equisat(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
     pearlite! {
@@ -53,6 +58,7 @@ fn equisat(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
 
 // Predicates
 impl Formula {
+    #[open]
     #[predicate]
     pub fn eventually_sat_complete(self) -> bool {
         pearlite! {
@@ -60,11 +66,13 @@ impl Formula {
         }
     }
 
+    #[open]
     #[predicate]
     pub fn equisat(self, o: Formula) -> bool {
         self.eventually_sat_complete() == o.eventually_sat_complete()
     }
 
+    #[open]
     #[predicate]
     #[cfg_attr(feature = "trust_formula_logic", trusted)]
     #[ensures(result == self.invariant_mirror())] // Removing this makes a bunch of seemingly unrelated things fail
@@ -72,6 +80,7 @@ impl Formula {
         pearlite! { formula_invariant(self@) }
     }
 
+    #[open]
     #[predicate]
     fn invariant_mirror(self) -> bool {
         pearlite! {
@@ -84,6 +93,7 @@ impl Formula {
         }
     }
 
+    #[open]
     #[predicate]
     fn eventually_sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
@@ -91,6 +101,7 @@ impl Formula {
         }
     }
 
+    #[open]
     #[predicate]
     fn eventually_sat_complete_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
@@ -98,11 +109,13 @@ impl Formula {
         }
     }
 
+    #[open]
     #[predicate]
     fn eventually_sat(self, a: Assignments) -> bool {
         pearlite! { self.eventually_sat_inner(a@)}
     }
 
+    #[open]
     #[predicate]
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
@@ -111,11 +124,13 @@ impl Formula {
         }
     }
 
+    #[open]
     #[predicate]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! { formula_sat_inner(self@, a@) }
     }
 
+    #[open]
     #[predicate]
     fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
@@ -124,11 +139,13 @@ impl Formula {
         }
     }
 
+    #[open]
     #[predicate]
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! { self.unsat_inner(a@) }
     }
 
+    #[open]
     #[predicate]
     pub fn not_satisfiable(self) -> bool {
         pearlite! { exists<c: Clause> c@.len() == 0 && c.equisat_extension(self) }

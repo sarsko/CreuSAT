@@ -1199,7 +1199,7 @@ module CreuSat_Logic_LogicFormula_Impl1_Invariant_Impl
     predicate Invariant0.invariant' = Invariant0.invariant',
     function ShallowModel1.shallow_model = ShallowModel2.shallow_model,
     val Max0.mAX' = Max0.mAX'
-  let rec ghost predicate invariant' [#"../CreuSAT/src/logic/logic_formula.rs" 67 4 67 34] (self : CreuSat_Formula_Formula_Type.t_formula)
+  let rec Snapshot predicate invariant' [#"../CreuSAT/src/logic/logic_formula.rs" 67 4 67 34] (self : CreuSat_Formula_Formula_Type.t_formula)
     ensures { [#"../CreuSAT/src/logic/logic_formula.rs" 66 14 66 47] result = InvariantMirror0.invariant_mirror self }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
@@ -1637,7 +1637,7 @@ module CreuSat_Assignments_Impl2_SetAssignment_Interface
 end
 module CreuSat_Assignments_Impl2_SetAssignment
   use prelude.Borrow
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.Int
   use prelude.UInt8
   use prelude.UIntSize
@@ -1794,7 +1794,7 @@ module CreuSat_Assignments_Impl2_SetAssignment
   var lit_2 : CreuSat_Lit_Lit_Type.t_lit;
   var _f_3 : CreuSat_Formula_Formula_Type.t_formula;
   var _t_4 : Alloc_Vec_Vec_Type.t_vec (CreuSat_Trail_Step_Type.t_step) (Alloc_Alloc_Global_Type.t_global);
-  var old_self_17 : Ghost.ghost_ty (borrowed (CreuSat_Assignments_Assignments_Type.t_assignments));
+  var old_self_17 : Snapshot.Snapshot_ty (borrowed (CreuSat_Assignments_Assignments_Type.t_assignments));
   var _19 : ();
   var _20 : bool;
   var _21 : CreuSat_Lit_Lit_Type.t_lit;
@@ -1815,7 +1815,7 @@ module CreuSat_Assignments_Impl2_SetAssignment
   }
   BB0 {
     _19 <- ();
-    old_self_17 <- ([#"../CreuSAT/src/assignments.rs" 73 48 73 63] Ghost.new self_1);
+    old_self_17 <- ([#"../CreuSAT/src/assignments.rs" 73 48 73 63] Snapshot.new self_1);
     goto BB1
   }
   BB1 {
@@ -4056,7 +4056,7 @@ module CreuSat_Clause_Impl2_SwapLitsInClause
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.Slice
   use seq.Seq
   use CreuSat_Lit_Lit_Type as CreuSat_Lit_Lit_Type
@@ -4167,7 +4167,7 @@ module CreuSat_Clause_Impl2_SwapLitsInClause
   var _f_2 : CreuSat_Formula_Formula_Type.t_formula;
   var j_3 : usize;
   var k_4 : usize;
-  var old_c_12 : Ghost.ghost_ty (borrowed (CreuSat_Clause_Clause_Type.t_clause));
+  var old_c_12 : Snapshot.Snapshot_ty (borrowed (CreuSat_Clause_Clause_Type.t_clause));
   var _14 : ();
   var _15 : ();
   var _16 : borrowed (slice (CreuSat_Lit_Lit_Type.t_lit));
@@ -4185,7 +4185,7 @@ module CreuSat_Clause_Impl2_SwapLitsInClause
   }
   BB0 {
     _14 <- ();
-    old_c_12 <- ([#"../CreuSAT/src/clause.rs" 168 40 168 55] Ghost.new self_1);
+    old_c_12 <- ([#"../CreuSAT/src/clause.rs" 168 40 168 55] Snapshot.new self_1);
     goto BB1
   }
   BB1 {
@@ -4205,7 +4205,7 @@ module CreuSat_Clause_Impl2_SwapLitsInClause
     goto BB3
   }
   BB3 {
-    assert { [#"../CreuSAT/src/clause.rs" 170 8 171 85] EventuallySatComplete0.eventually_sat_complete (Seq.snoc (let (a, _) = ShallowModel2.shallow_model _f_2 in a) ( * self_1), let (_, a) = ShallowModel2.shallow_model _f_2 in a) -> EventuallySatComplete0.eventually_sat_complete (Seq.snoc (let (a, _) = ShallowModel2.shallow_model _f_2 in a) ( * Ghost.inner old_c_12), let (_, a) = ShallowModel2.shallow_model _f_2 in a) };
+    assert { [#"../CreuSAT/src/clause.rs" 170 8 171 85] EventuallySatComplete0.eventually_sat_complete (Seq.snoc (let (a, _) = ShallowModel2.shallow_model _f_2 in a) ( * self_1), let (_, a) = ShallowModel2.shallow_model _f_2 in a) -> EventuallySatComplete0.eventually_sat_complete (Seq.snoc (let (a, _) = ShallowModel2.shallow_model _f_2 in a) ( * Snapshot.inner old_c_12), let (_, a) = ShallowModel2.shallow_model _f_2 in a) };
     _21 <- ();
     _0 <- ();
     return _0
@@ -5157,31 +5157,31 @@ module CreuSat_Logic_LogicClause_Impl2_Unsat
     ensures { result = unsat self a }
     
 end
-module CreusotContracts_Ghost_Impl1_ShallowModel_Stub
+module CreusotContracts_Snapshot_Impl1_ShallowModel_Stub
   type t
-  use prelude.Ghost
+  use prelude.Snapshot
   clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
     type self = t
-  function shallow_model (self : Ghost.ghost_ty t) : ShallowModelTy0.shallowModelTy
+  function shallow_model (self : Snapshot.Snapshot_ty t) : ShallowModelTy0.shallowModelTy
 end
-module CreusotContracts_Ghost_Impl1_ShallowModel_Interface
+module CreusotContracts_Snapshot_Impl1_ShallowModel_Interface
   type t
-  use prelude.Ghost
+  use prelude.Snapshot
   clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
     type self = t
-  function shallow_model (self : Ghost.ghost_ty t) : ShallowModelTy0.shallowModelTy
+  function shallow_model (self : Snapshot.Snapshot_ty t) : ShallowModelTy0.shallowModelTy
 end
-module CreusotContracts_Ghost_Impl1_ShallowModel
+module CreusotContracts_Snapshot_Impl1_ShallowModel
   type t
-  use prelude.Ghost
+  use prelude.Snapshot
   clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
     type self = t
   clone CreusotContracts_Model_Impl1_ShallowModel_Stub as ShallowModel0 with
     type t = t,
     type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy
-  function shallow_model (self : Ghost.ghost_ty t) : ShallowModelTy0.shallowModelTy =
-    [#"../CreuSAT/src/unit_prop.rs" 211 51 211 79] ShallowModel0.shallow_model (Ghost.inner self)
-  val shallow_model (self : Ghost.ghost_ty t) : ShallowModelTy0.shallowModelTy
+  function shallow_model (self : Snapshot.Snapshot_ty t) : ShallowModelTy0.shallowModelTy =
+    [#"../CreuSAT/src/unit_prop.rs" 211 51 211 79] ShallowModel0.shallow_model (Snapshot.inner self)
+  val shallow_model (self : Snapshot.Snapshot_ty t) : ShallowModelTy0.shallowModelTy
     ensures { result = shallow_model self }
     
 end
@@ -5339,7 +5339,7 @@ module CreuSat_Logic_LogicConflictAnalysis_LemmaEqFormulas_Impl
   clone CreuSat_Logic_LogicFormula_FormulaInvariant as FormulaInvariant0 with
     predicate Invariant0.invariant' = Invariant0.invariant',
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model
-  let rec ghost function lemma_eq_formulas [#"../CreuSAT/src/logic/logic_conflict_analysis.rs" 17 0 17 78] (f : (Seq.seq (CreuSat_Clause_Clause_Type.t_clause), int)) (f2 : (Seq.seq (CreuSat_Clause_Clause_Type.t_clause), int)) (c : CreuSat_Clause_Clause_Type.t_clause) : ()
+  let rec Snapshot function lemma_eq_formulas [#"../CreuSAT/src/logic/logic_conflict_analysis.rs" 17 0 17 78] (f : (Seq.seq (CreuSat_Clause_Clause_Type.t_clause), int)) (f2 : (Seq.seq (CreuSat_Clause_Clause_Type.t_clause), int)) (c : CreuSat_Clause_Clause_Type.t_clause) : ()
     requires {[#"../CreuSAT/src/logic/logic_conflict_analysis.rs" 10 11 10 30] (let (a, _) = f2 in a) = Seq.snoc (let (a, _) = f in a) c}
     requires {[#"../CreuSAT/src/logic/logic_conflict_analysis.rs" 11 11 11 31] FormulaInvariant0.formula_invariant f}
     ensures { [#"../CreuSAT/src/logic/logic_conflict_analysis.rs" 12 10 12 37] Seq.length (let (a, _) = f in a) + 1 = Seq.length (let (a, _) = f2 in a) }
@@ -5467,7 +5467,7 @@ module CreuSat_Logic_LogicConflictAnalysis_LemmaResolventOfEquisatExtensionIsEqu
   clone CreuSat_Logic_LogicClause_Impl2_InFormulaInner as InFormulaInner0
   clone CreuSat_Logic_LogicClause_EquisatExtensionInner as EquisatExtensionInner0 with
     predicate EventuallySatComplete0.eventually_sat_complete = EventuallySatComplete0.eventually_sat_complete
-  let rec ghost function lemma_resolvent_of_equisat_extension_is_equisat [#"../CreuSAT/src/logic/logic_conflict_analysis.rs" 26 0 28 1] (f : (Seq.seq (CreuSat_Clause_Clause_Type.t_clause), int)) (c : CreuSat_Clause_Clause_Type.t_clause) (c2 : CreuSat_Clause_Clause_Type.t_clause) (c3 : CreuSat_Clause_Clause_Type.t_clause) (k : int) (m : int) : ()
+  let rec Snapshot function lemma_resolvent_of_equisat_extension_is_equisat [#"../CreuSAT/src/logic/logic_conflict_analysis.rs" 26 0 28 1] (f : (Seq.seq (CreuSat_Clause_Clause_Type.t_clause), int)) (c : CreuSat_Clause_Clause_Type.t_clause) (c2 : CreuSat_Clause_Clause_Type.t_clause) (c3 : CreuSat_Clause_Clause_Type.t_clause) (k : int) (m : int) : ()
     requires {[#"../CreuSAT/src/logic/logic_conflict_analysis.rs" 21 11 21 31] FormulaInvariant0.formula_invariant f}
     requires {[#"../CreuSAT/src/logic/logic_conflict_analysis.rs" 22 11 22 40] EquisatExtensionInner0.equisat_extension_inner c f}
     requires {[#"../CreuSAT/src/logic/logic_conflict_analysis.rs" 23 11 23 33] InFormulaInner0.in_formula_inner c2 f}
@@ -5668,7 +5668,7 @@ module CreuSat_ConflictAnalysis_Resolve
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
-  use prelude.Ghost
+  use prelude.Snapshot
   use seq.Seq
   use prelude.UInt8
   use CreuSat_Lit_Lit_Type as CreuSat_Lit_Lit_Type
@@ -5921,7 +5921,7 @@ module CreuSat_ConflictAnalysis_Resolve
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model
   clone CreuSat_Clause_Impl2_Len_Interface as Len0 with
     function ShallowModel0.shallow_model = ShallowModel1.shallow_model
-  clone CreusotContracts_Ghost_Impl1_ShallowModel as ShallowModel10 with
+  clone CreusotContracts_Snapshot_Impl1_ShallowModel as ShallowModel10 with
     type t = borrowed (CreuSat_Clause_Clause_Type.t_clause),
     type ShallowModelTy0.shallowModelTy = Seq.seq (CreuSat_Lit_Lit_Type.t_lit),
     function ShallowModel0.shallow_model = ShallowModel17.shallow_model
@@ -6024,13 +6024,13 @@ module CreuSat_ConflictAnalysis_Resolve
   var seen_7 : borrowed (Alloc_Vec_Vec_Type.t_vec bool (Alloc_Alloc_Global_Type.t_global));
   var path_c_8 : borrowed usize;
   var to_bump_9 : borrowed (Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global));
-  var old_c_32 : Ghost.ghost_ty (borrowed (CreuSat_Clause_Clause_Type.t_clause));
+  var old_c_32 : Snapshot.Snapshot_ty (borrowed (CreuSat_Clause_Clause_Type.t_clause));
   var _34 : ();
-  var old_seen_35 : Ghost.ghost_ty (borrowed (Alloc_Vec_Vec_Type.t_vec bool (Alloc_Alloc_Global_Type.t_global)));
+  var old_seen_35 : Snapshot.Snapshot_ty (borrowed (Alloc_Vec_Vec_Type.t_vec bool (Alloc_Alloc_Global_Type.t_global)));
   var _37 : ();
-  var old_path_c_38 : Ghost.ghost_ty (borrowed usize);
+  var old_path_c_38 : Snapshot.Snapshot_ty (borrowed usize);
   var _40 : ();
-  var old_to_bump_41 : Ghost.ghost_ty (borrowed (Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global)));
+  var old_to_bump_41 : Snapshot.Snapshot_ty (borrowed (Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global)));
   var _43 : ();
   var _44 : ();
   var _46 : ();
@@ -6042,7 +6042,7 @@ module CreuSat_ConflictAnalysis_Resolve
   var _52 : usize;
   var _53 : ();
   var _55 : ();
-  var old_c2_57 : Ghost.ghost_ty (borrowed (CreuSat_Clause_Clause_Type.t_clause));
+  var old_c2_57 : Snapshot.Snapshot_ty (borrowed (CreuSat_Clause_Clause_Type.t_clause));
   var _59 : ();
   var _60 : ();
   var _62 : ();
@@ -6054,7 +6054,7 @@ module CreuSat_ConflictAnalysis_Resolve
   var _81 : usize;
   var _82 : usize;
   var _83 : CreuSat_Clause_Clause_Type.t_clause;
-  var old_c3_84 : Ghost.ghost_ty (borrowed (CreuSat_Clause_Clause_Type.t_clause));
+  var old_c3_84 : Snapshot.Snapshot_ty (borrowed (CreuSat_Clause_Clause_Type.t_clause));
   var _86 : ();
   var _87 : ();
   var _89 : ();
@@ -6124,22 +6124,22 @@ module CreuSat_ConflictAnalysis_Resolve
   }
   BB0 {
     _34 <- ();
-    old_c_32 <- ([#"../CreuSAT/src/conflict_analysis.rs" 57 36 57 45] Ghost.new c_2);
+    old_c_32 <- ([#"../CreuSAT/src/conflict_analysis.rs" 57 36 57 45] Snapshot.new c_2);
     goto BB1
   }
   BB1 {
     _37 <- ();
-    old_seen_35 <- ([#"../CreuSAT/src/conflict_analysis.rs" 58 42 58 54] Ghost.new seen_7);
+    old_seen_35 <- ([#"../CreuSAT/src/conflict_analysis.rs" 58 42 58 54] Snapshot.new seen_7);
     goto BB2
   }
   BB2 {
     _40 <- ();
-    old_path_c_38 <- ([#"../CreuSAT/src/conflict_analysis.rs" 59 40 59 54] Ghost.new path_c_8);
+    old_path_c_38 <- ([#"../CreuSAT/src/conflict_analysis.rs" 59 40 59 54] Snapshot.new path_c_8);
     goto BB3
   }
   BB3 {
     _43 <- ();
-    old_to_bump_41 <- ([#"../CreuSAT/src/conflict_analysis.rs" 60 46 60 61] Ghost.new to_bump_9);
+    old_to_bump_41 <- ([#"../CreuSAT/src/conflict_analysis.rs" 60 46 60 61] Snapshot.new to_bump_9);
     goto BB4
   }
   BB4 {
@@ -6163,18 +6163,18 @@ module CreuSat_ConflictAnalysis_Resolve
   BB6 {
     _50 <- { _50 with current = ([#"../CreuSAT/src/conflict_analysis.rs" 67 16 67 21] false) };
     assume { Resolve0.resolve _50 };
-    assert { [#"../CreuSAT/src/conflict_analysis.rs" 69 18 69 44]  ^ seen_7 =  ^ Ghost.inner old_seen_35 };
+    assert { [#"../CreuSAT/src/conflict_analysis.rs" 69 18 69 44]  ^ seen_7 =  ^ Snapshot.inner old_seen_35 };
     _53 <- ();
     assert { [#"../CreuSAT/src/conflict_analysis.rs" 70 18 70 41] ClauseIsSeen0.clause_is_seen ( * c_2) ( * seen_7) };
     _55 <- ();
     _59 <- ();
-    old_c2_57 <- ([#"../CreuSAT/src/conflict_analysis.rs" 71 37 71 46] Ghost.new c_2);
+    old_c2_57 <- ([#"../CreuSAT/src/conflict_analysis.rs" 71 37 71 46] Snapshot.new c_2);
     goto BB7
   }
   BB7 {
     assert { [#"../CreuSAT/src/conflict_analysis.rs" 72 4 72 45] not LitIn0.lit_in (Seq.get (ShallowModel10.shallow_model old_c_32) (UIntSize.to_int c_idx_5)) ( * c_2) };
     _60 <- ();
-    assert { [#"../CreuSAT/src/conflict_analysis.rs" 73 18 73 38]  ^ c_2 =  ^ Ghost.inner old_c_32 };
+    assert { [#"../CreuSAT/src/conflict_analysis.rs" 73 18 73 38]  ^ c_2 =  ^ Snapshot.inner old_c_32 };
     _62 <- ();
     assert { [#"../CreuSAT/src/conflict_analysis.rs" 74 4 75 48] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel10.shallow_model old_c_32) /\ j <> UIntSize.to_int c_idx_5 -> LitIn0.lit_in (Seq.get (ShallowModel10.shallow_model old_c_32) j) ( * c_2) };
     _64 <- ();
@@ -6188,7 +6188,7 @@ module CreuSat_ConflictAnalysis_Resolve
     invariant { [#"../CreuSAT/src/conflict_analysis.rs" 79 4 79 43] not LitIn0.lit_in (Seq.get (ShallowModel10.shallow_model old_c_32) (UIntSize.to_int c_idx_5)) ( * c_2) /\ not LitIn0.lit_in (Seq.get (ShallowModel1.shallow_model o_3) 0) ( * c_2) };
     invariant { [#"../CreuSAT/src/conflict_analysis.rs" 79 4 79 43] forall j : int . 1 <= j /\ j < UIntSize.to_int i_66 -> LitIn0.lit_in (Seq.get (ShallowModel1.shallow_model o_3) j) ( * c_2) };
     invariant { [#"../CreuSAT/src/conflict_analysis.rs" 79 4 79 43] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel10.shallow_model old_c_32) /\ j <> UIntSize.to_int c_idx_5 -> LitIn0.lit_in (Seq.get (ShallowModel10.shallow_model old_c_32) j) ( * c_2) };
-    invariant { [#"../CreuSAT/src/conflict_analysis.rs" 79 4 79 43] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c_2) -> LitIn0.lit_in (Seq.get (ShallowModel0.shallow_model c_2) j) ( * Ghost.inner old_c_32) \/ LitIn0.lit_in (Seq.get (ShallowModel0.shallow_model c_2) j) o_3 };
+    invariant { [#"../CreuSAT/src/conflict_analysis.rs" 79 4 79 43] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model c_2) -> LitIn0.lit_in (Seq.get (ShallowModel0.shallow_model c_2) j) ( * Snapshot.inner old_c_32) \/ LitIn0.lit_in (Seq.get (ShallowModel0.shallow_model c_2) j) o_3 };
     invariant { [#"../CreuSAT/src/conflict_analysis.rs" 87 16 87 35] ShallowModel3.shallow_model path_c_8 <= Seq.length (ShallowModel0.shallow_model c_2) };
     invariant { [#"../CreuSAT/src/conflict_analysis.rs" 88 16 88 39] ClauseIsSeen0.clause_is_seen ( * c_2) ( * seen_7) };
     invariant { [#"../CreuSAT/src/conflict_analysis.rs" 89 16 89 43] Seq.length (ShallowModel4.shallow_model seen_7) = UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars _f_1) };
@@ -6207,11 +6207,11 @@ module CreuSat_ConflictAnalysis_Resolve
   }
   BB10 {
     _86 <- ();
-    old_c3_84 <- ([#"../CreuSAT/src/conflict_analysis.rs" 92 41 92 50] Ghost.new c_2);
+    old_c3_84 <- ([#"../CreuSAT/src/conflict_analysis.rs" 92 41 92 50] Snapshot.new c_2);
     goto BB11
   }
   BB11 {
-    assert { [#"../CreuSAT/src/conflict_analysis.rs" 93 22 93 43]  ^ c_2 =  ^ Ghost.inner old_c3_84 };
+    assert { [#"../CreuSAT/src/conflict_analysis.rs" 93 22 93 43]  ^ c_2 =  ^ Snapshot.inner old_c3_84 };
     _87 <- ();
     _93 <- CreuSat_Clause_Clause_Type.clause_lits ( * c_2);
     _92 <- _93;
@@ -6352,9 +6352,9 @@ module CreuSat_ConflictAnalysis_Resolve
     assume { Resolve3.resolve path_c_8 };
     assume { Resolve4.resolve to_bump_9 };
     _67 <- ();
-    assert { [#"../CreuSAT/src/conflict_analysis.rs" 111 18 111 63] ResolventOf0.resolvent_of ( * c_2) ( * Ghost.inner old_c_32) o_3 0 (UIntSize.to_int c_idx_5) };
+    assert { [#"../CreuSAT/src/conflict_analysis.rs" 111 18 111 63] ResolventOf0.resolvent_of ( * c_2) ( * Snapshot.inner old_c_32) o_3 0 (UIntSize.to_int c_idx_5) };
     _144 <- ();
-    assert { [#"../CreuSAT/src/conflict_analysis.rs" 112 18 112 105] let _ = LemmaResolventOfEquisatExtensionIsEquisat0.lemma_resolvent_of_equisat_extension_is_equisat (ShallowModel6.shallow_model _f_1) ( * Ghost.inner old_c_32) o_3 ( * c_2) (UIntSize.to_int c_idx_5) 0 in true };
+    assert { [#"../CreuSAT/src/conflict_analysis.rs" 112 18 112 105] let _ = LemmaResolventOfEquisatExtensionIsEquisat0.lemma_resolvent_of_equisat_extension_is_equisat (ShallowModel6.shallow_model _f_1) ( * Snapshot.inner old_c_32) o_3 ( * c_2) (UIntSize.to_int c_idx_5) 0 in true };
     _146 <- ();
     _0 <- ();
     return _0
@@ -6411,7 +6411,7 @@ module CreuSat_ConflictAnalysis_ChooseLiteral
   use prelude.Int
   use prelude.UIntSize
   use prelude.Borrow
-  use prelude.Ghost
+  use prelude.Snapshot
   use seq.Seq
   use prelude.UInt8
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
@@ -6602,7 +6602,7 @@ module CreuSat_ConflictAnalysis_ChooseLiteral
   var i_3 : borrowed usize;
   var _f_4 : CreuSat_Formula_Formula_Type.t_formula;
   var seen_5 : Alloc_Vec_Vec_Type.t_vec bool (Alloc_Alloc_Global_Type.t_global);
-  var old_i_11 : Ghost.ghost_ty (borrowed usize);
+  var old_i_11 : Snapshot.Snapshot_ty (borrowed usize);
   var _13 : ();
   var _14 : ();
   var _16 : ();
@@ -6651,7 +6651,7 @@ module CreuSat_ConflictAnalysis_ChooseLiteral
   }
   BB0 {
     _13 <- ();
-    old_i_11 <- ([#"../CreuSAT/src/conflict_analysis.rs" 130 35 130 45] Ghost.new i_3);
+    old_i_11 <- ([#"../CreuSAT/src/conflict_analysis.rs" 130 35 130 45] Snapshot.new i_3);
     goto BB1
   }
   BB1 {
@@ -7198,7 +7198,7 @@ module CreuSat_Util_Sort
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.Slice
   use seq.Seq
   clone Core_Num_Impl11_Max as Max0
@@ -7265,7 +7265,7 @@ module CreuSat_Util_Sort
     function ShallowModel0.shallow_model = ShallowModel4.shallow_model
   clone CreuSat_Logic_LogicUtil_Partition as Partition0
   clone CreuSat_Logic_LogicUtil_SortedRangeTupleZeroth as SortedRangeTupleZeroth0
-  clone CreusotContracts_Ghost_Impl1_ShallowModel as ShallowModel2 with
+  clone CreusotContracts_Snapshot_Impl1_ShallowModel as ShallowModel2 with
     type t = borrowed (Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global)),
     type ShallowModelTy0.shallowModelTy = Seq.seq (usize, usize),
     function ShallowModel0.shallow_model = ShallowModel3.shallow_model
@@ -7281,7 +7281,7 @@ module CreuSat_Util_Sort
   var _0 : ();
   var v_1 : borrowed (Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global));
   var i_4 : usize;
-  var old_v_5 : Ghost.ghost_ty (borrowed (Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global)));
+  var old_v_5 : Snapshot.Snapshot_ty (borrowed (Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global)));
   var _7 : ();
   var _12 : ();
   var _13 : bool;
@@ -7326,7 +7326,7 @@ module CreuSat_Util_Sort
   BB0 {
     i_4 <- ([#"../CreuSAT/src/util.rs" 60 23 60 24] (0 : usize));
     _7 <- ();
-    old_v_5 <- ([#"../CreuSAT/src/util.rs" 61 49 61 61] Ghost.new v_1);
+    old_v_5 <- ([#"../CreuSAT/src/util.rs" 61 49 61 61] Snapshot.new v_1);
     goto BB1
   }
   BB1 {
@@ -7465,7 +7465,7 @@ module CreuSat_Decision_Impl2_Rescore
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
-  use prelude.Ghost
+  use prelude.Snapshot
   use seq.Seq
   use CreuSat_Decision_Node_Type as CreuSat_Decision_Node_Type
   clone CreusotContracts_Std1_Slice_Impl5_ResolveElswhere as ResolveElswhere0 with
@@ -7537,7 +7537,7 @@ module CreuSat_Decision_Impl2_Rescore
   var self_1 : borrowed (CreuSat_Decision_Decisions_Type.t_decisions);
   var _f_2 : CreuSat_Formula_Formula_Type.t_formula;
   var iNVALID'_8 : usize;
-  var old_self_9 : Ghost.ghost_ty (borrowed (CreuSat_Decision_Decisions_Type.t_decisions));
+  var old_self_9 : Snapshot.Snapshot_ty (borrowed (CreuSat_Decision_Decisions_Type.t_decisions));
   var _11 : ();
   var curr_score_12 : usize;
   var _13 : Alloc_Vec_Vec_Type.t_vec (CreuSat_Decision_Node_Type.t_node) (Alloc_Alloc_Global_Type.t_global);
@@ -7573,7 +7573,7 @@ module CreuSat_Decision_Impl2_Rescore
   BB0 {
     iNVALID'_8 <- ([#"../CreuSAT/src/decision.rs" 137 29 137 39] (18446744073709551615 : usize));
     _11 <- ();
-    old_self_9 <- ([#"../CreuSAT/src/decision.rs" 138 46 138 61] Ghost.new self_1);
+    old_self_9 <- ([#"../CreuSAT/src/decision.rs" 138 46 138 61] Snapshot.new self_1);
     goto BB1
   }
   BB1 {
@@ -7588,7 +7588,7 @@ module CreuSat_Decision_Impl2_Rescore
   }
   BB3 {
     invariant { [#"../CreuSAT/src/decision.rs" 142 20 142 73] curr_15 = Max0.mAX' \/ UIntSize.to_int curr_15 < Seq.length (ShallowModel0.shallow_model (CreuSat_Decision_Decisions_Type.decisions_linked_list ( * self_1))) };
-    invariant { [#"../CreuSAT/src/decision.rs" 142 8 142 75] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model (CreuSat_Decision_Decisions_Type.decisions_linked_list ( * self_1))) -> CreuSat_Decision_Node_Type.node_next (Seq.get (ShallowModel0.shallow_model (CreuSat_Decision_Decisions_Type.decisions_linked_list ( * self_1))) j) = CreuSat_Decision_Node_Type.node_next (Seq.get (ShallowModel0.shallow_model (CreuSat_Decision_Decisions_Type.decisions_linked_list ( * Ghost.inner old_self_9))) j) /\ CreuSat_Decision_Node_Type.node_prev (Seq.get (ShallowModel0.shallow_model (CreuSat_Decision_Decisions_Type.decisions_linked_list ( * self_1))) j) = CreuSat_Decision_Node_Type.node_prev (Seq.get (ShallowModel0.shallow_model (CreuSat_Decision_Decisions_Type.decisions_linked_list ( * Ghost.inner old_self_9))) j) };
+    invariant { [#"../CreuSAT/src/decision.rs" 142 8 142 75] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model (CreuSat_Decision_Decisions_Type.decisions_linked_list ( * self_1))) -> CreuSat_Decision_Node_Type.node_next (Seq.get (ShallowModel0.shallow_model (CreuSat_Decision_Decisions_Type.decisions_linked_list ( * self_1))) j) = CreuSat_Decision_Node_Type.node_next (Seq.get (ShallowModel0.shallow_model (CreuSat_Decision_Decisions_Type.decisions_linked_list ( * Snapshot.inner old_self_9))) j) /\ CreuSat_Decision_Node_Type.node_prev (Seq.get (ShallowModel0.shallow_model (CreuSat_Decision_Decisions_Type.decisions_linked_list ( * self_1))) j) = CreuSat_Decision_Node_Type.node_prev (Seq.get (ShallowModel0.shallow_model (CreuSat_Decision_Decisions_Type.decisions_linked_list ( * Snapshot.inner old_self_9))) j) };
     invariant { [#"../CreuSAT/src/decision.rs" 147 20 147 48] Invariant0.invariant' ( * self_1) (UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars _f_2)) };
     _22 <- curr_15;
     _23 <- iNVALID'_8;
@@ -8002,7 +8002,7 @@ module CreuSat_Decision_Impl2_IncrementAndMove
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
-  use prelude.Ghost
+  use prelude.Snapshot
   use seq.Seq
   use CreuSat_Lit_Lit_Type as CreuSat_Lit_Lit_Type
   clone CreuSat_Logic_LogicLit_Impl0_IndexLogic as IndexLogic2
@@ -8218,7 +8218,7 @@ module CreuSat_Decision_Impl2_IncrementAndMove
   var _10 : (usize, usize);
   var _11 : usize;
   var _12 : Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global);
-  var old_self_13 : Ghost.ghost_ty (borrowed (CreuSat_Decision_Decisions_Type.t_decisions));
+  var old_self_13 : Snapshot.Snapshot_ty (borrowed (CreuSat_Decision_Decisions_Type.t_decisions));
   var _15 : ();
   var i_16 : usize;
   var _17 : ();
@@ -8282,7 +8282,7 @@ module CreuSat_Decision_Impl2_IncrementAndMove
   }
   BB3 {
     _15 <- ();
-    old_self_13 <- ([#"../CreuSAT/src/decision.rs" 206 46 206 61] Ghost.new self_1);
+    old_self_13 <- ([#"../CreuSAT/src/decision.rs" 206 46 206 61] Snapshot.new self_1);
     goto BB4
   }
   BB4 {
@@ -8296,7 +8296,7 @@ module CreuSat_Decision_Impl2_IncrementAndMove
     goto BB7
   }
   BB7 {
-    invariant { [#"../CreuSAT/src/decision.rs" 208 20 208 44] Ghost.inner old_self_13 = self_1 };
+    invariant { [#"../CreuSAT/src/decision.rs" 208 20 208 44] Snapshot.inner old_self_13 = self_1 };
     invariant { [#"../CreuSAT/src/decision.rs" 209 20 209 56] Seq.length (ShallowModel0.shallow_model v_3) = Seq.length (ShallowModel1.shallow_model counts_with_index_9) };
     invariant { [#"../CreuSAT/src/decision.rs" 208 8 208 46] forall j : int . 0 <= j /\ j < UIntSize.to_int i_16 -> UIntSize.to_int (let (_, a) = Seq.get (ShallowModel1.shallow_model counts_with_index_9) j in a) < Seq.length (ShallowModel2.shallow_model (CreuSat_Decision_Decisions_Type.decisions_linked_list ( * self_1))) };
     _23 <- i_16;
@@ -10962,7 +10962,7 @@ module CreuSat_Util_SortReverse
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.Slice
   use seq.Seq
   clone Core_Num_Impl11_Max as Max0
@@ -11029,7 +11029,7 @@ module CreuSat_Util_SortReverse
     function ShallowModel0.shallow_model = ShallowModel4.shallow_model
   clone CreuSat_Logic_LogicUtil_PartitionRev as PartitionRev0
   clone CreuSat_Logic_LogicUtil_SortedRangeRev as SortedRangeRev0
-  clone CreusotContracts_Ghost_Impl1_ShallowModel as ShallowModel2 with
+  clone CreusotContracts_Snapshot_Impl1_ShallowModel as ShallowModel2 with
     type t = borrowed (Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global)),
     type ShallowModelTy0.shallowModelTy = Seq.seq (usize, usize),
     function ShallowModel0.shallow_model = ShallowModel3.shallow_model
@@ -11045,7 +11045,7 @@ module CreuSat_Util_SortReverse
   var _0 : ();
   var v_1 : borrowed (Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global));
   var i_4 : usize;
-  var old_v_5 : Ghost.ghost_ty (borrowed (Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global)));
+  var old_v_5 : Snapshot.Snapshot_ty (borrowed (Alloc_Vec_Vec_Type.t_vec (usize, usize) (Alloc_Alloc_Global_Type.t_global)));
   var _7 : ();
   var _12 : ();
   var _13 : bool;
@@ -11090,7 +11090,7 @@ module CreuSat_Util_SortReverse
   BB0 {
     i_4 <- ([#"../CreuSAT/src/util.rs" 12 23 12 24] (0 : usize));
     _7 <- ();
-    old_v_5 <- ([#"../CreuSAT/src/util.rs" 13 49 13 61] Ghost.new v_1);
+    old_v_5 <- ([#"../CreuSAT/src/util.rs" 13 49 13 61] Snapshot.new v_1);
     goto BB1
   }
   BB1 {
@@ -13531,7 +13531,7 @@ module CreuSat_Formula_Impl2_AddClause
   use prelude.Int
   use prelude.UIntSize
   use prelude.Borrow
-  use prelude.Ghost
+  use prelude.Snapshot
   use seq.Seq
   use prelude.UInt8
   use CreuSat_Lit_Lit_Type as CreuSat_Lit_Lit_Type
@@ -13778,7 +13778,7 @@ module CreuSat_Formula_Impl2_AddClause
   var clause_2 : CreuSat_Clause_Clause_Type.t_clause;
   var watches_3 : borrowed (CreuSat_Watches_Watches_Type.t_watches);
   var _t_4 : CreuSat_Trail_Trail_Type.t_trail;
-  var old_self_20 : Ghost.ghost_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
+  var old_self_20 : Snapshot.Snapshot_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
   var _22 : ();
   var cref_23 : usize;
   var _24 : Alloc_Vec_Vec_Type.t_vec (CreuSat_Clause_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global);
@@ -13827,7 +13827,7 @@ module CreuSat_Formula_Impl2_AddClause
   }
   BB4 {
     _22 <- ();
-    old_self_20 <- ([#"../CreuSAT/src/formula.rs" 125 44 125 59] Ghost.new self_1);
+    old_self_20 <- ([#"../CreuSAT/src/formula.rs" 125 44 125 59] Snapshot.new self_1);
     goto BB5
   }
   BB5 {
@@ -13878,9 +13878,9 @@ module CreuSat_Formula_Impl2_AddClause
     goto BB11
   }
   BB11 {
-    assert { [#"../CreuSAT/src/formula.rs" 136 22 136 48]  ^ Ghost.inner old_self_20 =  ^ self_1 };
+    assert { [#"../CreuSAT/src/formula.rs" 136 22 136 48]  ^ Snapshot.inner old_self_20 =  ^ self_1 };
     _46 <- ();
-    assert { [#"../CreuSAT/src/formula.rs" 138 22 138 45] Equisat0.equisat ( * Ghost.inner old_self_20) ( * self_1) };
+    assert { [#"../CreuSAT/src/formula.rs" 138 22 138 45] Equisat0.equisat ( * Snapshot.inner old_self_20) ( * self_1) };
     _48 <- ();
     assert { [#"../CreuSAT/src/formula.rs" 139 22 139 55] TrailInvariant0.trail_invariant (ShallowModel3.shallow_model (CreuSat_Trail_Trail_Type.trail_trail _t_4)) ( * self_1) };
     _50 <- ();
@@ -13946,7 +13946,7 @@ module CreuSat_Formula_Impl2_AddUnwatchedClause
   use prelude.Int
   use prelude.UIntSize
   use prelude.Borrow
-  use prelude.Ghost
+  use prelude.Snapshot
   use seq.Seq
   use prelude.UInt8
   use CreuSat_Lit_Lit_Type as CreuSat_Lit_Lit_Type
@@ -14175,7 +14175,7 @@ module CreuSat_Formula_Impl2_AddUnwatchedClause
   var clause_2 : CreuSat_Clause_Clause_Type.t_clause;
   var watches_3 : borrowed (CreuSat_Watches_Watches_Type.t_watches);
   var _t_4 : CreuSat_Trail_Trail_Type.t_trail;
-  var old_self_20 : Ghost.ghost_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
+  var old_self_20 : Snapshot.Snapshot_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
   var _22 : ();
   var cref_23 : usize;
   var _24 : Alloc_Vec_Vec_Type.t_vec (CreuSat_Clause_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global);
@@ -14204,7 +14204,7 @@ module CreuSat_Formula_Impl2_AddUnwatchedClause
   }
   BB4 {
     _22 <- ();
-    old_self_20 <- ([#"../CreuSAT/src/formula.rs" 157 44 157 59] Ghost.new self_1);
+    old_self_20 <- ([#"../CreuSAT/src/formula.rs" 157 44 157 59] Snapshot.new self_1);
     goto BB5
   }
   BB5 {
@@ -14285,7 +14285,7 @@ module CreuSat_Formula_Impl2_AddUnit
   use prelude.Int
   use prelude.UIntSize
   use prelude.Borrow
-  use prelude.Ghost
+  use prelude.Snapshot
   use seq.Seq
   use prelude.UInt8
   use CreuSat_Lit_Lit_Type as CreuSat_Lit_Lit_Type
@@ -14490,7 +14490,7 @@ module CreuSat_Formula_Impl2_AddUnit
   var self_1 : borrowed (CreuSat_Formula_Formula_Type.t_formula);
   var clause_2 : CreuSat_Clause_Clause_Type.t_clause;
   var _t_3 : CreuSat_Trail_Trail_Type.t_trail;
-  var old_self_20 : Ghost.ghost_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
+  var old_self_20 : Snapshot.Snapshot_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
   var _22 : ();
   var cref_23 : usize;
   var _24 : Alloc_Vec_Vec_Type.t_vec (CreuSat_Clause_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global);
@@ -14520,7 +14520,7 @@ module CreuSat_Formula_Impl2_AddUnit
   }
   BB5 {
     _22 <- ();
-    old_self_20 <- ([#"../CreuSAT/src/formula.rs" 180 44 180 59] Ghost.new self_1);
+    old_self_20 <- ([#"../CreuSAT/src/formula.rs" 180 44 180 59] Snapshot.new self_1);
     goto BB6
   }
   BB6 {
@@ -14812,7 +14812,7 @@ module CreuSat_Watches_Impl0_Unwatch
   use prelude.Int
   use prelude.UIntSize
   use prelude.Slice
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.IntSize
   use seq.Seq
   use prelude.UInt8
@@ -15124,7 +15124,7 @@ module CreuSat_Watches_Impl0_Unwatch
   var _49 : usize;
   var _50 : usize;
   var _51 : usize;
-  var old_w_52 : Ghost.ghost_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
+  var old_w_52 : Snapshot.Snapshot_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
   var _54 : ();
   var _55 : ();
   var _56 : Core_Option_Option_Type.t_option (CreuSat_Watches_Watcher_Type.t_watcher);
@@ -15235,7 +15235,7 @@ module CreuSat_Watches_Impl0_Unwatch
   }
   BB13 {
     _54 <- ();
-    old_w_52 <- ([#"../CreuSAT/src/watches.rs" 169 49 169 64] Ghost.new self_1);
+    old_w_52 <- ([#"../CreuSAT/src/watches.rs" 169 49 169 64] Snapshot.new self_1);
     goto BB14
   }
   BB14 {
@@ -15268,7 +15268,7 @@ module CreuSat_Watches_Impl0_Unwatch
   BB19 {
     w_62 <- Core_Option_Option_Type.some_0 _56;
     _56 <- (let Core_Option_Option_Type.C_Some a = _56 in Core_Option_Option_Type.C_Some (any CreuSat_Watches_Watcher_Type.t_watcher));
-    assert { [#"../CreuSAT/src/watches.rs" 172 38 172 61]  ^ Ghost.inner old_w_52 =  ^ self_1 };
+    assert { [#"../CreuSAT/src/watches.rs" 172 38 172 61]  ^ Snapshot.inner old_w_52 =  ^ self_1 };
     _63 <- ();
     assert { [#"../CreuSAT/src/watches.rs" 173 38 173 56] Invariant0.invariant' ( * self_1) f_2 };
     _65 <- ();
@@ -15337,7 +15337,7 @@ module CreuSat_Formula_Impl2_DeleteClause
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
-  use prelude.Ghost
+  use prelude.Snapshot
   use seq.Seq
   use prelude.UInt8
   use CreuSat_Lit_Lit_Type as CreuSat_Lit_Lit_Type
@@ -15584,7 +15584,7 @@ module CreuSat_Formula_Impl2_DeleteClause
   var cref_2 : usize;
   var watches_3 : borrowed (CreuSat_Watches_Watches_Type.t_watches);
   var t_4 : CreuSat_Trail_Trail_Type.t_trail;
-  var old_f_16 : Ghost.ghost_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
+  var old_f_16 : Snapshot.Snapshot_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
   var _18 : ();
   var _19 : ();
   var _20 : borrowed (CreuSat_Watches_Watches_Type.t_watches);
@@ -15623,7 +15623,7 @@ module CreuSat_Formula_Impl2_DeleteClause
   }
   BB0 {
     _18 <- ();
-    old_f_16 <- ([#"../CreuSAT/src/formula.rs" 212 41 212 56] Ghost.new self_1);
+    old_f_16 <- ([#"../CreuSAT/src/formula.rs" 212 41 212 56] Snapshot.new self_1);
     goto BB1
   }
   BB1 {
@@ -15680,11 +15680,11 @@ module CreuSat_Formula_Impl2_DeleteClause
   BB8 {
     _41 <- { _41 with current = (let CreuSat_Clause_Clause_Type.C_Clause a b c d =  * _41 in CreuSat_Clause_Clause_Type.C_Clause ([#"../CreuSAT/src/formula.rs" 215 37 215 41] true) b c d) };
     assume { Resolve2.resolve _41 };
-    assert { [#"../CreuSAT/src/formula.rs" 216 8 217 66] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * self_1))) (UIntSize.to_int cref_2))) -> Seq.get (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * self_1))) (UIntSize.to_int cref_2))) i = Seq.get (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * Ghost.inner old_f_16))) (UIntSize.to_int cref_2))) i };
+    assert { [#"../CreuSAT/src/formula.rs" 216 8 217 66] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * self_1))) (UIntSize.to_int cref_2))) -> Seq.get (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * self_1))) (UIntSize.to_int cref_2))) i = Seq.get (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * Snapshot.inner old_f_16))) (UIntSize.to_int cref_2))) i };
     _44 <- ();
-    assert { [#"../CreuSAT/src/formula.rs" 218 22 218 42] Equisat0.equisat ( * Ghost.inner old_f_16) ( * self_1) };
+    assert { [#"../CreuSAT/src/formula.rs" 218 22 218 42] Equisat0.equisat ( * Snapshot.inner old_f_16) ( * self_1) };
     _46 <- ();
-    assert { [#"../CreuSAT/src/formula.rs" 219 22 219 45]  ^ self_1 =  ^ Ghost.inner old_f_16 };
+    assert { [#"../CreuSAT/src/formula.rs" 219 22 219 45]  ^ self_1 =  ^ Snapshot.inner old_f_16 };
     _48 <- ();
     _0 <- ();
     return _0
@@ -15721,7 +15721,7 @@ module CreuSat_Formula_Impl2_DeleteClauses_Interface
 end
 module CreuSat_Formula_Impl2_DeleteClauses
   use prelude.Borrow
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.Int
   use prelude.UIntSize
   use prelude.UInt8
@@ -15963,9 +15963,9 @@ module CreuSat_Formula_Impl2_DeleteClauses
   var self_1 : borrowed (CreuSat_Formula_Formula_Type.t_formula);
   var watches_2 : borrowed (CreuSat_Watches_Watches_Type.t_watches);
   var t_3 : CreuSat_Trail_Trail_Type.t_trail;
-  var old_f_14 : Ghost.ghost_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
+  var old_f_14 : Snapshot.Snapshot_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
   var _16 : ();
-  var old_w_17 : Ghost.ghost_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
+  var old_w_17 : Snapshot.Snapshot_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
   var _19 : ();
   var i_20 : usize;
   var _26 : ();
@@ -16008,12 +16008,12 @@ module CreuSat_Formula_Impl2_DeleteClauses
   }
   BB0 {
     _16 <- ();
-    old_f_14 <- ([#"../CreuSAT/src/formula.rs" 232 41 232 56] Ghost.new self_1);
+    old_f_14 <- ([#"../CreuSAT/src/formula.rs" 232 41 232 56] Snapshot.new self_1);
     goto BB1
   }
   BB1 {
     _19 <- ();
-    old_w_17 <- ([#"../CreuSAT/src/formula.rs" 233 41 233 59] Ghost.new watches_2);
+    old_w_17 <- ([#"../CreuSAT/src/formula.rs" 233 41 233 59] Snapshot.new watches_2);
     goto BB2
   }
   BB2 {
@@ -16024,8 +16024,8 @@ module CreuSat_Formula_Impl2_DeleteClauses
     invariant { [#"../CreuSAT/src/formula.rs" 236 20 236 44] Invariant1.invariant' ( * watches_2) ( * self_1) };
     invariant { [#"../CreuSAT/src/formula.rs" 237 20 237 38] Invariant2.invariant' t_3 ( * self_1) };
     invariant { [#"../CreuSAT/src/formula.rs" 238 20 238 36] Invariant0.invariant' ( * self_1) };
-    invariant { [#"../CreuSAT/src/formula.rs" 239 20 239 53] UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * self_1)) = UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * Ghost.inner old_f_14)) };
-    invariant { [#"../CreuSAT/src/formula.rs" 240 20 240 48] Equisat0.equisat ( * self_1) ( * Ghost.inner old_f_14) };
+    invariant { [#"../CreuSAT/src/formula.rs" 239 20 239 53] UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * self_1)) = UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * Snapshot.inner old_f_14)) };
+    invariant { [#"../CreuSAT/src/formula.rs" 240 20 240 48] Equisat0.equisat ( * self_1) ( * Snapshot.inner old_f_14) };
     _28 <- i_20;
     _30 <- CreuSat_Formula_Formula_Type.formula_clauses ( * self_1);
     _29 <- ([#"../CreuSAT/src/formula.rs" 241 18 241 36] Len0.len _30);
@@ -16421,7 +16421,7 @@ module CreuSat_Formula_Impl2_ReduceDb
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.Int32
   use prelude.UInt8
   use seq.Seq
@@ -16679,9 +16679,9 @@ module CreuSat_Formula_Impl2_ReduceDb
   var _25 : ();
   var _26 : ();
   var i_27 : usize;
-  var old_f_28 : Ghost.ghost_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
+  var old_f_28 : Snapshot.Snapshot_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
   var _30 : ();
-  var old_w_31 : Ghost.ghost_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
+  var old_w_31 : Snapshot.Snapshot_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
   var _33 : ();
   var _39 : bool;
   var _40 : usize;
@@ -16783,12 +16783,12 @@ module CreuSat_Formula_Impl2_ReduceDb
   BB6 {
     i_27 <- CreuSat_Solver_Solver_Type.solver_initial_len ( * s_4);
     _30 <- ();
-    old_f_28 <- ([#"../CreuSAT/src/formula.rs" 290 41 290 56] Ghost.new self_1);
+    old_f_28 <- ([#"../CreuSAT/src/formula.rs" 290 41 290 56] Snapshot.new self_1);
     goto BB7
   }
   BB7 {
     _33 <- ();
-    old_w_31 <- ([#"../CreuSAT/src/formula.rs" 291 41 291 59] Ghost.new watches_2);
+    old_w_31 <- ([#"../CreuSAT/src/formula.rs" 291 41 291 59] Snapshot.new watches_2);
     goto BB8
   }
   BB8 {
@@ -16798,8 +16798,8 @@ module CreuSat_Formula_Impl2_ReduceDb
     invariant { [#"../CreuSAT/src/formula.rs" 292 20 292 44] Invariant1.invariant' ( * watches_2) ( * self_1) };
     invariant { [#"../CreuSAT/src/formula.rs" 293 20 293 38] Invariant2.invariant' t_3 ( * self_1) };
     invariant { [#"../CreuSAT/src/formula.rs" 294 20 294 36] Invariant0.invariant' ( * self_1) };
-    invariant { [#"../CreuSAT/src/formula.rs" 295 20 295 53] UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * self_1)) = UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * Ghost.inner old_f_28)) };
-    invariant { [#"../CreuSAT/src/formula.rs" 296 20 296 48] Equisat0.equisat ( * self_1) ( * Ghost.inner old_f_28) };
+    invariant { [#"../CreuSAT/src/formula.rs" 295 20 295 53] UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * self_1)) = UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * Snapshot.inner old_f_28)) };
+    invariant { [#"../CreuSAT/src/formula.rs" 296 20 296 48] Equisat0.equisat ( * self_1) ( * Snapshot.inner old_f_28) };
     _40 <- i_27;
     _42 <- CreuSat_Formula_Formula_Type.formula_clauses ( * self_1);
     _41 <- ([#"../CreuSAT/src/formula.rs" 297 18 297 36] Len0.len _42);
@@ -17609,7 +17609,7 @@ end
 module CreuSat_Logic_Logic_BoolToAssignedstate_Impl
   use prelude.UInt8
   use prelude.Int
-  let rec ghost function bool_to_assignedstate [#"../CreuSAT/src/logic/logic.rs" 34 0 34 54] (b : bool) : uint8
+  let rec Snapshot function bool_to_assignedstate [#"../CreuSAT/src/logic/logic.rs" 34 0 34 54] (b : bool) : uint8
     ensures { [#"../CreuSAT/src/logic/logic.rs" 32 0 32 30] b -> UInt8.to_int result = 1 }
     ensures { [#"../CreuSAT/src/logic/logic.rs" 33 0 33 31] not b -> UInt8.to_int result = 0 }
     
@@ -18500,7 +18500,7 @@ module CreuSat_Logic_LogicTrail_LemmaPushMaintainsLitNotInLess_Impl
     function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
     predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant,
     axiom .
-  let rec ghost function lemma_push_maintains_lit_not_in_less [#"../CreuSAT/src/logic/logic_trail.rs" 200 0 200 77] (t : CreuSat_Trail_Trail_Type.t_trail) (f : CreuSat_Formula_Formula_Type.t_formula) (step : CreuSat_Trail_Step_Type.t_step) : ()
+  let rec Snapshot function lemma_push_maintains_lit_not_in_less [#"../CreuSAT/src/logic/logic_trail.rs" 200 0 200 77] (t : CreuSat_Trail_Trail_Type.t_trail) (f : CreuSat_Formula_Formula_Type.t_formula) (step : CreuSat_Trail_Step_Type.t_step) : ()
     requires {[#"../CreuSAT/src/logic/logic_trail.rs" 193 11 193 24] Invariant0.invariant' f}
     requires {[#"../CreuSAT/src/logic/logic_trail.rs" 194 11 194 25] Invariant1.invariant' t f}
     requires {[#"../CreuSAT/src/logic/logic_trail.rs" 195 11 195 56] Unset0.unset (Seq.get (ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_assignments t)) (IndexLogic0.index_logic (CreuSat_Trail_Step_Type.step_lit step)))}
@@ -18544,7 +18544,7 @@ module CreuSat_Logic_LogicUtil_Pop_Impl
   use seq.Seq
   use prelude.Int
   use seq_ext.SeqExt
-  let rec ghost function pop [#"../CreuSAT/src/logic/logic_util.rs" 60 0 60 34] (s : Seq.seq t) : Seq.seq t
+  let rec Snapshot function pop [#"../CreuSAT/src/logic/logic_util.rs" 60 0 60 34] (s : Seq.seq t) : Seq.seq t
     requires {[#"../CreuSAT/src/logic/logic_util.rs" 56 11 56 22] Seq.length s > 0}
     ensures { [#"../CreuSAT/src/logic/logic_util.rs" 57 10 57 49] result = SeqExt.subsequence s 0 (Seq.length s - 1) }
     ensures { [#"../CreuSAT/src/logic/logic_util.rs" 58 10 58 37] Seq.length result = Seq.length s - 1 }
@@ -18580,7 +18580,7 @@ module CreuSat_Logic_LogicUtil_LastIdx_Impl
   type t
   use seq.Seq
   use prelude.Int
-  let rec ghost function last_idx [#"../CreuSAT/src/logic/logic_util.rs" 67 0 67 36] (s : Seq.seq t) : int
+  let rec Snapshot function last_idx [#"../CreuSAT/src/logic/logic_util.rs" 67 0 67 36] (s : Seq.seq t) : int
     requires {[#"../CreuSAT/src/logic/logic_util.rs" 66 11 66 22] Seq.length s > 0}
     
    = [@vc:do_not_keep_trace] [@vc:sp]
@@ -18613,7 +18613,7 @@ module CreuSat_Logic_LogicUtil_LastElem_Impl
   type t
   use seq.Seq
   use prelude.Int
-  let rec ghost function last_elem [#"../CreuSAT/src/logic/logic_util.rs" 74 0 74 35] (s : Seq.seq t) : t
+  let rec Snapshot function last_elem [#"../CreuSAT/src/logic/logic_util.rs" 74 0 74 35] (s : Seq.seq t) : t
     requires {[#"../CreuSAT/src/logic/logic_util.rs" 73 11 73 22] Seq.length s > 0}
     
    = [@vc:do_not_keep_trace] [@vc:sp]
@@ -18667,7 +18667,7 @@ module CreuSat_Logic_LogicUtil_LemmaPopMaintainsSorted_Impl
     axiom .
   clone CreuSat_Logic_LogicUtil_Sorted as Sorted0 with
     predicate SortedRange0.sorted_range = SortedRange0.sorted_range
-  let rec ghost function lemma_pop_maintains_sorted [#"../CreuSAT/src/logic/logic_util.rs" 83 0 83 48] (s : Seq.seq usize) : ()
+  let rec Snapshot function lemma_pop_maintains_sorted [#"../CreuSAT/src/logic/logic_util.rs" 83 0 83 48] (s : Seq.seq usize) : ()
     requires {[#"../CreuSAT/src/logic/logic_util.rs" 80 11 80 22] Seq.length s > 0}
     requires {[#"../CreuSAT/src/logic/logic_util.rs" 81 11 81 20] Sorted0.sorted s}
     ensures { [#"../CreuSAT/src/logic/logic_util.rs" 82 10 82 24] Sorted0.sorted (Pop0.pop s) }
@@ -18857,7 +18857,7 @@ module CreuSat_Logic_LogicWatches_LemmaPopWatchMaintainsWatcherInvariant_Impl
   clone CreuSat_Logic_LogicWatches_WatcherCrefsInRange as WatcherCrefsInRange0 with
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
     val Max0.mAX' = Max0.mAX'
-  let rec ghost function lemma_pop_watch_maintains_watcher_invariant [#"../CreuSAT/src/logic/logic_watches.rs" 55 0 55 79] (w : Seq.seq (CreuSat_Watches_Watcher_Type.t_watcher)) (f : CreuSat_Formula_Formula_Type.t_formula) : ()
+  let rec Snapshot function lemma_pop_watch_maintains_watcher_invariant [#"../CreuSAT/src/logic/logic_watches.rs" 55 0 55 79] (w : Seq.seq (CreuSat_Watches_Watcher_Type.t_watcher)) (f : CreuSat_Formula_Formula_Type.t_formula) : ()
     requires {[#"../CreuSAT/src/logic/logic_watches.rs" 52 11 52 22] Seq.length w > 0}
     requires {[#"../CreuSAT/src/logic/logic_watches.rs" 53 11 53 39] WatcherCrefsInRange0.watcher_crefs_in_range w f}
     ensures { [#"../CreuSAT/src/logic/logic_watches.rs" 54 10 54 43] WatcherCrefsInRange0.watcher_crefs_in_range (Pop0.pop w) f }
@@ -18949,7 +18949,7 @@ module CreuSat_Logic_LogicWatches_LemmaPushMaintainsWatcherInvariant_Impl
   clone CreuSat_Logic_LogicWatches_WatcherCrefsInRange as WatcherCrefsInRange0 with
     function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
     val Max0.mAX' = Max0.mAX'
-  let rec ghost function lemma_push_maintains_watcher_invariant [#"../CreuSAT/src/logic/logic_watches.rs" 62 0 62 86] (w : Seq.seq (CreuSat_Watches_Watcher_Type.t_watcher)) (f : CreuSat_Formula_Formula_Type.t_formula) (o : CreuSat_Watches_Watcher_Type.t_watcher) : ()
+  let rec Snapshot function lemma_push_maintains_watcher_invariant [#"../CreuSAT/src/logic/logic_watches.rs" 62 0 62 86] (w : Seq.seq (CreuSat_Watches_Watcher_Type.t_watcher)) (f : CreuSat_Formula_Formula_Type.t_formula) (o : CreuSat_Watches_Watcher_Type.t_watcher) : ()
     requires {[#"../CreuSAT/src/logic/logic_watches.rs" 59 11 59 39] WatcherCrefsInRange0.watcher_crefs_in_range w f}
     requires {[#"../CreuSAT/src/logic/logic_watches.rs" 60 11 60 37] UIntSize.to_int (CreuSat_Watches_Watcher_Type.watcher_cref o) < Seq.length (ShallowModel0.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses f))}
     ensures { [#"../CreuSAT/src/logic/logic_watches.rs" 61 10 61 46] WatcherCrefsInRange0.watcher_crefs_in_range (Seq.snoc w o) f }
@@ -19719,7 +19719,7 @@ module CreuSat_Trail_Impl0_Backstep
   use prelude.Int
   use prelude.UIntSize
   use prelude.Borrow
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.IntSize
   use prelude.UInt8
   use seq.Seq
@@ -19919,7 +19919,7 @@ module CreuSat_Trail_Impl0_Backstep
   var self_1 : borrowed (CreuSat_Trail_Trail_Type.t_trail);
   var f_2 : CreuSat_Formula_Formula_Type.t_formula;
   var _3 : ();
-  var old_t_11 : Ghost.ghost_ty (borrowed (CreuSat_Trail_Trail_Type.t_trail));
+  var old_t_11 : Snapshot.Snapshot_ty (borrowed (CreuSat_Trail_Trail_Type.t_trail));
   var _13 : ();
   var last_14 : Core_Option_Option_Type.t_option (CreuSat_Trail_Step_Type.t_step);
   var _15 : borrowed (Alloc_Vec_Vec_Type.t_vec (CreuSat_Trail_Step_Type.t_step) (Alloc_Alloc_Global_Type.t_global));
@@ -19949,7 +19949,7 @@ module CreuSat_Trail_Impl0_Backstep
   }
   BB0 {
     _13 <- ();
-    old_t_11 <- ([#"../CreuSAT/src/trail.rs" 63 39 63 54] Ghost.new self_1);
+    old_t_11 <- ([#"../CreuSAT/src/trail.rs" 63 39 63 54] Snapshot.new self_1);
     goto BB1
   }
   BB1 {
@@ -19996,9 +19996,9 @@ module CreuSat_Trail_Impl0_Backstep
   BB7 {
     _20 <- { _20 with current = ([#"../CreuSAT/src/trail.rs" 69 16 69 55]  * _20 + ([#"../CreuSAT/src/trail.rs" 69 54 69 55] (2 : uint8))) };
     assume { Resolve1.resolve _20 };
-    assert { [#"../CreuSAT/src/trail.rs" 71 30 71 62] ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_trail ( * self_1)) = Pop1.pop (ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_trail ( * Ghost.inner old_t_11))) };
+    assert { [#"../CreuSAT/src/trail.rs" 71 30 71 62] ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_trail ( * self_1)) = Pop1.pop (ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_trail ( * Snapshot.inner old_t_11))) };
     _24 <- ();
-    assert { [#"../CreuSAT/src/trail.rs" 72 30 72 53]  ^ Ghost.inner old_t_11 =  ^ self_1 };
+    assert { [#"../CreuSAT/src/trail.rs" 72 30 72 53]  ^ Snapshot.inner old_t_11 =  ^ self_1 };
     _26 <- ();
     _29 <- borrow_mut (CreuSat_Trail_Trail_Type.trail_lit_to_level ( * self_1));
     self_1 <- { self_1 with current = (let CreuSat_Trail_Trail_Type.C_Trail a b c d e =  * self_1 in CreuSat_Trail_Trail_Type.C_Trail a ( ^ _29) c d e) };
@@ -20074,7 +20074,7 @@ module CreuSat_Trail_Impl0_BacktrackTo
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.IntSize
   use seq.Seq
   use prelude.UInt8
@@ -20325,9 +20325,9 @@ module CreuSat_Trail_Impl0_BacktrackTo
   var level_2 : usize;
   var f_3 : CreuSat_Formula_Formula_Type.t_formula;
   var d_4 : borrowed (CreuSat_Decision_Decisions_Type.t_decisions);
-  var old_t_13 : Ghost.ghost_ty (borrowed (CreuSat_Trail_Trail_Type.t_trail));
+  var old_t_13 : Snapshot.Snapshot_ty (borrowed (CreuSat_Trail_Trail_Type.t_trail));
   var _15 : ();
-  var old_d_16 : Ghost.ghost_ty (borrowed (CreuSat_Decision_Decisions_Type.t_decisions));
+  var old_d_16 : Snapshot.Snapshot_ty (borrowed (CreuSat_Decision_Decisions_Type.t_decisions));
   var _18 : ();
   var how_many_19 : usize;
   var _20 : usize;
@@ -20376,7 +20376,7 @@ module CreuSat_Trail_Impl0_BacktrackTo
   var _72 : usize;
   var _73 : Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global);
   var _74 : usize;
-  var old_t2_75 : Ghost.ghost_ty (borrowed (CreuSat_Trail_Trail_Type.t_trail));
+  var old_t2_75 : Snapshot.Snapshot_ty (borrowed (CreuSat_Trail_Trail_Type.t_trail));
   var _77 : ();
   var _78 : ();
   var _80 : ();
@@ -20407,7 +20407,7 @@ module CreuSat_Trail_Impl0_BacktrackTo
   var _112 : Alloc_Vec_Vec_Type.t_vec usize (Alloc_Alloc_Global_Type.t_global);
   var _113 : usize;
   var _114 : Alloc_Vec_Vec_Type.t_vec (CreuSat_Trail_Step_Type.t_step) (Alloc_Alloc_Global_Type.t_global);
-  var old_t3_115 : Ghost.ghost_ty (borrowed (CreuSat_Trail_Trail_Type.t_trail));
+  var old_t3_115 : Snapshot.Snapshot_ty (borrowed (CreuSat_Trail_Trail_Type.t_trail));
   var _117 : ();
   var _118 : ();
   var _120 : ();
@@ -20438,12 +20438,12 @@ module CreuSat_Trail_Impl0_BacktrackTo
   }
   BB0 {
     _15 <- ();
-    old_t_13 <- ([#"../CreuSAT/src/trail.rs" 119 39 119 54] Ghost.new self_1);
+    old_t_13 <- ([#"../CreuSAT/src/trail.rs" 119 39 119 54] Snapshot.new self_1);
     goto BB1
   }
   BB1 {
     _18 <- ();
-    old_d_16 <- ([#"../CreuSAT/src/trail.rs" 120 43 120 55] Ghost.new d_4);
+    old_d_16 <- ([#"../CreuSAT/src/trail.rs" 120 43 120 55] Snapshot.new d_4);
     goto BB2
   }
   BB2 {
@@ -20494,7 +20494,7 @@ module CreuSat_Trail_Impl0_BacktrackTo
     goto BB10
   }
   BB10 {
-    invariant { [#"../CreuSAT/src/trail.rs" 126 20 126 44] UIntSize.to_int i_30 <= Seq.length (ShallowModel1.shallow_model (CreuSat_Trail_Trail_Type.trail_trail ( * Ghost.inner old_t_13))) };
+    invariant { [#"../CreuSAT/src/trail.rs" 126 20 126 44] UIntSize.to_int i_30 <= Seq.length (ShallowModel1.shallow_model (CreuSat_Trail_Trail_Type.trail_trail ( * Snapshot.inner old_t_13))) };
     invariant { [#"../CreuSAT/src/trail.rs" 127 20 127 33] i_30 <= how_many_19 };
     invariant { [#"../CreuSAT/src/trail.rs" 128 20 128 80] LongArePostUnitInner0.long_are_post_unit_inner (ShallowModel1.shallow_model (CreuSat_Trail_Trail_Type.trail_trail ( * self_1))) f_3 (ShallowModel2.shallow_model (CreuSat_Trail_Trail_Type.trail_assignments ( * self_1))) };
     invariant { [#"../CreuSAT/src/trail.rs" 129 20 129 50] InvariantNoDecision0.invariant_no_decision ( * self_1) f_3 };
@@ -20577,7 +20577,7 @@ module CreuSat_Trail_Impl0_BacktrackTo
   }
   BB20 {
     _77 <- ();
-    old_t2_75 <- ([#"../CreuSAT/src/trail.rs" 149 44 149 59] Ghost.new self_1);
+    old_t2_75 <- ([#"../CreuSAT/src/trail.rs" 149 44 149 59] Snapshot.new self_1);
     goto BB21
   }
   BB21 {
@@ -20607,9 +20607,9 @@ module CreuSat_Trail_Impl0_BacktrackTo
     absurd
   }
   BB25 {
-    assert { [#"../CreuSAT/src/trail.rs" 155 34 155 75] ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_decisions ( * self_1)) = Pop1.pop (ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_decisions ( * Ghost.inner old_t2_75))) };
+    assert { [#"../CreuSAT/src/trail.rs" 155 34 155 75] ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_decisions ( * self_1)) = Pop1.pop (ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_decisions ( * Snapshot.inner old_t2_75))) };
     _88 <- ();
-    assert { [#"../CreuSAT/src/trail.rs" 156 34 156 60]  ^ Ghost.inner old_t2_75 =  ^ self_1 };
+    assert { [#"../CreuSAT/src/trail.rs" 156 34 156 60]  ^ Snapshot.inner old_t2_75 =  ^ self_1 };
     _90 <- ();
     _84 <- ();
     assert { [#"../CreuSAT/src/trail.rs" 162 26 162 49] Sorted0.sorted (ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_decisions ( * self_1))) };
@@ -20670,7 +20670,7 @@ module CreuSat_Trail_Impl0_BacktrackTo
   }
   BB35 {
     _117 <- ();
-    old_t3_115 <- ([#"../CreuSAT/src/trail.rs" 168 44 168 59] Ghost.new self_1);
+    old_t3_115 <- ([#"../CreuSAT/src/trail.rs" 168 44 168 59] Snapshot.new self_1);
     goto BB36
   }
   BB36 {
@@ -20700,12 +20700,12 @@ module CreuSat_Trail_Impl0_BacktrackTo
     absurd
   }
   BB40 {
-    assert { [#"../CreuSAT/src/trail.rs" 175 34 175 75] ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_decisions ( * self_1)) = Pop1.pop (ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_decisions ( * Ghost.inner old_t3_115))) };
+    assert { [#"../CreuSAT/src/trail.rs" 175 34 175 75] ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_decisions ( * self_1)) = Pop1.pop (ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_decisions ( * Snapshot.inner old_t3_115))) };
     _128 <- ();
-    assert { [#"../CreuSAT/src/trail.rs" 176 34 176 60]  ^ Ghost.inner old_t3_115 =  ^ self_1 };
+    assert { [#"../CreuSAT/src/trail.rs" 176 34 176 60]  ^ Snapshot.inner old_t3_115 =  ^ self_1 };
     _130 <- ();
     _124 <- ();
-    assert { [#"../CreuSAT/src/trail.rs" 182 26 182 71] let _ = LemmaPopMaintainsSorted0.lemma_pop_maintains_sorted (ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_decisions ( * Ghost.inner old_t3_115))) in true };
+    assert { [#"../CreuSAT/src/trail.rs" 182 26 182 71] let _ = LemmaPopMaintainsSorted0.lemma_pop_maintains_sorted (ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_decisions ( * Snapshot.inner old_t3_115))) in true };
     _134 <- ();
     assert { [#"../CreuSAT/src/trail.rs" 183 26 183 49] Sorted0.sorted (ShallowModel0.shallow_model (CreuSat_Trail_Trail_Type.trail_decisions ( * self_1))) };
     _136 <- ();
@@ -23346,7 +23346,7 @@ module CreuSat_UnitProp_Swap
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.Slice
   use seq.Seq
   use seq.Permut
@@ -23529,7 +23529,7 @@ module CreuSat_UnitProp_Swap
   clone CreuSat_Logic_LogicFormula_EventuallySatComplete as EventuallySatComplete0 with
     predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner,
     predicate FormulaSatInner0.formula_sat_inner = FormulaSatInner0.formula_sat_inner
-  clone CreusotContracts_Ghost_Impl1_ShallowModel as ShallowModel3 with
+  clone CreusotContracts_Snapshot_Impl1_ShallowModel as ShallowModel3 with
     type t = borrowed (CreuSat_Formula_Formula_Type.t_formula),
     type ShallowModelTy0.shallowModelTy = (Seq.seq (CreuSat_Clause_Clause_Type.t_clause), int),
     function ShallowModel0.shallow_model = ShallowModel15.shallow_model
@@ -23614,7 +23614,7 @@ module CreuSat_UnitProp_Swap
   var cref_4 : usize;
   var j_5 : usize;
   var k_6 : usize;
-  var old_f_22 : Ghost.ghost_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
+  var old_f_22 : Snapshot.Snapshot_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
   var _24 : ();
   var _25 : ();
   var _26 : borrowed (slice (CreuSat_Lit_Lit_Type.t_lit));
@@ -23641,7 +23641,7 @@ module CreuSat_UnitProp_Swap
   }
   BB0 {
     _24 <- ();
-    old_f_22 <- ([#"../CreuSAT/src/unit_prop.rs" 69 37 69 49] Ghost.new f_1);
+    old_f_22 <- ([#"../CreuSAT/src/unit_prop.rs" 69 37 69 49] Snapshot.new f_1);
     goto BB1
   }
   BB1 {
@@ -23673,11 +23673,11 @@ module CreuSat_UnitProp_Swap
     _34 <- ();
     assert { [#"../CreuSAT/src/unit_prop.rs" 74 18 74 64] NoDuplicateIndexesInner0.no_duplicate_indexes_inner (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1))) (UIntSize.to_int cref_4))) };
     _36 <- ();
-    assert { [#"../CreuSAT/src/unit_prop.rs" 76 4 76 170] forall a2 : Seq.seq uint8 . Seq.length a2 = UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * f_1)) /\ CompleteInner0.complete_inner a2 /\ SatInner1.sat_inner (Seq.get (ShallowModel0.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * Ghost.inner old_f_22))) (UIntSize.to_int cref_4)) a2 -> SatInner1.sat_inner (Seq.get (ShallowModel0.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1))) (UIntSize.to_int cref_4)) a2 };
+    assert { [#"../CreuSAT/src/unit_prop.rs" 76 4 76 170] forall a2 : Seq.seq uint8 . Seq.length a2 = UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * f_1)) /\ CompleteInner0.complete_inner a2 /\ SatInner1.sat_inner (Seq.get (ShallowModel0.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * Snapshot.inner old_f_22))) (UIntSize.to_int cref_4)) a2 -> SatInner1.sat_inner (Seq.get (ShallowModel0.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1))) (UIntSize.to_int cref_4)) a2 };
     _38 <- ();
     assert { [#"../CreuSAT/src/unit_prop.rs" 77 4 77 82] EventuallySatComplete0.eventually_sat_complete (ShallowModel3.shallow_model old_f_22) -> EventuallySatComplete0.eventually_sat_complete (ShallowModel4.shallow_model f_1) };
     _40 <- ();
-    assert { [#"../CreuSAT/src/unit_prop.rs" 78 18 78 38]  ^ f_1 =  ^ Ghost.inner old_f_22 };
+    assert { [#"../CreuSAT/src/unit_prop.rs" 78 18 78 38]  ^ f_1 =  ^ Snapshot.inner old_f_22 };
     _42 <- ();
     _0 <- ();
     return _0
@@ -23741,7 +23741,7 @@ module CreuSat_Watches_UpdateWatch
   use prelude.Int
   use prelude.UIntSize
   use prelude.Slice
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.IntSize
   use seq.Seq
   use prelude.UInt8
@@ -24079,7 +24079,7 @@ module CreuSat_Watches_UpdateWatch
   var _40 : usize;
   var _41 : usize;
   var _42 : ();
-  var old_w_44 : Ghost.ghost_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
+  var old_w_44 : Snapshot.Snapshot_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
   var _46 : ();
   var _47 : ();
   var _49 : Core_Option_Option_Type.t_option (CreuSat_Watches_Watcher_Type.t_watcher);
@@ -24177,7 +24177,7 @@ module CreuSat_Watches_UpdateWatch
     assert { [#"../CreuSAT/src/watches.rs" 41 18 41 52] UIntSize.to_int watchidx_18 < Seq.length (ShallowModel2.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * watches_3))) };
     _42 <- ();
     _46 <- ();
-    old_w_44 <- ([#"../CreuSAT/src/watches.rs" 42 37 42 52] Ghost.new watches_3);
+    old_w_44 <- ([#"../CreuSAT/src/watches.rs" 42 37 42 52] Snapshot.new watches_3);
     goto BB9
   }
   BB9 {
@@ -24213,9 +24213,9 @@ module CreuSat_Watches_UpdateWatch
   BB14 {
     w_55 <- Core_Option_Option_Type.some_0 _49;
     _49 <- (let Core_Option_Option_Type.C_Some a = _49 in Core_Option_Option_Type.C_Some (any CreuSat_Watches_Watcher_Type.t_watcher));
-    assert { [#"../CreuSAT/src/watches.rs" 46 26 46 101] let _ = LemmaPopWatchMaintainsWatcherInvariant0.lemma_pop_watch_maintains_watcher_invariant (ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * Ghost.inner old_w_44))) (UIntSize.to_int watchidx_18))) f_1 in true };
+    assert { [#"../CreuSAT/src/watches.rs" 46 26 46 101] let _ = LemmaPopWatchMaintainsWatcherInvariant0.lemma_pop_watch_maintains_watcher_invariant (ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * Snapshot.inner old_w_44))) (UIntSize.to_int watchidx_18))) f_1 in true };
     _56 <- ();
-    assert { [#"../CreuSAT/src/watches.rs" 47 26 47 89] ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * watches_3))) (UIntSize.to_int watchidx_18)) = Pop1.pop (ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * Ghost.inner old_w_44))) (UIntSize.to_int watchidx_18))) };
+    assert { [#"../CreuSAT/src/watches.rs" 47 26 47 89] ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * watches_3))) (UIntSize.to_int watchidx_18)) = Pop1.pop (ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * Snapshot.inner old_w_44))) (UIntSize.to_int watchidx_18))) };
     _58 <- ();
     assert { [#"../CreuSAT/src/watches.rs" 48 26 48 82] WatcherCrefsInRange0.watcher_crefs_in_range (ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * watches_3))) (UIntSize.to_int watchidx_18))) f_1 };
     _60 <- ();
@@ -24856,7 +24856,7 @@ module CreuSat_UnitProp_ExistsNewWatchableLit
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
-  use prelude.Ghost
+  use prelude.Snapshot
   use seq.Seq
   use prelude.UInt8
   use CreuSat_Lit_Lit_Type as CreuSat_Lit_Lit_Type
@@ -25137,9 +25137,9 @@ module CreuSat_UnitProp_ExistsNewWatchableLit
   var cref_4 : usize;
   var j_5 : usize;
   var lit_6 : CreuSat_Lit_Lit_Type.t_lit;
-  var old_w_25 : Ghost.ghost_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
+  var old_w_25 : Snapshot.Snapshot_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
   var _27 : ();
-  var old_f_28 : Ghost.ghost_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
+  var old_f_28 : Snapshot.Snapshot_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
   var _30 : ();
   var clause_len_31 : usize;
   var _32 : CreuSat_Clause_Clause_Type.t_clause;
@@ -25169,7 +25169,7 @@ module CreuSat_UnitProp_ExistsNewWatchableLit
   var _61 : usize;
   var _62 : CreuSat_Lit_Lit_Type.t_lit;
   var _63 : ();
-  var old_f2_64 : Ghost.ghost_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
+  var old_f2_64 : Snapshot.Snapshot_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
   var _66 : ();
   var _67 : usize;
   var _68 : borrowed (CreuSat_Clause_Clause_Type.t_clause);
@@ -25194,7 +25194,7 @@ module CreuSat_UnitProp_ExistsNewWatchableLit
   var _95 : usize;
   var _96 : CreuSat_Lit_Lit_Type.t_lit;
   var _97 : ();
-  var old_f2_98 : Ghost.ghost_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
+  var old_f2_98 : Snapshot.Snapshot_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
   var _100 : ();
   var _101 : usize;
   var _102 : borrowed (CreuSat_Clause_Clause_Type.t_clause);
@@ -25216,12 +25216,12 @@ module CreuSat_UnitProp_ExistsNewWatchableLit
   }
   BB0 {
     _27 <- ();
-    old_w_25 <- ([#"../CreuSAT/src/unit_prop.rs" 101 37 101 55] Ghost.new watches_3);
+    old_w_25 <- ([#"../CreuSAT/src/unit_prop.rs" 101 37 101 55] Snapshot.new watches_3);
     goto BB1
   }
   BB1 {
     _30 <- ();
-    old_f_28 <- ([#"../CreuSAT/src/unit_prop.rs" 102 37 102 49] Ghost.new f_1);
+    old_f_28 <- ([#"../CreuSAT/src/unit_prop.rs" 102 37 102 49] Snapshot.new f_1);
     goto BB2
   }
   BB2 {
@@ -25257,8 +25257,8 @@ module CreuSat_UnitProp_ExistsNewWatchableLit
   }
   BB8 {
     invariant { [#"../CreuSAT/src/unit_prop.rs" 106 16 106 28] UIntSize.to_int search_43 >= 2 };
-    invariant { [#"../CreuSAT/src/unit_prop.rs" 107 16 107 27] f_1 = Ghost.inner old_f_28 };
-    invariant { [#"../CreuSAT/src/unit_prop.rs" 108 16 108 33] watches_3 = Ghost.inner old_w_25 };
+    invariant { [#"../CreuSAT/src/unit_prop.rs" 107 16 107 27] f_1 = Snapshot.inner old_f_28 };
+    invariant { [#"../CreuSAT/src/unit_prop.rs" 108 16 108 33] watches_3 = Snapshot.inner old_w_25 };
     invariant { [#"../CreuSAT/src/unit_prop.rs" 106 4 106 30] forall m : int . UIntSize.to_int init_search_36 <= m /\ m < UIntSize.to_int search_43 -> Unsat0.unsat (Seq.get (ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1))) (UIntSize.to_int cref_4))) m) (CreuSat_Trail_Trail_Type.trail_assignments trail_2) };
     invariant { [#"../CreuSAT/src/unit_prop.rs" 106 4 106 30] not SatInner0.sat_inner (Seq.get (ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1))) (UIntSize.to_int cref_4))) 0) (ShallowModel4.shallow_model (CreuSat_Trail_Trail_Type.trail_assignments trail_2)) };
     _52 <- search_43;
@@ -25291,7 +25291,7 @@ module CreuSat_UnitProp_ExistsNewWatchableLit
   BB11 {
     assume { Resolve0.resolve watches_3 };
     _66 <- ();
-    old_f2_64 <- ([#"../CreuSAT/src/unit_prop.rs" 114 46 114 58] Ghost.new f_1);
+    old_f2_64 <- ([#"../CreuSAT/src/unit_prop.rs" 114 46 114 58] Snapshot.new f_1);
     goto BB12
   }
   BB12 {
@@ -25307,9 +25307,9 @@ module CreuSat_UnitProp_ExistsNewWatchableLit
     _68 <- { _68 with current = (let CreuSat_Clause_Clause_Type.C_Clause a b c d =  * _68 in CreuSat_Clause_Clause_Type.C_Clause a b _67 d) };
     _67 <- any usize;
     assume { Resolve2.resolve _68 };
-    assert { [#"../CreuSAT/src/unit_prop.rs" 116 12 116 122] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1))) -> ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1))) j) = ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * Ghost.inner old_f2_64))) j) };
+    assert { [#"../CreuSAT/src/unit_prop.rs" 116 12 116 122] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1))) -> ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1))) j) = ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * Snapshot.inner old_f2_64))) j) };
     _71 <- ();
-    assert { [#"../CreuSAT/src/unit_prop.rs" 117 26 117 52] Equisat0.equisat ( * Ghost.inner old_f2_64) ( * f_1) };
+    assert { [#"../CreuSAT/src/unit_prop.rs" 117 26 117 52] Equisat0.equisat ( * Snapshot.inner old_f2_64) ( * f_1) };
     _73 <- ();
     _0 <- ([#"../CreuSAT/src/unit_prop.rs" 119 19 119 23] true);
     goto BB24
@@ -25327,8 +25327,8 @@ module CreuSat_UnitProp_ExistsNewWatchableLit
   }
   BB16 {
     invariant { [#"../CreuSAT/src/unit_prop.rs" 124 16 124 54] 2 <= UIntSize.to_int search_43 /\ UIntSize.to_int search_43 <= UIntSize.to_int clause_len_31 };
-    invariant { [#"../CreuSAT/src/unit_prop.rs" 125 16 125 27] f_1 = Ghost.inner old_f_28 };
-    invariant { [#"../CreuSAT/src/unit_prop.rs" 126 16 126 33] watches_3 = Ghost.inner old_w_25 };
+    invariant { [#"../CreuSAT/src/unit_prop.rs" 125 16 125 27] f_1 = Snapshot.inner old_f_28 };
+    invariant { [#"../CreuSAT/src/unit_prop.rs" 126 16 126 33] watches_3 = Snapshot.inner old_w_25 };
     invariant { [#"../CreuSAT/src/unit_prop.rs" 124 4 124 56] forall m : int . UIntSize.to_int init_search_36 <= m /\ m < UIntSize.to_int clause_len_31 -> Unsat0.unsat (Seq.get (ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1))) (UIntSize.to_int cref_4))) m) (CreuSat_Trail_Trail_Type.trail_assignments trail_2) };
     invariant { [#"../CreuSAT/src/unit_prop.rs" 124 4 124 56] forall m : int . 2 <= m /\ m < UIntSize.to_int search_43 -> Unsat0.unsat (Seq.get (ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1))) (UIntSize.to_int cref_4))) m) (CreuSat_Trail_Trail_Type.trail_assignments trail_2) };
     invariant { [#"../CreuSAT/src/unit_prop.rs" 124 4 124 56] not SatInner0.sat_inner (Seq.get (ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1))) (UIntSize.to_int cref_4))) 0) (ShallowModel4.shallow_model (CreuSat_Trail_Trail_Type.trail_assignments trail_2)) };
@@ -25362,7 +25362,7 @@ module CreuSat_UnitProp_ExistsNewWatchableLit
   BB19 {
     assume { Resolve0.resolve watches_3 };
     _100 <- ();
-    old_f2_98 <- ([#"../CreuSAT/src/unit_prop.rs" 133 46 133 58] Ghost.new f_1);
+    old_f2_98 <- ([#"../CreuSAT/src/unit_prop.rs" 133 46 133 58] Snapshot.new f_1);
     goto BB20
   }
   BB20 {
@@ -25378,9 +25378,9 @@ module CreuSat_UnitProp_ExistsNewWatchableLit
     _102 <- { _102 with current = (let CreuSat_Clause_Clause_Type.C_Clause a b c d =  * _102 in CreuSat_Clause_Clause_Type.C_Clause a b _101 d) };
     _101 <- any usize;
     assume { Resolve2.resolve _102 };
-    assert { [#"../CreuSAT/src/unit_prop.rs" 135 12 135 122] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1))) -> ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1))) j) = ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * Ghost.inner old_f2_98))) j) };
+    assert { [#"../CreuSAT/src/unit_prop.rs" 135 12 135 122] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1))) -> ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1))) j) = ShallowModel3.shallow_model (Seq.get (ShallowModel2.shallow_model (CreuSat_Formula_Formula_Type.formula_clauses ( * Snapshot.inner old_f2_98))) j) };
     _105 <- ();
-    assert { [#"../CreuSAT/src/unit_prop.rs" 136 26 136 52] Equisat0.equisat ( * Ghost.inner old_f2_98) ( * f_1) };
+    assert { [#"../CreuSAT/src/unit_prop.rs" 136 26 136 52] Equisat0.equisat ( * Snapshot.inner old_f2_98) ( * f_1) };
     _107 <- ();
     _0 <- ([#"../CreuSAT/src/unit_prop.rs" 138 19 138 23] true);
     goto BB24
@@ -25483,7 +25483,7 @@ module CreuSat_UnitProp_PropagateLitWithRegardToClause
   use prelude.Int
   use prelude.UIntSize
   use prelude.Borrow
-  use prelude.Ghost
+  use prelude.Snapshot
   use seq.Seq
   use seq.Permut
   use prelude.UInt8
@@ -25698,7 +25698,7 @@ module CreuSat_UnitProp_PropagateLitWithRegardToClause
     predicate Invariant0.invariant' = Invariant6.invariant',
     function ShallowModel1.shallow_model = ShallowModel3.shallow_model,
     val Max0.mAX' = Max1.mAX'
-  clone CreusotContracts_Ghost_Impl1_ShallowModel as ShallowModel5 with
+  clone CreusotContracts_Snapshot_Impl1_ShallowModel as ShallowModel5 with
     type t = CreuSat_Clause_Clause_Type.t_clause,
     type ShallowModelTy0.shallowModelTy = Seq.seq (CreuSat_Lit_Lit_Type.t_lit),
     function ShallowModel0.shallow_model = ShallowModel11.shallow_model
@@ -25888,7 +25888,7 @@ module CreuSat_UnitProp_PropagateLitWithRegardToClause
   var cref_4 : usize;
   var lit_5 : CreuSat_Lit_Lit_Type.t_lit;
   var j_6 : usize;
-  var old_w_23 : Ghost.ghost_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
+  var old_w_23 : Snapshot.Snapshot_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
   var _25 : ();
   var clause_26 : CreuSat_Clause_Clause_Type.t_clause;
   var _27 : CreuSat_Clause_Clause_Type.t_clause;
@@ -25979,7 +25979,7 @@ module CreuSat_UnitProp_PropagateLitWithRegardToClause
   var _122 : CreuSat_Trail_Trail_Type.t_trail;
   var _123 : CreuSat_Trail_Reason_Type.t_reason;
   var _124 : usize;
-  var old_c_125 : Ghost.ghost_ty (CreuSat_Clause_Clause_Type.t_clause);
+  var old_c_125 : Snapshot.Snapshot_ty (CreuSat_Clause_Clause_Type.t_clause);
   var _128 : ();
   var _129 : ();
   var _131 : ();
@@ -26008,7 +26008,7 @@ module CreuSat_UnitProp_PropagateLitWithRegardToClause
   }
   BB0 {
     _25 <- ();
-    old_w_23 <- ([#"../CreuSAT/src/unit_prop.rs" 166 37 166 55] Ghost.new watches_3);
+    old_w_23 <- ([#"../CreuSAT/src/unit_prop.rs" 166 37 166 55] Snapshot.new watches_3);
     goto BB1
   }
   BB1 {
@@ -26040,7 +26040,7 @@ module CreuSat_UnitProp_PropagateLitWithRegardToClause
   BB5 {
     assume { Resolve0.resolve f_1 };
     assume { Resolve1.resolve trail_2 };
-    assert { [#"../CreuSAT/src/unit_prop.rs" 171 22 171 48]  ^ watches_3 =  ^ Ghost.inner old_w_23 };
+    assert { [#"../CreuSAT/src/unit_prop.rs" 171 22 171 48]  ^ watches_3 =  ^ Snapshot.inner old_w_23 };
     _39 <- ();
     assert { [#"../CreuSAT/src/unit_prop.rs" 172 22 172 59] IndexLogic0.index_logic first_lit_30 < UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * f_1)) };
     _41 <- ();
@@ -26094,7 +26094,7 @@ module CreuSat_UnitProp_PropagateLitWithRegardToClause
   BB12 {
     assume { Resolve0.resolve f_1 };
     assume { Resolve1.resolve trail_2 };
-    assert { [#"../CreuSAT/src/unit_prop.rs" 179 22 179 48]  ^ watches_3 =  ^ Ghost.inner old_w_23 };
+    assert { [#"../CreuSAT/src/unit_prop.rs" 179 22 179 48]  ^ watches_3 =  ^ Snapshot.inner old_w_23 };
     _60 <- ();
     assert { [#"../CreuSAT/src/unit_prop.rs" 180 22 180 60] IndexLogic0.index_logic second_lit_51 < UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * f_1)) };
     _62 <- ();
@@ -26246,7 +26246,7 @@ module CreuSat_UnitProp_PropagateLitWithRegardToClause
     _123 <- CreuSat_Trail_Reason_Type.C_Long _124;
     step_119 <- CreuSat_Trail_Step_Type.C_Step _120 _121 _123;
     _128 <- ();
-    old_c_125 <- ([#"../CreuSAT/src/unit_prop.rs" 212 35 212 61] Ghost.new (Index2.index (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1)) cref_4));
+    old_c_125 <- ([#"../CreuSAT/src/unit_prop.rs" 212 35 212 61] Snapshot.new (Index2.index (CreuSat_Formula_Formula_Type.formula_clauses ( * f_1)) cref_4));
     goto BB31
   }
   BB31 {
@@ -26358,7 +26358,7 @@ module CreuSat_UnitProp_PropagateLiteral
   use prelude.Int
   use prelude.UIntSize
   use prelude.Borrow
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.IntSize
   use seq.Seq
   use prelude.UInt8
@@ -26648,11 +26648,11 @@ module CreuSat_UnitProp_PropagateLiteral
   var _18 : CreuSat_Lit_Lit_Type.t_lit;
   var _19 : ();
   var _21 : ();
-  var old_trail_23 : Ghost.ghost_ty (borrowed (CreuSat_Trail_Trail_Type.t_trail));
+  var old_trail_23 : Snapshot.Snapshot_ty (borrowed (CreuSat_Trail_Trail_Type.t_trail));
   var _25 : ();
-  var old_f_26 : Ghost.ghost_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
+  var old_f_26 : Snapshot.Snapshot_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
   var _28 : ();
-  var old_w_29 : Ghost.ghost_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
+  var old_w_29 : Snapshot.Snapshot_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
   var _31 : ();
   var _32 : ();
   var _40 : ();
@@ -26709,17 +26709,17 @@ module CreuSat_UnitProp_PropagateLiteral
     assert { [#"../CreuSAT/src/unit_prop.rs" 242 18 242 52] Seq.length (ShallowModel1.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * watches_3))) > UIntSize.to_int watchidx_17 };
     _21 <- ();
     _25 <- ();
-    old_trail_23 <- ([#"../CreuSAT/src/unit_prop.rs" 243 39 243 55] Ghost.new trail_2);
+    old_trail_23 <- ([#"../CreuSAT/src/unit_prop.rs" 243 39 243 55] Snapshot.new trail_2);
     goto BB2
   }
   BB2 {
     _28 <- ();
-    old_f_26 <- ([#"../CreuSAT/src/unit_prop.rs" 244 37 244 49] Ghost.new f_1);
+    old_f_26 <- ([#"../CreuSAT/src/unit_prop.rs" 244 37 244 49] Snapshot.new f_1);
     goto BB3
   }
   BB3 {
     _31 <- ();
-    old_w_29 <- ([#"../CreuSAT/src/unit_prop.rs" 245 37 245 55] Ghost.new watches_3);
+    old_w_29 <- ([#"../CreuSAT/src/unit_prop.rs" 245 37 245 55] Snapshot.new watches_3);
     goto BB4
   }
   BB4 {
@@ -26727,12 +26727,12 @@ module CreuSat_UnitProp_PropagateLiteral
   }
   BB5 {
     invariant { [#"../CreuSAT/src/unit_prop.rs" 246 16 246 35] Invariant1.invariant' ( * trail_2) ( * f_1) };
-    invariant { [#"../CreuSAT/src/unit_prop.rs" 247 16 247 62] Seq.length (ShallowModel1.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * watches_3))) = Seq.length (ShallowModel1.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * Ghost.inner old_w_29))) };
+    invariant { [#"../CreuSAT/src/unit_prop.rs" 247 16 247 62] Seq.length (ShallowModel1.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * watches_3))) = Seq.length (ShallowModel1.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * Snapshot.inner old_w_29))) };
     invariant { [#"../CreuSAT/src/unit_prop.rs" 248 16 248 37] Invariant2.invariant' ( * watches_3) ( * f_1) };
-    invariant { [#"../CreuSAT/src/unit_prop.rs" 249 16 249 33] Equisat0.equisat ( * Ghost.inner old_f_26) ( * f_1) };
+    invariant { [#"../CreuSAT/src/unit_prop.rs" 249 16 249 33] Equisat0.equisat ( * Snapshot.inner old_f_26) ( * f_1) };
     invariant { [#"../CreuSAT/src/unit_prop.rs" 250 16 250 29] Invariant0.invariant' ( * f_1) };
-    invariant { [#"../CreuSAT/src/unit_prop.rs" 251 16 251 56] ShallowModel2.shallow_model (CreuSat_Trail_Trail_Type.trail_decisions ( * trail_2)) = ShallowModel2.shallow_model (CreuSat_Trail_Trail_Type.trail_decisions ( * Ghost.inner old_trail_23)) };
-    invariant { [#"../CreuSAT/src/unit_prop.rs" 252 16 252 46] UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * f_1)) = UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * Ghost.inner old_f_26)) };
+    invariant { [#"../CreuSAT/src/unit_prop.rs" 251 16 251 56] ShallowModel2.shallow_model (CreuSat_Trail_Trail_Type.trail_decisions ( * trail_2)) = ShallowModel2.shallow_model (CreuSat_Trail_Trail_Type.trail_decisions ( * Snapshot.inner old_trail_23)) };
+    invariant { [#"../CreuSAT/src/unit_prop.rs" 252 16 252 46] UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * f_1)) = UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * Snapshot.inner old_f_26)) };
     _42 <- j_16;
     _46 <- CreuSat_Watches_Watches_Type.watches_watches ( * watches_3);
     _47 <- watchidx_17;
@@ -26901,7 +26901,7 @@ module CreuSat_UnitProp_UnitPropagate
   use prelude.Int
   use prelude.UIntSize
   use prelude.Borrow
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.IntSize
   use seq.Seq
   use prelude.UInt8
@@ -27148,11 +27148,11 @@ module CreuSat_UnitProp_UnitPropagate
   var trail_2 : borrowed (CreuSat_Trail_Trail_Type.t_trail);
   var watches_3 : borrowed (CreuSat_Watches_Watches_Type.t_watches);
   var i_14 : usize;
-  var old_trail_15 : Ghost.ghost_ty (borrowed (CreuSat_Trail_Trail_Type.t_trail));
+  var old_trail_15 : Snapshot.Snapshot_ty (borrowed (CreuSat_Trail_Trail_Type.t_trail));
   var _17 : ();
-  var old_f_18 : Ghost.ghost_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
+  var old_f_18 : Snapshot.Snapshot_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
   var _20 : ();
-  var old_w_21 : Ghost.ghost_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
+  var old_w_21 : Snapshot.Snapshot_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
   var _23 : ();
   var _24 : ();
   var _31 : ();
@@ -27188,17 +27188,17 @@ module CreuSat_UnitProp_UnitPropagate
   BB0 {
     i_14 <- CreuSat_Trail_Trail_Type.trail_curr_i ( * trail_2);
     _17 <- ();
-    old_trail_15 <- ([#"../CreuSAT/src/unit_prop.rs" 286 39 286 55] Ghost.new trail_2);
+    old_trail_15 <- ([#"../CreuSAT/src/unit_prop.rs" 286 39 286 55] Snapshot.new trail_2);
     goto BB1
   }
   BB1 {
     _20 <- ();
-    old_f_18 <- ([#"../CreuSAT/src/unit_prop.rs" 287 37 287 49] Ghost.new f_1);
+    old_f_18 <- ([#"../CreuSAT/src/unit_prop.rs" 287 37 287 49] Snapshot.new f_1);
     goto BB2
   }
   BB2 {
     _23 <- ();
-    old_w_21 <- ([#"../CreuSAT/src/unit_prop.rs" 288 37 288 55] Ghost.new watches_3);
+    old_w_21 <- ([#"../CreuSAT/src/unit_prop.rs" 288 37 288 55] Snapshot.new watches_3);
     goto BB3
   }
   BB3 {
@@ -27207,10 +27207,10 @@ module CreuSat_UnitProp_UnitPropagate
   BB4 {
     invariant { [#"../CreuSAT/src/unit_prop.rs" 289 16 289 29] Invariant0.invariant' ( * f_1) };
     invariant { [#"../CreuSAT/src/unit_prop.rs" 290 16 290 35] Invariant1.invariant' ( * trail_2) ( * f_1) };
-    invariant { [#"../CreuSAT/src/unit_prop.rs" 291 16 291 62] Seq.length (ShallowModel1.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * watches_3))) = Seq.length (ShallowModel1.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * Ghost.inner old_w_21))) };
+    invariant { [#"../CreuSAT/src/unit_prop.rs" 291 16 291 62] Seq.length (ShallowModel1.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * watches_3))) = Seq.length (ShallowModel1.shallow_model (CreuSat_Watches_Watches_Type.watches_watches ( * Snapshot.inner old_w_21))) };
     invariant { [#"../CreuSAT/src/unit_prop.rs" 292 16 292 37] Invariant2.invariant' ( * watches_3) ( * f_1) };
-    invariant { [#"../CreuSAT/src/unit_prop.rs" 293 16 293 33] Equisat0.equisat ( * Ghost.inner old_f_18) ( * f_1) };
-    invariant { [#"../CreuSAT/src/unit_prop.rs" 294 16 294 46] UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * f_1)) = UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * Ghost.inner old_f_18)) };
+    invariant { [#"../CreuSAT/src/unit_prop.rs" 293 16 293 33] Equisat0.equisat ( * Snapshot.inner old_f_18) ( * f_1) };
+    invariant { [#"../CreuSAT/src/unit_prop.rs" 294 16 294 46] UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * f_1)) = UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * Snapshot.inner old_f_18)) };
     _33 <- i_14;
     _35 <- CreuSat_Trail_Trail_Type.trail_trail ( * trail_2);
     _34 <- ([#"../CreuSAT/src/unit_prop.rs" 295 14 295 31] Len0.len _35);
@@ -27748,7 +27748,7 @@ module CreuSat_Solver_Impl0_UnitPropLoop_Interface
 end
 module CreuSat_Solver_Impl0_UnitPropLoop
   use prelude.Borrow
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.Int
   use prelude.IntSize
   use prelude.UIntSize
@@ -27993,13 +27993,13 @@ module CreuSat_Solver_Impl0_UnitPropLoop
   var d_3 : borrowed (CreuSat_Decision_Decisions_Type.t_decisions);
   var t_4 : borrowed (CreuSat_Trail_Trail_Type.t_trail);
   var w_5 : borrowed (CreuSat_Watches_Watches_Type.t_watches);
-  var old_f_18 : Ghost.ghost_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
+  var old_f_18 : Snapshot.Snapshot_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
   var _20 : ();
-  var old_t_21 : Ghost.ghost_ty (borrowed (CreuSat_Trail_Trail_Type.t_trail));
+  var old_t_21 : Snapshot.Snapshot_ty (borrowed (CreuSat_Trail_Trail_Type.t_trail));
   var _23 : ();
-  var old_w_24 : Ghost.ghost_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
+  var old_w_24 : Snapshot.Snapshot_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
   var _26 : ();
-  var old_d_27 : Ghost.ghost_ty (borrowed (CreuSat_Decision_Decisions_Type.t_decisions));
+  var old_d_27 : Snapshot.Snapshot_ty (borrowed (CreuSat_Decision_Decisions_Type.t_decisions));
   var _29 : ();
   var _36 : ();
   var _37 : ();
@@ -28023,22 +28023,22 @@ module CreuSat_Solver_Impl0_UnitPropLoop
   }
   BB0 {
     _20 <- ();
-    old_f_18 <- ([#"../CreuSAT/src/solver.rs" 230 41 230 53] Ghost.new f_2);
+    old_f_18 <- ([#"../CreuSAT/src/solver.rs" 230 41 230 53] Snapshot.new f_2);
     goto BB1
   }
   BB1 {
     _23 <- ();
-    old_t_21 <- ([#"../CreuSAT/src/solver.rs" 231 39 231 51] Ghost.new t_4);
+    old_t_21 <- ([#"../CreuSAT/src/solver.rs" 231 39 231 51] Snapshot.new t_4);
     goto BB2
   }
   BB2 {
     _26 <- ();
-    old_w_24 <- ([#"../CreuSAT/src/solver.rs" 232 41 232 53] Ghost.new w_5);
+    old_w_24 <- ([#"../CreuSAT/src/solver.rs" 232 41 232 53] Snapshot.new w_5);
     goto BB3
   }
   BB3 {
     _29 <- ();
-    old_d_27 <- ([#"../CreuSAT/src/solver.rs" 233 43 233 55] Ghost.new d_3);
+    old_d_27 <- ([#"../CreuSAT/src/solver.rs" 233 43 233 55] Snapshot.new d_3);
     goto BB4
   }
   BB4 {
@@ -28049,8 +28049,8 @@ module CreuSat_Solver_Impl0_UnitPropLoop
     invariant { [#"../CreuSAT/src/solver.rs" 235 20 235 35] Invariant1.invariant' ( * t_4) ( * f_2) };
     invariant { [#"../CreuSAT/src/solver.rs" 236 20 236 35] Invariant2.invariant' ( * w_5) ( * f_2) };
     invariant { [#"../CreuSAT/src/solver.rs" 237 20 237 44] Invariant3.invariant' ( * d_3) (UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * f_2))) };
-    invariant { [#"../CreuSAT/src/solver.rs" 238 20 238 45] Equisat0.equisat ( * Ghost.inner old_f_18) ( * f_2) };
-    invariant { [#"../CreuSAT/src/solver.rs" 239 20 239 50] UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * f_2)) = UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * Ghost.inner old_f_18)) };
+    invariant { [#"../CreuSAT/src/solver.rs" 238 20 238 45] Equisat0.equisat ( * Snapshot.inner old_f_18) ( * f_2) };
+    invariant { [#"../CreuSAT/src/solver.rs" 239 20 239 50] UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * f_2)) = UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * Snapshot.inner old_f_18)) };
     _39 <- borrow_mut ( * self_1);
     self_1 <- { self_1 with current = ( ^ _39) };
     _40 <- borrow_mut ( * f_2);
@@ -29179,7 +29179,7 @@ module CreuSat_Solver_Impl0_Inner_Interface
 end
 module CreuSat_Solver_Impl0_Inner
   use prelude.Borrow
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.Int
   use prelude.IntSize
   use prelude.UInt8
@@ -29441,7 +29441,7 @@ module CreuSat_Solver_Impl0_Inner
   var decisions_3 : CreuSat_Decision_Decisions_Type.t_decisions;
   var trail_4 : CreuSat_Trail_Trail_Type.t_trail;
   var watches_5 : CreuSat_Watches_Watches_Type.t_watches;
-  var old_f_14 : Ghost.ghost_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
+  var old_f_14 : Snapshot.Snapshot_ty (borrowed (CreuSat_Formula_Formula_Type.t_formula));
   var _16 : ();
   var _23 : ();
   var _24 : ();
@@ -29481,7 +29481,7 @@ module CreuSat_Solver_Impl0_Inner
   }
   BB4 {
     _16 <- ();
-    old_f_14 <- ([#"../CreuSAT/src/solver.rs" 323 41 323 59] Ghost.new formula_2);
+    old_f_14 <- ([#"../CreuSAT/src/solver.rs" 323 41 323 59] Snapshot.new formula_2);
     goto BB5
   }
   BB5 {
@@ -29497,8 +29497,8 @@ module CreuSat_Solver_Impl0_Inner
     goto BB9
   }
   BB9 {
-    invariant { [#"../CreuSAT/src/solver.rs" 324 20 324 51] Equisat0.equisat ( * Ghost.inner old_f_14) ( * formula_2) };
-    invariant { [#"../CreuSAT/src/solver.rs" 325 20 325 56] UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * formula_2)) = UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * Ghost.inner old_f_14)) };
+    invariant { [#"../CreuSAT/src/solver.rs" 324 20 324 51] Equisat0.equisat ( * Snapshot.inner old_f_14) ( * formula_2) };
+    invariant { [#"../CreuSAT/src/solver.rs" 325 20 325 56] UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * formula_2)) = UIntSize.to_int (CreuSat_Formula_Formula_Type.formula_num_vars ( * Snapshot.inner old_f_14)) };
     invariant { [#"../CreuSAT/src/solver.rs" 326 20 326 39] Invariant0.invariant' ( * formula_2) };
     invariant { [#"../CreuSAT/src/solver.rs" 327 20 327 45] Invariant2.invariant' trail_4 ( * formula_2) };
     invariant { [#"../CreuSAT/src/solver.rs" 328 20 328 47] Invariant3.invariant' watches_5 ( * formula_2) };
@@ -30017,7 +30017,7 @@ module CreuSat_Watches_Impl0_InitWatches_Interface
 end
 module CreuSat_Watches_Impl0_InitWatches
   use prelude.Borrow
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.Int
   use prelude.UIntSize
   use seq.Seq
@@ -30169,7 +30169,7 @@ module CreuSat_Watches_Impl0_InitWatches
   var _0 : ();
   var self_1 : borrowed (CreuSat_Watches_Watches_Type.t_watches);
   var f_2 : CreuSat_Formula_Formula_Type.t_formula;
-  var old_w_7 : Ghost.ghost_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
+  var old_w_7 : Snapshot.Snapshot_ty (borrowed (CreuSat_Watches_Watches_Type.t_watches));
   var _9 : ();
   var i_10 : usize;
   var _13 : ();
@@ -30221,7 +30221,7 @@ module CreuSat_Watches_Impl0_InitWatches
   }
   BB0 {
     _9 <- ();
-    old_w_7 <- ([#"../CreuSAT/src/watches.rs" 133 41 133 56] Ghost.new self_1);
+    old_w_7 <- ([#"../CreuSAT/src/watches.rs" 133 41 133 56] Snapshot.new self_1);
     goto BB1
   }
   BB1 {
@@ -30374,7 +30374,7 @@ module CreuSat_Trail_Impl0_LearnUnits
   use prelude.Borrow
   use prelude.Int
   use prelude.UIntSize
-  use prelude.Ghost
+  use prelude.Snapshot
   use prelude.UInt8
   use seq.Seq
   use CreuSat_Lit_Lit_Type as CreuSat_Lit_Lit_Type
@@ -30633,9 +30633,9 @@ module CreuSat_Trail_Impl0_LearnUnits
   var d_3 : borrowed (CreuSat_Decision_Decisions_Type.t_decisions);
   var _4 : ();
   var i_11 : usize;
-  var old_d_12 : Ghost.ghost_ty (borrowed (CreuSat_Decision_Decisions_Type.t_decisions));
+  var old_d_12 : Snapshot.Snapshot_ty (borrowed (CreuSat_Decision_Decisions_Type.t_decisions));
   var _14 : ();
-  var old_self_15 : Ghost.ghost_ty (borrowed (CreuSat_Trail_Trail_Type.t_trail));
+  var old_self_15 : Snapshot.Snapshot_ty (borrowed (CreuSat_Trail_Trail_Type.t_trail));
   var _17 : ();
   var _18 : ();
   var _21 : ();
@@ -30684,12 +30684,12 @@ module CreuSat_Trail_Impl0_LearnUnits
   BB0 {
     i_11 <- ([#"../CreuSAT/src/trail.rs" 311 20 311 21] (0 : usize));
     _14 <- ();
-    old_d_12 <- ([#"../CreuSAT/src/trail.rs" 312 43 312 55] Ghost.new d_3);
+    old_d_12 <- ([#"../CreuSAT/src/trail.rs" 312 43 312 55] Snapshot.new d_3);
     goto BB1
   }
   BB1 {
     _17 <- ();
-    old_self_15 <- ([#"../CreuSAT/src/trail.rs" 313 42 313 57] Ghost.new self_1);
+    old_self_15 <- ([#"../CreuSAT/src/trail.rs" 313 42 313 57] Snapshot.new self_1);
     goto BB2
   }
   BB2 {

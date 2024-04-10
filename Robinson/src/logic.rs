@@ -4,6 +4,7 @@ use creusot_contracts::*;
 use crate::{assignments::*, clause::*, formula::*};
 
 #[logic]
+#[open]
 #[ensures(b ==> result@ == 1)]
 #[ensures(!b ==> result@ == 0)]
 pub fn bool_to_assignedstate(b: bool) -> AssignedState {
@@ -15,6 +16,7 @@ pub fn bool_to_assignedstate(b: bool) -> AssignedState {
 }
 
 #[logic]
+#[open]
 fn flip_v(v: AssignedState) -> AssignedState {
     pearlite! {
         if v@ == 0 {
@@ -28,16 +30,19 @@ fn flip_v(v: AssignedState) -> AssignedState {
 }
 
 #[logic]
+#[open]
 fn pos() -> AssignedState {
     1u8
 }
 
 #[logic]
+#[open]
 fn neg() -> AssignedState {
     0u8
 }
 
 #[predicate]
+#[open]
 pub fn unset(v: AssignedState) -> bool {
     pearlite! {
         if v@ >= 2 {
@@ -49,6 +54,7 @@ pub fn unset(v: AssignedState) -> bool {
 }
 
 #[logic]
+#[open]
 #[requires(f.invariant())]
 #[requires(f.num_vars@ == a.len())]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
@@ -59,6 +65,7 @@ pub fn unset(v: AssignedState) -> bool {
 pub fn lemma_unit_forces(f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 
 #[logic]
+#[open]
 #[requires(f.invariant())]
 #[requires(f.num_vars@ == a.len())]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
@@ -76,12 +83,14 @@ pub fn lemma_unit_wrong_polarity_unsat_formula(
 }
 
 #[logic]
+#[open]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
 #[requires(f.eventually_sat_complete_inner(a.set(ix, v)))]
 #[ensures(f.eventually_sat_complete_inner(a))]
 pub fn lemma_extension_sat_base_sat(f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 
 #[logic]
+#[open]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
 #[requires(!f.eventually_sat_complete_inner(a.set(ix, neg())))]
 #[requires(!f.eventually_sat_complete_inner(a.set(ix, pos())))]
