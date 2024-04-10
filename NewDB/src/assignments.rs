@@ -33,7 +33,7 @@ impl ShallowModel for Assignments {
     type ShallowModelTy = Seq<AssignedState>;
 
     #[open]
-#[logic]
+    #[logic]
     fn shallow_model(self) -> Self::ShallowModelTy {
         self.0.shallow_model()
     }
@@ -41,7 +41,7 @@ impl ShallowModel for Assignments {
 
 impl Assignments {
     #[open]
-#[predicate]
+    #[predicate]
     pub fn invariant(self) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self@.len() ==>

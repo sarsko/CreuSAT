@@ -2,7 +2,7 @@ extern crate creusot_contracts;
 use creusot_contracts::*;
 
 #[predicate]
-#[open]//#[open(self)]
+#[open] //#[open(self)]
 pub fn sorted_range_rev(s: Seq<(usize, usize)>, l: Int, u: Int) -> bool {
     pearlite! {
         forall<i: Int, j: Int> l <= i && i < j && j < u ==> s[i].0 >= s[j].0
@@ -10,7 +10,7 @@ pub fn sorted_range_rev(s: Seq<(usize, usize)>, l: Int, u: Int) -> bool {
 }
 
 #[predicate]
-#[open]//#[open(self)]
+#[open] //#[open(self)]
 pub fn sorted_rev(s: Seq<(usize, usize)>) -> bool {
     sorted_range_rev(s, 0, s.len())
 }

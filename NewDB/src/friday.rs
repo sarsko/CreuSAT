@@ -14,7 +14,7 @@ struct Pasn {
 
 impl Assignments {
     #[open]
-#[predicate]
+    #[predicate]
     fn compatible(self, pa: Pasn) -> bool {
         pearlite! {
             self.invariant() &&
@@ -31,7 +31,7 @@ pub struct Formula {
 
 impl Formula {
     #[open]
-#[predicate]
+    #[predicate]
     fn invariant(self) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
@@ -40,7 +40,7 @@ impl Formula {
     }
 
     #[open]
-#[predicate]
+    #[predicate]
     fn sat(self, a: Assignments) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
@@ -51,7 +51,7 @@ impl Formula {
 
 impl Clause {
     #[open]
-#[predicate]
+    #[predicate]
     fn vars_in_range(self, n: Int) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self.0@.len() ==>
@@ -62,7 +62,7 @@ impl Clause {
 
 impl Pasn {
     #[open]
-#[predicate]
+    #[predicate]
     fn invariant(self, n: Int) -> bool {
         pearlite! {
             self.ix@ <= self.assign.0@.len()
@@ -74,7 +74,7 @@ impl Pasn {
 
 impl Clause {
     #[open]
-#[predicate]
+    #[predicate]
     fn clause_sat_logic(self, a: Assignments) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < self.0@.len() &&

@@ -41,7 +41,7 @@ pub(crate) struct ClauseAllocator {
 
 impl ClauseAllocator {
     #[open]
-#[logic]
+    #[logic]
     //#[ensures(forall<i: Int> 0 <= i && i < (self@.buffer).len() ==> (self@.buffer)[i] == (result@.buffer)[i])]
     //#[ensures(result@.num_vars == self.num_vars@)]
     pub(crate) fn push(self, lit: Lit) -> Self {
@@ -49,7 +49,7 @@ impl ClauseAllocator {
     }
 
     #[open]
-#[predicate]
+    #[predicate]
     pub(crate) fn extended(self, new: ClauseAllocator) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self.buffer@.len() ==> self.buffer@[i] == new.buffer@[i]
@@ -61,13 +61,13 @@ impl ClauseAllocator {
 
 impl ClauseAllocator {
     #[open]
-#[predicate]
+    #[predicate]
     pub(crate) fn invariant(self) -> bool {
         pearlite! { self@.len() <= u32::MAX@ }
     }
 
     #[open]
-#[logic]
+    #[logic]
     //#[requires(cref_invariant(cref, self))]
     pub(crate) fn get_clause_logic(self, cref: Int) -> Seq<Lit> {
         pearlite! {
@@ -76,7 +76,7 @@ impl ClauseAllocator {
     }
 
     #[open]
-#[logic]
+    #[logic]
     //#[requires(cref_invariant(cref, self))]
     pub(crate) fn get_clause_fset(self, cref: Int) -> FSet<Lit> {
         pearlite! {
@@ -85,7 +85,7 @@ impl ClauseAllocator {
     }
 
     #[open]
-#[logic]
+    #[logic]
     //#[requires(cref_invariant(cref, self))]
     #[variant(upper - idx)]
     #[requires(idx >= 0 && upper <= self@.len())]
@@ -106,7 +106,7 @@ impl ShallowModel for ClauseAllocator {
     type ShallowModelTy = Seq<Lit>;
 
     #[open]
-#[logic]
+    #[logic]
     fn shallow_model(self) -> Self::ShallowModelTy {
         self.buffer.shallow_model()
     }

@@ -14,7 +14,7 @@ pub struct ClauseManager {
 
 impl ClauseManager {
     #[open]
-#[predicate]
+    #[predicate]
     pub(crate) fn invariant(self) -> bool {
         pearlite! {
             self.clause_allocator.invariant()
