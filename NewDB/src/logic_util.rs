@@ -5,6 +5,7 @@ use creusot_contracts::*;
 
 use crate::lit::*;
 
+#[open]
 #[logic]
 #[why3::attr = "inline:trivial"]
 pub(crate) fn bool_as_u8(b: bool) -> u8 {
@@ -16,6 +17,7 @@ pub(crate) fn bool_as_u8(b: bool) -> u8 {
     }
 }
 
+#[open]
 #[logic]
 #[ensures(forall<i: Int> 0 <= i && i < seq.len() ==> result.contains(seq[i]))]
 #[ensures(forall<l: _> result.contains(l) ==> exists<i: Int> 0 <= i && i < seq.len() && seq[i] == l)]
@@ -25,6 +27,7 @@ pub(crate) fn seq_to_fset(seq: Seq<Lit>) -> FSet<Lit> {
     }
 }
 
+#[open]
 #[logic]
 #[variant(seq.len() - idx)]
 #[requires(idx >= 0)]

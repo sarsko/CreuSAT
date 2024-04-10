@@ -15,14 +15,16 @@ pub struct CRefManager {
 impl ShallowModel for CRefManager {
     type ShallowModelTy = Seq<CRef>;
 
-    #[logic]
+    #[open]
+#[logic]
     fn shallow_model(self) -> Self::ShallowModelTy {
         self.crefs.shallow_model()
     }
 }
 
 impl CRefManager {
-    #[predicate]
+    #[open]
+#[predicate]
     pub(crate) fn invariant(self, clause_allocator: ClauseAllocator) -> bool {
         pearlite! {
             clause_allocator.invariant()
@@ -32,7 +34,8 @@ impl CRefManager {
         }
     }
 
-    #[predicate]
+    #[open]
+#[predicate]
     pub(crate) fn are_implied_by(self, original_clauses: CRefManager, clause_allocator: ClauseAllocator) -> bool {
         pearlite! {
             let formula = Formula::from(self@, clause_allocator, self.num_vars@);

@@ -4,6 +4,7 @@ use creusot_contracts::{logic::FSet, std::*};
 
 use crate::{assignments::*, lit::*};
 
+#[open]
 #[predicate]
 pub(crate) fn clause_sat(clause: FSet<Lit>, assignments: Seq<AssignedState>) -> bool {
     pearlite! {
@@ -11,6 +12,7 @@ pub(crate) fn clause_sat(clause: FSet<Lit>, assignments: Seq<AssignedState>) -> 
     }
 }
 
+#[open]
 #[predicate]
 pub(crate) fn clause_invariant(clause: FSet<Lit>, num_vars: Int) -> bool {
     pearlite! {
@@ -18,6 +20,7 @@ pub(crate) fn clause_invariant(clause: FSet<Lit>, num_vars: Int) -> bool {
     }
 }
 
+#[open]
 #[predicate]
 pub(crate) fn clause_invariant_seq(clause: Seq<Lit>, num_vars: Int) -> bool {
     pearlite! {
@@ -26,6 +29,7 @@ pub(crate) fn clause_invariant_seq(clause: Seq<Lit>, num_vars: Int) -> bool {
     }
 }
 
+#[open]
 #[predicate]
 pub(crate) fn no_duplicate_indexes_inner(clause: Seq<Lit>) -> bool {
     pearlite! {

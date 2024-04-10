@@ -12,6 +12,7 @@ pub type CRef = u32;
 
 // TODO: This seems to be a non-ideal invariant
 // TODO: Add more
+#[open]
 #[predicate]
 pub(crate) fn cref_invariant(cref: Int, clause_allocator: ClauseAllocator, num_vars: Int) -> bool {
     pearlite! {
@@ -22,6 +23,7 @@ pub(crate) fn cref_invariant(cref: Int, clause_allocator: ClauseAllocator, num_v
     }
 }
 
+#[open]
 #[predicate]
 pub(crate) fn cref_invariant_fset(cref: Int, clause_allocator: ClauseAllocator, num_vars: Int) -> bool {
     pearlite! {
@@ -38,14 +40,16 @@ pub(crate) struct ClauseAllocator {
 }
 
 impl ClauseAllocator {
-    #[logic]
+    #[open]
+#[logic]
     //#[ensures(forall<i: Int> 0 <= i && i < (self@.buffer).len() ==> (self@.buffer)[i] == (result@.buffer)[i])]
     //#[ensures(result@.num_vars == self.num_vars@)]
     pub(crate) fn push(self, lit: Lit) -> Self {
         self
     }
 
-    #[predicate]
+    #[open]
+#[predicate]
     pub(crate) fn extended(self, new: ClauseAllocator) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self.buffer@.len() ==> self.buffer@[i] == new.buffer@[i]
@@ -56,12 +60,14 @@ impl ClauseAllocator {
 }
 
 impl ClauseAllocator {
-    #[predicate]
+    #[open]
+#[predicate]
     pub(crate) fn invariant(self) -> bool {
         pearlite! { self@.len() <= u32::MAX@ }
     }
 
-    #[logic]
+    #[open]
+#[logic]
     //#[requires(cref_invariant(cref, self))]
     pub(crate) fn get_clause_logic(self, cref: Int) -> Seq<Lit> {
         pearlite! {
@@ -69,7 +75,8 @@ impl ClauseAllocator {
         }
     }
 
-    #[logic]
+    #[open]
+#[logic]
     //#[requires(cref_invariant(cref, self))]
     pub(crate) fn get_clause_fset(self, cref: Int) -> FSet<Lit> {
         pearlite! {
@@ -77,7 +84,8 @@ impl ClauseAllocator {
         }
     }
 
-    #[logic]
+    #[open]
+#[logic]
     //#[requires(cref_invariant(cref, self))]
     #[variant(upper - idx)]
     #[requires(idx >= 0 && upper <= self@.len())]
@@ -97,7 +105,8 @@ impl ClauseAllocator {
 impl ShallowModel for ClauseAllocator {
     type ShallowModelTy = Seq<Lit>;
 
-    #[logic]
+    #[open]
+#[logic]
     fn shallow_model(self) -> Self::ShallowModelTy {
         self.buffer.shallow_model()
     }
