@@ -1,0 +1,154 @@
+(* #"/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 176 0 176 34 *)
+
+let%span slib = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 177 45 177 50
+let%span slib'0 = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 177 70 177 71
+let%span slib'1 = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 172 11 172 24
+let%span slib'2 = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 173 10 174 31
+let%span slib'3 = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 175 11 175 53
+let%span slib'4 = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 162 11 162 36
+let%span slib'5 = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 163 11 163 24
+let%span slib'6 = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 164 10 164 76
+let%span slib'7 = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 161 10 161 30
+let%span slib'8 = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 45 12 46 39
+let%span slib'9 = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 97 12 98 40
+let%span slib'10 = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 85 12 87 49
+let%span slib'11 = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 108 12 109 33
+let%span slib'12 = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 75 12 75 41
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-35eaee8d7346d14d/4f7f6cd/creusot-contracts/src/std/vec.rs" 186 22 186 41
+let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-35eaee8d7346d14d/4f7f6cd/creusot-contracts/src/std/vec.rs" 187 22 187 76
+let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-35eaee8d7346d14d/4f7f6cd/creusot-contracts/src/std/vec.rs" 21 14 21 41
+let%span sinvariant = "/Users/sarekhs/.cargo/git/checkouts/creusot-35eaee8d7346d14d/4f7f6cd/creusot-contracts/src/invariant.rs" 25 8 25 18
+let%span sindex = "/Users/sarekhs/.cargo/git/checkouts/creusot-35eaee8d7346d14d/4f7f6cd/creusot-contracts/src/logic/ops/index.rs" 29 8 29 31
+
+use creusot.prelude.Opaque
+use creusot.int.UInt64
+use seq.Seq
+use mach.int.Int
+use creusot.prelude.Any
+
+type t_NonNull  =
+  { t_NonNull__pointer: Opaque.ptr }
+
+type t_Unique  =
+  { t_Unique__pointer: t_NonNull; t_Unique__qy95zmarker: () }
+
+type t_UsizeNoHighBit  =
+  { t_UsizeNoHighBit__0: UInt64.t }
+
+type t_RawVecInner  =
+  { t_RawVecInner__ptr: t_Unique; t_RawVecInner__cap: t_UsizeNoHighBit; t_RawVecInner__alloc: () }
+
+type t_RawVec  =
+  { t_RawVec__inner: t_RawVecInner; t_RawVec__qy95zmarker: () }
+
+type t_Vec  =
+  { t_Vec__buf: t_RawVec; t_Vec__len: UInt64.t }
+
+type t_Formula  =
+  { t_Formula__clauses: t_Vec; t_Formula__num_vars: UInt64.t }
+
+type t_RawVec'0  =
+  { t_RawVec__inner'0: t_RawVecInner; t_RawVec__qy95zmarker'0: () }
+
+type t_Vec'0  =
+  { t_Vec__buf'0: t_RawVec'0; t_Vec__len'0: UInt64.t }
+
+constant v_MAX : UInt64.t = (18446744073709551615 : UInt64.t)
+
+function view (self : t_Vec'0) : Seq.seq bool
+
+axiom view_spec : forall self : t_Vec'0 . [%#svec'1] Seq.length (view self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+function index_logic [@inline:trivial] (self : t_Vec'0) (ix : int) : bool =
+  [%#sindex] Seq.get (view self) ix
+
+let rec from_elem (elem:bool) (n:UInt64.t) (return'  (x:t_Vec'0))= any
+  [ return''0 (result:t_Vec'0)-> {[%#svec] Seq.length (view result) = UInt64.t'int n}
+    {[%#svec'0] forall i : int . 0 <= i /\ i < UInt64.t'int n  -> index_logic result i = elem}
+    (! return' {result}) ]
+
+
+type t_Assignments  =
+  { t_Assignments__0: t_Vec'0 }
+
+type t_Pasn  =
+  { t_Pasn__assign: t_Assignments; t_Pasn__ix: UInt64.t }
+
+predicate invariant' [#"/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 95 4 95 38] (self : t_Pasn) (n : int) =
+  [%#slib'9] UInt64.t'int self.t_Pasn__ix <= Seq.length (view (self.t_Pasn__assign).t_Assignments__0)
+  /\ Seq.length (view (self.t_Pasn__assign).t_Assignments__0) = n
+
+predicate inv (_0 : t_Formula)
+
+axiom inv_axiom [@rewrite] : forall x : t_Formula [inv x] . inv x = true
+
+predicate invariant''0 (self : t_Formula) =
+  [%#sinvariant] inv self
+
+predicate compatible [#"/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 83 4 83 41] (self : t_Assignments) (pa : t_Pasn) =
+  [%#slib'10] Seq.length (view (pa.t_Pasn__assign).t_Assignments__0) = Seq.length (view self.t_Assignments__0)
+  /\ (forall i : int . 0 <= i /\ i < UInt64.t'int pa.t_Pasn__ix
+   -> Seq.get (view (pa.t_Pasn__assign).t_Assignments__0) i = Seq.get (view self.t_Assignments__0) i)
+
+type t_RawVec'1  =
+  { t_RawVec__inner'1: t_RawVecInner; t_RawVec__qy95zmarker'1: () }
+
+type t_Vec'1  =
+  { t_Vec__buf'1: t_RawVec'1; t_Vec__len'1: UInt64.t }
+
+type t_Clause  =
+  { t_Clause__0: t_Vec'1 }
+
+function view'0 (self : t_Vec) : Seq.seq t_Clause
+
+axiom view_spec'0 : forall self : t_Vec . [%#svec'1] Seq.length (view'0 self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+type t_Lit  =
+  { t_Lit__var: UInt64.t; t_Lit__value: bool }
+
+function view'1 (self : t_Vec'1) : Seq.seq t_Lit
+
+axiom view_spec'1 : forall self : t_Vec'1 . [%#svec'1] Seq.length (view'1 self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+predicate sat [#"/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 73 4 73 44] (self : t_Lit) (a : t_Assignments) =
+  [%#slib'12] Seq.get (view a.t_Assignments__0) (UInt64.t'int self.t_Lit__var) = self.t_Lit__value
+
+predicate sat'0 [#"/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 106 4 106 40] (self : t_Clause) (a : t_Assignments) =
+  [%#slib'11] exists i : int . 0 <= i
+  /\ i < Seq.length (view'1 self.t_Clause__0) /\ sat (Seq.get (view'1 self.t_Clause__0) i) a
+
+predicate sat'1 [#"/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 43 4 43 40] (self : t_Formula) (a : t_Assignments) =
+  [%#slib'8] forall i : int . 0 <= i /\ i < Seq.length (view'0 self.t_Formula__clauses)
+   -> sat'0 (Seq.get (view'0 self.t_Formula__clauses) i) a
+
+let rec solve (f:t_Formula) (pa:t_Pasn) (return'  (x:bool))= {[@expl:solve requires #0] [%#slib'4] invariant' pa (UInt64.t'int f.t_Formula__num_vars)}
+  {[@expl:solve requires #1] [%#slib'5] invariant''0 f}
+  any
+  [ return''0 (result:bool)-> {[%#slib'6] (not result) = (forall a : t_Assignments . compatible a pa  -> not sat'1 f a)}
+    (! return' {result}) ]
+
+
+meta "compute_max_steps" 1000000
+
+let rec solver[#"/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 176 0 176 34] (f:t_Formula) (return'  (x:bool))= {[@expl:solver requires] [%#slib'1] invariant''0 f}
+  (! bb0
+  [ bb0 = s0
+    [ s0 = from_elem {[%#slib] false} {f'0.t_Formula__num_vars} (fun (_ret:t_Vec'0) ->  [ &_8 <- _ret ] s1) | s1 = bb1 ]
+  
+  | bb1 = s0 [ s0 =  [ &_7 <- { t_Assignments__0 = _8 } ] s1 | s1 = bb2 ] 
+  | bb2 = s0 [ s0 =  [ &_6 <- { t_Pasn__assign = _7; t_Pasn__ix = ([%#slib'0] (0 : UInt64.t)) } ] s1 | s1 = bb3 ] 
+  | bb3 = s0 [ s0 = solve {f'0} {_6} (fun (_ret:bool) ->  [ &_0 <- _ret ] s1) | s1 = bb4 ] 
+  | bb4 = return''0 {_0} ]
+  )
+  [ & _0 : bool = Any.any_l ()
+  | & f'0 : t_Formula = f
+  | & _6 : t_Pasn = Any.any_l ()
+  | & _7 : t_Assignments = Any.any_l ()
+  | & _8 : t_Vec'0 = Any.any_l () ]
+  
+  [ return''0 (result:bool)-> {[@expl:solver ensures #0] [%#slib'2] not result
+     -> (forall a : t_Assignments . Seq.length (view a.t_Assignments__0) = UInt64.t'int f.t_Formula__num_vars
+     -> not sat'1 f a)}
+    {[@expl:solver ensures #1] [%#slib'3] result  -> (exists a : t_Assignments . sat'1 f a)}
+    (! return' {result}) ]
+  
