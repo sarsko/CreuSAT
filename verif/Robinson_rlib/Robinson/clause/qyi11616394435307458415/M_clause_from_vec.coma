@@ -1,0 +1,34 @@
+(* #"/Users/sarekhs/CreuSAT/Robinson/src/clause.rs" 122 4 122 51 *)
+
+(* clause::Clause *)
+
+use creusot.prelude.Opaque
+use creusot.int.UInt64
+use creusot.prelude.Any
+
+type t_NonNull  =
+  { t_NonNull__pointer: Opaque.ptr }
+
+type t_Unique  =
+  { t_Unique__pointer: t_NonNull; t_Unique__qy95zmarker: () }
+
+type t_UsizeNoHighBit  =
+  { t_UsizeNoHighBit__0: UInt64.t }
+
+type t_RawVecInner  =
+  { t_RawVecInner__ptr: t_Unique; t_RawVecInner__cap: t_UsizeNoHighBit; t_RawVecInner__alloc: () }
+
+type t_RawVec  =
+  { t_RawVec__inner: t_RawVecInner; t_RawVec__qy95zmarker: () }
+
+type t_Vec  =
+  { t_Vec__buf: t_RawVec; t_Vec__len: UInt64.t }
+
+type t_Clause  =
+  { t_Clause__rest: t_Vec }
+
+meta "compute_max_steps" 1000000
+
+let rec clause_from_vec[#"/Users/sarekhs/CreuSAT/Robinson/src/clause.rs" 122 4 122 51] (vec:t_Vec) (return'  (x:t_Clause))= (! bb0
+  [ bb0 = s0 [ s0 =  [ &_0 <- { t_Clause__rest = vec'0 } ] s1 | s1 = bb1 ]  | bb1 = bb2 | bb2 = return''0 {_0} ]
+  ) [ & _0 : t_Clause = Any.any_l () | & vec'0 : t_Vec = vec ]  [ return''0 (result:t_Clause)-> (! return' {result}) ] 

@@ -11,7 +11,7 @@ pub struct Decisions {
 impl Decisions {
     #[predicate]
     #[open]
-    pub fn invariant(self, n: Int) -> bool {
+    pub fn inv(self, n: Int) -> bool {
         pearlite! {
             self.lit_order@.len() == n
             && forall<i: Int> 0 <= i && i < self.lit_order@.len() ==>
@@ -22,8 +22,8 @@ impl Decisions {
 
 impl Decisions {
     #[cfg_attr(feature = "trust_decision", trusted)]
-    #[requires(f.invariant())]
-    #[ensures(result.invariant(f.num_vars@))]
+    #[requires(f.inv())]
+    #[ensures(result.inv(f.num_vars@))]
     pub fn new(f: &Formula) -> Decisions {
         let mut lit_order: Vec<usize> = vec::from_elem(0, f.num_vars);
         let mut counts: Vec<usize> = vec::from_elem(0, f.num_vars);

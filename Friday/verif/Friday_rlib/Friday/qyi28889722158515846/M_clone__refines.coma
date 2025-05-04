@@ -1,0 +1,31 @@
+(* #"/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 11 9 11 14 *)
+
+(* <Assignments as creusot_contracts::Clone> *)
+
+let%span slib = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 11 9 11 14
+
+use creusot.prelude.Opaque
+use creusot.int.UInt64
+
+type t_NonNull  =
+  { t_NonNull__pointer: Opaque.ptr }
+
+type t_Unique  =
+  { t_Unique__pointer: t_NonNull; t_Unique__qy95zmarker: () }
+
+type t_UsizeNoHighBit  =
+  { t_UsizeNoHighBit__0: UInt64.t }
+
+type t_RawVecInner  =
+  { t_RawVecInner__ptr: t_Unique; t_RawVecInner__cap: t_UsizeNoHighBit; t_RawVecInner__alloc: () }
+
+type t_RawVec  =
+  { t_RawVec__inner: t_RawVecInner; t_RawVec__qy95zmarker: () }
+
+type t_Vec  =
+  { t_Vec__buf: t_RawVec; t_Vec__len: UInt64.t }
+
+type t_Assignments  =
+  { t_Assignments__0: t_Vec }
+
+goal refines : [%#slib] forall self_ : t_Assignments . forall result : t_Assignments . result = self_  -> result = self_

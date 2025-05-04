@@ -13,13 +13,13 @@ pub struct Formula {
 }
 
 #[cfg(creusot)]
-impl ShallowModel for Formula {
-    type ShallowModelTy = (Seq<Clause>, Int);
+impl View for Formula {
+    type ViewTy = (Seq<Clause>, Int);
 
     #[logic]
     #[open]
-    fn shallow_model(self) -> Self::ShallowModelTy {
-        (self.clauses.shallow_model(), self.num_vars.shallow_model())
+    fn view(self) -> Self::ViewTy {
+        (self.clauses.view(), self.num_vars.view())
     }
 }
 
@@ -36,10 +36,10 @@ pub fn formula_sat_inner(f: (Seq<Clause>, Int), a: Seq<AssignedState>) -> bool {
 impl Formula {
     #[predicate]
     #[open]
-    pub fn invariant(self) -> bool {
+    pub fn inv(self) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < (self.clauses@).len() ==>
-                (self.clauses@)[i].invariant(self.num_vars@)
+                (self.clauses@)[i].inv(self.num_vars@)
         }
     }
 
@@ -132,7 +132,7 @@ impl Formula {
     #[ensures(match result {
         SatResult::Sat(assn) => { (^self).eventually_sat_no_ass() && formula_sat_inner(self@, assn@) },
         SatResult::Unsat     => { (^self).contains_empty_clause() && !self.eventually_sat_complete_no_ass() },
-        SatResult::Unknown   => { (^self).invariant() },
+        SatResult::Unknown   => { (^self).inv() },
     })]
     #[ensures(self.clauses == (^self).clauses)]
     pub fn check_and_establish_formula_invariant(&mut self) -> SatResult {
@@ -145,7 +145,7 @@ impl Formula {
         }
         let old_self: Snapshot<&mut Formula> = snapshot!(self);
         let mut i: usize = 0;
-        #[invariant(forall<j: Int> 0 <= j && j < i@ ==> self.clauses@[j].invariant(self.num_vars@))]
+        #[invariant(forall<j: Int> 0 <= j && j < i@ ==> self.clauses@[j].inv(self.num_vars@))]
         #[invariant(forall<j: Int> 0 <= j && j < i@ ==> self.clauses@[j]@.len() > 0)]
         #[invariant(self@.0 == old_self.inner()@.0)]
         #[invariant(self.clauses == old_self.clauses)]

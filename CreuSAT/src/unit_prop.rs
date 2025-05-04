@@ -1,4 +1,4 @@
-extern crate creusot_contracts;
+
 use creusot_contracts::{std::*, Snapshot, *};
 
 use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*, util, watches::*};
@@ -13,9 +13,9 @@ use crate::logic::{
 };
 
 #[cfg_attr(feature = "trust_unit", trusted)]
-#[maintains((mut f).invariant())]
-#[maintains(trail.invariant(mut f))]
-#[maintains((mut watches).invariant(mut f))]
+#[maintains((mut f).inv())]
+#[maintains(trail.inv(mut f))]
+#[maintains((mut watches).inv(mut f))]
 #[requires(f.num_vars@ < usize::MAX@/2)]
 #[requires(lit.index_logic() < f.num_vars@)]
 #[requires(!f.clauses@[cref@]@[0].sat_inner(trail.assignments@))]
@@ -52,9 +52,9 @@ fn check_and_move_watch(
 // This has previously had issues on the trail invariant and on the formula equisatisfiability.
 // Solved fairly easily by Auto Level 3 when targeted direcly, but Auto Level 8/9 struggles.
 #[cfg_attr(all(feature = "trust_unit", not(feature = "problem_child")), trusted)]
-#[maintains((mut f).invariant())]
-#[maintains((*trail).invariant(mut f))] // <-
-#[maintains((*watches).invariant(mut f))]
+#[maintains((mut f).inv())]
+#[maintains((*trail).inv(mut f))] // <-
+#[maintains((*watches).inv(mut f))]
 #[requires(f.clauses@[cref@]@.len() >= 2)]
 #[requires(cref@ < f.clauses@.len())]
 #[requires(f.clauses@[cref@]@.len() > j@)]
@@ -80,9 +80,9 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
 
 // This has to do f.clauses[cref] and not f[cref]
 #[cfg_attr(feature = "trust_unit", trusted)]
-#[maintains((mut f).invariant())]
-#[maintains((trail).invariant(mut f))]
-#[maintains((mut watches).invariant(mut f))]
+#[maintains((mut f).inv())]
+#[maintains((trail).inv(mut f))]
+#[maintains((mut watches).inv(mut f))]
 #[requires(f.num_vars@ < usize::MAX@/2)]
 #[requires(lit.to_watchidx_logic() < watches.watches@.len())]
 #[requires(watches.watches@[lit.to_watchidx_logic()]@.len() > j@)]
@@ -143,9 +143,9 @@ fn exists_new_watchable_lit(
 }
 
 #[cfg_attr(feature = "trust_unit", trusted)]
-#[maintains((mut f).invariant())]
-#[maintains((mut trail).invariant(mut f))]
-#[maintains((mut watches).invariant(mut f))]
+#[maintains((mut f).inv())]
+#[maintains((mut trail).inv(mut f))]
+#[maintains((mut watches).inv(mut f))]
 #[requires(lit.to_watchidx_logic() < watches.watches@.len())]
 #[requires(watches.watches@[lit.to_watchidx_logic()]@.len() > j@)]
 #[requires(f.num_vars@ < usize::MAX@/2)]
@@ -193,7 +193,7 @@ fn propagate_lit_with_regard_to_clause(
         if second_lit.lit_unset(&trail.assignments) {
             return Ok(true);
         }
-        proof_assert!(trail.invariant(*f));
+        proof_assert!(trail.inv(*f));
         proof_assert!(!f.clauses@[cref@].unsat(trail.assignments));
         proof_assert!(f.clauses@[cref@].unit(trail.assignments));
         let step = Step {
@@ -224,9 +224,9 @@ fn propagate_lit_with_regard_to_clause(
 }
 
 #[cfg_attr(feature = "trust_unit", trusted)]
-#[maintains((mut f).invariant())]
-#[maintains((mut trail).invariant(mut f))]
-#[maintains((mut watches).invariant(mut f))]
+#[maintains((mut f).inv())]
+#[maintains((mut trail).inv(mut f))]
+#[maintains((mut watches).inv(mut f))]
 #[requires(f.num_vars@ < usize::MAX@/2)]
 #[requires(lit.index_logic() < f.num_vars@)]
 #[ensures(match result {
@@ -243,11 +243,11 @@ fn propagate_literal(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, 
     let old_trail: Snapshot<&mut Trail> = snapshot! { trail };
     let old_f: Snapshot<&mut Formula> = snapshot! { f };
     let old_w: Snapshot<&mut Watches> = snapshot! { watches };
-    #[invariant(trail.invariant(*f))]
+    #[invariant(trail.inv(*f))]
     #[invariant(watches.watches@.len() == old_w.watches@.len())]
-    #[invariant(watches.invariant(*f))]
+    #[invariant(watches.inv(*f))]
     #[invariant(old_f.equisat(*f))]
-    #[invariant(f.invariant())]
+    #[invariant(f.inv())]
     #[invariant(trail.decisions@ == old_trail.decisions@)]
     #[invariant(f.num_vars@ == old_f.num_vars@)]
     while j < watches.watches[watchidx].len() {
@@ -271,9 +271,9 @@ fn propagate_literal(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, 
 }
 
 #[cfg_attr(feature = "trust_unit", trusted)]
-#[maintains((mut f).invariant())]
-#[maintains((mut trail).invariant(mut f))]
-#[maintains((mut watches).invariant(mut f))]
+#[maintains((mut f).inv())]
+#[maintains((mut trail).inv(mut f))]
+#[maintains((mut watches).inv(mut f))]
 #[requires(f.num_vars@ < usize::MAX@/2)]
 #[ensures(match result {
     Ok(()) => true, // !(^f).unsat(^a),
@@ -286,10 +286,10 @@ pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches)
     let old_trail: Snapshot<&mut Trail> = snapshot! { trail };
     let old_f: Snapshot<&mut Formula> = snapshot! { f };
     let old_w: Snapshot<&mut Watches> = snapshot! { watches };
-    #[invariant(f.invariant())]
-    #[invariant(trail.invariant(*f))]
+    #[invariant(f.inv())]
+    #[invariant(trail.inv(*f))]
     #[invariant(watches.watches@.len() == old_w.watches@.len())]
-    #[invariant(watches.invariant(*f))]
+    #[invariant(watches.inv(*f))]
     #[invariant(old_f.equisat(*f))]
     #[invariant(f.num_vars@ == old_f.num_vars@)]
     while i < trail.trail.len() {

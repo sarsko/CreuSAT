@@ -1,4 +1,4 @@
-extern crate creusot_contracts;
+
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
@@ -71,7 +71,7 @@ impl Watches {
     #[predicate]
     #[open]
     //#[ensures(result == watches_invariant_internal(self.watches@, n))]
-    pub fn invariant(self, f: Formula) -> bool {
+    pub fn inv(self, f: Formula) -> bool {
         pearlite! {
             watches_invariant_internal(self.watches@, f.num_vars@, f)
         }

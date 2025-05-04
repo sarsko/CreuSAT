@@ -1,4 +1,4 @@
-extern crate creusot_contracts;
+
 use creusot_contracts::{std::*, Snapshot, *};
 
 use crate::{assignments::*, decision::*, formula::*, lit::*};
@@ -37,9 +37,9 @@ impl Trail {
     }
     // OK
     #[cfg_attr(feature = "trust_trail", trusted)]
-    #[requires(f.invariant())]
-    #[requires(a.invariant(*f))]
-    #[ensures(result.invariant(*f))]
+    #[requires(f.inv())]
+    #[requires(a.inv(*f))]
+    #[ensures(result.inv(*f))]
     pub fn new(f: &Formula, a: Assignments) -> Trail {
         Trail {
             assignments: a,
@@ -52,9 +52,9 @@ impl Trail {
 
     #[cfg_attr(all(feature = "trust_trail", not(feature = "problem_child")), trusted)]
     #[inline(always)]
-    #[requires(f.invariant())]
+    #[requires(f.inv())]
     #[requires(f.num_vars@ > 0)]
-    #[maintains((mut self).invariant_no_decision(*f))]
+    #[maintains((mut self).inv_no_decision(*f))]
     #[requires(long_are_post_unit_inner(self.trail@, *f, self.assignments@))]
     #[ensures(long_are_post_unit_inner((^self).trail@, *f, (^self).assignments@))]
     #[ensures(result@ < f.num_vars@)]
@@ -82,7 +82,7 @@ impl Trail {
                 proof_assert!(long_are_post_unit_inner(self.trail@, *f, self.assignments@) && true);
             }
         }
-        proof_assert!(self.assignments.invariant(*f));
+        proof_assert!(self.assignments.inv(*f));
         // proof_assert!(trail_invariant(self@.trail, *f));
         // proof_assert!(lit_to_level_invariant(self@.lit_to_level, *f));
         //proof_assert!(decisions_invariant(self@.decisions, self@.trail));
@@ -95,9 +95,9 @@ impl Trail {
 
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[inline(always)]
-    #[requires(f.invariant())]
-    #[maintains((mut self).invariant(*f))]
-    #[maintains((mut d).invariant(f.num_vars@))]
+    #[requires(f.inv())]
+    #[maintains((mut self).inv(*f))]
+    #[maintains((mut d).inv(f.num_vars@))]
     #[requires(long_are_post_unit_inner(self.trail@, *f, self.assignments@))]
     #[ensures(long_are_post_unit_inner((^self).trail@, *f, (^self).assignments@))]
     pub fn backtrack_safe(&mut self, level: usize, f: &Formula, d: &mut Decisions) {
@@ -108,9 +108,9 @@ impl Trail {
 
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[requires(self.decisions@.len() > level@)]
-    #[requires(f.invariant())]
-    #[maintains((mut self).invariant(*f))]
-    #[maintains((mut d).invariant(f.num_vars@))]
+    #[requires(f.inv())]
+    #[maintains((mut self).inv(*f))]
+    #[maintains((mut d).inv(f.num_vars@))]
     //#[requires((self@.trail).len() > 0)] // removed
     #[requires(long_are_post_unit_inner(self.trail@, *f, self.assignments@))]
     #[ensures(long_are_post_unit_inner((^self).trail@, *f, (^self).assignments@))]
@@ -126,8 +126,8 @@ impl Trail {
         #[invariant(i@ <= old_t.trail@.len())]
         #[invariant(i <= how_many)]
         #[invariant(long_are_post_unit_inner(self.trail@, *f, self.assignments@))]
-        #[invariant(self.invariant_no_decision(*f))]
-        #[invariant(d.invariant(f.num_vars@))]
+        #[invariant(self.inv_no_decision(*f))]
+        #[invariant(d.inv(f.num_vars@))]
         //#[invariant((self@.trail).len() == old_t.trail@.len() - i@)] // we don't care anymore
         #[invariant(curr@ < d.linked_list@.len() || curr@ == usize::MAX@)]
         // Hmm maybe change invariant
@@ -144,7 +144,7 @@ impl Trail {
         d.search = curr;
 
         #[invariant(long_are_post_unit_inner(self.trail@, *f, self.assignments@))]
-        #[invariant(self.invariant_no_decision(*f))]
+        #[invariant(self.inv_no_decision(*f))]
         while self.decisions.len() > level {
             let old_t2: Snapshot<&mut Trail> = snapshot! { self };
             proof_assert!(sorted(self.decisions@));
@@ -163,7 +163,7 @@ impl Trail {
         }
         // This is a noop, and should be proven away.
         #[invariant(long_are_post_unit_inner(self.trail@, *f, self.assignments@))]
-        #[invariant(self.invariant_no_decision(*f))]
+        #[invariant(self.inv_no_decision(*f))]
         while self.decisions.len() > 0 && self.decisions[self.decisions.len() - 1] > self.trail.len() {
             let old_t3: Snapshot<&mut Trail> = snapshot! { self };
             proof_assert!(sorted(self.decisions@));
@@ -187,7 +187,7 @@ impl Trail {
             self.decisions@[self.decisions@.len()-1]@ <= self.trail@.len()
         );
         // proof_assert!(decisions_invariant(self@.decisions, self@.trail));
-        proof_assert!(self.assignments.invariant(*f));
+        proof_assert!(self.assignments.inv(*f));
         // proof_assert!(trail_invariant(self@.trail, *f));
         // proof_assert!(lit_to_level_invariant(self@.lit_to_level, *f));
         //proof_assert!(self.lit_not_in_less(*f));
@@ -200,10 +200,10 @@ impl Trail {
     }
 
     #[cfg_attr(feature = "trust_trail", trusted)]
-    #[maintains((mut self).invariant(*_f))]
-    #[requires(_f.invariant())]
-    #[requires(step.lit.invariant(_f.num_vars@))]
-    #[requires(step.reason.invariant(*_f))]
+    #[maintains((mut self).inv(*_f))]
+    #[requires(_f.inv())]
+    #[requires(step.lit.inv(_f.num_vars@))]
+    #[requires(step.reason.inv(*_f))]
     #[requires(match step.reason {
         Reason::Long(cref) => {cref@ < _f.clauses@.len()
                             && _f.clauses@[cref@]@[0].unset(self.assignments)
@@ -237,7 +237,7 @@ impl Trail {
 
         self.assignments.set_assignment(step.lit, _f, trail);
 
-        //proof_assert!(step.invariant(*_f));
+        //proof_assert!(step.inv(*_f));
         proof_assert!(lemma_push_maintains_lit_not_in_less(*self, *_f, step); true);
         self.trail.push(step);
 
@@ -248,8 +248,8 @@ impl Trail {
     }
 
     #[cfg_attr(feature = "trust_trail", trusted)]
-    #[requires(_f.invariant())]
-    #[maintains((mut self).invariant(*_f))]
+    #[requires(_f.inv())]
+    #[maintains((mut self).inv(*_f))]
     #[requires(idx@ < _f.num_vars@)]
     #[requires(unset(self.assignments@[idx@]))]
     #[ensures((forall<j: Int> 0 <= j && j < self.assignments@.len() &&
@@ -273,12 +273,12 @@ impl Trail {
 
     // Okay so I should really just prove the backtracking mechanism, this is not nice
     #[cfg_attr(feature = "trust_trail", trusted)]
-    #[maintains((mut self).invariant(*f))]
-    #[maintains((mut d).invariant(f.num_vars@))]
-    #[requires(f.invariant())]
+    #[maintains((mut self).inv(*f))]
+    #[maintains((mut d).inv(f.num_vars@))]
+    #[requires(f.inv())]
     #[requires(cref@ < f.clauses@.len())]
     #[requires(f.clauses@[cref@]@.len() == 1)]
-    #[requires(f.clauses@[cref@].invariant(f.num_vars@))]
+    #[requires(f.clauses@[cref@].inv(f.num_vars@))]
     // unsure which of these is wanted
     //#[ensuresf.clauses@[cref@].sat((^self).assignments))]
     #[ensures(match result {
@@ -300,9 +300,9 @@ impl Trail {
     }
 
     #[cfg_attr(feature = "trust_trail", trusted)]
-    #[maintains((mut self).invariant(*f))]
-    #[maintains((mut d).invariant(f.num_vars@))]
-    #[requires(f.invariant())]
+    #[maintains((mut self).inv(*f))]
+    #[maintains((mut d).inv(f.num_vars@))]
+    #[requires(f.inv())]
     #[ensures(match result {
         Some(true) => f.not_satisfiable(),
         _ => true,
@@ -311,8 +311,8 @@ impl Trail {
         let mut i = 0;
         let old_d: Snapshot<&mut Decisions> = snapshot! { d };
         let old_self: Snapshot<&mut Trail> = snapshot! { self };
-        #[invariant(self.invariant(*f))]
-        #[invariant(d.invariant(f.num_vars@))]
+        #[invariant(self.inv(*f))]
+        #[invariant(d.inv(f.num_vars@))]
         while i < f.clauses.len() {
             let clause = &f[i];
             if clause.len() == 1 {

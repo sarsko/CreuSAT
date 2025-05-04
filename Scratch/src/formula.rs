@@ -1,4 +1,4 @@
-extern crate creusot_contracts;
+
 
 use creusot_contracts::std::*;
 use creusot_contracts::*;
@@ -12,13 +12,13 @@ pub struct Formula {
 }
 
 #[cfg(creusot)]
-impl ShallowModel for Formula {
-    type ShallowModelTy = (Seq<Clause>, Int);
+impl View for Formula {
+    type ViewTy = (Seq<Clause>, Int);
 
     #[open]
     #[logic]
-    fn shallow_model(self) -> Self::ShallowModelTy {
-        (self.clauses.shallow_model(), self.num_vars.shallow_model())
+    fn view(self) -> Self::ViewTy {
+        (self.clauses.view(), self.num_vars.view())
     }
 }
 
@@ -27,7 +27,7 @@ impl ShallowModel for Formula {
 pub fn formula_invariant(f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < f.0.len() ==>
-            (f.0[i].invariant(f.1) && f.0[i]@.len() > 0)
+            (f.0[i].inv(f.1) && f.0[i]@.len() > 0)
     }
 }
 
@@ -75,17 +75,17 @@ impl Formula {
     #[open]
     #[predicate]
     #[cfg_attr(feature = "trust_formula_logic", trusted)]
-    #[ensures(result == self.invariant_mirror())] // Removing this makes a bunch of seemingly unrelated things fail
-    pub fn invariant(self) -> bool {
+    #[ensures(result == self.inv_mirror())] // Removing this makes a bunch of seemingly unrelated things fail
+    pub fn inv(self) -> bool {
         pearlite! { formula_invariant(self@) }
     }
 
     #[open]
     #[predicate]
-    fn invariant_mirror(self) -> bool {
+    fn inv_mirror(self) -> bool {
         pearlite! {
             (forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
-                self.clauses@[i].invariant(self.num_vars@))
+                self.clauses@[i].inv(self.num_vars@))
             &&
             (forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
                 self.clauses@[i]@.len() >= 1)

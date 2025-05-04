@@ -1,4 +1,4 @@
-extern crate creusot_contracts;
+
 use creusot_contracts::{std::*, Clone, Snapshot, *};
 
 use crate::{assignments::*, formula::*, lit::*};
@@ -12,13 +12,13 @@ pub struct Clause {
 }
 
 #[cfg(creusot)]
-impl ShallowModel for Clause {
-    type ShallowModelTy = Seq<Lit>;
+impl View for Clause {
+    type ViewTy = Seq<Lit>;
 
     #[open]
     #[logic]
-    fn shallow_model(self) -> Self::ShallowModelTy {
-        self.lits.shallow_model() //.push(self.first)//.push(self.second)
+    fn view(self) -> Self::ViewTy {
+        self.lits.view() //.push(self.first)//.push(self.second)
     }
 }
 
@@ -27,13 +27,13 @@ impl ShallowModel for Clause {
 pub fn vars_in_range_inner(s: Seq<Lit>, n: Int) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < s.len() ==>
-            s[i].invariant(n)
+            s[i].inv(n)
     }
 }
 
 #[open]
 #[predicate]
-pub fn invariant_internal(s: Seq<Lit>, n: Int) -> bool {
+pub fn inv_internal(s: Seq<Lit>, n: Int) -> bool {
     vars_in_range_inner(s, n) && no_duplicate_indexes_inner(s)
 }
 
@@ -219,7 +219,7 @@ impl Clause {
 
     #[open]
     #[predicate]
-    pub fn invariant(self, n: Int) -> bool {
+    pub fn inv(self, n: Int) -> bool {
         pearlite! { invariant_internal(self@, n) }
     }
 

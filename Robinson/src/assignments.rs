@@ -1,8 +1,7 @@
 extern crate creusot_contracts;
-#[allow(unused)]
+use crate::{clause::*, decision::*, formula::*};
 use creusot_contracts::{model::*, std::*, *};
 
-use crate::{clause::*, decision::*, formula::*};
 
 #[cfg(creusot)]
 use crate::logic::*;
@@ -12,13 +11,13 @@ pub type AssignedState = u8;
 pub struct Assignments(pub Vec<AssignedState>, pub usize);
 
 #[cfg(creusot)]
-impl ShallowModel for Assignments {
-    type ShallowModelTy = Seq<AssignedState>;
+impl View for Assignments {
+    type ViewTy = Seq<AssignedState>;
 
     #[logic]
     #[open]
-    fn shallow_model(self) -> Self::ShallowModelTy {
-        self.0.shallow_model()
+    fn view(self) -> Self::ViewTy {
+        self.0.view()
     }
 }
 
@@ -55,7 +54,7 @@ pub fn assignments_invariant(a: Seq<AssignedState>, f: Formula) -> bool {
 impl Assignments {
     #[predicate]
     #[open]
-    pub fn invariant(self, f: Formula) -> bool {
+    pub fn inv(self, f: Formula) -> bool {
         pearlite! {
             f.num_vars@ == self@.len() && self.1@ <= f.num_vars@
         }
@@ -84,6 +83,14 @@ impl Assignments {
 
 impl Assignments {
     #[cfg_attr(feature = "trust_assignments", trusted)]
+    #[requires(f.inv())]
+    #[ensures(result.inv(*f))]
+    #[ensures(forall<i: Int> 0 <= i && i < result@.len() ==> unset(result@[i]))]
+    pub fn new(f: &Formula) -> Self {
+        Assignments(vec::from_elem(2u8, f.num_vars), 0)
+    }
+
+    #[cfg_attr(feature = "trust_assignments", trusted)]
     #[ensures(forall<i: Int> 0 <= i && i < self@.len() ==> self@[i] == result@[i])]
     #[ensures(self@.len() == result@.len())]
     #[ensures(result.1@ == self.1@)]
@@ -101,17 +108,9 @@ impl Assignments {
     }
 
     #[cfg_attr(feature = "trust_assignments", trusted)]
-    #[requires(f.invariant())]
-    #[ensures(result.invariant(*f))]
-    #[ensures(forall<i: Int> 0 <= i && i < result@.len() ==> unset(result@[i]))]
-    pub fn new(f: &Formula) -> Self {
-        Assignments(vec::from_elem(2u8, f.num_vars), 0)
-    }
-
-    #[cfg_attr(feature = "trust_assignments", trusted)]
-    #[maintains((mut self).invariant(*_f))]
+    #[maintains((mut self).inv(*_f))]
     #[requires(!self.complete())]
-    #[requires(d.invariant(self@.len()))]
+    #[requires(d.inv(self@.len()))]
     #[ensures(result@ < self@.len() && unset(self@[result@]))]
     #[ensures(self@ == (^self)@)]
     pub fn find_unassigned(&mut self, d: &Decisions, _f: &Formula) -> usize {
@@ -139,8 +138,8 @@ impl Assignments {
     }
 
     #[cfg_attr(feature = "trust_assignments", trusted)]
-    #[maintains((mut self).invariant(*f))]
-    #[requires(f.invariant())]
+    #[maintains((mut self).inv(*f))]
+    #[requires(f.inv())]
     #[requires(0 <= i@ && i@ < f.clauses@.len())]
     #[ensures((*self).compatible(^self))]
     #[ensures(f.eventually_sat_complete(*self) == f.eventually_sat_complete(^self))]
@@ -184,8 +183,8 @@ impl Assignments {
     }
 
     #[cfg_attr(feature = "trust_assignments", trusted)]
-    #[maintains((mut self).invariant(*f))]
-    #[requires(f.invariant())]
+    #[maintains((mut self).inv(*f))]
+    #[requires(f.inv())]
     #[ensures(f.eventually_sat_complete(^self) == f.eventually_sat_complete(*self))]
     #[ensures((*self).compatible(^self))]
     #[ensures(match result {
@@ -199,7 +198,7 @@ impl Assignments {
         let _old_a: Snapshot<&mut Assignments> = snapshot!(self);
         let mut i: usize = 0;
         let mut out = ClauseState::Sat;
-        #[invariant(self.invariant(*f))]
+        #[invariant(self.inv(*f))]
         #[invariant(_old_a.compatible(*self))]
         #[invariant(f.eventually_sat_complete(*_old_a.inner()) == f.eventually_sat_complete(*self))]
         #[invariant(!(out == ClauseState::Unsat))]
@@ -233,8 +232,8 @@ impl Assignments {
     }
 
     #[cfg_attr(feature = "trust_assignments", trusted)]
-    #[requires(f.invariant())]
-    #[maintains((mut self).invariant(*f))]
+    #[requires(f.inv())]
+    #[maintains((mut self).inv(*f))]
     #[ensures(f.eventually_sat_complete(*self) == f.eventually_sat_complete(^self))]
     #[ensures((*self).compatible(^self))]
     #[ensures(result == Some(false) ==> f.unsat(^self))]
@@ -242,7 +241,7 @@ impl Assignments {
     #[ensures(result == None ==> !(^self).complete())]
     pub fn do_unit_propagation(&mut self, f: &Formula) -> Option<bool> {
         let _old_a: Snapshot<&mut Assignments> = snapshot!(self);
-        #[invariant(self.invariant(*f))]
+        #[invariant(self.inv(*f))]
         #[invariant(_old_a.compatible(*self))]
         #[invariant(f.eventually_sat_complete(*_old_a.inner()) ==> f.eventually_sat_complete(*self))]
         loop {

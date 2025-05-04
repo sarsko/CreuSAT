@@ -63,7 +63,7 @@ module Core_Num_Impl11_Max
   let constant mAX'  : usize = [@vc:do_not_keep_trace] [@vc:sp]
     (18446744073709551615 : usize)
 end
-module CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub
+module CreusotContracts_Std1_Vec_Impl0_View_Stub
   type t
   type a
   use seq.Seq
@@ -71,9 +71,9 @@ module CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub
   use prelude.Int
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max_Stub as Max0
-  function shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
+  function view (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
 end
-module CreusotContracts_Std1_Vec_Impl0_ShallowModel_Interface
+module CreusotContracts_Std1_Vec_Impl0_View_Interface
   type t
   type a
   use seq.Seq
@@ -81,10 +81,10 @@ module CreusotContracts_Std1_Vec_Impl0_ShallowModel_Interface
   use prelude.Int
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max_Stub as Max0
-  function shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
-  axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
+  function view (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
+  axiom view_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . Seq.length (view self) <= UIntSize.to_int Max0.mAX'
 end
-module CreusotContracts_Std1_Vec_Impl0_ShallowModel
+module CreusotContracts_Std1_Vec_Impl0_View
   type t
   type a
   use seq.Seq
@@ -92,47 +92,47 @@ module CreusotContracts_Std1_Vec_Impl0_ShallowModel
   use prelude.Int
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max_Stub as Max0
-  function shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
-  val shallow_model (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
-    ensures { result = shallow_model self }
+  function view (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
+  val view (self : Alloc_Vec_Vec_Type.t_vec t a) : Seq.seq t
+    ensures { result = view self }
     
-  axiom shallow_model_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
+  axiom view_spec : forall self : Alloc_Vec_Vec_Type.t_vec t a . Seq.length (view self) <= UIntSize.to_int Max0.mAX'
 end
-module Scratch_Assignments_Impl0_ShallowModel_Stub
+module Scratch_Assignments_Impl0_View_Stub
   use seq.Seq
   use prelude.Int
   use prelude.UInt8
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  function shallow_model [#"../Scratch/src/assignments.rs" 20 4 20 50] (self : Scratch_Assignments_Assignments_Type.t_assignments) : Seq.seq uint8
+  function view [#"../Scratch/src/assignments.rs" 20 4 20 50] (self : Scratch_Assignments_Assignments_Type.t_assignments) : Seq.seq uint8
     
 end
-module Scratch_Assignments_Impl0_ShallowModel_Interface
+module Scratch_Assignments_Impl0_View_Interface
   use seq.Seq
   use prelude.Int
   use prelude.UInt8
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  function shallow_model [#"../Scratch/src/assignments.rs" 20 4 20 50] (self : Scratch_Assignments_Assignments_Type.t_assignments) : Seq.seq uint8
+  function view [#"../Scratch/src/assignments.rs" 20 4 20 50] (self : Scratch_Assignments_Assignments_Type.t_assignments) : Seq.seq uint8
     
 end
-module Scratch_Assignments_Impl0_ShallowModel
+module Scratch_Assignments_Impl0_View
   use seq.Seq
   use prelude.Int
   use prelude.UInt8
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max_Stub as Max0
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+  clone CreusotContracts_Std1_Vec_Impl0_View_Stub as View0 with
     type t = uint8,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  function shallow_model [#"../Scratch/src/assignments.rs" 20 4 20 50] (self : Scratch_Assignments_Assignments_Type.t_assignments) : Seq.seq uint8
+  function view [#"../Scratch/src/assignments.rs" 20 4 20 50] (self : Scratch_Assignments_Assignments_Type.t_assignments) : Seq.seq uint8
     
    =
-    [#"../Scratch/src/assignments.rs" 19 4 19 12] ShallowModel0.shallow_model (Scratch_Assignments_Assignments_Type.assignments_0 self)
-  val shallow_model [#"../Scratch/src/assignments.rs" 20 4 20 50] (self : Scratch_Assignments_Assignments_Type.t_assignments) : Seq.seq uint8
-    ensures { result = shallow_model self }
+    [#"../Scratch/src/assignments.rs" 19 4 19 12] View0.view (Scratch_Assignments_Assignments_Type.assignments_0 self)
+  val view [#"../Scratch/src/assignments.rs" 20 4 20 50] (self : Scratch_Assignments_Assignments_Type.t_assignments) : Seq.seq uint8
+    ensures { result = view self }
     
 end
 module Scratch_Logic_Unset_Stub
@@ -310,12 +310,12 @@ module Scratch_Assignments_Impl1_Invariant
   use prelude.Int
   use prelude.UInt8
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  clone Scratch_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Assignments_Impl0_View_Stub as View0
   use Scratch_Formula_Formula_Type as Scratch_Formula_Formula_Type
   predicate invariant' [#"../Scratch/src/assignments.rs" 48 4 48 46] (self : Scratch_Assignments_Assignments_Type.t_assignments) (f : Scratch_Formula_Formula_Type.t_formula)
     
    =
-    [#"../Scratch/src/assignments.rs" 49 8 52 9] UIntSize.to_int (Scratch_Formula_Formula_Type.formula_num_vars f) = Seq.length (ShallowModel0.shallow_model self) /\ (forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) -> UInt8.to_int (Seq.get (ShallowModel0.shallow_model self) i) <= 3)
+    [#"../Scratch/src/assignments.rs" 49 8 52 9] UIntSize.to_int (Scratch_Formula_Formula_Type.formula_num_vars f) = Seq.length (View0.view self) /\ (forall i : int . 0 <= i /\ i < Seq.length (View0.view self) -> UInt8.to_int (Seq.get (View0.view self) i) <= 3)
   val invariant' [#"../Scratch/src/assignments.rs" 48 4 48 46] (self : Scratch_Assignments_Assignments_Type.t_assignments) (f : Scratch_Formula_Formula_Type.t_formula) : bool
     ensures { result = invariant' self f }
     
@@ -335,11 +335,11 @@ module Scratch_Assignments_Impl1_Complete
   use seq.Seq
   clone Scratch_Logic_Unset_Stub as Unset0
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  clone Scratch_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Assignments_Impl0_View_Stub as View0
   predicate complete [#"../Scratch/src/assignments.rs" 56 4 56 33] (self : Scratch_Assignments_Assignments_Type.t_assignments)
     
    =
-    [#"../Scratch/src/assignments.rs" 57 8 59 9] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) -> not Unset0.unset (Seq.get (ShallowModel0.shallow_model self) i)
+    [#"../Scratch/src/assignments.rs" 57 8 59 9] forall i : int . 0 <= i /\ i < Seq.length (View0.view self) -> not Unset0.unset (Seq.get (View0.view self) i)
   val complete [#"../Scratch/src/assignments.rs" 56 4 56 33] (self : Scratch_Assignments_Assignments_Type.t_assignments) : bool
     ensures { result = complete self }
     
@@ -444,38 +444,38 @@ module Scratch_Clause_Impl3_Clone
   }
   
 end
-module Scratch_Clause_Impl0_ShallowModel_Stub
+module Scratch_Clause_Impl0_View_Stub
   use seq.Seq
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  function shallow_model [#"../Scratch/src/clause.rs" 19 4 19 50] (self : Scratch_Clause_Clause_Type.t_clause) : Seq.seq (Scratch_Lit_Lit_Type.t_lit)
+  function view [#"../Scratch/src/clause.rs" 19 4 19 50] (self : Scratch_Clause_Clause_Type.t_clause) : Seq.seq (Scratch_Lit_Lit_Type.t_lit)
     
 end
-module Scratch_Clause_Impl0_ShallowModel_Interface
+module Scratch_Clause_Impl0_View_Interface
   use seq.Seq
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  function shallow_model [#"../Scratch/src/clause.rs" 19 4 19 50] (self : Scratch_Clause_Clause_Type.t_clause) : Seq.seq (Scratch_Lit_Lit_Type.t_lit)
+  function view [#"../Scratch/src/clause.rs" 19 4 19 50] (self : Scratch_Clause_Clause_Type.t_clause) : Seq.seq (Scratch_Lit_Lit_Type.t_lit)
     
 end
-module Scratch_Clause_Impl0_ShallowModel
+module Scratch_Clause_Impl0_View
   use seq.Seq
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max_Stub as Max0
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+  clone CreusotContracts_Std1_Vec_Impl0_View_Stub as View0 with
     type t = Scratch_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  function shallow_model [#"../Scratch/src/clause.rs" 19 4 19 50] (self : Scratch_Clause_Clause_Type.t_clause) : Seq.seq (Scratch_Lit_Lit_Type.t_lit)
+  function view [#"../Scratch/src/clause.rs" 19 4 19 50] (self : Scratch_Clause_Clause_Type.t_clause) : Seq.seq (Scratch_Lit_Lit_Type.t_lit)
     
    =
-    [#"../Scratch/src/clause.rs" 18 4 18 12] ShallowModel0.shallow_model (Scratch_Clause_Clause_Type.clause_lits self)
-  val shallow_model [#"../Scratch/src/clause.rs" 19 4 19 50] (self : Scratch_Clause_Clause_Type.t_clause) : Seq.seq (Scratch_Lit_Lit_Type.t_lit)
-    ensures { result = shallow_model self }
+    [#"../Scratch/src/clause.rs" 18 4 18 12] View0.view (Scratch_Clause_Clause_Type.clause_lits self)
+  val view [#"../Scratch/src/clause.rs" 19 4 19 50] (self : Scratch_Clause_Clause_Type.t_clause) : Seq.seq (Scratch_Lit_Lit_Type.t_lit)
+    ensures { result = view self }
     
 end
 module Scratch_Lit_Impl2_IndexLogic_Stub
@@ -673,11 +673,11 @@ module Scratch_Clause_Impl2_SatInner
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   clone Scratch_Lit_Impl3_SatInner_Stub as SatInner0
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   predicate sat_inner [#"../Scratch/src/clause.rs" 162 4 162 57] (self : Scratch_Clause_Clause_Type.t_clause) (a : Seq.seq uint8)
     
    =
-    [#"../Scratch/src/clause.rs" 163 8 166 9] exists i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) /\ SatInner0.sat_inner (Seq.get (ShallowModel0.shallow_model self) i) a
+    [#"../Scratch/src/clause.rs" 163 8 166 9] exists i : int . 0 <= i /\ i < Seq.length (View0.view self) /\ SatInner0.sat_inner (Seq.get (View0.view self) i) a
   val sat_inner [#"../Scratch/src/clause.rs" 162 4 162 57] (self : Scratch_Clause_Clause_Type.t_clause) (a : Seq.seq uint8) : bool
     ensures { result = sat_inner self a }
     
@@ -824,11 +824,11 @@ module Scratch_Clause_Impl1_PostUnitInner
   clone Scratch_Lit_Impl3_UnsatInner_Stub as UnsatInner0
   clone Scratch_Lit_Impl3_SatInner_Stub as SatInner0
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   predicate post_unit_inner [#"../Scratch/src/clause.rs" 60 4 60 63] (self : Scratch_Clause_Clause_Type.t_clause) (a : Seq.seq uint8)
     
    =
-    [#"../Scratch/src/clause.rs" 61 8 65 9] exists i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) /\ SatInner0.sat_inner (Seq.get (ShallowModel0.shallow_model self) i) a /\ (forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model self) /\ j <> i -> UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model self) j) a)
+    [#"../Scratch/src/clause.rs" 61 8 65 9] exists i : int . 0 <= i /\ i < Seq.length (View0.view self) /\ SatInner0.sat_inner (Seq.get (View0.view self) i) a /\ (forall j : int . 0 <= j /\ j < Seq.length (View0.view self) /\ j <> i -> UnsatInner0.unsat_inner (Seq.get (View0.view self) j) a)
   val post_unit_inner [#"../Scratch/src/clause.rs" 60 4 60 63] (self : Scratch_Clause_Clause_Type.t_clause) (a : Seq.seq uint8) : bool
     ensures { result = post_unit_inner self a }
     
@@ -883,11 +883,11 @@ module Scratch_Clause_Impl1_NoUnsetInner
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   clone Scratch_Lit_Impl3_UnsetInner_Stub as UnsetInner0
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   predicate no_unset_inner [#"../Scratch/src/clause.rs" 69 4 69 62] (self : Scratch_Clause_Clause_Type.t_clause) (a : Seq.seq uint8)
     
    =
-    [#"../Scratch/src/clause.rs" 70 8 72 9] forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model self) -> not UnsetInner0.unset_inner (Seq.get (ShallowModel0.shallow_model self) j) a
+    [#"../Scratch/src/clause.rs" 70 8 72 9] forall j : int . 0 <= j /\ j < Seq.length (View0.view self) -> not UnsetInner0.unset_inner (Seq.get (View0.view self) j) a
   val no_unset_inner [#"../Scratch/src/clause.rs" 69 4 69 62] (self : Scratch_Clause_Clause_Type.t_clause) (a : Seq.seq uint8) : bool
     ensures { result = no_unset_inner self a }
     
@@ -908,11 +908,11 @@ module Scratch_Clause_Impl1_PostUnit
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
   clone Scratch_Clause_Impl1_PostUnitInner_Stub as PostUnitInner0
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  clone Scratch_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Assignments_Impl0_View_Stub as View0
   predicate post_unit [#"../Scratch/src/clause.rs" 76 4 76 50] (self : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments)
     
    =
-    [#"../Scratch/src/clause.rs" 77 20 77 44] PostUnitInner0.post_unit_inner self (ShallowModel0.shallow_model a)
+    [#"../Scratch/src/clause.rs" 77 20 77 44] PostUnitInner0.post_unit_inner self (View0.view a)
   val post_unit [#"../Scratch/src/clause.rs" 76 4 76 50] (self : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments) : bool
     ensures { result = post_unit self a }
     
@@ -940,32 +940,32 @@ module Scratch_Clause_Impl1_EqAssnInner
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   clone Scratch_Lit_Impl2_IndexLogic_Stub as IndexLogic0
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   predicate eq_assn_inner [#"../Scratch/src/clause.rs" 81 4 81 85] (self : Scratch_Clause_Clause_Type.t_clause) (a : Seq.seq uint8) (a2 : Seq.seq uint8)
     
    =
-    [#"../Scratch/src/clause.rs" 82 8 85 9] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) -> Seq.get a (IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model self) i)) = Seq.get a2 (IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model self) i))
+    [#"../Scratch/src/clause.rs" 82 8 85 9] forall i : int . 0 <= i /\ i < Seq.length (View0.view self) -> Seq.get a (IndexLogic0.index_logic (Seq.get (View0.view self) i)) = Seq.get a2 (IndexLogic0.index_logic (Seq.get (View0.view self) i))
   val eq_assn_inner [#"../Scratch/src/clause.rs" 81 4 81 85] (self : Scratch_Clause_Clause_Type.t_clause) (a : Seq.seq uint8) (a2 : Seq.seq uint8) : bool
     ensures { result = eq_assn_inner self a a2 }
     
 end
-module Scratch_Formula_Impl0_ShallowModel_Stub
+module Scratch_Formula_Impl0_View_Stub
   use seq.Seq
   use prelude.Int
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
   use Scratch_Formula_Formula_Type as Scratch_Formula_Formula_Type
-  function shallow_model [#"../Scratch/src/formula.rs" 19 4 19 50] (self : Scratch_Formula_Formula_Type.t_formula) : (Seq.seq (Scratch_Clause_Clause_Type.t_clause), int)
+  function view [#"../Scratch/src/formula.rs" 19 4 19 50] (self : Scratch_Formula_Formula_Type.t_formula) : (Seq.seq (Scratch_Clause_Clause_Type.t_clause), int)
     
 end
-module Scratch_Formula_Impl0_ShallowModel_Interface
+module Scratch_Formula_Impl0_View_Interface
   use seq.Seq
   use prelude.Int
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
   use Scratch_Formula_Formula_Type as Scratch_Formula_Formula_Type
-  function shallow_model [#"../Scratch/src/formula.rs" 19 4 19 50] (self : Scratch_Formula_Formula_Type.t_formula) : (Seq.seq (Scratch_Clause_Clause_Type.t_clause), int)
+  function view [#"../Scratch/src/formula.rs" 19 4 19 50] (self : Scratch_Formula_Formula_Type.t_formula) : (Seq.seq (Scratch_Clause_Clause_Type.t_clause), int)
     
 end
-module Scratch_Formula_Impl0_ShallowModel
+module Scratch_Formula_Impl0_View
   use seq.Seq
   use prelude.Int
   use prelude.UIntSize
@@ -973,18 +973,18 @@ module Scratch_Formula_Impl0_ShallowModel
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max_Stub as Max0
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+  clone CreusotContracts_Std1_Vec_Impl0_View_Stub as View0 with
     type t = Scratch_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
   use Scratch_Formula_Formula_Type as Scratch_Formula_Formula_Type
-  function shallow_model [#"../Scratch/src/formula.rs" 19 4 19 50] (self : Scratch_Formula_Formula_Type.t_formula) : (Seq.seq (Scratch_Clause_Clause_Type.t_clause), int)
+  function view [#"../Scratch/src/formula.rs" 19 4 19 50] (self : Scratch_Formula_Formula_Type.t_formula) : (Seq.seq (Scratch_Clause_Clause_Type.t_clause), int)
     
    =
-    [#"../Scratch/src/formula.rs" 20 8 20 69] (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses self), UIntSize.to_int (Scratch_Formula_Formula_Type.formula_num_vars self))
-  val shallow_model [#"../Scratch/src/formula.rs" 19 4 19 50] (self : Scratch_Formula_Formula_Type.t_formula) : (Seq.seq (Scratch_Clause_Clause_Type.t_clause), int)
-    ensures { result = shallow_model self }
+    [#"../Scratch/src/formula.rs" 20 8 20 69] (View0.view (Scratch_Formula_Formula_Type.formula_clauses self), UIntSize.to_int (Scratch_Formula_Formula_Type.formula_num_vars self))
+  val view [#"../Scratch/src/formula.rs" 19 4 19 50] (self : Scratch_Formula_Formula_Type.t_formula) : (Seq.seq (Scratch_Clause_Clause_Type.t_clause), int)
+    ensures { result = view self }
     
 end
 module Scratch_Clause_Impl2_EquisatExtension_Stub
@@ -1003,11 +1003,11 @@ module Scratch_Clause_Impl2_EquisatExtension
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
   clone Scratch_Clause_EquisatExtensionInner_Stub as EquisatExtensionInner0
   use Scratch_Formula_Formula_Type as Scratch_Formula_Formula_Type
-  clone Scratch_Formula_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Formula_Impl0_View_Stub as View0
   predicate equisat_extension [#"../Scratch/src/clause.rs" 91 4 91 54] (self : Scratch_Clause_Clause_Type.t_clause) (f : Scratch_Formula_Formula_Type.t_formula)
     
    =
-    [#"../Scratch/src/clause.rs" 92 20 92 53] EquisatExtensionInner0.equisat_extension_inner self (ShallowModel0.shallow_model f)
+    [#"../Scratch/src/clause.rs" 92 20 92 53] EquisatExtensionInner0.equisat_extension_inner self (View0.view f)
   val equisat_extension [#"../Scratch/src/clause.rs" 91 4 91 54] (self : Scratch_Clause_Clause_Type.t_clause) (f : Scratch_Formula_Formula_Type.t_formula) : bool
     ensures { result = equisat_extension self f }
     
@@ -1031,11 +1031,11 @@ module Scratch_Clause_Impl2_SameIdxSamePolarityExcept
   clone Scratch_Lit_Impl2_IsPositiveLogic_Stub as IsPositiveLogic0
   clone Scratch_Lit_Impl2_IndexLogic_Stub as IndexLogic0
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   predicate same_idx_same_polarity_except [#"../Scratch/src/clause.rs" 96 4 96 85] (self : Scratch_Clause_Clause_Type.t_clause) (other : Scratch_Clause_Clause_Type.t_clause) (exception' : int)
     
    =
-    [#"../Scratch/src/clause.rs" 97 8 102 9] forall j : int . forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) /\ 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model other) -> IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model self) i) <> exception' /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model self) i) = IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model other) j) -> IsPositiveLogic0.is_positive_logic (Seq.get (ShallowModel0.shallow_model self) i) = IsPositiveLogic0.is_positive_logic (Seq.get (ShallowModel0.shallow_model other) j)
+    [#"../Scratch/src/clause.rs" 97 8 102 9] forall j : int . forall i : int . 0 <= i /\ i < Seq.length (View0.view self) /\ 0 <= j /\ j < Seq.length (View0.view other) -> IndexLogic0.index_logic (Seq.get (View0.view self) i) <> exception' /\ IndexLogic0.index_logic (Seq.get (View0.view self) i) = IndexLogic0.index_logic (Seq.get (View0.view other) j) -> IsPositiveLogic0.is_positive_logic (Seq.get (View0.view self) i) = IsPositiveLogic0.is_positive_logic (Seq.get (View0.view other) j)
   val same_idx_same_polarity_except [#"../Scratch/src/clause.rs" 96 4 96 85] (self : Scratch_Clause_Clause_Type.t_clause) (other : Scratch_Clause_Clause_Type.t_clause) (exception' : int) : bool
     ensures { result = same_idx_same_polarity_except self other exception' }
     
@@ -1057,11 +1057,11 @@ module Scratch_Lit_Impl3_LitIn
   use seq.Seq
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   predicate lit_in [#"../Scratch/src/lit.rs" 88 4 88 42] (self : Scratch_Lit_Lit_Type.t_lit) (c : Scratch_Clause_Clause_Type.t_clause)
     
    =
-    [#"../Scratch/src/lit.rs" 89 8 89 76] exists i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model c) /\ Seq.get (ShallowModel0.shallow_model c) i = self
+    [#"../Scratch/src/lit.rs" 89 8 89 76] exists i : int . 0 <= i /\ i < Seq.length (View0.view c) /\ Seq.get (View0.view c) i = self
   val lit_in [#"../Scratch/src/lit.rs" 88 4 88 42] (self : Scratch_Lit_Lit_Type.t_lit) (c : Scratch_Clause_Clause_Type.t_clause) : bool
     ensures { result = lit_in self c }
     
@@ -1107,11 +1107,11 @@ module Scratch_Clause_Impl2_ResolventOf
   clone Scratch_Lit_Impl3_IsOpp_Stub as IsOpp0
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
   clone Scratch_Lit_Impl3_LitIn_Stub as LitIn0
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   predicate resolvent_of [#"../Scratch/src/clause.rs" 106 4 106 76] (self : Scratch_Clause_Clause_Type.t_clause) (c : Scratch_Clause_Clause_Type.t_clause) (c2 : Scratch_Clause_Clause_Type.t_clause) (k : int) (m : int)
     
    =
-    [#"../Scratch/src/clause.rs" 107 8 114 9] (forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model c) /\ i <> m -> LitIn0.lit_in (Seq.get (ShallowModel0.shallow_model c) i) self) /\ (forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model c2) /\ i <> k -> LitIn0.lit_in (Seq.get (ShallowModel0.shallow_model c2) i) self) /\ (forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) -> LitIn0.lit_in (Seq.get (ShallowModel0.shallow_model self) i) c \/ LitIn0.lit_in (Seq.get (ShallowModel0.shallow_model self) i) c2) /\ not LitIn0.lit_in (Seq.get (ShallowModel0.shallow_model c) m) self /\ not LitIn0.lit_in (Seq.get (ShallowModel0.shallow_model c2) k) self /\ IsOpp0.is_opp (Seq.get (ShallowModel0.shallow_model c2) k) (Seq.get (ShallowModel0.shallow_model c) m)
+    [#"../Scratch/src/clause.rs" 107 8 114 9] (forall i : int . 0 <= i /\ i < Seq.length (View0.view c) /\ i <> m -> LitIn0.lit_in (Seq.get (View0.view c) i) self) /\ (forall i : int . 0 <= i /\ i < Seq.length (View0.view c2) /\ i <> k -> LitIn0.lit_in (Seq.get (View0.view c2) i) self) /\ (forall i : int . 0 <= i /\ i < Seq.length (View0.view self) -> LitIn0.lit_in (Seq.get (View0.view self) i) c \/ LitIn0.lit_in (Seq.get (View0.view self) i) c2) /\ not LitIn0.lit_in (Seq.get (View0.view c) m) self /\ not LitIn0.lit_in (Seq.get (View0.view c2) k) self /\ IsOpp0.is_opp (Seq.get (View0.view c2) k) (Seq.get (View0.view c) m)
   val resolvent_of [#"../Scratch/src/clause.rs" 106 4 106 76] (self : Scratch_Clause_Clause_Type.t_clause) (c : Scratch_Clause_Clause_Type.t_clause) (c2 : Scratch_Clause_Clause_Type.t_clause) (k : int) (m : int) : bool
     ensures { result = resolvent_of self c c2 k m }
     
@@ -1135,7 +1135,7 @@ module Scratch_Clause_Impl2_InFormula
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max_Stub as Max0
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+  clone CreusotContracts_Std1_Vec_Impl0_View_Stub as View0 with
     type t = Scratch_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
@@ -1144,7 +1144,7 @@ module Scratch_Clause_Impl2_InFormula
   predicate in_formula [#"../Scratch/src/clause.rs" 118 4 118 47] (self : Scratch_Clause_Clause_Type.t_clause) (f : Scratch_Formula_Formula_Type.t_formula)
     
    =
-    [#"../Scratch/src/clause.rs" 119 8 122 9] exists i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses f)) /\ Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses f)) i = self
+    [#"../Scratch/src/clause.rs" 119 8 122 9] exists i : int . 0 <= i /\ i < Seq.length (View0.view (Scratch_Formula_Formula_Type.formula_clauses f)) /\ Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses f)) i = self
   val in_formula [#"../Scratch/src/clause.rs" 118 4 118 47] (self : Scratch_Clause_Clause_Type.t_clause) (f : Scratch_Formula_Formula_Type.t_formula) : bool
     ensures { result = in_formula self f }
     
@@ -1192,11 +1192,11 @@ module Scratch_Clause_Impl2_VarsInRange
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   clone Scratch_Clause_VarsInRangeInner_Stub as VarsInRangeInner0
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   predicate vars_in_range [#"../Scratch/src/clause.rs" 182 4 182 46] (self : Scratch_Clause_Clause_Type.t_clause) (n : int)
     
    =
-    [#"../Scratch/src/clause.rs" 183 20 183 49] VarsInRangeInner0.vars_in_range_inner (ShallowModel0.shallow_model self) n
+    [#"../Scratch/src/clause.rs" 183 20 183 49] VarsInRangeInner0.vars_in_range_inner (View0.view self) n
   val vars_in_range [#"../Scratch/src/clause.rs" 182 4 182 46] (self : Scratch_Clause_Clause_Type.t_clause) (n : int) : bool
     ensures { result = vars_in_range self n }
     
@@ -1224,13 +1224,13 @@ module Scratch_Clause_Impl2_UnitInner
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   clone Scratch_Lit_Impl3_UnsetInner_Stub as UnsetInner0
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   clone Scratch_Clause_Impl2_SatInner_Stub as SatInner0
   clone Scratch_Clause_Impl2_VarsInRange_Stub as VarsInRange0
   predicate unit_inner [#"../Scratch/src/clause.rs" 133 4 133 54] (self : Scratch_Clause_Clause_Type.t_clause) (a : Seq.seq uint8)
     
    =
-    [#"../Scratch/src/clause.rs" 134 8 141 9] VarsInRange0.vars_in_range self (Seq.length a) /\ not SatInner0.sat_inner self a /\ (exists i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) /\ UnsetInner0.unset_inner (Seq.get (ShallowModel0.shallow_model self) i) a /\ (forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model self) /\ j <> i -> not UnsetInner0.unset_inner (Seq.get (ShallowModel0.shallow_model self) j) a))
+    [#"../Scratch/src/clause.rs" 134 8 141 9] VarsInRange0.vars_in_range self (Seq.length a) /\ not SatInner0.sat_inner self a /\ (exists i : int . 0 <= i /\ i < Seq.length (View0.view self) /\ UnsetInner0.unset_inner (Seq.get (View0.view self) i) a /\ (forall j : int . 0 <= j /\ j < Seq.length (View0.view self) /\ j <> i -> not UnsetInner0.unset_inner (Seq.get (View0.view self) j) a))
   val unit_inner [#"../Scratch/src/clause.rs" 133 4 133 54] (self : Scratch_Clause_Clause_Type.t_clause) (a : Seq.seq uint8) : bool
     ensures { result = unit_inner self a }
     
@@ -1251,11 +1251,11 @@ module Scratch_Clause_Impl2_Unit
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
   clone Scratch_Clause_Impl2_UnitInner_Stub as UnitInner0
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  clone Scratch_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Assignments_Impl0_View_Stub as View0
   predicate unit [#"../Scratch/src/clause.rs" 144 4 144 45] (self : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments)
     
    =
-    [#"../Scratch/src/clause.rs" 145 20 145 39] UnitInner0.unit_inner self (ShallowModel0.shallow_model a)
+    [#"../Scratch/src/clause.rs" 145 20 145 39] UnitInner0.unit_inner self (View0.view a)
   val unit [#"../Scratch/src/clause.rs" 144 4 144 45] (self : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments) : bool
     ensures { result = unit self a }
     
@@ -1283,11 +1283,11 @@ module Scratch_Clause_Impl2_UnsatInner
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   clone Scratch_Lit_Impl3_UnsatInner_Stub as UnsatInner0
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   predicate unsat_inner [#"../Scratch/src/clause.rs" 149 4 149 59] (self : Scratch_Clause_Clause_Type.t_clause) (a : Seq.seq uint8)
     
    =
-    [#"../Scratch/src/clause.rs" 150 8 153 9] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model self) -> UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model self) i) a
+    [#"../Scratch/src/clause.rs" 150 8 153 9] forall i : int . 0 <= i /\ i < Seq.length (View0.view self) -> UnsatInner0.unsat_inner (Seq.get (View0.view self) i) a
   val unsat_inner [#"../Scratch/src/clause.rs" 149 4 149 59] (self : Scratch_Clause_Clause_Type.t_clause) (a : Seq.seq uint8) : bool
     ensures { result = unsat_inner self a }
     
@@ -1308,11 +1308,11 @@ module Scratch_Clause_Impl2_Unsat
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
   clone Scratch_Clause_Impl2_UnsatInner_Stub as UnsatInner0
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  clone Scratch_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Assignments_Impl0_View_Stub as View0
   predicate unsat [#"../Scratch/src/clause.rs" 157 4 157 46] (self : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments)
     
    =
-    [#"../Scratch/src/clause.rs" 158 20 158 40] UnsatInner0.unsat_inner self (ShallowModel0.shallow_model a)
+    [#"../Scratch/src/clause.rs" 158 20 158 40] UnsatInner0.unsat_inner self (View0.view a)
   val unsat [#"../Scratch/src/clause.rs" 157 4 157 46] (self : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments) : bool
     ensures { result = unsat self a }
     
@@ -1333,11 +1333,11 @@ module Scratch_Clause_Impl2_Sat
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
   clone Scratch_Clause_Impl2_SatInner_Stub as SatInner0
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  clone Scratch_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Assignments_Impl0_View_Stub as View0
   predicate sat [#"../Scratch/src/clause.rs" 170 4 170 44] (self : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments)
     
    =
-    [#"../Scratch/src/clause.rs" 172 12 172 30] SatInner0.sat_inner self (ShallowModel0.shallow_model a)
+    [#"../Scratch/src/clause.rs" 172 12 172 30] SatInner0.sat_inner self (View0.view a)
   val sat [#"../Scratch/src/clause.rs" 170 4 170 44] (self : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments) : bool
     ensures { result = sat self a }
     
@@ -1379,10 +1379,10 @@ module Scratch_Clause_Impl2_NoDuplicateIndexes
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   clone Scratch_Clause_NoDuplicateIndexesInner_Stub as NoDuplicateIndexesInner0
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   predicate no_duplicate_indexes [#"../Scratch/src/clause.rs" 187 4 187 45] (self : Scratch_Clause_Clause_Type.t_clause)
    =
-    [#"../Scratch/src/clause.rs" 188 20 188 53] NoDuplicateIndexesInner0.no_duplicate_indexes_inner (ShallowModel0.shallow_model self)
+    [#"../Scratch/src/clause.rs" 188 20 188 53] NoDuplicateIndexesInner0.no_duplicate_indexes_inner (View0.view self)
   val no_duplicate_indexes [#"../Scratch/src/clause.rs" 187 4 187 45] (self : Scratch_Clause_Clause_Type.t_clause) : bool
     ensures { result = no_duplicate_indexes self }
     
@@ -1401,10 +1401,10 @@ module Scratch_Clause_Impl2_SearchIdxInRange
   use seq.Seq
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   predicate search_idx_in_range [#"../Scratch/src/clause.rs" 192 4 192 44] (self : Scratch_Clause_Clause_Type.t_clause)
    =
-    [#"../Scratch/src/clause.rs" 193 20 193 68] 2 <= UIntSize.to_int (Scratch_Clause_Clause_Type.clause_search self) /\ UIntSize.to_int (Scratch_Clause_Clause_Type.clause_search self) <= Seq.length (ShallowModel0.shallow_model self)
+    [#"../Scratch/src/clause.rs" 193 20 193 68] 2 <= UIntSize.to_int (Scratch_Clause_Clause_Type.clause_search self) /\ UIntSize.to_int (Scratch_Clause_Clause_Type.clause_search self) <= Seq.length (View0.view self)
   val search_idx_in_range [#"../Scratch/src/clause.rs" 192 4 192 44] (self : Scratch_Clause_Clause_Type.t_clause) : bool
     ensures { result = search_idx_in_range self }
     
@@ -1424,10 +1424,10 @@ module Scratch_Clause_Impl2_Invariant
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   clone Scratch_Clause_InvariantInternal_Stub as InvariantInternal0
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   predicate invariant' [#"../Scratch/src/clause.rs" 197 4 197 42] (self : Scratch_Clause_Clause_Type.t_clause) (n : int)
    =
-    [#"../Scratch/src/clause.rs" 198 20 198 48] InvariantInternal0.invariant_internal (ShallowModel0.shallow_model self) n
+    [#"../Scratch/src/clause.rs" 198 20 198 48] InvariantInternal0.invariant_internal (View0.view self) n
   val invariant' [#"../Scratch/src/clause.rs" 197 4 197 42] (self : Scratch_Clause_Clause_Type.t_clause) (n : int) : bool
     ensures { result = invariant' self n }
     
@@ -1480,10 +1480,10 @@ module Scratch_Clause_Impl2_ClauseIsSeen
   clone Core_Num_Impl11_Max_Stub as Max0
   clone Scratch_Lit_IdxInLogic_Stub as IdxInLogic0
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel1
+  clone Scratch_Clause_Impl0_View_Stub as View1
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+  clone CreusotContracts_Std1_Vec_Impl0_View_Stub as View0 with
     type t = bool,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
@@ -1491,7 +1491,7 @@ module Scratch_Clause_Impl2_ClauseIsSeen
   predicate clause_is_seen [#"../Scratch/src/clause.rs" 202 4 202 56] (self : Scratch_Clause_Clause_Type.t_clause) (seen : Alloc_Vec_Vec_Type.t_vec bool (Alloc_Alloc_Global_Type.t_global))
     
    =
-    [#"../Scratch/src/clause.rs" 203 8 206 9] forall idx : int . 0 <= idx /\ idx < Seq.length (ShallowModel0.shallow_model seen) -> Seq.get (ShallowModel0.shallow_model seen) idx = IdxInLogic0.idx_in_logic idx (ShallowModel1.shallow_model self)
+    [#"../Scratch/src/clause.rs" 203 8 206 9] forall idx : int . 0 <= idx /\ idx < Seq.length (View0.view seen) -> Seq.get (View0.view seen) idx = IdxInLogic0.idx_in_logic idx (View1.view self)
   val clause_is_seen [#"../Scratch/src/clause.rs" 202 4 202 56] (self : Scratch_Clause_Clause_Type.t_clause) (seen : Alloc_Vec_Vec_Type.t_vec bool (Alloc_Alloc_Global_Type.t_global)) : bool
     ensures { result = clause_is_seen self seen }
     
@@ -1511,11 +1511,11 @@ module Scratch_Clause_Impl2_Equals
   use prelude.Int
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   predicate equals [#"../Scratch/src/clause.rs" 210 4 210 42] (self : Scratch_Clause_Clause_Type.t_clause) (o : Scratch_Clause_Clause_Type.t_clause)
     
    =
-    [#"../Scratch/src/clause.rs" 211 8 215 9] Seq.length (ShallowModel0.shallow_model self) = Seq.length (ShallowModel0.shallow_model o) /\ (forall j : int . 0 <= j /\ j < Seq.length (ShallowModel0.shallow_model self) -> Seq.get (ShallowModel0.shallow_model self) j = Seq.get (ShallowModel0.shallow_model o) j)
+    [#"../Scratch/src/clause.rs" 211 8 215 9] Seq.length (View0.view self) = Seq.length (View0.view o) /\ (forall j : int . 0 <= j /\ j < Seq.length (View0.view self) -> Seq.get (View0.view self) j = Seq.get (View0.view o) j)
   val equals [#"../Scratch/src/clause.rs" 210 4 210 42] (self : Scratch_Clause_Clause_Type.t_clause) (o : Scratch_Clause_Clause_Type.t_clause) : bool
     ensures { result = equals self o }
     
@@ -1539,12 +1539,12 @@ module Scratch_Formula_FormulaInvariant
   use prelude.Int
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   clone Scratch_Clause_Impl2_Invariant_Stub as Invariant0
   predicate formula_invariant [#"../Scratch/src/formula.rs" 25 0 25 55] (f : (Seq.seq (Scratch_Clause_Clause_Type.t_clause), int))
     
    =
-    [#"../Scratch/src/formula.rs" 26 4 29 5] forall i : int . 0 <= i /\ i < Seq.length (let (a, _) = f in a) -> Invariant0.invariant' (Seq.get (let (a, _) = f in a) i) (let (_, a) = f in a) /\ Seq.length (ShallowModel0.shallow_model (Seq.get (let (a, _) = f in a) i)) > 0
+    [#"../Scratch/src/formula.rs" 26 4 29 5] forall i : int . 0 <= i /\ i < Seq.length (let (a, _) = f in a) -> Invariant0.invariant' (Seq.get (let (a, _) = f in a) i) (let (_, a) = f in a) /\ Seq.length (View0.view (Seq.get (let (a, _) = f in a) i)) > 0
   val formula_invariant [#"../Scratch/src/formula.rs" 25 0 25 55] (f : (Seq.seq (Scratch_Clause_Clause_Type.t_clause), int)) : bool
     ensures { result = formula_invariant f }
     
@@ -1601,7 +1601,7 @@ module Scratch_Formula_Impl1_SatInner
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max_Stub as Max0
   clone Scratch_Clause_Impl2_SatInner_Stub as SatInner0
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+  clone CreusotContracts_Std1_Vec_Impl0_View_Stub as View0 with
     type t = Scratch_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
@@ -1610,7 +1610,7 @@ module Scratch_Formula_Impl1_SatInner
   predicate sat_inner [#"../Scratch/src/formula.rs" 107 4 107 57] (self : Scratch_Formula_Formula_Type.t_formula) (a : Seq.seq uint8)
     
    =
-    [#"../Scratch/src/formula.rs" 108 8 111 9] forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses self)) -> SatInner0.sat_inner (Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses self)) i) a
+    [#"../Scratch/src/formula.rs" 108 8 111 9] forall i : int . 0 <= i /\ i < Seq.length (View0.view (Scratch_Formula_Formula_Type.formula_clauses self)) -> SatInner0.sat_inner (Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses self)) i) a
   val sat_inner [#"../Scratch/src/formula.rs" 107 4 107 57] (self : Scratch_Formula_Formula_Type.t_formula) (a : Seq.seq uint8) : bool
     ensures { result = sat_inner self a }
     
@@ -1679,16 +1679,16 @@ module Scratch_Formula_Impl1_InvariantMirror
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max_Stub as Max0
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel1
+  clone Scratch_Clause_Impl0_View_Stub as View1
   clone Scratch_Clause_Impl2_Invariant_Stub as Invariant0
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+  clone CreusotContracts_Std1_Vec_Impl0_View_Stub as View0 with
     type t = Scratch_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
   use Scratch_Formula_Formula_Type as Scratch_Formula_Formula_Type
   predicate invariant_mirror [#"../Scratch/src/formula.rs" 76 4 76 37] (self : Scratch_Formula_Formula_Type.t_formula) =
-    [#"../Scratch/src/formula.rs" 78 12 82 45] (forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses self)) -> Invariant0.invariant' (Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses self)) i) (UIntSize.to_int (Scratch_Formula_Formula_Type.formula_num_vars self))) /\ (forall i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses self)) -> Seq.length (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses self)) i)) >= 1)
+    [#"../Scratch/src/formula.rs" 78 12 82 45] (forall i : int . 0 <= i /\ i < Seq.length (View0.view (Scratch_Formula_Formula_Type.formula_clauses self)) -> Invariant0.invariant' (Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses self)) i) (UIntSize.to_int (Scratch_Formula_Formula_Type.formula_num_vars self))) /\ (forall i : int . 0 <= i /\ i < Seq.length (View0.view (Scratch_Formula_Formula_Type.formula_clauses self)) -> Seq.length (View1.view (Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses self)) i)) >= 1)
   val invariant_mirror [#"../Scratch/src/formula.rs" 76 4 76 37] (self : Scratch_Formula_Formula_Type.t_formula) : bool
     ensures { result = invariant_mirror self }
     
@@ -1708,10 +1708,10 @@ module Scratch_Formula_Impl1_Invariant
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
   clone Scratch_Formula_FormulaInvariant_Stub as FormulaInvariant0
   use Scratch_Formula_Formula_Type as Scratch_Formula_Formula_Type
-  clone Scratch_Formula_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Formula_Impl0_View_Stub as View0
   clone Scratch_Formula_Impl1_InvariantMirror_Stub as InvariantMirror0
   predicate invariant' [#"../Scratch/src/formula.rs" 71 4 71 34] (self : Scratch_Formula_Formula_Type.t_formula) =
-    [#"../Scratch/src/formula.rs" 72 20 72 44] FormulaInvariant0.formula_invariant (ShallowModel0.shallow_model self)
+    [#"../Scratch/src/formula.rs" 72 20 72 44] FormulaInvariant0.formula_invariant (View0.view self)
   val invariant' [#"../Scratch/src/formula.rs" 71 4 71 34] (self : Scratch_Formula_Formula_Type.t_formula) : bool
     ensures { result = invariant' self }
     
@@ -1729,7 +1729,7 @@ module Scratch_Formula_Impl1_Invariant_Impl
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
+  clone CreusotContracts_Std1_Vec_Impl0_View as View3 with
     type t = Scratch_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
@@ -1738,34 +1738,34 @@ module Scratch_Formula_Impl1_Invariant_Impl
     predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
     predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel as ShallowModel2 with
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+  clone Scratch_Clause_Impl0_View as View2 with
+    function View0.view = View3.view,
     val Max0.mAX' = Max0.mAX'
   clone Scratch_Clause_Impl2_Invariant as Invariant0 with
-    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
+    function View0.view = View2.view,
     predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel1 with
+  clone CreusotContracts_Std1_Vec_Impl0_View as View1 with
     type t = Scratch_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
   clone Scratch_Formula_FormulaInvariant as FormulaInvariant0 with
     predicate Invariant0.invariant' = Invariant0.invariant',
-    function ShallowModel0.shallow_model = ShallowModel2.shallow_model
+    function View0.view = View2.view
   use Scratch_Formula_Formula_Type as Scratch_Formula_Formula_Type
-  clone Scratch_Formula_Impl0_ShallowModel as ShallowModel0 with
-    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+  clone Scratch_Formula_Impl0_View as View0 with
+    function View0.view = View1.view,
     val Max0.mAX' = Max0.mAX'
   clone Scratch_Formula_Impl1_InvariantMirror as InvariantMirror0 with
-    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    function View0.view = View1.view,
     predicate Invariant0.invariant' = Invariant0.invariant',
-    function ShallowModel1.shallow_model = ShallowModel2.shallow_model,
+    function View1.view = View2.view,
     val Max0.mAX' = Max0.mAX'
   let rec Snapshot predicate invariant' [#"../Scratch/src/formula.rs" 71 4 71 34] (self : Scratch_Formula_Formula_Type.t_formula)
     ensures { [#"../Scratch/src/formula.rs" 70 14 70 47] result = InvariantMirror0.invariant_mirror self }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
-    [#"../Scratch/src/formula.rs" 72 20 72 44] let a' = ShallowModel0.shallow_model self in FormulaInvariant0.formula_invariant a'
+    [#"../Scratch/src/formula.rs" 72 20 72 44] let a' = View0.view self in FormulaInvariant0.formula_invariant a'
 end
 module Scratch_Formula_Impl1_EventuallySatInner_Stub
   use seq.Seq
@@ -1847,11 +1847,11 @@ module Scratch_Formula_Impl1_EventuallySat
   use Scratch_Formula_Formula_Type as Scratch_Formula_Formula_Type
   clone Scratch_Formula_Impl1_EventuallySatInner_Stub as EventuallySatInner0
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  clone Scratch_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Assignments_Impl0_View_Stub as View0
   predicate eventually_sat [#"../Scratch/src/formula.rs" 102 4 102 51] (self : Scratch_Formula_Formula_Type.t_formula) (a : Scratch_Assignments_Assignments_Type.t_assignments)
     
    =
-    [#"../Scratch/src/formula.rs" 103 20 103 49] EventuallySatInner0.eventually_sat_inner self (ShallowModel0.shallow_model a)
+    [#"../Scratch/src/formula.rs" 103 20 103 49] EventuallySatInner0.eventually_sat_inner self (View0.view a)
   val eventually_sat [#"../Scratch/src/formula.rs" 102 4 102 51] (self : Scratch_Formula_Formula_Type.t_formula) (a : Scratch_Assignments_Assignments_Type.t_assignments) : bool
     ensures { result = eventually_sat self a }
     
@@ -1872,13 +1872,13 @@ module Scratch_Formula_Impl1_Sat
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
   clone Scratch_Formula_FormulaSatInner_Stub as FormulaSatInner0
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  clone Scratch_Assignments_Impl0_ShallowModel_Stub as ShallowModel1
+  clone Scratch_Assignments_Impl0_View_Stub as View1
   use Scratch_Formula_Formula_Type as Scratch_Formula_Formula_Type
-  clone Scratch_Formula_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Formula_Impl0_View_Stub as View0
   predicate sat [#"../Scratch/src/formula.rs" 115 4 115 44] (self : Scratch_Formula_Formula_Type.t_formula) (a : Scratch_Assignments_Assignments_Type.t_assignments)
     
    =
-    [#"../Scratch/src/formula.rs" 116 20 116 48] FormulaSatInner0.formula_sat_inner (ShallowModel0.shallow_model self) (ShallowModel1.shallow_model a)
+    [#"../Scratch/src/formula.rs" 116 20 116 48] FormulaSatInner0.formula_sat_inner (View0.view self) (View1.view a)
   val sat [#"../Scratch/src/formula.rs" 115 4 115 44] (self : Scratch_Formula_Formula_Type.t_formula) (a : Scratch_Assignments_Assignments_Type.t_assignments) : bool
     ensures { result = sat self a }
     
@@ -1908,7 +1908,7 @@ module Scratch_Formula_Impl1_UnsatInner
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max_Stub as Max0
   clone Scratch_Clause_Impl2_UnsatInner_Stub as UnsatInner0
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+  clone CreusotContracts_Std1_Vec_Impl0_View_Stub as View0 with
     type t = Scratch_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
@@ -1917,7 +1917,7 @@ module Scratch_Formula_Impl1_UnsatInner
   predicate unsat_inner [#"../Scratch/src/formula.rs" 120 4 120 55] (self : Scratch_Formula_Formula_Type.t_formula) (a : Seq.seq uint8)
     
    =
-    [#"../Scratch/src/formula.rs" 121 8 124 9] exists i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses self)) /\ UnsatInner0.unsat_inner (Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses self)) i) a
+    [#"../Scratch/src/formula.rs" 121 8 124 9] exists i : int . 0 <= i /\ i < Seq.length (View0.view (Scratch_Formula_Formula_Type.formula_clauses self)) /\ UnsatInner0.unsat_inner (Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses self)) i) a
   val unsat_inner [#"../Scratch/src/formula.rs" 120 4 120 55] (self : Scratch_Formula_Formula_Type.t_formula) (a : Seq.seq uint8) : bool
     ensures { result = unsat_inner self a }
     
@@ -1938,11 +1938,11 @@ module Scratch_Formula_Impl1_Unsat
   use Scratch_Formula_Formula_Type as Scratch_Formula_Formula_Type
   clone Scratch_Formula_Impl1_UnsatInner_Stub as UnsatInner0
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  clone Scratch_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Assignments_Impl0_View_Stub as View0
   predicate unsat [#"../Scratch/src/formula.rs" 128 4 128 46] (self : Scratch_Formula_Formula_Type.t_formula) (a : Scratch_Assignments_Assignments_Type.t_assignments)
     
    =
-    [#"../Scratch/src/formula.rs" 129 20 129 40] UnsatInner0.unsat_inner self (ShallowModel0.shallow_model a)
+    [#"../Scratch/src/formula.rs" 129 20 129 40] UnsatInner0.unsat_inner self (View0.view a)
   val unsat [#"../Scratch/src/formula.rs" 128 4 128 46] (self : Scratch_Formula_Formula_Type.t_formula) (a : Scratch_Assignments_Assignments_Type.t_assignments) : bool
     ensures { result = unsat self a }
     
@@ -1961,10 +1961,10 @@ module Scratch_Formula_Impl1_NotSatisfiable
   use Scratch_Formula_Formula_Type as Scratch_Formula_Formula_Type
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
   clone Scratch_Clause_Impl2_EquisatExtension_Stub as EquisatExtension0
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   predicate not_satisfiable [#"../Scratch/src/formula.rs" 133 4 133 40] (self : Scratch_Formula_Formula_Type.t_formula)
    =
-    [#"../Scratch/src/formula.rs" 134 8 134 82] exists c : Scratch_Clause_Clause_Type.t_clause . Seq.length (ShallowModel0.shallow_model c) = 0 /\ EquisatExtension0.equisat_extension c self
+    [#"../Scratch/src/formula.rs" 134 8 134 82] exists c : Scratch_Clause_Clause_Type.t_clause . Seq.length (View0.view c) = 0 /\ EquisatExtension0.equisat_extension c self
   val not_satisfiable [#"../Scratch/src/formula.rs" 133 4 133 40] (self : Scratch_Formula_Formula_Type.t_formula) : bool
     ensures { result = not_satisfiable self }
     
@@ -2013,24 +2013,24 @@ module Scratch_Lit_Impl4_Clone
   }
   
 end
-module Scratch_Lit_Impl0_ShallowModel_Stub
+module Scratch_Lit_Impl0_View_Stub
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
-  function shallow_model [#"../Scratch/src/lit.rs" 21 4 21 34] (self : Scratch_Lit_Lit_Type.t_lit) : Scratch_Lit_Lit_Type.t_lit
+  function view [#"../Scratch/src/lit.rs" 21 4 21 34] (self : Scratch_Lit_Lit_Type.t_lit) : Scratch_Lit_Lit_Type.t_lit
     
 end
-module Scratch_Lit_Impl0_ShallowModel_Interface
+module Scratch_Lit_Impl0_View_Interface
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
-  function shallow_model [#"../Scratch/src/lit.rs" 21 4 21 34] (self : Scratch_Lit_Lit_Type.t_lit) : Scratch_Lit_Lit_Type.t_lit
+  function view [#"../Scratch/src/lit.rs" 21 4 21 34] (self : Scratch_Lit_Lit_Type.t_lit) : Scratch_Lit_Lit_Type.t_lit
     
 end
-module Scratch_Lit_Impl0_ShallowModel
+module Scratch_Lit_Impl0_View
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
-  function shallow_model [#"../Scratch/src/lit.rs" 21 4 21 34] (self : Scratch_Lit_Lit_Type.t_lit) : Scratch_Lit_Lit_Type.t_lit
+  function view [#"../Scratch/src/lit.rs" 21 4 21 34] (self : Scratch_Lit_Lit_Type.t_lit) : Scratch_Lit_Lit_Type.t_lit
     
    =
     [#"../Scratch/src/lit.rs" 22 8 22 12] self
-  val shallow_model [#"../Scratch/src/lit.rs" 21 4 21 34] (self : Scratch_Lit_Lit_Type.t_lit) : Scratch_Lit_Lit_Type.t_lit
-    ensures { result = shallow_model self }
+  val view [#"../Scratch/src/lit.rs" 21 4 21 34] (self : Scratch_Lit_Lit_Type.t_lit) : Scratch_Lit_Lit_Type.t_lit
+    ensures { result = view self }
     
 end
 module Scratch_Lit_Impl1_DeepModel_Stub
@@ -2153,11 +2153,11 @@ module Scratch_Lit_Impl3_LitIdxIn
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   clone Scratch_Lit_Impl2_IndexLogic_Stub as IndexLogic0
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   predicate lit_idx_in [#"../Scratch/src/lit.rs" 93 4 93 46] (self : Scratch_Lit_Lit_Type.t_lit) (c : Scratch_Clause_Clause_Type.t_clause)
     
    =
-    [#"../Scratch/src/lit.rs" 94 8 97 9] exists i : int . 0 <= i /\ i < Seq.length (ShallowModel0.shallow_model c) /\ IndexLogic0.index_logic (Seq.get (ShallowModel0.shallow_model c) i) = IndexLogic0.index_logic self
+    [#"../Scratch/src/lit.rs" 94 8 97 9] exists i : int . 0 <= i /\ i < Seq.length (View0.view c) /\ IndexLogic0.index_logic (Seq.get (View0.view c) i) = IndexLogic0.index_logic self
   val lit_idx_in [#"../Scratch/src/lit.rs" 93 4 93 46] (self : Scratch_Lit_Lit_Type.t_lit) (c : Scratch_Clause_Clause_Type.t_clause) : bool
     ensures { result = lit_idx_in self c }
     
@@ -2178,11 +2178,11 @@ module Scratch_Lit_Impl3_Sat
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   clone Scratch_Lit_Impl3_SatInner_Stub as SatInner0
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  clone Scratch_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Assignments_Impl0_View_Stub as View0
   predicate sat [#"../Scratch/src/lit.rs" 131 4 131 44] (self : Scratch_Lit_Lit_Type.t_lit) (a : Scratch_Assignments_Assignments_Type.t_assignments)
     
    =
-    [#"../Scratch/src/lit.rs" 132 20 132 38] SatInner0.sat_inner self (ShallowModel0.shallow_model a)
+    [#"../Scratch/src/lit.rs" 132 20 132 38] SatInner0.sat_inner self (View0.view a)
   val sat [#"../Scratch/src/lit.rs" 131 4 131 44] (self : Scratch_Lit_Lit_Type.t_lit) (a : Scratch_Assignments_Assignments_Type.t_assignments) : bool
     ensures { result = sat self a }
     
@@ -2203,11 +2203,11 @@ module Scratch_Lit_Impl3_Unset
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   clone Scratch_Lit_Impl3_UnsetInner_Stub as UnsetInner0
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  clone Scratch_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Assignments_Impl0_View_Stub as View0
   predicate unset [#"../Scratch/src/lit.rs" 136 4 136 46] (self : Scratch_Lit_Lit_Type.t_lit) (a : Scratch_Assignments_Assignments_Type.t_assignments)
     
    =
-    [#"../Scratch/src/lit.rs" 137 20 137 40] UnsetInner0.unset_inner self (ShallowModel0.shallow_model a)
+    [#"../Scratch/src/lit.rs" 137 20 137 40] UnsetInner0.unset_inner self (View0.view a)
   val unset [#"../Scratch/src/lit.rs" 136 4 136 46] (self : Scratch_Lit_Lit_Type.t_lit) (a : Scratch_Assignments_Assignments_Type.t_assignments) : bool
     ensures { result = unset self a }
     
@@ -2228,11 +2228,11 @@ module Scratch_Lit_Impl3_Unsat
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
   clone Scratch_Lit_Impl3_UnsatInner_Stub as UnsatInner0
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  clone Scratch_Assignments_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Assignments_Impl0_View_Stub as View0
   predicate unsat [#"../Scratch/src/lit.rs" 141 4 141 46] (self : Scratch_Lit_Lit_Type.t_lit) (a : Scratch_Assignments_Assignments_Type.t_assignments)
     
    =
-    [#"../Scratch/src/lit.rs" 142 20 142 40] UnsatInner0.unsat_inner self (ShallowModel0.shallow_model a)
+    [#"../Scratch/src/lit.rs" 142 20 142 40] UnsatInner0.unsat_inner self (View0.view a)
   val unsat [#"../Scratch/src/lit.rs" 141 4 141 46] (self : Scratch_Lit_Lit_Type.t_lit) (a : Scratch_Assignments_Assignments_Type.t_assignments) : bool
     ensures { result = unsat self a }
     
@@ -2263,7 +2263,7 @@ module Scratch_Scratch_LemmaClausePermutedMaintainsSat_Stub
   clone CreusotContracts_Logic_Seq_Impl0_PermutationOf_Stub as PermutationOf0 with
     type t = Scratch_Lit_Lit_Type.t_lit
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   clone Scratch_Clause_Impl2_Sat_Stub as Sat0
   function lemma_clause_permuted_maintains_sat [#"../Scratch/src/scratch.rs" 26 0 26 69] (c : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments) : ()
     
@@ -2274,11 +2274,11 @@ module Scratch_Scratch_LemmaClausePermutedMaintainsSat_Interface
   clone CreusotContracts_Logic_Seq_Impl0_PermutationOf_Stub as PermutationOf0 with
     type t = Scratch_Lit_Lit_Type.t_lit
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   clone Scratch_Clause_Impl2_Sat_Stub as Sat0
   function lemma_clause_permuted_maintains_sat [#"../Scratch/src/scratch.rs" 26 0 26 69] (c : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments) : ()
     
-  axiom lemma_clause_permuted_maintains_sat_spec : forall c : Scratch_Clause_Clause_Type.t_clause, a : Scratch_Assignments_Assignments_Type.t_assignments . ([#"../Scratch/src/scratch.rs" 24 11 24 19] Sat0.sat c a) -> ([#"../Scratch/src/scratch.rs" 25 0 25 67] forall c2 : Scratch_Clause_Clause_Type.t_clause . PermutationOf0.permutation_of (ShallowModel0.shallow_model c2) (ShallowModel0.shallow_model c) -> Sat0.sat c2 a)
+  axiom lemma_clause_permuted_maintains_sat_spec : forall c : Scratch_Clause_Clause_Type.t_clause, a : Scratch_Assignments_Assignments_Type.t_assignments . ([#"../Scratch/src/scratch.rs" 24 11 24 19] Sat0.sat c a) -> ([#"../Scratch/src/scratch.rs" 25 0 25 67] forall c2 : Scratch_Clause_Clause_Type.t_clause . PermutationOf0.permutation_of (View0.view c2) (View0.view c) -> Sat0.sat c2 a)
 end
 module Scratch_Scratch_LemmaClausePermutedMaintainsSat
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
@@ -2286,7 +2286,7 @@ module Scratch_Scratch_LemmaClausePermutedMaintainsSat
   clone CreusotContracts_Logic_Seq_Impl0_PermutationOf_Stub as PermutationOf0 with
     type t = Scratch_Lit_Lit_Type.t_lit
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   clone Scratch_Clause_Impl2_Sat_Stub as Sat0
   function lemma_clause_permuted_maintains_sat [#"../Scratch/src/scratch.rs" 26 0 26 69] (c : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments) : ()
     
@@ -2296,7 +2296,7 @@ module Scratch_Scratch_LemmaClausePermutedMaintainsSat
     requires {[#"../Scratch/src/scratch.rs" 24 11 24 19] Sat0.sat c a}
     ensures { result = lemma_clause_permuted_maintains_sat c a }
     
-  axiom lemma_clause_permuted_maintains_sat_spec : forall c : Scratch_Clause_Clause_Type.t_clause, a : Scratch_Assignments_Assignments_Type.t_assignments . ([#"../Scratch/src/scratch.rs" 24 11 24 19] Sat0.sat c a) -> ([#"../Scratch/src/scratch.rs" 25 0 25 67] forall c2 : Scratch_Clause_Clause_Type.t_clause . PermutationOf0.permutation_of (ShallowModel0.shallow_model c2) (ShallowModel0.shallow_model c) -> Sat0.sat c2 a)
+  axiom lemma_clause_permuted_maintains_sat_spec : forall c : Scratch_Clause_Clause_Type.t_clause, a : Scratch_Assignments_Assignments_Type.t_assignments . ([#"../Scratch/src/scratch.rs" 24 11 24 19] Sat0.sat c a) -> ([#"../Scratch/src/scratch.rs" 25 0 25 67] forall c2 : Scratch_Clause_Clause_Type.t_clause . PermutationOf0.permutation_of (View0.view c2) (View0.view c) -> Sat0.sat c2 a)
 end
 module Scratch_Scratch_LemmaClausePermutedMaintainsSat_Impl
   use prelude.Int
@@ -2310,35 +2310,35 @@ module Scratch_Scratch_LemmaClausePermutedMaintainsSat_Impl
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
+  clone CreusotContracts_Std1_Vec_Impl0_View as View3 with
     type t = uint8,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
+  clone CreusotContracts_Std1_Vec_Impl0_View as View2 with
     type t = Scratch_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel as ShallowModel0 with
-    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
+  clone Scratch_Clause_Impl0_View as View0 with
+    function View0.view = View2.view,
     val Max0.mAX' = Max0.mAX'
   clone Scratch_Clause_Impl2_SatInner as SatInner0 with
-    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    function View0.view = View0.view,
     predicate SatInner0.sat_inner = SatInner1.sat_inner
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  clone Scratch_Assignments_Impl0_ShallowModel as ShallowModel1 with
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+  clone Scratch_Assignments_Impl0_View as View1 with
+    function View0.view = View3.view,
     val Max0.mAX' = Max0.mAX'
   clone CreusotContracts_Logic_Seq_Impl0_PermutationOf as PermutationOf0 with
     type t = Scratch_Lit_Lit_Type.t_lit
   clone Scratch_Clause_Impl2_Sat as Sat0 with
-    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    function View0.view = View1.view,
     predicate SatInner0.sat_inner = SatInner0.sat_inner
   let rec Snapshot function lemma_clause_permuted_maintains_sat [#"../Scratch/src/scratch.rs" 26 0 26 69] (c : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments) : ()
     requires {[#"../Scratch/src/scratch.rs" 24 11 24 19] Sat0.sat c a}
-    ensures { [#"../Scratch/src/scratch.rs" 25 0 25 67] forall c2 : Scratch_Clause_Clause_Type.t_clause . PermutationOf0.permutation_of (ShallowModel0.shallow_model c2) (ShallowModel0.shallow_model c) -> Sat0.sat c2 a }
+    ensures { [#"../Scratch/src/scratch.rs" 25 0 25 67] forall c2 : Scratch_Clause_Clause_Type.t_clause . PermutationOf0.permutation_of (View0.view c2) (View0.view c) -> Sat0.sat c2 a }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
     [#"../Scratch/src/scratch.rs" 23 0 23 8] ()
@@ -2349,7 +2349,7 @@ module Scratch_Scratch_LemmaClausePermutedMaintainsUnsat_Stub
   clone CreusotContracts_Logic_Seq_Impl0_PermutationOf_Stub as PermutationOf0 with
     type t = Scratch_Lit_Lit_Type.t_lit
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   clone Scratch_Clause_Impl2_Unsat_Stub as Unsat0
   function lemma_clause_permuted_maintains_unsat [#"../Scratch/src/scratch.rs" 31 0 31 71] (c : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments) : ()
     
@@ -2360,11 +2360,11 @@ module Scratch_Scratch_LemmaClausePermutedMaintainsUnsat_Interface
   clone CreusotContracts_Logic_Seq_Impl0_PermutationOf_Stub as PermutationOf0 with
     type t = Scratch_Lit_Lit_Type.t_lit
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   clone Scratch_Clause_Impl2_Unsat_Stub as Unsat0
   function lemma_clause_permuted_maintains_unsat [#"../Scratch/src/scratch.rs" 31 0 31 71] (c : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments) : ()
     
-  axiom lemma_clause_permuted_maintains_unsat_spec : forall c : Scratch_Clause_Clause_Type.t_clause, a : Scratch_Assignments_Assignments_Type.t_assignments . ([#"../Scratch/src/scratch.rs" 29 11 29 21] Unsat0.unsat c a) -> ([#"../Scratch/src/scratch.rs" 30 0 30 69] forall c2 : Scratch_Clause_Clause_Type.t_clause . PermutationOf0.permutation_of (ShallowModel0.shallow_model c2) (ShallowModel0.shallow_model c) -> Unsat0.unsat c2 a)
+  axiom lemma_clause_permuted_maintains_unsat_spec : forall c : Scratch_Clause_Clause_Type.t_clause, a : Scratch_Assignments_Assignments_Type.t_assignments . ([#"../Scratch/src/scratch.rs" 29 11 29 21] Unsat0.unsat c a) -> ([#"../Scratch/src/scratch.rs" 30 0 30 69] forall c2 : Scratch_Clause_Clause_Type.t_clause . PermutationOf0.permutation_of (View0.view c2) (View0.view c) -> Unsat0.unsat c2 a)
 end
 module Scratch_Scratch_LemmaClausePermutedMaintainsUnsat
   use Scratch_Lit_Lit_Type as Scratch_Lit_Lit_Type
@@ -2372,7 +2372,7 @@ module Scratch_Scratch_LemmaClausePermutedMaintainsUnsat
   clone CreusotContracts_Logic_Seq_Impl0_PermutationOf_Stub as PermutationOf0 with
     type t = Scratch_Lit_Lit_Type.t_lit
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel0
+  clone Scratch_Clause_Impl0_View_Stub as View0
   clone Scratch_Clause_Impl2_Unsat_Stub as Unsat0
   function lemma_clause_permuted_maintains_unsat [#"../Scratch/src/scratch.rs" 31 0 31 71] (c : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments) : ()
     
@@ -2382,7 +2382,7 @@ module Scratch_Scratch_LemmaClausePermutedMaintainsUnsat
     requires {[#"../Scratch/src/scratch.rs" 29 11 29 21] Unsat0.unsat c a}
     ensures { result = lemma_clause_permuted_maintains_unsat c a }
     
-  axiom lemma_clause_permuted_maintains_unsat_spec : forall c : Scratch_Clause_Clause_Type.t_clause, a : Scratch_Assignments_Assignments_Type.t_assignments . ([#"../Scratch/src/scratch.rs" 29 11 29 21] Unsat0.unsat c a) -> ([#"../Scratch/src/scratch.rs" 30 0 30 69] forall c2 : Scratch_Clause_Clause_Type.t_clause . PermutationOf0.permutation_of (ShallowModel0.shallow_model c2) (ShallowModel0.shallow_model c) -> Unsat0.unsat c2 a)
+  axiom lemma_clause_permuted_maintains_unsat_spec : forall c : Scratch_Clause_Clause_Type.t_clause, a : Scratch_Assignments_Assignments_Type.t_assignments . ([#"../Scratch/src/scratch.rs" 29 11 29 21] Unsat0.unsat c a) -> ([#"../Scratch/src/scratch.rs" 30 0 30 69] forall c2 : Scratch_Clause_Clause_Type.t_clause . PermutationOf0.permutation_of (View0.view c2) (View0.view c) -> Unsat0.unsat c2 a)
 end
 module Scratch_Scratch_LemmaClausePermutedMaintainsUnsat_Impl
   use prelude.Int
@@ -2396,35 +2396,35 @@ module Scratch_Scratch_LemmaClausePermutedMaintainsUnsat_Impl
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel3 with
+  clone CreusotContracts_Std1_Vec_Impl0_View as View3 with
     type t = uint8,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel2 with
+  clone CreusotContracts_Std1_Vec_Impl0_View as View2 with
     type t = Scratch_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel as ShallowModel0 with
-    function ShallowModel0.shallow_model = ShallowModel2.shallow_model,
+  clone Scratch_Clause_Impl0_View as View0 with
+    function View0.view = View2.view,
     val Max0.mAX' = Max0.mAX'
   clone Scratch_Clause_Impl2_UnsatInner as UnsatInner0 with
-    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    function View0.view = View0.view,
     predicate UnsatInner0.unsat_inner = UnsatInner1.unsat_inner
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  clone Scratch_Assignments_Impl0_ShallowModel as ShallowModel1 with
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+  clone Scratch_Assignments_Impl0_View as View1 with
+    function View0.view = View3.view,
     val Max0.mAX' = Max0.mAX'
   clone CreusotContracts_Logic_Seq_Impl0_PermutationOf as PermutationOf0 with
     type t = Scratch_Lit_Lit_Type.t_lit
   clone Scratch_Clause_Impl2_Unsat as Unsat0 with
-    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    function View0.view = View1.view,
     predicate UnsatInner0.unsat_inner = UnsatInner0.unsat_inner
   let rec Snapshot function lemma_clause_permuted_maintains_unsat [#"../Scratch/src/scratch.rs" 31 0 31 71] (c : Scratch_Clause_Clause_Type.t_clause) (a : Scratch_Assignments_Assignments_Type.t_assignments) : ()
     requires {[#"../Scratch/src/scratch.rs" 29 11 29 21] Unsat0.unsat c a}
-    ensures { [#"../Scratch/src/scratch.rs" 30 0 30 69] forall c2 : Scratch_Clause_Clause_Type.t_clause . PermutationOf0.permutation_of (ShallowModel0.shallow_model c2) (ShallowModel0.shallow_model c) -> Unsat0.unsat c2 a }
+    ensures { [#"../Scratch/src/scratch.rs" 30 0 30 69] forall c2 : Scratch_Clause_Clause_Type.t_clause . PermutationOf0.permutation_of (View0.view c2) (View0.view c) -> Unsat0.unsat c2 a }
     
    = [@vc:do_not_keep_trace] [@vc:sp]
     [#"../Scratch/src/scratch.rs" 28 0 28 8] ()
@@ -2448,80 +2448,80 @@ module CreusotContracts_Resolve_Impl1_Resolve
     ensures { result = resolve self }
     
 end
-module CreusotContracts_Model_ShallowModel_ShallowModelTy_Type
+module CreusotContracts_Model_View_ViewTy_Type
   type self
-  type shallowModelTy
+  type ViewTy
 end
-module CreusotContracts_Model_ShallowModel_ShallowModel_Stub
+module CreusotContracts_Model_View_View_Stub
   type self
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+  clone CreusotContracts_Model_View_ViewTy_Type as ViewTy0 with
     type self = self
-  function shallow_model (self : self) : ShallowModelTy0.shallowModelTy
+  function view (self : self) : ViewTy0.ViewTy
 end
-module CreusotContracts_Model_ShallowModel_ShallowModel_Interface
+module CreusotContracts_Model_View_View_Interface
   type self
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+  clone CreusotContracts_Model_View_ViewTy_Type as ViewTy0 with
     type self = self
-  function shallow_model (self : self) : ShallowModelTy0.shallowModelTy
+  function view (self : self) : ViewTy0.ViewTy
 end
-module CreusotContracts_Model_ShallowModel_ShallowModel
+module CreusotContracts_Model_View_View
   type self
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+  clone CreusotContracts_Model_View_ViewTy_Type as ViewTy0 with
     type self = self
-  function shallow_model (self : self) : ShallowModelTy0.shallowModelTy
-  val shallow_model (self : self) : ShallowModelTy0.shallowModelTy
-    ensures { result = shallow_model self }
+  function view (self : self) : ViewTy0.ViewTy
+  val view (self : self) : ViewTy0.ViewTy
+    ensures { result = view self }
     
 end
-module CreusotContracts_Model_Impl3_ShallowModel_Stub
+module CreusotContracts_Model_Impl3_View_Stub
   type t
   use prelude.Borrow
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+  clone CreusotContracts_Model_View_ViewTy_Type as ViewTy0 with
     type self = t
-  function shallow_model (self : borrowed t) : ShallowModelTy0.shallowModelTy
+  function view (self : borrowed t) : ViewTy0.ViewTy
 end
-module CreusotContracts_Model_Impl3_ShallowModel_Interface
+module CreusotContracts_Model_Impl3_View_Interface
   type t
   use prelude.Borrow
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+  clone CreusotContracts_Model_View_ViewTy_Type as ViewTy0 with
     type self = t
-  function shallow_model (self : borrowed t) : ShallowModelTy0.shallowModelTy
+  function view (self : borrowed t) : ViewTy0.ViewTy
 end
-module CreusotContracts_Model_Impl3_ShallowModel
+module CreusotContracts_Model_Impl3_View
   type t
   use prelude.Borrow
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+  clone CreusotContracts_Model_View_ViewTy_Type as ViewTy0 with
     type self = t
-  clone CreusotContracts_Model_ShallowModel_ShallowModel_Stub as ShallowModel0 with
+  clone CreusotContracts_Model_View_View_Stub as View0 with
     type self = t,
-    type ShallowModelTy0.shallowModelTy = ShallowModelTy0.shallowModelTy
-  function shallow_model (self : borrowed t) : ShallowModelTy0.shallowModelTy =
-    ShallowModel0.shallow_model ( * self)
-  val shallow_model (self : borrowed t) : ShallowModelTy0.shallowModelTy
-    ensures { result = shallow_model self }
+    type ViewTy0.ViewTy = ViewTy0.ViewTy
+  function view (self : borrowed t) : ViewTy0.ViewTy =
+    View0.view ( * self)
+  val view (self : borrowed t) : ViewTy0.ViewTy
+    ensures { result = view self }
     
 end
 module CreusotContracts_Std1_Slice_SliceIndex_InBounds_Stub
   type self
   type t
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+  clone CreusotContracts_Model_View_ViewTy_Type as ViewTy0 with
     type self = t
-  predicate in_bounds (self : self) (seq : ShallowModelTy0.shallowModelTy)
+  predicate in_bounds (self : self) (seq : ViewTy0.ViewTy)
 end
 module CreusotContracts_Std1_Slice_SliceIndex_InBounds_Interface
   type self
   type t
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+  clone CreusotContracts_Model_View_ViewTy_Type as ViewTy0 with
     type self = t
-  predicate in_bounds (self : self) (seq : ShallowModelTy0.shallowModelTy)
+  predicate in_bounds (self : self) (seq : ViewTy0.ViewTy)
 end
 module CreusotContracts_Std1_Slice_SliceIndex_InBounds
   type self
   type t
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+  clone CreusotContracts_Model_View_ViewTy_Type as ViewTy0 with
     type self = t
-  predicate in_bounds (self : self) (seq : ShallowModelTy0.shallowModelTy)
-  val in_bounds (self : self) (seq : ShallowModelTy0.shallowModelTy) : bool
+  predicate in_bounds (self : self) (seq : ViewTy0.ViewTy)
+  val in_bounds (self : self) (seq : ViewTy0.ViewTy) : bool
     ensures { result = in_bounds self seq }
     
 end
@@ -2536,9 +2536,9 @@ module CreusotContracts_Std1_Slice_SliceIndex_HasValue_Stub
   clone Core_Slice_Index_SliceIndex_Output_Type as Output0 with
     type self = self,
     type t = t
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+  clone CreusotContracts_Model_View_ViewTy_Type as ViewTy0 with
     type self = t
-  predicate has_value (self : self) (seq : ShallowModelTy0.shallowModelTy) (out : Output0.output)
+  predicate has_value (self : self) (seq : ViewTy0.ViewTy) (out : Output0.output)
 end
 module CreusotContracts_Std1_Slice_SliceIndex_HasValue_Interface
   type self
@@ -2546,9 +2546,9 @@ module CreusotContracts_Std1_Slice_SliceIndex_HasValue_Interface
   clone Core_Slice_Index_SliceIndex_Output_Type as Output0 with
     type self = self,
     type t = t
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+  clone CreusotContracts_Model_View_ViewTy_Type as ViewTy0 with
     type self = t
-  predicate has_value (self : self) (seq : ShallowModelTy0.shallowModelTy) (out : Output0.output)
+  predicate has_value (self : self) (seq : ViewTy0.ViewTy) (out : Output0.output)
 end
 module CreusotContracts_Std1_Slice_SliceIndex_HasValue
   type self
@@ -2556,37 +2556,37 @@ module CreusotContracts_Std1_Slice_SliceIndex_HasValue
   clone Core_Slice_Index_SliceIndex_Output_Type as Output0 with
     type self = self,
     type t = t
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+  clone CreusotContracts_Model_View_ViewTy_Type as ViewTy0 with
     type self = t
-  predicate has_value (self : self) (seq : ShallowModelTy0.shallowModelTy) (out : Output0.output)
-  val has_value (self : self) (seq : ShallowModelTy0.shallowModelTy) (out : Output0.output) : bool
+  predicate has_value (self : self) (seq : ViewTy0.ViewTy) (out : Output0.output)
+  val has_value (self : self) (seq : ViewTy0.ViewTy) (out : Output0.output) : bool
     ensures { result = has_value self seq out }
     
 end
 module CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere_Stub
   type self
   type t
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+  clone CreusotContracts_Model_View_ViewTy_Type as ViewTy0 with
     type self = t
-  predicate resolve_elswhere (self : self) (old' : ShallowModelTy0.shallowModelTy) (fin : ShallowModelTy0.shallowModelTy)
+  predicate resolve_elswhere (self : self) (old' : ViewTy0.ViewTy) (fin : ViewTy0.ViewTy)
     
 end
 module CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere_Interface
   type self
   type t
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+  clone CreusotContracts_Model_View_ViewTy_Type as ViewTy0 with
     type self = t
-  predicate resolve_elswhere (self : self) (old' : ShallowModelTy0.shallowModelTy) (fin : ShallowModelTy0.shallowModelTy)
+  predicate resolve_elswhere (self : self) (old' : ViewTy0.ViewTy) (fin : ViewTy0.ViewTy)
     
 end
 module CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere
   type self
   type t
-  clone CreusotContracts_Model_ShallowModel_ShallowModelTy_Type as ShallowModelTy0 with
+  clone CreusotContracts_Model_View_ViewTy_Type as ViewTy0 with
     type self = t
-  predicate resolve_elswhere (self : self) (old' : ShallowModelTy0.shallowModelTy) (fin : ShallowModelTy0.shallowModelTy)
+  predicate resolve_elswhere (self : self) (old' : ViewTy0.ViewTy) (fin : ViewTy0.ViewTy)
     
-  val resolve_elswhere (self : self) (old' : ShallowModelTy0.shallowModelTy) (fin : ShallowModelTy0.shallowModelTy) : bool
+  val resolve_elswhere (self : self) (old' : ViewTy0.ViewTy) (fin : ViewTy0.ViewTy) : bool
     ensures { result = resolve_elswhere self old' fin }
     
 end
@@ -2606,8 +2606,8 @@ module Alloc_Vec_Impl14_IndexMut_Interface
   clone CreusotContracts_Std1_Slice_SliceIndex_ResolveElswhere_Stub as ResolveElswhere0 with
     type self = i,
     type t = slice t,
-    type ShallowModelTy0.shallowModelTy = Seq.seq t
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel1 with
+    type ViewTy0.ViewTy = Seq.seq t
+  clone CreusotContracts_Std1_Vec_Impl0_View_Stub as View1 with
     type t = t,
     type a = a,
     val Max0.mAX' = Max0.mAX',
@@ -2615,54 +2615,54 @@ module Alloc_Vec_Impl14_IndexMut_Interface
   clone CreusotContracts_Std1_Slice_SliceIndex_HasValue_Stub as HasValue0 with
     type self = i,
     type t = slice t,
-    type ShallowModelTy0.shallowModelTy = Seq.seq t,
+    type ViewTy0.ViewTy = Seq.seq t,
     type Output0.output = Output0.output
   clone CreusotContracts_Std1_Slice_SliceIndex_InBounds_Stub as InBounds0 with
     type self = i,
     type t = slice t,
-    type ShallowModelTy0.shallowModelTy = Seq.seq t
-  clone CreusotContracts_Model_Impl3_ShallowModel_Stub as ShallowModel0 with
+    type ViewTy0.ViewTy = Seq.seq t
+  clone CreusotContracts_Model_Impl3_View_Stub as View0 with
     type t = Alloc_Vec_Vec_Type.t_vec t a,
-    type ShallowModelTy0.shallowModelTy = Seq.seq t
+    type ViewTy0.ViewTy = Seq.seq t
   val index_mut (self : borrowed (Alloc_Vec_Vec_Type.t_vec t a)) (index : i) : borrowed Output0.output
-    requires {InBounds0.in_bounds index (ShallowModel0.shallow_model self)}
-    ensures { HasValue0.has_value index (ShallowModel0.shallow_model self) ( * result) }
-    ensures { HasValue0.has_value index (ShallowModel1.shallow_model ( ^ self)) ( ^ result) }
-    ensures { ResolveElswhere0.resolve_elswhere index (ShallowModel0.shallow_model self) (ShallowModel1.shallow_model ( ^ self)) }
-    ensures { Seq.length (ShallowModel1.shallow_model ( ^ self)) = Seq.length (ShallowModel0.shallow_model self) }
+    requires {InBounds0.in_bounds index (View0.view self)}
+    ensures { HasValue0.has_value index (View0.view self) ( * result) }
+    ensures { HasValue0.has_value index (View1.view ( ^ self)) ( ^ result) }
+    ensures { ResolveElswhere0.resolve_elswhere index (View0.view self) (View1.view ( ^ self)) }
+    ensures { Seq.length (View1.view ( ^ self)) = Seq.length (View0.view self) }
     
 end
-module CreusotContracts_Std1_Slice_Impl0_ShallowModel_Stub
+module CreusotContracts_Std1_Slice_Impl0_View_Stub
   type t
   use seq.Seq
   use prelude.UIntSize
   use prelude.Int
   use prelude.Slice
   clone Core_Num_Impl11_Max_Stub as Max0
-  function shallow_model (self : slice t) : Seq.seq t
+  function view (self : slice t) : Seq.seq t
 end
-module CreusotContracts_Std1_Slice_Impl0_ShallowModel_Interface
+module CreusotContracts_Std1_Slice_Impl0_View_Interface
   type t
   use seq.Seq
   use prelude.UIntSize
   use prelude.Int
   use prelude.Slice
   clone Core_Num_Impl11_Max_Stub as Max0
-  function shallow_model (self : slice t) : Seq.seq t
-  axiom shallow_model_spec : forall self : slice t . shallow_model self = Slice.id self && Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
+  function view (self : slice t) : Seq.seq t
+  axiom view_spec : forall self : slice t . view self = Slice.id self && Seq.length (view self) <= UIntSize.to_int Max0.mAX'
 end
-module CreusotContracts_Std1_Slice_Impl0_ShallowModel
+module CreusotContracts_Std1_Slice_Impl0_View
   type t
   use seq.Seq
   use prelude.UIntSize
   use prelude.Int
   use prelude.Slice
   clone Core_Num_Impl11_Max_Stub as Max0
-  function shallow_model (self : slice t) : Seq.seq t
-  val shallow_model (self : slice t) : Seq.seq t
-    ensures { result = shallow_model self }
+  function view (self : slice t) : Seq.seq t
+  val view (self : slice t) : Seq.seq t
+    ensures { result = view self }
     
-  axiom shallow_model_spec : forall self : slice t . shallow_model self = Slice.id self && Seq.length (shallow_model self) <= UIntSize.to_int Max0.mAX'
+  axiom view_spec : forall self : slice t . view self = Slice.id self && Seq.length (view self) <= UIntSize.to_int Max0.mAX'
 end
 module Alloc_Vec_Impl10_DerefMut_Interface
   type t
@@ -2673,24 +2673,24 @@ module Alloc_Vec_Impl10_DerefMut_Interface
   clone Core_Num_Impl11_Max_Stub as Max0
   use seq.Seq
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel3 with
+  clone CreusotContracts_Std1_Vec_Impl0_View_Stub as View3 with
     type t = t,
     type a = a,
     val Max0.mAX' = Max0.mAX',
     axiom .
-  clone CreusotContracts_Std1_Slice_Impl0_ShallowModel_Stub as ShallowModel2 with
+  clone CreusotContracts_Std1_Slice_Impl0_View_Stub as View2 with
     type t = t,
     val Max0.mAX' = Max0.mAX',
     axiom .
-  clone CreusotContracts_Model_Impl3_ShallowModel_Stub as ShallowModel1 with
+  clone CreusotContracts_Model_Impl3_View_Stub as View1 with
     type t = Alloc_Vec_Vec_Type.t_vec t a,
-    type ShallowModelTy0.shallowModelTy = Seq.seq t
-  clone CreusotContracts_Model_Impl3_ShallowModel_Stub as ShallowModel0 with
+    type ViewTy0.ViewTy = Seq.seq t
+  clone CreusotContracts_Model_Impl3_View_Stub as View0 with
     type t = slice t,
-    type ShallowModelTy0.shallowModelTy = Seq.seq t
+    type ViewTy0.ViewTy = Seq.seq t
   val deref_mut (self : borrowed (Alloc_Vec_Vec_Type.t_vec t a)) : borrowed (slice t)
-    ensures { ShallowModel0.shallow_model result = ShallowModel1.shallow_model self }
-    ensures { ShallowModel2.shallow_model ( ^ result) = ShallowModel3.shallow_model ( ^ self) }
+    ensures { View0.view result = View1.view self }
+    ensures { View2.view ( ^ result) = View3.view ( ^ self) }
     
 end
 module Core_Slice_Impl0_Swap_Interface
@@ -2703,17 +2703,17 @@ module Core_Slice_Impl0_Swap_Interface
   use prelude.Slice
   clone Core_Num_Impl11_Max_Stub as Max0
   use seq.Seq
-  clone CreusotContracts_Std1_Slice_Impl0_ShallowModel_Stub as ShallowModel1 with
+  clone CreusotContracts_Std1_Slice_Impl0_View_Stub as View1 with
     type t = t,
     val Max0.mAX' = Max0.mAX',
     axiom .
-  clone CreusotContracts_Model_Impl3_ShallowModel_Stub as ShallowModel0 with
+  clone CreusotContracts_Model_Impl3_View_Stub as View0 with
     type t = slice t,
-    type ShallowModelTy0.shallowModelTy = Seq.seq t
+    type ViewTy0.ViewTy = Seq.seq t
   val swap (self : borrowed (slice t)) (a : usize) (b : usize) : ()
-    requires {UIntSize.to_int a < Seq.length (ShallowModel0.shallow_model self)}
-    requires {UIntSize.to_int b < Seq.length (ShallowModel0.shallow_model self)}
-    ensures { Permut.exchange (ShallowModel1.shallow_model ( ^ self)) (ShallowModel0.shallow_model self) (UIntSize.to_int a) (UIntSize.to_int b) }
+    requires {UIntSize.to_int a < Seq.length (View0.view self)}
+    requires {UIntSize.to_int b < Seq.length (View0.view self)}
+    ensures { Permut.exchange (View1.view ( ^ self)) (View0.view self) (UIntSize.to_int a) (UIntSize.to_int b) }
     
 end
 module CreusotContracts_Std1_Slice_Impl5_InBounds_Stub
@@ -2807,9 +2807,9 @@ module Scratch_Scratch_Swap_Interface
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
   clone Scratch_Formula_Impl1_Equisat_Stub as Equisat0
   clone Scratch_Lit_Impl3_SatInner_Stub as SatInner0
-  clone Scratch_Assignments_Impl0_ShallowModel_Stub as ShallowModel2
-  clone Scratch_Clause_Impl0_ShallowModel_Stub as ShallowModel1
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel_Stub as ShallowModel0 with
+  clone Scratch_Assignments_Impl0_View_Stub as View2
+  clone Scratch_Clause_Impl0_View_Stub as View1
+  clone CreusotContracts_Std1_Vec_Impl0_View_Stub as View0 with
     type t = Scratch_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
@@ -2819,15 +2819,15 @@ module Scratch_Scratch_Swap_Interface
     axiom .
   val swap [#"../Scratch/src/scratch.rs" 43 0 43 83] (f : borrowed (Scratch_Formula_Formula_Type.t_formula)) (cref : usize) (j : usize) (k : usize) (assignments : Scratch_Assignments_Assignments_Type.t_assignments) : ()
     requires {[#"../Scratch/src/scratch.rs" 33 0 33 33] Invariant0.invariant' ( * f)}
-    requires {[#"../Scratch/src/scratch.rs" 34 11 34 40] Seq.length (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) >= 2}
-    requires {[#"../Scratch/src/scratch.rs" 35 11 35 35] UIntSize.to_int cref < Seq.length (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( * f)))}
-    requires {[#"../Scratch/src/scratch.rs" 36 11 36 40] Seq.length (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) > UIntSize.to_int j}
-    requires {[#"../Scratch/src/scratch.rs" 37 11 37 40] Seq.length (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) > UIntSize.to_int k}
-    requires {[#"../Scratch/src/scratch.rs" 38 0 38 59] not SatInner0.sat_inner (Seq.get (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) 0) (ShallowModel2.shallow_model assignments)}
+    requires {[#"../Scratch/src/scratch.rs" 34 11 34 40] Seq.length (View1.view (Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) >= 2}
+    requires {[#"../Scratch/src/scratch.rs" 35 11 35 35] UIntSize.to_int cref < Seq.length (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( * f)))}
+    requires {[#"../Scratch/src/scratch.rs" 36 11 36 40] Seq.length (View1.view (Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) > UIntSize.to_int j}
+    requires {[#"../Scratch/src/scratch.rs" 37 11 37 40] Seq.length (View1.view (Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) > UIntSize.to_int k}
+    requires {[#"../Scratch/src/scratch.rs" 38 0 38 59] not SatInner0.sat_inner (Seq.get (View1.view (Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) 0) (View2.view assignments)}
     ensures { [#"../Scratch/src/scratch.rs" 33 0 33 33] Invariant0.invariant' ( ^ f) }
-    ensures { [#"../Scratch/src/scratch.rs" 39 0 39 72] Permut.exchange (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( ^ f))) (UIntSize.to_int cref))) (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) (UIntSize.to_int j) (UIntSize.to_int k) }
+    ensures { [#"../Scratch/src/scratch.rs" 39 0 39 72] Permut.exchange (View1.view (Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( ^ f))) (UIntSize.to_int cref))) (View1.view (Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) (UIntSize.to_int j) (UIntSize.to_int k) }
     ensures { [#"../Scratch/src/scratch.rs" 40 10 40 39] UIntSize.to_int (Scratch_Formula_Formula_Type.formula_num_vars ( * f)) = UIntSize.to_int (Scratch_Formula_Formula_Type.formula_num_vars ( ^ f)) }
-    ensures { [#"../Scratch/src/scratch.rs" 41 10 41 49] Seq.length (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( * f))) = Seq.length (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( ^ f))) }
+    ensures { [#"../Scratch/src/scratch.rs" 41 10 41 49] Seq.length (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( * f))) = Seq.length (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( ^ f))) }
     ensures { [#"../Scratch/src/scratch.rs" 42 10 42 23] Equisat0.equisat ( * f) ( ^ f) }
     
 end
@@ -2855,93 +2855,93 @@ module Scratch_Scratch_Swap
   use Alloc_Vec_Vec_Type as Alloc_Vec_Vec_Type
   clone Core_Num_Impl11_Max as Max0
   use Alloc_Alloc_Global_Type as Alloc_Alloc_Global_Type
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel4 with
+  clone CreusotContracts_Std1_Vec_Impl0_View as View4 with
     type t = Scratch_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
   use Scratch_Clause_Clause_Type as Scratch_Clause_Clause_Type
-  clone Scratch_Clause_Impl0_ShallowModel as ShallowModel1 with
-    function ShallowModel0.shallow_model = ShallowModel4.shallow_model,
+  clone Scratch_Clause_Impl0_View as View1 with
+    function View0.view = View4.view,
     val Max0.mAX' = Max0.mAX'
   clone Scratch_Clause_Impl2_SatInner as SatInner2 with
-    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    function View0.view = View1.view,
     predicate SatInner0.sat_inner = SatInner0.sat_inner
   clone Scratch_Logic_Unset as Unset0
   clone Scratch_Clause_InvariantInternal as InvariantInternal0 with
     predicate VarsInRangeInner0.vars_in_range_inner = VarsInRangeInner0.vars_in_range_inner,
     predicate NoDuplicateIndexesInner0.no_duplicate_indexes_inner = NoDuplicateIndexesInner0.no_duplicate_indexes_inner
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel0 with
+  clone CreusotContracts_Std1_Vec_Impl0_View as View0 with
     type t = Scratch_Clause_Clause_Type.t_clause,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
   use Scratch_Formula_Formula_Type as Scratch_Formula_Formula_Type
   clone Scratch_Formula_Impl1_SatInner as SatInner1 with
-    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    function View0.view = View0.view,
     predicate SatInner0.sat_inner = SatInner2.sat_inner,
     val Max0.mAX' = Max0.mAX'
   clone Scratch_Assignments_CompleteInner as CompleteInner0 with
     predicate Unset0.unset = Unset0.unset
   clone Scratch_Clause_Impl2_Invariant as Invariant1 with
-    function ShallowModel0.shallow_model = ShallowModel1.shallow_model,
+    function View0.view = View1.view,
     predicate InvariantInternal0.invariant_internal = InvariantInternal0.invariant_internal
   use seq.Seq
-  clone CreusotContracts_Std1_Slice_Impl0_ShallowModel as ShallowModel9 with
+  clone CreusotContracts_Std1_Slice_Impl0_View as View9 with
     type t = Scratch_Lit_Lit_Type.t_lit,
     val Max0.mAX' = Max0.mAX',
     axiom .
-  clone CreusotContracts_Model_Impl3_ShallowModel as ShallowModel8 with
+  clone CreusotContracts_Model_Impl3_View as View8 with
     type t = Alloc_Vec_Vec_Type.t_vec (Scratch_Lit_Lit_Type.t_lit) (Alloc_Alloc_Global_Type.t_global),
-    type ShallowModelTy0.shallowModelTy = Seq.seq (Scratch_Lit_Lit_Type.t_lit),
-    function ShallowModel0.shallow_model = ShallowModel4.shallow_model
-  clone CreusotContracts_Model_Impl3_ShallowModel as ShallowModel7 with
+    type ViewTy0.ViewTy = Seq.seq (Scratch_Lit_Lit_Type.t_lit),
+    function View0.view = View4.view
+  clone CreusotContracts_Model_Impl3_View as View7 with
     type t = slice (Scratch_Lit_Lit_Type.t_lit),
-    type ShallowModelTy0.shallowModelTy = Seq.seq (Scratch_Lit_Lit_Type.t_lit),
-    function ShallowModel0.shallow_model = ShallowModel9.shallow_model
+    type ViewTy0.ViewTy = Seq.seq (Scratch_Lit_Lit_Type.t_lit),
+    function View0.view = View9.view
   clone CreusotContracts_Std1_Slice_Impl5_ResolveElswhere as ResolveElswhere0 with
     type t = Scratch_Clause_Clause_Type.t_clause
   clone CreusotContracts_Std1_Slice_Impl5_HasValue as HasValue0 with
     type t = Scratch_Clause_Clause_Type.t_clause
   clone CreusotContracts_Std1_Slice_Impl5_InBounds as InBounds0 with
     type t = Scratch_Clause_Clause_Type.t_clause
-  clone CreusotContracts_Model_Impl3_ShallowModel as ShallowModel6 with
+  clone CreusotContracts_Model_Impl3_View as View6 with
     type t = Alloc_Vec_Vec_Type.t_vec (Scratch_Clause_Clause_Type.t_clause) (Alloc_Alloc_Global_Type.t_global),
-    type ShallowModelTy0.shallowModelTy = Seq.seq (Scratch_Clause_Clause_Type.t_clause),
-    function ShallowModel0.shallow_model = ShallowModel0.shallow_model
+    type ViewTy0.ViewTy = Seq.seq (Scratch_Clause_Clause_Type.t_clause),
+    function View0.view = View0.view
   clone Scratch_Formula_Impl1_EventuallySatComplete as EventuallySatComplete0 with
     predicate CompleteInner0.complete_inner = CompleteInner0.complete_inner,
     predicate SatInner0.sat_inner = SatInner1.sat_inner
-  clone CreusotContracts_Std1_Vec_Impl0_ShallowModel as ShallowModel5 with
+  clone CreusotContracts_Std1_Vec_Impl0_View as View5 with
     type t = uint8,
     type a = Alloc_Alloc_Global_Type.t_global,
     val Max0.mAX' = Max0.mAX',
     axiom .
   clone Scratch_Formula_FormulaInvariant as FormulaInvariant0 with
     predicate Invariant0.invariant' = Invariant1.invariant',
-    function ShallowModel0.shallow_model = ShallowModel1.shallow_model
-  clone Scratch_Formula_Impl0_ShallowModel as ShallowModel3 with
-    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    function View0.view = View1.view
+  clone Scratch_Formula_Impl0_View as View3 with
+    function View0.view = View0.view,
     val Max0.mAX' = Max0.mAX'
   clone Scratch_Formula_Impl1_InvariantMirror as InvariantMirror0 with
-    function ShallowModel0.shallow_model = ShallowModel0.shallow_model,
+    function View0.view = View0.view,
     predicate Invariant0.invariant' = Invariant1.invariant',
-    function ShallowModel1.shallow_model = ShallowModel1.shallow_model,
+    function View1.view = View1.view,
     val Max0.mAX' = Max0.mAX'
   clone Core_Slice_Impl0_Swap_Interface as Swap0 with
     type t = Scratch_Lit_Lit_Type.t_lit,
-    function ShallowModel0.shallow_model = ShallowModel7.shallow_model,
-    function ShallowModel1.shallow_model = ShallowModel9.shallow_model,
+    function View0.view = View7.view,
+    function View1.view = View9.view,
     val Max0.mAX' = Max0.mAX'
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve2 with
     type t = slice (Scratch_Lit_Lit_Type.t_lit)
   clone Alloc_Vec_Impl10_DerefMut_Interface as DerefMut0 with
     type t = Scratch_Lit_Lit_Type.t_lit,
     type a = Alloc_Alloc_Global_Type.t_global,
-    function ShallowModel0.shallow_model = ShallowModel7.shallow_model,
-    function ShallowModel1.shallow_model = ShallowModel8.shallow_model,
-    function ShallowModel2.shallow_model = ShallowModel9.shallow_model,
-    function ShallowModel3.shallow_model = ShallowModel4.shallow_model,
+    function View0.view = View7.view,
+    function View1.view = View8.view,
+    function View2.view = View9.view,
+    function View3.view = View4.view,
     val Max0.mAX' = Max0.mAX'
   clone CreusotContracts_Resolve_Impl1_Resolve as Resolve1 with
     type t = Scratch_Clause_Clause_Type.t_clause
@@ -2949,10 +2949,10 @@ module Scratch_Scratch_Swap
     type t = Scratch_Clause_Clause_Type.t_clause,
     type i = usize,
     type a = Alloc_Alloc_Global_Type.t_global,
-    function ShallowModel0.shallow_model = ShallowModel6.shallow_model,
+    function View0.view = View6.view,
     predicate InBounds0.in_bounds = InBounds0.in_bounds,
     predicate HasValue0.has_value = HasValue0.has_value,
-    function ShallowModel1.shallow_model = ShallowModel0.shallow_model,
+    function View1.view = View0.view,
     predicate ResolveElswhere0.resolve_elswhere = ResolveElswhere0.resolve_elswhere,
     type Output0.output = Scratch_Clause_Clause_Type.t_clause,
     val Max0.mAX' = Max0.mAX'
@@ -2961,25 +2961,25 @@ module Scratch_Scratch_Swap
   clone Scratch_Formula_Impl1_Equisat as Equisat0 with
     predicate EventuallySatComplete0.eventually_sat_complete = EventuallySatComplete0.eventually_sat_complete
   use Scratch_Assignments_Assignments_Type as Scratch_Assignments_Assignments_Type
-  clone Scratch_Assignments_Impl0_ShallowModel as ShallowModel2 with
-    function ShallowModel0.shallow_model = ShallowModel5.shallow_model,
+  clone Scratch_Assignments_Impl0_View as View2 with
+    function View0.view = View5.view,
     val Max0.mAX' = Max0.mAX'
   clone Scratch_Formula_Impl1_Invariant as Invariant0 with
     predicate InvariantMirror0.invariant_mirror = InvariantMirror0.invariant_mirror,
-    function ShallowModel0.shallow_model = ShallowModel3.shallow_model,
+    function View0.view = View3.view,
     predicate FormulaInvariant0.formula_invariant = FormulaInvariant0.formula_invariant,
     axiom .
   let rec cfg swap [#"../Scratch/src/scratch.rs" 43 0 43 83] [@cfg:stackify] [@cfg:subregion_analysis] (f : borrowed (Scratch_Formula_Formula_Type.t_formula)) (cref : usize) (j : usize) (k : usize) (assignments : Scratch_Assignments_Assignments_Type.t_assignments) : ()
     requires {[#"../Scratch/src/scratch.rs" 33 0 33 33] Invariant0.invariant' ( * f)}
-    requires {[#"../Scratch/src/scratch.rs" 34 11 34 40] Seq.length (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) >= 2}
-    requires {[#"../Scratch/src/scratch.rs" 35 11 35 35] UIntSize.to_int cref < Seq.length (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( * f)))}
-    requires {[#"../Scratch/src/scratch.rs" 36 11 36 40] Seq.length (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) > UIntSize.to_int j}
-    requires {[#"../Scratch/src/scratch.rs" 37 11 37 40] Seq.length (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) > UIntSize.to_int k}
-    requires {[#"../Scratch/src/scratch.rs" 38 0 38 59] not SatInner0.sat_inner (Seq.get (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) 0) (ShallowModel2.shallow_model assignments)}
+    requires {[#"../Scratch/src/scratch.rs" 34 11 34 40] Seq.length (View1.view (Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) >= 2}
+    requires {[#"../Scratch/src/scratch.rs" 35 11 35 35] UIntSize.to_int cref < Seq.length (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( * f)))}
+    requires {[#"../Scratch/src/scratch.rs" 36 11 36 40] Seq.length (View1.view (Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) > UIntSize.to_int j}
+    requires {[#"../Scratch/src/scratch.rs" 37 11 37 40] Seq.length (View1.view (Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) > UIntSize.to_int k}
+    requires {[#"../Scratch/src/scratch.rs" 38 0 38 59] not SatInner0.sat_inner (Seq.get (View1.view (Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) 0) (View2.view assignments)}
     ensures { [#"../Scratch/src/scratch.rs" 33 0 33 33] Invariant0.invariant' ( ^ f) }
-    ensures { [#"../Scratch/src/scratch.rs" 39 0 39 72] Permut.exchange (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( ^ f))) (UIntSize.to_int cref))) (ShallowModel1.shallow_model (Seq.get (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) (UIntSize.to_int j) (UIntSize.to_int k) }
+    ensures { [#"../Scratch/src/scratch.rs" 39 0 39 72] Permut.exchange (View1.view (Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( ^ f))) (UIntSize.to_int cref))) (View1.view (Seq.get (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( * f))) (UIntSize.to_int cref))) (UIntSize.to_int j) (UIntSize.to_int k) }
     ensures { [#"../Scratch/src/scratch.rs" 40 10 40 39] UIntSize.to_int (Scratch_Formula_Formula_Type.formula_num_vars ( * f)) = UIntSize.to_int (Scratch_Formula_Formula_Type.formula_num_vars ( ^ f)) }
-    ensures { [#"../Scratch/src/scratch.rs" 41 10 41 49] Seq.length (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( * f))) = Seq.length (ShallowModel0.shallow_model (Scratch_Formula_Formula_Type.formula_clauses ( ^ f))) }
+    ensures { [#"../Scratch/src/scratch.rs" 41 10 41 49] Seq.length (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( * f))) = Seq.length (View0.view (Scratch_Formula_Formula_Type.formula_clauses ( ^ f))) }
     ensures { [#"../Scratch/src/scratch.rs" 42 10 42 23] Equisat0.equisat ( * f) ( ^ f) }
     
    = [@vc:do_not_keep_trace] [@vc:sp]

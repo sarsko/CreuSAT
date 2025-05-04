@@ -1,4 +1,4 @@
-extern crate creusot_contracts;
+
 use ::std::panic;
 
 use creusot_contracts::{std::*, Snapshot, *};
@@ -27,10 +27,10 @@ pub enum ConflictResult {
 }
 
 #[cfg_attr(feature = "trust_solver", trusted)]
-#[requires(f.invariant())]
-#[requires(trail.invariant(*f))]
+#[requires(f.inv())]
+#[requires(trail.inv(*f))]
 #[requires(equisat_extension_inner(*clause, f@))]
-#[requires(clause.invariant(f.num_vars@))]
+#[requires(clause.inv(f.num_vars@))]
 #[requires(clause@.len() > 1)]
 #[requires(vars_in_range_inner(clause@, f.num_vars@))]
 #[requires(no_duplicate_indexes_inner(clause@))]
@@ -101,12 +101,12 @@ impl Solver {
     }
 
     #[cfg_attr(feature = "trust_solver", trusted)]
-    #[maintains((mut f).invariant())]
-    #[maintains((mut t).invariant(mut f))]
-    #[maintains((mut w).invariant(mut f))]
-    #[maintains((mut d).invariant(f.num_vars@))]
+    #[maintains((mut f).inv())]
+    #[maintains((mut t).inv(mut f))]
+    #[maintains((mut w).inv(mut f))]
+    #[maintains((mut d).inv(f.num_vars@))]
     #[requires(f.num_vars@ < usize::MAX@/2)]
-    #[requires(clause.invariant(f.num_vars@))]
+    #[requires(clause.inv(f.num_vars@))]
     #[requires(equisat_extension_inner(clause, f@))]
     #[requires((clause@).len() > 1)]
     #[requires(s_idx@ < (clause@).len())]
@@ -144,10 +144,10 @@ impl Solver {
     }
 
     #[cfg_attr(feature = "trust_solver", trusted)]
-    #[maintains((mut f).invariant())]
-    #[maintains((mut t).invariant(mut f))]
-    #[maintains((mut w).invariant(mut f))]
-    #[maintains((mut d).invariant(f.num_vars@))]
+    #[maintains((mut f).inv())]
+    #[maintains((mut t).inv(mut f))]
+    #[maintains((mut w).inv(mut f))]
+    #[maintains((mut d).inv(f.num_vars@))]
     #[requires(f.num_vars@ < usize::MAX@/2)]
     #[requires(cref@ < f.clauses@.len())]
     #[requires(f.clauses@[cref@].unsat(t.assignments))]
@@ -191,10 +191,10 @@ impl Solver {
     }
 
     #[cfg_attr(feature = "trust_solver", trusted)]
-    #[maintains((mut f).invariant())]
-    #[maintains((mut w).invariant(mut f))]
-    #[maintains((mut t).invariant(mut f))]
-    #[maintains((mut d).invariant(f.num_vars@))]
+    #[maintains((mut f).inv())]
+    #[maintains((mut w).inv(mut f))]
+    #[maintains((mut t).inv(mut f))]
+    #[maintains((mut d).inv(f.num_vars@))]
     #[requires(f.num_vars@ < usize::MAX@/2)]
     #[ensures(f.num_vars@ == (^f).num_vars@)]
     #[ensures(f.equisat(^f))]
@@ -214,10 +214,10 @@ impl Solver {
     }
 
     #[cfg_attr(feature = "trust_solver", trusted)]
-    #[maintains((mut f).invariant())]
-    #[maintains((mut t).invariant(mut f))]
-    #[maintains((mut w).invariant(mut f))]
-    #[maintains((mut d).invariant(f.num_vars@))]
+    #[maintains((mut f).inv())]
+    #[maintains((mut t).inv(mut f))]
+    #[maintains((mut w).inv(mut f))]
+    #[maintains((mut d).inv(f.num_vars@))]
     #[requires(f.num_vars@ < usize::MAX@/2)]
     #[ensures(match result {
         Some(false) => { (^f).not_satisfiable() },
@@ -231,10 +231,10 @@ impl Solver {
         let old_t: Snapshot<&mut Trail> = snapshot! { t };
         let old_w: Snapshot<&mut Watches> = snapshot! { w };
         let old_d: Snapshot<&mut Decisions> = snapshot! { d };
-        #[invariant(f.invariant())]
-        #[invariant(t.invariant(*f))]
-        #[invariant(w.invariant(*f))]
-        #[invariant(d.invariant(f.num_vars@))]
+        #[invariant(f.inv())]
+        #[invariant(t.inv(*f))]
+        #[invariant(w.inv(*f))]
+        #[invariant(d.inv(f.num_vars@))]
         #[invariant(old_f.inner().equisat(*f))]
         #[invariant(f.num_vars@ == old_f.num_vars@)]
         loop {
@@ -254,11 +254,11 @@ impl Solver {
     }
 
     #[cfg_attr(feature = "trust_solver", trusted)]
-    #[maintains((mut f).invariant())]
-    #[maintains((mut trail).invariant(mut f))]
-    #[maintains((mut w).invariant(mut f))]
-    #[maintains((mut d).invariant(f.num_vars@))]
-    #[requires(d.invariant(f.num_vars@))]
+    #[maintains((mut f).inv())]
+    #[maintains((mut trail).inv(mut f))]
+    #[maintains((mut w).inv(mut f))]
+    #[maintains((mut d).inv(f.num_vars@))]
+    #[requires(d.inv(f.num_vars@))]
     #[requires(f.num_vars@ < usize::MAX@/2)]
     #[ensures(f.num_vars@ == (^f).num_vars@)]
     #[ensures(f.equisat(^f))]
@@ -306,11 +306,11 @@ impl Solver {
     // OK
     #[cfg_attr(feature = "trust_solver", trusted)]
     #[requires(formula.num_vars@ < usize::MAX@/2)]
-    #[requires(formula.invariant())]
-    #[requires(decisions.invariant(formula.num_vars@))]
-    #[requires(trail.invariant(*formula))]
-    #[requires(watches.invariant(*formula))]
-    #[requires(decisions.invariant(formula.num_vars@))]
+    #[requires(formula.inv())]
+    #[requires(decisions.inv(formula.num_vars@))]
+    #[requires(trail.inv(*formula))]
+    #[requires(watches.inv(*formula))]
+    #[requires(decisions.inv(formula.num_vars@))]
     #[ensures(match result {
         SatResult::Sat(v) => { (^formula).sat_inner(v@) && formula.equisat(^formula) && formula.eventually_sat_complete() },
         SatResult::Unsat => { (^formula).not_satisfiable() && formula.equisat(^formula) }
@@ -323,10 +323,10 @@ impl Solver {
         let old_f: Snapshot<&mut Formula> = snapshot! { formula };
         #[invariant(old_f.inner().equisat(*formula))]
         #[invariant(formula.num_vars@ == old_f.num_vars@)]
-        #[invariant(formula.invariant())]
-        #[invariant(trail.invariant(*formula))]
-        #[invariant(watches.invariant(*formula))]
-        #[invariant(decisions.invariant(formula.num_vars@))]
+        #[invariant(formula.inv())]
+        #[invariant(trail.inv(*formula))]
+        #[invariant(watches.inv(*formula))]
+        #[invariant(decisions.inv(formula.num_vars@))]
         loop {
             match self.outer_loop(formula, &mut decisions, &mut trail, &mut watches) {
                 SatResult::Unknown => {} // continue

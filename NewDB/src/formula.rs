@@ -1,4 +1,4 @@
-extern crate creusot_contracts;
+
 
 use creusot_contracts::logic::FSet;
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
@@ -35,9 +35,9 @@ impl Formula {
     // TODO: Look at actually implementing from
     #[open]
     #[logic]
-    #[requires(clause_allocator.invariant())]
+    #[requires(clause_allocator.inv())]
     #[requires(forall<i: Int> 0 <= i && i < crefs.len() ==>
-                cref_invariant(crefs[i]@, clause_allocator, num_vars))] // CRefManager.invariant unwrapped -> TODO: refactor?
+                cref_invariant(crefs[i]@, clause_allocator, num_vars))] // CRefManager.inv unwrapped -> TODO: refactor?
     #[ensures(result.num_vars == num_vars)]
     #[ensures(forall<i: Int> 0 <= i && i < crefs.len() ==> exists<c: _> result.formula.contains(c) && clause_allocator.get_clause_fset(crefs[i]@) == c)]
     #[ensures(forall<c: _> result.formula.contains(c) ==> exists<i: Int> 0 <= i && i < crefs.len() && clause_allocator.get_clause_fset(crefs[i]@) == c)]
@@ -56,9 +56,9 @@ impl Formula {
     //#[variant((clause@_allocator).len() - idx)]
     #[variant(crefs.len() - idx)]
     #[requires(idx >= 0)]
-    #[requires(clause_allocator.invariant())]
+    #[requires(clause_allocator.inv())]
     #[requires(forall<i: Int> 0 <= i && i < crefs.len() ==>
-                cref_invariant(crefs[i]@, clause_allocator, _num_vars))] // CRefManager.invariant unwrapped -> TODO: refactor?
+                cref_invariant(crefs[i]@, clause_allocator, _num_vars))] // CRefManager.inv unwrapped -> TODO: refactor?
     #[ensures(forall<i: Int> idx <= i && i < crefs.len() ==> exists<c: _> result.contains(c) && clause_allocator.get_clause_fset(crefs[i]@) == c)]
     #[ensures(forall<c: _> result.contains(c) ==> exists<i: Int> idx <= i && i < crefs.len() && clause_allocator.get_clause_fset(crefs[i]@) == c)]
     fn from_internal(crefs: Seq<CRef>, clause_allocator: ClauseAllocator, idx: Int, _num_vars: Int) -> FSet<FSet<Lit>> {

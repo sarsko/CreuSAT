@@ -1,4 +1,4 @@
-extern crate creusot_contracts;
+
 use ::std::ops;
 use creusot_contracts::{model::*, std::*, *};
 
@@ -16,12 +16,12 @@ pub struct Lit {
 }
 
 #[cfg(creusot)]
-impl ShallowModel for Lit {
-    type ShallowModelTy = Lit;
+impl View for Lit {
+    type ViewTy = Lit;
 
     #[logic]
     #[open]
-    fn shallow_model(self) -> Self {
+    fn view(self) -> Self {
         self
     }
 }
@@ -54,14 +54,14 @@ impl Lit {
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[ensures(result == self.invariant(n@))]
+    #[ensures(result == self.inv(n@))]
     pub fn check_lit_invariant(&self, n: usize) -> bool {
         self.index() < n
     }
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[requires(self.invariant(a@.len()))]
+    #[requires(self.inv(a@.len()))]
     #[ensures(result == self.sat(*a))]
     pub fn lit_sat(self, a: &Assignments) -> bool {
         match self.is_positive() {
@@ -72,7 +72,7 @@ impl Lit {
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[requires(self.invariant(a@.len()))]
+    #[requires(self.inv(a@.len()))]
     #[ensures(result == self.unsat(*a))]
     pub fn lit_unsat(self, a: &Assignments) -> bool {
         match self.is_positive() {
@@ -83,7 +83,7 @@ impl Lit {
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[requires(self.invariant(a@.len()))]
+    #[requires(self.inv(a@.len()))]
     #[ensures(result == self.unset(*a))]
     pub fn lit_unset(self, a: &Assignments) -> bool {
         a[self.index()] >= 2
@@ -91,7 +91,7 @@ impl Lit {
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_lit", trusted)]
-    #[requires(self.invariant(a@.len()))]
+    #[requires(self.inv(a@.len()))]
     #[ensures(result == !self.unset(*a))]
     pub fn lit_set(self, a: &Assignments) -> bool {
         a[self.index()] < 2

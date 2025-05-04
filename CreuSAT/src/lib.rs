@@ -5,7 +5,7 @@
 #![allow(dead_code)]
 #![allow(non_snake_case)]
 #![recursion_limit = "512"]
-extern crate creusot_contracts;
+
 
 use creusot_contracts::{std::*, Snapshot, *};
 

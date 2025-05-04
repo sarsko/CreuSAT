@@ -1,4 +1,4 @@
-extern crate creusot_contracts;
+
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
@@ -7,7 +7,7 @@ use crate::decision::*;
 impl Decisions {
     #[predicate]
     #[open]
-    pub fn invariant(self, n: Int) -> bool {
+    pub fn inv(self, n: Int) -> bool {
         pearlite! {
             self.linked_list@.len() == n
             && (self.search@ < self.linked_list@.len() || self.search@ == usize::MAX@)

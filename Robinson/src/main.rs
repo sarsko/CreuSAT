@@ -1,11 +1,15 @@
 //#[global_allocator]
 //static GLOBAL: jemallocator::Jemalloc = jemallocator::Jemalloc;
+#[allow(unused)]
+use creusot_contracts::*;
 
 #[cfg(creusot)]
 fn main() {}
 
 #[cfg(not(creusot))]
 fn main() {
+    // SAREK TODO: fix
+    /*
     use clap::{arg, crate_authors, Command};
     use Robinson::parser::{parse_cnf, preproc_and_solve};
     let matches = Command::new("\nRobinson")
@@ -33,4 +37,5 @@ fn main() {
             println!("c Parser errored with message: {}", e);
         }
     }
+    */
 }

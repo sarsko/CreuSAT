@@ -1,0 +1,52 @@
+(* #"/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 11 9 11 14 *)
+
+(* <Assignments as creusot_contracts::Clone> *)
+
+let%span slib = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 11 9 11 14
+let%span sclone = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/clone.rs" 15 26 15 41
+
+use creusot.prelude.Opaque
+use creusot.int.UInt64
+use creusot.prelude.Any
+
+type t_NonNull  =
+  { t_NonNull__pointer: Opaque.ptr }
+
+type t_Unique  =
+  { t_Unique__pointer: t_NonNull; t_Unique__qy95zmarker: () }
+
+type t_UsizeNoHighBit  =
+  { t_UsizeNoHighBit__0: UInt64.t }
+
+type t_RawVecInner  =
+  { t_RawVecInner__ptr: t_Unique; t_RawVecInner__cap: t_UsizeNoHighBit; t_RawVecInner__alloc: () }
+
+type t_RawVec  =
+  { t_RawVec__inner: t_RawVecInner; t_RawVec__qy95zmarker: () }
+
+type t_Vec  =
+  { t_Vec__buf: t_RawVec; t_Vec__len: UInt64.t }
+
+type t_Assignments  =
+  { t_Assignments__0: t_Vec }
+
+let rec clone' (self_:t_Vec) (return'  (x:t_Vec))= any
+  [ return''0 (result:t_Vec)-> {[%#sclone] result = self_} (! return' {result}) ]
+
+
+meta "compute_max_steps" 1000000
+
+let rec clone''0[#"/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 11 9 11 14] (self:t_Assignments) (return'  (x:t_Assignments))= (! bb0
+  [ bb0 = s0
+    [ s0 =  [ &_5 <- self'0.t_Assignments__0 ] s1
+    | s1 = clone' {_5} (fun (_ret:t_Vec) ->  [ &_3 <- _ret ] s2)
+    | s2 = bb1 ]
+  
+  | bb1 = s0 [ s0 =  [ &_0 <- { t_Assignments__0 = _3 } ] s1 | s1 = bb2 ] 
+  | bb2 = return''0 {_0} ]
+  )
+  [ & _0 : t_Assignments = Any.any_l ()
+  | & self'0 : t_Assignments = self
+  | & _3 : t_Vec = Any.any_l ()
+  | & _5 : t_Vec = Any.any_l () ]
+   [ return''0 (result:t_Assignments)-> {[@expl:clone ensures] [%#slib] result = self} (! return' {result}) ] 

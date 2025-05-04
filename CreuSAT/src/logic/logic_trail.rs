@@ -1,4 +1,4 @@
-extern crate creusot_contracts;
+
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
@@ -10,7 +10,7 @@ use crate::logic::{logic::*, logic_clause::*, logic_util::*};
 impl Reason {
     #[predicate]
     #[open]
-    pub fn invariant(self, f: Formula) -> bool {
+    pub fn inv(self, f: Formula) -> bool {
         pearlite! {
             match self {
                 Reason::Long(cref) =>
@@ -27,7 +27,7 @@ impl Reason {
     /*
         #[predicate]
     #[open]
-        pub fn invariant_reason_new(self, f: Formula, a: Assignments) -> bool {
+        pub fn inv_reason_new(self, f: Formula, a: Assignments) -> bool {
             pearlite! {
                 match self {
                     Reason::Long(cref) =>
@@ -52,9 +52,9 @@ impl Trail {
     #[predicate]
     #[open] //#[open(self)]
     #[why3::attr = "inline:trivial"]
-    pub fn invariant(self, f: Formula) -> bool {
+    pub fn inv(self, f: Formula) -> bool {
         pearlite! {
-            self.assignments.invariant(f)
+            self.assignments.inv(f)
             && trail_invariant(self.trail@, f)
             && self.lit_to_level@.len() == f.num_vars@
             && lit_not_in_less_inner(self.trail@, f)
@@ -70,9 +70,9 @@ impl Trail {
     #[predicate]
     #[open] //#[open(self)]
     #[why3::attr = "inline:trivial"]
-    pub fn invariant_no_decision(self, f: Formula) -> bool {
+    pub fn inv_no_decision(self, f: Formula) -> bool {
         pearlite! {
-            self.assignments.invariant(f)
+            self.assignments.inv(f)
             && trail_invariant(self.trail@, f)
             && self.lit_to_level@.len() == f.num_vars@
             && lit_not_in_less_inner(self.trail@, f)
@@ -103,8 +103,8 @@ pub fn lit_not_in_less_inner(t: Seq<Step>, f: Formula) -> bool {
 pub fn trail_invariant(trail: Seq<Step>, f: Formula) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < trail.len() ==>
-              (trail[i].lit.invariant(f.num_vars@)
-            && trail[i].reason.invariant(f))
+              (trail[i].lit.inv(f.num_vars@)
+            && trail[i].reason.inv(f))
     }
 }
 
@@ -191,11 +191,11 @@ pub fn unit_are_sat(trail: Seq<Step>, f: Formula, a: Assignments) -> bool {
 #[cfg_attr(feature = "trust_trail_logic", trusted)]
 #[logic]
 #[open]
-#[requires(a.invariant(f))]
-#[requires(f.invariant())]
+#[requires(a.inv(f))]
+#[requires(f.inv())]
 #[requires(trail_invariant(v, f))]
 #[requires(crefs_in_range(v, f))]
-#[requires(lit.invariant(f.num_vars@))]
+#[requires(lit.inv(f.num_vars@))]
 #[requires(unset((a@)[lit.index_logic()]))]
 #[requires(long_are_post_unit_inner(v, f, a@))]
 #[ensures(long_are_post_unit_inner(v, f, (a@).set(lit.index_logic(), 1u8)))]
@@ -206,11 +206,11 @@ pub fn lemma_assign_maintains_long_are_post_unit(v: Seq<Step>, f: Formula, a: As
 #[cfg_attr(feature = "trust_trail_logic", trusted)]
 #[logic]
 #[open]
-#[requires(f.invariant())]
-#[requires(t.invariant(f))]
+#[requires(f.inv())]
+#[requires(t.inv(f))]
 #[requires(unset(t.assignments@[step.lit.index_logic()]))]
-#[requires(step.lit.invariant(f.num_vars@))]
-//#[requires(step.reason.invariant(f))]
+#[requires(step.lit.inv(f.num_vars@))]
+//#[requires(step.reason.inv(f))]
 #[requires(lit_not_in_less_inner(t.trail@, f))]
 #[ensures(lit_not_in_less_inner(t.trail@.push(step), f))]
 pub fn lemma_push_maintains_lit_not_in_less(t: Trail, f: Formula, step: Step) {}

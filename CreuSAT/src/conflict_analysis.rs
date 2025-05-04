@@ -1,4 +1,4 @@
-extern crate creusot_contracts;
+
 use creusot_contracts::{std::*, vec, Snapshot, *};
 
 use crate::{assignments::*, clause::*, decision::*, formula::*, lit::*, trail::*};
@@ -27,8 +27,8 @@ fn idx_in(c: &Vec<Lit>, idx: usize, seen: &Vec<bool>) -> bool {
 }
 
 #[cfg_attr(feature = "trust_conflict", trusted)]
-#[requires(_f.invariant())]
-#[requires(trail.invariant(*_f))]
+#[requires(_f.inv())]
+#[requires(trail.inv(*_f))]
 #[requires(idx@ < _f.num_vars@)]
 #[requires(o.in_formula(*_f))]
 #[requires(c_idx@ < c@.len()
@@ -49,7 +49,7 @@ fn idx_in(c: &Vec<Lit>, idx: usize, seen: &Vec<bool>) -> bool {
 #[maintains(equisat_extension_inner(mut c, _f@))]
 #[maintains((mut c).clause_is_seen(mut seen))]
 #[maintains((mut c).unsat(trail.assignments))] // TODO: Should be stated with regards to seq
-#[maintains((mut c).invariant(_f.num_vars@))]
+#[maintains((mut c).inv(_f.num_vars@))]
 fn resolve(
     _f: &Formula, c: &mut Clause, o: &Clause, idx: usize, c_idx: usize, trail: &Trail, seen: &mut Vec<bool>,
     path_c: &mut usize, to_bump: &mut Vec<usize>,
@@ -76,7 +76,7 @@ fn resolve(
 
     // Add all the literals from the other clause
     let mut i: usize = 1;
-    #[invariant(c.invariant(_f.num_vars@))]
+    #[invariant(c.inv(_f.num_vars@))]
     #[invariant(c.unsat(trail.assignments))] // TODO: Should be stated with regards to seq
     #[invariant(1 <= i@ && i@ <= o@.len())]
     #[invariant(!old_c@[c_idx@].lit_in(*c) && !o@[0].lit_in(*c))]
@@ -113,7 +113,7 @@ fn resolve(
 }
 
 #[cfg_attr(feature = "trust_conflict", trusted)]
-#[requires(trail.invariant(*_f))]
+#[requires(trail.inv(*_f))]
 #[requires(c.unsat(trail.assignments))]
 #[requires(i@ <= trail.trail@.len())]
 #[requires((seen@).len() == _f.num_vars@)]
@@ -147,22 +147,22 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula, seen: 
 }
 
 #[cfg_attr(feature = "trust_conflict", trusted)]
-#[requires(f.invariant())]
+#[requires(f.inv())]
 #[requires(f.num_vars@ < usize::MAX@)]
-#[requires(trail.invariant(*f))]
+#[requires(trail.inv(*f))]
 #[requires(cref@ < f.clauses@.len())]
 #[requires(f.clauses@[cref@].unsat(trail.assignments))]
 #[ensures(match result {
     Conflict::Ground => f.not_satisfiable(),
     Conflict::Unit(clause) => {
-        clause.invariant(f.num_vars@)
+        clause.inv(f.num_vars@)
         && clause@.len() == 1
         && vars_in_range_inner(clause@, f.num_vars@)
         && no_duplicate_indexes_inner(clause@)
         && equisat_extension_inner(clause, f@)
     },
     Conflict::Learned(s_idx, clause) => {
-        clause.invariant(f.num_vars@)
+        clause.inv(f.num_vars@)
         && clause@.len() > 1
         && vars_in_range_inner(clause@, f.num_vars@)
         && no_duplicate_indexes_inner(clause@)
@@ -170,14 +170,14 @@ fn choose_literal(c: &Clause, trail: &Trail, i: &mut usize, _f: &Formula, seen: 
         && s_idx@ < (clause@).len()
     },
     Conflict::Restart(clause) => {
-        clause.invariant(f.num_vars@)
+        clause.inv(f.num_vars@)
         && clause@.len() > 1
         && vars_in_range_inner(clause@, f.num_vars@)
         && no_duplicate_indexes_inner(clause@)
         && equisat_extension_inner(clause, f@)
     },
 })]
-#[maintains((mut d).invariant(f.num_vars@))]
+#[maintains((mut d).inv(f.num_vars@))]
 pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisions) -> Conflict {
     let decisionlevel = trail.decision_level();
     let mut to_bump = Vec::new();
@@ -204,7 +204,7 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
     let mut clause = clause;
     #[invariant(seen@.len() == f.num_vars@)]
     #[invariant(forall<idx: Int> 0 <= idx && idx < seen@.len() ==> (seen@[idx] == idx_in_logic(idx, clause@)))]
-    #[invariant(clause.invariant(f.num_vars@))]
+    #[invariant(clause.inv(f.num_vars@))]
     #[invariant(equisat_extension_inner(clause, f@))]
     #[invariant(clause.unsat(trail.assignments))]
     #[invariant(0 <= i@ && i@ <= trail.trail@.len())]
@@ -251,8 +251,8 @@ pub fn analyze_conflict(f: &Formula, trail: &Trail, cref: usize, d: &mut Decisio
 }
 
 #[cfg_attr(all(feature = "trust_conflict", not(feature = "problem_child")), trusted)]
-#[requires(f.invariant())]
-#[requires(trail.invariant(*f))]
+#[requires(f.inv())]
+#[requires(trail.inv(*f))]
 #[requires(cref@ < f.clauses@.len())]
 #[requires(f.clauses@[cref@].unsat(trail.assignments))]
 #[ensures(result ==> f.not_satisfiable())]
