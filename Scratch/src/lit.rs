@@ -1,4 +1,3 @@
-
 use ::std::ops;
 use creusot_contracts::{model::*, std::*, *};
 

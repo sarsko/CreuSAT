@@ -1,4 +1,3 @@
-
 use creusot_contracts::{std::*, *};
 
 use crate::{formula::*, lit::*, trail::*};

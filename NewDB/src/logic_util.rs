@@ -1,5 +1,3 @@
-
-
 use creusot_contracts::logic::FSet;
 use creusot_contracts::*;
 

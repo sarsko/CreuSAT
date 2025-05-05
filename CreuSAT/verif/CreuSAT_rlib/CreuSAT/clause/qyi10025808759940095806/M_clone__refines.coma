@@ -1,0 +1,32 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 10 9 10 14 *)
+
+(* <clause::Clause as creusot_contracts::Clone> *)
+
+let%span sclause = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 10 9 10 14
+
+use creusot.int.UInt32
+use creusot.int.UInt64
+use creusot.prelude.Opaque
+
+type t_NonNull  =
+  { t_NonNull__pointer: Opaque.ptr }
+
+type t_Unique  =
+  { t_Unique__pointer: t_NonNull; t_Unique__qy95zmarker: () }
+
+type t_UsizeNoHighBit  =
+  { t_UsizeNoHighBit__0: UInt64.t }
+
+type t_RawVecInner  =
+  { t_RawVecInner__ptr: t_Unique; t_RawVecInner__cap: t_UsizeNoHighBit; t_RawVecInner__alloc: () }
+
+type t_RawVec  =
+  { t_RawVec__inner: t_RawVecInner; t_RawVec__qy95zmarker: () }
+
+type t_Vec  =
+  { t_Vec__buf: t_RawVec; t_Vec__len: UInt64.t }
+
+type t_Clause  =
+  { t_Clause__deleted: bool; t_Clause__lbd: UInt32.t; t_Clause__search: UInt64.t; t_Clause__lits: t_Vec }
+
+goal refines : [%#sclause] forall self_ : t_Clause . forall result : t_Clause . result = self_  -> result = self_

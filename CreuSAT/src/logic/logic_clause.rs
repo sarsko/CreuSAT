@@ -1,4 +1,3 @@
-
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
@@ -14,7 +13,7 @@ impl View for Clause {
     #[logic]
     #[open]
     fn view(self) -> Self::ViewTy {
-        self.lits.view() //.push(self.first)//.push(self.second)
+        self.lits.view() //.push_back(self.first)//.push_back(self.second)
     }
 }
 
@@ -37,7 +36,7 @@ pub fn inv_internal(s: Seq<Lit>, n: Int) -> bool {
 #[open]
 pub fn equisat_extension_inner(c: Clause, f: FormulaModel) -> bool {
     pearlite! {
-        eventually_sat_complete(f) ==> eventually_sat_complete(FormulaModel { clauses: f.clauses.push(c), num_vars: f.num_vars })
+        eventually_sat_complete(f) ==> eventually_sat_complete(FormulaModel { clauses: f.clauses.push_back(c), num_vars: f.num_vars })
     }
 }
 
@@ -224,7 +223,7 @@ impl Clause {
     #[predicate]
     #[open]
     pub fn inv(self, n: Int) -> bool {
-        pearlite! { invariant_internal(self@, n) }
+        pearlite! { inv_internal(self@, n) }
     }
 
     #[predicate]

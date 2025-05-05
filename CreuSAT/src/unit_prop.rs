@@ -1,4 +1,3 @@
-
 use creusot_contracts::{std::*, Snapshot, *};
 
 use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*, util, watches::*};
@@ -76,6 +75,42 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
     proof_assert!(forall<a2: Seq<AssignedState>> a2.len() == f.num_vars@ && complete_inner(a2) && old_f.clauses@[cref@].sat_inner(a2) ==> f.clauses@[cref@].sat_inner(a2));
     proof_assert!(eventually_sat_complete(old_f@) ==> eventually_sat_complete(f@));
     proof_assert!(^f == ^old_f.inner());
+
+    proof_assert!(forall<i: Int> 0 <= i && i < f.clauses@.len() && i != cref@ ==> old_f.clauses@[i] == f.clauses@[i]);
+
+    // trail inv inlined
+    proof_assert!(
+            trail.assignments.inv(*f)
+            && trail_invariant(trail.trail@, *f)
+            && trail.lit_to_level@.len() == f.num_vars@
+            && lit_is_unique_inner(trail.trail@)
+            && trail_entries_are_assigned_inner(trail.trail@, trail.assignments@)
+            && crate::logic::logic_util::sorted(trail.decisions@)
+            && unit_are_sat(trail.trail@, *f, trail.assignments)
+            && (forall<i: Int> 0 <= i && i < trail.decisions@.len() ==> trail.decisions@[i]@ <= trail.trail@.len())
+    );
+
+    // lit_not_in_less_inner inlined
+    proof_assert! {
+        forall<i: Int> 0 <= i && i < trail.trail@.len() ==>
+            forall<j: Int> 0 <= j && j < i ==>
+                match trail.trail@[j].reason {
+                    Reason::Long(cref) => !(trail.trail@)[i].lit.lit_idx_in(f.clauses@[cref@]),
+                    _ => true,
+                }
+    }
+    proof_assert!(lit_not_in_less_inner(trail.trail@, *f));
+
+    // long_are_post_unit inlined
+    proof_assert!(
+        forall<j: Int> 0 <= j && j < trail.trail@.len() ==>
+            match trail.trail@[j].reason {
+                Reason::Long(k) => { clause_post_with_regards_to(f.clauses@[k@], trail.assignments, trail.trail@[j].lit.index_logic()) },
+                    _ => true,
+                }
+    );
+
+    proof_assert!(long_are_post_unit_inner(trail.trail@, *f, trail.assignments@));
 }
 
 // This has to do f.clauses[cref] and not f[cref]
@@ -152,10 +187,18 @@ fn exists_new_watchable_lit(
 #[requires(lit.index_logic() < f.num_vars@)]
 #[requires(cref@ < f.clauses@.len())]
 #[requires(f.clauses@[cref@]@.len() >= 2)]
-#[ensures((^trail).decisions == trail.decisions)] // added
+#[ensures((^trail).decisions == trail.decisions)]
+// added
+// TODO: https://github.com/creusot-rs/creusot/issues/1504
+/*
 #[ensures(match result {
     Ok(true) => true,
     Ok(false) => (^trail).trail@.len() == (trail.trail@).len(),
+    Err(n) => n@ < (^f).clauses@.len() && (^f).unsat((^trail).assignments) && (^f).clauses@[n@].unsat((^trail).assignments),
+})]
+*/
+#[ensures(match result {
+    Ok(b) => if b { true } else { (^trail).trail@.len() == (trail.trail@).len() },
     Err(n) => n@ < (^f).clauses@.len() && (^f).unsat((^trail).assignments) && (^f).clauses@[n@].unsat((^trail).assignments),
 })]
 #[ensures(f.num_vars@ == (^f).num_vars@)]

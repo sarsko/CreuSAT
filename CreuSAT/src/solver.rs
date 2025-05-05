@@ -1,4 +1,3 @@
-
 use ::std::panic;
 
 use creusot_contracts::{std::*, Snapshot, *};
@@ -153,9 +152,16 @@ impl Solver {
     #[requires(f.clauses@[cref@].unsat(t.assignments))]
     #[ensures(f.num_vars@ == (^f).num_vars@)]
     #[ensures(f.equisat(^f))]
+    /*
+    // TODO: https://github.com/creusot-rs/creusot/issues/1504
     #[ensures(match result {
         Some(false) => { (^f).not_satisfiable() },
         Some(true)  => { true },
+        None        => { true },
+    })]
+    */
+    #[ensures(match result {
+        Some(b) => { if b { true } else { (^f).not_satisfiable() }},
         None        => { true },
     })]
     fn handle_conflict(
@@ -219,9 +225,16 @@ impl Solver {
     #[maintains((mut w).inv(mut f))]
     #[maintains((mut d).inv(f.num_vars@))]
     #[requires(f.num_vars@ < usize::MAX@/2)]
+    // TODO: https://github.com/creusot-rs/creusot/issues/1504
+    /*
     #[ensures(match result {
         Some(false) => { (^f).not_satisfiable() },
         Some(true)  => { true },
+        None        => { true },
+    })]
+    */
+    #[ensures(match result {
+        Some(b) => if b { true } else { (^f).not_satisfiable() },
         None        => { true },
     })]
     #[ensures(f.num_vars@ == (^f).num_vars@)]

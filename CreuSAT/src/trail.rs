@@ -1,4 +1,3 @@
-
 use creusot_contracts::{std::*, Snapshot, *};
 
 use crate::{assignments::*, decision::*, formula::*, lit::*};
@@ -35,6 +34,7 @@ impl Trail {
     pub fn decision_level(&self) -> usize {
         self.decisions.len()
     }
+
     // OK
     #[cfg_attr(feature = "trust_trail", trusted)]
     #[requires(f.inv())]
@@ -303,8 +303,15 @@ impl Trail {
     #[maintains((mut self).inv(*f))]
     #[maintains((mut d).inv(f.num_vars@))]
     #[requires(f.inv())]
+    // TODO: https://github.com/creusot-rs/creusot/issues/1504
+    /*
     #[ensures(match result {
         Some(true) => f.not_satisfiable(),
+        _ => true,
+    })]
+    */
+    #[ensures(match result {
+        Some(b) => if b { f.not_satisfiable() } else  { true },
         _ => true,
     })]
     pub fn learn_units(&mut self, f: &Formula, d: &mut Decisions) -> Option<bool> {

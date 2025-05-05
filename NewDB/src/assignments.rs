@@ -2,7 +2,6 @@
 #![feature(type_ascription)]
 #![cfg_attr(not(creusot), feature(stmt_expr_attributes, proc_macro_hygiene))]
 
-
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
 pub type AssignedState = u8;

@@ -1,0 +1,187 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/watches.rs" 72 4 72 38 *)
+
+(* watches::Watches *)
+
+let%span svec = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/vec.rs" 80 26 80 44
+let%span svec'0 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/vec.rs" 21 14 21 41
+let%span svec'1 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/vec.rs" 93 26 93 56
+let%span smodel = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/model.rs" 72 8 72 22
+let%span slogic_lit = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 24 20 24 29
+let%span slogic_clause = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 14 4 14 12
+let%span swatches = "/Users/sarekhs/CreuSAT/CreuSAT/src/watches.rs" 73 27 73 28
+let%span swatches'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/watches.rs" 76 20 76 58
+let%span swatches'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/watches.rs" 75 20 75 37
+let%span swatches'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/watches.rs" 80 17 80 18
+let%span swatches'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/watches.rs" 71 14 71 28
+let%span slogic_watches = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 14 8 19 64
+let%span slogic_watches'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 76 12 76 63
+
+use creusot.int.UInt64
+use creusot.prelude.Opaque
+use seq.Seq
+use mach.int.Int
+use creusot.int.UInt32
+use creusot.prelude.MutBorrow
+use creusot.prelude.Any
+
+type t_NonNull  =
+  { t_NonNull__pointer: Opaque.ptr }
+
+type t_Unique  =
+  { t_Unique__pointer: t_NonNull; t_Unique__qy95zmarker: () }
+
+type t_UsizeNoHighBit  =
+  { t_UsizeNoHighBit__0: UInt64.t }
+
+type t_RawVecInner  =
+  { t_RawVecInner__ptr: t_Unique; t_RawVecInner__cap: t_UsizeNoHighBit; t_RawVecInner__alloc: () }
+
+type t_RawVec  =
+  { t_RawVec__inner: t_RawVecInner; t_RawVec__qy95zmarker: () }
+
+type t_Vec  =
+  { t_Vec__buf: t_RawVec; t_Vec__len: UInt64.t }
+
+type t_RawVec'0  =
+  { t_RawVec__inner'0: t_RawVecInner; t_RawVec__qy95zmarker'0: () }
+
+type t_Vec'0  =
+  { t_Vec__buf'0: t_RawVec'0; t_Vec__len'0: UInt64.t }
+
+constant v_MAX : UInt64.t = (18446744073709551615 : UInt64.t)
+
+function view (self : t_Vec) : Seq.seq t_Vec'0
+
+axiom view_spec : forall self : t_Vec . [%#svec'0] Seq.length (view self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+let rec new (return'  (x:t_Vec))= any
+  [ return''0 (result:t_Vec)-> {[%#svec] Seq.length (view result) = 0} (! return' {result}) ]
+
+
+type t_RawVec'1  =
+  { t_RawVec__inner'1: t_RawVecInner; t_RawVec__qy95zmarker'1: () }
+
+type t_Vec'1  =
+  { t_Vec__buf'1: t_RawVec'1; t_Vec__len'1: UInt64.t }
+
+type t_Formula  =
+  { t_Formula__clauses: t_Vec'1; t_Formula__num_vars: UInt64.t }
+
+type t_Lit  =
+  { t_Lit__idx: UInt64.t; t_Lit__polarity: bool }
+
+type t_Watcher  =
+  { t_Watcher__cref: UInt64.t; t_Watcher__blocker: t_Lit }
+
+function view'0 (self : t_Vec'0) : Seq.seq t_Watcher
+
+axiom view_spec'0 : forall self : t_Vec'0 . [%#svec'0] Seq.length (view'0 self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+type t_RawVec'2  =
+  { t_RawVec__inner'2: t_RawVecInner; t_RawVec__qy95zmarker'2: () }
+
+type t_Vec'2  =
+  { t_Vec__buf'2: t_RawVec'2; t_Vec__len'2: UInt64.t }
+
+type t_Clause  =
+  { t_Clause__deleted: bool; t_Clause__lbd: UInt32.t; t_Clause__search: UInt64.t; t_Clause__lits: t_Vec'2 }
+
+function view'1 (self : t_Vec'1) : Seq.seq t_Clause
+
+axiom view_spec'1 : forall self : t_Vec'1 . [%#svec'0] Seq.length (view'1 self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+function view'2 (self : t_Vec'2) : Seq.seq t_Lit
+
+axiom view_spec'2 : forall self : t_Vec'2 . [%#svec'0] Seq.length (view'2 self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+function view'3 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 16 4 16 33] (self : t_Clause) : Seq.seq t_Lit
+
+ =
+  [%#slogic_clause] view'2 self.t_Clause__lits
+
+function index_logic [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 23 4 23 35] (self : t_Lit) : int =
+  [%#slogic_lit] UInt64.t'int self.t_Lit__idx
+
+predicate watches_inv_internal [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 12 0 12 77] (w : Seq.seq t_Vec'0) (n : int) (f : t_Formula)
+
+ =
+  [%#slogic_watches] 2 * n = Seq.length w
+  /\ (forall i : int . 0 <= i /\ i < Seq.length w
+   -> (forall j : int . 0 <= j /\ j < Seq.length (view'0 (Seq.get w i))
+   -> UInt64.t'int (Seq.get (view'0 (Seq.get w i)) j).t_Watcher__cref < Seq.length (view'1 f.t_Formula__clauses)
+  /\ Seq.length (view'3 (Seq.get (view'1 f.t_Formula__clauses) (UInt64.t'int (Seq.get (view'0 (Seq.get w i)) j).t_Watcher__cref)))
+  > 1
+  /\ index_logic (Seq.get (view'0 (Seq.get w i)) j).t_Watcher__blocker < UInt64.t'int f.t_Formula__num_vars))
+
+let rec new'0 (return'  (x:t_Vec'0))= any
+  [ return''0 (result:t_Vec'0)-> {[%#svec] Seq.length (view'0 result) = 0} (! return' {result}) ]
+
+
+function view'4 (self : MutBorrow.t t_Vec) : Seq.seq t_Vec'0 =
+  [%#smodel] view self.current
+
+let rec push (self_:MutBorrow.t t_Vec) (v:t_Vec'0) (return'  (x:()))= any
+  [ return''0 (result:())-> {[%#svec'1] view self_.final = Seq.snoc (view'4 self_) v} (! return' {result}) ]
+
+
+type t_Watches  =
+  { t_Watches__watches: t_Vec }
+
+predicate inv [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 74 4 74 40] (self : t_Watches) (f : t_Formula)
+
+ =
+  [%#slogic_watches'0] watches_inv_internal (view self.t_Watches__watches) (UInt64.t'int f.t_Formula__num_vars) f
+
+meta "compute_max_steps" 1000000
+
+let rec new'1[#"/Users/sarekhs/CreuSAT/CreuSAT/src/watches.rs" 72 4 72 38] (f:t_Formula) (return'  (x:t_Watches))= (! bb0
+  [ bb0 = s0
+    [ s0 =  [ &i <- [%#swatches] (0 : UInt64.t) ] s1
+    | s1 = new (fun (_ret:t_Vec) ->  [ &watches <- _ret ] s2)
+    | s2 = bb1 ]
+  
+  | bb1 = bb2
+  | bb2 = bb2'0
+    [ bb2'0 = {[@expl:loop invariant #0] [%#swatches'1] UInt64.t'int i <= UInt64.t'int f'0.t_Formula__num_vars}
+      {[@expl:loop invariant #1] [%#swatches'0] watches_inv_internal (view watches) (UInt64.t'int i) f'0}
+      (! s0) [ s0 = bb3 ] 
+      [ bb3 = bb4
+      | bb4 = s0
+        [ s0 =  [ &_10 <- UInt64.lt i f'0.t_Formula__num_vars ] s1
+        | s1 = any [ br0 -> {_10 = false} (! bb10) | br1 -> {_10} (! bb5) ]  ]
+      
+      | bb5 = s0
+        [ s0 = MutBorrow.borrow_mut <t_Vec> {watches}
+            (fun (_ret:MutBorrow.t t_Vec) ->  [ &_14 <- _ret ]  [ &watches <- _ret.final ] s1)
+        | s1 = new'0 (fun (_ret:t_Vec'0) ->  [ &_15 <- _ret ] s2)
+        | s2 = bb6 ]
+      
+      | bb6 = s0 [ s0 = push {_14} {_15} (fun (_ret:()) ->  [ &_13 <- _ret ] s1) | s1 = bb7 ] 
+      | bb7 = s0
+        [ s0 = MutBorrow.borrow_mut <t_Vec> {watches}
+            (fun (_ret:MutBorrow.t t_Vec) ->  [ &_17 <- _ret ]  [ &watches <- _ret.final ] s1)
+        | s1 = new'0 (fun (_ret:t_Vec'0) ->  [ &_18 <- _ret ] s2)
+        | s2 = bb8 ]
+      
+      | bb8 = s0 [ s0 = push {_17} {_18} (fun (_ret:()) ->  [ &_16 <- _ret ] s1) | s1 = bb9 ] 
+      | bb9 = s0
+        [ s0 = UInt64.add {i} {[%#swatches'2] (1 : UInt64.t)} (fun (_ret:UInt64.t) ->  [ &i <- _ret ] s1) | s1 = bb2'0 ]
+       ]
+     ]
+  
+  | bb10 = s0 [ s0 =  [ &_0 <- { t_Watches__watches = watches } ] s1 | s1 = bb11 ] 
+  | bb11 = bb12
+  | bb12 = return''0 {_0} ]
+  )
+  [ & _0 : t_Watches = Any.any_l ()
+  | & f'0 : t_Formula = f
+  | & i : UInt64.t = Any.any_l ()
+  | & watches : t_Vec = Any.any_l ()
+  | & _10 : bool = Any.any_l ()
+  | & _13 : () = Any.any_l ()
+  | & _14 : MutBorrow.t t_Vec = Any.any_l ()
+  | & _15 : t_Vec'0 = Any.any_l ()
+  | & _16 : () = Any.any_l ()
+  | & _17 : MutBorrow.t t_Vec = Any.any_l ()
+  | & _18 : t_Vec'0 = Any.any_l () ]
+   [ return''0 (result:t_Watches)-> {[@expl:new ensures] [%#swatches'3] inv result f} (! return' {result}) ] 

@@ -1,0 +1,305 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 176 4 176 76 *)
+
+(* clause::Clause *)
+
+let%span svec = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/vec.rs" 168 27 168 46
+let%span svec'0 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/vec.rs" 169 26 169 54
+let%span svec'1 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/vec.rs" 89 26 89 48
+let%span svec'2 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/vec.rs" 158 27 158 46
+let%span svec'3 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/vec.rs" 159 26 159 54
+let%span svec'4 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/vec.rs" 160 26 160 57
+let%span svec'5 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/vec.rs" 161 26 161 62
+let%span svec'6 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/vec.rs" 162 26 162 55
+let%span svec'7 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/vec.rs" 21 14 21 41
+let%span smodel = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/model.rs" 54 8 54 22
+let%span smodel'0 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/model.rs" 72 8 72 22
+let%span sslice = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/slice.rs" 123 20 123 37
+let%span sslice'0 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/slice.rs" 130 20 130 37
+let%span sslice'1 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/slice.rs" 137 20 137 94
+let%span sresolve = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/resolve.rs" 54 20 54 34
+let%span slit = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 43 14 43 43
+let%span slogic_lit = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 24 20 24 29
+let%span slogic_lit'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 83 20 83 42
+let%span slogic_clause = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 227 20 227 42
+let%span slogic_clause'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 33 4 33 62
+let%span slogic_clause'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 14 4 14 12
+let%span slogic_clause'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 25 8 26 23
+let%span slogic_clause'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 48 8 49 92
+let%span sclause = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 177 27 177 28
+let%span sclause'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 178 29 178 30
+let%span sclause'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 179 20 179 30
+let%span sclause'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 186 23 186 24
+let%span sclause'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 188 17 188 18
+let%span sclause'4 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 174 15 174 52
+let%span sclause'5 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 175 15 175 37
+let%span sclause'6 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 92 14 92 36
+let%span sclause'7 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 22 15 22 32
+let%span sclause'8 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 23 14 23 35
+
+use creusot.int.UInt64
+use mach.int.Int
+use creusot.prelude.MutBorrow
+use creusot.int.UInt32
+use creusot.prelude.Opaque
+use seq.Seq
+use creusot.prelude.Any
+
+type t_NonNull  =
+  { t_NonNull__pointer: Opaque.ptr }
+
+type t_Unique  =
+  { t_Unique__pointer: t_NonNull; t_Unique__qy95zmarker: () }
+
+type t_UsizeNoHighBit  =
+  { t_UsizeNoHighBit__0: UInt64.t }
+
+type t_RawVecInner  =
+  { t_RawVecInner__ptr: t_Unique; t_RawVecInner__cap: t_UsizeNoHighBit; t_RawVecInner__alloc: () }
+
+type t_RawVec  =
+  { t_RawVec__inner: t_RawVecInner; t_RawVec__qy95zmarker: () }
+
+type t_Vec  =
+  { t_Vec__buf: t_RawVec; t_Vec__len: UInt64.t }
+
+type t_Clause  =
+  { t_Clause__deleted: bool; t_Clause__lbd: UInt32.t; t_Clause__search: UInt64.t; t_Clause__lits: t_Vec }
+
+type t_Lit  =
+  { t_Lit__idx: UInt64.t; t_Lit__polarity: bool }
+
+constant v_MAX : UInt64.t = (18446744073709551615 : UInt64.t)
+
+function view (self : t_Vec) : Seq.seq t_Lit
+
+axiom view_spec : forall self : t_Vec . [%#svec'7] Seq.length (view self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+function view'0 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 16 4 16 33] (self : t_Clause) : Seq.seq t_Lit
+
+ =
+  [%#slogic_clause'1] view self.t_Clause__lits
+
+function view'1 (self : t_Clause) : Seq.seq t_Lit =
+  [%#smodel] view'0 self
+
+let rec len (self:t_Clause) (return'  (x:UInt64.t))= any
+  [ return''0 (result:UInt64.t)-> {[%#sclause'6] UInt64.t'int result = Seq.length (view'1 self)} (! return' {result}) ]
+
+
+let rec index (self:t_Clause) (ix:UInt64.t) (return'  (x:t_Lit))= {[@expl:index requires] [%#sclause'7] UInt64.t'int ix
+  < Seq.length (view'1 self)}
+  any
+  [ return''0 (result:t_Lit)-> {[%#sclause'8] Seq.get (view'1 self) (UInt64.t'int ix) = result} (! return' {result}) ]
+
+
+function index_logic [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 23 4 23 35] (self : t_Lit) : int =
+  [%#slogic_lit] UInt64.t'int self.t_Lit__idx
+
+let rec index'0 (self:t_Lit) (return'  (x:UInt64.t))= any
+  [ return''0 (result:UInt64.t)-> {[%#slit] UInt64.t'int result = index_logic self} (! return' {result}) ]
+
+
+type t_RawVec'0  =
+  { t_RawVec__inner'0: t_RawVecInner; t_RawVec__qy95zmarker'0: () }
+
+type t_Vec'0  =
+  { t_Vec__buf'0: t_RawVec'0; t_Vec__len'0: UInt64.t }
+
+type t_Assignments  =
+  { t_Assignments__0: t_Vec'0 }
+
+type t_RawVec'1  =
+  { t_RawVec__inner'1: t_RawVecInner; t_RawVec__qy95zmarker'1: () }
+
+type t_Vec'1  =
+  { t_Vec__buf'1: t_RawVec'1; t_Vec__len'1: UInt64.t }
+
+type t_RawVec'2  =
+  { t_RawVec__inner'2: t_RawVecInner; t_RawVec__qy95zmarker'2: () }
+
+type t_Vec'2  =
+  { t_Vec__buf'2: t_RawVec'2; t_Vec__len'2: UInt64.t }
+
+type t_Trail  =
+  { t_Trail__assignments: t_Assignments;
+    t_Trail__lit_to_level: t_Vec'1;
+    t_Trail__trail: t_Vec'2;
+    t_Trail__curr_i: UInt64.t;
+    t_Trail__decisions: t_Vec'1 }
+
+predicate in_bounds [@inline:trivial] (self : UInt64.t) (seq : Seq.seq UInt64.t) =
+  [%#sslice] UInt64.t'int self < Seq.length seq
+
+function view'2 (self : t_Vec'1) : Seq.seq UInt64.t
+
+axiom view_spec'0 : forall self : t_Vec'1 . [%#svec'7] Seq.length (view'2 self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+function view'3 (self : t_Vec'1) : Seq.seq UInt64.t =
+  [%#smodel] view'2 self
+
+predicate has_value [@inline:trivial] (self : UInt64.t) (seq : Seq.seq UInt64.t) (out : UInt64.t) =
+  [%#sslice'0] Seq.get seq (UInt64.t'int self) = out
+
+let rec index'1 (self_:t_Vec'1) (ix:UInt64.t) (return'  (x:UInt64.t))= {[@expl:index requires] [%#svec] in_bounds ix (view'3 self_)}
+  any [ return''0 (result:UInt64.t)-> {[%#svec'0] has_value ix (view'3 self_) result} (! return' {result}) ] 
+
+type t_Solver  =
+  { t_Solver__num_lemmas: UInt64.t;
+    t_Solver__max_lemmas: UInt64.t;
+    t_Solver__num_conflicts: UInt64.t;
+    t_Solver__initial_len: UInt64.t;
+    t_Solver__inc_reduce_db: UInt64.t;
+    t_Solver__fast: UInt64.t;
+    t_Solver__slow: UInt64.t;
+    t_Solver__perm_diff: t_Vec'1 }
+
+let rec len'0 (self_:t_Vec'1) (return'  (x:UInt64.t))= any
+  [ return''0 (result:UInt64.t)-> {[%#svec'1] UInt64.t'int result = Seq.length (view'3 self_)} (! return' {result}) ]
+
+
+function view'4 (self : MutBorrow.t t_Vec'1) : Seq.seq UInt64.t =
+  [%#smodel'0] view'2 self.current
+
+predicate resolve_elswhere [@inline:trivial] (self : UInt64.t) (old' : Seq.seq UInt64.t) (fin : Seq.seq UInt64.t) =
+  [%#sslice'1] forall i : int . 0 <= i /\ i <> UInt64.t'int self /\ i < Seq.length old'
+   -> Seq.get old' i = Seq.get fin i
+
+let rec index_mut (self_:MutBorrow.t t_Vec'1) (ix:UInt64.t) (return'  (x:MutBorrow.t UInt64.t))= {[@expl:index_mut requires] [%#svec'2] in_bounds ix (view'4 self_)}
+  any
+  [ return''0 (result:MutBorrow.t UInt64.t)-> {[%#svec'3] has_value ix (view'4 self_) result.current}
+    {[%#svec'4] has_value ix (view'2 self_.final) result.final}
+    {[%#svec'5] resolve_elswhere ix (view'4 self_) (view'2 self_.final)}
+    {[%#svec'6] Seq.length (view'2 self_.final) = Seq.length (view'4 self_)}
+    (! return' {result}) ]
+
+
+predicate resolve (self : MutBorrow.t UInt64.t) =
+  [%#sresolve] self.final = self.current
+
+predicate resolve'0 (_0 : MutBorrow.t UInt64.t) =
+  resolve _0
+
+predicate resolve'1 (self : MutBorrow.t t_Solver) =
+  [%#sresolve] self.final = self.current
+
+predicate resolve'2 (_0 : MutBorrow.t t_Solver) =
+  resolve'1 _0
+
+type t_RawVec'3  =
+  { t_RawVec__inner'3: t_RawVecInner; t_RawVec__qy95zmarker'3: () }
+
+type t_Vec'3  =
+  { t_Vec__buf'3: t_RawVec'3; t_Vec__len'3: UInt64.t }
+
+type t_Formula  =
+  { t_Formula__clauses: t_Vec'3; t_Formula__num_vars: UInt64.t }
+
+predicate inv [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 82 4 82 36] (self : t_Lit) (n : int) =
+  [%#slogic_lit'0] index_logic self < n
+
+predicate vars_in_range_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 23 0 23 55] (s : Seq.seq t_Lit) (n : int)
+
+ =
+  [%#slogic_clause'2] forall i : int . 0 <= i /\ i < Seq.length s  -> inv (Seq.get s i) n
+
+predicate no_duplicate_indexes_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 46 0 46 54] (s : Seq.seq t_Lit)
+
+ =
+  [%#slogic_clause'3] forall j : int, k : int . 0 <= j /\ j < Seq.length s /\ 0 <= k /\ k < Seq.length s /\ k <> j
+   -> index_logic (Seq.get s k) <> index_logic (Seq.get s j)
+
+predicate inv_internal [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 32 0 32 48] (s : Seq.seq t_Lit) (n : int)
+
+ =
+  [%#slogic_clause'0] vars_in_range_inner s n /\ no_duplicate_indexes_inner s
+
+predicate inv'0 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 226 4 226 36] (self : t_Clause) (n : int) =
+  [%#slogic_clause] inv_internal (view'0 self) n
+
+meta "compute_max_steps" 1000000
+
+let rec calc_lbd[#"/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 176 4 176 76] (self:t_Clause) (_f:t_Formula) (s:MutBorrow.t t_Solver) (t:t_Trail) (return'  (x:UInt64.t))= {[@expl:calc_lbd requires #0] [%#sclause'4] Seq.length (view'2 t.t_Trail__lit_to_level)
+  = UInt64.t'int _f.t_Formula__num_vars}
+  {[@expl:calc_lbd requires #1] [%#sclause'5] inv'0 self (UInt64.t'int _f.t_Formula__num_vars)}
+  (! bb0
+  [ bb0 = s0
+    [ s0 =  [ &i <- [%#sclause] (0 : UInt64.t) ] s1
+    | s1 =  [ &lbd <- [%#sclause'0] (0 : UInt64.t) ] s2
+    | s2 =  [ &old_1_0 <- s'0 ] s3
+    | s3 = bb1 ]
+  
+  | bb1 = bb1'0
+    [ bb1'0 = {[@expl:mut invariant] old_1_0.final = s'0.final}
+      {[@expl:loop invariant] [%#sclause'1] UInt64.t'int lbd <= UInt64.t'int i}
+      (! s0) [ s0 = bb2 ] 
+      [ bb2 = s0 [ s0 = len {self'0} (fun (_ret:UInt64.t) ->  [ &_15 <- _ret ] s1) | s1 = bb3 ] 
+      | bb3 = s0
+        [ s0 =  [ &_13 <- UInt64.lt i _15 ] s1 | s1 = any [ br0 -> {_13 = false} (! bb17) | br1 -> {_13} (! bb4) ]  ]
+      
+      | bb4 = s0 [ s0 = index {self'0} {i} (fun (_ret:t_Lit) ->  [ &_22 <- _ret ] s1) | s1 = bb5 ] 
+      | bb5 = s0 [ s0 = index'0 {_22} (fun (_ret:UInt64.t) ->  [ &_20 <- _ret ] s1) | s1 = bb6 ] 
+      | bb6 = s0
+        [ s0 = index'1 {t'0.t_Trail__lit_to_level} {_20} (fun (_ret:UInt64.t) ->  [ &_18 <- _ret ] s1) | s1 = bb7 ]
+      
+      | bb7 = s0
+        [ s0 =  [ &level <- _18 ] s1
+        | s1 = len'0 {(s'0.current).t_Solver__perm_diff} (fun (_ret:UInt64.t) ->  [ &_28 <- _ret ] s2)
+        | s2 = bb8 ]
+      
+      | bb8 = s0
+        [ s0 =  [ &_26 <- UInt64.lt level _28 ] s1
+        | s1 = any [ br0 -> {_26 = false} (! bb14) | br1 -> {_26} (! bb9) ]  ]
+      
+      | bb9 = s0
+        [ s0 = index'1 {(s'0.current).t_Solver__perm_diff} {level} (fun (_ret:UInt64.t) ->  [ &_32 <- _ret ] s1)
+        | s1 = bb10 ]
+      
+      | bb10 = s0
+        [ s0 =  [ &_30 <- _32 <> (s'0.current).t_Solver__num_conflicts ] s1
+        | s1 = any [ br0 -> {_30 = false} (! bb13) | br1 -> {_30} (! bb11) ]  ]
+      
+      | bb11 = s0
+        [ s0 = MutBorrow.borrow_mut <t_Vec'1> {(s'0.current).t_Solver__perm_diff}
+            (fun (_ret:MutBorrow.t t_Vec'1) ->
+               [ &_38 <- _ret ] 
+               [ &s'0 <- { s'0 with current = { s'0.current with t_Solver__perm_diff = _ret.final } } ] 
+              s1)
+        | s1 = index_mut {_38} {level} (fun (_ret:MutBorrow.t UInt64.t) ->  [ &_37 <- _ret ] s2)
+        | s2 = bb12 ]
+      
+      | bb12 = s0
+        [ s0 =  [ &_37 <- { _37 with current = (s'0.current).t_Solver__num_conflicts } ] s1
+        | s1 = -{resolve'0 _37}- s2
+        | s2 = UInt64.add {lbd} {[%#sclause'2] (1 : UInt64.t)} (fun (_ret:UInt64.t) ->  [ &lbd <- _ret ] s3)
+        | s3 = bb16 ]
+      
+      | bb13 = bb15
+      | bb14 = bb15
+      | bb15 = bb16
+      | bb16 = s0
+        [ s0 = UInt64.add {i} {[%#sclause'3] (1 : UInt64.t)} (fun (_ret:UInt64.t) ->  [ &i <- _ret ] s1) | s1 = bb1'0 ]
+       ]
+     ]
+  
+  | bb17 = s0 [ s0 = -{resolve'2 s'0}- s1 | s1 =  [ &_0 <- lbd ] s2 | s2 = return''0 {_0} ]  ]
+  )
+  [ & _0 : UInt64.t = Any.any_l ()
+  | & self'0 : t_Clause = self
+  | & s'0 : MutBorrow.t t_Solver = s
+  | & t'0 : t_Trail = t
+  | & i : UInt64.t = Any.any_l ()
+  | & lbd : UInt64.t = Any.any_l ()
+  | & _13 : bool = Any.any_l ()
+  | & _15 : UInt64.t = Any.any_l ()
+  | & level : UInt64.t = Any.any_l ()
+  | & _18 : UInt64.t = Any.any_l ()
+  | & _20 : UInt64.t = Any.any_l ()
+  | & _22 : t_Lit = Any.any_l ()
+  | & _26 : bool = Any.any_l ()
+  | & _28 : UInt64.t = Any.any_l ()
+  | & _30 : bool = Any.any_l ()
+  | & _32 : UInt64.t = Any.any_l ()
+  | & _37 : MutBorrow.t UInt64.t = Any.any_l ()
+  | & _38 : MutBorrow.t t_Vec'1 = Any.any_l ()
+  | & old_1_0 : MutBorrow.t t_Solver = Any.any_l () ]
+   [ return''0 (result:UInt64.t)-> (! return' {result}) ] 

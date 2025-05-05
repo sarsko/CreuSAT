@@ -1,4 +1,3 @@
-
 extern crate creusot_contracts;
 #[allow(unused)]
 use creusot_contracts::{model::*, std::*, *};

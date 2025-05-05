@@ -1,0 +1,21 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/decision.rs" 22 4 22 24 *)
+
+(* <decision::Node as std::default::Default> *)
+
+let%span sdecision = "/Users/sarekhs/CreuSAT/CreuSAT/src/decision.rs" 22 4 22 24
+let%span sdecision'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/decision.rs" 31 20 31 91
+
+use creusot.int.UInt64
+
+type t_Node  =
+  { t_Node__next: UInt64.t; t_Node__prev: UInt64.t; t_Node__ts: UInt64.t }
+
+constant v_MAX : UInt64.t = (18446744073709551615 : UInt64.t)
+
+predicate is_default [#"/Users/sarekhs/CreuSAT/CreuSAT/src/decision.rs" 30 4 30 31] (self : t_Node) =
+  [%#sdecision'0] UInt64.t'int self.t_Node__next = UInt64.t'int (v_MAX : UInt64.t)
+  /\ UInt64.t'int self.t_Node__prev = UInt64.t'int (v_MAX : UInt64.t) /\ UInt64.t'int self.t_Node__ts = 0
+
+goal refines : [%#sdecision] forall result : t_Node . UInt64.t'int result.t_Node__ts = 0
+/\ UInt64.t'int result.t_Node__prev = UInt64.t'int (v_MAX : UInt64.t)
+/\ UInt64.t'int result.t_Node__next = UInt64.t'int (v_MAX : UInt64.t)  -> is_default result

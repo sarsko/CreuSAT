@@ -1,6 +1,5 @@
 // Formula is Mac OK with an inline_full + split on VC #12 for add_clause 11.04 22.18
 
-
 use creusot_contracts::{std::*, Snapshot, *};
 
 use crate::{assignments::*, clause::*, solver::*, trail::*, watches::*};

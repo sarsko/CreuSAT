@@ -3,7 +3,6 @@
 //#![cfg_attr(not(creusot), feature(stmt_expr_attributes, proc_macro_hygiene))]
 #![allow(unused)]
 
-
 #[allow(unused)]
 use creusot_contracts::std::*;
 #[allow(unused)]

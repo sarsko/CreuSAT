@@ -1,4 +1,3 @@
-
 use creusot_contracts::{std::*, Clone, Snapshot, *};
 
 use crate::{assignments::*, formula::*, lit::*};

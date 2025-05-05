@@ -1,4 +1,3 @@
-
 use creusot_contracts::{std::*, Snapshot, *};
 
 use crate::{formula::*, lit::*, trail::*};
@@ -73,7 +72,7 @@ impl Watches {
         let mut i: usize = 0;
         let mut watches = Vec::new();
         #[invariant(i@ <= f.num_vars@)]
-        #[invariant(watches_invariant_internal(watches@, i@, *f))]
+        #[invariant(watches_inv_internal(watches@, i@, *f))]
         while i < f.num_vars {
             watches.push(Vec::new());
             watches.push(Vec::new());
@@ -94,7 +93,7 @@ impl Watches {
     #[requires((@(_f.clauses@)[cref@]).len() > 1)]
     #[ensures((self@.watches).len() == (@(^self).watches).len())]
     pub fn add_watcher(&mut self, lit: Lit, cref: usize, _f: &Formula) {
-        self.watches[lit.to_neg_watchidx()].push(Watcher { cref });
+        self.watches[lit.to_neg_watchidx()].push_back(Watcher { cref });
     }
     */
 

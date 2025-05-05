@@ -2,7 +2,6 @@ extern crate creusot_contracts;
 use crate::{clause::*, decision::*, formula::*};
 use creusot_contracts::{model::*, std::*, *};
 
-
 #[cfg(creusot)]
 use crate::logic::*;
 

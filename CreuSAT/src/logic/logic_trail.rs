@@ -1,4 +1,3 @@
-
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
@@ -212,5 +211,5 @@ pub fn lemma_assign_maintains_long_are_post_unit(v: Seq<Step>, f: Formula, a: As
 #[requires(step.lit.inv(f.num_vars@))]
 //#[requires(step.reason.inv(f))]
 #[requires(lit_not_in_less_inner(t.trail@, f))]
-#[ensures(lit_not_in_less_inner(t.trail@.push(step), f))]
+#[ensures(lit_not_in_less_inner(t.trail@.push_back(step), f))]
 pub fn lemma_push_maintains_lit_not_in_less(t: Trail, f: Formula, step: Step) {}

@@ -1,0 +1,46 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/decision.rs" 9 9 9 14 *)
+
+(* <decision::Node as creusot_contracts::Clone> *)
+
+let%span sclone = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/clone.rs" 15 26 15 41
+let%span sdecision = "/Users/sarekhs/CreuSAT/CreuSAT/src/decision.rs" 9 9 9 14
+
+use creusot.int.UInt64
+use creusot.prelude.Any
+
+type t_Node  =
+  { t_Node__next: UInt64.t; t_Node__prev: UInt64.t; t_Node__ts: UInt64.t }
+
+let rec clone' (self_:UInt64.t) (return'  (x:UInt64.t))= any
+  [ return''0 (result:UInt64.t)-> {[%#sclone] result = self_} (! return' {result}) ]
+
+
+meta "compute_max_steps" 1000000
+
+let rec clone''0[#"/Users/sarekhs/CreuSAT/CreuSAT/src/decision.rs" 9 9 9 14] (self:t_Node) (return'  (x:t_Node))= (! bb0
+  [ bb0 = s0
+    [ s0 =  [ &_5 <- self'0.t_Node__next ] s1
+    | s1 = clone' {_5} (fun (_ret:UInt64.t) ->  [ &_3 <- _ret ] s2)
+    | s2 = bb1 ]
+  
+  | bb1 = s0
+    [ s0 =  [ &_8 <- self'0.t_Node__prev ] s1
+    | s1 = clone' {_8} (fun (_ret:UInt64.t) ->  [ &_6 <- _ret ] s2)
+    | s2 = bb2 ]
+  
+  | bb2 = s0
+    [ s0 =  [ &_11 <- self'0.t_Node__ts ] s1
+    | s1 = clone' {_11} (fun (_ret:UInt64.t) ->  [ &_9 <- _ret ] s2)
+    | s2 = bb3 ]
+  
+  | bb3 = s0 [ s0 =  [ &_0 <- { t_Node__next = _3; t_Node__prev = _6; t_Node__ts = _9 } ] s1 | s1 = return''0 {_0} ]  ]
+  )
+  [ & _0 : t_Node = Any.any_l ()
+  | & self'0 : t_Node = self
+  | & _3 : UInt64.t = Any.any_l ()
+  | & _5 : UInt64.t = Any.any_l ()
+  | & _6 : UInt64.t = Any.any_l ()
+  | & _8 : UInt64.t = Any.any_l ()
+  | & _9 : UInt64.t = Any.any_l ()
+  | & _11 : UInt64.t = Any.any_l () ]
+   [ return''0 (result:t_Node)-> {[@expl:clone ensures] [%#sdecision] result = self} (! return' {result}) ] 

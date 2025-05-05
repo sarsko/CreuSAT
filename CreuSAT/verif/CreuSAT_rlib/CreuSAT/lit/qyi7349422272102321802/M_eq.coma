@@ -1,0 +1,52 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 135 4 135 37 *)
+
+(* <lit::Lit as creusot_contracts::PartialEq> *)
+
+let%span slit = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 136 8 136 82
+let%span slit'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 133 14 133 39
+let%span slit'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 43 14 43 43
+let%span slit'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 50 14 50 48
+let%span slogic_lit = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 24 20 24 29
+let%span slogic_lit'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 31 20 31 33
+
+use creusot.int.UInt64
+use creusot.prelude.Any
+
+type t_Lit  =
+  { t_Lit__idx: UInt64.t; t_Lit__polarity: bool }
+
+function index_logic [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 23 4 23 35] (self : t_Lit) : int =
+  [%#slogic_lit] UInt64.t'int self.t_Lit__idx
+
+let rec index (self:t_Lit) (return'  (x:UInt64.t))= any
+  [ return''0 (result:UInt64.t)-> {[%#slit'1] UInt64.t'int result = index_logic self} (! return' {result}) ]
+
+
+function is_positive_logic [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 30 4 30 42] (self : t_Lit) : bool =
+  [%#slogic_lit'0] self.t_Lit__polarity
+
+let rec is_positive (self:t_Lit) (return'  (x:bool))= any
+  [ return''0 (result:bool)-> {[%#slit'2] result = is_positive_logic self} (! return' {result}) ]
+
+
+meta "compute_max_steps" 1000000
+
+let rec eq[#"/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 135 4 135 37] (self:t_Lit) (other:t_Lit) (return'  (x:bool))= (! bb0
+  [ bb0 = s0 [ s0 = index {self'0} (fun (_ret:UInt64.t) ->  [ &_5 <- _ret ] s1) | s1 = bb1 ] 
+  | bb1 = s0 [ s0 = index {other'0} (fun (_ret:UInt64.t) ->  [ &_7 <- _ret ] s1) | s1 = bb2 ] 
+  | bb2 = s0 [ s0 =  [ &_4 <- _5 = _7 ] s1 | s1 = any [ br0 -> {_4 = false} (! bb4) | br1 -> {_4} (! bb3) ]  ] 
+  | bb3 = s0 [ s0 = is_positive {self'0} (fun (_ret:bool) ->  [ &_9 <- _ret ] s1) | s1 = bb5 ] 
+  | bb5 = s0 [ s0 = is_positive {other'0} (fun (_ret:bool) ->  [ &_11 <- _ret ] s1) | s1 = bb6 ] 
+  | bb6 = s0 [ s0 =  [ &_0 <- _9 = _11 ] s1 | s1 = bb7 ] 
+  | bb4 = s0 [ s0 =  [ &_0 <- [%#slit] false ] s1 | s1 = bb7 ] 
+  | bb7 = return''0 {_0} ]
+  )
+  [ & _0 : bool = Any.any_l ()
+  | & self'0 : t_Lit = self
+  | & other'0 : t_Lit = other
+  | & _4 : bool = Any.any_l ()
+  | & _5 : UInt64.t = Any.any_l ()
+  | & _7 : UInt64.t = Any.any_l ()
+  | & _9 : bool = Any.any_l ()
+  | & _11 : bool = Any.any_l () ]
+   [ return''0 (result:bool)-> {[@expl:eq ensures] [%#slit'0] result = (self = other)} (! return' {result}) ] 

@@ -61,7 +61,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                                 match e.parse::<i32>() {
                                     Ok(n) => {
                                         if n == 0 {
-                                            out_clauses.push(curr_clause);
+                                            out_clauses.push_back(curr_clause);
                                             curr_clause = vec![];
                                         } else {
                                             let n_abs = n.abs() as usize;
@@ -69,7 +69,7 @@ pub fn parse_cnf(infile: &str) -> Result<(Clauses, usize), String> {
                                                 max_literal = n_abs;
                                             }
                                             if !seen.contains(&n) {
-                                                curr_clause.push(n);
+                                                curr_clause.push_back(n);
                                                 seen.insert(n);
                                             }
                                         }
@@ -111,17 +111,17 @@ pub fn preproc_and_solve(clauses: &mut std::vec::Vec<std::vec::Vec<i32>>, num_li
             assert!(*lit != 0);
             if *lit < 0 {
                 let new_lit = Lit2::new((lit.abs() - 1) as usize, false);
-                currclause.push(new_lit);
+                currclause.push_back(new_lit);
             } else {
                 let new_lit = Lit2::new((*lit - 1) as usize, true);
-                currclause.push(new_lit);
+                currclause.push_back(new_lit);
             }
         }
         if currclause.len() == 0 {
             return false;
         } else {
             let clause2: Clause2 = Clause2::clause_from_vec(&currclause);
-            formula.clauses.push(clause2);
+            formula.clauses.push_back(clause2);
         }
     }
     match solver(&mut formula) {

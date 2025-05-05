@@ -1,4 +1,3 @@
-
 use creusot_contracts::{ensures, invariant, maintains, proof_assert, requires, std::vec, Clone, Int, Snapshot, *};
 
 use crate::{assignments::*, formula::*, util::*};
@@ -13,7 +12,7 @@ pub struct Node {
     pub ts: usize,
 }
 
-//const INVALID: usize = usize::MAX;
+const INVALID: usize = usize::MAX;
 
 impl ::std::default::Default for Node {
     #[ensures(result.next@ == usize::MAX@)]
@@ -49,7 +48,6 @@ impl Decisions {
                 lit_order@[i]@ < f.num_vars@)]
     #[ensures(result.inv(f.num_vars@))]
     pub fn make_linked_list(f: &Formula, lit_order: Vec<usize>) -> Decisions {
-        let INVALID: usize = usize::MAX;
         let mut linked_list: Vec<Node> = vec::from_elem(Node::default(), f.num_vars);
         let mut i: usize = 0;
         let mut head: usize = 0;
@@ -135,7 +133,6 @@ impl Decisions {
     #[ensures((^self).timestamp@ == self.linked_list@.len() + 1)]
     #[ensures((^self).linked_list@.len() == self.linked_list@.len())]
     fn rescore(&mut self, _f: &Formula) {
-        let INVALID: usize = usize::MAX;
         let old_self: Snapshot<&mut Decisions> = snapshot! { self };
         let mut curr_score = self.linked_list.len();
         let mut i: usize = 0;
@@ -163,7 +160,6 @@ impl Decisions {
     #[requires(tomove@ < self.linked_list@.len())]
     #[maintains((mut self).inv(_f.num_vars@))]
     fn move_to_front(&mut self, tomove: usize, _f: &Formula) {
-        let INVALID: usize = usize::MAX;
         if tomove == self.start {
             return;
         }
@@ -227,6 +223,7 @@ impl Decisions {
         }
     }
 
+    // SAREK TODO
     #[cfg_attr(feature = "trust_decision", trusted)]
     #[maintains((mut self).inv(_f.num_vars@))]
     #[requires(a.inv(*_f))]
@@ -235,7 +232,6 @@ impl Decisions {
         None    => a.complete(),
     })]
     pub fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize> {
-        let INVALID: usize = usize::MAX;
         let mut curr = self.search;
         #[invariant(curr == usize::MAX || curr@ < (a@).len())]
         while curr != INVALID {

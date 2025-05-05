@@ -1,4 +1,3 @@
-
 use creusot_contracts::{model::*, std::*, *};
 
 use crate::{

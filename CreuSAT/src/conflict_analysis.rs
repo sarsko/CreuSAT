@@ -1,4 +1,3 @@
-
 use creusot_contracts::{std::*, vec, Snapshot, *};
 
 use crate::{assignments::*, clause::*, decision::*, formula::*, lit::*, trail::*};
@@ -99,7 +98,7 @@ fn resolve(
             if trail.lit_to_level[o[i].index()] >= trail.decision_level() {
                 *path_c += 1;
             }
-            proof_assert!(c@ == old_c3@.push(o@[i@]));
+            proof_assert!(c@ == old_c3@.push_back(o@[i@]));
             proof_assert!(c@.len() == old_c3@.len() + 1);
             proof_assert!(o@[i@].lit_in(*c));
         }

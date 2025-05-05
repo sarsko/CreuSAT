@@ -1,4 +1,3 @@
-
 use creusot_contracts::{std::*, Clone, Snapshot, *};
 
 use crate::{assignments::*, formula::*, lit::*, solver::*, trail::*};
@@ -137,7 +136,7 @@ impl Clause {
 
     // This is an ugly runtime check
     #[cfg_attr(feature = "trust_clause", trusted)]
-    #[requires(invariant_internal(self@, _f.num_vars@))]
+    #[requires(inv_internal(self@, _f.num_vars@))]
     #[requires(a.inv(*_f))]
     #[requires(self@.len() > 1)]
     #[ensures(result ==> self.unit(*a))]

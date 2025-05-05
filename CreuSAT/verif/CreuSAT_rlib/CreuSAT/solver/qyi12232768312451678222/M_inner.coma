@@ -1,0 +1,757 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 334 4 336 18 *)
+
+(* solver::Solver *)
+
+let%span svec = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/vec.rs" 21 14 21 41
+let%span slogic_assignments = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 53 12 54 74
+let%span slogic_assignments'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 17 4 17 12
+let%span slogic_assignments'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 62 12 62 73
+let%span slogic_assignments'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 37 8 37 61
+let%span sresolve = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/resolve.rs" 54 20 54 34
+let%span slogic_lit = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 24 20 24 29
+let%span slogic_lit'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 83 20 83 42
+let%span slogic_lit'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 75 12 76 57
+let%span slogic_lit'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 90 12 93 13
+let%span slogic_lit'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 117 20 117 38
+let%span slogic_lit'4 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 101 12 104 13
+let%span slogic_lit'5 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 31 20 31 33
+let%span slogic_formula = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 79 14 79 41
+let%span slogic_formula'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 81 20 81 44
+let%span slogic_formula'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 73 8 73 69
+let%span slogic_formula'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 123 12 124 45
+let%span slogic_formula'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 66 12 66 113
+let%span slogic_formula'4 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 152 20 152 80
+let%span slogic_formula'5 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 88 12 92 45
+let%span slogic_formula'6 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 30 8 31 69
+let%span slogic_formula'7 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 22 8 22 85
+let%span slogic_formula'8 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 131 20 131 48
+let%span slogic_formula'9 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 39 8 40 37
+let%span slogic_formula'10 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 48 8 48 111
+let%span slogic_trail = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 56 8 67 9
+let%span slogic_trail'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 105 8 107 38
+let%span slogic_trail'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 92 8 97 17
+let%span slogic_trail'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 146 8 148 72
+let%span slogic_trail'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 168 8 172 17
+let%span slogic_trail'4 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 115 8 116 33
+let%span slogic_trail'5 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 180 8 186 17
+let%span slogic_trail'6 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 15 12 23 13
+let%span slogic_trail'7 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 129 4 133 5
+let%span slogic = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic.rs" 25 8 29 9
+let%span slogic_clause = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 187 12 188 37
+let%span slogic_clause'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 14 4 14 12
+let%span slogic_clause'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 105 20 105 53
+let%span slogic_clause'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 227 20 227 42
+let%span slogic_clause'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 40 8 40 134
+let%span slogic_clause'4 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 33 4 33 62
+let%span slogic_clause'5 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 25 8 26 23
+let%span slogic_clause'6 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 48 8 49 92
+let%span slogic_util = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_util.rs" 28 4 28 31
+let%span slogic_util'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_util.rs" 22 16 22 80
+let%span sord = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/logic/ord.rs" 129 39 129 89
+let%span sord'0 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/logic/ord.rs" 134 39 134 86
+let%span sord'1 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/logic/ord.rs" 139 39 139 86
+let%span sord'2 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/logic/ord.rs" 144 39 144 89
+let%span sord'3 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/logic/ord.rs" 149 39 149 70
+let%span sord'4 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/logic/ord.rs" 154 40 154 57
+let%span sord'5 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/logic/ord.rs" 155 40 155 57
+let%span sord'6 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/logic/ord.rs" 156 39 156 56
+let%span sord'7 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/logic/ord.rs" 161 40 161 70
+let%span sord'8 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/logic/ord.rs" 162 39 162 72
+let%span sord'9 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/logic/ord.rs" 167 40 167 73
+let%span sord'10 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/logic/ord.rs" 168 39 168 69
+let%span sord'11 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/logic/ord.rs" 173 39 173 84
+let%span sord'12 = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/logic/ord.rs" 230 16 236 17
+let%span slogic_decision = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_decision.rs" 12 12 17 97
+let%span slogic_watches = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 76 12 76 63
+let%span slogic_watches'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 14 8 19 64
+let%span ssolver = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 337 44 337 65
+let%span ssolver'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 343 20 343 52
+let%span ssolver'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 342 20 342 41
+let%span ssolver'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 341 20 341 39
+let%span ssolver'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 340 20 340 33
+let%span ssolver'4 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 339 20 339 56
+let%span ssolver'5 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 338 20 338 51
+let%span ssolver'6 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 322 15 322 48
+let%span ssolver'7 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 323 15 323 28
+let%span ssolver'8 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 324 15 324 47
+let%span ssolver'9 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 325 15 325 34
+let%span ssolver'10 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 326 15 326 36
+let%span ssolver'11 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 327 15 327 47
+let%span ssolver'12 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 328 14 332 5
+let%span ssolver'13 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 333 14 333 39
+let%span ssolver'14 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 271 4 271 31
+let%span ssolver'15 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 272 4 272 40
+let%span ssolver'16 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 273 4 273 36
+let%span ssolver'17 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 274 4 274 42
+let%span ssolver'18 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 275 15 275 33
+let%span ssolver'19 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 276 15 276 42
+let%span ssolver'20 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 277 14 277 43
+let%span ssolver'21 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 278 14 278 27
+let%span ssolver'22 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 279 14 285 5
+
+use creusot.prelude.Opaque
+use creusot.int.UInt64
+use seq.Seq
+use mach.int.Int
+use creusot.prelude.MutBorrow
+use creusot.int.UInt32
+use creusot.int.UInt8
+use creusot.prelude.Any
+
+type t_NonNull  =
+  { t_NonNull__pointer: Opaque.ptr }
+
+type t_Unique  =
+  { t_Unique__pointer: t_NonNull; t_Unique__qy95zmarker: () }
+
+type t_UsizeNoHighBit  =
+  { t_UsizeNoHighBit__0: UInt64.t }
+
+type t_RawVecInner  =
+  { t_RawVecInner__ptr: t_Unique; t_RawVecInner__cap: t_UsizeNoHighBit; t_RawVecInner__alloc: () }
+
+type t_RawVec  =
+  { t_RawVec__inner: t_RawVecInner; t_RawVec__qy95zmarker: () }
+
+type t_Vec  =
+  { t_Vec__buf: t_RawVec; t_Vec__len: UInt64.t }
+
+type t_Decisions  =
+  { t_Decisions__linked_list: t_Vec;
+    t_Decisions__timestamp: UInt64.t;
+    t_Decisions__start: UInt64.t;
+    t_Decisions__search: UInt64.t }
+
+type t_Node  =
+  { t_Node__next: UInt64.t; t_Node__prev: UInt64.t; t_Node__ts: UInt64.t }
+
+constant v_MAX : UInt64.t = (18446744073709551615 : UInt64.t)
+
+function view (self : t_Vec) : Seq.seq t_Node
+
+axiom view_spec : forall self : t_Vec . [%#svec] Seq.length (view self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+constant v_MAX'0 : UInt64.t = (18446744073709551615 : UInt64.t)
+
+predicate inv [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_decision.rs" 10 4 10 36] (self : t_Decisions) (n : int)
+ =
+  [%#slogic_decision] Seq.length (view self.t_Decisions__linked_list) = n
+  /\ (UInt64.t'int self.t_Decisions__search < Seq.length (view self.t_Decisions__linked_list)
+  \/ UInt64.t'int self.t_Decisions__search = UInt64.t'int v_MAX'0)
+  /\ UInt64.t'int self.t_Decisions__start < Seq.length (view self.t_Decisions__linked_list)
+  /\ (forall i : int . 0 <= i /\ i < Seq.length (view self.t_Decisions__linked_list)
+   -> (UInt64.t'int (Seq.get (view self.t_Decisions__linked_list) i).t_Node__next = UInt64.t'int v_MAX'0
+  \/ UInt64.t'int (Seq.get (view self.t_Decisions__linked_list) i).t_Node__next < n)
+  /\ (UInt64.t'int (Seq.get (view self.t_Decisions__linked_list) i).t_Node__prev = UInt64.t'int v_MAX'0
+  \/ UInt64.t'int (Seq.get (view self.t_Decisions__linked_list) i).t_Node__prev < n))
+
+type t_RawVec'0  =
+  { t_RawVec__inner'0: t_RawVecInner; t_RawVec__qy95zmarker'0: () }
+
+type t_Vec'0  =
+  { t_Vec__buf'0: t_RawVec'0; t_Vec__len'0: UInt64.t }
+
+type t_Formula  =
+  { t_Formula__clauses: t_Vec'0; t_Formula__num_vars: UInt64.t }
+
+type t_RawVec'1  =
+  { t_RawVec__inner'1: t_RawVecInner; t_RawVec__qy95zmarker'1: () }
+
+type t_Vec'1  =
+  { t_Vec__buf'1: t_RawVec'1; t_Vec__len'1: UInt64.t }
+
+type t_Watches  =
+  { t_Watches__watches: t_Vec'1 }
+
+type t_RawVec'2  =
+  { t_RawVec__inner'2: t_RawVecInner; t_RawVec__qy95zmarker'2: () }
+
+type t_Vec'2  =
+  { t_Vec__buf'2: t_RawVec'2; t_Vec__len'2: UInt64.t }
+
+type t_Lit  =
+  { t_Lit__idx: UInt64.t; t_Lit__polarity: bool }
+
+type t_Watcher  =
+  { t_Watcher__cref: UInt64.t; t_Watcher__blocker: t_Lit }
+
+function view'0 (self : t_Vec'2) : Seq.seq t_Watcher
+
+axiom view_spec'0 : forall self : t_Vec'2 . [%#svec] Seq.length (view'0 self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+type t_RawVec'3  =
+  { t_RawVec__inner'3: t_RawVecInner; t_RawVec__qy95zmarker'3: () }
+
+type t_Vec'3  =
+  { t_Vec__buf'3: t_RawVec'3; t_Vec__len'3: UInt64.t }
+
+type t_Clause  =
+  { t_Clause__deleted: bool; t_Clause__lbd: UInt32.t; t_Clause__search: UInt64.t; t_Clause__lits: t_Vec'3 }
+
+function view'1 (self : t_Vec'0) : Seq.seq t_Clause
+
+axiom view_spec'1 : forall self : t_Vec'0 . [%#svec] Seq.length (view'1 self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+function view'2 (self : t_Vec'3) : Seq.seq t_Lit
+
+axiom view_spec'2 : forall self : t_Vec'3 . [%#svec] Seq.length (view'2 self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+function view'3 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 16 4 16 33] (self : t_Clause) : Seq.seq t_Lit
+
+ =
+  [%#slogic_clause'0] view'2 self.t_Clause__lits
+
+function index_logic [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 23 4 23 35] (self : t_Lit) : int =
+  [%#slogic_lit] UInt64.t'int self.t_Lit__idx
+
+predicate watches_inv_internal [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 12 0 12 77] (w : Seq.seq t_Vec'2) (n : int) (f : t_Formula)
+
+ =
+  [%#slogic_watches'0] 2 * n = Seq.length w
+  /\ (forall i : int . 0 <= i /\ i < Seq.length w
+   -> (forall j : int . 0 <= j /\ j < Seq.length (view'0 (Seq.get w i))
+   -> UInt64.t'int (Seq.get (view'0 (Seq.get w i)) j).t_Watcher__cref < Seq.length (view'1 f.t_Formula__clauses)
+  /\ Seq.length (view'3 (Seq.get (view'1 f.t_Formula__clauses) (UInt64.t'int (Seq.get (view'0 (Seq.get w i)) j).t_Watcher__cref)))
+  > 1
+  /\ index_logic (Seq.get (view'0 (Seq.get w i)) j).t_Watcher__blocker < UInt64.t'int f.t_Formula__num_vars))
+
+function view'4 (self : t_Vec'1) : Seq.seq t_Vec'2
+
+axiom view_spec'3 : forall self : t_Vec'1 . [%#svec] Seq.length (view'4 self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+predicate inv'0 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 74 4 74 40] (self : t_Watches) (f : t_Formula)
+
+ =
+  [%#slogic_watches] watches_inv_internal (view'4 self.t_Watches__watches) (UInt64.t'int f.t_Formula__num_vars) f
+
+type t_RawVec'4  =
+  { t_RawVec__inner'4: t_RawVecInner; t_RawVec__qy95zmarker'4: () }
+
+type t_Vec'4  =
+  { t_Vec__buf'4: t_RawVec'4; t_Vec__len'4: UInt64.t }
+
+type t_Assignments  =
+  { t_Assignments__0: t_Vec'4 }
+
+type t_RawVec'5  =
+  { t_RawVec__inner'5: t_RawVecInner; t_RawVec__qy95zmarker'5: () }
+
+type t_Vec'5  =
+  { t_Vec__buf'5: t_RawVec'5; t_Vec__len'5: UInt64.t }
+
+type t_RawVec'6  =
+  { t_RawVec__inner'6: t_RawVecInner; t_RawVec__qy95zmarker'6: () }
+
+type t_Vec'6  =
+  { t_Vec__buf'6: t_RawVec'6; t_Vec__len'6: UInt64.t }
+
+type t_Trail  =
+  { t_Trail__assignments: t_Assignments;
+    t_Trail__lit_to_level: t_Vec'5;
+    t_Trail__trail: t_Vec'6;
+    t_Trail__curr_i: UInt64.t;
+    t_Trail__decisions: t_Vec'5 }
+
+function view'5 (self : t_Vec'4) : Seq.seq UInt8.t
+
+axiom view_spec'4 : forall self : t_Vec'4 . [%#svec] Seq.length (view'5 self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+function view'6 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 19 4 19 33] (self : t_Assignments) : Seq.seq UInt8.t
+
+ =
+  [%#slogic_assignments'0] view'5 self.t_Assignments__0
+
+predicate inv'1 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 51 4 51 40] (self : t_Assignments) (f : t_Formula)
+
+ =
+  [%#slogic_assignments] UInt64.t'int f.t_Formula__num_vars = Seq.length (view'6 self)
+  /\ (forall i : int . 0 <= i /\ i < Seq.length (view'6 self)  -> UInt8.t'int (Seq.get (view'6 self) i) <= 3)
+
+type t_Reason  =
+  | C_Decision
+  | C_Unit UInt64.t
+  | C_Long UInt64.t
+
+type t_Step  =
+  { t_Step__lit: t_Lit; t_Step__decision_level: UInt64.t; t_Step__reason: t_Reason }
+
+predicate inv'2 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 82 4 82 36] (self : t_Lit) (n : int) =
+  [%#slogic_lit'0] index_logic self < n
+
+predicate inv'3 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 13 4 13 40] (self : t_Reason) (f : t_Formula)
+
+ =
+  [%#slogic_trail'6] match self with
+    | C_Long cref -> 0 <= UInt64.t'int cref
+    /\ UInt64.t'int cref < Seq.length (view'1 f.t_Formula__clauses)
+    /\ Seq.length (view'3 (Seq.get (view'1 f.t_Formula__clauses) (UInt64.t'int cref))) > 1
+    | C_Unit cref -> 0 <= UInt64.t'int cref
+    /\ UInt64.t'int cref < Seq.length (view'1 f.t_Formula__clauses)
+    /\ Seq.length (view'3 (Seq.get (view'1 f.t_Formula__clauses) (UInt64.t'int cref))) = 1
+    | _ -> true
+    end
+
+predicate trail_invariant [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 103 0 103 60] (trail : Seq.seq t_Step) (f : t_Formula)
+
+ =
+  [%#slogic_trail'0] forall i : int . 0 <= i /\ i < Seq.length trail
+   -> inv'2 (Seq.get trail i).t_Step__lit (UInt64.t'int f.t_Formula__num_vars)
+  /\ inv'3 (Seq.get trail i).t_Step__reason f
+
+function view'7 (self : t_Vec'6) : Seq.seq t_Step
+
+axiom view_spec'5 : forall self : t_Vec'6 . [%#svec] Seq.length (view'7 self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+function view'8 (self : t_Vec'5) : Seq.seq UInt64.t
+
+axiom view_spec'6 : forall self : t_Vec'5 . [%#svec] Seq.length (view'8 self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+predicate lit_idx_in [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 73 4 73 46] (self : t_Lit) (c : t_Clause)
+ =
+  [%#slogic_lit'1] exists i : int . 0 <= i
+  /\ i < Seq.length (view'3 c) /\ index_logic (Seq.get (view'3 c) i) = index_logic self
+
+predicate lit_not_in_less_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 90 0 90 62] (t : Seq.seq t_Step) (f : t_Formula)
+
+ =
+  [%#slogic_trail'1] forall i : int . 0 <= i /\ i < Seq.length t
+   -> (forall j : int . 0 <= j /\ j < i
+   -> match (Seq.get t j).t_Step__reason with
+    | C_Long cref -> not lit_idx_in (Seq.get t i).t_Step__lit (Seq.get (view'1 f.t_Formula__clauses) (UInt64.t'int cref))
+    | _ -> true
+    end)
+
+predicate lit_is_unique_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 144 0 144 52] (trail : Seq.seq t_Step)
+
+ =
+  [%#slogic_trail'2] forall i : int . 0 <= i /\ i < Seq.length trail
+   -> (forall j : int . 0 <= j /\ j < i
+   -> index_logic (Seq.get trail j).t_Step__lit <> index_logic (Seq.get trail i).t_Step__lit)
+
+function is_positive_logic [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 30 4 30 42] (self : t_Lit) : bool =
+  [%#slogic_lit'5] self.t_Lit__polarity
+
+predicate sat_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 88 4 88 57] (self : t_Lit) (a : Seq.seq UInt8.t)
+
+ =
+  [%#slogic_lit'2] if is_positive_logic self then
+    UInt8.t'int (Seq.get a (index_logic self)) = 1
+  else
+    UInt8.t'int (Seq.get a (index_logic self)) = 0
+
+
+predicate unsat_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 99 4 99 59] (self : t_Lit) (a : Seq.seq UInt8.t)
+
+ =
+  [%#slogic_lit'4] if is_positive_logic self then
+    UInt8.t'int (Seq.get a (index_logic self)) = 0
+  else
+    UInt8.t'int (Seq.get a (index_logic self)) = 1
+
+
+predicate clause_post_with_regards_to_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 128 0 128 90] (c : t_Clause) (a : Seq.seq UInt8.t) (j : int)
+
+ =
+  [%#slogic_trail'7] index_logic (Seq.get (view'3 c) 0) = j
+  /\ sat_inner (Seq.get (view'3 c) 0) a
+  /\ (forall i : int . 1 <= i /\ i < Seq.length (view'3 c)  -> unsat_inner (Seq.get (view'3 c) i) a)
+
+predicate long_are_post_unit_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 166 0 166 92] (trail : Seq.seq t_Step) (f : t_Formula) (a : Seq.seq UInt8.t)
+
+ =
+  [%#slogic_trail'3] forall j : int . 0 <= j /\ j < Seq.length trail
+   -> match (Seq.get trail j).t_Step__reason with
+    | C_Long k -> clause_post_with_regards_to_inner (Seq.get (view'1 f.t_Formula__clauses) (UInt64.t'int k)) a (index_logic (Seq.get trail j).t_Step__lit)
+    | _ -> true
+    end
+
+predicate trail_entries_are_assigned_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 113 0 113 84] (t : Seq.seq t_Step) (a : Seq.seq UInt8.t)
+
+ =
+  [%#slogic_trail'4] forall j : int . 0 <= j /\ j < Seq.length t  -> sat_inner (Seq.get t j).t_Step__lit a
+
+type t_Ordering  =
+  | C_Less
+  | C_Equal
+  | C_Greater
+
+function cmp_log (self : UInt64.t) (o : UInt64.t) : t_Ordering =
+  [%#sord'12] if UInt64.lt self o then C_Less else if self = o then C_Equal else C_Greater
+
+function eq_cmp (x : UInt64.t) (y : UInt64.t) : ()
+
+axiom eq_cmp_spec : forall x : UInt64.t, y : UInt64.t . [%#sord'11] (x = y) = (cmp_log x y = C_Equal)
+
+function antisym2 (x : UInt64.t) (y : UInt64.t) : ()
+
+axiom antisym2_spec : forall x : UInt64.t, y : UInt64.t . ([%#sord'9] cmp_log x y = C_Greater)
+ -> ([%#sord'10] cmp_log y x = C_Less)
+
+function antisym1 (x : UInt64.t) (y : UInt64.t) : ()
+
+axiom antisym1_spec : forall x : UInt64.t, y : UInt64.t . ([%#sord'7] cmp_log x y = C_Less)
+ -> ([%#sord'8] cmp_log y x = C_Greater)
+
+function trans (x : UInt64.t) (y : UInt64.t) (z : UInt64.t) (o : t_Ordering) : ()
+
+axiom trans_spec : forall x : UInt64.t, y : UInt64.t, z : UInt64.t, o : t_Ordering . ([%#sord'4] cmp_log x y = o)
+ -> ([%#sord'5] cmp_log y z = o)  -> ([%#sord'6] cmp_log x z = o)
+
+function refl (x : UInt64.t) : ()
+
+axiom refl_spec : forall x : UInt64.t . [%#sord'3] cmp_log x x = C_Equal
+
+function cmp_gt_log (x : UInt64.t) (y : UInt64.t) : ()
+
+axiom cmp_gt_log_spec : forall x : UInt64.t, y : UInt64.t . [%#sord'2] UInt64.gt x y = (cmp_log x y = C_Greater)
+
+function cmp_ge_log (x : UInt64.t) (y : UInt64.t) : ()
+
+axiom cmp_ge_log_spec : forall x : UInt64.t, y : UInt64.t . [%#sord'1] UInt64.ge x y = (cmp_log x y <> C_Less)
+
+function cmp_lt_log (x : UInt64.t) (y : UInt64.t) : ()
+
+axiom cmp_lt_log_spec : forall x : UInt64.t, y : UInt64.t . [%#sord'0] UInt64.lt x y = (cmp_log x y = C_Less)
+
+function cmp_le_log (x : UInt64.t) (y : UInt64.t) : ()
+
+axiom cmp_le_log_spec : forall x : UInt64.t, y : UInt64.t . [%#sord] UInt64.le x y = (cmp_log x y <> C_Greater)
+
+predicate sorted_range [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_util.rs" 21 0 21 58] (s : Seq.seq UInt64.t) (l : int) (u : int)
+
+ =
+  [%#slogic_util'0] forall i : int, j : int . l <= i /\ i < j /\ j < u  -> UInt64.le (Seq.get s i) (Seq.get s j)
+
+predicate sorted [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_util.rs" 27 0 27 36] (s : Seq.seq UInt64.t) =
+  [%#slogic_util] sorted_range s 0 (Seq.length s)
+
+predicate sat [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 116 4 116 44] (self : t_Lit) (a : t_Assignments)
+ =
+  [%#slogic_lit'3] sat_inner self (view'6 a)
+
+predicate unit_are_sat [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 178 0 178 73] (trail : Seq.seq t_Step) (f : t_Formula) (a : t_Assignments)
+
+ =
+  [%#slogic_trail'5] forall j : int . 0 <= j /\ j < Seq.length trail
+   -> match (Seq.get trail j).t_Step__reason with
+    | C_Unit k -> (Seq.get trail j).t_Step__lit
+    = Seq.get (view'3 (Seq.get (view'1 f.t_Formula__clauses) (UInt64.t'int k))) 0
+    /\ sat (Seq.get (view'3 (Seq.get (view'1 f.t_Formula__clauses) (UInt64.t'int k))) 0) a
+    | _ -> true
+    end
+
+predicate inv'4 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 55 4 55 40] (self : t_Trail) (f : t_Formula)
+ =
+  [%#slogic_trail] inv'1 self.t_Trail__assignments f
+  /\ trail_invariant (view'7 self.t_Trail__trail) f
+  /\ Seq.length (view'8 self.t_Trail__lit_to_level) = UInt64.t'int f.t_Formula__num_vars
+  /\ lit_not_in_less_inner (view'7 self.t_Trail__trail) f
+  /\ lit_is_unique_inner (view'7 self.t_Trail__trail)
+  /\ long_are_post_unit_inner (view'7 self.t_Trail__trail) f (view'6 self.t_Trail__assignments)
+  /\ trail_entries_are_assigned_inner (view'7 self.t_Trail__trail) (view'6 self.t_Trail__assignments)
+  /\ sorted (view'8 self.t_Trail__decisions)
+  /\ unit_are_sat (view'7 self.t_Trail__trail) f self.t_Trail__assignments
+  /\ (forall i : int . 0 <= i /\ i < Seq.length (view'8 self.t_Trail__decisions)
+   -> UInt64.t'int (Seq.get (view'8 self.t_Trail__decisions) i) <= Seq.length (view'7 self.t_Trail__trail))
+
+predicate vars_in_range_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 23 0 23 55] (s : Seq.seq t_Lit) (n : int)
+
+ =
+  [%#slogic_clause'5] forall i : int . 0 <= i /\ i < Seq.length s  -> inv'2 (Seq.get s i) n
+
+predicate no_duplicate_indexes_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 46 0 46 54] (s : Seq.seq t_Lit)
+
+ =
+  [%#slogic_clause'6] forall j : int, k : int . 0 <= j /\ j < Seq.length s /\ 0 <= k /\ k < Seq.length s /\ k <> j
+   -> index_logic (Seq.get s k) <> index_logic (Seq.get s j)
+
+predicate inv_internal [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 32 0 32 48] (s : Seq.seq t_Lit) (n : int)
+
+ =
+  [%#slogic_clause'4] vars_in_range_inner s n /\ no_duplicate_indexes_inner s
+
+predicate inv'5 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 226 4 226 36] (self : t_Clause) (n : int) =
+  [%#slogic_clause'2] inv_internal (view'3 self) n
+
+predicate inv_mirror [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 86 4 86 35] (self : t_Formula) =
+  [%#slogic_formula'5] (forall i : int . 0 <= i /\ i < Seq.length (view'1 self.t_Formula__clauses)
+   -> inv'5 (Seq.get (view'1 self.t_Formula__clauses) i) (UInt64.t'int self.t_Formula__num_vars))
+  /\ (forall i : int . 0 <= i /\ i < Seq.length (view'1 self.t_Formula__clauses)
+   -> Seq.length (view'3 (Seq.get (view'1 self.t_Formula__clauses) i)) >= 1)
+
+type t_FormulaModel  =
+  { t_FormulaModel__clauses: Seq.seq t_Clause; t_FormulaModel__num_vars: int }
+
+predicate formula_invariant [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 28 0 28 49] (f : t_FormulaModel)
+
+ =
+  [%#slogic_formula'6] forall i : int . 0 <= i /\ i < Seq.length f.t_FormulaModel__clauses
+   -> inv'5 (Seq.get f.t_FormulaModel__clauses i) f.t_FormulaModel__num_vars
+  /\ Seq.length (view'3 (Seq.get f.t_FormulaModel__clauses i)) > 0
+
+function view'9 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 21 4 21 33] (self : t_Formula) : t_FormulaModel
+
+ =
+  [%#slogic_formula'7] { t_FormulaModel__clauses = view'1 self.t_Formula__clauses;
+                         t_FormulaModel__num_vars = UInt64.t'int self.t_Formula__num_vars }
+
+predicate inv'6 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 80 4 80 28] (self : t_Formula) =
+  [%#slogic_formula'0] formula_invariant (view'9 self)
+
+axiom inv_spec : forall self : t_Formula . [%#slogic_formula] inv'6 self = inv_mirror self
+
+predicate unset [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic.rs" 23 0 23 38] (v : UInt8.t) =
+  [%#slogic] if UInt8.t'int v >= 2 then true else false
+
+predicate complete_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 35 0 35 52] (a : Seq.seq UInt8.t)
+
+ =
+  [%#slogic_assignments'2] forall i : int . 0 <= i /\ i < Seq.length a  -> not unset (Seq.get a i)
+
+predicate sat_inner'0 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 185 4 185 57] (self : t_Clause) (a : Seq.seq UInt8.t)
+
+ =
+  [%#slogic_clause] exists i : int . 0 <= i /\ i < Seq.length (view'3 self) /\ sat_inner (Seq.get (view'3 self) i) a
+
+predicate sat_inner'1 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 121 4 121 57] (self : t_Formula) (a : Seq.seq UInt8.t)
+
+ =
+  [%#slogic_formula'2] forall i : int . 0 <= i /\ i < Seq.length (view'1 self.t_Formula__clauses)
+   -> sat_inner'0 (Seq.get (view'1 self.t_Formula__clauses) i) a
+
+predicate eventually_sat_complete [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 64 4 64 48] (self : t_Formula)
+
+ =
+  [%#slogic_formula'3] exists a2 : Seq.seq UInt8.t . Seq.length a2 = UInt64.t'int self.t_Formula__num_vars
+  /\ complete_inner a2 /\ sat_inner'1 self a2
+
+predicate equisat [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 72 4 72 44] (self : t_Formula) (o : t_Formula)
+
+ =
+  [%#slogic_formula'1] eventually_sat_complete self = eventually_sat_complete o
+
+type t_Solver  =
+  { t_Solver__num_lemmas: UInt64.t;
+    t_Solver__max_lemmas: UInt64.t;
+    t_Solver__num_conflicts: UInt64.t;
+    t_Solver__initial_len: UInt64.t;
+    t_Solver__inc_reduce_db: UInt64.t;
+    t_Solver__fast: UInt64.t;
+    t_Solver__slow: UInt64.t;
+    t_Solver__perm_diff: t_Vec'5 }
+
+type t_SatResult  =
+  | C_Sat t_Vec'4
+  | C_Unsat
+  | C_Unknown
+  | C_Err
+
+predicate formula_sat_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 37 0 37 72] (f : t_FormulaModel) (a : Seq.seq UInt8.t)
+
+ =
+  [%#slogic_formula'9] forall i : int . 0 <= i /\ i < Seq.length f.t_FormulaModel__clauses
+   -> sat_inner'0 (Seq.get f.t_FormulaModel__clauses i) a
+
+predicate sat'0 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 130 4 130 44] (self : t_Formula) (a : t_Assignments)
+
+ =
+  [%#slogic_formula'8] formula_sat_inner (view'9 self) (view'6 a)
+
+predicate complete [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 60 4 60 33] (self : t_Assignments)
+ =
+  [%#slogic_assignments'1] forall i : int . 0 <= i /\ i < Seq.length (view'6 self)
+   -> not unset (Seq.get (view'6 self) i)
+
+predicate eventually_sat_complete'0 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 46 0 46 55] (f : t_FormulaModel)
+
+ =
+  [%#slogic_formula'10] exists a2 : Seq.seq UInt8.t . Seq.length a2 = f.t_FormulaModel__num_vars
+  /\ complete_inner a2 /\ formula_sat_inner f a2
+
+predicate equisat_extension_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 38 0 38 66] (c : t_Clause) (f : t_FormulaModel)
+
+ =
+  [%#slogic_clause'3] eventually_sat_complete'0 f
+   -> eventually_sat_complete'0 { t_FormulaModel__clauses = Seq.snoc f.t_FormulaModel__clauses c;
+                                  t_FormulaModel__num_vars = f.t_FormulaModel__num_vars }
+
+predicate equisat_extension [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 104 4 104 54] (self : t_Clause) (f : t_Formula)
+
+ =
+  [%#slogic_clause'1] equisat_extension_inner self (view'9 f)
+
+predicate not_satisfiable [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 151 4 151 40] (self : t_Formula)
+ =
+  [%#slogic_formula'4] exists c : t_Clause . Seq.length (view'3 c) = 0 /\ equisat_extension c self
+
+let rec outer_loop (self:MutBorrow.t t_Solver) (f:MutBorrow.t t_Formula) (d:MutBorrow.t t_Decisions) (trail:MutBorrow.t t_Trail) (w:MutBorrow.t t_Watches) (return'  (x:t_SatResult))= {[@expl:outer_loop requires #0] [%#ssolver'14] inv'6 f.current}
+  {[@expl:outer_loop requires #1] [%#ssolver'15] inv'4 trail.current f.current}
+  {[@expl:outer_loop requires #2] [%#ssolver'16] inv'0 w.current f.current}
+  {[@expl:outer_loop requires #3] [%#ssolver'17] inv d.current (UInt64.t'int (f.current).t_Formula__num_vars)}
+  {[@expl:outer_loop requires #4] [%#ssolver'18] inv d.current (UInt64.t'int (f.current).t_Formula__num_vars)}
+  {[@expl:outer_loop requires #5] [%#ssolver'19] UInt64.t'int (f.current).t_Formula__num_vars
+  < Int.div (UInt64.t'int v_MAX'0) 2}
+  any
+  [ return''0 (result:t_SatResult)-> {[%#ssolver'14] inv'6 f.final}
+    {[%#ssolver'15] inv'4 trail.final f.final}
+    {[%#ssolver'16] inv'0 w.final f.final}
+    {[%#ssolver'17] inv d.final (UInt64.t'int (f.current).t_Formula__num_vars)}
+    {[%#ssolver'20] UInt64.t'int (f.current).t_Formula__num_vars = UInt64.t'int (f.final).t_Formula__num_vars}
+    {[%#ssolver'21] equisat f.current f.final}
+    {[%#ssolver'22] match result with
+      | C_Sat _ -> sat'0 f.final (trail.final).t_Trail__assignments /\ complete (trail.final).t_Trail__assignments
+      | C_Unsat -> not_satisfiable f.final
+      | C_Unknown -> true
+      | C_Err -> true
+      end}
+    (! return' {result}) ]
+
+
+predicate resolve (self : MutBorrow.t t_Watches) =
+  [%#sresolve] self.final = self.current
+
+predicate resolve'0 (_0 : MutBorrow.t t_Watches) =
+  resolve _0
+
+predicate resolve'1 (self : MutBorrow.t t_Trail) =
+  [%#sresolve] self.final = self.current
+
+predicate resolve'2 (_0 : MutBorrow.t t_Trail) =
+  resolve'1 _0
+
+predicate resolve'3 (self : MutBorrow.t t_Decisions) =
+  [%#sresolve] self.final = self.current
+
+predicate resolve'4 (_0 : MutBorrow.t t_Decisions) =
+  resolve'3 _0
+
+predicate resolve'5 (self : MutBorrow.t t_Formula) =
+  [%#sresolve] self.final = self.current
+
+predicate resolve'6 (_0 : MutBorrow.t t_Formula) =
+  resolve'5 _0
+
+predicate resolve'7 (self : MutBorrow.t t_Solver) =
+  [%#sresolve] self.final = self.current
+
+predicate resolve'8 (_0 : MutBorrow.t t_Solver) =
+  resolve'7 _0
+
+meta "compute_max_steps" 1000000
+
+let rec inner[#"/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 334 4 336 18] (self:MutBorrow.t t_Solver) (formula:MutBorrow.t t_Formula) (decisions:t_Decisions) (trail:t_Trail) (watches:t_Watches) (return'  (x:t_SatResult))= {[@expl:inner requires #0] [%#ssolver'6] UInt64.t'int (formula.current).t_Formula__num_vars
+  < Int.div (UInt64.t'int v_MAX'0) 2}
+  {[@expl:inner requires #1] [%#ssolver'7] inv'6 formula.current}
+  {[@expl:inner requires #2] [%#ssolver'8] inv decisions (UInt64.t'int (formula.current).t_Formula__num_vars)}
+  {[@expl:inner requires #3] [%#ssolver'9] inv'4 trail formula.current}
+  {[@expl:inner requires #4] [%#ssolver'10] inv'0 watches formula.current}
+  {[@expl:inner requires #5] [%#ssolver'11] inv decisions (UInt64.t'int (formula.current).t_Formula__num_vars)}
+  (! bb0
+  [ bb0 = bb1
+  | bb1 = bb2
+  | bb2 = bb3
+  | bb3 = bb4
+  | bb4 = s0 [ s0 =  [ &old_f <- [%#ssolver] formula'0 ] s1 | s1 = bb5 ] 
+  | bb5 = s0 [ s0 =  [ &old_6_0 <- self'0 ] s1 | s1 =  [ &old_6_1 <- formula'0 ] s2 | s2 = bb6 ] 
+  | bb6 = bb6'0
+    [ bb6'0 = {[@expl:mut invariant] old_6_1.final = formula'0.final}
+      {[@expl:mut invariant] old_6_0.final = self'0.final}
+      {[@expl:loop invariant #0] [%#ssolver'5] equisat old_f.current formula'0.current}
+      {[@expl:loop invariant #1] [%#ssolver'4] UInt64.t'int (formula'0.current).t_Formula__num_vars
+      = UInt64.t'int (old_f.current).t_Formula__num_vars}
+      {[@expl:loop invariant #2] [%#ssolver'3] inv'6 formula'0.current}
+      {[@expl:loop invariant #3] [%#ssolver'2] inv'4 trail'0 formula'0.current}
+      {[@expl:loop invariant #4] [%#ssolver'1] inv'0 watches'0 formula'0.current}
+      {[@expl:loop invariant #5] [%#ssolver'0] inv decisions'0 (UInt64.t'int (formula'0.current).t_Formula__num_vars)}
+      (! s0) [ s0 = bb7 ] 
+      [ bb7 = bb8
+      | bb8 = bb9
+      | bb9 = bb10
+      | bb10 = s0
+        [ s0 = MutBorrow.borrow_mut <t_Solver> {self'0.current}
+            (fun (_ret:MutBorrow.t t_Solver) ->
+               [ &_26 <- _ret ] 
+               [ &self'0 <- { self'0 with current = _ret.final } ] 
+              s1)
+        | s1 = MutBorrow.borrow_mut <t_Formula> {formula'0.current}
+            (fun (_ret:MutBorrow.t t_Formula) ->
+               [ &_27 <- _ret ] 
+               [ &formula'0 <- { formula'0 with current = _ret.final } ] 
+              s2)
+        | s2 = MutBorrow.borrow_mut <t_Decisions> {decisions'0}
+            (fun (_ret:MutBorrow.t t_Decisions) ->  [ &_29 <- _ret ]  [ &decisions'0 <- _ret.final ] s3)
+        | s3 = MutBorrow.borrow_final <t_Decisions> {_29.current} {MutBorrow.get_id _29}
+            (fun (_ret:MutBorrow.t t_Decisions) ->  [ &_28 <- _ret ]  [ &_29 <- { _29 with current = _ret.final } ] s4)
+        | s4 = MutBorrow.borrow_mut <t_Trail> {trail'0}
+            (fun (_ret:MutBorrow.t t_Trail) ->  [ &_31 <- _ret ]  [ &trail'0 <- _ret.final ] s5)
+        | s5 = MutBorrow.borrow_final <t_Trail> {_31.current} {MutBorrow.get_id _31}
+            (fun (_ret:MutBorrow.t t_Trail) ->  [ &_30 <- _ret ]  [ &_31 <- { _31 with current = _ret.final } ] s6)
+        | s6 = MutBorrow.borrow_mut <t_Watches> {watches'0}
+            (fun (_ret:MutBorrow.t t_Watches) ->  [ &_33 <- _ret ]  [ &watches'0 <- _ret.final ] s7)
+        | s7 = MutBorrow.borrow_final <t_Watches> {_33.current} {MutBorrow.get_id _33}
+            (fun (_ret:MutBorrow.t t_Watches) ->  [ &_32 <- _ret ]  [ &_33 <- { _33 with current = _ret.final } ] s8)
+        | s8 = outer_loop {_26} {_27} {_28} {_30} {_32} (fun (_ret:t_SatResult) ->  [ &_25 <- _ret ] s9)
+        | s9 = bb11 ]
+      
+      | bb11 = s0
+        [ s0 = -{resolve'0 _33}- s1
+        | s1 = -{resolve'2 _31}- s2
+        | s2 = -{resolve'4 _29}- s3
+        | s3 = any
+          [ br0 (x0:t_Vec'4)-> {_25 = C_Sat x0} (! bb14)
+          | br1 -> {_25 = C_Unsat} (! bb12)
+          | br2 -> {_25 = C_Unknown} (! bb13)
+          | br3 -> {_25 = C_Err} (! bb12) ]
+         ]
+      
+      | bb13 = bb16
+      | bb16 = bb18
+      | bb18 = bb6'0 ]
+     ]
+  
+  | bb12 = s0
+    [ s0 = -{resolve'6 formula'0}- s1
+    | s1 = -{resolve'8 self'0}- s2
+    | s2 =  [ &o <- _25 ] s3
+    | s3 =  [ &_0 <- o ] s4
+    | s4 = bb19 ]
+  
+  | bb19 = bb20
+  | bb14 = s0 [ s0 = -{resolve'6 formula'0}- s1 | s1 = -{resolve'8 self'0}- s2 | s2 = bb15 ] 
+  | bb15 = s0 [ s0 =  [ &_0 <- C_Sat ((trail'0.t_Trail__assignments).t_Assignments__0) ] s1 | s1 = bb17 ] 
+  | bb17 = bb20
+  | bb20 = bb21
+  | bb21 = bb22
+  | bb22 = bb23
+  | bb23 = bb24
+  | bb24 = return''0 {_0} ]
+  )
+  [ & _0 : t_SatResult = Any.any_l ()
+  | & self'0 : MutBorrow.t t_Solver = self
+  | & formula'0 : MutBorrow.t t_Formula = formula
+  | & decisions'0 : t_Decisions = decisions
+  | & trail'0 : t_Trail = trail
+  | & watches'0 : t_Watches = watches
+  | & old_f : MutBorrow.t t_Formula = Any.any_l ()
+  | & _25 : t_SatResult = Any.any_l ()
+  | & _26 : MutBorrow.t t_Solver = Any.any_l ()
+  | & _27 : MutBorrow.t t_Formula = Any.any_l ()
+  | & _28 : MutBorrow.t t_Decisions = Any.any_l ()
+  | & _29 : MutBorrow.t t_Decisions = Any.any_l ()
+  | & _30 : MutBorrow.t t_Trail = Any.any_l ()
+  | & _31 : MutBorrow.t t_Trail = Any.any_l ()
+  | & _32 : MutBorrow.t t_Watches = Any.any_l ()
+  | & _33 : MutBorrow.t t_Watches = Any.any_l ()
+  | & o : t_SatResult = Any.any_l ()
+  | & old_6_0 : MutBorrow.t t_Solver = Any.any_l ()
+  | & old_6_1 : MutBorrow.t t_Formula = Any.any_l () ]
+  
+  [ return''0 (result:t_SatResult)-> {[@expl:inner ensures #0] [%#ssolver'12] match result with
+      | C_Sat v -> sat_inner'1 formula.final (view'5 v)
+      /\ equisat formula.current formula.final /\ eventually_sat_complete formula.current
+      | C_Unsat -> not_satisfiable formula.final /\ equisat formula.current formula.final
+      | _ -> true
+      end}
+    {[@expl:inner ensures #1] [%#ssolver'13] equisat formula.current formula.final}
+    (! return' {result}) ]
+  

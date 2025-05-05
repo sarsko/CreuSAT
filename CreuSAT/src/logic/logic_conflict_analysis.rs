@@ -1,4 +1,3 @@
-
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
@@ -9,7 +8,7 @@ use crate::logic::{logic_assignments::*, logic_clause::*, logic_formula::*};
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
 #[logic]
 #[open] //#[open(self)]
-#[requires(f2.clauses == f.clauses.push(c))]
+#[requires(f2.clauses == f.clauses.push_back(c))]
 #[requires(formula_invariant(f))]
 #[ensures(f.clauses.len() + 1 == f2.clauses.len())]
 #[ensures(forall<i: Int> 0 <= i && i < f.clauses.len() ==> f.clauses[i].equals(f2.clauses[i]))]
@@ -29,5 +28,5 @@ pub fn lemma_eq_formulas(f: FormulaModel, f2: FormulaModel, c: Clause) {}
 pub fn lemma_resolvent_of_equisat_extension_is_equisat(
     f: FormulaModel, c: Clause, c2: Clause, c3: Clause, k: Int, m: Int,
 ) {
-    lemma_eq_formulas(f, FormulaModel { clauses: f.clauses.push(c3), num_vars: f.num_vars }, c3);
+    lemma_eq_formulas(f, FormulaModel { clauses: f.clauses.push_back(c3), num_vars: f.num_vars }, c3);
 }

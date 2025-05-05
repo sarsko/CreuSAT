@@ -1,0 +1,70 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 89 4 89 40 *)
+
+(* solver::Solver *)
+
+let%span sresolve = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/resolve.rs" 54 20 54 34
+let%span ssolver = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 90 32 90 42
+let%span ssolver'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 91 34 91 35
+
+use creusot.int.UInt64
+use creusot.prelude.Opaque
+use creusot.prelude.MutBorrow
+use creusot.prelude.Any
+
+type t_NonNull  =
+  { t_NonNull__pointer: Opaque.ptr }
+
+type t_Unique  =
+  { t_Unique__pointer: t_NonNull; t_Unique__qy95zmarker: () }
+
+type t_UsizeNoHighBit  =
+  { t_UsizeNoHighBit__0: UInt64.t }
+
+type t_RawVecInner  =
+  { t_RawVecInner__ptr: t_Unique; t_RawVecInner__cap: t_UsizeNoHighBit; t_RawVecInner__alloc: () }
+
+type t_RawVec  =
+  { t_RawVec__inner: t_RawVecInner; t_RawVec__qy95zmarker: () }
+
+type t_Vec  =
+  { t_Vec__buf: t_RawVec; t_Vec__len: UInt64.t }
+
+type t_Solver  =
+  { t_Solver__num_lemmas: UInt64.t;
+    t_Solver__max_lemmas: UInt64.t;
+    t_Solver__num_conflicts: UInt64.t;
+    t_Solver__initial_len: UInt64.t;
+    t_Solver__inc_reduce_db: UInt64.t;
+    t_Solver__fast: UInt64.t;
+    t_Solver__slow: UInt64.t;
+    t_Solver__perm_diff: t_Vec }
+
+predicate resolve (self : MutBorrow.t t_Solver) =
+  [%#sresolve] self.final = self.current
+
+predicate resolve'0 (_0 : MutBorrow.t t_Solver) =
+  resolve _0
+
+meta "compute_max_steps" 1000000
+
+let rec increase_num_conflicts[#"/Users/sarekhs/CreuSAT/CreuSAT/src/solver.rs" 89 4 89 40] (self:MutBorrow.t t_Solver) (return'  (x:()))= (! bb0
+  [ bb0 = s0
+    [ s0 = 
+      [ &_2 <- UInt64.lt (self'0.current).t_Solver__num_conflicts ([%#ssolver] (18446744073709551615 : UInt64.t)) ]
+      
+      s1
+    | s1 = any [ br0 -> {_2 = false} (! bb2) | br1 -> {_2} (! bb1) ]  ]
+  
+  | bb1 = s0
+    [ s0 = UInt64.add {(self'0.current).t_Solver__num_conflicts} {[%#ssolver'0] (1 : UInt64.t)}
+        (fun (_ret:UInt64.t) ->
+           [ &self'0 <- { self'0 with current = { self'0.current with t_Solver__num_conflicts = _ret } } ] 
+          s1)
+    | s1 = -{resolve'0 self'0}- s2
+    | s2 = bb3 ]
+  
+  | bb2 = s0 [ s0 = -{resolve'0 self'0}- s1 | s1 = bb3 ] 
+  | bb3 = return''0 {_0} ]
+  ) [ & _0 : () = Any.any_l () | & self'0 : MutBorrow.t t_Solver = self | & _2 : bool = Any.any_l () ] 
+  [ return''0 (result:())-> (! return' {result}) ]
+  

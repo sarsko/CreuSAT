@@ -1,0 +1,74 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 47 0 47 48 *)
+
+let%span sresolve = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/resolve.rs" 54 20 54 34
+let%span sutil = "/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 48 21 48 26
+let%span sutil'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 48 13 48 26
+let%span sutil'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 49 45 49 47
+let%span sutil'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 49 32 49 47
+let%span sutil'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 49 32 49 42
+let%span sutil'4 = "/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 49 56 49 58
+let%span sutil'5 = "/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 50 7 50 17
+
+use creusot.int.UInt64
+use creusot.prelude.MutBorrow
+use creusot.prelude.Any
+
+predicate resolve (self : MutBorrow.t UInt64.t) =
+  [%#sresolve] self.final = self.current
+
+predicate resolve'0 (_0 : MutBorrow.t UInt64.t) =
+  resolve _0
+
+meta "compute_max_steps" 1000000
+
+let rec update_slow[#"/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 47 0 47 48] (slow:MutBorrow.t UInt64.t) (lbd:UInt64.t) (return'  (x:()))= (! bb0
+  [ bb0 = s0
+    [ s0 =  [ &_5 <- ([%#sutil] (32768 : UInt64.t)) = ([%#sutil'0] (0 : UInt64.t)) ] s1
+    | s1 = {[@expl:division by zero] [%#sutil'0] not _5} s2
+    | s2 = bb1 ]
+  
+  | bb1 = s0
+    [ s0 = UInt64.div {slow'0.current} {[%#sutil] (32768 : UInt64.t)} (fun (_ret:UInt64.t) ->  [ &_3 <- _ret ] s1)
+    | s1 = UInt64.sub {slow'0.current} {_3} (fun (_ret:UInt64.t) ->  [ &slow'0 <- { slow'0 with current = _ret } ] s2)
+    | s2 =  [ &_10 <- ([%#sutil'1] (32 : UInt64.t)) = ([%#sutil'2] (0 : UInt64.t)) ] s3
+    | s3 = {[@expl:division by zero] [%#sutil'2] not _10} s4
+    | s4 = bb2 ]
+  
+  | bb2 = s0
+    [ s0 = UInt64.div {[%#sutil'3] (18446744073709551615 : UInt64.t)} {[%#sutil'1] (32 : UInt64.t)}
+        (fun (_ret:UInt64.t) ->  [ &_9 <- _ret ] s1)
+    | s1 =  [ &_7 <- UInt64.lt lbd'0 _9 ] s2
+    | s2 = any [ br0 -> {_7 = false} (! bb4) | br1 -> {_7} (! bb3) ]  ]
+  
+  | bb3 = s0
+    [ s0 = UInt64.mul {lbd'0} {[%#sutil'4] (32 : UInt64.t)} (fun (_ret:UInt64.t) ->  [ &lbd_shl_five <- _ret ] s1)
+    | s1 = bb5 ]
+  
+  | bb4 = s0 [ s0 =  [ &lbd_shl_five <- lbd'0 ] s1 | s1 = bb5 ] 
+  | bb5 = s0
+    [ s0 = UInt64.sub {[%#sutil'5] (18446744073709551615 : UInt64.t)} {slow'0.current}
+        (fun (_ret:UInt64.t) ->  [ &_13 <- _ret ] s1)
+    | s1 =  [ &_12 <- UInt64.gt _13 lbd_shl_five ] s2
+    | s2 = any [ br0 -> {_12 = false} (! bb7) | br1 -> {_12} (! bb6) ]  ]
+  
+  | bb6 = s0
+    [ s0 = UInt64.add {slow'0.current} {lbd_shl_five}
+        (fun (_ret:UInt64.t) ->  [ &slow'0 <- { slow'0 with current = _ret } ] s1)
+    | s1 = -{resolve'0 slow'0}- s2
+    | s2 = bb8 ]
+  
+  | bb7 = s0 [ s0 = -{resolve'0 slow'0}- s1 | s1 = bb8 ] 
+  | bb8 = return''0 {_0} ]
+  )
+  [ & _0 : () = Any.any_l ()
+  | & slow'0 : MutBorrow.t UInt64.t = slow
+  | & lbd'0 : UInt64.t = lbd
+  | & _3 : UInt64.t = Any.any_l ()
+  | & _5 : bool = Any.any_l ()
+  | & lbd_shl_five : UInt64.t = Any.any_l ()
+  | & _7 : bool = Any.any_l ()
+  | & _9 : UInt64.t = Any.any_l ()
+  | & _10 : bool = Any.any_l ()
+  | & _12 : bool = Any.any_l ()
+  | & _13 : UInt64.t = Any.any_l () ]
+   [ return''0 (result:())-> (! return' {result}) ] 

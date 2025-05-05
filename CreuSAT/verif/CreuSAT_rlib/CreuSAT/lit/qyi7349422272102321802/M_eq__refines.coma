@@ -1,0 +1,21 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 135 4 135 37 *)
+
+(* <lit::Lit as creusot_contracts::PartialEq> *)
+
+let%span smodel = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/model.rs" 45 8 45 28
+let%span slit = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 135 4 135 37
+let%span slit'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 36 8 36 12
+
+use creusot.int.UInt64
+
+type t_Lit  =
+  { t_Lit__idx: UInt64.t; t_Lit__polarity: bool }
+
+function deep_model [#"/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 35 4 35 31] (self : t_Lit) : t_Lit =
+  [%#slit'0] self
+
+function deep_model'0 (self : t_Lit) : t_Lit =
+  [%#smodel] deep_model self
+
+goal refines : [%#slit] forall self_ : t_Lit . forall rhs : t_Lit . forall result : bool . result = (self_ = rhs)
+ -> result = (deep_model'0 self_ = deep_model'0 rhs)

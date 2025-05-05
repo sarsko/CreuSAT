@@ -1,10 +1,12 @@
-use clap::{arg, crate_authors, Command};
+#[allow(unused)]
+use creusot_contracts::*;
 
 #[cfg(creusot)]
 fn main() {}
 
 #[cfg(not(creusot))]
 fn main() {
+    use clap::{arg, crate_authors, Command};
     use CreuSAT::parser::{parse_cnf, preproc_and_solve};
     let matches = Command::new("\nCreuSAT")
         .author(crate_authors!("\n"))

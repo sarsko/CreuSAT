@@ -1,0 +1,71 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 105 4 105 37 *)
+
+(* lit::Lit *)
+
+let%span slit = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 106 23 106 24
+let%span slit'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 106 51 106 52
+let%span slit'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 106 62 106 63
+let%span slit'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 102 15 102 49
+let%span slit'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 103 14 103 49
+let%span slit'4 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 104 14 104 94
+let%span slit'5 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 43 14 43 43
+let%span slit'6 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 50 14 50 48
+let%span slogic_lit = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 24 20 24 29
+let%span slogic_lit'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 38 20 38 89
+let%span slogic_lit'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 31 20 31 33
+
+use creusot.int.UInt64
+use mach.int.Int
+use creusot.prelude.Any
+
+type t_Lit  =
+  { t_Lit__idx: UInt64.t; t_Lit__polarity: bool }
+
+function index_logic [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 23 4 23 35] (self : t_Lit) : int =
+  [%#slogic_lit] UInt64.t'int self.t_Lit__idx
+
+let rec index (self:t_Lit) (return'  (x:UInt64.t))= any
+  [ return''0 (result:UInt64.t)-> {[%#slit'5] UInt64.t'int result = index_logic self} (! return' {result}) ]
+
+
+function is_positive_logic [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 30 4 30 42] (self : t_Lit) : bool =
+  [%#slogic_lit'1] self.t_Lit__polarity
+
+let rec is_positive (self:t_Lit) (return'  (x:bool))= any
+  [ return''0 (result:bool)-> {[%#slit'6] result = is_positive_logic self} (! return' {result}) ]
+
+
+constant v_MAX : UInt64.t = (18446744073709551615 : UInt64.t)
+
+function to_watchidx_logic [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 37 4 37 41] (self : t_Lit) : int =
+  [%#slogic_lit'0] index_logic self * 2 + (if is_positive_logic self then 0 else 1)
+
+meta "compute_max_steps" 1000000
+
+let rec to_watchidx[#"/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 105 4 105 37] (self:t_Lit) (return'  (x:UInt64.t))= {[@expl:to_watchidx requires] [%#slit'2] index_logic self
+  < Int.div (UInt64.t'int v_MAX) 2}
+  (! bb0
+  [ bb0 = s0 [ s0 = index {self'0} (fun (_ret:UInt64.t) ->  [ &_6 <- _ret ] s1) | s1 = bb1 ] 
+  | bb1 = s0
+    [ s0 = UInt64.mul {_6} {[%#slit] (2 : UInt64.t)} (fun (_ret:UInt64.t) ->  [ &_5 <- _ret ] s1)
+    | s1 = is_positive {self'0} (fun (_ret:bool) ->  [ &_9 <- _ret ] s2)
+    | s2 = bb2 ]
+  
+  | bb2 = any [ br0 -> {_9 = false} (! bb4) | br1 -> {_9} (! bb3) ] 
+  | bb3 = s0 [ s0 =  [ &_8 <- [%#slit'0] (0 : UInt64.t) ] s1 | s1 = bb5 ] 
+  | bb4 = s0 [ s0 =  [ &_8 <- [%#slit'1] (1 : UInt64.t) ] s1 | s1 = bb5 ] 
+  | bb5 = s0 [ s0 = UInt64.add {_5} {_8} (fun (_ret:UInt64.t) ->  [ &_0 <- _ret ] s1) | s1 = return''0 {_0} ]  ]
+  )
+  [ & _0 : UInt64.t = Any.any_l ()
+  | & self'0 : t_Lit = self
+  | & _5 : UInt64.t = Any.any_l ()
+  | & _6 : UInt64.t = Any.any_l ()
+  | & _8 : UInt64.t = Any.any_l ()
+  | & _9 : bool = Any.any_l () ]
+  
+  [ return''0 (result:UInt64.t)-> {[@expl:to_watchidx ensures #0] [%#slit'3] UInt64.t'int result
+    = to_watchidx_logic self}
+    {[@expl:to_watchidx ensures #1] [%#slit'4] UInt64.t'int result
+    = index_logic self * 2 + (if is_positive_logic self then 0 else 1)}
+    (! return' {result}) ]
+  
