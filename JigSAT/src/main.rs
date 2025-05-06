@@ -1,5 +1,9 @@
 use clap::{arg, crate_authors, Command};
 
+#[cfg(creusot)]
+fn main() {}
+
+#[cfg(not(creusot))]
 fn main() {
     use JigSAT::parser::{parse_cnf, preproc_and_solve};
     let matches = Command::new("\nJigSAT")

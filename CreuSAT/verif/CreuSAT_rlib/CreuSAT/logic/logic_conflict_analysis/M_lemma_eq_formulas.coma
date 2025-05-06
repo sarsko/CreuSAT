@@ -1,0 +1,119 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 19 0 19 70 *)
+
+let%span svec = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/vec.rs" 21 14 21 41
+let%span slogic_lit = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 83 20 83 42
+let%span slogic_lit'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 24 20 24 29
+let%span slogic_formula = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 30 8 31 69
+let%span slogic_clause = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 243 12 245 33
+let%span slogic_clause'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 14 4 14 12
+let%span slogic_clause'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 227 20 227 42
+let%span slogic_clause'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 33 4 33 62
+let%span slogic_clause'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 25 8 26 23
+let%span slogic_clause'4 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 48 8 49 92
+let%span slogic_conflict_analysis = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 12 11 12 47
+let%span slogic_conflict_analysis'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 13 11 13 31
+let%span slogic_conflict_analysis'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 14 10 14 49
+let%span slogic_conflict_analysis'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 15 10 15 93
+let%span slogic_conflict_analysis'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 16 10 16 47
+let%span slogic_conflict_analysis'4 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 19 71 19 73
+
+use creusot.int.UInt32
+use creusot.int.UInt64
+use creusot.prelude.Opaque
+use seq.Seq
+use mach.int.Int
+
+type t_NonNull  =
+  { t_NonNull__pointer: Opaque.ptr }
+
+type t_Unique  =
+  { t_Unique__pointer: t_NonNull; t_Unique__qy95zmarker: () }
+
+type t_UsizeNoHighBit  =
+  { t_UsizeNoHighBit__0: UInt64.t }
+
+type t_RawVecInner  =
+  { t_RawVecInner__ptr: t_Unique; t_RawVecInner__cap: t_UsizeNoHighBit; t_RawVecInner__alloc: () }
+
+type t_RawVec  =
+  { t_RawVec__inner: t_RawVecInner; t_RawVec__qy95zmarker: () }
+
+type t_Vec  =
+  { t_Vec__buf: t_RawVec; t_Vec__len: UInt64.t }
+
+type t_Clause  =
+  { t_Clause__deleted: bool; t_Clause__lbd: UInt32.t; t_Clause__search: UInt64.t; t_Clause__lits: t_Vec }
+
+type t_FormulaModel  =
+  { t_FormulaModel__clauses: Seq.seq t_Clause; t_FormulaModel__num_vars: int }
+
+type t_Lit  =
+  { t_Lit__idx: UInt64.t; t_Lit__polarity: bool }
+
+function index_logic [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 23 4 23 35] (self : t_Lit) : int =
+  [%#slogic_lit'0] UInt64.t'int self.t_Lit__idx
+
+predicate inv [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 82 4 82 36] (self : t_Lit) (n : int) =
+  [%#slogic_lit] index_logic self < n
+
+predicate vars_in_range_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 23 0 23 55] (s : Seq.seq t_Lit) (n : int)
+
+ =
+  [%#slogic_clause'3] forall i : int . 0 <= i /\ i < Seq.length s  -> inv (Seq.get s i) n
+
+predicate no_duplicate_indexes_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 46 0 46 54] (s : Seq.seq t_Lit)
+
+ =
+  [%#slogic_clause'4] forall j : int, k : int . 0 <= j /\ j < Seq.length s /\ 0 <= k /\ k < Seq.length s /\ k <> j
+   -> index_logic (Seq.get s k) <> index_logic (Seq.get s j)
+
+predicate inv_internal [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 32 0 32 48] (s : Seq.seq t_Lit) (n : int)
+
+ =
+  [%#slogic_clause'2] vars_in_range_inner s n /\ no_duplicate_indexes_inner s
+
+constant v_MAX : UInt64.t = (18446744073709551615 : UInt64.t)
+
+function view (self : t_Vec) : Seq.seq t_Lit
+
+axiom view_spec : forall self : t_Vec . [%#svec] Seq.length (view self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+function view'0 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 16 4 16 33] (self : t_Clause) : Seq.seq t_Lit
+
+ =
+  [%#slogic_clause'0] view self.t_Clause__lits
+
+predicate inv'0 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 226 4 226 36] (self : t_Clause) (n : int) =
+  [%#slogic_clause'1] inv_internal (view'0 self) n
+
+predicate formula_invariant [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 28 0 28 49] (f : t_FormulaModel)
+
+ =
+  [%#slogic_formula] forall i : int . 0 <= i /\ i < Seq.length f.t_FormulaModel__clauses
+   -> inv'0 (Seq.get f.t_FormulaModel__clauses i) f.t_FormulaModel__num_vars
+  /\ Seq.length (view'0 (Seq.get f.t_FormulaModel__clauses i)) > 0
+
+predicate equals [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 241 4 241 42] (self : t_Clause) (o : t_Clause)
+
+ =
+  [%#slogic_clause] Seq.length (view'0 self) = Seq.length (view'0 o)
+  /\ (forall j : int . 0 <= j /\ j < Seq.length (view'0 self)  -> Seq.get (view'0 self) j = Seq.get (view'0 o) j)
+
+constant f  : t_FormulaModel
+
+constant f2  : t_FormulaModel
+
+constant c  : t_Clause
+
+function lemma_eq_formulas [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 19 0 19 70] (f'0 : t_FormulaModel) (f2'0 : t_FormulaModel) (c'0 : t_Clause) : ()
+
+
+goal vc_lemma_eq_formulas : ([%#slogic_conflict_analysis] f2.t_FormulaModel__clauses
+= Seq.snoc f.t_FormulaModel__clauses c)
+ -> ([%#slogic_conflict_analysis'0] formula_invariant f)
+ -> ([%#slogic_conflict_analysis'1] Seq.length f.t_FormulaModel__clauses + 1 = Seq.length f2.t_FormulaModel__clauses)
+&& ([%#slogic_conflict_analysis'2] forall i : int . 0 <= i /\ i < Seq.length f.t_FormulaModel__clauses
+ -> equals (Seq.get f.t_FormulaModel__clauses i) (Seq.get f2.t_FormulaModel__clauses i))
+&& ([%#slogic_conflict_analysis'3] view'0 (Seq.get f2.t_FormulaModel__clauses (Seq.length f2.t_FormulaModel__clauses
+- 1))
+= view'0 c)

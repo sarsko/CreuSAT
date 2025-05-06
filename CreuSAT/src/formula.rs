@@ -1,5 +1,4 @@
 // Formula is Mac OK with an inline_full + split on VC #12 for add_clause 11.04 22.18
-extern crate creusot_contracts;
 
 use creusot_contracts::{std::*, Snapshot, *};
 
@@ -60,7 +59,7 @@ impl Formula {
     #[ensures(match result {
         SatResult::Sat(assn) => { formula_sat_inner(self@, assn@) },
         SatResult::Unsat     => { self.not_satisfiable() },
-        SatResult::Unknown   => { self.invariant() && 0 < self.num_vars@ && self.num_vars@ < usize::MAX@/2 },
+        SatResult::Unknown   => { self.inv() && 0 < self.num_vars@ && self.num_vars@ < usize::MAX@/2 },
         SatResult::Err       => { true },
     })]
     pub fn check_formula_invariant(&self) -> SatResult {
@@ -74,7 +73,7 @@ impl Formula {
             return SatResult::Err; // We have no vars but more than 0 clauses -> error.
         }
         let mut i: usize = 0;
-        #[invariant(forall<j: Int> 0 <= j && j < i@ ==> self.clauses@[j].invariant(self.num_vars@))]
+        #[invariant(forall<j: Int> 0 <= j && j < i@ ==> self.clauses@[j].inv(self.num_vars@))]
         #[invariant(forall<j: Int> 0 <= j && j < i@ ==> self.clauses@[j]@.len() > 0)]
         while i < self.clauses.len() {
             if !self.clauses[i].check_clause_invariant(self.num_vars) {
@@ -89,8 +88,8 @@ impl Formula {
     }
 
     #[cfg_attr(feature = "trust_formula", trusted)]
-    #[requires(self.invariant())]
-    #[requires(a.invariant(*self))]
+    #[requires(self.inv())]
+    #[requires(a.inv(*self))]
     #[requires(idx@ < self.clauses@.len())]
     #[ensures(result == self.clauses@[idx@].sat(*a))]
     pub fn is_clause_sat(&self, idx: usize, a: &Assignments) -> bool {
@@ -107,14 +106,14 @@ impl Formula {
     }
 
     #[cfg_attr(feature = "trust_formula", trusted)]
-    #[maintains((mut self).invariant())]
-    #[maintains(_t.invariant(mut self))]
-    #[maintains((mut watches).invariant(mut self))]
+    #[maintains((mut self).inv())]
+    #[maintains(_t.inv(mut self))]
+    #[maintains((mut watches).inv(mut self))]
     #[requires((clause@).len() >= 2)]
     #[requires(self.num_vars@ < usize::MAX@/2)]
     //#[requires(vars_in_range_inner(clause@, self.num_vars@))]
     //#[requires(no_duplicate_indexes_inner(clause@))]
-    #[requires(clause.invariant(self.num_vars@))]
+    #[requires(clause.inv(self.num_vars@))]
     #[requires(equisat_extension_inner(clause, self@))]
     #[ensures(self.num_vars@ == (^self).num_vars@)]
     #[ensures(self.equisat(^self))]
@@ -141,12 +140,12 @@ impl Formula {
     }
 
     #[cfg_attr(feature = "trust_formula", trusted)]
-    #[maintains((mut self).invariant())]
-    #[maintains(_t.invariant(mut self))]
-    #[maintains((mut watches).invariant(mut self))]
+    #[maintains((mut self).inv())]
+    #[maintains(_t.inv(mut self))]
+    #[maintains((mut watches).inv(mut self))]
     #[requires(clause@.len() >= 2)]
     #[requires(self.num_vars@ < usize::MAX@/2)]
-    #[requires(clause.invariant(self.num_vars@))]
+    #[requires(clause.inv(self.num_vars@))]
     #[requires(equisat_extension_inner(clause, self@))]
     #[ensures(self.num_vars@ == (^self).num_vars@)]
     #[ensures(self.equisat(^self))]
@@ -161,10 +160,10 @@ impl Formula {
     }
 
     #[cfg_attr(feature = "trust_formula", trusted)]
-    #[maintains((mut self).invariant())]
-    #[maintains(_t.invariant(mut self))]
+    #[maintains((mut self).inv())]
+    #[maintains(_t.inv(mut self))]
     #[requires((clause@).len() == 1)]
-    #[requires(clause.invariant(self.num_vars@))]
+    #[requires(clause.inv(self.num_vars@))]
     #[requires(self.num_vars@ < usize::MAX@/2)]
     #[requires(vars_in_range_inner(clause@, self.num_vars@))]
     #[requires(no_duplicate_indexes_inner(clause@))]
@@ -184,8 +183,8 @@ impl Formula {
     }
 
     #[cfg_attr(feature = "trust_formula", trusted)]
-    #[requires(self.invariant())]
-    #[requires(a.invariant(*self))]
+    #[requires(self.inv())]
+    #[requires(a.inv(*self))]
     #[ensures(result == self.sat(*a))]
     pub fn is_sat(&self, a: &Assignments) -> bool {
         let mut i: usize = 0;
@@ -200,9 +199,9 @@ impl Formula {
     }
 
     #[cfg_attr(feature = "trust_formula", trusted)]
-    #[maintains((mut watches).invariant(mut self))]
-    #[maintains((mut self).invariant())]
-    #[maintains((*t).invariant(mut self))]
+    #[maintains((mut watches).inv(mut self))]
+    #[maintains((mut self).inv())]
+    #[maintains((*t).inv(mut self))]
     #[requires(self.num_vars@ < usize::MAX@/2)]
     #[requires(self.clauses@[cref@]@.len() > 1)]
     #[requires(cref@ < self.clauses@.len())]
@@ -221,10 +220,10 @@ impl Formula {
 
     // OK
     #[cfg_attr(feature = "trust_formula", trusted)]
-    #[maintains((mut self).invariant())]
-    #[maintains((mut watches).invariant(mut self))]
-    #[maintains((*t).invariant(mut self))]
-    #[requires(t.invariant(*self))]
+    #[maintains((mut self).inv())]
+    #[maintains((mut watches).inv(mut self))]
+    #[maintains((*t).inv(mut self))]
+    #[requires(t.inv(*self))]
     #[requires(self.num_vars@ < usize::MAX@/2)]
     #[ensures(self.num_vars == (^self).num_vars)]
     #[ensures(self.equisat(^self))]
@@ -233,14 +232,14 @@ impl Formula {
         let old_w: Snapshot<&mut Watches> = snapshot! { watches };
         // unwatch trivially SAT
         let mut i = 0;
-        #[invariant(watches.invariant(*self))]
-        #[invariant(t.invariant(*self))]
-        #[invariant(self.invariant())]
+        #[invariant(watches.inv(*self))]
+        #[invariant(t.inv(*self))]
+        #[invariant(self.inv())]
         #[invariant(self.num_vars@ == old_f.num_vars@)]
         #[invariant(self.equisat(*old_f.inner()))]
         while i < self.clauses.len() {
             if !self.clauses[i].deleted {
-                proof_assert!(t.assignments.invariant(*self));
+                proof_assert!(t.assignments.inv(*self));
                 if self.clauses[i].len() > 1 && self.is_clause_sat(i, &t.assignments) {
                     self.delete_clause(i, watches, t);
                 }
@@ -252,12 +251,12 @@ impl Formula {
     }
 
     #[cfg_attr(feature = "trust_formula", trusted)]
-    #[maintains((mut self).invariant())]
-    #[maintains((mut watches).invariant(mut self))]
-    //#[maintains((*t).invariant(mut self))]
+    #[maintains((mut self).inv())]
+    #[maintains((mut watches).inv(mut self))]
+    //#[maintains((*t).inv(mut self))]
     #[requires(self.num_vars@ < usize::MAX@/2)]
-    #[requires(t.invariant(*self))]
-    #[ensures(t.invariant(^self))]
+    #[requires(t.inv(*self))]
+    #[ensures(t.inv(^self))]
     #[ensures(self.num_vars == (^self).num_vars)]
     #[ensures(self.equisat(^self))]
     pub fn simplify_formula(&mut self, watches: &mut Watches, t: &Trail) {
@@ -267,12 +266,12 @@ impl Formula {
     }
 
     #[cfg_attr(feature = "trust_formula", trusted)]
-    #[maintains((mut self).invariant())]
-    #[maintains((mut watches).invariant(mut self))]
-    //#[maintains((*t).invariant(mut self))]
-    #[requires(self.invariant())]
-    #[requires(t.invariant(*self))]
-    #[ensures(t.invariant(^self))]
+    #[maintains((mut self).inv())]
+    #[maintains((mut watches).inv(mut self))]
+    //#[maintains((*t).inv(mut self))]
+    #[requires(self.inv())]
+    #[requires(t.inv(*self))]
+    #[ensures(t.inv(^self))]
     #[requires(self.num_vars@ < usize::MAX@/2)]
     #[ensures(self.num_vars == (^self).num_vars)]
     #[ensures(self.equisat(^self))]
@@ -289,9 +288,9 @@ impl Formula {
         let mut i = s.initial_len;
         let old_f: Snapshot<&mut Formula> = snapshot! { self };
         let old_w: Snapshot<&mut Watches> = snapshot! { watches };
-        #[invariant(watches.invariant(*self))]
-        #[invariant(t.invariant(*self))]
-        #[invariant(self.invariant())]
+        #[invariant(watches.inv(*self))]
+        #[invariant(t.inv(*self))]
+        #[invariant(self.inv())]
         #[invariant(self.num_vars@ == old_f.num_vars@)]
         #[invariant(self.equisat(*old_f.inner()))]
         while i < self.clauses.len() {

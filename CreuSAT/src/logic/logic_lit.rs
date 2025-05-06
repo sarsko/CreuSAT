@@ -1,4 +1,3 @@
-extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
@@ -79,7 +78,7 @@ impl Lit {
 
     #[predicate]
     #[open]
-    pub fn invariant(self, n: Int) -> bool {
+    pub fn inv(self, n: Int) -> bool {
         pearlite! { self.index_logic() < n }
     }
 

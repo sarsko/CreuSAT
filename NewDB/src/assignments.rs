@@ -1,7 +1,6 @@
 #![allow(non_snake_case)]
 #![feature(type_ascription)]
 #![cfg_attr(not(creusot), feature(stmt_expr_attributes, proc_macro_hygiene))]
-extern crate creusot_contracts;
 
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
@@ -29,20 +28,20 @@ pub fn unset(v: AssignedState) -> bool {
 pub struct Assignments(pub Vec<AssignedState>);
 
 #[cfg(creusot)]
-impl ShallowModel for Assignments {
-    type ShallowModelTy = Seq<AssignedState>;
+impl View for Assignments {
+    type ViewTy = Seq<AssignedState>;
 
     #[open]
     #[logic]
-    fn shallow_model(self) -> Self::ShallowModelTy {
-        self.0.shallow_model()
+    fn view(self) -> Self::ViewTy {
+        self.0.view()
     }
 }
 
 impl Assignments {
     #[open]
     #[predicate]
-    pub fn invariant(self) -> bool {
+    pub fn inv(self) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self@.len() ==>
                 self@[i]@ < 2

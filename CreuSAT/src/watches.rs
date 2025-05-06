@@ -1,4 +1,3 @@
-extern crate creusot_contracts;
 use creusot_contracts::{std::*, Snapshot, *};
 
 use crate::{formula::*, lit::*, trail::*};
@@ -24,11 +23,11 @@ pub struct Watches {
 // barriers for the invariants, stuff took forever. It checks out, but I should probably come back later and clean up
 // #10 and #19 just take some time, but check out on Mac
 #[cfg_attr(all(feature = "trust_watches", not(feature = "problem_child")), trusted)]
-#[maintains((mut watches).invariant(*f))]
+#[maintains((mut watches).inv(*f))]
 #[requires(f.num_vars@ < usize::MAX@/2)]
 #[requires(lit.index_logic() < f.num_vars@)]
-#[requires(f.invariant())]
-#[requires(trail.invariant(*f))]
+#[requires(f.inv())]
+#[requires(trail.inv(*f))]
 #[requires(cref@ < f.clauses@.len())]
 #[requires(0 <= k@ && k@ < f.clauses@[cref@]@.len())] // Changed
 #[requires(f.clauses@[cref@]@.len() >= 2)] // This was > 2 before ?
@@ -46,7 +45,7 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
             proof_assert!(lemma_pop_watch_maintains_watcher_invariant(old_w.watches@[watchidx@]@, *f); true);
             proof_assert!(watches.watches@[watchidx@]@ == pop(old_w.watches@[watchidx@]@));
             proof_assert!(watcher_crefs_in_range(watches.watches@[watchidx@]@, *f));
-            proof_assert!(watches.invariant(*f));
+            proof_assert!(watches.inv(*f));
             proof_assert!(curr_lit.to_neg_watchidx_logic() < watches.watches@.len());
             proof_assert!(watcher_crefs_in_range(watches.watches@[curr_lit.to_neg_watchidx_logic()]@, *f));
             proof_assert!(w.cref@ < f.clauses@.len());
@@ -57,7 +56,7 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
 
             proof_assert!(watch_valid(watches.watches@[watch_lit@]@, *f));
             proof_assert!(watcher_crefs_in_range(watches.watches@[curr_lit.to_neg_watchidx_logic()]@, *f));
-            proof_assert!(watches.invariant(*f));
+            proof_assert!(watches.inv(*f));
         }
         None => {
             unreachable!();
@@ -68,12 +67,12 @@ pub fn update_watch(f: &Formula, trail: &Trail, watches: &mut Watches, cref: usi
 impl Watches {
     // OK
     #[cfg_attr(feature = "trust_watches", trusted)]
-    #[ensures(result.invariant(*f))]
+    #[ensures(result.inv(*f))]
     pub fn new(f: &Formula) -> Watches {
         let mut i: usize = 0;
         let mut watches = Vec::new();
         #[invariant(i@ <= f.num_vars@)]
-        #[invariant(watches_invariant_internal(watches@, i@, *f))]
+        #[invariant(watches_inv_internal(watches@, i@, *f))]
         while i < f.num_vars {
             watches.push(Vec::new());
             watches.push(Vec::new());
@@ -87,19 +86,19 @@ impl Watches {
     // We watch the negated literal for updates
     // OK
     #[cfg_attr(feature = "trust_watches", trusted)]
-    #[maintains((mut self).invariant(*_f))]
+    #[maintains((mut self).inv(*_f))]
     #[requires(cref@ < (_f.clauses@).len())]
     #[requires(lit.index_logic() < usize::MAX@/2)]
     #[requires(lit.to_neg_watchidx_logic() < (self@.watches).len())]
     #[requires((@(_f.clauses@)[cref@]).len() > 1)]
     #[ensures((self@.watches).len() == (@(^self).watches).len())]
     pub fn add_watcher(&mut self, lit: Lit, cref: usize, _f: &Formula) {
-        self.watches[lit.to_neg_watchidx()].push(Watcher { cref });
+        self.watches[lit.to_neg_watchidx()].push_back(Watcher { cref });
     }
     */
 
     #[cfg_attr(feature = "trust_watches", trusted)]
-    #[maintains((mut self).invariant(*_f))]
+    #[maintains((mut self).inv(*_f))]
     #[requires(cref@ < _f.clauses@.len())]
     #[requires(lit.index_logic() < usize::MAX@/2)]
     #[requires(blocker.index_logic() < _f.num_vars@)]
@@ -112,7 +111,7 @@ impl Watches {
 
     // OK
     #[cfg_attr(feature = "trust_watches", trusted)]
-    #[maintains((mut self).invariant(*_f))]
+    #[maintains((mut self).inv(*_f))]
     #[requires(new_lit.index_logic() < usize::MAX@/2)]
     #[requires(new_lit.to_neg_watchidx_logic() < self.watches@.len())]
     #[requires(old_idx@ < self.watches@.len())]
@@ -126,13 +125,13 @@ impl Watches {
     // Requires duplicates to be removed
     // OK
     #[cfg_attr(feature = "trust_watches", trusted)]
-    #[maintains((mut self).invariant(*f))]
+    #[maintains((mut self).inv(*f))]
     #[requires(f.num_vars@ < usize::MAX@/2)]
-    #[requires(f.invariant())]
+    #[requires(f.inv())]
     pub fn init_watches(&mut self, f: &Formula) {
         let old_w: Snapshot<&mut Watches> = snapshot! { self };
         let mut i = 0;
-        #[invariant(self.invariant(*f))]
+        #[invariant(self.inv(*f))]
         #[invariant(self.watches@.len() == 2 * f.num_vars@)]
         while i < f.clauses.len() {
             let clause = &f[i];
@@ -148,17 +147,17 @@ impl Watches {
 
     // This is just the first half of update_watch.
     #[cfg_attr(all(feature = "trust_watches", not(feature = "problem_child")), trusted)]
-    #[maintains((mut self).invariant(*f))]
+    #[maintains((mut self).inv(*f))]
     #[requires(f.num_vars@ < usize::MAX@/2)]
     #[requires(lit.index_logic() < f.num_vars@)]
-    #[requires(f.invariant())]
-    #[requires(trail.invariant(*f))]
+    #[requires(f.inv())]
+    #[requires(trail.inv(*f))]
     #[requires(cref@ < f.clauses@.len())]
     #[requires(f.clauses@[cref@]@.len() >= 2)]
     pub fn unwatch(&mut self, f: &Formula, trail: &Trail, cref: usize, lit: Lit) {
         let watchidx = lit.to_neg_watchidx();
         let mut i: usize = 0;
-        #[invariant(self.invariant(*f))]
+        #[invariant(self.inv(*f))]
         while i < self.watches[watchidx].len() {
             if self.watches[watchidx][i].cref == cref {
                 let end = self.watches[watchidx].len() - 1;
@@ -170,7 +169,7 @@ impl Watches {
                 match self.watches[watchidx].pop() {
                     Some(w) => {
                         proof_assert!(^old_w.inner() == ^self);
-                        proof_assert!(self.invariant(*f));
+                        proof_assert!(self.inv(*f));
                     }
                     None => unreachable!(),
                 }

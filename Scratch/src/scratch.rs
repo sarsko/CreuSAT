@@ -1,4 +1,3 @@
-extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::{Clone, *};
 
@@ -11,11 +10,11 @@ use crate::{assignments::*, clause::*, formula::*, lit::*};
 /*
 #[open]
 #[logic]
-#[requires(f.invariant())]
-#[requires(t.invariant(f))]
+#[requires(f.inv())]
+#[requires(t.inv(f))]
 #[requires(unset((@t.assignments)[step.lit.index_logic()]))]
-#[requires(step.lit.invariant(f.num_vars@))]
-//#[requires(step.reason.invariant(f))]
+#[requires(step.lit.inv(f.num_vars@))]
+//#[requires(step.reason.inv(f))]
 #[requires(lit_not_in_less_inner(@t.trail, f))]
 #[ensures(lit_not_in_less_inner((@t.trail).push(step), f))]
 pub fn lemma_push_maintains_lit_not_in_less(t: Trail, f: Formula, step: Step) {}
@@ -33,7 +32,7 @@ pub fn lemma_clause_permuted_maintains_sat(c: Clause, a: Assignments) {}
 #[ensures(forall<c2: Clause> c2@.permutation_of(c@) ==> c2.unsat(a))]
 pub fn lemma_clause_permuted_maintains_unsat(c: Clause, a: Assignments) {}
 
-#[maintains((mut f).invariant())]
+#[maintains((mut f).inv())]
 #[requires(f.clauses@[cref@]@.len() >= 2)]
 #[requires(cref@ < f.clauses@.len())]
 #[requires(f.clauses@[cref@]@.len() > j@)]

@@ -1,4 +1,3 @@
-extern crate creusot_contracts;
 use creusot_contracts::{std::*, *};
 
 use crate::{formula::*, lit::*, trail::*};
@@ -58,9 +57,9 @@ impl Assignments {
 
     #[inline(always)]
     #[cfg_attr(feature = "trust_assignments", trusted)]
-    #[maintains((mut self).invariant(*_f))]
-    #[requires(lit.invariant(_f.num_vars@))]
-    #[requires(_f.invariant())]
+    #[maintains((mut self).inv(*_f))]
+    #[requires(lit.inv(_f.num_vars@))]
+    #[requires(_f.inv())]
     #[requires(trail_invariant(_t@, *_f))]
     #[requires(unset(self@[lit.index_logic()]))]
     #[requires(long_are_post_unit_inner(_t@, *_f, self@))]
@@ -81,8 +80,8 @@ impl Assignments {
 
     // OK
     #[cfg_attr(feature = "trust_assignments", trusted)]
-    #[requires(f.invariant())]
-    #[ensures(result.invariant(*f))]
+    #[requires(f.inv())]
+    #[ensures(result.inv(*f))]
     pub fn new(f: &Formula) -> Self {
         Assignments(vec::from_elem(2, f.num_vars))
     }

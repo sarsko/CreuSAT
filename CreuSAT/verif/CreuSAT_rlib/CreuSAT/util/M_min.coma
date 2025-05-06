@@ -1,0 +1,32 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 98 0 98 39 *)
+
+let%span sutil = "/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 94 10 94 36
+let%span sutil'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 95 10 95 36
+let%span sutil'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 96 10 96 35
+let%span sutil'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 97 10 97 40
+let%span sutil'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 86 4 90 5
+
+use creusot.int.UInt64
+use mach.int.Int
+use creusot.prelude.Any
+
+function min_log [#"/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 85 0 85 37] (a : int) (b : int) : int =
+  [%#sutil'3] if a <= b then a else b
+
+meta "compute_max_steps" 1000000
+
+let rec min[#"/Users/sarekhs/CreuSAT/CreuSAT/src/util.rs" 98 0 98 39] (a:UInt64.t) (b:UInt64.t) (return'  (x:UInt64.t))= (! bb0
+  [ bb0 = s0
+    [ s0 =  [ &_7 <- UInt64.le a'0 b'0 ] s1 | s1 = any [ br0 -> {_7 = false} (! bb2) | br1 -> {_7} (! bb1) ]  ]
+  
+  | bb1 = s0 [ s0 =  [ &_0 <- a'0 ] s1 | s1 = bb3 ] 
+  | bb2 = s0 [ s0 =  [ &_0 <- b'0 ] s1 | s1 = bb3 ] 
+  | bb3 = return''0 {_0} ]
+  ) [ & _0 : UInt64.t = Any.any_l () | & a'0 : UInt64.t = a | & b'0 : UInt64.t = b | & _7 : bool = Any.any_l () ] 
+  [ return''0 (result:UInt64.t)-> {[@expl:min ensures #0] [%#sutil] UInt64.t'int result
+    = min_log (UInt64.t'int a) (UInt64.t'int b)}
+    {[@expl:min ensures #1] [%#sutil'0] UInt64.t'int a <= UInt64.t'int b  -> UInt64.t'int result = UInt64.t'int a}
+    {[@expl:min ensures #2] [%#sutil'1] UInt64.t'int b < UInt64.t'int a  -> UInt64.t'int result = UInt64.t'int b}
+    {[@expl:min ensures #3] [%#sutil'2] UInt64.t'int result <= UInt64.t'int b /\ UInt64.t'int result <= UInt64.t'int a}
+    (! return' {result}) ]
+  

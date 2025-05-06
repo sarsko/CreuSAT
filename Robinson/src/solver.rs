@@ -9,9 +9,9 @@ pub enum SatResult {
     Unknown,
 }
 
-#[requires(f.invariant())]
-#[requires(a.invariant(*f))]
-#[requires(d.invariant(f.num_vars@))]
+#[requires(f.inv())]
+#[requires(a.inv(*f))]
+#[requires(d.inv(f.num_vars@))]
 #[ensures(result == true ==> f.eventually_sat(a))]
 #[ensures(result == false ==> !f.eventually_sat_complete(a))]
 fn inner(f: &Formula, mut a: Assignments, d: &Decisions) -> bool {

@@ -1,7 +1,5 @@
 #![allow(non_snake_case)]
-#![feature(type_ascription)]
-#![cfg_attr(not(creusot), feature(stmt_expr_attributes, proc_macro_hygiene))]
-extern crate creusot_contracts;
+//#![feature(type_ascription)]
 
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
@@ -28,7 +26,7 @@ pub struct Formula {
     num_vars: usize,
 }
 
-impl Formula {
+impl Invariant for Formula {
     #[predicate]
     #[open(self)]
     fn invariant(self) -> bool {
@@ -37,7 +35,9 @@ impl Formula {
                 self.clauses@[i].vars_in_range(self.num_vars@)
         }
     }
+}
 
+impl Formula {
     #[predicate]
     #[open(self)]
     fn sat(self, a: Assignments) -> bool {
@@ -61,16 +61,16 @@ impl Clause {
 
 impl Lit {
     #[predicate]
-    #[open]
-    pub fn var_in_range(self, n: Int) -> bool {
+    #[open(self)]
+    fn var_in_range(self, n: Int) -> bool {
         pearlite! {
             self.var@ < n
         }
     }
 
     #[predicate]
-    #[open]
-    pub fn sat(self, a: Assignments) -> bool {
+    #[open(self)]
+    fn sat(self, a: Assignments) -> bool {
         pearlite! {
             a.0@[self.var@] == self.value
         }
@@ -79,7 +79,7 @@ impl Lit {
 
 impl Assignments {
     #[predicate]
-    #[open]
+    #[open(self)]
     fn compatible(self, pa: Pasn) -> bool {
         pearlite! {
             pa.assign.0@.len() == self.0@.len() &&
@@ -91,7 +91,7 @@ impl Assignments {
 
 impl Pasn {
     #[predicate]
-    #[open]
+    #[open(self)]
     fn invariant(self, n: Int) -> bool {
         pearlite! {
             self.ix@ <= self.assign.0@.len()
@@ -130,7 +130,6 @@ impl Clause {
 }
 
 impl Formula {
-    #[requires(self.invariant())]
     #[requires(a.0@.len() == self.num_vars@)]
     #[ensures(result == self.sat(*a))]
     fn eval(&self, a: &Assignments) -> bool {

@@ -1,4 +1,4 @@
-#![feature(type_ascription)]
+//#![feature(type_ascription)]
 #![allow(non_snake_case)]
 
 mod assignments;

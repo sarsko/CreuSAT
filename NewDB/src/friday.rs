@@ -1,5 +1,3 @@
-extern crate creusot_contracts;
-
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
 use crate::{assignments::*, lit::*};
@@ -17,7 +15,7 @@ impl Assignments {
     #[predicate]
     fn compatible(self, pa: Pasn) -> bool {
         pearlite! {
-            self.invariant() &&
+            self.inv() &&
             pa.assign.0@.len() == self.0@.len() &&
                 forall<i: Int> 0 <= i && i < pa.ix@ ==>
                     pa.assign.0@[i] == self.0@[i]
@@ -32,7 +30,7 @@ pub struct Formula {
 impl Formula {
     #[open]
     #[predicate]
-    fn invariant(self) -> bool {
+    fn inv(self) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
                 self.clauses@[i].vars_in_range(self.num_vars@)
@@ -63,11 +61,11 @@ impl Clause {
 impl Pasn {
     #[open]
     #[predicate]
-    fn invariant(self, n: Int) -> bool {
+    fn inv(self, n: Int) -> bool {
         pearlite! {
             self.ix@ <= self.assign.0@.len()
             && self.assign.0@.len() == n
-            && self.assign.invariant()
+            && self.assign.inv()
         }
     }
 }
@@ -103,7 +101,7 @@ impl Clause {
 }
 
 impl Formula {
-    #[requires(self.invariant())]
+    #[requires(self.inv())]
     #[requires(a.0@.len() == self.num_vars@)]
     #[ensures(result == self.sat(*a))]
     fn eval_formula(&self, a: &Assignments) -> bool {
@@ -121,9 +119,9 @@ impl Formula {
 
 #[requires(pa.ix@ < pa.assign.0@.len())]
 #[requires(pa.assign.0@.len() <= usize::MAX@)]
-#[requires(pa.invariant(pa.assign@.len()))]
+#[requires(pa.inv(pa.assign@.len()))]
 #[requires(b@ < 2)]
-#[ensures(result.invariant(pa.assign@.len()))]
+#[ensures(result.inv(pa.assign@.len()))]
 #[ensures(result.assign.compatible(*pa))]
 #[ensures(result.assign.0@[pa.ix@] == b)]
 #[ensures(result.ix@ == pa.ix@ + 1)]
@@ -135,8 +133,8 @@ fn set_next(pa: &Pasn, b: AssignedState) -> Pasn {
 }
 
 #[variant(f.num_vars@ - pa.ix@)]
-#[requires(pa.invariant(f.num_vars@))]
-#[requires(f.invariant())]
+#[requires(pa.inv(f.num_vars@))]
+#[requires(f.inv())]
 #[ensures(!result == (forall<a: Assignments> a.compatible(pa) ==> !f.sat(a)))]
 fn solve(f: &Formula, pa: Pasn) -> bool {
     if pa.ix == pa.assign.0.len() {
@@ -145,8 +143,8 @@ fn solve(f: &Formula, pa: Pasn) -> bool {
     solve(f, set_next(&pa, 1)) || solve(f, set_next(&pa, 0))
 }
 
-#[requires(f.invariant())]
-#[ensures(!result ==> forall<a: Assignments> a.0@.len() == f.num_vars@ && a.invariant()
+#[requires(f.inv())]
+#[ensures(!result ==> forall<a: Assignments> a.0@.len() == f.num_vars@ && a.inv()
                   ==> !f.sat(a))]
 #[ensures( result ==> exists<a: Assignments> f.sat(a))]
 pub fn solver(f: &Formula) -> bool {

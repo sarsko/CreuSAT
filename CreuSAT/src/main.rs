@@ -1,13 +1,14 @@
-use clap::{arg, crate_authors, Command};
+#[allow(unused)]
+use creusot_contracts::*;
 
 #[cfg(creusot)]
 fn main() {}
 
 #[cfg(not(creusot))]
 fn main() {
+    use clap::{arg, Command};
     use CreuSAT::parser::{parse_cnf, preproc_and_solve};
     let matches = Command::new("\nCreuSAT")
-        .author(crate_authors!("\n"))
         .about("A verified SAT solver written in Rust.")
         .disable_colored_help(false)
         .disable_version_flag(true)

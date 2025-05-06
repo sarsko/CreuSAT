@@ -1,0 +1,50 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 147 4 147 23 *)
+
+(* <lit::Lit as std::ops::Not> *)
+
+let%span slit = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 145 14 145 56
+let%span slit'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 146 14 146 69
+let%span slit'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 43 14 43 43
+let%span slit'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 50 14 50 48
+let%span slogic_lit = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 24 20 24 29
+let%span slogic_lit'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 31 20 31 33
+
+use creusot.int.UInt64
+use creusot.prelude.Any
+
+type t_Lit  =
+  { t_Lit__idx: UInt64.t; t_Lit__polarity: bool }
+
+function index_logic [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 23 4 23 35] (self : t_Lit) : int =
+  [%#slogic_lit] UInt64.t'int self.t_Lit__idx
+
+let rec index (self:t_Lit) (return'  (x:UInt64.t))= any
+  [ return''0 (result:UInt64.t)-> {[%#slit'1] UInt64.t'int result = index_logic self} (! return' {result}) ]
+
+
+function is_positive_logic [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 30 4 30 42] (self : t_Lit) : bool =
+  [%#slogic_lit'0] self.t_Lit__polarity
+
+let rec is_positive (self:t_Lit) (return'  (x:bool))= any
+  [ return''0 (result:bool)-> {[%#slit'2] result = is_positive_logic self} (! return' {result}) ]
+
+
+meta "compute_max_steps" 1000000
+
+let rec not'[#"/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 147 4 147 23] (self:t_Lit) (return'  (x:t_Lit))= (! bb0
+  [ bb0 = s0 [ s0 = index {self'0} (fun (_ret:UInt64.t) ->  [ &_4 <- _ret ] s1) | s1 = bb1 ] 
+  | bb1 = s0 [ s0 = is_positive {self'0} (fun (_ret:bool) ->  [ &_7 <- _ret ] s1) | s1 = bb2 ] 
+  | bb2 = s0
+    [ s0 =  [ &_6 <- not _7 ] s1 | s1 =  [ &_0 <- { t_Lit__idx = _4; t_Lit__polarity = _6 } ] s2 | s2 = return''0 {_0} ]
+   ]
+  )
+  [ & _0 : t_Lit = Any.any_l ()
+  | & self'0 : t_Lit = self
+  | & _4 : UInt64.t = Any.any_l ()
+  | & _6 : bool = Any.any_l ()
+  | & _7 : bool = Any.any_l () ]
+  
+  [ return''0 (result:t_Lit)-> {[@expl:not ensures #0] [%#slit] index_logic result = index_logic self}
+    {[@expl:not ensures #1] [%#slit'0] is_positive_logic result = (not is_positive_logic self)}
+    (! return' {result}) ]
+  

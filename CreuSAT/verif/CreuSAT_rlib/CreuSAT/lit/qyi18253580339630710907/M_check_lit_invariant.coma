@@ -1,0 +1,35 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 58 4 58 55 *)
+
+(* lit::Lit *)
+
+let%span slit = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 57 14 57 36
+let%span slit'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 43 14 43 43
+let%span slogic_lit = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 83 20 83 42
+let%span slogic_lit'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 24 20 24 29
+
+use creusot.int.UInt64
+use mach.int.Int
+use creusot.prelude.Any
+
+type t_Lit  =
+  { t_Lit__idx: UInt64.t; t_Lit__polarity: bool }
+
+function index_logic [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 23 4 23 35] (self : t_Lit) : int =
+  [%#slogic_lit'0] UInt64.t'int self.t_Lit__idx
+
+let rec index (self:t_Lit) (return'  (x:UInt64.t))= any
+  [ return''0 (result:UInt64.t)-> {[%#slit'0] UInt64.t'int result = index_logic self} (! return' {result}) ]
+
+
+predicate inv [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 82 4 82 36] (self : t_Lit) (n : int) =
+  [%#slogic_lit] index_logic self < n
+
+meta "compute_max_steps" 1000000
+
+let rec check_lit_invariant[#"/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 58 4 58 55] (self:t_Lit) (n:UInt64.t) (return'  (x:bool))= (! bb0
+  [ bb0 = s0 [ s0 = index {self'0} (fun (_ret:UInt64.t) ->  [ &_4 <- _ret ] s1) | s1 = bb1 ] 
+  | bb1 = s0 [ s0 =  [ &_0 <- UInt64.lt _4 n'0 ] s1 | s1 = return''0 {_0} ]  ]
+  ) [ & _0 : bool = Any.any_l () | & self'0 : t_Lit = self | & n'0 : UInt64.t = n | & _4 : UInt64.t = Any.any_l () ] 
+  [ return''0 (result:bool)-> {[@expl:check_lit_invariant ensures] [%#slit] result = inv self (UInt64.t'int n)}
+    (! return' {result}) ]
+  

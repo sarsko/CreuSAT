@@ -1,4 +1,3 @@
-extern crate creusot_contracts;
 use creusot_contracts::{std::*, Snapshot, *};
 
 use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*, util, watches::*};
@@ -13,9 +12,9 @@ use crate::logic::{
 };
 
 #[cfg_attr(feature = "trust_unit", trusted)]
-#[maintains((mut f).invariant())]
-#[maintains(trail.invariant(mut f))]
-#[maintains((mut watches).invariant(mut f))]
+#[maintains((mut f).inv())]
+#[maintains(trail.inv(mut f))]
+#[maintains((mut watches).inv(mut f))]
 #[requires(f.num_vars@ < usize::MAX@/2)]
 #[requires(lit.index_logic() < f.num_vars@)]
 #[requires(!f.clauses@[cref@]@[0].sat_inner(trail.assignments@))]
@@ -52,9 +51,9 @@ fn check_and_move_watch(
 // This has previously had issues on the trail invariant and on the formula equisatisfiability.
 // Solved fairly easily by Auto Level 3 when targeted direcly, but Auto Level 8/9 struggles.
 #[cfg_attr(all(feature = "trust_unit", not(feature = "problem_child")), trusted)]
-#[maintains((mut f).invariant())]
-#[maintains((*trail).invariant(mut f))] // <-
-#[maintains((*watches).invariant(mut f))]
+#[maintains((mut f).inv())]
+#[maintains((*trail).inv(mut f))] // <-
+#[maintains((*watches).inv(mut f))]
 #[requires(f.clauses@[cref@]@.len() >= 2)]
 #[requires(cref@ < f.clauses@.len())]
 #[requires(f.clauses@[cref@]@.len() > j@)]
@@ -76,13 +75,49 @@ fn swap(f: &mut Formula, trail: &Trail, watches: &Watches, cref: usize, j: usize
     proof_assert!(forall<a2: Seq<AssignedState>> a2.len() == f.num_vars@ && complete_inner(a2) && old_f.clauses@[cref@].sat_inner(a2) ==> f.clauses@[cref@].sat_inner(a2));
     proof_assert!(eventually_sat_complete(old_f@) ==> eventually_sat_complete(f@));
     proof_assert!(^f == ^old_f.inner());
+
+    proof_assert!(forall<i: Int> 0 <= i && i < f.clauses@.len() && i != cref@ ==> old_f.clauses@[i] == f.clauses@[i]);
+
+    // trail inv inlined
+    proof_assert!(
+            trail.assignments.inv(*f)
+            && trail_invariant(trail.trail@, *f)
+            && trail.lit_to_level@.len() == f.num_vars@
+            && lit_is_unique_inner(trail.trail@)
+            && trail_entries_are_assigned_inner(trail.trail@, trail.assignments@)
+            && crate::logic::logic_util::sorted(trail.decisions@)
+            && unit_are_sat(trail.trail@, *f, trail.assignments)
+            && (forall<i: Int> 0 <= i && i < trail.decisions@.len() ==> trail.decisions@[i]@ <= trail.trail@.len())
+    );
+
+    // lit_not_in_less_inner inlined
+    proof_assert! {
+        forall<i: Int> 0 <= i && i < trail.trail@.len() ==>
+            forall<j: Int> 0 <= j && j < i ==>
+                match trail.trail@[j].reason {
+                    Reason::Long(cref) => !(trail.trail@)[i].lit.lit_idx_in(f.clauses@[cref@]),
+                    _ => true,
+                }
+    }
+    proof_assert!(lit_not_in_less_inner(trail.trail@, *f));
+
+    // long_are_post_unit inlined
+    proof_assert!(
+        forall<j: Int> 0 <= j && j < trail.trail@.len() ==>
+            match trail.trail@[j].reason {
+                Reason::Long(k) => { clause_post_with_regards_to(f.clauses@[k@], trail.assignments, trail.trail@[j].lit.index_logic()) },
+                    _ => true,
+                }
+    );
+
+    proof_assert!(long_are_post_unit_inner(trail.trail@, *f, trail.assignments@));
 }
 
 // This has to do f.clauses[cref] and not f[cref]
 #[cfg_attr(feature = "trust_unit", trusted)]
-#[maintains((mut f).invariant())]
-#[maintains((trail).invariant(mut f))]
-#[maintains((mut watches).invariant(mut f))]
+#[maintains((mut f).inv())]
+#[maintains((trail).inv(mut f))]
+#[maintains((mut watches).inv(mut f))]
 #[requires(f.num_vars@ < usize::MAX@/2)]
 #[requires(lit.to_watchidx_logic() < watches.watches@.len())]
 #[requires(watches.watches@[lit.to_watchidx_logic()]@.len() > j@)]
@@ -143,19 +178,27 @@ fn exists_new_watchable_lit(
 }
 
 #[cfg_attr(feature = "trust_unit", trusted)]
-#[maintains((mut f).invariant())]
-#[maintains((mut trail).invariant(mut f))]
-#[maintains((mut watches).invariant(mut f))]
+#[maintains((mut f).inv())]
+#[maintains((mut trail).inv(mut f))]
+#[maintains((mut watches).inv(mut f))]
 #[requires(lit.to_watchidx_logic() < watches.watches@.len())]
 #[requires(watches.watches@[lit.to_watchidx_logic()]@.len() > j@)]
 #[requires(f.num_vars@ < usize::MAX@/2)]
 #[requires(lit.index_logic() < f.num_vars@)]
 #[requires(cref@ < f.clauses@.len())]
 #[requires(f.clauses@[cref@]@.len() >= 2)]
-#[ensures((^trail).decisions == trail.decisions)] // added
+#[ensures((^trail).decisions == trail.decisions)]
+// added
+// TODO: https://github.com/creusot-rs/creusot/issues/1504
+/*
 #[ensures(match result {
     Ok(true) => true,
     Ok(false) => (^trail).trail@.len() == (trail.trail@).len(),
+    Err(n) => n@ < (^f).clauses@.len() && (^f).unsat((^trail).assignments) && (^f).clauses@[n@].unsat((^trail).assignments),
+})]
+*/
+#[ensures(match result {
+    Ok(b) => if b { true } else { (^trail).trail@.len() == (trail.trail@).len() },
     Err(n) => n@ < (^f).clauses@.len() && (^f).unsat((^trail).assignments) && (^f).clauses@[n@].unsat((^trail).assignments),
 })]
 #[ensures(f.num_vars@ == (^f).num_vars@)]
@@ -193,7 +236,7 @@ fn propagate_lit_with_regard_to_clause(
         if second_lit.lit_unset(&trail.assignments) {
             return Ok(true);
         }
-        proof_assert!(trail.invariant(*f));
+        proof_assert!(trail.inv(*f));
         proof_assert!(!f.clauses@[cref@].unsat(trail.assignments));
         proof_assert!(f.clauses@[cref@].unit(trail.assignments));
         let step = Step {
@@ -224,9 +267,9 @@ fn propagate_lit_with_regard_to_clause(
 }
 
 #[cfg_attr(feature = "trust_unit", trusted)]
-#[maintains((mut f).invariant())]
-#[maintains((mut trail).invariant(mut f))]
-#[maintains((mut watches).invariant(mut f))]
+#[maintains((mut f).inv())]
+#[maintains((mut trail).inv(mut f))]
+#[maintains((mut watches).inv(mut f))]
 #[requires(f.num_vars@ < usize::MAX@/2)]
 #[requires(lit.index_logic() < f.num_vars@)]
 #[ensures(match result {
@@ -243,11 +286,11 @@ fn propagate_literal(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, 
     let old_trail: Snapshot<&mut Trail> = snapshot! { trail };
     let old_f: Snapshot<&mut Formula> = snapshot! { f };
     let old_w: Snapshot<&mut Watches> = snapshot! { watches };
-    #[invariant(trail.invariant(*f))]
+    #[invariant(trail.inv(*f))]
     #[invariant(watches.watches@.len() == old_w.watches@.len())]
-    #[invariant(watches.invariant(*f))]
+    #[invariant(watches.inv(*f))]
     #[invariant(old_f.equisat(*f))]
-    #[invariant(f.invariant())]
+    #[invariant(f.inv())]
     #[invariant(trail.decisions@ == old_trail.decisions@)]
     #[invariant(f.num_vars@ == old_f.num_vars@)]
     while j < watches.watches[watchidx].len() {
@@ -271,9 +314,9 @@ fn propagate_literal(f: &mut Formula, trail: &mut Trail, watches: &mut Watches, 
 }
 
 #[cfg_attr(feature = "trust_unit", trusted)]
-#[maintains((mut f).invariant())]
-#[maintains((mut trail).invariant(mut f))]
-#[maintains((mut watches).invariant(mut f))]
+#[maintains((mut f).inv())]
+#[maintains((mut trail).inv(mut f))]
+#[maintains((mut watches).inv(mut f))]
 #[requires(f.num_vars@ < usize::MAX@/2)]
 #[ensures(match result {
     Ok(()) => true, // !(^f).unsat(^a),
@@ -286,10 +329,10 @@ pub fn unit_propagate(f: &mut Formula, trail: &mut Trail, watches: &mut Watches)
     let old_trail: Snapshot<&mut Trail> = snapshot! { trail };
     let old_f: Snapshot<&mut Formula> = snapshot! { f };
     let old_w: Snapshot<&mut Watches> = snapshot! { watches };
-    #[invariant(f.invariant())]
-    #[invariant(trail.invariant(*f))]
+    #[invariant(f.inv())]
+    #[invariant(trail.inv(*f))]
     #[invariant(watches.watches@.len() == old_w.watches@.len())]
-    #[invariant(watches.invariant(*f))]
+    #[invariant(watches.inv(*f))]
     #[invariant(old_f.equisat(*f))]
     #[invariant(f.num_vars@ == old_f.num_vars@)]
     while i < trail.trail.len() {

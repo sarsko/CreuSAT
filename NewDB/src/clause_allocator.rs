@@ -1,5 +1,3 @@
-extern crate creusot_contracts;
-
 use creusot_contracts::logic::FSet;
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
@@ -62,7 +60,7 @@ impl ClauseAllocator {
 impl ClauseAllocator {
     #[open]
     #[predicate]
-    pub(crate) fn invariant(self) -> bool {
+    pub(crate) fn inv(self) -> bool {
         pearlite! { self@.len() <= u32::MAX@ }
     }
 
@@ -102,13 +100,13 @@ impl ClauseAllocator {
 }
 
 #[cfg(creusot)]
-impl ShallowModel for ClauseAllocator {
-    type ShallowModelTy = Seq<Lit>;
+impl View for ClauseAllocator {
+    type ViewTy = Seq<Lit>;
 
     #[open]
     #[logic]
-    fn shallow_model(self) -> Self::ShallowModelTy {
-        self.buffer.shallow_model()
+    fn view(self) -> Self::ViewTy {
+        self.buffer.view()
     }
 }
 
@@ -116,7 +114,7 @@ pub const HEADER_LEN: usize = 1;
 
 impl ClauseAllocator {
     // TODO: This is struggling with no_duplicate_indexes and FSet/Seq stuff
-    #[maintains((mut self).invariant())]
+    #[maintains((mut self).inv())]
     #[requires(lits@.len() > 0)]
     #[requires(self@.len() + lits@.len() + HEADER_LEN@ <= u32::MAX@)] // TODO: May have to move this to a runtime check
     #[requires(clause_invariant_seq(lits@, self.num_vars@))]
@@ -151,7 +149,7 @@ impl ClauseAllocator {
         cref
     }
 
-    #[requires(self.invariant())]
+    #[requires(self.inv())]
     #[requires(cref_invariant(cref@, *self, self.num_vars@))]
     #[ensures(result@ == self.get_clause_logic(cref@))]
     pub(crate) fn get_clause(&self, cref: u32) -> &[Lit] {

@@ -1,4 +1,3 @@
-extern crate creusot_contracts;
 use creusot_contracts::{std::*, Clone, Snapshot, *};
 
 use crate::{assignments::*, formula::*, lit::*, solver::*, trail::*};
@@ -51,10 +50,10 @@ impl IndexMut<usize> for Clause {
 
 impl Clause {
     #[cfg_attr(feature = "trust_clause", trusted)]
-    #[ensures(result == self.invariant(n@))]
+    #[ensures(result == self.inv(n@))]
     pub fn check_clause_invariant(&self, n: usize) -> bool {
         let mut i: usize = 0;
-        #[invariant(forall<j: Int> 0 <= j && j < i@ ==> self@[j].invariant(n@))]
+        #[invariant(forall<j: Int> 0 <= j && j < i@ ==> self@[j].inv(n@))]
         while i < self.len() {
             if !self[i].check_lit_invariant(n) {
                 return false;
@@ -104,7 +103,7 @@ impl Clause {
     // This does better without splitting
     #[inline(always)]
     #[cfg_attr(feature = "trust_clause", trusted)]
-    #[maintains((mut self).invariant(_f.num_vars@))]
+    #[maintains((mut self).inv(_f.num_vars@))]
     #[requires(self@.len() > 0)]
     #[requires(idx@ < self@.len())]
     #[ensures(forall<i: Int> 0 <= i && i < (^self)@.len() ==>
@@ -121,7 +120,7 @@ impl Clause {
     // This does better without splitting
     #[inline(always)]
     #[cfg_attr(feature = "trust_clause", trusted)]
-    #[maintains((mut self).invariant(_f.num_vars@))]
+    #[maintains((mut self).inv(_f.num_vars@))]
     #[requires(self@.len() > 0)]
     #[requires(idx@ < self@.len())]
     #[ensures(forall<i: Int> 0 <= i && i < (^self)@.len() ==>
@@ -137,8 +136,8 @@ impl Clause {
 
     // This is an ugly runtime check
     #[cfg_attr(feature = "trust_clause", trusted)]
-    #[requires(invariant_internal(self@, _f.num_vars@))]
-    #[requires(a.invariant(*_f))]
+    #[requires(inv_internal(self@, _f.num_vars@))]
+    #[requires(a.inv(*_f))]
     #[requires(self@.len() > 1)]
     #[ensures(result ==> self.unit(*a))]
     #[ensures(result ==> self@[0].unset(*a))]
@@ -158,8 +157,8 @@ impl Clause {
     #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires(self@.len() > j@)]
     #[requires(self@.len() > k@)]
-    #[requires(_f.invariant())]
-    #[maintains((mut self).invariant(_f.num_vars@))]
+    #[requires(_f.inv())]
+    #[maintains((mut self).inv(_f.num_vars@))]
     #[maintains((mut self).equisat_extension(*_f))]
     #[ensures(self@.len() == (^self)@.len())]
     #[ensures((^self)@.exchange(self@, j@, k@))]
@@ -172,7 +171,7 @@ impl Clause {
 
     #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires(t.lit_to_level@.len() == _f.num_vars@)]
-    #[requires(self.invariant(_f.num_vars@))]
+    #[requires(self.inv(_f.num_vars@))]
     pub fn calc_lbd(&self, _f: &Formula, s: &mut Solver, t: &Trail) -> usize {
         let mut i: usize = 0;
         let mut lbd: usize = 0;

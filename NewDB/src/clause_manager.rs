@@ -1,5 +1,3 @@
-extern crate creusot_contracts;
-
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
 use crate::{assignments::*, clause_allocator::*, cref_manager::*, lit::*};
@@ -15,11 +13,11 @@ pub struct ClauseManager {
 impl ClauseManager {
     #[open]
     #[predicate]
-    pub(crate) fn invariant(self) -> bool {
+    pub(crate) fn inv(self) -> bool {
         pearlite! {
-            self.clause_allocator.invariant()
-            && self.original_clauses.invariant(self.clause_allocator)
-            && self.learnt_core.invariant(self.clause_allocator)
+            self.clause_allocator.inv()
+            && self.original_clauses.inv(self.clause_allocator)
+            && self.learnt_core.inv(self.clause_allocator)
             && self.learnt_core.are_implied_by(self.original_clauses, self.clause_allocator)
         }
     }
@@ -61,7 +59,7 @@ fn lemma_implied_by_stable_on_blim(
 // Going to need two lemmas here it seems: one for adding a clause without binding it cannot change
 // anything, and one for binding a clause which is implied maintains the invariant.
 impl ClauseManager {
-    #[maintains((mut self).invariant())]
+    #[maintains((mut self).inv())]
     #[requires(lits@.len() > 0)]
     #[requires(self.clause_allocator@.len() + lits@.len() + HEADER_LEN@ <= u32::MAX@)] // TODO: May have to move this to a runtime check
     #[requires(Formula::from(self.original_clauses@, self.clause_allocator, self.clause_allocator.num_vars@).implies(seq_to_fset(lits@)))]

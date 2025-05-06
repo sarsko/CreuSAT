@@ -1,4 +1,3 @@
-extern crate creusot_contracts;
 use ::std::ops;
 use creusot_contracts::{model::*, std::*, *};
 
@@ -14,12 +13,12 @@ pub struct Lit {
 }
 
 #[cfg(creusot)]
-impl ShallowModel for Lit {
-    type ShallowModelTy = Lit;
+impl View for Lit {
+    type ViewTy = Lit;
 
     #[open]
     #[logic]
-    fn shallow_model(self) -> Self {
+    fn view(self) -> Self {
         self
     }
 }
@@ -110,7 +109,7 @@ impl Lit {
 
     #[open]
     #[predicate]
-    pub fn invariant(self, n: Int) -> bool {
+    pub fn inv(self, n: Int) -> bool {
         pearlite! { self.index_logic() < n }
     }
 

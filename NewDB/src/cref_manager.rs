@@ -1,5 +1,3 @@
-extern crate creusot_contracts;
-
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
 use crate::{assignments::*, clause_allocator::*, lit::*};
@@ -12,22 +10,22 @@ pub struct CRefManager {
 }
 
 #[cfg(creusot)]
-impl ShallowModel for CRefManager {
-    type ShallowModelTy = Seq<CRef>;
+impl View for CRefManager {
+    type ViewTy = Seq<CRef>;
 
     #[open]
     #[logic]
-    fn shallow_model(self) -> Self::ShallowModelTy {
-        self.crefs.shallow_model()
+    fn view(self) -> Self::ViewTy {
+        self.crefs.view()
     }
 }
 
 impl CRefManager {
     #[open]
     #[predicate]
-    pub(crate) fn invariant(self, clause_allocator: ClauseAllocator) -> bool {
+    pub(crate) fn inv(self, clause_allocator: ClauseAllocator) -> bool {
         pearlite! {
-            clause_allocator.invariant()
+            clause_allocator.inv()
             && self.num_vars@ == clause_allocator.num_vars@ && // TODO: Fix the double storing
             forall<i: Int> 0 <= i && i < self@.len() ==>
                 cref_invariant(self@[i]@, clause_allocator, clause_allocator.num_vars@)
@@ -47,7 +45,7 @@ impl CRefManager {
 
 impl CRefManager {
     // TODO: Passing the clause allocator is super ugly and I should refactor
-    #[maintains((mut self).invariant(*_clause_allocator))]
+    #[maintains((mut self).inv(*_clause_allocator))]
     #[requires(cref_invariant(cref@, *_clause_allocator, self.num_vars@))]
     #[ensures((^self)@ == self@.push(cref))]
     #[ensures(forall<i: Int> 0 <= i && i < self@.len() ==> self@[i] == (^self)@[i])]

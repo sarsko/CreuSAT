@@ -1,0 +1,269 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 145 4 145 71 *)
+
+(* clause::Clause *)
+
+let%span svec = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/vec.rs" 21 14 21 41
+let%span smodel = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/model.rs" 54 8 54 22
+let%span slogic_assignments = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 53 12 54 74
+let%span slogic_assignments'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 17 4 17 12
+let%span slit = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 75 15 75 33
+let%span slit'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 76 14 76 38
+let%span slit'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 86 15 86 33
+let%span slit'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 87 14 87 38
+let%span slogic_lit = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 129 20 129 40
+let%span slogic_lit'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 123 20 123 40
+let%span slogic_lit'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 101 12 104 13
+let%span slogic_lit'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 83 20 83 42
+let%span slogic_lit'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 111 20 111 47
+let%span slogic_lit'4 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 31 20 31 33
+let%span slogic_lit'5 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 24 20 24 29
+let%span slogic_lit'6 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 90 12 93 13
+let%span slogic_clause = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 33 4 33 62
+let%span slogic_clause'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 165 20 165 39
+let%span slogic_clause'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 14 4 14 12
+let%span slogic_clause'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 25 8 26 23
+let%span slogic_clause'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 48 8 49 92
+let%span slogic_clause'4 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 153 12 158 57
+let%span slogic_clause'5 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 209 20 209 49
+let%span slogic_clause'6 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 187 12 188 37
+let%span sclause = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 146 27 146 28
+let%span sclause'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 147 20 147 74
+let%span sclause'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 152 17 152 18
+let%span sclause'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 150 23 150 28
+let%span sclause'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 154 13 154 14
+let%span sclause'4 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 140 15 140 48
+let%span sclause'5 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 141 15 141 25
+let%span sclause'6 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 142 15 142 30
+let%span sclause'7 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 143 14 143 38
+let%span sclause'8 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 144 14 144 43
+let%span sclause'9 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 92 14 92 36
+let%span sclause'10 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 22 15 22 32
+let%span sclause'11 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 23 14 23 35
+
+use creusot.int.UInt64
+use mach.int.Int
+use creusot.prelude.Opaque
+use creusot.int.UInt8
+use seq.Seq
+use creusot.int.UInt32
+use creusot.prelude.Any
+
+type t_Lit  =
+  { t_Lit__idx: UInt64.t; t_Lit__polarity: bool }
+
+type t_NonNull  =
+  { t_NonNull__pointer: Opaque.ptr }
+
+type t_Unique  =
+  { t_Unique__pointer: t_NonNull; t_Unique__qy95zmarker: () }
+
+type t_UsizeNoHighBit  =
+  { t_UsizeNoHighBit__0: UInt64.t }
+
+type t_RawVecInner  =
+  { t_RawVecInner__ptr: t_Unique; t_RawVecInner__cap: t_UsizeNoHighBit; t_RawVecInner__alloc: () }
+
+type t_RawVec  =
+  { t_RawVec__inner: t_RawVecInner; t_RawVec__qy95zmarker: () }
+
+type t_Vec  =
+  { t_Vec__buf: t_RawVec; t_Vec__len: UInt64.t }
+
+type t_Assignments  =
+  { t_Assignments__0: t_Vec }
+
+function is_positive_logic [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 30 4 30 42] (self : t_Lit) : bool =
+  [%#slogic_lit'4] self.t_Lit__polarity
+
+function index_logic [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 23 4 23 35] (self : t_Lit) : int =
+  [%#slogic_lit'5] UInt64.t'int self.t_Lit__idx
+
+predicate unsat_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 99 4 99 59] (self : t_Lit) (a : Seq.seq UInt8.t)
+
+ =
+  [%#slogic_lit'1] if is_positive_logic self then
+    UInt8.t'int (Seq.get a (index_logic self)) = 0
+  else
+    UInt8.t'int (Seq.get a (index_logic self)) = 1
+
+
+constant v_MAX : UInt64.t = (18446744073709551615 : UInt64.t)
+
+function view (self : t_Vec) : Seq.seq UInt8.t
+
+axiom view_spec : forall self : t_Vec . [%#svec] Seq.length (view self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+function view'0 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 19 4 19 33] (self : t_Assignments) : Seq.seq UInt8.t
+
+ =
+  [%#slogic_assignments'0] view self.t_Assignments__0
+
+predicate unsat [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 128 4 128 46] (self : t_Lit) (a : t_Assignments)
+
+ =
+  [%#slogic_lit] unsat_inner self (view'0 a)
+
+type t_RawVec'0  =
+  { t_RawVec__inner'0: t_RawVecInner; t_RawVec__qy95zmarker'0: () }
+
+type t_Vec'0  =
+  { t_Vec__buf'0: t_RawVec'0; t_Vec__len'0: UInt64.t }
+
+type t_Clause  =
+  { t_Clause__deleted: bool; t_Clause__lbd: UInt32.t; t_Clause__search: UInt64.t; t_Clause__lits: t_Vec'0 }
+
+function view'1 (self : t_Vec'0) : Seq.seq t_Lit
+
+axiom view_spec'0 : forall self : t_Vec'0 . [%#svec] Seq.length (view'1 self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+function view'2 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 16 4 16 33] (self : t_Clause) : Seq.seq t_Lit
+
+ =
+  [%#slogic_clause'1] view'1 self.t_Clause__lits
+
+function view'3 (self : t_Clause) : Seq.seq t_Lit =
+  [%#smodel] view'2 self
+
+let rec len (self:t_Clause) (return'  (x:UInt64.t))= any
+  [ return''0 (result:UInt64.t)-> {[%#sclause'9] UInt64.t'int result = Seq.length (view'3 self)} (! return' {result}) ]
+
+
+let rec index (self:t_Clause) (ix:UInt64.t) (return'  (x:t_Lit))= {[@expl:index requires] [%#sclause'10] UInt64.t'int ix
+  < Seq.length (view'3 self)}
+  any
+  [ return''0 (result:t_Lit)-> {[%#sclause'11] Seq.get (view'3 self) (UInt64.t'int ix) = result} (! return' {result}) ]
+
+
+predicate inv [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 82 4 82 36] (self : t_Lit) (n : int) =
+  [%#slogic_lit'2] index_logic self < n
+
+function view'4 (self : t_Assignments) : Seq.seq UInt8.t =
+  [%#smodel] view'0 self
+
+let rec lit_unsat (self:t_Lit) (a:t_Assignments) (return'  (x:bool))= {[@expl:lit_unsat requires] [%#slit] inv self (Seq.length (view'4 a))}
+  any [ return''0 (result:bool)-> {[%#slit'0] result = unsat self a} (! return' {result}) ] 
+
+predicate unset_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 110 4 110 59] (self : t_Lit) (a : Seq.seq UInt8.t)
+
+ =
+  [%#slogic_lit'3] UInt8.t'int (Seq.get a (index_logic self)) >= 2
+
+predicate unset [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 122 4 122 46] (self : t_Lit) (a : t_Assignments)
+
+ =
+  [%#slogic_lit'0] unset_inner self (view'0 a)
+
+let rec lit_unset (self:t_Lit) (a:t_Assignments) (return'  (x:bool))= {[@expl:lit_unset requires] [%#slit'1] inv self (Seq.length (view'4 a))}
+  any [ return''0 (result:bool)-> {[%#slit'2] result = unset self a} (! return' {result}) ] 
+
+type t_RawVec'1  =
+  { t_RawVec__inner'1: t_RawVecInner; t_RawVec__qy95zmarker'1: () }
+
+type t_Vec'1  =
+  { t_Vec__buf'1: t_RawVec'1; t_Vec__len'1: UInt64.t }
+
+type t_Formula  =
+  { t_Formula__clauses: t_Vec'1; t_Formula__num_vars: UInt64.t }
+
+predicate vars_in_range_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 23 0 23 55] (s : Seq.seq t_Lit) (n : int)
+
+ =
+  [%#slogic_clause'2] forall i : int . 0 <= i /\ i < Seq.length s  -> inv (Seq.get s i) n
+
+predicate no_duplicate_indexes_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 46 0 46 54] (s : Seq.seq t_Lit)
+
+ =
+  [%#slogic_clause'3] forall j : int, k : int . 0 <= j /\ j < Seq.length s /\ 0 <= k /\ k < Seq.length s /\ k <> j
+   -> index_logic (Seq.get s k) <> index_logic (Seq.get s j)
+
+predicate inv_internal [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 32 0 32 48] (s : Seq.seq t_Lit) (n : int)
+
+ =
+  [%#slogic_clause] vars_in_range_inner s n /\ no_duplicate_indexes_inner s
+
+predicate inv'0 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 51 4 51 40] (self : t_Assignments) (f : t_Formula)
+
+ =
+  [%#slogic_assignments] UInt64.t'int f.t_Formula__num_vars = Seq.length (view'0 self)
+  /\ (forall i : int . 0 <= i /\ i < Seq.length (view'0 self)  -> UInt8.t'int (Seq.get (view'0 self) i) <= 3)
+
+predicate vars_in_range [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 208 4 208 46] (self : t_Clause) (n : int)
+
+ =
+  [%#slogic_clause'5] vars_in_range_inner (view'2 self) n
+
+predicate sat_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 88 4 88 57] (self : t_Lit) (a : Seq.seq UInt8.t)
+
+ =
+  [%#slogic_lit'6] if is_positive_logic self then
+    UInt8.t'int (Seq.get a (index_logic self)) = 1
+  else
+    UInt8.t'int (Seq.get a (index_logic self)) = 0
+
+
+predicate sat_inner'0 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 185 4 185 57] (self : t_Clause) (a : Seq.seq UInt8.t)
+
+ =
+  [%#slogic_clause'6] exists i : int . 0 <= i /\ i < Seq.length (view'2 self) /\ sat_inner (Seq.get (view'2 self) i) a
+
+predicate unit_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 151 4 151 58] (self : t_Clause) (a : Seq.seq UInt8.t)
+
+ =
+  [%#slogic_clause'4] vars_in_range self (Seq.length a)
+  /\ not sat_inner'0 self a
+  /\ (exists i : int . 0 <= i
+  /\ i < Seq.length (view'2 self)
+  /\ unset_inner (Seq.get (view'2 self) i) a
+  /\ (forall j : int . 0 <= j /\ j < Seq.length (view'2 self) /\ j <> i
+   -> not unset_inner (Seq.get (view'2 self) j) a))
+
+predicate unit' [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 164 4 164 45] (self : t_Clause) (a : t_Assignments)
+
+ =
+  [%#slogic_clause'0] unit_inner self (view'0 a)
+
+meta "compute_max_steps" 1000000
+
+let rec unit_and_unset[#"/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 145 4 145 71] (self:t_Clause) (a:t_Assignments) (_f:t_Formula) (return'  (x:bool))= {[@expl:unit_and_unset requires #0] [%#sclause'4] inv_internal (view'3 self) (UInt64.t'int _f.t_Formula__num_vars)}
+  {[@expl:unit_and_unset requires #1] [%#sclause'5] inv'0 a _f}
+  {[@expl:unit_and_unset requires #2] [%#sclause'6] Seq.length (view'3 self) > 1}
+  (! bb0
+  [ bb0 = s0 [ s0 =  [ &i <- [%#sclause] (1 : UInt64.t) ] s1 | s1 = bb1 ] 
+  | bb1 = bb1'0
+    [ bb1'0 = {[@expl:loop invariant] [%#sclause'0] forall j : int . 1 <= j /\ j < UInt64.t'int i
+       -> unsat (Seq.get (view'3 self'0) j) a'0}
+      (! s0) [ s0 = bb2 ] 
+      [ bb2 = s0 [ s0 = len {self'0} (fun (_ret:UInt64.t) ->  [ &_16 <- _ret ] s1) | s1 = bb3 ] 
+      | bb3 = s0
+        [ s0 =  [ &_14 <- UInt64.lt i _16 ] s1 | s1 = any [ br0 -> {_14 = false} (! bb9) | br1 -> {_14} (! bb4) ]  ]
+      
+      | bb4 = s0 [ s0 = index {self'0} {i} (fun (_ret:t_Lit) ->  [ &_21 <- _ret ] s1) | s1 = bb5 ] 
+      | bb5 = s0 [ s0 = lit_unsat {_21} {a'0} (fun (_ret:bool) ->  [ &_19 <- _ret ] s1) | s1 = bb6 ] 
+      | bb6 = any [ br0 -> {_19 = false} (! bb8) | br1 -> {_19} (! bb7) ] 
+      | bb7 = s0
+        [ s0 = UInt64.add {i} {[%#sclause'1] (1 : UInt64.t)} (fun (_ret:UInt64.t) ->  [ &i <- _ret ] s1) | s1 = bb1'0 ]
+       ]
+     ]
+  
+  | bb8 = s0 [ s0 =  [ &_0 <- [%#sclause'2] false ] s1 | s1 = bb12 ] 
+  | bb9 = s0
+    [ s0 = index {self'0} {[%#sclause'3] (0 : UInt64.t)} (fun (_ret:t_Lit) ->  [ &_28 <- _ret ] s1) | s1 = bb10 ]
+  
+  | bb10 = s0 [ s0 = lit_unset {_28} {a'0} (fun (_ret:bool) ->  [ &_0 <- _ret ] s1) | s1 = bb11 ] 
+  | bb11 = bb12
+  | bb12 = return''0 {_0} ]
+  )
+  [ & _0 : bool = Any.any_l ()
+  | & self'0 : t_Clause = self
+  | & a'0 : t_Assignments = a
+  | & i : UInt64.t = Any.any_l ()
+  | & _14 : bool = Any.any_l ()
+  | & _16 : UInt64.t = Any.any_l ()
+  | & _19 : bool = Any.any_l ()
+  | & _21 : t_Lit = Any.any_l ()
+  | & _28 : t_Lit = Any.any_l () ]
+  
+  [ return''0 (result:bool)-> {[@expl:unit_and_unset ensures #0] [%#sclause'7] result  -> unit' self a}
+    {[@expl:unit_and_unset ensures #1] [%#sclause'8] result  -> unset (Seq.get (view'3 self) 0) a}
+    (! return' {result}) ]
+  

@@ -1,0 +1,156 @@
+(* #"/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 55 4 55 58 *)
+
+(* clause::Clause *)
+
+let%span svec = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/vec.rs" 21 14 21 41
+let%span smodel = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/model.rs" 54 8 54 22
+let%span slit = "/Users/sarekhs/CreuSAT/CreuSAT/src/lit.rs" 57 14 57 36
+let%span slogic_lit = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 83 20 83 42
+let%span slogic_lit'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 24 20 24 29
+let%span slogic_clause = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 227 20 227 42
+let%span slogic_clause'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 14 4 14 12
+let%span slogic_clause'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 215 20 215 53
+let%span slogic_clause'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 33 4 33 62
+let%span slogic_clause'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 48 8 49 92
+let%span slogic_clause'4 = "/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 25 8 26 23
+let%span sclause = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 56 27 56 28
+let%span sclause'0 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 57 20 57 72
+let%span sclause'1 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 62 17 62 18
+let%span sclause'2 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 60 23 60 28
+let%span sclause'3 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 54 14 54 36
+let%span sclause'4 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 92 14 92 36
+let%span sclause'5 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 22 15 22 32
+let%span sclause'6 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 23 14 23 35
+let%span sclause'7 = "/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 68 14 68 51
+
+use creusot.int.UInt64
+use mach.int.Int
+use seq.Seq
+use creusot.int.UInt32
+use creusot.prelude.Opaque
+use creusot.prelude.Any
+
+type t_Lit  =
+  { t_Lit__idx: UInt64.t; t_Lit__polarity: bool }
+
+function index_logic [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 23 4 23 35] (self : t_Lit) : int =
+  [%#slogic_lit'0] UInt64.t'int self.t_Lit__idx
+
+predicate inv [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 82 4 82 36] (self : t_Lit) (n : int) =
+  [%#slogic_lit] index_logic self < n
+
+type t_NonNull  =
+  { t_NonNull__pointer: Opaque.ptr }
+
+type t_Unique  =
+  { t_Unique__pointer: t_NonNull; t_Unique__qy95zmarker: () }
+
+type t_UsizeNoHighBit  =
+  { t_UsizeNoHighBit__0: UInt64.t }
+
+type t_RawVecInner  =
+  { t_RawVecInner__ptr: t_Unique; t_RawVecInner__cap: t_UsizeNoHighBit; t_RawVecInner__alloc: () }
+
+type t_RawVec  =
+  { t_RawVec__inner: t_RawVecInner; t_RawVec__qy95zmarker: () }
+
+type t_Vec  =
+  { t_Vec__buf: t_RawVec; t_Vec__len: UInt64.t }
+
+type t_Clause  =
+  { t_Clause__deleted: bool; t_Clause__lbd: UInt32.t; t_Clause__search: UInt64.t; t_Clause__lits: t_Vec }
+
+constant v_MAX : UInt64.t = (18446744073709551615 : UInt64.t)
+
+function view (self : t_Vec) : Seq.seq t_Lit
+
+axiom view_spec : forall self : t_Vec . [%#svec] Seq.length (view self) <= UInt64.t'int (v_MAX : UInt64.t)
+
+function view'0 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 16 4 16 33] (self : t_Clause) : Seq.seq t_Lit
+
+ =
+  [%#slogic_clause'0] view self.t_Clause__lits
+
+function view'1 (self : t_Clause) : Seq.seq t_Lit =
+  [%#smodel] view'0 self
+
+let rec len (self:t_Clause) (return'  (x:UInt64.t))= any
+  [ return''0 (result:UInt64.t)-> {[%#sclause'4] UInt64.t'int result = Seq.length (view'1 self)} (! return' {result}) ]
+
+
+let rec index (self:t_Clause) (ix:UInt64.t) (return'  (x:t_Lit))= {[@expl:index requires] [%#sclause'5] UInt64.t'int ix
+  < Seq.length (view'1 self)}
+  any
+  [ return''0 (result:t_Lit)-> {[%#sclause'6] Seq.get (view'1 self) (UInt64.t'int ix) = result} (! return' {result}) ]
+
+
+let rec check_lit_invariant (self:t_Lit) (n:UInt64.t) (return'  (x:bool))= any
+  [ return''0 (result:bool)-> {[%#slit] result = inv self (UInt64.t'int n)} (! return' {result}) ]
+
+
+predicate no_duplicate_indexes_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 46 0 46 54] (s : Seq.seq t_Lit)
+
+ =
+  [%#slogic_clause'3] forall j : int, k : int . 0 <= j /\ j < Seq.length s /\ 0 <= k /\ k < Seq.length s /\ k <> j
+   -> index_logic (Seq.get s k) <> index_logic (Seq.get s j)
+
+predicate no_duplicate_indexes [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 214 4 214 45] (self : t_Clause)
+
+ =
+  [%#slogic_clause'1] no_duplicate_indexes_inner (view'0 self)
+
+let rec no_duplicates (self:t_Clause) (return'  (x:bool))= any
+  [ return''0 (result:bool)-> {[%#sclause'7] result = no_duplicate_indexes self} (! return' {result}) ]
+
+
+predicate vars_in_range_inner [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 23 0 23 55] (s : Seq.seq t_Lit) (n : int)
+
+ =
+  [%#slogic_clause'4] forall i : int . 0 <= i /\ i < Seq.length s  -> inv (Seq.get s i) n
+
+predicate inv_internal [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 32 0 32 48] (s : Seq.seq t_Lit) (n : int)
+
+ =
+  [%#slogic_clause'2] vars_in_range_inner s n /\ no_duplicate_indexes_inner s
+
+predicate inv'0 [#"/Users/sarekhs/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 226 4 226 36] (self : t_Clause) (n : int) =
+  [%#slogic_clause] inv_internal (view'0 self) n
+
+meta "compute_max_steps" 1000000
+
+let rec check_clause_invariant[#"/Users/sarekhs/CreuSAT/CreuSAT/src/clause.rs" 55 4 55 58] (self:t_Clause) (n:UInt64.t) (return'  (x:bool))= (! bb0
+  [ bb0 = s0 [ s0 =  [ &i <- [%#sclause] (0 : UInt64.t) ] s1 | s1 = bb1 ] 
+  | bb1 = bb1'0
+    [ bb1'0 = {[@expl:loop invariant] [%#sclause'0] forall j : int . 0 <= j /\ j < UInt64.t'int i
+       -> inv (Seq.get (view'1 self'0) j) (UInt64.t'int n'0)}
+      (! s0) [ s0 = bb2 ] 
+      [ bb2 = s0 [ s0 = len {self'0} (fun (_ret:UInt64.t) ->  [ &_12 <- _ret ] s1) | s1 = bb3 ] 
+      | bb3 = s0
+        [ s0 =  [ &_10 <- UInt64.lt i _12 ] s1 | s1 = any [ br0 -> {_10 = false} (! bb9) | br1 -> {_10} (! bb4) ]  ]
+      
+      | bb4 = s0 [ s0 = index {self'0} {i} (fun (_ret:t_Lit) ->  [ &_17 <- _ret ] s1) | s1 = bb5 ] 
+      | bb5 = s0 [ s0 = check_lit_invariant {_17} {n'0} (fun (_ret:bool) ->  [ &_15 <- _ret ] s1) | s1 = bb6 ] 
+      | bb6 = any [ br0 -> {_15 = false} (! bb8) | br1 -> {_15} (! bb7) ] 
+      | bb7 = s0
+        [ s0 = UInt64.add {i} {[%#sclause'1] (1 : UInt64.t)} (fun (_ret:UInt64.t) ->  [ &i <- _ret ] s1) | s1 = bb1'0 ]
+       ]
+     ]
+  
+  | bb8 = s0 [ s0 =  [ &_0 <- [%#sclause'2] false ] s1 | s1 = bb11 ] 
+  | bb9 = s0 [ s0 = no_duplicates {self'0} (fun (_ret:bool) ->  [ &_0 <- _ret ] s1) | s1 = bb10 ] 
+  | bb10 = bb11
+  | bb11 = return''0 {_0} ]
+  )
+  [ & _0 : bool = Any.any_l ()
+  | & self'0 : t_Clause = self
+  | & n'0 : UInt64.t = n
+  | & i : UInt64.t = Any.any_l ()
+  | & _10 : bool = Any.any_l ()
+  | & _12 : UInt64.t = Any.any_l ()
+  | & _15 : bool = Any.any_l ()
+  | & _17 : t_Lit = Any.any_l () ]
+  
+  [ return''0 (result:bool)-> {[@expl:check_clause_invariant ensures] [%#sclause'3] result
+    = inv'0 self (UInt64.t'int n)}
+    (! return' {result}) ]
+  

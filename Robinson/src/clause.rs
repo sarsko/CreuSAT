@@ -12,13 +12,13 @@ pub struct Clause {
 }
 
 #[cfg(creusot)]
-impl ShallowModel for Clause {
-    type ShallowModelTy = Seq<Lit>;
+impl View for Clause {
+    type ViewTy = Seq<Lit>;
 
     #[logic]
     #[open]
-    fn shallow_model(self) -> Self::ShallowModelTy {
-        self.rest.shallow_model()
+    fn view(self) -> Self::ViewTy {
+        self.rest.view()
     }
 }
 
@@ -89,7 +89,7 @@ impl Clause {
     pub fn vars_in_range(self, n: Int) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self@.len() ==>
-                self@[i].invariant(n)
+                self@[i].inv(n)
         }
     }
 
@@ -104,7 +104,7 @@ impl Clause {
 
     #[predicate]
     #[open]
-    pub fn invariant(self, n: Int) -> bool {
+    pub fn inv(self, n: Int) -> bool {
         self.vars_in_range(n) //&& self.no_duplicate_indexes()
     }
 }
@@ -123,9 +123,9 @@ impl Clause {
     }
 
     #[cfg_attr(feature = "trust_clause", trusted)]
-    #[requires(self.invariant((a@).len()))]
-    #[requires(_f.invariant())]
-    #[requires(a.invariant(*_f))]
+    #[requires(self.inv((a@).len()))]
+    #[requires(_f.inv())]
+    #[requires(a.inv(*_f))]
     #[ensures((result == ClauseState::Sat)     ==> self.sat(*a))]
     #[ensures((result == ClauseState::Unsat)   ==> self.unsat(*a))]
     #[ensures((result == ClauseState::Unit)    ==> self.unit(*a) && !a.complete())]
@@ -167,8 +167,8 @@ impl Clause {
 
     #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires(self.unit(*a))]
-    #[requires(_f.invariant())]
-    #[requires(a.invariant(*_f))]
+    #[requires(_f.inv())]
+    #[requires(a.inv(*_f))]
     #[ensures(exists<j: Int> 0 <= j && j < self@.len() && self@[j] == result)]
     #[ensures(result.index_logic() < a@.len())]
     #[ensures(unset(a@[result.index_logic()]))]
@@ -187,11 +187,11 @@ impl Clause {
 
     #[cfg_attr(feature = "trust_clause", trusted)]
     #[requires(self.vars_in_range(usize::MAX@))]
-    #[ensures(self.invariant(result@))]
+    #[ensures(self.inv(result@))]
     pub fn check_clause_invariant(&self, n: usize) -> usize {
         let mut i: usize = 0;
         let mut new_n = n;
-        #[invariant(forall<j: Int> 0 <= j && j < i@ ==> self@[j].invariant(new_n@))]
+        #[invariant(forall<j: Int> 0 <= j && j < i@ ==> self@[j].inv(new_n@))]
         #[invariant(new_n@ >= n@)]
         while i < self.len() {
             if !self.rest[i].check_lit_invariant(new_n) {

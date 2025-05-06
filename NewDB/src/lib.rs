@@ -1,8 +1,7 @@
 #![allow(non_snake_case)]
 #![allow(unused)]
-#![feature(type_ascription)]
-#![cfg_attr(not(creusot), feature(stmt_expr_attributes, proc_macro_hygiene))]
-extern crate creusot_contracts;
+//#![feature(type_ascription)]
+//#![cfg_attr(not(creusot), feature(stmt_expr_attributes, proc_macro_hygiene))]
 
 use creusot_contracts::logic::FSet;
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};

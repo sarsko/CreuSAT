@@ -35,7 +35,7 @@ impl Lit {
 
     #[predicate]
     #[open]
-    pub fn invariant(self, n: Int) -> bool {
+    pub fn inv(self, n: Int) -> bool {
         pearlite! { self.idx@ < n }
     }
 
@@ -99,7 +99,7 @@ impl Lit {
     }
 
     #[inline]
-    #[requires(self.invariant(a@.len()))]
+    #[requires(self.inv(a@.len()))]
     #[ensures(result == self.sat(*a))]
     pub fn lit_sat(self, a: &Assignments) -> bool {
         match self.polarity {
@@ -110,7 +110,7 @@ impl Lit {
 
     #[allow(unused)] // Not used, but OK to have.
     #[inline]
-    #[requires(self.invariant(a@.len()))]
+    #[requires(self.inv(a@.len()))]
     #[ensures(result == self.unsat(*a))]
     pub fn lit_unsat(self, a: &Assignments) -> bool {
         match self.polarity {
@@ -120,7 +120,7 @@ impl Lit {
     }
 
     #[inline]
-    #[requires(self.invariant(a@.len()))]
+    #[requires(self.inv(a@.len()))]
     #[ensures(result == self.unset(*a))]
     pub fn lit_unset(self, a: &Assignments) -> bool {
         a.0[self.idx] >= 2
@@ -128,7 +128,7 @@ impl Lit {
 
     #[inline(always)]
     //#[cfg_attr(feature = "trust_lit", trusted)]
-    #[ensures(result == self.invariant(n@))]
+    #[ensures(result == self.inv(n@))]
     #[ensures(result == (self.idx@ < n@))]
     pub fn check_lit_invariant(&self, n: usize) -> bool {
         self.idx < n

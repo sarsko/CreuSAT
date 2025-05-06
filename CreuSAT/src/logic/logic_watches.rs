@@ -1,4 +1,3 @@
-extern crate creusot_contracts;
 use creusot_contracts::std::*;
 use creusot_contracts::*;
 
@@ -9,7 +8,7 @@ use crate::logic::logic_util::*;
 // The n is here so that we can "hijack" it during initialization
 #[predicate]
 #[open]
-pub fn watches_invariant_internal(w: Seq<Vec<Watcher>>, n: Int, f: Formula) -> bool {
+pub fn watches_inv_internal(w: Seq<Vec<Watcher>>, n: Int, f: Formula) -> bool {
     pearlite! {
         2 * n == w.len()
         && forall<i: Int> 0 <= i && i < w.len() ==>
@@ -64,16 +63,16 @@ pub fn lemma_pop_watch_maintains_watcher_invariant(w: Seq<Watcher>, f: Formula) 
 #[cfg_attr(feature = "trust_watches_logic", trusted)]
 #[requires(watcher_crefs_in_range(w, f))]
 #[requires(o.cref@ < f.clauses@.len())]
-#[ensures(watcher_crefs_in_range(w.push(o), f))]
+#[ensures(watcher_crefs_in_range(w.push_back(o), f))]
 pub fn lemma_push_maintains_watcher_invariant(w: Seq<Watcher>, f: Formula, o: Watcher) {}
 
 impl Watches {
     #[predicate]
     #[open]
-    //#[ensures(result == watches_invariant_internal(self.watches@, n))]
-    pub fn invariant(self, f: Formula) -> bool {
+    //#[ensures(result == watches_inv_internal(self.watches@, n))]
+    pub fn inv(self, f: Formula) -> bool {
         pearlite! {
-            watches_invariant_internal(self.watches@, f.num_vars@, f)
+            watches_inv_internal(self.watches@, f.num_vars@, f)
         }
     }
 }

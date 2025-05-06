@@ -1,4 +1,3 @@
-extern crate creusot_contracts;
 use creusot_contracts::{ensures, invariant, maintains, proof_assert, requires, std::vec, Clone, Int, Snapshot, *};
 
 use crate::{assignments::*, formula::*, util::*};
@@ -13,7 +12,7 @@ pub struct Node {
     pub ts: usize,
 }
 
-//const INVALID: usize = usize::MAX;
+const INVALID: usize = usize::MAX;
 
 impl ::std::default::Default for Node {
     #[ensures(result.next@ == usize::MAX@)]
@@ -42,14 +41,13 @@ pub struct Decisions {
 impl Decisions {
     // It is possible to sacrifice some readability for a tad faster proofs here(by adding assertions).
     #[cfg_attr(feature = "trust_decision", trusted)]
-    #[requires(f.invariant())]
+    #[requires(f.inv())]
     #[requires(0 < f.num_vars@ && f.num_vars@ < usize::MAX@/2)]
     #[requires(lit_order@.len() == f.num_vars@ &&
             forall<i: Int> 0 <= i && i < lit_order@.len() ==>
                 lit_order@[i]@ < f.num_vars@)]
-    #[ensures(result.invariant(f.num_vars@))]
+    #[ensures(result.inv(f.num_vars@))]
     pub fn make_linked_list(f: &Formula, lit_order: Vec<usize>) -> Decisions {
-        let INVALID: usize = usize::MAX;
         let mut linked_list: Vec<Node> = vec::from_elem(Node::default(), f.num_vars);
         let mut i: usize = 0;
         let mut head: usize = 0;
@@ -82,9 +80,9 @@ impl Decisions {
     }
 
     #[cfg_attr(feature = "trust_decision", trusted)]
-    #[requires(f.invariant())]
+    #[requires(f.inv())]
     #[requires(0 < f.num_vars@ && f.num_vars@ < usize::MAX@/2)]
-    #[ensures(result.invariant(f.num_vars@))]
+    #[ensures(result.inv(f.num_vars@))]
     pub fn new(f: &Formula) -> Decisions {
         let mut lit_order: Vec<usize> = vec::from_elem(0, f.num_vars);
         let mut counts: Vec<usize> = vec::from_elem(0, f.num_vars);
@@ -130,12 +128,11 @@ impl Decisions {
     }
 
     #[cfg_attr(feature = "trust_decision", trusted)]
-    #[maintains((mut self).invariant(_f.num_vars@))]
+    #[maintains((mut self).inv(_f.num_vars@))]
     #[requires(self.linked_list@.len() < usize::MAX@)]
     #[ensures((^self).timestamp@ == self.linked_list@.len() + 1)]
     #[ensures((^self).linked_list@.len() == self.linked_list@.len())]
     fn rescore(&mut self, _f: &Formula) {
-        let INVALID: usize = usize::MAX;
         let old_self: Snapshot<&mut Decisions> = snapshot! { self };
         let mut curr_score = self.linked_list.len();
         let mut i: usize = 0;
@@ -145,7 +142,7 @@ impl Decisions {
             (self.linked_list@[j].next == old_self.linked_list@[j].next
             && self.linked_list@[j].prev == old_self.linked_list@[j].prev)
         )]
-        #[invariant(self.invariant(_f.num_vars@))]
+        #[invariant(self.inv(_f.num_vars@))]
         while curr != INVALID {
             self.linked_list[curr].ts = curr_score;
             if curr_score > 0 {
@@ -161,9 +158,8 @@ impl Decisions {
     #[cfg_attr(feature = "trust_decision", trusted)]
     #[requires(_f.num_vars@ < usize::MAX@)]
     #[requires(tomove@ < self.linked_list@.len())]
-    #[maintains((mut self).invariant(_f.num_vars@))]
+    #[maintains((mut self).inv(_f.num_vars@))]
     fn move_to_front(&mut self, tomove: usize, _f: &Formula) {
-        let INVALID: usize = usize::MAX;
         if tomove == self.start {
             return;
         }
@@ -200,8 +196,8 @@ impl Decisions {
     #[cfg_attr(feature = "trust_decision", trusted)]
     #[requires(elems_less_than(v@, f.num_vars@))]
     #[requires(f.num_vars@ < usize::MAX@)]
-    #[requires(f.invariant())]
-    #[maintains((mut self).invariant(f.num_vars@))]
+    #[requires(f.inv())]
+    #[maintains((mut self).inv(f.num_vars@))]
     pub fn increment_and_move(&mut self, f: &Formula, v: Vec<usize>) {
         let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); v.len()];
         let old_self: Snapshot<&mut Decisions> = snapshot! { self };
@@ -219,7 +215,7 @@ impl Decisions {
         //counts_with_index.sort_unstable_by_key(|k| k.0);
         //counts_with_index.sort_by_key(|k| k.0);
         i = 0;
-        #[invariant(self.invariant(f.num_vars@))]
+        #[invariant(self.inv(f.num_vars@))]
         #[invariant(v@.len() == counts_with_index@.len())]
         while i < counts_with_index.len() {
             self.move_to_front(counts_with_index[i].1, f);
@@ -227,15 +223,15 @@ impl Decisions {
         }
     }
 
+    // SAREK TODO
     #[cfg_attr(feature = "trust_decision", trusted)]
-    #[maintains((mut self).invariant(_f.num_vars@))]
-    #[requires(a.invariant(*_f))]
+    #[maintains((mut self).inv(_f.num_vars@))]
+    #[requires(a.inv(*_f))]
     #[ensures(match result {
         Some(k) => k@ < (a@).len() && unset((a@)[k@]),
         None    => a.complete(),
     })]
     pub fn get_next(&mut self, a: &Assignments, _f: &Formula) -> Option<usize> {
-        let INVALID: usize = usize::MAX;
         let mut curr = self.search;
         #[invariant(curr == usize::MAX || curr@ < (a@).len())]
         while curr != INVALID {

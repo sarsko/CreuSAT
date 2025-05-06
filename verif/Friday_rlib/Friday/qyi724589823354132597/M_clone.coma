@@ -1,0 +1,67 @@
+(* #"/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 19 9 19 14 *)
+
+(* <Pasn as creusot_contracts::Clone> *)
+
+let%span slib = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 19 9 19 14
+let%span slib'0 = "/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 11 9 11 14
+let%span sclone = "/Users/sarekhs/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/creusot-contracts-0.5.0/src/std/clone.rs" 15 26 15 41
+
+use creusot.prelude.Opaque
+use creusot.int.UInt64
+use creusot.prelude.Any
+
+type t_NonNull  =
+  { t_NonNull__pointer: Opaque.ptr }
+
+type t_Unique  =
+  { t_Unique__pointer: t_NonNull; t_Unique__qy95zmarker: () }
+
+type t_UsizeNoHighBit  =
+  { t_UsizeNoHighBit__0: UInt64.t }
+
+type t_RawVecInner  =
+  { t_RawVecInner__ptr: t_Unique; t_RawVecInner__cap: t_UsizeNoHighBit; t_RawVecInner__alloc: () }
+
+type t_RawVec  =
+  { t_RawVec__inner: t_RawVecInner; t_RawVec__qy95zmarker: () }
+
+type t_Vec  =
+  { t_Vec__buf: t_RawVec; t_Vec__len: UInt64.t }
+
+type t_Assignments  =
+  { t_Assignments__0: t_Vec }
+
+type t_Pasn  =
+  { t_Pasn__assign: t_Assignments; t_Pasn__ix: UInt64.t }
+
+let rec clone' (self:t_Assignments) (return'  (x:t_Assignments))= any
+  [ return''0 (result:t_Assignments)-> {[%#slib'0] result = self} (! return' {result}) ]
+
+
+let rec clone''0 (self_:UInt64.t) (return'  (x:UInt64.t))= any
+  [ return''0 (result:UInt64.t)-> {[%#sclone] result = self_} (! return' {result}) ]
+
+
+meta "compute_max_steps" 1000000
+
+let rec clone''1[#"/Users/sarekhs/CreuSAT/Friday/src/lib.rs" 19 9 19 14] (self:t_Pasn) (return'  (x:t_Pasn))= (! bb0
+  [ bb0 = s0
+    [ s0 =  [ &_5 <- self'0.t_Pasn__assign ] s1
+    | s1 = clone' {_5} (fun (_ret:t_Assignments) ->  [ &_3 <- _ret ] s2)
+    | s2 = bb1 ]
+  
+  | bb1 = s0
+    [ s0 =  [ &_8 <- self'0.t_Pasn__ix ] s1
+    | s1 = clone''0 {_8} (fun (_ret:UInt64.t) ->  [ &_6 <- _ret ] s2)
+    | s2 = bb2 ]
+  
+  | bb2 = s0 [ s0 =  [ &_0 <- { t_Pasn__assign = _3; t_Pasn__ix = _6 } ] s1 | s1 = bb3 ] 
+  | bb3 = return''0 {_0} ]
+  )
+  [ & _0 : t_Pasn = Any.any_l ()
+  | & self'0 : t_Pasn = self
+  | & _3 : t_Assignments = Any.any_l ()
+  | & _5 : t_Assignments = Any.any_l ()
+  | & _6 : UInt64.t = Any.any_l ()
+  | & _8 : UInt64.t = Any.any_l () ]
+   [ return''0 (result:t_Pasn)-> {[@expl:clone ensures] [%#slib] result = self} (! return' {result}) ] 
