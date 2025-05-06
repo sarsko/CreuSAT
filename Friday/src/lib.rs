@@ -1,5 +1,5 @@
 #![allow(non_snake_case)]
-#![feature(type_ascription)]
+//#![feature(type_ascription)]
 
 use creusot_contracts::{std::clone::Clone, std::*, vec, *};
 
