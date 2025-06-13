@@ -1,0 +1,31 @@
+(* #"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 89 4 89 26 *)
+
+(* abstract_sat::Lit *)
+
+let%span sabstract_sat = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 85 14 85 38
+let%span sabstract_sat'0 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 86 14 86 57
+let%span sabstract_sat'1 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 87 14 87 57
+let%span sabstract_sat'2 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 88 14 88 80
+let%span sabstract_sat'3 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 89 27 89 29
+let%span sabstract_sat'4 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 52 8 55 9
+let%span sabstract_sat'5 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 14 8 14 21
+
+use mach.int.Int
+
+type t_Lit  =
+  { t_Lit__idx: int; t_Lit__polarity: bool }
+
+function opp [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 51 4 51 28] (self : t_Lit) : t_Lit =
+  [%#sabstract_sat'4] { t_Lit__idx = self.t_Lit__idx; t_Lit__polarity = not self.t_Lit__polarity }
+
+predicate invariant' [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 13 4 13 30] (self : t_Lit) =
+  [%#sabstract_sat'5] self.t_Lit__idx >= 0
+
+constant self  : t_Lit
+
+function unit_test_opp [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 89 4 89 26] (self'0 : t_Lit) : ()
+
+goal vc_unit_test_opp : ([%#sabstract_sat] opp (opp self) = self)
+&& ([%#sabstract_sat'0] invariant' self  -> invariant' (opp self))
+&& ([%#sabstract_sat'1] invariant' (opp self)  -> invariant' self)
+&& ([%#sabstract_sat'2] (opp self).t_Lit__idx = self.t_Lit__idx /\ (opp self).t_Lit__polarity <> self.t_Lit__polarity)

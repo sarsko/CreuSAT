@@ -1,0 +1,52 @@
+(* #"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 70 4 70 68 *)
+
+(* abstract_sat::Lit *)
+
+let%span sabstract_sat = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 68 15 68 34
+let%span sabstract_sat'0 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 69 14 69 42
+let%span sabstract_sat'1 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 70 69 70 71
+let%span sabstract_sat'2 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 40 8 40 60
+let%span sabstract_sat'3 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 22 8 25 9
+let%span sabstract_sat'4 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 31 8 34 9
+
+use seq.Seq
+
+type t_Lit  =
+  { t_Lit__idx: int; t_Lit__polarity: bool }
+
+type t_AssignedState  =
+  | C_False
+  | C_True
+  | C_Unassigned
+
+type t_Assignments  =
+  { t_Assignments__assignments: Seq.seq t_AssignedState }
+
+predicate unassigned [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 39 4 39 51] (self : t_Lit) (a : t_Assignments)
+
+ =
+  [%#sabstract_sat'2] Seq.get a.t_Assignments__assignments self.t_Lit__idx = C_Unassigned
+
+predicate sat [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 21 4 21 44] (self : t_Lit) (a : t_Assignments) =
+  [%#sabstract_sat'3] if self.t_Lit__polarity then
+    Seq.get a.t_Assignments__assignments self.t_Lit__idx = C_True
+  else
+    Seq.get a.t_Assignments__assignments self.t_Lit__idx = C_False
+
+
+predicate unsat [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 30 4 30 46] (self : t_Lit) (a : t_Assignments) =
+  [%#sabstract_sat'4] if self.t_Lit__polarity then
+    Seq.get a.t_Assignments__assignments self.t_Lit__idx = C_False
+  else
+    Seq.get a.t_Assignments__assignments self.t_Lit__idx = C_True
+
+
+constant self  : t_Lit
+
+constant a  : t_Assignments
+
+function unit_test_not_unassigned_implies_judged [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 70 4 70 68] (self'0 : t_Lit) (a'0 : t_Assignments) : ()
+
+
+goal vc_unit_test_not_unassigned_implies_judged : ([%#sabstract_sat] not unassigned self a)
+ -> ([%#sabstract_sat'0] sat self a \/ unsat self a)

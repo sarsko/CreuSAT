@@ -1,0 +1,105 @@
+(* #"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 288 4 288 44 *)
+
+(* abstract_sat::Clause *)
+
+let%span sabstract_sat = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 283 15 283 31
+let%span sabstract_sat'0 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 284 15 284 28
+let%span sabstract_sat'1 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 285 14 285 31
+let%span sabstract_sat'2 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 286 14 286 30
+let%span sabstract_sat'3 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 287 14 287 26
+let%span sabstract_sat'4 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 288 45 288 47
+let%span sabstract_sat'5 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 102 12 105 89
+let%span sabstract_sat'6 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 131 12 131 67
+let%span sabstract_sat'7 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 139 12 139 67
+let%span sabstract_sat'8 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 123 12 123 64
+let%span sabstract_sat'9 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 115 12 115 64
+let%span sabstract_sat'10 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 175 12 176 107
+let%span sabstract_sat'11 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 31 8 34 9
+let%span sabstract_sat'12 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 22 8 25 9
+let%span sabstract_sat'13 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 165 4 165 12
+let%span sfset = "/Users/sarekhs/creusot/creusot-contracts/src/logic/fset.rs" 47 8 47 26
+let%span sseq = "/Users/sarekhs/creusot/creusot-contracts/src/logic/seq.rs" 362 20 362 77
+
+use seq.Seq
+use set.Fset
+use mach.int.Int
+
+type t_Lit  =
+  { t_Lit__idx: int; t_Lit__polarity: bool }
+
+type t_Clause  =
+  { t_Clause__clause_seq: Seq.seq t_Lit; t_Clause__clause_set: Fset.fset t_Lit }
+
+type t_AssignedState  =
+  | C_False
+  | C_True
+  | C_Unassigned
+
+type t_Assignments  =
+  { t_Assignments__assignments: Seq.seq t_AssignedState }
+
+function len [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 167 4 167 27] (self : t_Clause) : int =
+  [%#sabstract_sat'13] Fset.cardinal self.t_Clause__clause_set
+
+predicate no_duplicate_indexes [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 173 4 173 45] (self : t_Clause) =
+  [%#sabstract_sat'10] forall j : int, k : int . 0 <= j /\ j < len self /\ 0 <= k /\ k < len self /\ k <> j
+   -> (Seq.get self.t_Clause__clause_seq k).t_Lit__idx <> (Seq.get self.t_Clause__clause_seq j).t_Lit__idx
+
+predicate contains [@inline:trivial] (self : Fset.fset t_Lit) (e : t_Lit) =
+  [%#sfset] Fset.mem e self
+
+predicate contains'0 (self : Seq.seq t_Lit) (x : t_Lit) =
+  [%#sseq] exists i : int . 0 <= i /\ i < Seq.length self /\ Seq.get self i = x
+
+predicate invariant' [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 100 4 100 30] (self : t_Clause) =
+  [%#sabstract_sat'5] no_duplicate_indexes self
+  /\ Seq.length self.t_Clause__clause_seq = Fset.cardinal self.t_Clause__clause_set
+  /\ (forall i : int . 0 <= i /\ i < Seq.length self.t_Clause__clause_seq
+   -> contains self.t_Clause__clause_set (Seq.get self.t_Clause__clause_seq i))
+  /\ (forall l : t_Lit . contains self.t_Clause__clause_set l  -> contains'0 self.t_Clause__clause_seq l)
+
+predicate unsat [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 30 4 30 46] (self : t_Lit) (a : t_Assignments) =
+  [%#sabstract_sat'11] if self.t_Lit__polarity then
+    Seq.get a.t_Assignments__assignments self.t_Lit__idx = C_False
+  else
+    Seq.get a.t_Assignments__assignments self.t_Lit__idx = C_True
+
+
+predicate unsat'0 [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 129 4 129 46] (self : t_Clause) (a : t_Assignments)
+
+ =
+  [%#sabstract_sat'6] forall l : t_Lit . contains self.t_Clause__clause_set l  -> unsat l a
+
+predicate unsat_seq [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 137 4 137 50] (self : t_Clause) (a : t_Assignments)
+
+ =
+  [%#sabstract_sat'7] forall l : t_Lit . contains'0 self.t_Clause__clause_seq l  -> unsat l a
+
+predicate sat [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 21 4 21 44] (self : t_Lit) (a : t_Assignments) =
+  [%#sabstract_sat'12] if self.t_Lit__polarity then
+    Seq.get a.t_Assignments__assignments self.t_Lit__idx = C_True
+  else
+    Seq.get a.t_Assignments__assignments self.t_Lit__idx = C_False
+
+
+predicate sat_seq [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 121 4 121 48] (self : t_Clause) (a : t_Assignments)
+
+ =
+  [%#sabstract_sat'8] exists l : t_Lit . contains'0 self.t_Clause__clause_seq l /\ sat l a
+
+predicate sat'0 [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 113 4 113 44] (self : t_Clause) (a : t_Assignments)
+
+ =
+  [%#sabstract_sat'9] exists l : t_Lit . contains self.t_Clause__clause_set l /\ sat l a
+
+constant self  : t_Clause
+
+constant a  : t_Assignments
+
+function unit_test_unsat [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 288 4 288 44] (self'0 : t_Clause) (a'0 : t_Assignments) : ()
+
+
+goal vc_unit_test_unsat : ([%#sabstract_sat] invariant' self)
+ -> ([%#sabstract_sat'0] unsat'0 self a)
+ -> ([%#sabstract_sat'1] unsat_seq self a)
+&& ([%#sabstract_sat'2] not sat_seq self a) && ([%#sabstract_sat'3] not sat'0 self a)

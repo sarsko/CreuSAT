@@ -1,0 +1,83 @@
+(* #"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 453 4 453 43 *)
+
+(* abstract_sat::Formula *)
+
+let%span sabstract_sat = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 450 15 450 28
+let%span sabstract_sat'0 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 451 14 451 26
+let%span sabstract_sat'1 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 453 44 453 46
+let%span sabstract_sat'2 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 381 12 381 67
+let%span sabstract_sat'3 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 373 12 373 66
+let%span sabstract_sat'4 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 131 12 131 67
+let%span sabstract_sat'5 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 115 12 115 64
+let%span sabstract_sat'6 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 31 8 34 9
+let%span sabstract_sat'7 = "/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 22 8 25 9
+let%span sfset = "/Users/sarekhs/creusot/creusot-contracts/src/logic/fset.rs" 47 8 47 26
+
+use seq.Seq
+use set.Fset
+
+type t_Lit  =
+  { t_Lit__idx: int; t_Lit__polarity: bool }
+
+type t_Clause  =
+  { t_Clause__clause_seq: Seq.seq t_Lit; t_Clause__clause_set: Fset.fset t_Lit }
+
+type t_Formula  =
+  { t_Formula__formula_seq: Seq.seq t_Clause; t_Formula__formula_set: Fset.fset t_Clause; t_Formula__num_vars: int }
+
+type t_AssignedState  =
+  | C_False
+  | C_True
+  | C_Unassigned
+
+type t_Assignments  =
+  { t_Assignments__assignments: Seq.seq t_AssignedState }
+
+predicate contains [@inline:trivial] (self : Fset.fset t_Clause) (e : t_Clause) =
+  [%#sfset] Fset.mem e self
+
+predicate contains'0 [@inline:trivial] (self : Fset.fset t_Lit) (e : t_Lit) =
+  [%#sfset] Fset.mem e self
+
+predicate unsat [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 30 4 30 46] (self : t_Lit) (a : t_Assignments) =
+  [%#sabstract_sat'6] if self.t_Lit__polarity then
+    Seq.get a.t_Assignments__assignments self.t_Lit__idx = C_False
+  else
+    Seq.get a.t_Assignments__assignments self.t_Lit__idx = C_True
+
+
+predicate unsat'0 [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 129 4 129 46] (self : t_Clause) (a : t_Assignments)
+
+ =
+  [%#sabstract_sat'4] forall l : t_Lit . contains'0 self.t_Clause__clause_set l  -> unsat l a
+
+predicate unsat'1 [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 379 4 379 46] (self : t_Formula) (a : t_Assignments)
+
+ =
+  [%#sabstract_sat'2] exists c : t_Clause . contains self.t_Formula__formula_set c /\ unsat'0 c a
+
+predicate sat [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 21 4 21 44] (self : t_Lit) (a : t_Assignments) =
+  [%#sabstract_sat'7] if self.t_Lit__polarity then
+    Seq.get a.t_Assignments__assignments self.t_Lit__idx = C_True
+  else
+    Seq.get a.t_Assignments__assignments self.t_Lit__idx = C_False
+
+
+predicate sat'0 [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 113 4 113 44] (self : t_Clause) (a : t_Assignments)
+
+ =
+  [%#sabstract_sat'5] exists l : t_Lit . contains'0 self.t_Clause__clause_set l /\ sat l a
+
+predicate sat'1 [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 371 4 371 44] (self : t_Formula) (a : t_Assignments)
+
+ =
+  [%#sabstract_sat'3] forall c : t_Clause . contains self.t_Formula__formula_set c  -> sat'0 c a
+
+constant self  : t_Formula
+
+constant a  : t_Assignments
+
+function unsat_excludes [#"/Users/sarekhs/CreuSAT/MugSAT/src/abstract_sat.rs" 453 4 453 43] (self'0 : t_Formula) (a'0 : t_Assignments) : ()
+
+
+goal vc_unsat_excludes : ([%#sabstract_sat] unsat'1 self a)  -> ([%#sabstract_sat'0] not sat'1 self a)
