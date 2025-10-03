@@ -225,7 +225,9 @@ impl Clause {
 #[requires(equisat_extension_inner(c, f))]
 #[requires(c@.permutation_of(c2@))]
 #[ensures(equisat_extension_inner(c2, f))]
-pub fn lemma_permuted_clause_maintains_equisat(f: FormulaModel, c: Clause, c2: Clause) {}
+pub fn lemma_permuted_clause_maintains_equisat(f: FormulaModel, c: Clause, c2: Clause) {
+    proof_assert! { forall<s: Seq<Clause>, x: Clause> s.push_back(x).subsequence(0, s.len()) == s }
+}
 
 #[logic(open)]
 #[requires(no_duplicate_indexes_inner(c1@))]
