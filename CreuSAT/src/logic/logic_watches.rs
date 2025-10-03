@@ -6,8 +6,7 @@ use crate::{formula::*, watches::*};
 use crate::logic::logic_util::*;
 
 // The n is here so that we can "hijack" it during initialization
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn watches_inv_internal(w: Seq<Vec<Watcher>>, n: Int, f: Formula) -> bool {
     pearlite! {
         2 * n == w.len()
@@ -21,8 +20,7 @@ pub fn watches_inv_internal(w: Seq<Vec<Watcher>>, n: Int, f: Formula) -> bool {
 }
 
 // The watches for a specific literal are valid for a formula
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn watch_valid(w: Seq<Watcher>, f: Formula) -> bool {
     pearlite! {
         forall<j: Int> 0 <= j && j < w.len() ==>
@@ -32,8 +30,7 @@ pub fn watch_valid(w: Seq<Watcher>, f: Formula) -> bool {
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn watcher_crefs_in_range(w: Seq<Watcher>, f: Formula) -> bool {
     pearlite! {
         forall<j: Int> 0 <= j && j < w.len() ==>
@@ -41,8 +38,7 @@ pub fn watcher_crefs_in_range(w: Seq<Watcher>, f: Formula) -> bool {
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn watches_crefs_in_range(w: Seq<Vec<Watcher>>, f: Formula) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < w.len() ==>
@@ -50,16 +46,14 @@ pub fn watches_crefs_in_range(w: Seq<Vec<Watcher>>, f: Formula) -> bool {
     }
 }
 
-#[logic]
-#[open]
+#[logic(open)]
 #[cfg_attr(feature = "trust_watches_logic", trusted)]
 #[requires(w.len() > 0)]
 #[requires(watcher_crefs_in_range(w, f))]
 #[ensures(watcher_crefs_in_range(pop(w), f))]
 pub fn lemma_pop_watch_maintains_watcher_invariant(w: Seq<Watcher>, f: Formula) {}
 
-#[logic]
-#[open]
+#[logic(open)]
 #[cfg_attr(feature = "trust_watches_logic", trusted)]
 #[requires(watcher_crefs_in_range(w, f))]
 #[requires(o.cref@ < f.clauses@.len())]
@@ -67,8 +61,7 @@ pub fn lemma_pop_watch_maintains_watcher_invariant(w: Seq<Watcher>, f: Formula) 
 pub fn lemma_push_maintains_watcher_invariant(w: Seq<Watcher>, f: Formula, o: Watcher) {}
 
 impl Watches {
-    #[predicate]
-    #[open]
+    #[logic(open)]
     //#[ensures(result == watches_inv_internal(self.watches@, n))]
     pub fn inv(self, f: Formula) -> bool {
         pearlite! {

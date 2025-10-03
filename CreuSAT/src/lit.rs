@@ -18,8 +18,7 @@ pub struct Lit {
 impl View for Lit {
     type ViewTy = Lit;
 
-    #[logic]
-    #[open]
+    #[logic(open)]
     fn view(self) -> Self {
         self
     }
@@ -29,8 +28,7 @@ impl View for Lit {
 impl DeepModel for Lit {
     type DeepModelTy = Lit;
 
-    #[logic]
-    #[open]
+    #[logic(open)]
     fn deep_model(self) -> Self {
         self
     }

@@ -1,7 +1,6 @@
-use creusot_contracts::{std::*, *};
-
 use crate::{formula::*, lit::*, trail::*};
 use ::std::ops::{Index, IndexMut};
+use creusot_contracts::{std::*, *};
 
 #[allow(unused_features)]
 #[cfg(creusot)]

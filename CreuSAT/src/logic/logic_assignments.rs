@@ -13,15 +13,13 @@ use crate::logic::{logic::*, logic_formula::*};
 impl View for Assignments {
     type ViewTy = Seq<AssignedState>;
 
-    #[logic]
-    #[open]
+    #[logic(open)]
     fn view(self) -> Self::ViewTy {
         self.0.view()
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     pearlite! {
         a.len() == a2.len() && (forall<i: Int> 0 <= i && i < a.len() ==>
@@ -29,24 +27,21 @@ pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn complete_inner(a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < a.len() ==> !unset(a[i])
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     compatible_inner(a, a2) && complete_inner(a2)
 }
 
 // Predicates
 impl Assignments {
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn inv(self, f: Formula) -> bool {
         pearlite! {
             f.num_vars@ == self@.len()
@@ -54,8 +49,7 @@ impl Assignments {
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn complete(self) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self@.len() ==> !unset(self@[i])

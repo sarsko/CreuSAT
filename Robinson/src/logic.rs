@@ -3,8 +3,7 @@ use creusot_contracts::*;
 
 use crate::{assignments::*, clause::*, formula::*};
 
-#[logic]
-#[open]
+#[logic(open)]
 #[ensures(b ==> result@ == 1)]
 #[ensures(!b ==> result@ == 0)]
 pub fn bool_to_assignedstate(b: bool) -> AssignedState {
@@ -15,9 +14,8 @@ pub fn bool_to_assignedstate(b: bool) -> AssignedState {
     }
 }
 
-#[logic]
-#[open]
-fn flip_v(v: AssignedState) -> AssignedState {
+#[logic(open)]
+pub fn flip_v(v: AssignedState) -> AssignedState {
     pearlite! {
         if v@ == 0 {
             1u8
@@ -29,20 +27,17 @@ fn flip_v(v: AssignedState) -> AssignedState {
     }
 }
 
-#[logic]
-#[open]
-fn pos() -> AssignedState {
+#[logic(open)]
+pub fn pos() -> AssignedState {
     1u8
 }
 
-#[logic]
-#[open]
-fn neg() -> AssignedState {
+#[logic(open)]
+pub fn neg() -> AssignedState {
     0u8
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn unset(v: AssignedState) -> bool {
     pearlite! {
         if v@ >= 2 {
@@ -53,8 +48,7 @@ pub fn unset(v: AssignedState) -> bool {
     }
 }
 
-#[logic]
-#[open]
+#[logic(open)]
 #[requires(f.inv())]
 #[requires(f.num_vars@ == a.len())]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
@@ -64,8 +58,7 @@ pub fn unset(v: AssignedState) -> bool {
 #[ensures(f.eventually_sat_complete_inner(a.set(ix, v)))]
 pub fn lemma_unit_forces(f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 
-#[logic]
-#[open]
+#[logic(open)]
 #[requires(f.inv())]
 #[requires(f.num_vars@ == a.len())]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
@@ -82,15 +75,13 @@ pub fn lemma_unit_wrong_polarity_unsat_formula(
 ) {
 }
 
-#[logic]
-#[open]
+#[logic(open)]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
 #[requires(f.eventually_sat_complete_inner(a.set(ix, v)))]
 #[ensures(f.eventually_sat_complete_inner(a))]
 pub fn lemma_extension_sat_base_sat(f: Formula, a: Seq<AssignedState>, ix: Int, v: AssignedState) {}
 
-#[logic]
-#[open]
+#[logic(open)]
 #[requires(0 <= ix && ix < a.len() && unset(a[ix]))]
 #[requires(!f.eventually_sat_complete_inner(a.set(ix, neg())))]
 #[requires(!f.eventually_sat_complete_inner(a.set(ix, pos())))]

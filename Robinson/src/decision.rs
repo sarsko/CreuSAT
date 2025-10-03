@@ -9,8 +9,7 @@ pub struct Decisions {
 }
 
 impl Decisions {
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn inv(self, n: Int) -> bool {
         pearlite! {
             self.lit_order@.len() == n

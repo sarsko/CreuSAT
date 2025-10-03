@@ -1,6 +1,5 @@
-use creusot_contracts::{ensures, invariant, maintains, proof_assert, requires, std::vec, Clone, Int, Snapshot, *};
-
 use crate::{assignments::*, formula::*, util::*};
+use creusot_contracts::{ensures, invariant, maintains, proof_assert, requires, std::vec, Clone, Int, Snapshot, *};
 
 #[cfg(creusot)]
 use crate::logic::{logic::unset, logic_decision::*, logic_util::*};
@@ -20,14 +19,6 @@ impl ::std::default::Default for Node {
     #[ensures(result.ts@   == 0)]
     fn default() -> Self {
         Node { next: usize::MAX, prev: usize::MAX, ts: 0 }
-    }
-}
-
-impl creusot_contracts::Default for Node {
-    #[predicate]
-    #[open]
-    fn is_default(self) -> bool {
-        pearlite! { self.next@ == usize::MAX@ && self.prev@ == usize::MAX@ && self.ts@ == 0 }
     }
 }
 

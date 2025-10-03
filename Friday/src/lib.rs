@@ -27,8 +27,7 @@ pub struct Formula {
 }
 
 impl Invariant for Formula {
-    #[predicate]
-    #[open(self)]
+    #[logic(open(self))]
     fn invariant(self) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
@@ -38,8 +37,7 @@ impl Invariant for Formula {
 }
 
 impl Formula {
-    #[predicate]
-    #[open(self)]
+    #[logic(open(self))]
     fn sat(self, a: Assignments) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
@@ -49,8 +47,7 @@ impl Formula {
 }
 
 impl Clause {
-    #[predicate]
-    #[open(self)]
+    #[logic(open(self))]
     fn vars_in_range(self, n: Int) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self.0@.len() ==>
@@ -60,16 +57,14 @@ impl Clause {
 }
 
 impl Lit {
-    #[predicate]
-    #[open(self)]
+    #[logic(open(self))]
     fn var_in_range(self, n: Int) -> bool {
         pearlite! {
             self.var@ < n
         }
     }
 
-    #[predicate]
-    #[open(self)]
+    #[logic(open(self))]
     fn sat(self, a: Assignments) -> bool {
         pearlite! {
             a.0@[self.var@] == self.value
@@ -78,8 +73,7 @@ impl Lit {
 }
 
 impl Assignments {
-    #[predicate]
-    #[open(self)]
+    #[logic(open(self))]
     fn compatible(self, pa: Pasn) -> bool {
         pearlite! {
             pa.assign.0@.len() == self.0@.len() &&
@@ -90,8 +84,7 @@ impl Assignments {
 }
 
 impl Pasn {
-    #[predicate]
-    #[open(self)]
+    #[logic(open(self))]
     fn invariant(self, n: Int) -> bool {
         pearlite! {
             self.ix@ <= self.assign.0@.len()
@@ -101,8 +94,7 @@ impl Pasn {
 }
 
 impl Clause {
-    #[predicate]
-    #[open(self)]
+    #[logic(open(self))]
     fn sat(self, a: Assignments) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < self.0@.len() &&
