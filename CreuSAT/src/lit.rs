@@ -1,7 +1,5 @@
 use ::std::ops;
-use creusot_contracts::{model::*, std::*, *};
-
-use creusot_contracts::Clone;
+use creusot_contracts::prelude::{Clone, *};
 
 use crate::assignments::*;
 

@@ -1,5 +1,4 @@
-extern crate creusot_contracts;
-use creusot_contracts::*;
+use creusot_contracts::prelude::*;
 
 use crate::{assignments::*, clause::*, formula::*};
 

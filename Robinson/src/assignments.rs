@@ -1,6 +1,5 @@
-extern crate creusot_contracts;
 use crate::{clause::*, decision::*, formula::*};
-use creusot_contracts::{model::*, std::*, *};
+use creusot_contracts::prelude::*;
 
 #[cfg(creusot)]
 use crate::logic::*;
@@ -77,7 +76,7 @@ impl Assignments {
     #[ensures(result.inv(*f))]
     #[ensures(forall<i: Int> 0 <= i && i < result@.len() ==> unset(result@[i]))]
     pub fn new(f: &Formula) -> Self {
-        Assignments(vec::from_elem(2u8, f.num_vars), 0)
+        Assignments(std::vec::from_elem(2u8, f.num_vars), 0)
     }
 
     #[cfg_attr(feature = "trust_assignments", trusted)]

@@ -1,4 +1,4 @@
-use creusot_contracts::{std::*, Snapshot, *};
+use creusot_contracts::prelude::*;
 
 use crate::{formula::*, lit::*, trail::*};
 

@@ -1,6 +1,6 @@
 use ::std::panic;
 
-use creusot_contracts::{std::*, Snapshot, *};
+use creusot_contracts::prelude::*;
 
 use crate::{
     assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, trail::*, unit_prop::*, util::*,
@@ -79,7 +79,7 @@ impl Solver {
             inc_reduce_db: 300,
             fast: 16777216, // 1 << 24
             slow: 16777216, // 1 << 24
-            perm_diff: vec::from_elem(0, f.num_vars),
+            perm_diff: std::vec::from_elem(0, f.num_vars),
         }
     }
 

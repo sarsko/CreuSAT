@@ -1,4 +1,4 @@
-use creusot_contracts::{std::*, Clone, Snapshot, *};
+use creusot_contracts::prelude::{Clone, *};
 
 use crate::{assignments::*, formula::*, lit::*, solver::*, trail::*};
 use ::std::ops::{Index, IndexMut};

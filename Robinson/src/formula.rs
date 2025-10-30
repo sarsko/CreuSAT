@@ -1,6 +1,4 @@
-extern crate creusot_contracts;
-#[allow(unused)]
-use creusot_contracts::{model::*, *};
+use creusot_contracts::prelude::*;
 
 use crate::{clause::*, solver::*};
 

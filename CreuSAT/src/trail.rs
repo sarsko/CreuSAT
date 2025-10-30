@@ -1,4 +1,4 @@
-use creusot_contracts::{std::*, Snapshot, *};
+use creusot_contracts::prelude::*;
 
 use crate::{assignments::*, decision::*, formula::*, lit::*};
 
@@ -43,7 +43,7 @@ impl Trail {
     pub fn new(f: &Formula, a: Assignments) -> Trail {
         Trail {
             assignments: a,
-            lit_to_level: vec::from_elem(usize::MAX, f.num_vars),
+            lit_to_level: std::vec::from_elem(usize::MAX, f.num_vars),
             trail: Vec::new(),
             curr_i: 0,
             decisions: Vec::new(),

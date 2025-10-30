@@ -1,4 +1,4 @@
-use creusot_contracts::{model::*, std::*, *};
+use creusot_contracts::{model::*, prelude::*};
 
 use crate::{
     assignments::*,

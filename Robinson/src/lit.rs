@@ -1,6 +1,4 @@
-extern crate creusot_contracts;
-#[allow(unused)]
-use creusot_contracts::{std::clone::Clone, std::*, *};
+use creusot_contracts::prelude::{Clone, *};
 
 use crate::assignments::*;
 

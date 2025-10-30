@@ -1,5 +1,4 @@
-extern crate creusot_contracts;
-use creusot_contracts::*;
+use creusot_contracts::prelude::*;
 
 #[logic(open)] //#[open(self)]
 pub fn sorted_range_rev(s: Seq<(usize, usize)>, l: Int, u: Int) -> bool {
