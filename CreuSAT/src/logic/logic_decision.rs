@@ -3,11 +3,10 @@ use creusot_contracts::prelude::*;
 use crate::decision::*;
 
 impl Decisions {
-    #[logic(prophetic, open)]
+    #[logic(open)]
     pub fn inv(self, n: Int) -> bool {
         pearlite! {
-            inv(self)
-            && self.linked_list@.len() == n
+            self.linked_list@.len() == n
             && (self.search@ < self.linked_list@.len() || self.search@ == usize::MAX@)
             && self.start@ < self.linked_list@.len()
             && forall<i: Int> 0 <= i && i < self.linked_list@.len() ==>
