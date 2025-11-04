@@ -1,22 +1,18 @@
-use creusot_contracts::std::*;
-use creusot_contracts::*;
+use creusot_contracts::prelude::*;
 
 use crate::assignments::*;
 
-#[open]
-#[logic]
+#[logic(open)]
 fn pos() -> AssignedState {
     1u8
 }
 
-#[open]
-#[logic]
+#[logic(open)]
 fn neg() -> AssignedState {
     0u8
 }
 
-#[open]
-#[predicate]
+#[logic(open)]
 pub fn unset(v: AssignedState) -> bool {
     pearlite! {
         if v@ >= 2 {
@@ -28,8 +24,7 @@ pub fn unset(v: AssignedState) -> bool {
 }
 
 #[cfg_attr(feature = "trust_logic_logic", trusted)]
-#[open]
-#[logic]
+#[logic(open)]
 #[ensures(b ==> result@ == 1)]
 #[ensures(!b ==> result@ == 0)]
 pub fn bool_to_assignedstate(b: bool) -> AssignedState {
@@ -40,8 +35,7 @@ pub fn bool_to_assignedstate(b: bool) -> AssignedState {
     }
 }
 
-#[open]
-#[logic]
+#[logic(open)]
 fn flip_v(v: AssignedState) -> AssignedState {
     pearlite! {
         if v@ == 0 {
