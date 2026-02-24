@@ -1,4 +1,4 @@
-use creusot_contracts::prelude::*;
+use creusot_std::prelude::*;
 
 use crate::{assignments::*, clause_allocator::*, lit::*};
 
@@ -12,14 +12,14 @@ pub struct CRefManager {
 impl View for CRefManager {
     type ViewTy = Seq<CRef>;
 
-    #[logic(open(crate))]
+    #[logic]
     fn view(self) -> Self::ViewTy {
         self.crefs.view()
     }
 }
 
 impl CRefManager {
-    #[logic(open(crate))]
+    #[logic]
     pub(crate) fn inv(self, clause_allocator: ClauseAllocator) -> bool {
         pearlite! {
             clause_allocator.inv()
@@ -29,7 +29,7 @@ impl CRefManager {
         }
     }
 
-    #[logic(open(crate))]
+    #[logic]
     pub(crate) fn are_implied_by(self, original_clauses: CRefManager, clause_allocator: ClauseAllocator) -> bool {
         pearlite! {
             let formula = Formula::from(self@, clause_allocator, self.num_vars@);

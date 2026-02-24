@@ -1,13 +1,13 @@
-use creusot_contracts::prelude::*;
+use creusot_std::prelude::*;
 
-#[logic(open)] //#[open(self)]
+#[logic(open)]
 pub fn sorted_range_rev(s: Seq<(usize, usize)>, l: Int, u: Int) -> bool {
     pearlite! {
         forall<i: Int, j: Int> l <= i && i < j && j < u ==> s[i].0 >= s[j].0
     }
 }
 
-#[logic(open)] //#[open(self)]
+#[logic(open)]
 pub fn sorted_rev(s: Seq<(usize, usize)>) -> bool {
     sorted_range_rev(s, 0, s.len())
 }

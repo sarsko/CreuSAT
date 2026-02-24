@@ -1,4 +1,4 @@
-use creusot_contracts::prelude::*;
+use creusot_std::prelude::{vec, Clone, *};
 
 use crate::{assignments::*, clause_allocator::*, cref_manager::*, lit::*};
 
@@ -11,7 +11,7 @@ pub struct ClauseManager {
 }
 
 impl ClauseManager {
-    #[logic(open(crate))]
+    #[logic]
     pub(crate) fn inv(self) -> bool {
         pearlite! {
             self.clause_allocator.inv()
@@ -19,6 +19,16 @@ impl ClauseManager {
             && self.learnt_core.inv(self.clause_allocator)
             && self.learnt_core.are_implied_by(self.original_clauses, self.clause_allocator)
         }
+    }
+
+    #[logic(open(self))]
+    pub fn clause(self) -> Seq<Lit> {
+        pearlite! { self.clause_allocator@ }
+    }
+
+    #[logic(open(self))]
+    pub fn clause_num_vars(self) -> Int {
+        pearlite! { self.clause_allocator.num_vars@ }
     }
 }
 
@@ -60,7 +70,7 @@ impl ClauseManager {
     #[requires(self.clause_allocator@.len() + lits@.len() + HEADER_LEN@ <= u32::MAX@)] // TODO: May have to move this to a runtime check
     #[requires(Formula::from(self.original_clauses@, self.clause_allocator, self.clause_allocator.num_vars@).implies(seq_to_fset(lits@)))]
     //#[requires(self@.len() + (@lits).len() + @HEADER_LEN <= @u32::MAX)] // TODO: May have to move this to a runtime check
-    #[requires(clause_invariant_seq(lits@, self.clause_allocator.num_vars@))]
+    #[requires(clause_invariant_seq(lits@, self.clause_num_vars()))]
     pub(crate) fn learn_clause(&mut self, lits: &[Lit]) -> CRef {
         let old_self: Snapshot<&mut ClauseManager> = snapshot!(self);
         proof_assert!(self.learnt_core.are_implied_by(self.original_clauses, self.clause_allocator));

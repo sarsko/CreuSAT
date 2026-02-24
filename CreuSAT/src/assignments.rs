@@ -1,6 +1,7 @@
+use creusot_std::prelude::{vec, *};
+
 use crate::{formula::*, lit::*, trail::*};
 use ::std::ops::{Index, IndexMut};
-use creusot_contracts::prelude::*;
 
 #[allow(unused_features)]
 #[cfg(creusot)]
@@ -82,6 +83,6 @@ impl Assignments {
     #[requires(f.inv())]
     #[ensures(result.inv(*f))]
     pub fn new(f: &Formula) -> Self {
-        Assignments(std::vec::from_elem(2, f.num_vars))
+        Assignments(vec![2; f.num_vars])
     }
 }

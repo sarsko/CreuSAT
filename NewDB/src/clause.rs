@@ -1,23 +1,23 @@
-use creusot_contracts::logic::FSet;
-use creusot_contracts::prelude::*;
+use creusot_std::prelude::*;
+use creusot_std::{logic::FSet, std::*};
 
 use crate::{assignments::*, lit::*};
 
-#[logic(open(crate))]
-pub(crate) fn clause_sat(clause: FSet<Lit>, assignments: Seq<AssignedState>) -> bool {
+#[logic]
+pub fn clause_sat(clause: FSet<Lit>, assignments: Seq<AssignedState>) -> bool {
     pearlite! {
         exists<l: _> clause.contains(l) && l.sat(assignments)
     }
 }
 
-#[logic(open(crate))]
+#[logic]
 pub(crate) fn clause_invariant(clause: FSet<Lit>, num_vars: Int) -> bool {
     pearlite! {
         forall<l: _> clause.contains(l) ==> l.var_in_range(num_vars)
     }
 }
 
-#[logic(open(crate))]
+#[logic]
 pub(crate) fn clause_invariant_seq(clause: Seq<Lit>, num_vars: Int) -> bool {
     pearlite! {
         // no_duplicate_indexes_inner(clause) &&
@@ -25,7 +25,7 @@ pub(crate) fn clause_invariant_seq(clause: Seq<Lit>, num_vars: Int) -> bool {
     }
 }
 
-#[logic(open(crate))]
+#[logic]
 pub(crate) fn no_duplicate_indexes_inner(clause: Seq<Lit>) -> bool {
     pearlite! {
         forall<j: Int, k: Int> 0 <= j && j < clause.len() &&

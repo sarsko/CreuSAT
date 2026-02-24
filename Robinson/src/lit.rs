@@ -1,4 +1,4 @@
-use creusot_contracts::prelude::{Clone, *};
+use creusot_std::prelude::{Clone, *};
 
 use crate::assignments::*;
 

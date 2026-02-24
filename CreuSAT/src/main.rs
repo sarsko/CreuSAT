@@ -1,5 +1,5 @@
 #[allow(unused)]
-use creusot_contracts::*;
+use creusot_std::*;
 
 #[cfg(creusot)]
 fn main() {}

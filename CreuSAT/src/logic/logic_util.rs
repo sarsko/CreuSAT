@@ -1,4 +1,4 @@
-use creusot_contracts::prelude::*;
+use creusot_std::prelude::*;
 
 #[logic(open)]
 pub fn sorted_range_rev(s: Seq<(usize, usize)>, l: Int, u: Int) -> bool {

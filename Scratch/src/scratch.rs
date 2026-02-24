@@ -1,4 +1,4 @@
-use creusot_contracts::prelude::{Clone, *};
+use creusot_std::prelude::*;
 
 #[cfg(creusot)]
 use crate::logic::*;
@@ -18,12 +18,12 @@ use crate::{assignments::*, clause::*, formula::*, lit::*};
 pub fn lemma_push_maintains_lit_not_in_less(t: Trail, f: Formula, step: Step) {}
 */
 
-#[logic(open)]
+#[logic]
 #[requires(c.sat(a))]
 #[ensures(forall<c2: Clause> c2@.permutation_of(c@) ==> c2.sat(a))]
 pub fn lemma_clause_permuted_maintains_sat(c: Clause, a: Assignments) {}
 
-#[logic(open)]
+#[logic]
 #[requires(c.unsat(a))]
 #[ensures(forall<c2: Clause> c2@.permutation_of(c@) ==> c2.unsat(a))]
 pub fn lemma_clause_permuted_maintains_unsat(c: Clause, a: Assignments) {}

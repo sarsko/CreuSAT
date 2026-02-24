@@ -1,18 +1,18 @@
-use creusot_contracts::prelude::{Clone, *};
+use creusot_std::prelude::{Clone, *};
 
 pub type AssignedState = u8;
 
-#[logic(open)]
+#[logic]
 fn pos() -> AssignedState {
     1u8
 }
 
-#[logic(open)]
+#[logic]
 fn neg() -> AssignedState {
     0u8
 }
 
-#[logic(open)]
+#[logic]
 pub fn unset(v: AssignedState) -> bool {
     pearlite! { v@ >= 2 }
 }
@@ -30,14 +30,14 @@ impl Clone for Assignments {
 impl View for Assignments {
     type ViewTy = Seq<AssignedState>;
 
-    #[logic(open)]
+    #[logic]
     fn view(self) -> Self::ViewTy {
         self.0.view()
     }
 }
 
 impl Assignments {
-    #[logic(open)]
+    #[logic]
     pub fn inv(self) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self@.len() ==>
@@ -46,7 +46,7 @@ impl Assignments {
     }
 }
 
-#[logic(open)]
+#[logic]
 pub fn complete_inner(a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < a.len() ==> !unset(a[i])

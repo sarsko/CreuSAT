@@ -1,12 +1,12 @@
-use creusot_contracts::logic::FSet;
-use creusot_contracts::prelude::*;
+use creusot_std::logic::FSet;
+use creusot_std::prelude::*;
 
 use crate::assignments::AssignedState;
 use crate::{assignments::*, clause::*, clause_allocator::*, lit::*};
 
-pub(crate) struct Formula {
-    pub(crate) formula: FSet<FSet<Lit>>,
-    pub(crate) num_vars: Int,
+pub struct Formula {
+    pub formula: FSet<FSet<Lit>>,
+    pub num_vars: Int,
 }
 
 /*
@@ -30,7 +30,7 @@ pub fn abs_just_inner(self, just: Seq<usize>, ix: Int) -> FSet<(theory::Term, th
 
 impl Formula {
     // TODO: Look at actually implementing from
-    #[logic(open(self))]
+    #[logic]
     #[requires(clause_allocator.inv())]
     #[requires(forall<i: Int> 0 <= i && i < crefs.len() ==>
                 cref_invariant(crefs[i]@, clause_allocator, num_vars))] // CRefManager.inv unwrapped -> TODO: refactor?
@@ -41,12 +41,12 @@ impl Formula {
         Formula { formula: Formula::from_internal(crefs, clause_allocator, 0, num_vars), num_vars }
     }
 
-    #[logic(open(crate))]
-    pub(crate) fn insert(self, clause: FSet<Lit>) -> Formula {
+    #[logic]
+    fn insert(self, clause: FSet<Lit>) -> Formula {
         Formula { formula: self.formula.insert(clause), num_vars: self.num_vars }
     }
 
-    #[logic(open(self))]
+    #[logic]
     //#[variant((clause@_allocator).len() - idx)]
     #[variant(crefs.len() - idx)]
     #[requires(idx >= 0)]
@@ -68,14 +68,14 @@ impl Formula {
         }
     }
 
-    #[logic(open(crate))]
+    #[logic]
     pub(crate) fn implies(self, clause: FSet<Lit>) -> bool {
         pearlite! {
             self.eventually_sat_complete() ==> self.insert(clause).eventually_sat_complete()
         }
     }
 
-    #[logic(open(crate))]
+    #[logic]
     pub(crate) fn eventually_sat_complete(self) -> bool {
         pearlite! {
             exists<a: Seq<AssignedState>> a.len() == self.num_vars
@@ -84,7 +84,7 @@ impl Formula {
         }
     }
 
-    #[logic(open(crate))]
+    #[logic]
     pub fn sat(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             forall<c: _> self.formula.contains(c) ==> clause_sat(c, a)

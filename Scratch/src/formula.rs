@@ -1,4 +1,4 @@
-use creusot_contracts::prelude::*;
+use creusot_std::prelude::*;
 
 use crate::{assignments::*, clause::*, lit::*};
 
@@ -8,17 +8,16 @@ pub struct Formula {
     pub num_vars: usize,
 }
 
-#[cfg(creusot)]
 impl View for Formula {
     type ViewTy = (Seq<Clause>, Int);
 
-    #[logic(open)]
+    #[logic]
     fn view(self) -> Self::ViewTy {
         (self.clauses.view(), self.num_vars.view())
     }
 }
 
-#[logic(open)]
+#[logic]
 pub fn formula_invariant(f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < f.0.len() ==>
@@ -26,7 +25,7 @@ pub fn formula_invariant(f: (Seq<Clause>, Int)) -> bool {
     }
 }
 
-#[logic(open)]
+#[logic]
 pub fn formula_sat_inner(f: (Seq<Clause>, Int), a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < f.0.len() ==>
@@ -34,14 +33,14 @@ pub fn formula_sat_inner(f: (Seq<Clause>, Int), a: Seq<AssignedState>) -> bool {
     }
 }
 
-#[logic(open)]
+#[logic]
 pub fn eventually_sat_complete(f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
         exists<a2: Seq<AssignedState>> a2.len() == f.1 && complete_inner(a2) && formula_sat_inner(f, a2)
     }
 }
 
-#[logic(open)]
+#[logic]
 fn equisat(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
     pearlite! {
         eventually_sat_complete(f) == eventually_sat_complete(o)
@@ -50,27 +49,27 @@ fn equisat(f: (Seq<Clause>, Int), o: (Seq<Clause>, Int)) -> bool {
 
 // Predicates
 impl Formula {
-    #[logic(open)]
+    #[logic]
     pub fn eventually_sat_complete(self) -> bool {
         pearlite! {
             exists<a2: Seq<AssignedState>> a2.len() == self.num_vars@ && complete_inner(a2) && self.sat_inner(a2)
         }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn equisat(self, o: Formula) -> bool {
         self.eventually_sat_complete() == o.eventually_sat_complete()
     }
 
-    #[logic(open)]
+    #[logic]
     #[cfg_attr(feature = "trust_formula_logic", trusted)]
     #[ensures(result == self.inv_mirror())] // Removing this makes a bunch of seemingly unrelated things fail
     pub fn inv(self) -> bool {
         pearlite! { formula_invariant(self@) }
     }
 
-    #[logic(open)]
-    pub fn inv_mirror(self) -> bool {
+    #[logic]
+    fn inv_mirror(self) -> bool {
         pearlite! {
             (forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
                 self.clauses@[i].inv(self.num_vars@))
@@ -81,26 +80,26 @@ impl Formula {
         }
     }
 
-    #[logic(open)]
-    pub fn eventually_sat_inner(self, a: Seq<AssignedState>) -> bool {
+    #[logic]
+    fn eventually_sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             exists<a2: Seq<AssignedState>> a2.len() == self.num_vars@ && compatible_inner(a, a2) && self.sat_inner(a2)
         }
     }
 
-    #[logic(open)]
+    #[logic]
     fn eventually_sat_complete_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             exists<a2: Seq<AssignedState>> a2.len() == self.num_vars@ && compatible_complete_inner(a, a2) && self.sat_inner(a2)
         }
     }
 
-    #[logic(open)]
-    pub fn eventually_sat(self, a: Assignments) -> bool {
+    #[logic]
+    fn eventually_sat(self, a: Assignments) -> bool {
         pearlite! { self.eventually_sat_inner(a@)}
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
@@ -108,25 +107,25 @@ impl Formula {
         }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! { formula_sat_inner(self@, a@) }
     }
 
-    #[logic(open)]
-    pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
+    #[logic]
+    fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < self.clauses@.len() &&
                 self.clauses@[i].unsat_inner(a)
         }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! { self.unsat_inner(a@) }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn not_satisfiable(self) -> bool {
         pearlite! { exists<c: Clause> c@.len() == 0 && c.equisat_extension(self) }
     }

@@ -1,11 +1,8 @@
-use crate::{assignments::*, formula::*, util::*};
-use creusot_contracts::{
-    prelude::{Clone, *},
-    std::vec::vec,
-};
+use creusot_std::prelude::{vec, Clone, *};
 
 #[cfg(creusot)]
 use crate::logic::{logic::unset, logic_decision::*, logic_util::*};
+use crate::{assignments::*, formula::*, util::*};
 
 #[derive(Clone, Copy)]
 pub struct Node {
@@ -42,7 +39,7 @@ impl Decisions {
                 lit_order@[i]@ < f.num_vars@)]
     #[ensures(result.inv(f.num_vars@))]
     pub fn make_linked_list(f: &Formula, lit_order: Vec<usize>) -> Decisions {
-        let mut linked_list: Vec<Node> = std::vec::from_elem(Node::default(), f.num_vars);
+        let mut linked_list: Vec<Node> = vec![Node::default(); f.num_vars];
         let mut i: usize = 0;
         let mut head: usize = 0;
         #[invariant(linked_list@.len() == f.num_vars@)]
@@ -78,9 +75,9 @@ impl Decisions {
     #[requires(0 < f.num_vars@ && f.num_vars@ < usize::MAX@/2)]
     #[ensures(result.inv(f.num_vars@))]
     pub fn new(f: &Formula) -> Decisions {
-        let mut lit_order: Vec<usize> = std::vec::from_elem(0, f.num_vars);
-        let mut counts: Vec<usize> = std::vec::from_elem(0, f.num_vars);
-        let mut counts_with_index: Vec<(usize, usize)> = std::vec::from_elem((0, 0), f.num_vars);
+        let mut lit_order: Vec<usize> = vec![0; f.num_vars];
+        let mut counts: Vec<usize> = vec![0; f.num_vars];
+        let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); f.num_vars];
         let mut i: usize = 0;
         #[invariant(i@ <= f.clauses@.len())]
         #[invariant(counts@.len() == f.num_vars@)]

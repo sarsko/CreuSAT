@@ -1,4 +1,4 @@
-use creusot_contracts::prelude::*;
+use creusot_std::prelude::*;
 
 use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*, util, watches::*};
 
@@ -50,7 +50,7 @@ fn check_and_move_watch(
 // TODO: Look at strategies or look at making lemmas / assertions to make it easier.
 // This has previously had issues on the trail invariant and on the formula equisatisfiability.
 // Solved fairly easily by Auto Level 3 when targeted direcly, but Auto Level 8/9 struggles.
-#[cfg_attr(all(feature = "trust_unit", not(feature = "problem_child")), trusted)]
+#[trusted]
 #[maintains((mut f).inv())]
 #[maintains((*trail).inv(mut f))] // <-
 #[maintains((*watches).inv(mut f))]

@@ -1,4 +1,4 @@
-use creusot_contracts::prelude::*;
+use creusot_std::prelude::*;
 
 #[cfg(creusot)]
 use crate::logic::logic_util::*;

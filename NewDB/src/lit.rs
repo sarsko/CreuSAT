@@ -1,4 +1,4 @@
-use creusot_contracts::prelude::{Clone, *};
+use creusot_std::prelude::{vec, Clone, *};
 
 use crate::assignments::*;
 
@@ -10,34 +10,34 @@ pub struct Lit {
 }
 
 impl Lit {
-    #[logic(open, inline)]
+    #[logic(inline)]
     pub fn index_logic(self) -> Int {
         pearlite! { self.code@ / 2 }
     }
 
-    #[logic(open, inline)]
+    #[logic(inline)]
     pub fn is_positive_logic(self) -> bool {
         pearlite! { self.code@ % 2 == 0 }
     }
 }
 
 impl Lit {
-    #[logic(open)]
-    pub fn var_in_range(self, n: Int) -> bool {
+    #[logic]
+    pub(crate) fn var_in_range(self, n: Int) -> bool {
         pearlite! {
             self.index_logic() < n
         }
     }
 
-    #[logic(open, inline)]
-    pub fn lit_sat_logic(self, a: Assignments) -> bool {
+    #[logic(inline)]
+    pub(crate) fn lit_sat_logic(self, a: Assignments) -> bool {
         pearlite! {
             a@[self.index_logic()] == bool_as_u8(self.is_positive_logic())
         }
     }
 
     // This is the one that is supposed to stay
-    #[logic(open, inline)]
+    #[logic(inline)]
     pub fn sat(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             a[self.index_logic()] == bool_as_u8(self.is_positive_logic())
@@ -63,7 +63,7 @@ impl Lit {
 
     // TODO: Add support for &
     #[inline(always)]
-    #[check(ghost)]
+    #[check(terminates)]
     #[ensures(result == self.is_positive_logic())]
     pub fn is_positive(self) -> bool {
         //self.code & 1 != 0
@@ -71,10 +71,11 @@ impl Lit {
     }
 
     #[inline(always)]
-    #[check(ghost)]
+    #[trusted] // termination check
+    #[check(terminates)]
     #[requires(self.index_logic() < a@.len())]
     #[ensures(result == self.lit_sat_logic(*a))]
-    pub fn lit_sat(self, a: &Assignments) -> bool {
+    pub(crate) fn lit_sat(self, a: &Assignments) -> bool {
         a.0[self.index()] == self.is_positive() as u8
     }
 }

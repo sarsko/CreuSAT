@@ -1,5 +1,6 @@
+use creusot_std::prelude::*;
+
 use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*};
-use creusot_contracts::prelude::*;
 
 #[cfg(creusot)]
 use crate::logic::{logic::*, logic_clause::*, logic_util::*};

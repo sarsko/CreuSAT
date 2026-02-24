@@ -1,4 +1,4 @@
-use creusot_contracts::prelude::*;
+use creusot_std::prelude::*;
 
 use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*};
 

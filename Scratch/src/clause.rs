@@ -1,4 +1,4 @@
-use creusot_contracts::prelude::{Clone, *};
+use creusot_std::prelude::{Clone, *};
 
 use crate::{assignments::*, formula::*, lit::*};
 
@@ -10,17 +10,16 @@ pub struct Clause {
     pub lits: Vec<Lit>, // TODO: unpub
 }
 
-#[cfg(creusot)]
 impl View for Clause {
     type ViewTy = Seq<Lit>;
 
-    #[logic(open)]
+    #[logic]
     fn view(self) -> Self::ViewTy {
         self.lits.view() //.push(self.first)//.push(self.second)
     }
 }
 
-#[logic(open)]
+#[logic]
 pub fn vars_in_range_inner(s: Seq<Lit>, n: Int) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < s.len() ==>
@@ -28,19 +27,19 @@ pub fn vars_in_range_inner(s: Seq<Lit>, n: Int) -> bool {
     }
 }
 
-#[logic(open)]
+#[logic]
 pub fn inv_internal(s: Seq<Lit>, n: Int) -> bool {
     vars_in_range_inner(s, n) && no_duplicate_indexes_inner(s)
 }
 
-#[logic(open)]
+#[logic]
 pub fn equisat_extension_inner(c: Clause, f: (Seq<Clause>, Int)) -> bool {
     pearlite! {
         eventually_sat_complete(f) ==> eventually_sat_complete((f.0.push_back(c), f.1))
     }
 }
 
-#[logic(open)]
+#[logic]
 pub fn no_duplicate_indexes_inner(s: Seq<Lit>) -> bool {
     pearlite! {
         forall<j: Int, k: Int> 0 <= j && j < s.len() &&
@@ -55,7 +54,7 @@ pub fn no_duplicate_indexes_inner(s: Seq<Lit>) -> bool {
 }
 
 impl Clause {
-    #[logic(open)]
+    #[logic]
     pub fn post_unit_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < self@.len() && self@[i].sat_inner(a)
@@ -64,19 +63,19 @@ impl Clause {
         }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn no_unset_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             forall<j: Int> 0 <= j && j < self@.len() ==> !self@[j].unset_inner(a)
         }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn post_unit(self, a: Assignments) -> bool {
         pearlite! { self.post_unit_inner(a@) }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn eq_assn_inner(self, a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self@.len() ==>
@@ -86,12 +85,12 @@ impl Clause {
 }
 
 impl Clause {
-    #[logic(open)]
+    #[logic]
     pub fn equisat_extension(self, f: Formula) -> bool {
         pearlite! { equisat_extension_inner(self, f@) }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn same_idx_same_polarity_except(self, other: Clause, exception: Int) -> bool {
         pearlite! {
             forall<i: Int, j: Int> 0 <= i && i < self@.len() && 0 <= j && j < other@.len() ==>
@@ -101,7 +100,7 @@ impl Clause {
         }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn resolvent_of(self, c: Clause, c2: Clause, k: Int, m: Int) -> bool {
         pearlite! {
             (forall<i: Int> 0 <= i && i < c @.len() && i != m ==>  c   @[i].lit_in(self)) &&
@@ -113,7 +112,7 @@ impl Clause {
         }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn in_formula(self, f: Formula) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < f.clauses@.len() &&
@@ -121,15 +120,15 @@ impl Clause {
         }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn in_formula_inner(self, f: (Seq<Clause>, Int)) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < (f.0).len() && (f.0)[i] == self
         }
     }
 
-    #[logic(open)]
-    pub fn unit_inner(self, a: Seq<AssignedState>) -> bool {
+    #[logic]
+    fn unit_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             self.vars_in_range(a.len()) &&
                 !self.sat_inner(a) &&
@@ -139,12 +138,12 @@ impl Clause {
                                 !self@[j].unset_inner(a))
         }
     }
-    #[logic(open)]
+    #[logic]
     pub fn unit(self, a: Assignments) -> bool {
         pearlite! { self.unit_inner(a@) }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self@.len() ==>
@@ -152,12 +151,12 @@ impl Clause {
         }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! { self.unsat_inner(a@) }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < self@.len() &&
@@ -165,39 +164,39 @@ impl Clause {
         }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! {
             self.sat_inner(a@)
         }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn unknown(self, a: Assignments) -> bool {
         !self.sat(a) && !self.unsat(a)
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn vars_in_range(self, n: Int) -> bool {
         pearlite! { vars_in_range_inner(self@, n) }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn no_duplicate_indexes(self) -> bool {
         pearlite! { no_duplicate_indexes_inner(self@) }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn search_idx_in_range(self) -> bool {
         pearlite! { 2 <= self.search@ && self.search@ <= self@.len() }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn inv(self, n: Int) -> bool {
         pearlite! { inv_internal(self@, n) }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn clause_is_seen(self, seen: Vec<bool>) -> bool {
         pearlite! {
             forall<idx: Int> 0 <= idx && idx < seen@.len() ==>
@@ -205,7 +204,7 @@ impl Clause {
         }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn equals(self, o: Clause) -> bool {
         pearlite! {
             self@.len() == (o@).len()

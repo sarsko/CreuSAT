@@ -1,9 +1,9 @@
-use creusot_contracts::logic::FSet;
-use creusot_contracts::prelude::*;
+use creusot_std::logic::FSet;
+use creusot_std::prelude::*;
 
 use crate::lit::*;
 
-#[logic(open, inline)]
+#[logic(inline)]
 pub fn bool_as_u8(b: bool) -> u8 {
     pearlite! {
        match b {
@@ -13,7 +13,7 @@ pub fn bool_as_u8(b: bool) -> u8 {
     }
 }
 
-#[logic(open(crate))]
+#[logic]
 #[ensures(forall<i: Int> 0 <= i && i < seq.len() ==> result.contains(seq[i]))]
 #[ensures(forall<l: _> result.contains(l) ==> exists<i: Int> 0 <= i && i < seq.len() && seq[i] == l)]
 pub(crate) fn seq_to_fset(seq: Seq<Lit>) -> FSet<Lit> {
@@ -22,7 +22,7 @@ pub(crate) fn seq_to_fset(seq: Seq<Lit>) -> FSet<Lit> {
     }
 }
 
-#[logic(open(crate))]
+#[logic]
 #[variant(seq.len() - idx)]
 #[requires(idx >= 0)]
 #[ensures(forall<l : _> result.contains(l) ==> exists<i : _> idx <= i && i < seq.len() && seq[i] == l)]

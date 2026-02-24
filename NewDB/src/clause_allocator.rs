@@ -1,5 +1,5 @@
-use creusot_contracts::logic::FSet;
-use creusot_contracts::prelude::*;
+use creusot_std::logic::FSet;
+use creusot_std::prelude::{vec, Clone, *};
 
 use crate::{clause::*, lit::*};
 
@@ -10,7 +10,7 @@ pub type CRef = u32;
 
 // TODO: This seems to be a non-ideal invariant
 // TODO: Add more
-#[logic(open(crate))]
+#[logic]
 pub(crate) fn cref_invariant(cref: Int, clause_allocator: ClauseAllocator, num_vars: Int) -> bool {
     pearlite! {
         cref < clause_allocator@.len()
@@ -20,7 +20,7 @@ pub(crate) fn cref_invariant(cref: Int, clause_allocator: ClauseAllocator, num_v
     }
 }
 
-#[logic(open(crate))]
+#[logic]
 pub(crate) fn cref_invariant_fset(cref: Int, clause_allocator: ClauseAllocator, num_vars: Int) -> bool {
     pearlite! {
         cref < clause_allocator@.len()
@@ -36,14 +36,14 @@ pub(crate) struct ClauseAllocator {
 }
 
 impl ClauseAllocator {
-    #[logic(open)]
+    #[logic]
     //#[ensures(forall<i: Int> 0 <= i && i < (self@.buffer).len() ==> (self@.buffer)[i] == (result@.buffer)[i])]
     //#[ensures(result@.num_vars == self.num_vars@)]
     pub(crate) fn push(self, lit: Lit) -> Self {
         self
     }
 
-    #[logic(open(crate))]
+    #[logic]
     pub(crate) fn extended(self, new: ClauseAllocator) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self@.len() ==> self@[i] == new@[i]
@@ -54,12 +54,12 @@ impl ClauseAllocator {
 }
 
 impl ClauseAllocator {
-    #[logic(open(crate))]
+    #[logic]
     pub(crate) fn inv(self) -> bool {
         pearlite! { self@.len() <= u32::MAX@ }
     }
 
-    #[logic(open(crate))]
+    #[logic]
     //#[requires(cref_invariant(cref, self))]
     pub(crate) fn get_clause_logic(self, cref: Int) -> Seq<Lit> {
         pearlite! {
@@ -67,7 +67,7 @@ impl ClauseAllocator {
         }
     }
 
-    #[logic(open(crate))]
+    #[logic]
     //#[requires(cref_invariant(cref, self))]
     pub(crate) fn get_clause_fset(self, cref: Int) -> FSet<Lit> {
         pearlite! {
@@ -75,7 +75,7 @@ impl ClauseAllocator {
         }
     }
 
-    #[logic(open(crate))]
+    #[logic]
     //#[requires(cref_invariant(cref, self))]
     #[variant(upper - idx)]
     #[requires(idx >= 0 && upper <= self@.len())]
@@ -94,7 +94,7 @@ impl ClauseAllocator {
 impl View for ClauseAllocator {
     type ViewTy = Seq<Lit>;
 
-    #[logic(open(crate))]
+    #[logic]
     fn view(self) -> Self::ViewTy {
         self.buffer.view()
     }

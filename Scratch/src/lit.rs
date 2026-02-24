@@ -1,5 +1,5 @@
 use ::std::ops;
-use creusot_contracts::prelude::{Clone, *};
+use creusot_std::prelude::{Clone, *};
 
 use crate::{assignments::*, clause::*};
 
@@ -10,27 +10,25 @@ pub struct Lit {
     pub polarity: bool,
 }
 
-#[cfg(creusot)]
 impl View for Lit {
     type ViewTy = Lit;
 
-    #[logic(open)]
+    #[logic]
     fn view(self) -> Self {
         self
     }
 }
 
-#[cfg(creusot)]
 impl DeepModel for Lit {
     type DeepModelTy = Lit;
 
-    #[logic(open)]
+    #[logic]
     fn deep_model(self) -> Self {
         self
     }
 }
 
-#[logic(open, inline)]
+#[logic(inline)]
 //#[ensures(result == self.lit_in_internalc@)]
 pub fn idx_in_logic(idx: Int, c: Seq<Lit>) -> bool {
     pearlite! {
@@ -41,22 +39,22 @@ pub fn idx_in_logic(idx: Int, c: Seq<Lit>) -> bool {
 
 // Logic
 impl Lit {
-    #[logic(open, inline)]
+    #[logic(inline)]
     pub fn index_logic(self) -> Int {
         pearlite! { self.idx@ }
     }
 
-    #[logic(open, inline)]
+    #[logic(inline)]
     pub fn is_positive_logic(self) -> bool {
         pearlite! { self.polarity }
     }
 
-    #[logic(open, inline)]
+    #[logic(inline)]
     pub fn to_watchidx_logic(self) -> Int {
         pearlite! { self.index_logic() * 2 + if self.is_positive_logic() { 0 } else { 1 } }
     }
 
-    #[logic(open, inline)]
+    #[logic(inline)]
     pub fn to_neg_watchidx_logic(self) -> Int {
         pearlite! { self.index_logic() * 2 + if self.is_positive_logic() { 1 } else { 0 } }
     }
@@ -64,24 +62,24 @@ impl Lit {
 
 // Predicates
 impl Lit {
-    #[logic(open)]
+    #[logic]
     pub fn is_opp(self, o: Lit) -> bool {
         pearlite! {
             self.index_logic() == o.index_logic() && self.is_positive_logic() != o.is_positive_logic()
         }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn lit_in_internal(self, c: Seq<Lit>) -> bool {
         pearlite! { exists<i: Int> 0 <= i && i < c.len() && c[i] == self }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn lit_in(self, c: Clause) -> bool {
         pearlite! { exists<i: Int> 0 <= i && i < c@.len() && c@[i] == self }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn lit_idx_in(self, c: Clause) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < c@.len() &&
@@ -89,12 +87,12 @@ impl Lit {
         }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn inv(self, n: Int) -> bool {
         pearlite! { self.index_logic() < n }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             match self.is_positive_logic() {
@@ -104,7 +102,7 @@ impl Lit {
         }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             match self.is_positive_logic() {
@@ -114,22 +112,22 @@ impl Lit {
         }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn unset_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! { a[self.index_logic()]@ >= 2 }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! { self.sat_inner(a@) }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn unset(self, a: Assignments) -> bool {
         pearlite! { self.unset_inner(a@) }
     }
 
-    #[logic(open)]
+    #[logic]
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! { self.unsat_inner(a@) }
     }

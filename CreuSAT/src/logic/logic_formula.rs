@@ -1,4 +1,4 @@
-use creusot_contracts::prelude::*;
+use creusot_std::prelude::*;
 
 use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*, watches::*};
 
@@ -9,7 +9,6 @@ pub struct FormulaModel {
     pub num_vars: Int,
 }
 
-#[cfg(creusot)]
 impl View for Formula {
     type ViewTy = FormulaModel;
 
