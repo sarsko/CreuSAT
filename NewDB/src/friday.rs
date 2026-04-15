@@ -1,18 +1,23 @@
-use creusot_contracts::{std::clone::Clone, std::*, vec, *};
+use creusot_std::prelude::{vec, Clone, *};
 
 use crate::{assignments::*, lit::*};
 
-struct Clause(Vec<Lit>);
+pub struct Clause(pub(crate) Vec<Lit>);
 
-#[derive(Clone)]
 struct Pasn {
     assign: Assignments,
     ix: usize,
 }
 
+impl Clone for Pasn {
+    #[check(terminates)]
+    fn clone(&self) -> Self {
+        Self { assign: self.assign.clone(), ix: self.ix }
+    }
+}
+
 impl Assignments {
-    #[open]
-    #[predicate]
+    #[logic]
     fn compatible(self, pa: Pasn) -> bool {
         pearlite! {
             self.inv() &&
@@ -28,28 +33,35 @@ pub struct Formula {
 }
 
 impl Formula {
-    #[open]
-    #[predicate]
+    #[logic]
     fn inv(self) -> bool {
         pearlite! {
-            forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
-                self.clauses@[i].vars_in_range(self.num_vars@)
+            forall<i: Int> 0 <= i && i < self.clauses().len() ==>
+                self.clauses()[i].vars_in_range(self.num_vars@)
         }
     }
 
-    #[open]
-    #[predicate]
+    #[logic]
     fn sat(self, a: Assignments) -> bool {
         pearlite! {
-            forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
-                self.clauses@[i].clause_sat_logic(a)
+            forall<i: Int> 0 <= i && i < self.clauses().len() ==>
+                self.clauses()[i].clause_sat_logic(a)
         }
+    }
+
+    #[logic]
+    pub fn num_vars(self) -> Int {
+        pearlite! { self.num_vars@ }
+    }
+
+    #[logic]
+    pub fn clauses(self) -> Seq<Clause> {
+        pearlite! { self.clauses@ }
     }
 }
 
 impl Clause {
-    #[open]
-    #[predicate]
+    #[logic]
     fn vars_in_range(self, n: Int) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self.0@.len() ==>
@@ -59,8 +71,7 @@ impl Clause {
 }
 
 impl Pasn {
-    #[open]
-    #[predicate]
+    #[logic]
     fn inv(self, n: Int) -> bool {
         pearlite! {
             self.ix@ <= self.assign.0@.len()
@@ -68,11 +79,20 @@ impl Pasn {
             && self.assign.inv()
         }
     }
+
+    #[logic(open(self))]
+    pub fn assign(self) -> Assignments {
+        self.assign
+    }
+
+    #[logic(open(self))]
+    pub fn ix(self) -> usize {
+        self.ix
+    }
 }
 
 impl Clause {
-    #[open]
-    #[predicate]
+    #[logic]
     fn clause_sat_logic(self, a: Assignments) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < self.0@.len() &&
@@ -82,12 +102,14 @@ impl Clause {
 }
 
 impl Clause {
+    #[check(terminates)]
     #[requires(self.vars_in_range(a.0@.len()))]
     #[ensures(!result ==> !self.clause_sat_logic(*a))]
     #[ensures(result ==> self.clause_sat_logic(*a))]
     fn eval_clause(&self, a: &Assignments) -> bool {
         let mut i: usize = 0;
         let clause_len = self.0.len();
+        #[variant(clause_len@ - i@)]
         #[invariant(forall<j: Int> 0 <= j && j < i@ ==> !self.0@[j].lit_sat_logic(*a))]
         #[invariant(i@ <= clause_len@)]
         while i < clause_len {
@@ -101,13 +123,16 @@ impl Clause {
 }
 
 impl Formula {
+    #[check(terminates)]
     #[requires(self.inv())]
     #[requires(a.0@.len() == self.num_vars@)]
     #[ensures(result == self.sat(*a))]
     fn eval_formula(&self, a: &Assignments) -> bool {
         let mut i: usize = 0;
+        let n = self.clauses.len();
+        #[variant(n@ - i@)]
         #[invariant(forall<j: Int> 0 <= j && j < i@ ==> self.clauses@[j].clause_sat_logic(*a))]
-        while i < self.clauses.len() {
+        while i < n {
             if !self.clauses[i].eval_clause(a) {
                 return false;
             }
@@ -117,6 +142,7 @@ impl Formula {
     }
 }
 
+#[check(terminates)]
 #[requires(pa.ix@ < pa.assign.0@.len())]
 #[requires(pa.assign.0@.len() <= usize::MAX@)]
 #[requires(pa.inv(pa.assign@.len()))]
@@ -132,6 +158,7 @@ fn set_next(pa: &Pasn, b: AssignedState) -> Pasn {
     new_pa
 }
 
+#[check(terminates)]
 #[variant(f.num_vars@ - pa.ix@)]
 #[requires(pa.inv(f.num_vars@))]
 #[requires(f.inv())]
@@ -144,9 +171,9 @@ fn solve(f: &Formula, pa: Pasn) -> bool {
 }
 
 #[requires(f.inv())]
-#[ensures(!result ==> forall<a: Assignments> a.0@.len() == f.num_vars@ && a.inv()
+#[ensures(!result ==> forall<a: Assignments> a.0@.len() == f.num_vars() && a.inv()
                   ==> !f.sat(a))]
 #[ensures( result ==> exists<a: Assignments> f.sat(a))]
-pub fn solver(f: &Formula) -> bool {
+fn solver(f: &Formula) -> bool {
     solve(f, Pasn { assign: Assignments(vec![0; f.num_vars]), ix: 0 })
 }

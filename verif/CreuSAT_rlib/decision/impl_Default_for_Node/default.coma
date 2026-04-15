@@ -1,0 +1,35 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 20 4 20 24 *)
+
+(* <decision::Node as std::default::Default> *)
+
+let%span sdecision = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 21 21 21 31
+let%span sdecision'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 21 39 21 49
+let%span sdecision'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 21 55 21 56
+let%span sdecision'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 17 14 17 41
+let%span sdecision'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 18 14 18 41
+let%span sdecision'4 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 19 14 19 31
+
+use creusot.int.UInt64
+use creusot.prelude.Any
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+type t_Node = { next: UInt64.t; prev: UInt64.t; ts: UInt64.t }
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec default_Node [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 20 4 20 24] (return (x: t_Node)) =
+  (! bb0
+  [ bb0 = s0
+    [ s0 = [ &_ret <- { next = ([%#sdecision] const_MAX);
+                        prev = ([%#sdecision'0] const_MAX);
+                        ts = ([%#sdecision'1] (0: UInt64.t)) } ] s1
+    | s1 = return {_ret} ] ] [ & _ret: t_Node = Any.any_l () ])
+  [ return (result: t_Node) ->
+  {[@stop_split] [@expl:default_Node ensures] ([@stop_split] [@expl:default ensures #0] [%#sdecision'2] UInt64.t'int result.next
+      = UInt64.t'int const_MAX)
+    /\ ([@stop_split] [@expl:default ensures #1] [%#sdecision'3] UInt64.t'int result.prev = UInt64.t'int const_MAX)
+    /\ ([@stop_split] [@expl:default ensures #2] [%#sdecision'4] UInt64.t'int result.ts = 0)}
+    (! return {result}) ]

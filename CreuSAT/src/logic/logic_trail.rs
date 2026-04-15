@@ -1,5 +1,4 @@
-use creusot_contracts::std::*;
-use creusot_contracts::*;
+use creusot_std::prelude::*;
 
 use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*};
 
@@ -7,8 +6,7 @@ use crate::{assignments::*, clause::*, formula::*, lit::*, trail::*};
 use crate::logic::{logic::*, logic_clause::*, logic_util::*};
 
 impl Reason {
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn inv(self, f: Formula) -> bool {
         pearlite! {
             match self {
@@ -24,33 +22,30 @@ impl Reason {
     }
 
     /*
-        #[predicate]
-    #[open]
-        pub fn inv_reason_new(self, f: Formula, a: Assignments) -> bool {
-            pearlite! {
-                match self {
-                    Reason::Long(cref) =>
-                        (0 <= cref@ && cref@ < f.clauses@.len())
-                        && (@f.clauses@[cref@]).len() > 1
-                        && (forall<i: Int> 1 <= i && i < (@f.clauses@[cref@]).len() ==>
-                            (@f.clauses@[cref@])[i].unsat_inner(a@))
-                        && (@f.clauses@[cref@])[0].sat_inner(a@),
-                    Reason::Unit(cref) =>
-                        (0 <= cref@ && cref@ < f.clauses@.len())
-                        && (@f.clauses@[cref@]).len() == 1
-                        && (@f.clauses@[cref@])[0].sat_inner(a@),
-                    _ => true
-                }
+    #[logic(open)]
+    pub fn inv_reason_new(self, f: Formula, a: Assignments) -> bool {
+        pearlite! {
+            match self {
+                Reason::Long(cref) =>
+                    (0 <= cref@ && cref@ < f.clauses@.len())
+                    && (@f.clauses@[cref@]).len() > 1
+                    && (forall<i: Int> 1 <= i && i < (@f.clauses@[cref@]).len() ==>
+                        (@f.clauses@[cref@])[i].unsat_inner(a@))
+                    && (@f.clauses@[cref@])[0].sat_inner(a@),
+                Reason::Unit(cref) =>
+                    (0 <= cref@ && cref@ < f.clauses@.len())
+                    && (@f.clauses@[cref@]).len() == 1
+                    && (@f.clauses@[cref@])[0].sat_inner(a@),
+                _ => true
             }
         }
-        */
+    }
+    */
 }
 
 // LOGIC
 impl Trail {
-    #[predicate]
-    #[open] //#[open(self)]
-    #[why3::attr = "inline:trivial"]
+    #[logic(open, inline)] //#[open(self)]
     pub fn inv(self, f: Formula) -> bool {
         pearlite! {
             self.assignments.inv(f)
@@ -66,9 +61,7 @@ impl Trail {
         }
     }
 
-    #[predicate]
-    #[open] //#[open(self)]
-    #[why3::attr = "inline:trivial"]
+    #[logic(open, inline)] //#[open(self)]
     pub fn inv_no_decision(self, f: Formula) -> bool {
         pearlite! {
             self.assignments.inv(f)
@@ -84,8 +77,7 @@ impl Trail {
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn lit_not_in_less_inner(t: Seq<Step>, f: Formula) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < t.len() ==>
@@ -97,8 +89,7 @@ pub fn lit_not_in_less_inner(t: Seq<Step>, f: Formula) -> bool {
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn trail_invariant(trail: Seq<Step>, f: Formula) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < trail.len() ==>
@@ -107,8 +98,7 @@ pub fn trail_invariant(trail: Seq<Step>, f: Formula) -> bool {
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn trail_entries_are_assigned_inner(t: Seq<Step>, a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<j: Int> 0 <= j && j < t.len() ==>
@@ -116,14 +106,12 @@ pub fn trail_entries_are_assigned_inner(t: Seq<Step>, a: Seq<AssignedState>) -> 
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn clause_post_with_regards_to(c: Clause, a: Assignments, j: Int) -> bool {
     pearlite! { clause_post_with_regards_to_inner(c, a@, j) }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn clause_post_with_regards_to_inner(c: Clause, a: Seq<AssignedState>, j: Int) -> bool {
     pearlite! {
         c@[0].index_logic() == j
@@ -132,14 +120,12 @@ pub fn clause_post_with_regards_to_inner(c: Clause, a: Seq<AssignedState>, j: In
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn clause_post_with_regards_to_lit(c: Clause, a: Assignments, lit: Lit) -> bool {
     pearlite! { clause_post_with_regards_to_inner(c, a@, lit.idx@) }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn lit_is_unique_inner(trail: Seq<Step>) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < trail.len() ==>
@@ -148,8 +134,7 @@ pub fn lit_is_unique_inner(trail: Seq<Step>) -> bool {
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn long_are_post_unit(trail: Trail, f: Formula) -> bool {
     pearlite! {
         forall<j: Int> 0 <= j && j < trail.trail@.len() ==>
@@ -160,8 +145,7 @@ pub fn long_are_post_unit(trail: Trail, f: Formula) -> bool {
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn long_are_post_unit_inner(trail: Seq<Step>, f: Formula, a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<j: Int> 0 <= j && j < trail.len() ==>
@@ -172,8 +156,7 @@ pub fn long_are_post_unit_inner(trail: Seq<Step>, f: Formula, a: Seq<AssignedSta
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn unit_are_sat(trail: Seq<Step>, f: Formula, a: Assignments) -> bool {
     pearlite! {
         forall<j: Int> 0 <= j && j < trail.len() ==>
@@ -188,8 +171,7 @@ pub fn unit_are_sat(trail: Seq<Step>, f: Formula, a: Assignments) -> bool {
 
 /*
 #[cfg_attr(feature = "trust_trail_logic", trusted)]
-#[logic]
-#[open]
+#[logic(open)]
 #[requires(a.inv(f))]
 #[requires(f.inv())]
 #[requires(trail_invariant(v, f))]
@@ -203,8 +185,7 @@ pub fn lemma_assign_maintains_long_are_post_unit(v: Seq<Step>, f: Formula, a: As
 */
 
 #[cfg_attr(feature = "trust_trail_logic", trusted)]
-#[logic]
-#[open]
+#[logic(open)]
 #[requires(f.inv())]
 #[requires(t.inv(f))]
 #[requires(unset(t.assignments@[step.lit.index_logic()]))]

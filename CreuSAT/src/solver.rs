@@ -1,6 +1,6 @@
 use ::std::panic;
 
-use creusot_contracts::{std::*, Snapshot, *};
+use creusot_std::{prelude::*, std::vec::vec};
 
 use crate::{
     assignments::*, clause::*, conflict_analysis::*, decision::*, formula::*, trail::*, unit_prop::*, util::*,
@@ -79,7 +79,7 @@ impl Solver {
             inc_reduce_db: 300,
             fast: 16777216, // 1 << 24
             slow: 16777216, // 1 << 24
-            perm_diff: vec::from_elem(0, f.num_vars),
+            perm_diff: vec![0; f.num_vars],
         }
     }
 
@@ -250,6 +250,7 @@ impl Solver {
         #[invariant(d.inv(f.num_vars@))]
         #[invariant(old_f.inner().equisat(*f))]
         #[invariant(f.num_vars@ == old_f.num_vars@)]
+        #[invariant(inv(d))] // TODO: remove once Creusot can do this automatically
         loop {
             match self.unit_prop_step(f, d, t, w) {
                 ConflictResult::Ok => {
@@ -340,6 +341,7 @@ impl Solver {
         #[invariant(trail.inv(*formula))]
         #[invariant(watches.inv(*formula))]
         #[invariant(decisions.inv(formula.num_vars@))]
+        #[invariant(inv(decisions))] // TODO: remove once Creusot can do this automatically
         loop {
             match self.outer_loop(formula, &mut decisions, &mut trail, &mut watches) {
                 SatResult::Unknown => {} // continue

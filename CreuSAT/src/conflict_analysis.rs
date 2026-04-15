@@ -1,4 +1,4 @@
-use creusot_contracts::{std::*, vec, Snapshot, *};
+use creusot_std::{prelude::*, std::vec::vec};
 
 use crate::{assignments::*, clause::*, decision::*, formula::*, lit::*, trail::*};
 

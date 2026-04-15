@@ -1,0 +1,26 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 130 4 130 37 *)
+
+(* <lit::Lit as std::cmp::PartialEq> *)
+
+let%span slit = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 128 14 128 39
+let%span slit'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 31 8 31 12
+let%span scmp = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/cmp.rs" 14 26 14 75
+let%span smodel = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/model.rs" 36 8 36 28
+
+use creusot.int.UInt64
+
+type t_Lit = { idx: UInt64.t; polarity: bool }
+
+function deep_model_Lit [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 30 4 30 31] (self: t_Lit) : t_Lit =
+  [%#slit'0] self
+
+function deep_model_ref_Lit [@inline:trivial] (self: t_Lit) : t_Lit = [%#smodel] deep_model_Lit self
+
+meta "rewrite_def" function deep_model_ref_Lit
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+goal refines: forall self_: t_Lit. forall rhs: t_Lit. forall result: bool. ([%#slit] result = (self_ = rhs))
+        -> ([%#scmp] result = (deep_model_ref_Lit self_ = deep_model_ref_Lit rhs))

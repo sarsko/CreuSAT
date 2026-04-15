@@ -1,6 +1,4 @@
-extern crate creusot_contracts;
-#[allow(unused)]
-use creusot_contracts::{std::clone::Clone, std::*, *};
+use creusot_std::prelude::{Clone, *};
 
 use crate::assignments::*;
 
@@ -15,9 +13,7 @@ pub struct Lit {
 
 // Logic
 impl Lit {
-    #[logic]
-    #[open]
-    #[why3::attr = "inline:trivial"]
+    #[logic(open, inline)]
     pub fn index_logic(self) -> Int {
         pearlite! { self.idx@ }
     }
@@ -25,22 +21,19 @@ impl Lit {
 
 // Predicates
 impl Lit {
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn lit_in(self, c: Clause) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < c@.len() && c@[i] == self
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn inv(self, n: Int) -> bool {
         pearlite! { self.idx@ < n }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             match self.polarity {
@@ -50,8 +43,7 @@ impl Lit {
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             match self.polarity {
@@ -61,30 +53,26 @@ impl Lit {
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn unset_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             a[self.idx@]@ >= 2
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! {
             self.sat_inner(a@)
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn unset(self, a: Assignments) -> bool {
         pearlite! { self.unset_inner(a@) }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! { self.unsat_inner(a@) }
     }

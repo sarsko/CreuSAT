@@ -1,0 +1,67 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 53 0 53 79 *)
+
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span slogic_util = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 54 11 54 22
+let%span slogic_util'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 55 10 55 49
+let%span slogic_util'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 56 10 56 37
+let%span slogic_util'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 57 10 57 73
+let%span slogic_util'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 59 4 59 33
+let%span slogic_watches = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 50 11 50 22
+let%span slogic_watches'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 51 11 51 39
+let%span slogic_watches'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 52 10 52 43
+let%span slogic_watches'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 35 8 36 41
+
+use creusot.int.UInt64
+use seq.Seq
+use creusot.int.UInt32
+use int.Int
+
+type t_Lit = { idx: UInt64.t; polarity: bool }
+
+type t_Watcher = { cref: UInt64.t; blocker: t_Lit }
+
+type t_Vec_Clause_Global
+
+type t_Formula = { clauses: t_Vec_Clause_Global; num_vars: UInt64.t }
+
+type t_Vec_Lit_Global
+
+type t_Clause = { deleted: bool; lbd: UInt32.t; search: UInt64.t; lits: t_Vec_Lit_Global }
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_Clause_Global (self: t_Vec_Clause_Global) : Seq.seq t_Clause
+
+axiom view_Vec_Clause_Global_spec: forall self: t_Vec_Clause_Global. [%#svec] Seq.length (view_Vec_Clause_Global self)
+    <= UInt64.t'int const_MAX
+
+predicate watcher_crefs_in_range [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 33 0 33 66] (w: Seq.seq t_Watcher) (f: t_Formula) =
+  [%#slogic_watches'2] forall j: int. 0 <= j /\ j < Seq.length w
+    -> UInt64.t'int (Seq.get w j).cref < Seq.length (view_Vec_Clause_Global f.clauses)
+
+function pop_Watcher [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 58 0 58 34] (s: Seq.seq t_Watcher) : Seq.seq t_Watcher
+ = [%#slogic_util'3] Seq.([..]) s 0 (Seq.length s - 1)
+
+axiom pop_Watcher_spec: forall s: Seq.seq t_Watcher. ([%#slogic_util] Seq.length s > 0)
+    -> ([%#slogic_util'0] pop_Watcher s = Seq.([..]) s 0 (Seq.length s - 1))
+
+axiom pop_Watcher_spec'0: forall s: Seq.seq t_Watcher. ([%#slogic_util] Seq.length s > 0)
+    -> ([%#slogic_util'1] Seq.length (pop_Watcher s) = Seq.length s - 1)
+
+axiom pop_Watcher_spec'1: forall s: Seq.seq t_Watcher. ([%#slogic_util] Seq.length s > 0)
+    -> ([%#slogic_util'2] forall i: int. 0 <= i /\ i < Seq.length (pop_Watcher s)
+      -> Seq.get (pop_Watcher s) i = Seq.get s i)
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+constant w : Seq.seq t_Watcher
+
+constant f : t_Formula
+
+function lemma_pop_watch_maintains_watcher_invariant [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 53 0 53 79] (w: Seq.seq t_Watcher) (f: t_Formula) : ()
+
+goal vc_lemma_pop_watch_maintains_watcher_invariant: ([%#slogic_watches] Seq.length w > 0)
+  -> ([%#slogic_watches'0] watcher_crefs_in_range w f)
+  -> ([@stop_split] [@expl:lemma_pop_watch_maintains_watcher_invariant ensures] [%#slogic_watches'1] watcher_crefs_in_range (pop_Watcher w) f)

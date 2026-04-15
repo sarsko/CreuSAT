@@ -1,6 +1,5 @@
-extern crate creusot_contracts;
 use crate::{clause::*, decision::*, formula::*};
-use creusot_contracts::{model::*, std::*, *};
+use creusot_std::prelude::{vec, *};
 
 #[cfg(creusot)]
 use crate::logic::*;
@@ -13,15 +12,13 @@ pub struct Assignments(pub Vec<AssignedState>, pub usize);
 impl View for Assignments {
     type ViewTy = Seq<AssignedState>;
 
-    #[logic]
-    #[open]
+    #[logic(open)]
     fn view(self) -> Self::ViewTy {
         self.0.view()
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     pearlite! {
         a.len() == a2.len() && (forall<i: Int> 0 <= i && i < a.len() ==>
@@ -29,52 +26,45 @@ pub fn compatible_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn complete_inner(a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < a.len() ==> !unset(a[i])
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn compatible_complete_inner(a: Seq<AssignedState>, a2: Seq<AssignedState>) -> bool {
     compatible_inner(a, a2) && complete_inner(a2)
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn assignments_invariant(a: Seq<AssignedState>, f: Formula) -> bool {
     pearlite! { f.num_vars@ == a.len() }
 }
 
 // Predicates
 impl Assignments {
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn inv(self, f: Formula) -> bool {
         pearlite! {
             f.num_vars@ == self@.len() && self.1@ <= f.num_vars@
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn compatible(self, a2: Assignments) -> bool {
         pearlite! { compatible_inner(self@, a2@) }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn complete(self) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self@.len() ==> !unset(self@[i])
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn compatible_complete(self, a2: Assignments) -> bool {
         self.compatible(a2) && a2.complete()
     }
@@ -86,7 +76,7 @@ impl Assignments {
     #[ensures(result.inv(*f))]
     #[ensures(forall<i: Int> 0 <= i && i < result@.len() ==> unset(result@[i]))]
     pub fn new(f: &Formula) -> Self {
-        Assignments(vec::from_elem(2u8, f.num_vars), 0)
+        Assignments(vec![2u8; f.num_vars], 0)
     }
 
     #[cfg_attr(feature = "trust_assignments", trusted)]

@@ -1,0 +1,27 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 58 0 58 34 *)
+
+let%span slogic_util = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 54 11 54 22
+let%span slogic_util'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 55 10 55 49
+let%span slogic_util'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 56 10 56 37
+let%span slogic_util'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 57 10 57 73
+
+use seq.Seq
+use int.Int
+
+type t_T
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+constant s : Seq.seq t_T
+
+function pop_T [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 58 0 58 34] (s: Seq.seq t_T) : Seq.seq t_T
+
+goal vc_pop_T: ([%#slogic_util] Seq.length s > 0)
+  -> (let result = Seq.([..]) s 0 (Seq.length s
+  - 1) in [@stop_split] [@expl:pop_T ensures] ([@stop_split] [@expl:pop ensures #0] [%#slogic_util'0] result
+    = Seq.([..]) s 0 (Seq.length s - 1))
+  /\ ([@stop_split] [@expl:pop ensures #1] [%#slogic_util'1] Seq.length result = Seq.length s - 1)
+  /\ ([@stop_split] [@expl:pop ensures #2] [%#slogic_util'2] forall i: int. 0 <= i /\ i < Seq.length result
+    -> Seq.get result i = Seq.get s i))

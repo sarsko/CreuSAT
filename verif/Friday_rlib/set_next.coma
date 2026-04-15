@@ -1,0 +1,124 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 191 0 191 39 *)
+
+let%span slib = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 192 21 192 31
+let%span slib'0 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 193 19 193 26
+let%span slib'1 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 194 17 194 18
+let%span slib'2 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 194 4 194 18
+let%span slib'3 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 186 11 186 36
+let%span slib'4 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 187 11 187 42
+let%span slib'5 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 188 10 188 39
+let%span slib'6 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 189 10 189 37
+let%span slib'7 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 190 10 190 34
+let%span slib'8 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 52 14 52 35
+let%span slib'9 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 29 20 29 27
+let%span slib'10 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 113 12 115 45
+let%span slib'11 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 124 12 124 60
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 185 19 185 38
+let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 186 18 186 46
+let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 187 18 187 49
+let%span svec'2 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 188 18 188 54
+let%span svec'3 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 189 18 189 47
+let%span svec'4 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span sslice = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 148 20 148 37
+let%span sslice'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 153 20 153 37
+let%span sslice'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 158 20 158 88
+
+use creusot.int.UInt64
+use seq.Seq
+use creusot.prelude.MutBorrow
+use creusot.prelude.Any
+use int.Int
+
+type t_Vec_bool_Global
+
+type t_Assignments = { f0: t_Vec_bool_Global }
+
+type t_Pasn = { assign: t_Assignments; ix: UInt64.t }
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_bool_Global (self: t_Vec_bool_Global) : Seq.seq bool
+
+axiom view_Vec_bool_Global_spec: forall self: t_Vec_bool_Global. [%#svec'4] Seq.length (view_Vec_bool_Global self)
+    <= UInt64.t'int const_MAX
+
+function view_Assignments [#"/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 28 4 28 33] (self: t_Assignments) : Seq.seq bool
+ = [%#slib'9] view_Vec_bool_Global self.f0
+
+predicate eq [#"/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 122 4 122 44] (self: t_Pasn) (rhs: t_Pasn) =
+  [%#slib'11] view_Assignments self.assign = view_Assignments rhs.assign /\ self.ix = rhs.ix
+
+let rec clone_Pasn (self: t_Pasn) (return (x: t_Pasn)) = any
+  [ return (result: t_Pasn) -> {[@stop_split] [@expl:clone ensures] [%#slib'8] eq self result} (! return {result}) ]
+
+predicate in_bounds_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq bool) =
+  [%#sslice] UInt64.t'int self < Seq.length seq
+
+meta "rewrite_def" predicate in_bounds_usize
+
+predicate has_value_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq bool) (out: bool) =
+  [%#sslice'0] Seq.get seq (UInt64.t'int self) = out
+
+meta "rewrite_def" predicate has_value_usize
+
+predicate resolve_elswhere_usize [@inline:trivial] (self: UInt64.t) (old': Seq.seq bool) (fin: Seq.seq bool) =
+  [%#sslice'1] forall i: int. 0 <= i /\ i <> UInt64.t'int self /\ i < Seq.length old' -> Seq.get old' i = Seq.get fin i
+
+meta "rewrite_def" predicate resolve_elswhere_usize
+
+let rec index_mut_Vec_bool_Global (self_: MutBorrow.t t_Vec_bool_Global) (ix'0: UInt64.t)
+  (return (x: MutBorrow.t bool)) =
+  {[@stop_split] [@expl:index_mut requires] [%#svec] in_bounds_usize ix'0 (view_Vec_bool_Global self_.current)}
+  any
+  [ return (result: MutBorrow.t bool) ->
+  {[@stop_split] [@expl:index_mut_Vec_bool_Global ensures] ([@stop_split] [@expl:index_mut ensures #0] [%#svec'0] has_value_usize ix'0 (view_Vec_bool_Global self_.current) result.current)
+    /\ ([@stop_split] [@expl:index_mut ensures #1] [%#svec'1] has_value_usize ix'0 (view_Vec_bool_Global self_.final) result.final)
+    /\ ([@stop_split] [@expl:index_mut ensures #2] [%#svec'2] resolve_elswhere_usize ix'0 (view_Vec_bool_Global self_.current) (view_Vec_bool_Global self_.final))
+    /\ ([@stop_split] [@expl:index_mut ensures #3] [%#svec'3] Seq.length (view_Vec_bool_Global self_.final)
+    = Seq.length (view_Vec_bool_Global self_.current))}
+    (! return {result}) ]
+
+predicate resolve_refmut_bool [@inline:trivial] (_1: MutBorrow.t bool) = _1.final = _1.current
+
+meta "rewrite_def" predicate resolve_refmut_bool
+
+predicate compatible [#"/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 111 4 111 41] (self: t_Assignments) (pa: t_Pasn) =
+  [%#slib'10] Seq.length (view_Vec_bool_Global pa.assign.f0) = Seq.length (view_Vec_bool_Global self.f0)
+  /\ (forall i: int. 0 <= i /\ i < UInt64.t'int pa.ix
+    -> Seq.get (view_Assignments pa.assign) i = Seq.get (view_Assignments self) i)
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec set_next [#"/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 191 0 191 39] (pa: t_Pasn) (b: bool)
+  (return (x: t_Pasn)) =
+  {[@stop_split] [@expl:set_next requires] ([@stop_split] [@expl:set_next requires #0] [%#slib'3] UInt64.t'int pa.ix
+    < Seq.length (view_Assignments pa.assign))
+  /\ ([@stop_split] [@expl:set_next requires #1] [%#slib'4] Seq.length (view_Assignments pa.assign)
+  <= UInt64.t'int const_MAX)}
+  (! bb0
+  [ bb0 = s0
+    [ s0 = clone_Pasn [%#slib] {pa} (fun (_x: t_Pasn) -> [ &new_pa <- _x ] s1)
+    | s1 = MutBorrow.borrow_mut <t_Vec_bool_Global> {new_pa.assign.f0}
+        (fun (_bor: MutBorrow.t t_Vec_bool_Global) ->
+          [ &_18 <- _bor ] [ &new_pa <- { new_pa with assign = { f0 = _bor.final } } ] s2)
+    | s2 = index_mut_Vec_bool_Global [%#slib'0] {_18} {pa.ix} (fun (_x: MutBorrow.t bool) -> [ &_17 <- _x ] s3)
+    | s3 = [ &_17 <- { _17 with current = b } ] s4
+    | s4 = -{resolve_refmut_bool _17}- s5
+    | s5 = UInt64.add [%#slib'2] {new_pa.ix} {[%#slib'1] (1: UInt64.t)}
+        (fun (_x: UInt64.t) -> [ &new_pa <- { new_pa with ix = _x } ] s6)
+    | s6 = [ &_ret <- new_pa ] s7
+    | s7 = return {_ret} ] ]
+  [ & _ret: t_Pasn = Any.any_l ()
+  | & pa: t_Pasn = pa
+  | & b: bool = b
+  | & new_pa: t_Pasn = Any.any_l ()
+  | & _17: MutBorrow.t bool = Any.any_l ()
+  | & _18: MutBorrow.t t_Vec_bool_Global = Any.any_l () ])
+  [ return (result: t_Pasn) ->
+  {[@stop_split] [@expl:set_next ensures] ([@stop_split] [@expl:set_next ensures #0] [%#slib'5] compatible result.assign pa)
+    /\ ([@stop_split] [@expl:set_next ensures #1] [%#slib'6] Seq.get (view_Assignments result.assign) (UInt64.t'int pa.ix)
+      = b)
+    /\ ([@stop_split] [@expl:set_next ensures #2] [%#slib'7] UInt64.t'int result.ix = UInt64.t'int pa.ix + 1)}
+    (! return {result}) ]

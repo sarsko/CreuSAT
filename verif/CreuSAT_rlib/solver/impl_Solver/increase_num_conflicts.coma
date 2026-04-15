@@ -1,0 +1,47 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/solver.rs" 88 4 88 40 *)
+
+(* solver::Solver *)
+
+let%span ssolver = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/solver.rs" 89 32 89 42
+let%span ssolver'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/solver.rs" 90 34 90 35
+let%span ssolver'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/solver.rs" 90 12 90 35
+
+use creusot.int.UInt64
+use creusot.prelude.MutBorrow
+use creusot.prelude.Any
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+type t_Vec_usize_Global
+
+type t_Solver = {
+  num_lemmas: UInt64.t;
+  max_lemmas: UInt64.t;
+  num_conflicts: UInt64.t;
+  initial_len: UInt64.t;
+  inc_reduce_db: UInt64.t;
+  fast: UInt64.t;
+  slow: UInt64.t;
+  perm_diff: t_Vec_usize_Global }
+
+predicate resolve_refmut_Solver [@inline:trivial] (_1: MutBorrow.t t_Solver) = _1.final = _1.current
+
+meta "rewrite_def" predicate resolve_refmut_Solver
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec increase_num_conflicts [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/solver.rs" 88 4 88 40]
+  (self: MutBorrow.t t_Solver) (return (x: ())) = (! bb0
+  [ bb0 = s0
+    [ s0 = [ &_2 <- UInt64.lt self.current.num_conflicts ([%#ssolver] const_MAX) ] s1
+    | s1 = any [ br0 -> {_2 = false} (! bb2) | br1 -> {_2} (! bb1) ] ]
+  | bb1 = s0
+    [ s0 = UInt64.add [%#ssolver'1] {self.current.num_conflicts} {[%#ssolver'0] (1: UInt64.t)}
+        (fun (_x: UInt64.t) -> [ &self <- { self with current = { self.current with num_conflicts = _x } } ] s1)
+    | s1 = -{resolve_refmut_Solver self}- s2
+    | s2 = return {_ret} ]
+  | bb2 = s0 [ s0 = -{resolve_refmut_Solver self}- s1 | s1 = return {_ret} ] ]
+  [ & _ret: () = Any.any_l () | & self: MutBorrow.t t_Solver = self | & _2: bool = Any.any_l () ])
+  [ return (result: ()) -> (! return {result}) ]

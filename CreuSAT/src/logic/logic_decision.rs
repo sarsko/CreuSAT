@@ -1,11 +1,9 @@
-use creusot_contracts::std::*;
-use creusot_contracts::*;
+use creusot_std::prelude::*;
 
 use crate::decision::*;
 
 impl Decisions {
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn inv(self, n: Int) -> bool {
         pearlite! {
             self.linked_list@.len() == n

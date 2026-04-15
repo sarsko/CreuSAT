@@ -1,19 +1,17 @@
-use creusot_contracts::{std::clone::Clone, std::*, vec, *};
+use creusot_std::prelude::*;
 
 use crate::{assignments::*, clause_allocator::*, lit::*};
 
 use crate::formula::*;
 
 pub struct CRefManager {
-    crefs: Vec<CRef>,
+    pub(crate) crefs: Vec<CRef>,
     pub(crate) num_vars: usize,
 }
 
-#[cfg(creusot)]
 impl View for CRefManager {
     type ViewTy = Seq<CRef>;
 
-    #[open]
     #[logic]
     fn view(self) -> Self::ViewTy {
         self.crefs.view()
@@ -21,8 +19,7 @@ impl View for CRefManager {
 }
 
 impl CRefManager {
-    #[open]
-    #[predicate]
+    #[logic]
     pub(crate) fn inv(self, clause_allocator: ClauseAllocator) -> bool {
         pearlite! {
             clause_allocator.inv()
@@ -32,8 +29,7 @@ impl CRefManager {
         }
     }
 
-    #[open]
-    #[predicate]
+    #[logic]
     pub(crate) fn are_implied_by(self, original_clauses: CRefManager, clause_allocator: ClauseAllocator) -> bool {
         pearlite! {
             let formula = Formula::from(self@, clause_allocator, self.num_vars@);
@@ -47,7 +43,7 @@ impl CRefManager {
     // TODO: Passing the clause allocator is super ugly and I should refactor
     #[maintains((mut self).inv(*_clause_allocator))]
     #[requires(cref_invariant(cref@, *_clause_allocator, self.num_vars@))]
-    #[ensures((^self)@ == self@.push(cref))]
+    #[ensures((^self)@ == self@.push_back(cref))]
     #[ensures(forall<i: Int> 0 <= i && i < self@.len() ==> self@[i] == (^self)@[i])]
     #[ensures((^self)@[self@.len()] == cref)]
     pub(crate) fn add_cref(&mut self, cref: CRef, _clause_allocator: &ClauseAllocator) {

@@ -1,6 +1,4 @@
-extern crate creusot_contracts;
-#[allow(unused)]
-use creusot_contracts::{model::*, *};
+use creusot_std::prelude::*;
 
 use crate::{clause::*, solver::*};
 
@@ -16,15 +14,13 @@ pub struct Formula {
 impl View for Formula {
     type ViewTy = (Seq<Clause>, Int);
 
-    #[logic]
-    #[open]
+    #[logic(open)]
     fn view(self) -> Self::ViewTy {
         (self.clauses.view(), self.num_vars.view())
     }
 }
 
-#[predicate]
-#[open]
+#[logic(open)]
 pub fn formula_sat_inner(f: (Seq<Clause>, Int), a: Seq<AssignedState>) -> bool {
     pearlite! {
         forall<i: Int> 0 <= i && i < f.0.len() ==>
@@ -34,8 +30,7 @@ pub fn formula_sat_inner(f: (Seq<Clause>, Int), a: Seq<AssignedState>) -> bool {
 
 // Predicates
 impl Formula {
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn inv(self) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < (self.clauses@).len() ==>
@@ -43,50 +38,43 @@ impl Formula {
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn eventually_sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             exists<a2: Seq<AssignedState>> a2.len() == self.num_vars@ && compatible_inner(a, a2) && self.sat_inner(a2)
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn eventually_sat_no_ass(self) -> bool {
         pearlite! { exists<a2: Seq<AssignedState>> self.sat_inner(a2) }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn eventually_sat_complete_no_ass(self) -> bool {
         pearlite! {
             exists<a2: Seq<AssignedState>> a2.len() == self.num_vars@ && complete_inner(a2) && self.sat_inner(a2)
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn eventually_sat_complete_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             exists<a2 : Seq<AssignedState>> a2.len() == self.num_vars@ && compatible_complete_inner(a, a2) && self.sat_inner(a2)
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn eventually_sat_complete(self, a: Assignments) -> bool {
         pearlite! { self.eventually_sat_complete_inner(a@) }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn eventually_sat(self, a: Assignments) -> bool {
         pearlite! { self.eventually_sat_inner(a@) }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self.clauses@.len() ==>
@@ -94,14 +82,12 @@ impl Formula {
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! { self.sat_inner(a@) }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < self.clauses@.len() &&
@@ -109,14 +95,12 @@ impl Formula {
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! { self.unsat_inner(a@) }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn contains_empty_clause(self) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < self.clauses@.len() &&

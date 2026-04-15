@@ -1,0 +1,27 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 46 4 46 36 *)
+
+(* lit::Lit *)
+
+let%span slit = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 45 14 45 48
+let%span slogic_lit = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 24 20 24 33
+
+use creusot.int.UInt64
+use creusot.prelude.Any
+
+type t_Lit = { idx: UInt64.t; polarity: bool }
+
+predicate is_positive [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 23 4 23 42] [@inline:trivial] (self: t_Lit) =
+  [%#slogic_lit] self.polarity
+
+meta "rewrite_def" predicate is_positive
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec is_positive'0 [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 46 4 46 36] (self: t_Lit)
+  (return (x: bool)) = (! bb0
+  [ bb0 = s0 [ s0 = [ &_ret <- self.polarity ] s1 | s1 = return {_ret} ] ]
+  [ & _ret: bool = Any.any_l () | & self: t_Lit = self ])
+  [ return (result: bool) -> {[@stop_split] [@expl:is_positive ensures] [%#slit] result = is_positive self}
+    (! return {result}) ]

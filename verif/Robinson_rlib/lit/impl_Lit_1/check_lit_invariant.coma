@@ -1,0 +1,31 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 121 4 121 55 *)
+
+(* lit::Lit *)
+
+let%span slit = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 119 14 119 36
+let%span slit'0 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 120 14 120 40
+let%span slit'1 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 33 20 33 33
+
+use creusot.int.UInt64
+use creusot.prelude.Any
+use int.Int
+
+type t_Lit = { idx: UInt64.t; polarity: bool }
+
+predicate inv [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 32 4 32 36] (self: t_Lit) (n: int) =
+  [%#slit'1] UInt64.t'int self.idx < n
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec check_lit_invariant [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 121 4 121 55] (self: t_Lit)
+  (n: UInt64.t) (return (x: bool)) = (! bb0
+  [ bb0 = s0 [ s0 = [ &_ret <- UInt64.lt self.idx n ] s1 | s1 = return {_ret} ] ]
+  [ & _ret: bool = Any.any_l () | & self: t_Lit = self | & n: UInt64.t = n ])
+  [ return (result: bool) ->
+  {[@stop_split] [@expl:check_lit_invariant ensures] ([@stop_split] [@expl:check_lit_invariant ensures #0] [%#slit] result
+      = inv self (UInt64.t'int n))
+    /\ ([@stop_split] [@expl:check_lit_invariant ensures #1] [%#slit'0] result
+    = (UInt64.t'int self.idx < UInt64.t'int n))}
+    (! return {result}) ]

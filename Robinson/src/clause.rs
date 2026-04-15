@@ -1,6 +1,4 @@
-extern crate creusot_contracts;
-#[allow(unused)]
-use creusot_contracts::{model::*, std::*, *};
+use creusot_std::prelude::*;
 
 use crate::{assignments::*, formula::*, lit::*};
 
@@ -15,16 +13,14 @@ pub struct Clause {
 impl View for Clause {
     type ViewTy = Seq<Lit>;
 
-    #[logic]
-    #[open]
+    #[logic(open)]
     fn view(self) -> Self::ViewTy {
         self.rest.view()
     }
 }
 
 impl Clause {
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn in_formula(self, f: Formula) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < f.clauses@.len() &&
@@ -32,8 +28,7 @@ impl Clause {
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn unit_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             self.vars_in_range(a.len())
@@ -42,14 +37,12 @@ impl Clause {
             && (forall<j: Int> 0 <= j && j < self@.len() && j != i ==> !self@[j].unset_inner(a))
         }
     }
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn unit(self, a: Assignments) -> bool {
         pearlite! { self.unit_inner(a@) }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn unsat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self@.len() ==>
@@ -57,14 +50,12 @@ impl Clause {
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn unsat(self, a: Assignments) -> bool {
         pearlite! { self.unsat_inner(a@) }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn sat_inner(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             exists<i: Int> 0 <= i && i < self@.len() &&
@@ -72,20 +63,17 @@ impl Clause {
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn sat(self, a: Assignments) -> bool {
         pearlite! { self.sat_inner(a@) }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn unknown(self, a: Assignments) -> bool {
         !self.sat(a) && !self.unsat(a)
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn vars_in_range(self, n: Int) -> bool {
         pearlite! {
             forall<i: Int> 0 <= i && i < self@.len() ==>
@@ -93,8 +81,7 @@ impl Clause {
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn no_duplicate_indexes(self) -> bool {
         pearlite! {
             forall<j: Int, k: Int> 0 <= j && j < self@.len() &&
@@ -102,8 +89,7 @@ impl Clause {
         }
     }
 
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn inv(self, n: Int) -> bool {
         self.vars_in_range(n) //&& self.no_duplicate_indexes()
     }

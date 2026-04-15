@@ -1,4 +1,4 @@
-use creusot_contracts::{std::*, Snapshot, *};
+use creusot_std::prelude::*;
 
 #[cfg(creusot)]
 use crate::logic::logic_util::*;
@@ -79,8 +79,7 @@ pub fn sort(v: &mut Vec<(usize, usize)>) {
     }
 }
 
-#[logic]
-#[open]
+#[logic(open)]
 pub fn min_log(a: Int, b: Int) -> Int {
     if a <= b {
         a
@@ -102,8 +101,7 @@ pub fn min(a: usize, b: usize) -> usize {
     }
 }
 
-#[logic]
-#[open]
+#[logic(open)]
 pub fn max_log(a: Int, b: Int) -> Int {
     if a >= b {
         a

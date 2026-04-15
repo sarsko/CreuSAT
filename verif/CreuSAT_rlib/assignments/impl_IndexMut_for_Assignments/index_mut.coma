@@ -1,0 +1,119 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/assignments.rs" 39 4 39 60 *)
+
+(* <assignments::Assignments as std::ops::IndexMut<usize>> *)
+
+let%span sassignments = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/assignments.rs" 45 19 45 23
+let%span sassignments'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/assignments.rs" 34 15 34 32
+let%span sassignments'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/assignments.rs" 35 14 35 38
+let%span sassignments'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/assignments.rs" 36 14 36 38
+let%span sassignments'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/assignments.rs" 37 14 37 94
+let%span sassignments'4 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/assignments.rs" 38 14 38 46
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 185 19 185 38
+let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 186 18 186 46
+let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 187 18 187 49
+let%span svec'2 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 188 18 188 54
+let%span svec'3 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 189 18 189 47
+let%span svec'4 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span slogic_assignments = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 18 8 18 21
+let%span sslice = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 148 20 148 37
+let%span sslice'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 153 20 153 37
+let%span sslice'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 158 20 158 88
+
+use creusot.prelude.MutBorrow
+use creusot.int.UInt64
+use creusot.int.UInt8
+use seq.Seq
+use creusot.prelude.Any
+use int.Int
+
+type t_Vec_u8_Global
+
+type t_Assignments = { f0: t_Vec_u8_Global }
+
+predicate in_bounds_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq UInt8.t) =
+  [%#sslice] UInt64.t'int self < Seq.length seq
+
+meta "rewrite_def" predicate in_bounds_usize
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_u8_Global (self: t_Vec_u8_Global) : Seq.seq UInt8.t
+
+axiom view_Vec_u8_Global_spec: forall self: t_Vec_u8_Global. [%#svec'4] Seq.length (view_Vec_u8_Global self)
+    <= UInt64.t'int const_MAX
+
+predicate has_value_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq UInt8.t) (out: UInt8.t) =
+  [%#sslice'0] Seq.get seq (UInt64.t'int self) = out
+
+meta "rewrite_def" predicate has_value_usize
+
+predicate resolve_elswhere_usize [@inline:trivial] (self: UInt64.t) (old': Seq.seq UInt8.t) (fin: Seq.seq UInt8.t) =
+  [%#sslice'1] forall i: int. 0 <= i /\ i <> UInt64.t'int self /\ i < Seq.length old' -> Seq.get old' i = Seq.get fin i
+
+meta "rewrite_def" predicate resolve_elswhere_usize
+
+let rec index_mut_Vec_u8_Global (self_: MutBorrow.t t_Vec_u8_Global) (ix: UInt64.t) (return (x: MutBorrow.t UInt8.t)) =
+  {[@stop_split] [@expl:index_mut requires] [%#svec] in_bounds_usize ix (view_Vec_u8_Global self_.current)}
+  any
+  [ return (result: MutBorrow.t UInt8.t) ->
+  {[@stop_split] [@expl:index_mut_Vec_u8_Global ensures] ([@stop_split] [@expl:index_mut ensures #0] [%#svec'0] has_value_usize ix (view_Vec_u8_Global self_.current) result.current)
+    /\ ([@stop_split] [@expl:index_mut ensures #1] [%#svec'1] has_value_usize ix (view_Vec_u8_Global self_.final) result.final)
+    /\ ([@stop_split] [@expl:index_mut ensures #2] [%#svec'2] resolve_elswhere_usize ix (view_Vec_u8_Global self_.current) (view_Vec_u8_Global self_.final))
+    /\ ([@stop_split] [@expl:index_mut ensures #3] [%#svec'3] Seq.length (view_Vec_u8_Global self_.final)
+    = Seq.length (view_Vec_u8_Global self_.current))}
+    (! return {result}) ]
+
+predicate resolve_refmut_u8 [@inline:trivial] (_1: MutBorrow.t UInt8.t) = _1.final = _1.current
+
+meta "rewrite_def" predicate resolve_refmut_u8
+
+predicate resolve_refmut_Assignments [@inline:trivial] (_1: MutBorrow.t t_Assignments) = _1.final = _1.current
+
+meta "rewrite_def" predicate resolve_refmut_Assignments
+
+function view_Assignments [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 17 4 17 33] (self: t_Assignments) : Seq.seq UInt8.t
+ = [%#slogic_assignments] view_Vec_u8_Global self.f0
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec index_mut_Assignments [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/assignments.rs" 39 4 39 60]
+  (self: MutBorrow.t t_Assignments) (ix: UInt64.t) (return (x: MutBorrow.t UInt8.t)) =
+  {[@stop_split] [@expl:index_mut requires] [%#sassignments'0] UInt64.t'int ix
+  < Seq.length (view_Assignments self.current)}
+  (! bb0
+  [ bb0 = s0
+    [ s0 = MutBorrow.borrow_final <t_Vec_u8_Global> {self.current.f0} {MutBorrow.inherit_id (MutBorrow.get_id self) 0}
+        (fun (_bor: MutBorrow.t t_Vec_u8_Global) ->
+          [ &_20 <- _bor ] [ &self <- { self with current = { f0 = _bor.final } } ] s1)
+    | s1 = index_mut_Vec_u8_Global [%#sassignments] {_20} {ix} (fun (_x: MutBorrow.t UInt8.t) -> [ &_19 <- _x ] s2)
+    | s2 = MutBorrow.borrow_final <UInt8.t> {_19.current} {MutBorrow.get_id _19}
+        (fun (_bor: MutBorrow.t UInt8.t) -> [ &_18 <- _bor ] [ &_19 <- { _19 with current = _bor.final } ] s3)
+    | s3 = MutBorrow.borrow_final <UInt8.t> {_18.current} {MutBorrow.get_id _18}
+        (fun (_bor: MutBorrow.t UInt8.t) -> [ &_3 <- _bor ] [ &_18 <- { _18 with current = _bor.final } ] s4)
+    | s4 = MutBorrow.borrow_final <UInt8.t> {_3.current} {MutBorrow.get_id _3}
+        (fun (_bor: MutBorrow.t UInt8.t) -> [ &_ret <- _bor ] [ &_3 <- { _3 with current = _bor.final } ] s5)
+    | s5 = -{resolve_refmut_u8 _19}- s6
+    | s6 = -{resolve_refmut_u8 _18}- s7
+    | s7 = -{resolve_refmut_u8 _3}- s8
+    | s8 = -{resolve_refmut_Assignments self}- s9
+    | s9 = return {_ret} ] ]
+  [ & _ret: MutBorrow.t UInt8.t = Any.any_l ()
+  | & self: MutBorrow.t t_Assignments = self
+  | & ix: UInt64.t = ix
+  | & _3: MutBorrow.t UInt8.t = Any.any_l ()
+  | & _18: MutBorrow.t UInt8.t = Any.any_l ()
+  | & _19: MutBorrow.t UInt8.t = Any.any_l ()
+  | & _20: MutBorrow.t t_Vec_u8_Global = Any.any_l () ])
+  [ return (result: MutBorrow.t UInt8.t) ->
+  {[@stop_split] [@expl:index_mut_Assignments ensures] ([@stop_split] [@expl:index_mut ensures #0] [%#sassignments'1] Seq.get (view_Assignments self.current) (UInt64.t'int ix)
+      = result.current)
+    /\ ([@stop_split] [@expl:index_mut ensures #1] [%#sassignments'2] Seq.get (view_Assignments self.final) (UInt64.t'int ix)
+      = result.final)
+    /\ ([@stop_split] [@expl:index_mut ensures #2] [%#sassignments'3] forall i: int. 0 <= i
+          /\ i <> UInt64.t'int ix /\ i < Seq.length (view_Assignments self.current)
+        -> Seq.get (view_Assignments self.current) i = Seq.get (view_Assignments self.final) i)
+    /\ ([@stop_split] [@expl:index_mut ensures #3] [%#sassignments'4] Seq.length (view_Assignments self.final)
+    = Seq.length (view_Assignments self.current))}
+    (! return {result}) ]

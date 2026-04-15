@@ -1,18 +1,17 @@
-use creusot_contracts::{std::clone::Clone, std::*, vec, *};
+use creusot_std::prelude::{vec, Clone, *};
 
 use crate::{assignments::*, clause_allocator::*, cref_manager::*, lit::*};
 
 use crate::{clause::*, formula::*, logic_util::*};
 
 pub struct ClauseManager {
-    clause_allocator: ClauseAllocator,
-    original_clauses: CRefManager,
-    learnt_core: CRefManager,
+    pub(crate) clause_allocator: ClauseAllocator,
+    pub(crate) original_clauses: CRefManager,
+    pub(crate) learnt_core: CRefManager,
 }
 
 impl ClauseManager {
-    #[open]
-    #[predicate]
+    #[logic]
     pub(crate) fn inv(self) -> bool {
         pearlite! {
             self.clause_allocator.inv()
@@ -21,9 +20,18 @@ impl ClauseManager {
             && self.learnt_core.are_implied_by(self.original_clauses, self.clause_allocator)
         }
     }
+
+    #[logic(open(self))]
+    pub fn clause(self) -> Seq<Lit> {
+        pearlite! { self.clause_allocator@ }
+    }
+
+    #[logic(open(self))]
+    pub fn clause_num_vars(self) -> Int {
+        pearlite! { self.clause_allocator.num_vars@ }
+    }
 }
 
-#[open]
 #[logic]
 #[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
 #[ensures(learnt_clauses.are_implied_by(original_clauses, ca.push(lit)))]
@@ -32,7 +40,6 @@ fn lemma_implied_by_stable_on_push(
 ) {
 }
 
-#[open]
 #[logic]
 #[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
 #[requires(ca.extended(ca2))]
@@ -43,13 +50,12 @@ fn lemma_implied_by_stable_on_extension(
 ) {
 }
 
-#[open]
 #[logic]
 #[requires(learnt_clauses.are_implied_by(original_clauses, ca))]
 #[requires(ca.num_vars == ca2.num_vars)]
-#[requires(forall<i: Int> 0 <= i && i < ca.buffer@.len() ==> ca@[i] == ca2@[i])]
-#[requires(forall<i: Int> 0 <= i && i < ca2.buffer@.len() ==> ca@[i] == ca2@[i])]
-#[requires(ca2.buffer@.len() == ca.buffer@.len())]
+#[requires(forall<i: Int> 0 <= i && i < ca@.len() ==> ca@[i] == ca2@[i])]
+#[requires(forall<i: Int> 0 <= i && i < ca2@.len() ==> ca@[i] == ca2@[i])]
+#[requires(ca2@.len() == ca@.len())]
 #[ensures(learnt_clauses.are_implied_by(original_clauses, ca2))]
 fn lemma_implied_by_stable_on_blim(
     original_clauses: CRefManager, learnt_clauses: CRefManager, ca: ClauseAllocator, ca2: ClauseAllocator,
@@ -64,7 +70,7 @@ impl ClauseManager {
     #[requires(self.clause_allocator@.len() + lits@.len() + HEADER_LEN@ <= u32::MAX@)] // TODO: May have to move this to a runtime check
     #[requires(Formula::from(self.original_clauses@, self.clause_allocator, self.clause_allocator.num_vars@).implies(seq_to_fset(lits@)))]
     //#[requires(self@.len() + (@lits).len() + @HEADER_LEN <= @u32::MAX)] // TODO: May have to move this to a runtime check
-    #[requires(clause_invariant_seq(lits@, self.clause_allocator.num_vars@))]
+    #[requires(clause_invariant_seq(lits@, self.clause_num_vars()))]
     pub(crate) fn learn_clause(&mut self, lits: &[Lit]) -> CRef {
         let old_self: Snapshot<&mut ClauseManager> = snapshot!(self);
         proof_assert!(self.learnt_core.are_implied_by(self.original_clauses, self.clause_allocator));

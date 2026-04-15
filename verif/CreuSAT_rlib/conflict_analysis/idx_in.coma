@@ -1,0 +1,97 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 24 0 24 61 *)
+
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 195 19 195 38
+let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 196 18 196 46
+let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span sslice = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 148 20 148 37
+let%span sslice'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 153 20 153 37
+let%span slogic_lit = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 10 8 11 37
+let%span slogic_lit'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 19 20 19 29
+let%span slogic_lit'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 67 20 67 42
+let%span slogic_clause = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 21 8 22 23
+let%span sconflict_analysis = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 25 8 25 13
+let%span sconflict_analysis'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 20 11 20 47
+let%span sconflict_analysis'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 21 11 21 29
+let%span sconflict_analysis'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 22 11 22 48
+let%span sconflict_analysis'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 23 10 23 90
+
+use creusot.int.UInt64
+use seq.Seq
+use creusot.prelude.Any
+use int.Int
+
+type t_Vec_bool_Global
+
+predicate in_bounds_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq bool) =
+  [%#sslice] UInt64.t'int self < Seq.length seq
+
+meta "rewrite_def" predicate in_bounds_usize
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_bool_Global (self: t_Vec_bool_Global) : Seq.seq bool
+
+axiom view_Vec_bool_Global_spec: forall self: t_Vec_bool_Global. [%#svec'1] Seq.length (view_Vec_bool_Global self)
+    <= UInt64.t'int const_MAX
+
+predicate has_value_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq bool) (out: bool) =
+  [%#sslice'0] Seq.get seq (UInt64.t'int self) = out
+
+meta "rewrite_def" predicate has_value_usize
+
+let rec index_Vec_bool_Global (self_: t_Vec_bool_Global) (ix: UInt64.t) (return (x: bool)) =
+  {[@stop_split] [@expl:index requires] [%#svec] in_bounds_usize ix (view_Vec_bool_Global self_)}
+  any
+  [ return (result: bool) ->
+  {[@stop_split] [@expl:index ensures] [%#svec'0] has_value_usize ix (view_Vec_bool_Global self_) result}
+    (! return {result}) ]
+
+type t_Vec_Lit_Global
+
+type t_Lit = { idx: UInt64.t; polarity: bool }
+
+function index [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 18 4 18 35] [@inline:trivial] (self: t_Lit) : int
+ = [%#slogic_lit'0] UInt64.t'int self.idx
+
+meta "rewrite_def" function index
+
+predicate inv [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 66 4 66 36] (self: t_Lit) (n: int) =
+  [%#slogic_lit'1] index self < n
+
+predicate vars_in_range_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 19 0 19 55] (s: Seq.seq t_Lit) (n: int) =
+  [%#slogic_clause] forall i: int. 0 <= i /\ i < Seq.length s -> inv (Seq.get s i) n
+
+function view_Vec_Lit_Global (self: t_Vec_Lit_Global) : Seq.seq t_Lit
+
+axiom view_Vec_Lit_Global_spec: forall self: t_Vec_Lit_Global. [%#svec'1] Seq.length (view_Vec_Lit_Global self)
+    <= UInt64.t'int const_MAX
+
+predicate idx_in [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 8 0 8 50] [@inline:trivial] (idx'0: int) (c: Seq.seq t_Lit) =
+  [%#slogic_lit] exists i: int. 0 <= i /\ i < Seq.length c /\ index (Seq.get c i) = idx'0
+
+meta "rewrite_def" predicate idx_in
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec idx_in'0 [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 24 0 24 61]
+  (c: t_Vec_Lit_Global) (idx'0: UInt64.t) (seen: t_Vec_bool_Global) (return (x: bool)) =
+  {[@stop_split] [@expl:idx_in requires] ([@stop_split] [@expl:idx_in requires #0] [%#sconflict_analysis'0] vars_in_range_inner (view_Vec_Lit_Global c) (Seq.length (view_Vec_bool_Global seen)))
+  /\ ([@stop_split] [@expl:idx_in requires #1] [%#sconflict_analysis'1] UInt64.t'int idx'0
+    < Seq.length (view_Vec_bool_Global seen))
+  /\ ([@stop_split] [@expl:idx_in requires #2] [%#sconflict_analysis'2] Seq.get (view_Vec_bool_Global seen) (UInt64.t'int idx'0)
+  = idx_in (UInt64.t'int idx'0) (view_Vec_Lit_Global c))}
+  (! bb0
+  [ bb0 = s0
+    [ s0 = index_Vec_bool_Global [%#sconflict_analysis] {seen} {idx'0} (fun (_x: bool) -> [ &_17 <- _x ] s1)
+    | s1 = [ &_ret <- _17 ] s2
+    | s2 = return {_ret} ] ]
+  [ & _ret: bool = Any.any_l ()
+  | & idx'0: UInt64.t = idx'0
+  | & seen: t_Vec_bool_Global = seen
+  | & _17: bool = Any.any_l () ])
+  [ return (result: bool) -> {[@stop_split] [@expl:idx_in ensures] [%#sconflict_analysis'3] result
+    = (exists i: int. 0 <= i
+      /\ i < Seq.length (view_Vec_Lit_Global c) /\ index (Seq.get (view_Vec_Lit_Global c) i) = UInt64.t'int idx'0)}
+    (! return {result}) ]

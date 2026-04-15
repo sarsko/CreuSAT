@@ -1,0 +1,51 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 60 0 60 86 *)
+
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span slogic_watches = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 57 11 57 39
+let%span slogic_watches'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 58 11 58 37
+let%span slogic_watches'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 59 10 59 51
+let%span slogic_watches'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 35 8 36 41
+
+use creusot.int.UInt64
+use seq.Seq
+use creusot.int.UInt32
+use int.Int
+
+type t_Lit = { idx: UInt64.t; polarity: bool }
+
+type t_Watcher = { cref: UInt64.t; blocker: t_Lit }
+
+type t_Vec_Clause_Global
+
+type t_Formula = { clauses: t_Vec_Clause_Global; num_vars: UInt64.t }
+
+type t_Vec_Lit_Global
+
+type t_Clause = { deleted: bool; lbd: UInt32.t; search: UInt64.t; lits: t_Vec_Lit_Global }
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_Clause_Global (self: t_Vec_Clause_Global) : Seq.seq t_Clause
+
+axiom view_Vec_Clause_Global_spec: forall self: t_Vec_Clause_Global. [%#svec] Seq.length (view_Vec_Clause_Global self)
+    <= UInt64.t'int const_MAX
+
+predicate watcher_crefs_in_range [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 33 0 33 66] (w: Seq.seq t_Watcher) (f: t_Formula) =
+  [%#slogic_watches'2] forall j: int. 0 <= j /\ j < Seq.length w
+    -> UInt64.t'int (Seq.get w j).cref < Seq.length (view_Vec_Clause_Global f.clauses)
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+constant w : Seq.seq t_Watcher
+
+constant f : t_Formula
+
+constant o : t_Watcher
+
+function lemma_push_maintains_watcher_invariant [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_watches.rs" 60 0 60 86] (w: Seq.seq t_Watcher) (f: t_Formula) (o: t_Watcher) : ()
+
+goal vc_lemma_push_maintains_watcher_invariant: ([%#slogic_watches] watcher_crefs_in_range w f)
+  -> ([%#slogic_watches'0] UInt64.t'int o.cref < Seq.length (view_Vec_Clause_Global f.clauses))
+  -> ([@stop_split] [@expl:lemma_push_maintains_watcher_invariant ensures] [%#slogic_watches'1] watcher_crefs_in_range (Seq.snoc w o) f)

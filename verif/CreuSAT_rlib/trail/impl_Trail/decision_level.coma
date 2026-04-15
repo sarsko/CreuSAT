@@ -1,0 +1,53 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/trail.rs" 34 4 34 41 *)
+
+(* trail::Trail *)
+
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 114 18 114 40
+let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span strail = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/trail.rs" 35 8 35 28
+let%span strail'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/trail.rs" 33 14 33 46
+
+use creusot.int.UInt64
+use seq.Seq
+use creusot.prelude.Any
+use int.Int
+
+type t_Vec_usize_Global
+
+type t_Vec_u8_Global
+
+type t_Assignments = { f0: t_Vec_u8_Global }
+
+type t_Vec_Step_Global
+
+type t_Trail = {
+  assignments: t_Assignments;
+  lit_to_level: t_Vec_usize_Global;
+  trail: t_Vec_Step_Global;
+  curr_i: UInt64.t;
+  decisions: t_Vec_usize_Global }
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_usize_Global (self: t_Vec_usize_Global) : Seq.seq UInt64.t
+
+axiom view_Vec_usize_Global_spec: forall self: t_Vec_usize_Global. [%#svec'0] Seq.length (view_Vec_usize_Global self)
+    <= UInt64.t'int const_MAX
+
+let rec len_usize (self_: t_Vec_usize_Global) (return (x: UInt64.t)) = any
+  [ return (result: UInt64.t) -> {[@stop_split] [@expl:len ensures] [%#svec] UInt64.t'int result
+    = Seq.length (view_Vec_usize_Global self_)}
+    (! return {result}) ]
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec decision_level [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/trail.rs" 34 4 34 41] (self: t_Trail)
+  (return (x: UInt64.t)) = (! bb0
+  [ bb0 = s0
+    [ s0 = len_usize [%#strail] {self.decisions} (fun (_x: UInt64.t) -> [ &_ret <- _x ] s1) | s1 = return {_ret} ] ]
+  [ & _ret: UInt64.t = Any.any_l () | & self: t_Trail = self ])
+  [ return (result: UInt64.t) -> {[@stop_split] [@expl:decision_level ensures] [%#strail'0] UInt64.t'int result
+    = Seq.length (view_Vec_usize_Global self.decisions)}
+    (! return {result}) ]

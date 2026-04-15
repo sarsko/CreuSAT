@@ -1,0 +1,67 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 36 0 36 48 *)
+
+let%span sutil = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 37 21 37 23
+let%span sutil'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 37 13 37 23
+let%span sutil'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 37 4 37 23
+let%span sutil'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 38 48 38 53
+let%span sutil'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 38 35 38 53
+let%span sutil'4 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 38 35 38 45
+let%span sutil'5 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 38 62 38 67
+let%span sutil'6 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 38 56 38 67
+let%span sutil'7 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 39 7 39 17
+let%span sutil'8 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 39 7 39 25
+let%span sutil'9 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 40 8 40 32
+
+use creusot.int.UInt64
+use creusot.prelude.MutBorrow
+use creusot.prelude.Any
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+predicate resolve_refmut_usize [@inline:trivial] (_1: MutBorrow.t UInt64.t) = _1.final = _1.current
+
+meta "rewrite_def" predicate resolve_refmut_usize
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec update_fast [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 36 0 36 48] (fast: MutBorrow.t UInt64.t)
+  (lbd: UInt64.t) (return (x: ())) = (! bb0
+  [ bb0 = s0
+    [ s0 = [ &_5 <- ([%#sutil] (32: UInt64.t)) = ([%#sutil'0] (0: UInt64.t)) ] s1
+    | s1 = {[@expl:division by zero] [%#sutil'0] not _5} s2
+    | s2 = UInt64.div [%#sutil'0] {fast.current} {[%#sutil] (32: UInt64.t)} (fun (_x: UInt64.t) -> [ &_3 <- _x ] s3)
+    | s3 = UInt64.sub [%#sutil'1] {fast.current} {_3} (fun (_x: UInt64.t) -> [ &fast <- { fast with current = _x } ] s4)
+    | s4 = [ &_10 <- ([%#sutil'2] (32768: UInt64.t)) = ([%#sutil'3] (0: UInt64.t)) ] s5
+    | s5 = {[@expl:division by zero] [%#sutil'3] not _10} s6
+    | s6 = UInt64.div [%#sutil'3] {[%#sutil'4] const_MAX} {[%#sutil'2] (32768: UInt64.t)}
+        (fun (_x: UInt64.t) -> [ &_9 <- _x ] s7)
+    | s7 = [ &_7 <- UInt64.lt lbd _9 ] s8
+    | s8 = any [ br0 -> {_7 = false} (! bb4) | br1 -> {_7} (! bb3) ] ]
+  | bb3 = s0
+    [ s0 = UInt64.mul [%#sutil'6] {lbd} {[%#sutil'5] (32768: UInt64.t)}
+        (fun (_x: UInt64.t) -> [ &lbd_shl_fifteen <- _x ] s1)
+    | s1 = bb5 ]
+  | bb4 = s0 [ s0 = [ &lbd_shl_fifteen <- lbd ] s1 | s1 = bb5 ]
+  | bb5 = s0
+    [ s0 = UInt64.sub [%#sutil'8] {[%#sutil'7] const_MAX} {fast.current} (fun (_x: UInt64.t) -> [ &_13 <- _x ] s1)
+    | s1 = [ &_12 <- UInt64.gt _13 lbd_shl_fifteen ] s2
+    | s2 = any [ br0 -> {_12 = false} (! bb7) | br1 -> {_12} (! bb6) ] ]
+  | bb6 = s0
+    [ s0 = UInt64.add [%#sutil'9] {fast.current} {lbd_shl_fifteen}
+        (fun (_x: UInt64.t) -> [ &fast <- { fast with current = _x } ] s1)
+    | s1 = -{resolve_refmut_usize fast}- s2
+    | s2 = return {_ret} ]
+  | bb7 = s0 [ s0 = -{resolve_refmut_usize fast}- s1 | s1 = return {_ret} ] ]
+  [ & _ret: () = Any.any_l ()
+  | & fast: MutBorrow.t UInt64.t = fast
+  | & lbd: UInt64.t = lbd
+  | & _3: UInt64.t = Any.any_l ()
+  | & _5: bool = Any.any_l ()
+  | & lbd_shl_fifteen: UInt64.t = Any.any_l ()
+  | & _7: bool = Any.any_l ()
+  | & _9: UInt64.t = Any.any_l ()
+  | & _10: bool = Any.any_l ()
+  | & _12: bool = Any.any_l ()
+  | & _13: UInt64.t = Any.any_l () ]) [ return (result: ()) -> (! return {result}) ]

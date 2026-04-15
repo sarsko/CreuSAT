@@ -1,6 +1,4 @@
-extern crate creusot_contracts;
-#[allow(unused)]
-use creusot_contracts::{std::*, *};
+use creusot_std::prelude::{vec, *};
 
 use crate::{formula::*, util::*};
 
@@ -9,8 +7,7 @@ pub struct Decisions {
 }
 
 impl Decisions {
-    #[predicate]
-    #[open]
+    #[logic(open)]
     pub fn inv(self, n: Int) -> bool {
         pearlite! {
             self.lit_order@.len() == n
@@ -25,9 +22,9 @@ impl Decisions {
     #[requires(f.inv())]
     #[ensures(result.inv(f.num_vars@))]
     pub fn new(f: &Formula) -> Decisions {
-        let mut lit_order: Vec<usize> = vec::from_elem(0, f.num_vars);
-        let mut counts: Vec<usize> = vec::from_elem(0, f.num_vars);
-        let mut counts_with_index: Vec<(usize, usize)> = vec::from_elem((0, 0), f.num_vars);
+        let mut lit_order: Vec<usize> = vec![0; f.num_vars];
+        let mut counts: Vec<usize> = vec![0; f.num_vars];
+        let mut counts_with_index: Vec<(usize, usize)> = vec![(0, 0); f.num_vars];
         let mut i: usize = 0;
         #[invariant(counts@.len() == f.num_vars@)]
         while i < f.clauses.len() {

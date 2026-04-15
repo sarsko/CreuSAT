@@ -1,0 +1,116 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 7 9 7 14 *)
+
+(* <decision::Node as std::clone::Clone> *)
+
+let%span snum = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/num.rs" 48 26 48 41
+let%span sops = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 160 14 160 114
+let%span sops'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 165 14 165 100
+let%span sops'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 170 14 170 61
+let%span sops'2 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 126 15 126 59
+let%span sops'3 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 127 14 127 38
+let%span sops'4 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 132 14 132 33
+let%span sops'5 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 137 15 137 31
+let%span sops'6 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 138 15 138 28
+let%span sops'7 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 139 14 139 30
+let%span sops'8 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 144 14 145 104
+let%span sdecision = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 9 4 9 19
+let%span sdecision'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 10 4 10 19
+let%span sdecision'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 11 4 11 17
+let%span sdecision'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 7 9 7 14
+
+use creusot.int.UInt64
+use creusot.prelude.Any
+
+type t_Node = { next: UInt64.t; prev: UInt64.t; ts: UInt64.t }
+
+let rec clone_usize (self_: UInt64.t) (return (x: UInt64.t)) = any
+  [ return (result: UInt64.t) -> {[@stop_split] [@expl:clone ensures] [%#snum] result = self_} (! return {result}) ]
+
+predicate postcondition_once_clone [@inline:trivial] (self: ()) (args: UInt64.t) (result: UInt64.t) =
+  let self_ = args in [%#snum] result = self_
+
+meta "rewrite_def" predicate postcondition_once_clone
+
+predicate resolve_clone [@inline:trivial] (_1: ()) = true
+
+meta "rewrite_def" predicate resolve_clone
+
+predicate postcondition_mut_clone [@inline:trivial] (self: ()) (args: UInt64.t) (result_state: ()) (result: UInt64.t) =
+  let self_ = args in [%#snum] result = self_
+
+meta "rewrite_def" predicate postcondition_mut_clone
+
+function fn_mut_once_clone (self: ()) (args: UInt64.t) (res: UInt64.t) : ()
+
+axiom fn_mut_once_clone_spec:
+  forall self: (), args: UInt64.t, res: UInt64.t. [%#sops'8] postcondition_once_clone self args res
+    = (exists res_state: (). postcondition_mut_clone self args res_state res /\ resolve_clone res_state)
+
+predicate hist_inv_clone [@inline:trivial] (self: ()) (result_state: ()) = true
+
+meta "rewrite_def" predicate hist_inv_clone
+
+function hist_inv_trans_clone (self: ()) (b: ()) (c: ()) : ()
+
+axiom hist_inv_trans_clone_spec: forall self: (), b: (), c: (). ([%#sops'5] hist_inv_clone self b)
+    -> ([%#sops'6] hist_inv_clone b c) -> ([%#sops'7] hist_inv_clone self c)
+
+function hist_inv_refl_clone (self: ()) : ()
+
+axiom hist_inv_refl_clone_spec: forall self: (). [%#sops'4] hist_inv_clone self self
+
+function postcondition_mut_hist_inv_clone (self: ()) (args: UInt64.t) (res_state: ()) (res: UInt64.t) : ()
+
+axiom postcondition_mut_hist_inv_clone_spec:
+  forall self: (), args: UInt64.t, res_state: (), res: UInt64.t. ([%#sops'2] postcondition_mut_clone self args res_state res)
+    -> ([%#sops'3] hist_inv_clone self res_state)
+
+function fn_hist_inv_clone (self: ()) (res_state: ()) : ()
+
+axiom fn_hist_inv_clone_spec: forall self: (), res_state: (). [%#sops'1] hist_inv_clone self res_state
+    = (self = res_state)
+
+predicate postcondition_clone [@inline:trivial] (self: ()) (args: UInt64.t) (result: UInt64.t) =
+  let self_ = args in [%#snum] result = self_
+
+meta "rewrite_def" predicate postcondition_clone
+
+function fn_once_clone (self: ()) (args: UInt64.t) (res: UInt64.t) : ()
+
+axiom fn_once_clone_spec:
+  forall self: (), args: UInt64.t, res: UInt64.t. [%#sops'0] postcondition_once_clone self args res
+    = (postcondition_clone self args res /\ resolve_clone self)
+
+function fn_mut_clone (self: ()) (args: UInt64.t) (res_state: ()) (res: UInt64.t) : ()
+
+axiom fn_mut_clone_spec:
+  forall self: (), args: UInt64.t, res_state: (), res: UInt64.t. [%#sops] postcondition_mut_clone self args res_state res
+    = (postcondition_clone self args res /\ self = res_state)
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec clone_Node [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 7 9 7 14] (self: t_Node)
+  (return (x: t_Node)) = (! bb0
+  [ bb0 = s0
+    [ s0 = [ &_6 <- self.next ] s1
+    | s1 = clone_usize [%#sdecision] {_6} (fun (_x: UInt64.t) -> [ &_4 <- _x ] s2)
+    | s2 = [ &_9 <- self.prev ] s3
+    | s3 = clone_usize [%#sdecision'0] {_9} (fun (_x: UInt64.t) -> [ &_7 <- _x ] s4)
+    | s4 = [ &_12 <- self.ts ] s5
+    | s5 = clone_usize [%#sdecision'1] {_12} (fun (_x: UInt64.t) -> [ &_10 <- _x ] s6)
+    | s6 = [ &_ret <- { next = _4; prev = _7; ts = _10 } ] s7
+    | s7 = return {_ret} ] ]
+  [ & _ret: t_Node = Any.any_l ()
+  | & self: t_Node = self
+  | & _4: UInt64.t = Any.any_l ()
+  | & _6: UInt64.t = Any.any_l ()
+  | & _7: UInt64.t = Any.any_l ()
+  | & _9: UInt64.t = Any.any_l ()
+  | & _10: UInt64.t = Any.any_l ()
+  | & _12: UInt64.t = Any.any_l () ])
+  [ return (result: t_Node) ->
+  {[@stop_split] [@expl:clone ensures] [%#sdecision'2] postcondition_clone () self.next result.next
+    /\ postcondition_clone () self.prev result.prev /\ postcondition_clone () self.ts result.ts}
+    (! return {result}) ]

@@ -1,0 +1,72 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/assignments.rs" 21 4 21 48 *)
+
+(* <assignments::Assignments as std::ops::Index<usize>> *)
+
+let%span sassignments = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/assignments.rs" 27 15 27 19
+let%span sassignments'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/assignments.rs" 19 15 19 32
+let%span sassignments'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/assignments.rs" 20 14 20 35
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 195 19 195 38
+let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 196 18 196 46
+let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span slogic_assignments = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 18 8 18 21
+let%span sslice = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 148 20 148 37
+let%span sslice'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 153 20 153 37
+
+use creusot.int.UInt64
+use creusot.int.UInt8
+use seq.Seq
+use creusot.prelude.Any
+use int.Int
+
+type t_Vec_u8_Global
+
+type t_Assignments = { f0: t_Vec_u8_Global }
+
+predicate in_bounds_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq UInt8.t) =
+  [%#sslice] UInt64.t'int self < Seq.length seq
+
+meta "rewrite_def" predicate in_bounds_usize
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_u8_Global (self: t_Vec_u8_Global) : Seq.seq UInt8.t
+
+axiom view_Vec_u8_Global_spec: forall self: t_Vec_u8_Global. [%#svec'1] Seq.length (view_Vec_u8_Global self)
+    <= UInt64.t'int const_MAX
+
+predicate has_value_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq UInt8.t) (out: UInt8.t) =
+  [%#sslice'0] Seq.get seq (UInt64.t'int self) = out
+
+meta "rewrite_def" predicate has_value_usize
+
+let rec index_Vec_u8_Global (self_: t_Vec_u8_Global) (ix: UInt64.t) (return (x: UInt8.t)) =
+  {[@stop_split] [@expl:index requires] [%#svec] in_bounds_usize ix (view_Vec_u8_Global self_)}
+  any
+  [ return (result: UInt8.t) ->
+  {[@stop_split] [@expl:index ensures] [%#svec'0] has_value_usize ix (view_Vec_u8_Global self_) result}
+    (! return {result}) ]
+
+function view_Assignments [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 17 4 17 33] (self: t_Assignments) : Seq.seq UInt8.t
+ = [%#slogic_assignments] view_Vec_u8_Global self.f0
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec index_Assignments [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/assignments.rs" 21 4 21 48]
+  (self: t_Assignments) (ix: UInt64.t) (return (x: UInt8.t)) =
+  {[@stop_split] [@expl:index requires] [%#sassignments'0] UInt64.t'int ix < Seq.length (view_Assignments self)}
+  (! bb0
+  [ bb0 = s0
+    [ s0 = index_Vec_u8_Global [%#sassignments] {self.f0} {ix} (fun (_x: UInt8.t) -> [ &_10 <- _x ] s1)
+    | s1 = [ &_9 <- _10 ] s2
+    | s2 = [ &_ret <- _9 ] s3
+    | s3 = return {_ret} ] ]
+  [ & _ret: UInt8.t = Any.any_l ()
+  | & self: t_Assignments = self
+  | & ix: UInt64.t = ix
+  | & _9: UInt8.t = Any.any_l ()
+  | & _10: UInt8.t = Any.any_l () ])
+  [ return (result: UInt8.t) ->
+  {[@stop_split] [@expl:index ensures] [%#sassignments'1] Seq.get (view_Assignments self) (UInt64.t'int ix) = result}
+    (! return {result}) ]

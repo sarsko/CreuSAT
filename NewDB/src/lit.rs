@@ -1,4 +1,4 @@
-use creusot_contracts::{std::clone::Clone, std::*, vec, *};
+use creusot_std::prelude::{vec, Clone, *};
 
 use crate::assignments::*;
 
@@ -10,33 +10,26 @@ pub struct Lit {
 }
 
 impl Lit {
-    #[open]
-    #[logic]
-    #[why3::attr = "inline:trivial"]
+    #[logic(inline)]
     pub fn index_logic(self) -> Int {
         pearlite! { self.code@ / 2 }
     }
 
-    #[open]
-    #[logic]
-    #[why3::attr = "inline:trivial"]
+    #[logic(inline)]
     pub fn is_positive_logic(self) -> bool {
         pearlite! { self.code@ % 2 == 0 }
     }
 }
 
 impl Lit {
-    #[open]
-    #[predicate]
+    #[logic]
     pub(crate) fn var_in_range(self, n: Int) -> bool {
         pearlite! {
             self.index_logic() < n
         }
     }
 
-    #[open]
-    #[predicate]
-    #[why3::attr = "inline:trivial"]
+    #[logic(inline)]
     pub(crate) fn lit_sat_logic(self, a: Assignments) -> bool {
         pearlite! {
             a@[self.index_logic()] == bool_as_u8(self.is_positive_logic())
@@ -44,10 +37,8 @@ impl Lit {
     }
 
     // This is the one that is supposed to stay
-    #[open]
-    #[predicate]
-    #[why3::attr = "inline:trivial"]
-    pub(crate) fn sat(self, a: Seq<AssignedState>) -> bool {
+    #[logic(inline)]
+    pub fn sat(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             a[self.index_logic()] == bool_as_u8(self.is_positive_logic())
         }
@@ -55,6 +46,7 @@ impl Lit {
 }
 
 impl Lit {
+    #[check(ghost)]
     #[ensures(result.code@ == code@)]
     pub(crate) fn raw(code: u32) -> Lit {
         Lit { code }
@@ -62,6 +54,7 @@ impl Lit {
 
     // TODO: Add support for shr
     #[inline(always)]
+    #[check(ghost)]
     #[ensures(result@ == self.index_logic())]
     pub fn index(self) -> usize {
         //(self.code >> 1) as usize
@@ -70,6 +63,7 @@ impl Lit {
 
     // TODO: Add support for &
     #[inline(always)]
+    #[check(terminates)]
     #[ensures(result == self.is_positive_logic())]
     pub fn is_positive(self) -> bool {
         //self.code & 1 != 0
@@ -77,9 +71,11 @@ impl Lit {
     }
 
     #[inline(always)]
+    #[trusted] // termination check
+    #[check(terminates)]
     #[requires(self.index_logic() < a@.len())]
     #[ensures(result == self.lit_sat_logic(*a))]
-    pub fn lit_sat(self, a: &Assignments) -> bool {
+    pub(crate) fn lit_sat(self, a: &Assignments) -> bool {
         a.0[self.index()] == self.is_positive() as u8
     }
 }

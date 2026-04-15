@@ -1,17 +1,16 @@
-use creusot_contracts::logic::FSet;
-use creusot_contracts::{std::clone::Clone, std::*, vec, *};
+use creusot_std::logic::FSet;
+use creusot_std::prelude::*;
 
 use crate::assignments::AssignedState;
 use crate::{assignments::*, clause::*, clause_allocator::*, lit::*};
 
-pub(crate) struct Formula {
-    formula: FSet<FSet<Lit>>,
-    num_vars: Int,
+pub struct Formula {
+    pub formula: FSet<FSet<Lit>>,
+    pub num_vars: Int,
 }
 
 /*
-#[open]
-#[logic]
+#[logic(open)]
 #[variant(just.len() - ix)]
 #[requires(ix >= 0)]
 #[requires(forall<i: _> 0 <= i && i < just.len() ==> @just[i] < (self@.assignments).len())]
@@ -31,7 +30,6 @@ pub fn abs_just_inner(self, just: Seq<usize>, ix: Int) -> FSet<(theory::Term, th
 
 impl Formula {
     // TODO: Look at actually implementing from
-    #[open]
     #[logic]
     #[requires(clause_allocator.inv())]
     #[requires(forall<i: Int> 0 <= i && i < crefs.len() ==>
@@ -43,13 +41,11 @@ impl Formula {
         Formula { formula: Formula::from_internal(crefs, clause_allocator, 0, num_vars), num_vars }
     }
 
-    #[open]
     #[logic]
     fn insert(self, clause: FSet<Lit>) -> Formula {
         Formula { formula: self.formula.insert(clause), num_vars: self.num_vars }
     }
 
-    #[open]
     #[logic]
     //#[variant((clause@_allocator).len() - idx)]
     #[variant(crefs.len() - idx)]
@@ -67,21 +63,19 @@ impl Formula {
                 let clause = clause_allocator.get_clause_fset(crefs[idx]@);
                 set.insert(clause)
             } else {
-                FSet::EMPTY
+                FSet::empty()
             }
         }
     }
 
-    #[open]
-    #[predicate]
+    #[logic]
     pub(crate) fn implies(self, clause: FSet<Lit>) -> bool {
         pearlite! {
             self.eventually_sat_complete() ==> self.insert(clause).eventually_sat_complete()
         }
     }
 
-    #[open]
-    #[predicate]
+    #[logic]
     pub(crate) fn eventually_sat_complete(self) -> bool {
         pearlite! {
             exists<a: Seq<AssignedState>> a.len() == self.num_vars
@@ -90,9 +84,8 @@ impl Formula {
         }
     }
 
-    #[open]
-    #[predicate]
-    pub(crate) fn sat(self, a: Seq<AssignedState>) -> bool {
+    #[logic]
+    pub fn sat(self, a: Seq<AssignedState>) -> bool {
         pearlite! {
             forall<c: _> self.formula.contains(c) ==> clause_sat(c, a)
         }

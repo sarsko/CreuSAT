@@ -1,0 +1,57 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 142 4 142 23 *)
+
+(* <lit::Lit as std::ops::Not> *)
+
+let%span slit = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 143 19 143 31
+let%span slit'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 143 44 143 62
+let%span slit'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 140 14 140 56
+let%span slit'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 141 14 141 69
+let%span slit'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 38 14 38 43
+let%span slit'4 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 45 14 45 48
+let%span slogic_lit = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 19 20 19 29
+let%span slogic_lit'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 24 20 24 33
+
+use creusot.int.UInt64
+use creusot.prelude.Any
+
+type t_Lit = { idx: UInt64.t; polarity: bool }
+
+function index [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 18 4 18 35] [@inline:trivial] (self: t_Lit) : int
+ = [%#slogic_lit] UInt64.t'int self.idx
+
+meta "rewrite_def" function index
+
+let rec index'0 (self: t_Lit) (return (x: UInt64.t)) = any
+  [ return (result: UInt64.t) -> {[@stop_split] [@expl:index ensures] [%#slit'3] UInt64.t'int result = index self}
+    (! return {result}) ]
+
+predicate is_positive [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 23 4 23 42] [@inline:trivial] (self: t_Lit) =
+  [%#slogic_lit'0] self.polarity
+
+meta "rewrite_def" predicate is_positive
+
+let rec is_positive'0 (self: t_Lit) (return (x: bool)) = any
+  [ return (result: bool) -> {[@stop_split] [@expl:is_positive ensures] [%#slit'4] result = is_positive self}
+    (! return {result}) ]
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec not_Lit [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 142 4 142 23] (self: t_Lit)
+  (return (x: t_Lit)) = (! bb0
+  [ bb0 = s0
+    [ s0 = index'0 [%#slit] {self} (fun (_x: UInt64.t) -> [ &_6 <- _x ] s1)
+    | s1 = is_positive'0 [%#slit'0] {self} (fun (_x: bool) -> [ &_9 <- _x ] s2)
+    | s2 = [ &_8 <- not _9 ] s3
+    | s3 = [ &_ret <- { idx = _6; polarity = _8 } ] s4
+    | s4 = return {_ret} ] ]
+  [ & _ret: t_Lit = Any.any_l ()
+  | & self: t_Lit = self
+  | & _6: UInt64.t = Any.any_l ()
+  | & _8: bool = Any.any_l ()
+  | & _9: bool = Any.any_l () ])
+  [ return (result: t_Lit) ->
+  {[@stop_split] [@expl:not_Lit ensures] ([@stop_split] [@expl:not ensures #0] [%#slit'1] index result = index self)
+    /\ ([@stop_split] [@expl:not ensures #1] [%#slit'2] is_positive result = (not is_positive self))}
+    (! return {result}) ]
