@@ -1,0 +1,94 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/Robinson/src/logic.rs" 81 0 81 97 *)
+
+let%span sassignments = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 38 4 38 49
+let%span sassignments'0 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 24 8 25 43
+let%span sassignments'1 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 32 8 32 61
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span sformula = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/formula.rs" 63 12 63 128
+let%span sformula'0 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/formula.rs" 80 12 81 45
+let%span slogic = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/logic.rs" 78 11 78 50
+let%span slogic'0 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/logic.rs" 79 11 79 56
+let%span slogic'1 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/logic.rs" 80 10 80 44
+let%span slogic'2 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/logic.rs" 42 8 46 9
+let%span sclause = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 61 12 62 37
+let%span sclause'0 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 18 8 18 24
+let%span slit = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 39 12 42 13
+
+use creusot.int.UInt64
+use creusot.int.UInt8
+use seq.Seq
+use int.Int
+
+type t_Vec_Clause_Global
+
+type t_Formula = { clauses: t_Vec_Clause_Global; num_vars: UInt64.t }
+
+predicate unset [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/logic.rs" 40 0 40 38] (v: UInt8.t) =
+  [%#slogic'2] if UInt8.t'int v >= 2 then true else false
+
+predicate compatible_inner [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 22 0 22 78] (a: Seq.seq UInt8.t) (a2: Seq.seq UInt8.t) =
+  [%#sassignments'0] Seq.length a = Seq.length a2
+  /\ (forall i: int. 0 <= i /\ i < Seq.length a -> unset (Seq.get a i) \/ Seq.get a i = Seq.get a2 i)
+
+predicate complete_inner [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 30 0 30 52] (a: Seq.seq UInt8.t) =
+  [%#sassignments'1] forall i: int. 0 <= i /\ i < Seq.length a -> not unset (Seq.get a i)
+
+predicate compatible_complete_inner [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 37 0 37 87] (a: Seq.seq UInt8.t) (a2: Seq.seq UInt8.t) =
+  [%#sassignments] compatible_inner a a2 /\ complete_inner a2
+
+type t_Vec_Lit_Global
+
+type t_Clause = { rest: t_Vec_Lit_Global }
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_Clause_Global (self: t_Vec_Clause_Global) : Seq.seq t_Clause
+
+axiom view_Vec_Clause_Global_spec: forall self: t_Vec_Clause_Global. [%#svec] Seq.length (view_Vec_Clause_Global self)
+    <= UInt64.t'int const_MAX
+
+type t_Lit = { idx: UInt64.t; polarity: bool }
+
+function view_Vec_Lit_Global (self: t_Vec_Lit_Global) : Seq.seq t_Lit
+
+axiom view_Vec_Lit_Global_spec: forall self: t_Vec_Lit_Global. [%#svec] Seq.length (view_Vec_Lit_Global self)
+    <= UInt64.t'int const_MAX
+
+function view_Clause [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 17 4 17 33] (self: t_Clause) : Seq.seq t_Lit
+ = [%#sclause'0] view_Vec_Lit_Global self.rest
+
+predicate sat_inner [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 37 4 37 57] (self: t_Lit) (a: Seq.seq UInt8.t) =
+  [%#slit] if self.polarity then
+    UInt8.t'int (Seq.get a (UInt64.t'int self.idx)) = 1
+  else
+    UInt8.t'int (Seq.get a (UInt64.t'int self.idx)) = 0
+
+
+predicate sat_inner'0 [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 59 4 59 57] (self: t_Clause) (a: Seq.seq UInt8.t) =
+  [%#sclause] exists i: int. 0 <= i /\ i < Seq.length (view_Clause self) /\ sat_inner (Seq.get (view_Clause self) i) a
+
+predicate sat_inner'1 [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/formula.rs" 78 4 78 57] (self: t_Formula) (a: Seq.seq UInt8.t) =
+  [%#sformula'0] forall i: int. 0 <= i /\ i < Seq.length (view_Vec_Clause_Global self.clauses)
+    -> sat_inner'0 (Seq.get (view_Vec_Clause_Global self.clauses) i) a
+
+predicate eventually_sat_complete_inner [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/formula.rs" 61 4 61 77] (self: t_Formula) (a: Seq.seq UInt8.t) =
+  [%#sformula] exists a2: Seq.seq UInt8.t. Seq.length a2 = UInt64.t'int self.num_vars
+    /\ compatible_complete_inner a a2 /\ sat_inner'1 self a2
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+constant f : t_Formula
+
+constant a : Seq.seq UInt8.t
+
+constant ix : int
+
+constant v : UInt8.t
+
+function lemma_extension_sat_base_sat [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/logic.rs" 81 0 81 97] (f: t_Formula) (a: Seq.seq UInt8.t) (ix: int) (v: UInt8.t) : ()
+
+goal vc_lemma_extension_sat_base_sat: ([%#slogic] 0 <= ix /\ ix < Seq.length a /\ unset (Seq.get a ix))
+  -> ([%#slogic'0] eventually_sat_complete_inner f (Seq.set a ix v))
+  -> ([@stop_split] [@expl:lemma_extension_sat_base_sat ensures] [%#slogic'1] eventually_sat_complete_inner f a)

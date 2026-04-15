@@ -1,0 +1,98 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/solver.rs" 73 4 73 37 *)
+
+(* solver::Solver *)
+
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 337 8 337 40
+let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 114 18 114 40
+let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 96 22 96 41
+let%span svec'2 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 97 22 97 70
+let%span svec'3 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span svec'4 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 44 20 44 29
+let%span ssolver = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/solver.rs" 78 25 78 40
+let%span ssolver'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/solver.rs" 82 28 82 29
+let%span ssolver'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/solver.rs" 75 24 75 25
+let%span ssolver'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/solver.rs" 76 24 76 28
+let%span ssolver'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/solver.rs" 77 27 77 28
+let%span ssolver'4 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/solver.rs" 79 27 79 30
+let%span ssolver'5 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/solver.rs" 80 18 80 26
+let%span ssolver'6 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/solver.rs" 81 18 81 26
+
+use creusot.int.UInt64
+use seq.Seq
+use creusot.int.UInt32
+use creusot.prelude.Any
+use int.Int
+
+type t_Vec_Clause_Global
+
+type t_Formula = { clauses: t_Vec_Clause_Global; num_vars: UInt64.t }
+
+type t_Vec_Lit_Global
+
+type t_Clause = { deleted: bool; lbd: UInt32.t; search: UInt64.t; lits: t_Vec_Lit_Global }
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_Clause_Global (self: t_Vec_Clause_Global) : Seq.seq t_Clause
+
+axiom view_Vec_Clause_Global_spec: forall self: t_Vec_Clause_Global. [%#svec'3] Seq.length (view_Vec_Clause_Global self)
+    <= UInt64.t'int const_MAX
+
+let rec len_Clause (self_: t_Vec_Clause_Global) (return (x: UInt64.t)) = any
+  [ return (result: UInt64.t) -> {[@stop_split] [@expl:len ensures] [%#svec'0] UInt64.t'int result
+    = Seq.length (view_Vec_Clause_Global self_)}
+    (! return {result}) ]
+
+type t_Vec_usize_Global
+
+function view_Vec_usize_Global (self: t_Vec_usize_Global) : Seq.seq UInt64.t
+
+axiom view_Vec_usize_Global_spec: forall self: t_Vec_usize_Global. [%#svec'3] Seq.length (view_Vec_usize_Global self)
+    <= UInt64.t'int const_MAX
+
+function index_Vec_usize_Global [@inline:trivial] (self: t_Vec_usize_Global) (ix: int) : UInt64.t =
+  [%#svec'4] Seq.get (view_Vec_usize_Global self) ix
+
+meta "rewrite_def" function index_Vec_usize_Global
+
+let rec from_elem_usize (elem: UInt64.t) (n: UInt64.t) (return (x: t_Vec_usize_Global)) = any
+  [ return (result: t_Vec_usize_Global) ->
+  {[@stop_split] [@expl:from_elem_usize ensures] ([@stop_split] [@expl:from_elem ensures #0] [%#svec'1] Seq.length (view_Vec_usize_Global result)
+      = UInt64.t'int n)
+    /\ ([@stop_split] [@expl:from_elem ensures #1] [%#svec'2] forall i: int. 0 <= i /\ i < UInt64.t'int n
+      -> index_Vec_usize_Global result i = elem)}
+    (! return {result}) ]
+
+type t_Solver = {
+  num_lemmas: UInt64.t;
+  max_lemmas: UInt64.t;
+  num_conflicts: UInt64.t;
+  initial_len: UInt64.t;
+  inc_reduce_db: UInt64.t;
+  fast: UInt64.t;
+  slow: UInt64.t;
+  perm_diff: t_Vec_usize_Global }
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec new [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/solver.rs" 73 4 73 37] (f: t_Formula)
+  (return (x: t_Solver)) = (! bb0
+  [ bb0 = s0
+    [ s0 = len_Clause [%#ssolver] {f.clauses} (fun (_x: UInt64.t) -> [ &_2 <- _x ] s1)
+    | s1 = from_elem_usize [%#svec] {[%#ssolver'0] (0: UInt64.t)} {f.num_vars}
+        (fun (_x: t_Vec_usize_Global) -> [ &_4 <- _x ] s2)
+    | s2 = [ &_ret <- { num_lemmas = ([%#ssolver'1] (0: UInt64.t));
+                        max_lemmas = ([%#ssolver'2] (2000: UInt64.t));
+                        num_conflicts = ([%#ssolver'3] (0: UInt64.t));
+                        initial_len = _2;
+                        inc_reduce_db = ([%#ssolver'4] (300: UInt64.t));
+                        fast = ([%#ssolver'5] (16777216: UInt64.t));
+                        slow = ([%#ssolver'6] (16777216: UInt64.t));
+                        perm_diff = _4 } ] s3
+    | s3 = return {_ret} ] ]
+  [ & _ret: t_Solver = Any.any_l ()
+  | & f: t_Formula = f
+  | & _2: UInt64.t = Any.any_l ()
+  | & _4: t_Vec_usize_Global = Any.any_l () ]) [ return (result: t_Solver) -> (! return {result}) ]

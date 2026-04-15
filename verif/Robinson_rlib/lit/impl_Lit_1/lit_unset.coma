@@ -1,0 +1,81 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 113 4 113 51 *)
+
+(* lit::Lit *)
+
+let%span sassignments = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 17 8 17 21
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 195 19 195 38
+let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 196 18 196 46
+let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span slit = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 114 11 114 21
+let%span slit'0 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 114 25 114 26
+let%span slit'1 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 111 15 111 33
+let%span slit'2 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 112 14 112 38
+let%span slit'3 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 33 20 33 33
+let%span slit'4 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 72 20 72 40
+let%span slit'5 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 59 12 59 30
+let%span sslice = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 148 20 148 37
+let%span sslice'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 153 20 153 37
+
+use creusot.int.UInt64
+use creusot.int.UInt8
+use seq.Seq
+use creusot.prelude.Any
+use int.Int
+
+type t_Vec_u8_Global
+
+type t_Assignments = { f0: t_Vec_u8_Global; f1: UInt64.t }
+
+type t_Lit = { idx: UInt64.t; polarity: bool }
+
+predicate in_bounds_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq UInt8.t) =
+  [%#sslice] UInt64.t'int self < Seq.length seq
+
+meta "rewrite_def" predicate in_bounds_usize
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_u8_Global (self: t_Vec_u8_Global) : Seq.seq UInt8.t
+
+axiom view_Vec_u8_Global_spec: forall self: t_Vec_u8_Global. [%#svec'1] Seq.length (view_Vec_u8_Global self)
+    <= UInt64.t'int const_MAX
+
+predicate has_value_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq UInt8.t) (out: UInt8.t) =
+  [%#sslice'0] Seq.get seq (UInt64.t'int self) = out
+
+meta "rewrite_def" predicate has_value_usize
+
+let rec index_Vec_u8_Global (self_: t_Vec_u8_Global) (ix: UInt64.t) (return (x: UInt8.t)) =
+  {[@stop_split] [@expl:index requires] [%#svec] in_bounds_usize ix (view_Vec_u8_Global self_)}
+  any
+  [ return (result: UInt8.t) ->
+  {[@stop_split] [@expl:index ensures] [%#svec'0] has_value_usize ix (view_Vec_u8_Global self_) result}
+    (! return {result}) ]
+
+predicate inv [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 32 4 32 36] (self: t_Lit) (n: int) =
+  [%#slit'3] UInt64.t'int self.idx < n
+
+function view_Assignments [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 16 4 16 33] (self: t_Assignments) : Seq.seq UInt8.t
+ = [%#sassignments] view_Vec_u8_Global self.f0
+
+predicate unset_inner [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 57 4 57 59] (self: t_Lit) (a: Seq.seq UInt8.t) =
+  [%#slit'5] UInt8.t'int (Seq.get a (UInt64.t'int self.idx)) >= 2
+
+predicate unset [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 71 4 71 46] (self: t_Lit) (a: t_Assignments) =
+  [%#slit'4] unset_inner self (view_Assignments a)
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec lit_unset [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 113 4 113 51] (self: t_Lit)
+  (a: t_Assignments) (return (x: bool)) =
+  {[@stop_split] [@expl:lit_unset requires] [%#slit'1] inv self (Seq.length (view_Assignments a))}
+  (! bb0
+  [ bb0 = s0
+    [ s0 = index_Vec_u8_Global [%#slit] {a.f0} {self.idx} (fun (_x: UInt8.t) -> [ &_10 <- _x ] s1)
+    | s1 = [ &_ret <- UInt8.ge _10 ([%#slit'0] (2: UInt8.t)) ] s2
+    | s2 = return {_ret} ] ]
+  [ & _ret: bool = Any.any_l () | & self: t_Lit = self | & a: t_Assignments = a | & _10: UInt8.t = Any.any_l () ])
+  [ return (result: bool) -> {[@stop_split] [@expl:lit_unset ensures] [%#slit'2] result = unset self a}
+    (! return {result}) ]

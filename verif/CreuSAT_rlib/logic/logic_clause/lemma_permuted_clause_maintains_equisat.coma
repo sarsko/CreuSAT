@@ -1,0 +1,128 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 227 0 227 86 *)
+
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span slogic_assignments = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 33 8 33 61
+let%span slogic_lit = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 67 20 67 42
+let%span slogic_lit'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 19 20 19 29
+let%span slogic_lit'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 73 12 76 13
+let%span slogic_lit'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 24 20 24 33
+let%span slogic_formula = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 24 8 25 69
+let%span slogic_formula'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 40 8 40 111
+let%span slogic_formula'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 32 8 33 37
+let%span slogic = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic.rs" 20 8 24 9
+let%span slogic_clause = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 223 11 223 31
+let%span slogic_clause'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 224 11 224 40
+let%span slogic_clause'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 225 11 225 33
+let%span slogic_clause'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 226 10 226 40
+let%span slogic_clause'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 34 8 34 134
+let%span slogic_clause'4 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 14 8 14 24
+let%span slogic_clause'5 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 200 20 200 42
+let%span slogic_clause'6 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 28 4 28 62
+let%span slogic_clause'7 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 21 8 22 23
+let%span slogic_clause'8 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 41 8 42 92
+let%span slogic_clause'9 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 166 12 167 37
+let%span sseq = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/logic/seq.rs" 357 8 357 41
+
+use creusot.int.UInt32
+use creusot.int.UInt64
+use seq.Seq
+use creusot.int.UInt8
+use seq.Permut
+use int.Int
+
+type t_Vec_Lit_Global
+
+type t_Clause = { deleted: bool; lbd: UInt32.t; search: UInt64.t; lits: t_Vec_Lit_Global }
+
+type t_FormulaModel = { clauses: Seq.seq t_Clause; num_vars: int }
+
+type t_Lit = { idx: UInt64.t; polarity: bool }
+
+function index [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 18 4 18 35] [@inline:trivial] (self: t_Lit) : int
+ = [%#slogic_lit'0] UInt64.t'int self.idx
+
+meta "rewrite_def" function index
+
+predicate inv [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 66 4 66 36] (self: t_Lit) (n: int) =
+  [%#slogic_lit] index self < n
+
+predicate vars_in_range_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 19 0 19 55] (s: Seq.seq t_Lit) (n: int) =
+  [%#slogic_clause'7] forall i: int. 0 <= i /\ i < Seq.length s -> inv (Seq.get s i) n
+
+predicate no_duplicate_indexes_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 39 0 39 54] (s: Seq.seq t_Lit) =
+  [%#slogic_clause'8] forall j: int, k: int. 0 <= j /\ j < Seq.length s /\ 0 <= k /\ k < Seq.length s /\ k <> j
+    -> index (Seq.get s k) <> index (Seq.get s j)
+
+predicate inv_internal [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 27 0 27 48] (s: Seq.seq t_Lit) (n: int) =
+  [%#slogic_clause'6] vars_in_range_inner s n /\ no_duplicate_indexes_inner s
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_Lit_Global (self: t_Vec_Lit_Global) : Seq.seq t_Lit
+
+axiom view_Vec_Lit_Global_spec: forall self: t_Vec_Lit_Global. [%#svec] Seq.length (view_Vec_Lit_Global self)
+    <= UInt64.t'int const_MAX
+
+function view_Clause [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 13 4 13 33] (self: t_Clause) : Seq.seq t_Lit
+ = [%#slogic_clause'4] view_Vec_Lit_Global self.lits
+
+predicate inv'0 [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 199 4 199 36] (self: t_Clause) (n: int) =
+  [%#slogic_clause'5] inv_internal (view_Clause self) n
+
+predicate formula_invariant [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 22 0 22 49] (f: t_FormulaModel) =
+  [%#slogic_formula] forall i: int. 0 <= i /\ i < Seq.length f.clauses
+    -> inv'0 (Seq.get f.clauses i) f.num_vars /\ Seq.length (view_Clause (Seq.get f.clauses i)) > 0
+
+predicate unset [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic.rs" 18 0 18 38] (v: UInt8.t) =
+  [%#slogic] if UInt8.t'int v >= 2 then true else false
+
+predicate complete_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 31 0 31 52] (a: Seq.seq UInt8.t) =
+  [%#slogic_assignments] forall i: int. 0 <= i /\ i < Seq.length a -> not unset (Seq.get a i)
+
+predicate is_positive [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 23 4 23 42] [@inline:trivial] (self: t_Lit) =
+  [%#slogic_lit'2] self.polarity
+
+meta "rewrite_def" predicate is_positive
+
+predicate sat_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 71 4 71 57] (self: t_Lit) (a: Seq.seq UInt8.t) =
+  [%#slogic_lit'1] if is_positive self then
+    UInt8.t'int (Seq.get a (index self)) = 1
+  else
+    UInt8.t'int (Seq.get a (index self)) = 0
+
+
+predicate sat_inner'0 [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 164 4 164 57] (self: t_Clause) (a: Seq.seq UInt8.t) =
+  [%#slogic_clause'9] exists i: int. 0 <= i
+    /\ i < Seq.length (view_Clause self) /\ sat_inner (Seq.get (view_Clause self) i) a
+
+predicate formula_sat_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 30 0 30 72] (f: t_FormulaModel) (a: Seq.seq UInt8.t) =
+  [%#slogic_formula'1] forall i: int. 0 <= i /\ i < Seq.length f.clauses -> sat_inner'0 (Seq.get f.clauses i) a
+
+predicate eventually_sat_complete [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 38 0 38 55] (f: t_FormulaModel) =
+  [%#slogic_formula'0] exists a2: Seq.seq UInt8.t. Seq.length a2 = f.num_vars
+    /\ complete_inner a2 /\ formula_sat_inner f a2
+
+predicate equisat_extension_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 32 0 32 66] (c: t_Clause) (f: t_FormulaModel) =
+  [%#slogic_clause'3] eventually_sat_complete f
+  -> eventually_sat_complete { clauses = Seq.snoc f.clauses c; num_vars = f.num_vars }
+
+predicate permutation_of_Lit (self: Seq.seq t_Lit) (other: Seq.seq t_Lit) =
+  [%#sseq] Permut.permut self other 0 (Seq.length self)
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+constant f : t_FormulaModel
+
+constant c : t_Clause
+
+constant c2 : t_Clause
+
+function lemma_permuted_clause_maintains_equisat [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 227 0 227 86] (f: t_FormulaModel) (c: t_Clause) (c2: t_Clause) : ()
+
+goal vc_lemma_permuted_clause_maintains_equisat: ([%#slogic_clause] formula_invariant f)
+  -> ([%#slogic_clause'0] equisat_extension_inner c f)
+  -> ([%#slogic_clause'1] permutation_of_Lit (view_Clause c) (view_Clause c2))
+  -> (forall s: Seq.seq t_Clause, x: t_Clause. Seq.([..]) (Seq.snoc s x) 0 (Seq.length s) = s)
+  && ([@stop_split] [@expl:lemma_permuted_clause_maintains_equisat ensures] [%#slogic_clause'2] equisat_extension_inner c2 f)

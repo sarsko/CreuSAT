@@ -1,0 +1,117 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 78 4 78 35 *)
+
+(* assignments::Assignments *)
+
+let%span sassignments = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 79 25 79 28
+let%span sassignments'0 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 79 43 79 44
+let%span sassignments'1 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 75 15 75 22
+let%span sassignments'2 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 76 14 76 28
+let%span sassignments'3 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 77 14 77 78
+let%span sassignments'4 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 51 12 51 64
+let%span sassignments'5 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 17 8 17 21
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 337 8 337 40
+let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 96 22 96 41
+let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 97 22 97 70
+let%span svec'2 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span svec'3 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 44 20 44 29
+let%span sformula = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/formula.rs" 36 12 37 54
+let%span slogic = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/logic.rs" 42 8 46 9
+let%span sclause = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 94 8 94 29
+let%span sclause'0 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 79 12 80 31
+let%span sclause'1 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 18 8 18 24
+let%span slit = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 33 20 33 33
+
+use creusot.int.UInt8
+use creusot.int.UInt64
+use seq.Seq
+use creusot.prelude.Any
+use int.Int
+
+type t_Vec_Clause_Global
+
+type t_Formula = { clauses: t_Vec_Clause_Global; num_vars: UInt64.t }
+
+type t_Vec_u8_Global
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_u8_Global (self: t_Vec_u8_Global) : Seq.seq UInt8.t
+
+axiom view_Vec_u8_Global_spec: forall self: t_Vec_u8_Global. [%#svec'2] Seq.length (view_Vec_u8_Global self)
+    <= UInt64.t'int const_MAX
+
+function index_Vec_u8_Global [@inline:trivial] (self: t_Vec_u8_Global) (ix: int) : UInt8.t =
+  [%#svec'3] Seq.get (view_Vec_u8_Global self) ix
+
+meta "rewrite_def" function index_Vec_u8_Global
+
+let rec from_elem_u8 (elem: UInt8.t) (n: UInt64.t) (return (x: t_Vec_u8_Global)) = any
+  [ return (result: t_Vec_u8_Global) ->
+  {[@stop_split] [@expl:from_elem_u8 ensures] ([@stop_split] [@expl:from_elem ensures #0] [%#svec'0] Seq.length (view_Vec_u8_Global result)
+      = UInt64.t'int n)
+    /\ ([@stop_split] [@expl:from_elem ensures #1] [%#svec'1] forall i: int. 0 <= i /\ i < UInt64.t'int n
+      -> index_Vec_u8_Global result i = elem)}
+    (! return {result}) ]
+
+type t_Assignments = { f0: t_Vec_u8_Global; f1: UInt64.t }
+
+type t_Vec_Lit_Global
+
+type t_Clause = { rest: t_Vec_Lit_Global }
+
+function view_Vec_Clause_Global (self: t_Vec_Clause_Global) : Seq.seq t_Clause
+
+axiom view_Vec_Clause_Global_spec: forall self: t_Vec_Clause_Global. [%#svec'2] Seq.length (view_Vec_Clause_Global self)
+    <= UInt64.t'int const_MAX
+
+type t_Lit = { idx: UInt64.t; polarity: bool }
+
+function view_Vec_Lit_Global (self: t_Vec_Lit_Global) : Seq.seq t_Lit
+
+axiom view_Vec_Lit_Global_spec: forall self: t_Vec_Lit_Global. [%#svec'2] Seq.length (view_Vec_Lit_Global self)
+    <= UInt64.t'int const_MAX
+
+function view_Clause [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 17 4 17 33] (self: t_Clause) : Seq.seq t_Lit
+ = [%#sclause'1] view_Vec_Lit_Global self.rest
+
+predicate inv [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 32 4 32 36] (self: t_Lit) (n: int) =
+  [%#slit] UInt64.t'int self.idx < n
+
+predicate vars_in_range [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 77 4 77 46] (self: t_Clause) (n: int) =
+  [%#sclause'0] forall i: int. 0 <= i /\ i < Seq.length (view_Clause self) -> inv (Seq.get (view_Clause self) i) n
+
+predicate inv'0 [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 93 4 93 36] (self: t_Clause) (n: int) =
+  [%#sclause] vars_in_range self n
+
+predicate inv'1 [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/formula.rs" 34 4 34 28] (self: t_Formula) =
+  [%#sformula] forall i: int. 0 <= i /\ i < Seq.length (view_Vec_Clause_Global self.clauses)
+    -> inv'0 (Seq.get (view_Vec_Clause_Global self.clauses) i) (UInt64.t'int self.num_vars)
+
+function view_Assignments [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 16 4 16 33] (self: t_Assignments) : Seq.seq UInt8.t
+ = [%#sassignments'5] view_Vec_u8_Global self.f0
+
+predicate inv'2 [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 49 4 49 40] (self: t_Assignments) (f: t_Formula) =
+  [%#sassignments'4] UInt64.t'int f.num_vars = Seq.length (view_Assignments self)
+  /\ UInt64.t'int self.f1 <= UInt64.t'int f.num_vars
+
+predicate unset [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/logic.rs" 40 0 40 38] (v: UInt8.t) =
+  [%#slogic] if UInt8.t'int v >= 2 then true else false
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec new [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/assignments.rs" 78 4 78 35] (f: t_Formula)
+  (return (x: t_Assignments)) = {[@stop_split] [@expl:new requires] [%#sassignments'1] inv'1 f}
+  (! bb0
+  [ bb0 = s0
+    [ s0 = from_elem_u8 [%#svec] {[%#sassignments] (2: UInt8.t)} {f.num_vars}
+        (fun (_x: t_Vec_u8_Global) -> [ &_7 <- _x ] s1)
+    | s1 = [ &_ret <- { f0 = _7; f1 = ([%#sassignments'0] (0: UInt64.t)) } ] s2
+    | s2 = return {_ret} ] ]
+  [ & _ret: t_Assignments = Any.any_l () | & f: t_Formula = f | & _7: t_Vec_u8_Global = Any.any_l () ])
+  [ return (result: t_Assignments) ->
+  {[@stop_split] [@expl:new ensures] ([@stop_split] [@expl:new ensures #0] [%#sassignments'2] inv'2 result f)
+    /\ ([@stop_split] [@expl:new ensures #1] [%#sassignments'3] forall i: int. 0 <= i
+        /\ i < Seq.length (view_Assignments result) -> unset (Seq.get (view_Assignments result) i))}
+    (! return {result}) ]

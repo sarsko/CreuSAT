@@ -1,0 +1,133 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 177 4 177 59 *)
+
+(* clause::Clause *)
+
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 195 19 195 38
+let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 196 18 196 46
+let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span sclause = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 178 27 178 28
+let%span sclause'0 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 182 18 182 28
+let%span sclause'1 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 181 20 181 32
+let%span sclause'2 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 180 20 180 76
+let%span sclause'3 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 183 25 183 28
+let%span sclause'4 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 183 16 183 55
+let%span sclause'5 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 184 33 184 36
+let%span sclause'6 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 184 43 184 44
+let%span sclause'7 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 184 16 184 44
+let%span sclause'8 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 186 17 186 18
+let%span sclause'9 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 186 12 186 18
+let%span sclause'10 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 175 15 175 46
+let%span sclause'11 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 176 14 176 31
+let%span sclause'12 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 219 14 219 36
+let%span sclause'13 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 18 8 18 24
+let%span sclause'14 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 79 12 80 31
+let%span sclause'15 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 94 8 94 29
+let%span slit = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 33 20 33 33
+let%span slit'0 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 119 14 119 36
+let%span slit'1 = "/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 120 14 120 40
+let%span sslice = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 148 20 148 37
+let%span sslice'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 153 20 153 37
+
+use creusot.int.UInt64
+use seq.Seq
+use creusot.prelude.Any
+use int.Int
+
+type t_Vec_Lit_Global
+
+type t_Clause = { rest: t_Vec_Lit_Global }
+
+type t_Lit = { idx: UInt64.t; polarity: bool }
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_Lit_Global (self: t_Vec_Lit_Global) : Seq.seq t_Lit
+
+axiom view_Vec_Lit_Global_spec: forall self: t_Vec_Lit_Global. [%#svec'1] Seq.length (view_Vec_Lit_Global self)
+    <= UInt64.t'int const_MAX
+
+function view_Clause [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 17 4 17 33] (self: t_Clause) : Seq.seq t_Lit
+ = [%#sclause'13] view_Vec_Lit_Global self.rest
+
+let rec len (self: t_Clause) (return (x: UInt64.t)) = any
+  [ return (result: UInt64.t) -> {[@stop_split] [@expl:len ensures] [%#sclause'12] UInt64.t'int result
+    = Seq.length (view_Clause self)}
+    (! return {result}) ]
+
+predicate inv [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/lit.rs" 32 4 32 36] (self: t_Lit) (n: int) =
+  [%#slit] UInt64.t'int self.idx < n
+
+predicate in_bounds_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq t_Lit) =
+  [%#sslice] UInt64.t'int self < Seq.length seq
+
+meta "rewrite_def" predicate in_bounds_usize
+
+predicate has_value_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq t_Lit) (out: t_Lit) =
+  [%#sslice'0] Seq.get seq (UInt64.t'int self) = out
+
+meta "rewrite_def" predicate has_value_usize
+
+let rec index_Vec_Lit_Global (self_: t_Vec_Lit_Global) (ix: UInt64.t) (return (x: t_Lit)) =
+  {[@stop_split] [@expl:index requires] [%#svec] in_bounds_usize ix (view_Vec_Lit_Global self_)}
+  any
+  [ return (result: t_Lit) ->
+  {[@stop_split] [@expl:index ensures] [%#svec'0] has_value_usize ix (view_Vec_Lit_Global self_) result}
+    (! return {result}) ]
+
+let rec check_lit_invariant (self: t_Lit) (n: UInt64.t) (return (x: bool)) = any
+  [ return (result: bool) ->
+  {[@stop_split] [@expl:check_lit_invariant ensures] ([@stop_split] [@expl:check_lit_invariant ensures #0] [%#slit'0] result
+      = inv self (UInt64.t'int n))
+    /\ ([@stop_split] [@expl:check_lit_invariant ensures #1] [%#slit'1] result
+    = (UInt64.t'int self.idx < UInt64.t'int n))}
+    (! return {result}) ]
+
+predicate vars_in_range [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 77 4 77 46] (self: t_Clause) (n: int) =
+  [%#sclause'14] forall i: int. 0 <= i /\ i < Seq.length (view_Clause self) -> inv (Seq.get (view_Clause self) i) n
+
+predicate inv'0 [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 93 4 93 36] (self: t_Clause) (n: int) =
+  [%#sclause'15] vars_in_range self n
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec check_clause_invariant [#"/Users/sarekhs/Programming/CreuSAT/Robinson/src/clause.rs" 177 4 177 59]
+  (self: t_Clause) (n: UInt64.t) (return (x: UInt64.t)) =
+  {[@stop_split] [@expl:check_clause_invariant requires] [%#sclause'10] vars_in_range self (UInt64.t'int const_MAX)}
+  (! bb0
+  [ bb0 = s0 [ s0 = [ &i <- [%#sclause] (0: UInt64.t) ] s1 | s1 = [ &new_n <- n ] s2 | s2 = bb1 ]
+  | bb1 = bb1
+    [ bb1 = {[@expl:loop invariant #0] [%#sclause'2] forall j: int. 0 <= j /\ j < UInt64.t'int i
+        -> inv (Seq.get (view_Clause self) j) (UInt64.t'int new_n)}
+      {[@expl:loop invariant #1] [%#sclause'1] UInt64.t'int new_n >= UInt64.t'int n}
+      (! s0)
+      [ s0 = len [%#sclause'0] {self} (fun (_x: UInt64.t) -> [ &_21 <- _x ] s1)
+      | s1 = [ &_19 <- UInt64.lt i _21 ] s2
+      | s2 = any [ br0 -> {_19 = false} (! bb11) | br1 -> {_19} (! bb4) ] ]
+      [ bb4 = s0
+        [ s0 = index_Vec_Lit_Global [%#sclause'3] {self.rest} {i} (fun (_x: t_Lit) -> [ &_26 <- _x ] s1)
+        | s1 = check_lit_invariant [%#sclause'4] {_26} {new_n} (fun (_x: bool) -> [ &_24 <- _x ] s2)
+        | s2 = any [ br0 -> {_24 = false} (! bb8) | br1 -> {_24} (! bb10) ] ]
+      | bb8 = s0
+        [ s0 = index_Vec_Lit_Global [%#sclause'5] {self.rest} {i} (fun (_x: t_Lit) -> [ &_31 <- _x ] s1)
+        | s1 = UInt64.add [%#sclause'7] {_31.idx} {[%#sclause'6] (1: UInt64.t)}
+            (fun (_x: UInt64.t) -> [ &new_n <- _x ] s2)
+        | s2 = bb10 ]
+      | bb10 = s0
+        [ s0 = UInt64.add [%#sclause'9] {i} {[%#sclause'8] (1: UInt64.t)} (fun (_x: UInt64.t) -> [ &i <- _x ] s1)
+        | s1 = bb1 ] ] ]
+  | bb11 = s0 [ s0 = [ &_ret <- new_n ] s1 | s1 = return {_ret} ] ]
+  [ & _ret: UInt64.t = Any.any_l ()
+  | & self: t_Clause = self
+  | & n: UInt64.t = n
+  | & i: UInt64.t = Any.any_l ()
+  | & new_n: UInt64.t = Any.any_l ()
+  | & _19: bool = Any.any_l ()
+  | & _21: UInt64.t = Any.any_l ()
+  | & _24: bool = Any.any_l ()
+  | & _26: t_Lit = Any.any_l ()
+  | & _31: t_Lit = Any.any_l () ])
+  [ return (result: UInt64.t) ->
+  {[@stop_split] [@expl:check_clause_invariant ensures] [%#sclause'11] inv'0 self (UInt64.t'int result)}
+    (! return {result}) ]

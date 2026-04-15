@@ -1,0 +1,202 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 126 4 126 39 *)
+
+(* decision::Decisions *)
+
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 114 18 114 40
+let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 185 19 185 38
+let%span svec'2 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 186 18 186 46
+let%span svec'3 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 187 18 187 49
+let%span svec'4 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 188 18 188 54
+let%span svec'5 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 189 18 189 47
+let%span svec'6 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 195 19 195 38
+let%span svec'7 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 196 18 196 46
+let%span sslice = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 148 20 148 37
+let%span sslice'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 153 20 153 37
+let%span sslice'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 158 20 158 88
+let%span sdecision = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 127 61 127 65
+let%span sdecision'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 128 29 128 51
+let%span sdecision'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 137 22 137 29
+let%span sdecision'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 136 20 136 42
+let%span sdecision'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 132 20 134 74
+let%span sdecision'4 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 131 20 131 73
+let%span sdecision'5 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 138 28 138 34
+let%span sdecision'6 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 139 28 139 29
+let%span sdecision'7 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 140 30 140 31
+let%span sdecision'8 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 140 16 140 31
+let%span sdecision'9 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 144 35 144 41
+let%span sdecision'10 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 146 25 146 47
+let%span sdecision'11 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 146 50 146 51
+let%span sdecision'12 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 146 8 146 51
+let%span sdecision'13 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 122 4 122 46
+let%span sdecision'14 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 123 15 123 52
+let%span sdecision'15 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 124 14 124 63
+let%span sdecision'16 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 125 14 125 67
+let%span sdecision'17 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 14 0 14 20
+let%span slogic_decision = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_decision.rs" 9 12 14 97
+
+use creusot.int.UInt64
+use seq.Seq
+use creusot.prelude.MutBorrow
+use creusot.prelude.Any
+use int.Int
+
+type t_Vec_Node_Global
+
+type t_Decisions = { linked_list: t_Vec_Node_Global; timestamp: UInt64.t; start: UInt64.t; search: UInt64.t }
+
+type t_Node = { next: UInt64.t; prev: UInt64.t; ts: UInt64.t }
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_Node_Global (self: t_Vec_Node_Global) : Seq.seq t_Node
+
+axiom view_Vec_Node_Global_spec: forall self: t_Vec_Node_Global. [%#svec'0] Seq.length (view_Vec_Node_Global self)
+    <= UInt64.t'int const_MAX
+
+let rec len_Node (self_: t_Vec_Node_Global) (return (x: UInt64.t)) = any
+  [ return (result: UInt64.t) -> {[@stop_split] [@expl:len ensures] [%#svec] UInt64.t'int result
+    = Seq.length (view_Vec_Node_Global self_)}
+    (! return {result}) ]
+
+constant const_INVALID: UInt64.t = [%#sdecision'17] (18446744073709551615: UInt64.t)
+
+predicate inv [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_decision.rs" 7 4 7 36] (self: t_Decisions) (n: int) =
+  [%#slogic_decision] Seq.length (view_Vec_Node_Global self.linked_list) = n
+  /\ (UInt64.t'int self.search < Seq.length (view_Vec_Node_Global self.linked_list)
+    \/ UInt64.t'int self.search = UInt64.t'int const_MAX)
+  /\ UInt64.t'int self.start < Seq.length (view_Vec_Node_Global self.linked_list)
+  /\ (forall i: int. 0 <= i /\ i < Seq.length (view_Vec_Node_Global self.linked_list)
+    -> (UInt64.t'int (Seq.get (view_Vec_Node_Global self.linked_list) i).next = UInt64.t'int const_MAX
+      \/ UInt64.t'int (Seq.get (view_Vec_Node_Global self.linked_list) i).next < n)
+    /\ (UInt64.t'int (Seq.get (view_Vec_Node_Global self.linked_list) i).prev = UInt64.t'int const_MAX
+    \/ UInt64.t'int (Seq.get (view_Vec_Node_Global self.linked_list) i).prev < n))
+
+type t_Vec_Clause_Global
+
+type t_Formula = { clauses: t_Vec_Clause_Global; num_vars: UInt64.t }
+
+predicate in_bounds_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq t_Node) =
+  [%#sslice] UInt64.t'int self < Seq.length seq
+
+meta "rewrite_def" predicate in_bounds_usize
+
+predicate has_value_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq t_Node) (out: t_Node) =
+  [%#sslice'0] Seq.get seq (UInt64.t'int self) = out
+
+meta "rewrite_def" predicate has_value_usize
+
+predicate resolve_elswhere_usize [@inline:trivial] (self: UInt64.t) (old': Seq.seq t_Node) (fin: Seq.seq t_Node) =
+  [%#sslice'1] forall i: int. 0 <= i /\ i <> UInt64.t'int self /\ i < Seq.length old' -> Seq.get old' i = Seq.get fin i
+
+meta "rewrite_def" predicate resolve_elswhere_usize
+
+let rec index_mut_Vec_Node_Global (self_: MutBorrow.t t_Vec_Node_Global) (ix: UInt64.t)
+  (return (x: MutBorrow.t t_Node)) =
+  {[@stop_split] [@expl:index_mut requires] [%#svec'1] in_bounds_usize ix (view_Vec_Node_Global self_.current)}
+  any
+  [ return (result: MutBorrow.t t_Node) ->
+  {[@stop_split] [@expl:index_mut_Vec_Node_Global ensures] ([@stop_split] [@expl:index_mut ensures #0] [%#svec'2] has_value_usize ix (view_Vec_Node_Global self_.current) result.current)
+    /\ ([@stop_split] [@expl:index_mut ensures #1] [%#svec'3] has_value_usize ix (view_Vec_Node_Global self_.final) result.final)
+    /\ ([@stop_split] [@expl:index_mut ensures #2] [%#svec'4] resolve_elswhere_usize ix (view_Vec_Node_Global self_.current) (view_Vec_Node_Global self_.final))
+    /\ ([@stop_split] [@expl:index_mut ensures #3] [%#svec'5] Seq.length (view_Vec_Node_Global self_.final)
+    = Seq.length (view_Vec_Node_Global self_.current))}
+    (! return {result}) ]
+
+predicate resolve_refmut_Node [@inline:trivial] (_1: MutBorrow.t t_Node) = _1.final = _1.current
+
+meta "rewrite_def" predicate resolve_refmut_Node
+
+let rec index_Vec_Node_Global (self_: t_Vec_Node_Global) (ix: UInt64.t) (return (x: t_Node)) =
+  {[@stop_split] [@expl:index requires] [%#svec'6] in_bounds_usize ix (view_Vec_Node_Global self_)}
+  any
+  [ return (result: t_Node) ->
+  {[@stop_split] [@expl:index ensures] [%#svec'7] has_value_usize ix (view_Vec_Node_Global self_) result}
+    (! return {result}) ]
+
+predicate resolve_refmut_Decisions [@inline:trivial] (_1: MutBorrow.t t_Decisions) = _1.final = _1.current
+
+meta "rewrite_def" predicate resolve_refmut_Decisions
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec rescore [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 126 4 126 39]
+  (self: MutBorrow.t t_Decisions) (_f: t_Formula) (return (x: ())) =
+  {[@stop_split] [@expl:rescore requires] ([@stop_split] [@expl:rescore requires #0] [%#sdecision'13] inv self.current (UInt64.t'int _f.num_vars))
+  /\ ([@stop_split] [@expl:rescore requires #1] [%#sdecision'14] Seq.length (view_Vec_Node_Global self.current.linked_list)
+  < UInt64.t'int const_MAX)}
+  (! bb0
+  [ bb0 = s0
+    [ s0 = [ &old_self <- [%#sdecision] self ] s1
+    | s1 = len_Node [%#sdecision'0] {self.current.linked_list} (fun (_x: UInt64.t) -> [ &curr_score <- _x ] s2)
+    | s2 = [ &curr <- self.current.start ] s3
+    | s3 = [ &_old <- self.final ] s4
+    | s4 = [ &_old'0 <- self.current.timestamp ] s5
+    | s5 = [ &_old'1 <- self.current.start ] s6
+    | s6 = [ &_old'2 <- self.current.search ] s7
+    | s7 = bb3 ]
+  | bb3 = bb3
+    [ bb3 = {[@expl:inferred invariant: unchanged value] _old'2 = self.current.search}
+      {[@expl:inferred invariant: unchanged value] _old'1 = self.current.start}
+      {[@expl:inferred invariant: unchanged value] _old'0 = self.current.timestamp}
+      {[@expl:inferred invariant: unchanged value] _old = self.final}
+      {[@expl:loop invariant #0] [%#sdecision'4] curr = const_MAX
+      \/ UInt64.t'int curr < Seq.length (view_Vec_Node_Global self.current.linked_list)}
+      {[@expl:loop invariant #1] [%#sdecision'3] forall j: int. 0 <= j
+          /\ j < Seq.length (view_Vec_Node_Global self.current.linked_list)
+        -> (Seq.get (view_Vec_Node_Global self.current.linked_list) j).next
+          = (Seq.get (view_Vec_Node_Global old_self.current.linked_list) j).next
+        /\ (Seq.get (view_Vec_Node_Global self.current.linked_list) j).prev
+        = (Seq.get (view_Vec_Node_Global old_self.current.linked_list) j).prev}
+      {[@expl:loop invariant #2] [%#sdecision'2] inv self.current (UInt64.t'int _f.num_vars)}
+      (! s0)
+      [ s0 = [ &_34 <- curr <> ([%#sdecision'1] const_INVALID) ] s1
+      | s1 = any [ br0 -> {_34 = false} (! bb11) | br1 -> {_34} (! bb5) ] ]
+      [ bb5 = s0
+        [ s0 = MutBorrow.borrow_mut <t_Vec_Node_Global> {self.current.linked_list}
+            (fun (_bor: MutBorrow.t t_Vec_Node_Global) ->
+              [ &_38 <- _bor ] [ &self <- { self with current = { self.current with linked_list = _bor.final } } ] s1)
+        | s1 = index_mut_Vec_Node_Global [%#sdecision'5] {_38} {curr}
+            (fun (_x: MutBorrow.t t_Node) -> [ &_37 <- _x ] s2)
+        | s2 = [ &_37 <- { _37 with current = { _37.current with ts = curr_score } } ] s3
+        | s3 = -{resolve_refmut_Node _37}- s4
+        | s4 = [ &_41 <- UInt64.gt curr_score ([%#sdecision'6] (0: UInt64.t)) ] s5
+        | s5 = any [ br0 -> {_41 = false} (! bb11) | br1 -> {_41} (! bb7) ] ]
+      | bb7 = s0
+        [ s0 = UInt64.sub [%#sdecision'8] {curr_score} {[%#sdecision'7] (1: UInt64.t)}
+            (fun (_x: UInt64.t) -> [ &curr_score <- _x ] s1)
+        | s1 = index_Vec_Node_Global [%#sdecision'9] {self.current.linked_list} {curr}
+            (fun (_x: t_Node) -> [ &_45 <- _x ] s2)
+        | s2 = [ &curr <- _45.next ] s3
+        | s3 = bb3 ] ] ]
+  | bb11 = s0
+    [ s0 = len_Node [%#sdecision'10] {self.current.linked_list} (fun (_x: UInt64.t) -> [ &_49 <- _x ] s1)
+    | s1 = UInt64.add [%#sdecision'12] {_49} {[%#sdecision'11] (1: UInt64.t)}
+        (fun (_x: UInt64.t) -> [ &self <- { self with current = { self.current with timestamp = _x } } ] s2)
+    | s2 = -{resolve_refmut_Decisions self}- s3
+    | s3 = return {_ret} ] ]
+  [ & _ret: () = Any.any_l ()
+  | & self: MutBorrow.t t_Decisions = self
+  | & _f: t_Formula = _f
+  | & old_self: MutBorrow.t t_Decisions = Any.any_l ()
+  | & curr_score: UInt64.t = Any.any_l ()
+  | & curr: UInt64.t = Any.any_l ()
+  | & _34: bool = Any.any_l ()
+  | & _37: MutBorrow.t t_Node = Any.any_l ()
+  | & _38: MutBorrow.t t_Vec_Node_Global = Any.any_l ()
+  | & _41: bool = Any.any_l ()
+  | & _45: t_Node = Any.any_l ()
+  | & _49: UInt64.t = Any.any_l ()
+  | & _old: t_Decisions = Any.any_l ()
+  | & _old'0: UInt64.t = Any.any_l ()
+  | & _old'1: UInt64.t = Any.any_l ()
+  | & _old'2: UInt64.t = Any.any_l () ])
+  [ return (result: ()) ->
+  {[@stop_split] [@expl:rescore ensures] ([@stop_split] [@expl:rescore ensures #0] [%#sdecision'13] inv self.final (UInt64.t'int _f.num_vars))
+    /\ ([@stop_split] [@expl:rescore ensures #1] [%#sdecision'15] UInt64.t'int self.final.timestamp
+      = Seq.length (view_Vec_Node_Global self.current.linked_list) + 1)
+    /\ ([@stop_split] [@expl:rescore ensures #2] [%#sdecision'16] Seq.length (view_Vec_Node_Global self.final.linked_list)
+    = Seq.length (view_Vec_Node_Global self.current.linked_list))}
+    (! return {result}) ]

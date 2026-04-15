@@ -1,0 +1,84 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 116 4 116 68 *)
+
+(* lit::Lit *)
+
+let%span sassignments = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/assignments.rs" 19 15 19 32
+let%span sassignments'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/assignments.rs" 20 14 20 35
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span slogic_assignments = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 18 8 18 21
+let%span slit = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 117 48 117 53
+let%span slit'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 117 57 117 58
+let%span slit'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 117 61 117 65
+let%span slit'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 117 75 117 80
+let%span slit'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 113 15 113 40
+let%span slit'4 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 114 14 114 42
+let%span slit'5 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 115 14 115 70
+let%span slogic_lit = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 19 20 19 29
+let%span slogic_lit'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 24 20 24 33
+
+use creusot.int.UInt64
+use creusot.int.UInt8
+use seq.Seq
+use creusot.prelude.Any
+use int.Int
+
+type t_Vec_u8_Global
+
+type t_Assignments = { f0: t_Vec_u8_Global }
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_u8_Global (self: t_Vec_u8_Global) : Seq.seq UInt8.t
+
+axiom view_Vec_u8_Global_spec: forall self: t_Vec_u8_Global. [%#svec] Seq.length (view_Vec_u8_Global self)
+    <= UInt64.t'int const_MAX
+
+function view_Assignments [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 17 4 17 33] (self: t_Assignments) : Seq.seq UInt8.t
+ = [%#slogic_assignments] view_Vec_u8_Global self.f0
+
+let rec index_Assignments (self: t_Assignments) (ix: UInt64.t) (return (x: UInt8.t)) =
+  {[@stop_split] [@expl:index requires] [%#sassignments] UInt64.t'int ix < Seq.length (view_Assignments self)}
+  any
+  [ return (result: UInt8.t) ->
+  {[@stop_split] [@expl:index ensures] [%#sassignments'0] Seq.get (view_Assignments self) (UInt64.t'int ix) = result}
+    (! return {result}) ]
+
+type t_Lit = { idx: UInt64.t; polarity: bool }
+
+function index [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 18 4 18 35] [@inline:trivial] (self: t_Lit) : int
+ = [%#slogic_lit] UInt64.t'int self.idx
+
+meta "rewrite_def" function index
+
+predicate is_positive [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 23 4 23 42] [@inline:trivial] (self: t_Lit) =
+  [%#slogic_lit'0] self.polarity
+
+meta "rewrite_def" predicate is_positive
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec phase_saved [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 116 4 116 68] (idx'0: UInt64.t)
+  (assignments: t_Assignments) (return (x: t_Lit)) =
+  {[@stop_split] [@expl:phase_saved requires] [%#slit'3] UInt64.t'int idx'0 < Seq.length (view_Assignments assignments)}
+  (! bb0
+  [ bb0 = s0
+    [ s0 = index_Assignments [%#slit] {assignments} {idx'0} (fun (_x: UInt8.t) -> [ &_15 <- _x ] s1)
+    | s1 = [ &_13 <- _15 = ([%#slit'0] (1: UInt8.t)) ] s2
+    | s2 = any [ br0 -> {_13 = false} (! bb3) | br1 -> {_13} (! bb2) ] ]
+  | bb2 = s0 [ s0 = [ &_12 <- [%#slit'1] true ] s1 | s1 = bb4 ]
+  | bb3 = s0 [ s0 = [ &_12 <- [%#slit'2] false ] s1 | s1 = bb4 ]
+  | bb4 = s0 [ s0 = [ &_ret <- { idx = idx'0; polarity = _12 } ] s1 | s1 = return {_ret} ] ]
+  [ & _ret: t_Lit = Any.any_l ()
+  | & idx'0: UInt64.t = idx'0
+  | & assignments: t_Assignments = assignments
+  | & _12: bool = Any.any_l ()
+  | & _13: bool = Any.any_l ()
+  | & _15: UInt8.t = Any.any_l () ])
+  [ return (result: t_Lit) ->
+  {[@stop_split] [@expl:phase_saved ensures] ([@stop_split] [@expl:phase_saved ensures #0] [%#slit'4] index result
+      = UInt64.t'int idx'0)
+    /\ ([@stop_split] [@expl:phase_saved ensures #1] [%#slit'5] is_positive result
+    = (UInt8.t'int (Seq.get (view_Assignments assignments) (UInt64.t'int idx'0)) = 1))}
+    (! return {result}) ]

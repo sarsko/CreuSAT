@@ -1,0 +1,167 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 151 4 151 43 *)
+
+(* Clause *)
+
+let%span slib = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 152 27 152 28
+let%span slib'0 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 153 25 153 37
+let%span slib'1 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 154 18 154 34
+let%span slib'2 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 156 20 156 37
+let%span slib'3 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 155 20 155 75
+let%span slib'4 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 158 25 158 28
+let%span slib'5 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 158 18 158 33
+let%span slib'6 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 158 43 158 46
+let%span slib'7 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 161 17 161 18
+let%span slib'8 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 161 12 161 18
+let%span slib'9 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 159 23 159 27
+let%span slib'10 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 163 8 163 13
+let%span slib'11 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 149 15 149 43
+let%span slib'12 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 150 14 150 36
+let%span slib'13 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 104 12 104 39
+let%span slib'14 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 87 12 88 40
+let%span slib'15 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 29 20 29 27
+let%span slib'16 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 141 12 142 31
+let%span slib'17 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 46 20 46 27
+let%span slib'18 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 97 12 97 25
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 114 18 114 40
+let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 195 19 195 38
+let%span svec'2 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 196 18 196 46
+let%span swell_founded = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/logic/well_founded.rs" 43 8 43 33
+let%span sslice = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 148 20 148 37
+let%span sslice'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 153 20 153 37
+
+use creusot.int.UInt64
+use seq.Seq
+use creusot.prelude.Any
+use int.Int
+
+type t_Vec_Lit_Global
+
+type t_Clause = { f0: t_Vec_Lit_Global }
+
+type t_Lit = { var': UInt64.t; value: bool }
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_Lit_Global (self: t_Vec_Lit_Global) : Seq.seq t_Lit
+
+axiom view_Vec_Lit_Global_spec: forall self: t_Vec_Lit_Global. [%#svec'0] Seq.length (view_Vec_Lit_Global self)
+    <= UInt64.t'int const_MAX
+
+let rec len_Lit (self_: t_Vec_Lit_Global) (return (x: UInt64.t)) = any
+  [ return (result: UInt64.t) -> {[@stop_split] [@expl:len ensures] [%#svec] UInt64.t'int result
+    = Seq.length (view_Vec_Lit_Global self_)}
+    (! return {result}) ]
+
+predicate well_founded_relation_Int [@inline:trivial] (self: int) (other: int) =
+  [%#swell_founded] self >= 0 /\ self > other
+
+meta "rewrite_def" predicate well_founded_relation_Int
+
+type t_Vec_bool_Global
+
+type t_Assignments = { f0'0: t_Vec_bool_Global }
+
+function view_Vec_bool_Global (self: t_Vec_bool_Global) : Seq.seq bool
+
+axiom view_Vec_bool_Global_spec: forall self: t_Vec_bool_Global. [%#svec'0] Seq.length (view_Vec_bool_Global self)
+    <= UInt64.t'int const_MAX
+
+function view_Assignments [#"/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 28 4 28 33] (self: t_Assignments) : Seq.seq bool
+ = [%#slib'15] view_Vec_bool_Global self.f0'0
+
+predicate sat [#"/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 102 4 102 44] (self: t_Lit) (a: t_Assignments) =
+  [%#slib'13] Seq.get (view_Assignments a) (UInt64.t'int self.var') = self.value
+
+predicate in_bounds_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq t_Lit) =
+  [%#sslice] UInt64.t'int self < Seq.length seq
+
+meta "rewrite_def" predicate in_bounds_usize
+
+predicate has_value_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq t_Lit) (out: t_Lit) =
+  [%#sslice'0] Seq.get seq (UInt64.t'int self) = out
+
+meta "rewrite_def" predicate has_value_usize
+
+let rec index_Vec_Lit_Global (self_: t_Vec_Lit_Global) (ix: UInt64.t) (return (x: t_Lit)) =
+  {[@stop_split] [@expl:index requires] [%#svec'1] in_bounds_usize ix (view_Vec_Lit_Global self_)}
+  any
+  [ return (result: t_Lit) ->
+  {[@stop_split] [@expl:index ensures] [%#svec'2] has_value_usize ix (view_Vec_Lit_Global self_) result}
+    (! return {result}) ]
+
+predicate in_bounds_usize'0 [@inline:trivial] (self: UInt64.t) (seq: Seq.seq bool) =
+  [%#sslice] UInt64.t'int self < Seq.length seq
+
+meta "rewrite_def" predicate in_bounds_usize'0
+
+predicate has_value_usize'0 [@inline:trivial] (self: UInt64.t) (seq: Seq.seq bool) (out: bool) =
+  [%#sslice'0] Seq.get seq (UInt64.t'int self) = out
+
+meta "rewrite_def" predicate has_value_usize'0
+
+let rec index_Vec_bool_Global (self_: t_Vec_bool_Global) (ix: UInt64.t) (return (x: bool)) =
+  {[@stop_split] [@expl:index requires] [%#svec'1] in_bounds_usize'0 ix (view_Vec_bool_Global self_)}
+  any
+  [ return (result: bool) ->
+  {[@stop_split] [@expl:index ensures] [%#svec'2] has_value_usize'0 ix (view_Vec_bool_Global self_) result}
+    (! return {result}) ]
+
+function view_Clause [#"/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 45 4 45 33] (self: t_Clause) : Seq.seq t_Lit
+ = [%#slib'17] view_Vec_Lit_Global self.f0
+
+predicate var_in_range [#"/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 95 4 95 41] (self: t_Lit) (n: int) =
+  [%#slib'18] UInt64.t'int self.var' < n
+
+predicate vars_in_range [#"/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 85 4 85 42] (self: t_Clause) (n: int) =
+  [%#slib'14] forall i: int. 0 <= i /\ i < Seq.length (view_Clause self)
+    -> var_in_range (Seq.get (view_Clause self) i) n
+
+predicate sat'0 [#"/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 139 4 139 44] (self: t_Clause) (a: t_Assignments) =
+  [%#slib'16] exists i: int. 0 <= i /\ i < Seq.length (view_Clause self) /\ sat (Seq.get (view_Clause self) i) a
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec eval [#"/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 151 4 151 43] (self: t_Clause) (a: t_Assignments)
+  (return (x: bool)) =
+  {[@stop_split] [@expl:eval requires] [%#slib'11] vars_in_range self (Seq.length (view_Assignments a))}
+  (! bb0
+  [ bb0 = s0
+    [ s0 = [ &i <- [%#slib] (0: UInt64.t) ] s1
+    | s1 = len_Lit [%#slib'0] {self.f0} (fun (_x: UInt64.t) -> [ &clause_len <- _x ] s2)
+    | s2 = bb2 ]
+  | bb2 = bb2invariant
+    [ bb2 = {[@expl:loop variant] well_founded_relation_Int variant_old_bb2 ([%#slib'1] UInt64.t'int clause_len
+      - UInt64.t'int i)}
+      bb2invariant
+    | bb2invariant = {[@expl:loop invariant #0] [%#slib'3] forall j: int. 0 <= j /\ j < UInt64.t'int i
+        -> not sat (Seq.get (view_Vec_Lit_Global self.f0) j) a}
+      {[@expl:loop invariant #1] [%#slib'2] UInt64.t'int i <= UInt64.t'int clause_len}
+      (! [ &variant_old_bb2 <- [%#slib'1] UInt64.t'int clause_len - UInt64.t'int i ] s0)
+      [ s0 = [ &_25 <- UInt64.lt i clause_len ] s1 | s1 = any [ br0 -> {_25 = false} (! bb10) | br1 -> {_25} (! bb4) ] ]
+      [ bb4 = s0
+        [ s0 = index_Vec_Lit_Global [%#slib'4] {self.f0} {i} (fun (_x: t_Lit) -> [ &_34 <- _x ] s1)
+        | s1 = index_Vec_bool_Global [%#slib'5] {a.f0'0} {_34.var'} (fun (_x: bool) -> [ &_31 <- _x ] s2)
+        | s2 = index_Vec_Lit_Global [%#slib'6] {self.f0} {i} (fun (_x: t_Lit) -> [ &_38 <- _x ] s3)
+        | s3 = [ &_29 <- _31 = _38.value ] s4
+        | s4 = any [ br0 -> {_29 = false} (! bb9) | br1 -> {_29} (! bb8) ] ]
+      | bb9 = s0
+        [ s0 = UInt64.add [%#slib'8] {i} {[%#slib'7] (1: UInt64.t)} (fun (_x: UInt64.t) -> [ &i <- _x ] s1)
+        | s1 = bb2 ] ] ]
+  | bb8 = s0 [ s0 = [ &_ret <- [%#slib'9] true ] s1 | s1 = return {_ret} ]
+  | bb10 = s0 [ s0 = [ &_ret <- [%#slib'10] false ] s1 | s1 = return {_ret} ] ]
+  [ & _ret: bool = Any.any_l ()
+  | & self: t_Clause = self
+  | & a: t_Assignments = a
+  | & i: UInt64.t = Any.any_l ()
+  | & clause_len: UInt64.t = Any.any_l ()
+  | & _25: bool = Any.any_l ()
+  | & _29: bool = Any.any_l ()
+  | & _31: bool = Any.any_l ()
+  | & _34: t_Lit = Any.any_l ()
+  | & _38: t_Lit = Any.any_l ()
+  | & variant_old_bb2: int = Any.any_l () ])
+  [ return (result: bool) -> {[@stop_split] [@expl:eval ensures] [%#slib'12] result = sat'0 self a}
+    (! return {result}) ]

@@ -1,0 +1,219 @@
+(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 153 4 153 60 *)
+
+(* decision::Decisions *)
+
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 185 19 185 38
+let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 186 18 186 46
+let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 187 18 187 49
+let%span svec'2 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 188 18 188 54
+let%span svec'3 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 189 18 189 47
+let%span svec'4 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span sslice = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 148 20 148 37
+let%span sslice'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 153 20 153 37
+let%span sslice'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 158 20 158 88
+let%span sdecision = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 157 46 157 54
+let%span sdecision'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 160 22 160 29
+let%span sdecision'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 163 29 163 39
+let%span sdecision'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 164 12 164 28
+let%span sdecision'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 166 30 166 31
+let%span sdecision'4 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 166 12 166 31
+let%span sdecision'5 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 168 22 168 48
+let%span sdecision'6 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 169 24 169 36
+let%span sdecision'7 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 171 19 171 26
+let%span sdecision'8 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 173 28 173 34
+let%span sdecision'9 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 175 23 175 30
+let%span sdecision'10 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 176 28 176 38
+let%span sdecision'11 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 150 15 150 41
+let%span sdecision'12 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 151 15 151 48
+let%span sdecision'13 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 152 4 152 46
+let%span sdecision'14 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 14 0 14 20
+let%span sdecision'15 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 122 4 122 46
+let%span sdecision'16 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 123 15 123 52
+let%span sdecision'17 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 124 14 124 63
+let%span sdecision'18 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 125 14 125 67
+let%span slogic_decision = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_decision.rs" 9 12 14 97
+
+use creusot.int.UInt64
+use creusot.prelude.MutBorrow
+use seq.Seq
+use creusot.prelude.Any
+use int.Int
+
+type t_Vec_Node_Global
+
+type t_Decisions = { linked_list: t_Vec_Node_Global; timestamp: UInt64.t; start: UInt64.t; search: UInt64.t }
+
+predicate resolve_refmut_Decisions [@inline:trivial] (_1: MutBorrow.t t_Decisions) = _1.final = _1.current
+
+meta "rewrite_def" predicate resolve_refmut_Decisions
+
+type t_Node = { next: UInt64.t; prev: UInt64.t; ts: UInt64.t }
+
+predicate in_bounds_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq t_Node) =
+  [%#sslice] UInt64.t'int self < Seq.length seq
+
+meta "rewrite_def" predicate in_bounds_usize
+
+constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+
+function view_Vec_Node_Global (self: t_Vec_Node_Global) : Seq.seq t_Node
+
+axiom view_Vec_Node_Global_spec: forall self: t_Vec_Node_Global. [%#svec'4] Seq.length (view_Vec_Node_Global self)
+    <= UInt64.t'int const_MAX
+
+predicate has_value_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq t_Node) (out: t_Node) =
+  [%#sslice'0] Seq.get seq (UInt64.t'int self) = out
+
+meta "rewrite_def" predicate has_value_usize
+
+predicate resolve_elswhere_usize [@inline:trivial] (self: UInt64.t) (old': Seq.seq t_Node) (fin: Seq.seq t_Node) =
+  [%#sslice'1] forall i: int. 0 <= i /\ i <> UInt64.t'int self /\ i < Seq.length old' -> Seq.get old' i = Seq.get fin i
+
+meta "rewrite_def" predicate resolve_elswhere_usize
+
+let rec index_mut_Vec_Node_Global (self_: MutBorrow.t t_Vec_Node_Global) (ix: UInt64.t)
+  (return (x: MutBorrow.t t_Node)) =
+  {[@stop_split] [@expl:index_mut requires] [%#svec] in_bounds_usize ix (view_Vec_Node_Global self_.current)}
+  any
+  [ return (result: MutBorrow.t t_Node) ->
+  {[@stop_split] [@expl:index_mut_Vec_Node_Global ensures] ([@stop_split] [@expl:index_mut ensures #0] [%#svec'0] has_value_usize ix (view_Vec_Node_Global self_.current) result.current)
+    /\ ([@stop_split] [@expl:index_mut ensures #1] [%#svec'1] has_value_usize ix (view_Vec_Node_Global self_.final) result.final)
+    /\ ([@stop_split] [@expl:index_mut ensures #2] [%#svec'2] resolve_elswhere_usize ix (view_Vec_Node_Global self_.current) (view_Vec_Node_Global self_.final))
+    /\ ([@stop_split] [@expl:index_mut ensures #3] [%#svec'3] Seq.length (view_Vec_Node_Global self_.final)
+    = Seq.length (view_Vec_Node_Global self_.current))}
+    (! return {result}) ]
+
+constant const_INVALID: UInt64.t = [%#sdecision'14] (18446744073709551615: UInt64.t)
+
+predicate resolve_refmut_Node [@inline:trivial] (_1: MutBorrow.t t_Node) = _1.final = _1.current
+
+meta "rewrite_def" predicate resolve_refmut_Node
+
+type t_Vec_Clause_Global
+
+type t_Formula = { clauses: t_Vec_Clause_Global; num_vars: UInt64.t }
+
+predicate inv [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_decision.rs" 7 4 7 36] (self: t_Decisions) (n: int) =
+  [%#slogic_decision] Seq.length (view_Vec_Node_Global self.linked_list) = n
+  /\ (UInt64.t'int self.search < Seq.length (view_Vec_Node_Global self.linked_list)
+    \/ UInt64.t'int self.search = UInt64.t'int const_MAX)
+  /\ UInt64.t'int self.start < Seq.length (view_Vec_Node_Global self.linked_list)
+  /\ (forall i: int. 0 <= i /\ i < Seq.length (view_Vec_Node_Global self.linked_list)
+    -> (UInt64.t'int (Seq.get (view_Vec_Node_Global self.linked_list) i).next = UInt64.t'int const_MAX
+      \/ UInt64.t'int (Seq.get (view_Vec_Node_Global self.linked_list) i).next < n)
+    /\ (UInt64.t'int (Seq.get (view_Vec_Node_Global self.linked_list) i).prev = UInt64.t'int const_MAX
+    \/ UInt64.t'int (Seq.get (view_Vec_Node_Global self.linked_list) i).prev < n))
+
+let rec rescore (self: MutBorrow.t t_Decisions) (_f: t_Formula) (return (x: ())) =
+  {[@stop_split] [@expl:rescore requires] ([@stop_split] [@expl:rescore requires #0] [%#sdecision'15] inv self.current (UInt64.t'int _f.num_vars))
+  /\ ([@stop_split] [@expl:rescore requires #1] [%#sdecision'16] Seq.length (view_Vec_Node_Global self.current.linked_list)
+  < UInt64.t'int const_MAX)}
+  any
+  [ return (result: ()) ->
+  {[@stop_split] [@expl:rescore ensures] ([@stop_split] [@expl:rescore ensures #0] [%#sdecision'15] inv self.final (UInt64.t'int _f.num_vars))
+    /\ ([@stop_split] [@expl:rescore ensures #1] [%#sdecision'17] UInt64.t'int self.final.timestamp
+      = Seq.length (view_Vec_Node_Global self.current.linked_list) + 1)
+    /\ ([@stop_split] [@expl:rescore ensures #2] [%#sdecision'18] Seq.length (view_Vec_Node_Global self.final.linked_list)
+    = Seq.length (view_Vec_Node_Global self.current.linked_list))}
+    (! return {result}) ]
+
+meta "compute_max_steps" 1000000
+
+meta "select_lsinst" "all"
+
+let rec move_to_front [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/decision.rs" 153 4 153 60]
+  (self: MutBorrow.t t_Decisions) (tomove: UInt64.t) (_f: t_Formula) (return (x: ())) =
+  {[@stop_split] [@expl:move_to_front requires] ([@stop_split] [@expl:move_to_front requires #0] [%#sdecision'11] UInt64.t'int _f.num_vars
+    < UInt64.t'int const_MAX)
+  /\ ([@stop_split] [@expl:move_to_front requires #1] [%#sdecision'12] UInt64.t'int tomove
+    < Seq.length (view_Vec_Node_Global self.current.linked_list))
+  /\ ([@stop_split] [@expl:move_to_front requires #2] [%#sdecision'13] inv self.current (UInt64.t'int _f.num_vars))}
+  (! bb0
+  [ bb0 = s0
+    [ s0 = [ &_16 <- tomove = self.current.start ] s1
+    | s1 = any [ br0 -> {_16 = false} (! bb2) | br1 -> {_16} (! bb1) ] ]
+  | bb1 = s0 [ s0 = -{resolve_refmut_Decisions self}- s1 | s1 = return {_ret} ]
+  | bb2 = s0
+    [ s0 = MutBorrow.borrow_mut <t_Vec_Node_Global> {self.current.linked_list}
+        (fun (_bor: MutBorrow.t t_Vec_Node_Global) ->
+          [ &_22 <- _bor ] [ &self <- { self with current = { self.current with linked_list = _bor.final } } ] s1)
+    | s1 = index_mut_Vec_Node_Global [%#sdecision] {_22} {tomove} (fun (_x: MutBorrow.t t_Node) -> [ &_21 <- _x ] s2)
+    | s2 = MutBorrow.borrow_final <t_Node> {_21.current} {MutBorrow.get_id _21}
+        (fun (_bor: MutBorrow.t t_Node) -> [ &moving <- _bor ] [ &_21 <- { _21 with current = _bor.final } ] s3)
+    | s3 = [ &prev'0 <- moving.current.prev ] s4
+    | s4 = [ &old_next <- moving.current.next ] s5
+    | s5 = [ &moving <- { moving with current = { moving.current with prev = ([%#sdecision'0] const_INVALID) } } ] s6
+    | s6 = [ &moving <- { moving with current = { moving.current with next = self.current.start } } ] s7
+    | s7 = [ &moving <- { moving with current = { moving.current with ts = self.current.timestamp } } ] s8
+    | s8 = -{resolve_refmut_Node moving}- s9
+    | s9 = -{resolve_refmut_Node _21}- s10
+    | s10 = [ &_29 <- self.current.timestamp = ([%#sdecision'1] const_MAX) ] s11
+    | s11 = any [ br0 -> {_29 = false} (! bb6) | br1 -> {_29} (! bb4) ] ]
+  | bb4 = s0
+    [ s0 = MutBorrow.borrow_mut <t_Decisions> {self.current}
+        (fun (_bor: MutBorrow.t t_Decisions) -> [ &_32 <- _bor ] [ &self <- { self with current = _bor.final } ] s1)
+    | s1 = rescore [%#sdecision'2] {_32} {_f} (fun (_x: ()) -> [ &_31 <- _x ] s2)
+    | s2 = bb7 ]
+  | bb6 = s0
+    [ s0 = UInt64.add [%#sdecision'4] {self.current.timestamp} {[%#sdecision'3] (1: UInt64.t)}
+        (fun (_x: UInt64.t) -> [ &self <- { self with current = { self.current with timestamp = _x } } ] s1)
+    | s1 = bb7 ]
+  | bb7 = s0
+    [ s0 = {[@expl:assertion] [%#sdecision'5] UInt64.t'int self.current.start < UInt64.t'int _f.num_vars} s1
+    | s1 = MutBorrow.borrow_mut <t_Vec_Node_Global> {self.current.linked_list}
+        (fun (_bor: MutBorrow.t t_Vec_Node_Global) ->
+          [ &_40 <- _bor ] [ &self <- { self with current = { self.current with linked_list = _bor.final } } ] s2)
+    | s2 = index_mut_Vec_Node_Global [%#sdecision'6] {_40} {self.current.start}
+        (fun (_x: MutBorrow.t t_Node) -> [ &_39 <- _x ] s3)
+    | s3 = [ &_39 <- { _39 with current = { _39.current with prev = tomove } } ] s4
+    | s4 = -{resolve_refmut_Node _39}- s5
+    | s5 = [ &self <- { self with current = { self.current with start = tomove } } ] s6
+    | s6 = [ &_44 <- prev'0 <> ([%#sdecision'7] const_INVALID) ] s7
+    | s7 = any [ br0 -> {_44 = false} (! bb12) | br1 -> {_44} (! bb9) ] ]
+  | bb9 = s0
+    [ s0 = MutBorrow.borrow_mut <t_Vec_Node_Global> {self.current.linked_list}
+        (fun (_bor: MutBorrow.t t_Vec_Node_Global) ->
+          [ &_48 <- _bor ] [ &self <- { self with current = { self.current with linked_list = _bor.final } } ] s1)
+    | s1 = index_mut_Vec_Node_Global [%#sdecision'8] {_48} {prev'0} (fun (_x: MutBorrow.t t_Node) -> [ &_47 <- _x ] s2)
+    | s2 = [ &_47 <- { _47 with current = { _47.current with next = old_next } } ] s3
+    | s3 = -{resolve_refmut_Node _47}- s4
+    | s4 = bb12 ]
+  | bb12 = s0
+    [ s0 = [ &_50 <- old_next <> ([%#sdecision'9] const_INVALID) ] s1
+    | s1 = any [ br0 -> {_50 = false} (! bb15) | br1 -> {_50} (! bb13) ] ]
+  | bb13 = s0
+    [ s0 = MutBorrow.borrow_final <t_Vec_Node_Global> {self.current.linked_list}
+        {MutBorrow.inherit_id (MutBorrow.get_id self) 0}
+        (fun (_bor: MutBorrow.t t_Vec_Node_Global) ->
+          [ &_54 <- _bor ] [ &self <- { self with current = { self.current with linked_list = _bor.final } } ] s1)
+    | s1 = index_mut_Vec_Node_Global [%#sdecision'10] {_54} {old_next}
+        (fun (_x: MutBorrow.t t_Node) -> [ &_53 <- _x ] s2)
+    | s2 = [ &_53 <- { _53 with current = { _53.current with prev = prev'0 } } ] s3
+    | s3 = -{resolve_refmut_Node _53}- s4
+    | s4 = -{resolve_refmut_Decisions self}- s5
+    | s5 = return {_ret} ]
+  | bb15 = s0 [ s0 = -{resolve_refmut_Decisions self}- s1 | s1 = return {_ret} ] ]
+  [ & _ret: () = Any.any_l ()
+  | & self: MutBorrow.t t_Decisions = self
+  | & tomove: UInt64.t = tomove
+  | & _f: t_Formula = _f
+  | & _16: bool = Any.any_l ()
+  | & moving: MutBorrow.t t_Node = Any.any_l ()
+  | & _21: MutBorrow.t t_Node = Any.any_l ()
+  | & _22: MutBorrow.t t_Vec_Node_Global = Any.any_l ()
+  | & prev'0: UInt64.t = Any.any_l ()
+  | & old_next: UInt64.t = Any.any_l ()
+  | & _29: bool = Any.any_l ()
+  | & _31: () = Any.any_l ()
+  | & _32: MutBorrow.t t_Decisions = Any.any_l ()
+  | & _39: MutBorrow.t t_Node = Any.any_l ()
+  | & _40: MutBorrow.t t_Vec_Node_Global = Any.any_l ()
+  | & _44: bool = Any.any_l ()
+  | & _47: MutBorrow.t t_Node = Any.any_l ()
+  | & _48: MutBorrow.t t_Vec_Node_Global = Any.any_l ()
+  | & _50: bool = Any.any_l ()
+  | & _53: MutBorrow.t t_Node = Any.any_l ()
+  | & _54: MutBorrow.t t_Vec_Node_Global = Any.any_l () ])
+  [ return (result: ()) ->
+  {[@stop_split] [@expl:move_to_front ensures] [%#sdecision'13] inv self.final (UInt64.t'int _f.num_vars)}
+    (! return {result}) ]
