@@ -1,21 +1,26 @@
-(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 115 0 115 39 *)
+(* #"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/util.rs" 115 0 115 39 *)
 
-let%span sutil = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 114 10 114 36
-let%span sutil'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 106 4 110 5
+let%span sord = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/logic/ord.rs" 34 8 34 21
+let%span sutil = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/util.rs" 114 10 114 36
+let%span sutil'0 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/util.rs" 106 4 110 5
 
 use creusot.int.UInt64
 use creusot.prelude.Any
 use int.Int
 
-function max_log [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 105 0 105 37] (a: int) (b: int) : int =
-  [%#sutil'0] if a >= b then a else b
+predicate ge_log_Int [@inline:trivial] (self: int) (other: int) = [%#sord] other <= self
+
+meta "rewrite_def" predicate ge_log_Int
+
+function max_log [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/util.rs" 105 0 105 37] (a: int) (b: int) : int
+ = [%#sutil'0] if ge_log_Int a b then a else b
 
 meta "compute_max_steps" 1000000
 
 meta "select_lsinst" "all"
 
-let rec max [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/util.rs" 115 0 115 39] (a: UInt64.t) (b: UInt64.t)
-  (return (x: UInt64.t)) = (! bb0
+let max [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/util.rs" 115 0 115 39] (a: UInt64.t)
+  (b: UInt64.t) (return (x: UInt64.t)) = (! bb0
   [ bb0 = s0 [ s0 = [ &_6 <- UInt64.ge a b ] s1 | s1 = any [ br0 -> {_6 = false} (! bb2) | br1 -> {_6} (! bb1) ] ]
   | bb1 = s0 [ s0 = [ &_ret <- a ] s1 | s1 = return {_ret} ]
   | bb2 = s0 [ s0 = [ &_ret <- b ] s1 | s1 = return {_ret} ] ]

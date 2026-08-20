@@ -1,24 +1,16 @@
-(* #"/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 36 4 36 27 *)
+(* #"/Users/sarekhs/Programming/XXXX-current/CreuSAT/Friday/src/lib.rs" 36 4 36 27 *)
 
 (* <Assignments as std::clone::Clone> *)
 
-let%span slib = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 37 13 37 27
-let%span slib'0 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 35 14 35 30
-let%span slib'1 = "/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 29 20 29 27
-let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 241 18 241 46
-let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 242 18 243 60
-let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
-let%span sclone = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/clone.rs" 21 18 21 33
-let%span sops = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 160 14 160 114
-let%span sops'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 165 14 165 100
-let%span sops'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 170 14 170 61
-let%span sops'2 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 126 15 126 59
-let%span sops'3 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 127 14 127 38
-let%span sops'4 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 132 14 132 33
-let%span sops'5 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 137 15 137 31
-let%span sops'6 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 138 15 138 28
-let%span sops'7 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 139 14 139 30
-let%span sops'8 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 144 14 145 104
+let%span slib = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/Friday/src/lib.rs" 37 13 37 27
+let%span slib'0 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/Friday/src/lib.rs" 35 14 35 30
+let%span slib'1 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/Friday/src/lib.rs" 29 20 29 27
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/vec.rs" 241 18 241 22
+let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/vec.rs" 242 18 243 60
+let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span sclone = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/clone.rs" 26 29 26 33
+let%span sclone'0 = "/rustc/11177f2235f0c842b00f82c558ad9480c0c3a895/library/core/src/clone.rs" 715 20 715 43
+let%span suint_macros = "/rustc/11177f2235f0c842b00f82c558ad9480c0c3a895/library/core/src/num/uint_macros.rs" 51 8 51 27
 
 use seq.Seq
 use creusot.int.UInt64
@@ -29,76 +21,23 @@ type t_Vec_bool_Global
 
 type t_Assignments = { f0: t_Vec_bool_Global }
 
-constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+constant const_MAX: UInt64.t = [%#suint_macros] (18446744073709551615: UInt64.t)
 
 function view_Vec_bool_Global (self: t_Vec_bool_Global) : Seq.seq bool
 
-axiom view_Vec_bool_Global_spec: forall self: t_Vec_bool_Global. [%#svec'1] Seq.length (view_Vec_bool_Global self)
+axiom view_Vec_bool_Global_spec:
+  forall self: t_Vec_bool_Global [view_Vec_bool_Global self]. [%#svec'1] Seq.length (view_Vec_bool_Global self)
     <= UInt64.t'int const_MAX
 
-predicate postcondition_once_clone [@inline:trivial] (self: ()) (args: bool) (result: bool) =
-  let self_ = args in [%#sclone] result = self_
-
-meta "rewrite_def" predicate postcondition_once_clone
-
-predicate resolve_clone [@inline:trivial] (_1: ()) = true
-
-meta "rewrite_def" predicate resolve_clone
-
-predicate postcondition_mut_clone [@inline:trivial] (self: ()) (args: bool) (result_state: ()) (result: bool) =
-  let self_ = args in [%#sclone] result = self_
-
-meta "rewrite_def" predicate postcondition_mut_clone
-
-function fn_mut_once_clone (self: ()) (args: bool) (res: bool) : ()
-
-axiom fn_mut_once_clone_spec: forall self: (), args: bool, res: bool. [%#sops'8] postcondition_once_clone self args res
-    = (exists res_state: (). postcondition_mut_clone self args res_state res /\ resolve_clone res_state)
-
-predicate hist_inv_clone [@inline:trivial] (self: ()) (result_state: ()) = true
-
-meta "rewrite_def" predicate hist_inv_clone
-
-function hist_inv_trans_clone (self: ()) (b: ()) (c: ()) : ()
-
-axiom hist_inv_trans_clone_spec: forall self: (), b: (), c: (). ([%#sops'5] hist_inv_clone self b)
-    -> ([%#sops'6] hist_inv_clone b c) -> ([%#sops'7] hist_inv_clone self c)
-
-function hist_inv_refl_clone (self: ()) : ()
-
-axiom hist_inv_refl_clone_spec: forall self: (). [%#sops'4] hist_inv_clone self self
-
-function postcondition_mut_hist_inv_clone (self: ()) (args: bool) (res_state: ()) (res: bool) : ()
-
-axiom postcondition_mut_hist_inv_clone_spec:
-  forall self: (), args: bool, res_state: (), res: bool. ([%#sops'2] postcondition_mut_clone self args res_state res)
-    -> ([%#sops'3] hist_inv_clone self res_state)
-
-function fn_hist_inv_clone (self: ()) (res_state: ()) : ()
-
-axiom fn_hist_inv_clone_spec: forall self: (), res_state: (). [%#sops'1] hist_inv_clone self res_state
-    = (self = res_state)
-
-predicate postcondition_clone [@inline:trivial] (self: ()) (args: bool) (result: bool) =
-  let self_ = args in [%#sclone] result = self_
+predicate postcondition_clone (self: ()) (args: bool) (result: bool) =
+  [%#sclone'0] let self_ = args in [%#sclone] result = self_
 
 meta "rewrite_def" predicate postcondition_clone
 
-function fn_once_clone (self: ()) (args: bool) (res: bool) : ()
-
-axiom fn_once_clone_spec: forall self: (), args: bool, res: bool. [%#sops'0] postcondition_once_clone self args res
-    = (postcondition_clone self args res /\ resolve_clone self)
-
-function fn_mut_clone (self: ()) (args: bool) (res_state: ()) (res: bool) : ()
-
-axiom fn_mut_clone_spec:
-  forall self: (), args: bool, res_state: (), res: bool. [%#sops] postcondition_mut_clone self args res_state res
-    = (postcondition_clone self args res /\ self = res_state)
-
-let rec clone_bool (self_: bool) (return (x: bool)) = any
+let clone_bool (self_: bool) (return (x: bool)) = any
   [ return (result: bool) -> {[@stop_split] [@expl:clone ensures] [%#sclone] result = self_} (! return {result}) ]
 
-let rec clone_Vec_bool_Global (self_: t_Vec_bool_Global) (return (x: t_Vec_bool_Global)) = any
+let clone_Vec_bool_Global (self_: t_Vec_bool_Global) (return (x: t_Vec_bool_Global)) = any
   [ return (result: t_Vec_bool_Global) ->
   {[@stop_split] [@expl:clone_Vec_bool_Global ensures] ([@stop_split] [@expl:clone ensures #0] [%#svec] Seq.length (view_Vec_bool_Global self_)
       = Seq.length (view_Vec_bool_Global result))
@@ -107,15 +46,15 @@ let rec clone_Vec_bool_Global (self_: t_Vec_bool_Global) (return (x: t_Vec_bool_
       -> postcondition_clone () (Seq.get (view_Vec_bool_Global self_) i) (Seq.get (view_Vec_bool_Global result) i))}
     (! return {result}) ]
 
-function view_Assignments [#"/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 28 4 28 33] (self: t_Assignments) : Seq.seq bool
+function view_Assignments [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/Friday/src/lib.rs" 28 4 28 33] (self: t_Assignments) : Seq.seq bool
  = [%#slib'1] view_Vec_bool_Global self.f0
 
 meta "compute_max_steps" 1000000
 
 meta "select_lsinst" "all"
 
-let rec clone_Assignments [#"/Users/sarekhs/Programming/CreuSAT/Friday/src/lib.rs" 36 4 36 27] (self: t_Assignments)
-  (return (x: t_Assignments)) = (! bb0
+let clone_Assignments [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/Friday/src/lib.rs" 36 4 36 27]
+  (self: t_Assignments) (return (x: t_Assignments)) = (! bb0
   [ bb0 = s0
     [ s0 = clone_Vec_bool_Global [%#slib] {self.f0} (fun (_x: t_Vec_bool_Global) -> [ &_4 <- _x ] s1)
     | s1 = [ &_ret <- { f0 = _4 } ] s2

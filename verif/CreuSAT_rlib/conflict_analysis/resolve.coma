@@ -1,182 +1,171 @@
-(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 52 0 55 1 *)
+(* #"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 52 0 55 1 *)
 
-let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 185 19 185 38
-let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 186 18 186 46
-let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 187 18 187 49
-let%span svec'2 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 188 18 188 54
-let%span svec'3 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 189 18 189 47
-let%span svec'4 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
-let%span svec'5 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 118 18 118 48
-let%span svec'6 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 195 19 195 38
-let%span svec'7 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 196 18 196 46
-let%span slogic_assignments = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 18 8 18 21
-let%span slogic_assignments'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 47 12 48 74
-let%span slogic_assignments'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 33 8 33 61
-let%span sslice = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 148 20 148 37
-let%span sslice'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 153 20 153 37
-let%span sslice'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 158 20 158 88
-let%span slit = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 38 14 38 43
-let%span slogic_lit = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 54 20 54 74
-let%span slogic_lit'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 19 20 19 29
-let%span slogic_lit'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 43 12 43 102
-let%span slogic_lit'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 83 12 86 13
-let%span slogic_lit'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 73 12 76 13
-let%span slogic_lit'4 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 10 8 11 37
-let%span slogic_lit'5 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 24 20 24 33
-let%span slogic_lit'6 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 67 20 67 42
-let%span slogic_lit'7 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 60 12 61 57
-let%span slogic_lit'8 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 97 20 97 38
-let%span slogic_formula = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 17 8 17 85
-let%span slogic_formula'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 67 14 67 41
-let%span slogic_formula'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 69 20 69 44
-let%span slogic_formula'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 24 8 25 69
-let%span slogic_formula'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 75 12 79 45
-let%span slogic_formula'4 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 40 8 40 111
-let%span slogic_formula'5 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 32 8 33 37
-let%span slogic_trail = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 51 12 60 112
-let%span slogic_trail'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 95 8 97 38
-let%span slogic_trail'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 83 8 88 17
-let%span slogic_trail'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 131 8 133 72
-let%span slogic_trail'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 151 8 155 17
-let%span slogic_trail'4 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 104 8 105 33
-let%span slogic_trail'5 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 162 8 168 17
-let%span slogic_trail'6 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 12 12 20 13
-let%span slogic_trail'7 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 117 8 119 75
-let%span slogic = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic.rs" 20 8 24 9
-let%span slogic_clause = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 206 12 207 56
-let%span slogic_clause'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 14 8 14 24
-let%span slogic_clause'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 160 20 160 40
-let%span slogic_clause'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 200 20 200 42
-let%span slogic_clause'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 109 12 114 32
-let%span slogic_clause'4 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 121 12 122 37
-let%span slogic_clause'5 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 99 12 102 77
-let%span slogic_clause'6 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 34 8 34 134
-let%span slogic_clause'7 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 153 12 154 39
-let%span slogic_clause'8 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 28 4 28 62
-let%span slogic_clause'9 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 21 8 22 23
-let%span slogic_clause'10 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 129 12 129 80
-let%span slogic_clause'11 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 41 8 42 92
-let%span slogic_clause'12 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 214 12 216 33
-let%span slogic_clause'13 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 166 12 167 37
-let%span sclause = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/clause.rs" 123 4 123 46
-let%span sclause'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/clause.rs" 124 15 124 30
-let%span sclause'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/clause.rs" 125 15 125 33
-let%span sclause'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/clause.rs" 126 14 127 75
-let%span sclause'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/clause.rs" 128 14 128 47
-let%span sclause'4 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/clause.rs" 129 14 129 40
-let%span sclause'5 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/clause.rs" 130 14 131 47
-let%span sclause'6 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/clause.rs" 91 14 91 36
-let%span sclause'7 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/clause.rs" 21 15 21 32
-let%span sclause'8 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/clause.rs" 22 14 22 35
-let%span sconflict_analysis = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 56 49 56 50
-let%span sconflict_analysis'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 57 55 57 59
-let%span sconflict_analysis'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 58 53 58 59
-let%span sconflict_analysis'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 59 59 59 66
-let%span sconflict_analysis'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 61 18 61 41
-let%span sconflict_analysis'4 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 63 4 63 35
-let%span sconflict_analysis'5 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 65 15 65 16
-let%span sconflict_analysis'6 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 65 4 65 16
-let%span sconflict_analysis'7 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 66 8 66 13
-let%span sconflict_analysis'8 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 66 16 66 21
-let%span sconflict_analysis'9 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 68 18 68 44
-let%span sconflict_analysis'10 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 69 18 69 41
-let%span sconflict_analysis'11 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 70 50 70 51
-let%span sconflict_analysis'12 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 71 18 71 44
-let%span sconflict_analysis'13 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 72 18 72 38
-let%span sconflict_analysis'14 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 73 18 74 47
-let%span sconflict_analysis'15 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 77 23 77 24
-let%span sconflict_analysis'16 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 90 14 90 21
-let%span sconflict_analysis'17 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 89 16 89 55
-let%span sconflict_analysis'18 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 88 16 88 43
-let%span sconflict_analysis'19 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 87 16 87 39
-let%span sconflict_analysis'20 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 86 16 86 35
-let%span sconflict_analysis'21 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 85 16 85 108
-let%span sconflict_analysis'22 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 83 16 84 47
-let%span sconflict_analysis'23 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 82 16 82 68
-let%span sconflict_analysis'24 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 81 16 81 63
-let%span sconflict_analysis'25 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 80 16 80 41
-let%span sconflict_analysis'26 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 79 16 79 42
-let%span sconflict_analysis'27 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 78 16 78 35
-let%span sconflict_analysis'28 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 91 54 91 55
-let%span sconflict_analysis'29 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 92 22 92 43
-let%span sconflict_analysis'30 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 94 29 94 32
-let%span sconflict_analysis'31 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 94 28 94 40
-let%span sconflict_analysis'32 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 94 12 94 48
-let%span sconflict_analysis'33 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 95 18 95 21
-let%span sconflict_analysis'34 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 95 17 95 29
-let%span sconflict_analysis'35 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 95 16 95 30
-let%span sconflict_analysis'36 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 95 33 95 37
-let%span sconflict_analysis'37 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 96 26 96 29
-let%span sconflict_analysis'38 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 96 25 96 37
-let%span sconflict_analysis'39 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 96 12 96 38
-let%span sconflict_analysis'40 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 97 25 97 28
-let%span sconflict_analysis'41 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 97 12 97 29
-let%span sconflict_analysis'42 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 98 35 98 38
-let%span sconflict_analysis'43 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 98 34 98 46
-let%span sconflict_analysis'44 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 98 33 98 47
-let%span sconflict_analysis'45 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 98 51 98 73
-let%span sconflict_analysis'46 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 99 27 99 28
-let%span sconflict_analysis'47 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 99 16 99 28
-let%span sconflict_analysis'48 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 101 26 101 57
-let%span sconflict_analysis'49 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 102 26 102 55
-let%span sconflict_analysis'50 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 103 26 103 43
-let%span sconflict_analysis'51 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 106 22 107 33
-let%span sconflict_analysis'52 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 108 13 108 14
-let%span sconflict_analysis'53 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 108 8 108 14
-let%span sconflict_analysis'54 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 110 18 110 63
-let%span sconflict_analysis'55 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 111 18 111 105
-let%span sconflict_analysis'56 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 29 11 29 19
-let%span sconflict_analysis'57 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 30 11 30 25
-let%span sconflict_analysis'58 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 31 11 31 30
-let%span sconflict_analysis'59 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 32 11 32 28
-let%span sconflict_analysis'60 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 33 11 35 31
-let%span sconflict_analysis'61 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 37 11 37 52
-let%span sconflict_analysis'62 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 39 11 39 90
-let%span sconflict_analysis'63 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 40 11 40 46
-let%span sconflict_analysis'64 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 41 11 41 45
-let%span sconflict_analysis'65 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 44 11 44 38
-let%span sconflict_analysis'66 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 46 11 46 50
-let%span sconflict_analysis'67 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 48 0 48 49
-let%span sconflict_analysis'68 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 49 0 49 46
-let%span sconflict_analysis'69 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 50 0 50 46
-let%span sconflict_analysis'70 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 51 0 51 39
-let%span sconflict_analysis'71 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 42 10 42 35
-let%span sconflict_analysis'72 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 45 10 45 40
-let%span sconflict_analysis'73 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 47 10 47 52
-let%span sconflict_analysis'74 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 20 11 20 47
-let%span sconflict_analysis'75 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 21 11 21 29
-let%span sconflict_analysis'76 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 22 11 22 48
-let%span sconflict_analysis'77 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 23 10 23 90
-let%span slogic_util = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 49 16 49 66
-let%span slogic_util'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 22 4 22 31
-let%span slogic_util'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 17 16 17 80
-let%span strail = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/trail.rs" 33 14 33 46
-let%span slogic_conflict_analysis = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 20 11 20 31
-let%span slogic_conflict_analysis'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 21 11 21 40
-let%span slogic_conflict_analysis'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 22 11 22 33
-let%span slogic_conflict_analysis'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 23 11 23 39
-let%span slogic_conflict_analysis'3 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 24 10 24 40
-let%span slogic_conflict_analysis'4 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 28 4 28 101
-let%span slogic_conflict_analysis'5 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 9 11 9 47
-let%span slogic_conflict_analysis'6 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 10 11 10 31
-let%span slogic_conflict_analysis'7 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 11 10 11 49
-let%span slogic_conflict_analysis'8 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 12 10 12 93
-let%span slogic_conflict_analysis'9 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 13 10 13 47
-let%span slogic_conflict_analysis'10 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 16 71 16 73
-let%span sord = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/logic/ord.rs" 162 41 162 102
-let%span sord'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/logic/ord.rs" 168 41 168 99
-let%span sord'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/logic/ord.rs" 174 41 174 99
-let%span sord'2 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/logic/ord.rs" 180 41 180 102
-let%span sord'3 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/logic/ord.rs" 186 41 186 83
-let%span sord'4 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/logic/ord.rs" 192 42 192 59
-let%span sord'5 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/logic/ord.rs" 193 42 193 59
-let%span sord'6 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/logic/ord.rs" 194 41 194 58
-let%span sord'7 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/logic/ord.rs" 200 42 200 83
-let%span sord'8 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/logic/ord.rs" 201 41 201 85
-let%span sord'9 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/logic/ord.rs" 207 42 207 86
-let%span sord'10 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/logic/ord.rs" 208 41 208 82
-let%span sord'11 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/logic/ord.rs" 214 41 214 97
-let%span sord'12 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/logic/ord.rs" 296 16 302 17
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/vec.rs" 185 19 185 38
+let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/vec.rs" 186 18 186 46
+let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/vec.rs" 187 18 187 49
+let%span svec'2 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/vec.rs" 188 18 188 54
+let%span svec'3 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/vec.rs" 189 18 189 47
+let%span svec'4 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span svec'5 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/vec.rs" 118 18 118 48
+let%span svec'6 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/vec.rs" 195 19 195 38
+let%span svec'7 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/vec.rs" 196 18 196 46
+let%span slogic_assignments = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 18 8 18 21
+let%span slogic_assignments'0 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 47 12 48 74
+let%span slogic_assignments'1 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 33 8 33 61
+let%span sslice = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/slice.rs" 151 20 151 37
+let%span sslice'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/slice.rs" 156 20 156 37
+let%span sslice'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/slice.rs" 161 20 161 88
+let%span suint_macros = "/rustc/11177f2235f0c842b00f82c558ad9480c0c3a895/library/core/src/num/uint_macros.rs" 51 8 51 27
+let%span slit = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/lit.rs" 38 14 38 43
+let%span slogic_lit = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 54 20 54 74
+let%span slogic_lit'0 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 19 20 19 29
+let%span slogic_lit'1 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 43 12 43 102
+let%span slogic_lit'2 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 83 12 86 13
+let%span slogic_lit'3 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 73 12 76 13
+let%span slogic_lit'4 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 10 8 11 37
+let%span slogic_lit'5 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 24 20 24 33
+let%span slogic_lit'6 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 67 20 67 42
+let%span slogic_lit'7 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 60 12 61 57
+let%span slogic_lit'8 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 97 20 97 38
+let%span slogic_formula = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 17 8 17 85
+let%span slogic_formula'0 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 67 14 67 41
+let%span slogic_formula'1 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 69 20 69 44
+let%span slogic_formula'2 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 24 8 25 69
+let%span slogic_formula'3 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 75 12 79 45
+let%span slogic_formula'4 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 40 8 40 111
+let%span slogic_formula'5 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 32 8 33 37
+let%span slogic_trail = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 51 12 60 112
+let%span slogic_trail'0 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 95 8 97 38
+let%span slogic_trail'1 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 83 8 88 17
+let%span slogic_trail'2 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 131 8 133 72
+let%span slogic_trail'3 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 151 8 155 17
+let%span slogic_trail'4 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 104 8 105 33
+let%span slogic_trail'5 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 162 8 168 17
+let%span slogic_trail'6 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 12 12 20 13
+let%span slogic_trail'7 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 117 8 119 75
+let%span slogic = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic.rs" 20 8 24 9
+let%span sord = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/logic/ord.rs" 22 8 22 20
+let%span sord'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/logic/ord.rs" 34 8 34 21
+let%span slogic_clause = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 206 12 207 56
+let%span slogic_clause'0 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 14 8 14 24
+let%span slogic_clause'1 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 160 20 160 40
+let%span slogic_clause'2 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 200 20 200 42
+let%span slogic_clause'3 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 109 12 114 32
+let%span slogic_clause'4 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 121 12 122 37
+let%span slogic_clause'5 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 99 12 102 77
+let%span slogic_clause'6 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 34 8 34 134
+let%span slogic_clause'7 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 153 12 154 39
+let%span slogic_clause'8 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 28 4 28 62
+let%span slogic_clause'9 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 21 8 22 23
+let%span slogic_clause'10 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 129 12 129 80
+let%span slogic_clause'11 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 41 8 42 92
+let%span slogic_clause'12 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 214 12 216 33
+let%span slogic_clause'13 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 166 12 167 37
+let%span sclause = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/clause.rs" 123 4 123 46
+let%span sclause'0 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/clause.rs" 124 15 124 30
+let%span sclause'1 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/clause.rs" 125 15 125 33
+let%span sclause'2 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/clause.rs" 126 14 127 75
+let%span sclause'3 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/clause.rs" 128 14 128 47
+let%span sclause'4 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/clause.rs" 129 14 129 40
+let%span sclause'5 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/clause.rs" 130 14 131 47
+let%span sclause'6 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/clause.rs" 91 14 91 36
+let%span sclause'7 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/clause.rs" 21 15 21 32
+let%span sclause'8 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/clause.rs" 22 14 22 35
+let%span sconflict_analysis = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 56 49 56 50
+let%span sconflict_analysis'0 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 57 55 57 59
+let%span sconflict_analysis'1 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 58 53 58 59
+let%span sconflict_analysis'2 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 59 59 59 66
+let%span sconflict_analysis'3 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 61 18 61 41
+let%span sconflict_analysis'4 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 63 4 63 35
+let%span sconflict_analysis'5 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 65 15 65 16
+let%span sconflict_analysis'6 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 65 4 65 16
+let%span sconflict_analysis'7 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 66 8 66 13
+let%span sconflict_analysis'8 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 66 16 66 21
+let%span sconflict_analysis'9 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 68 18 68 44
+let%span sconflict_analysis'10 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 69 18 69 41
+let%span sconflict_analysis'11 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 70 50 70 51
+let%span sconflict_analysis'12 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 71 18 71 44
+let%span sconflict_analysis'13 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 72 18 72 38
+let%span sconflict_analysis'14 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 73 18 74 47
+let%span sconflict_analysis'15 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 77 23 77 24
+let%span sconflict_analysis'16 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 90 14 90 21
+let%span sconflict_analysis'17 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 89 16 89 55
+let%span sconflict_analysis'18 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 88 16 88 43
+let%span sconflict_analysis'19 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 87 16 87 39
+let%span sconflict_analysis'20 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 86 16 86 35
+let%span sconflict_analysis'21 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 85 16 85 108
+let%span sconflict_analysis'22 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 83 16 84 47
+let%span sconflict_analysis'23 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 82 16 82 68
+let%span sconflict_analysis'24 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 81 16 81 63
+let%span sconflict_analysis'25 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 80 16 80 41
+let%span sconflict_analysis'26 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 79 16 79 42
+let%span sconflict_analysis'27 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 78 16 78 35
+let%span sconflict_analysis'28 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 91 54 91 55
+let%span sconflict_analysis'29 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 92 22 92 43
+let%span sconflict_analysis'30 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 94 29 94 32
+let%span sconflict_analysis'31 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 94 28 94 40
+let%span sconflict_analysis'32 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 94 12 94 48
+let%span sconflict_analysis'33 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 95 18 95 21
+let%span sconflict_analysis'34 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 95 17 95 29
+let%span sconflict_analysis'35 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 95 16 95 30
+let%span sconflict_analysis'36 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 95 33 95 37
+let%span sconflict_analysis'37 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 96 26 96 29
+let%span sconflict_analysis'38 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 96 25 96 37
+let%span sconflict_analysis'39 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 96 12 96 38
+let%span sconflict_analysis'40 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 97 25 97 28
+let%span sconflict_analysis'41 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 97 12 97 29
+let%span sconflict_analysis'42 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 98 35 98 38
+let%span sconflict_analysis'43 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 98 34 98 46
+let%span sconflict_analysis'44 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 98 33 98 47
+let%span sconflict_analysis'45 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 98 51 98 73
+let%span sconflict_analysis'46 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 99 27 99 28
+let%span sconflict_analysis'47 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 99 16 99 28
+let%span sconflict_analysis'48 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 101 26 101 57
+let%span sconflict_analysis'49 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 102 26 102 55
+let%span sconflict_analysis'50 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 103 26 103 43
+let%span sconflict_analysis'51 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 106 22 107 33
+let%span sconflict_analysis'52 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 108 13 108 14
+let%span sconflict_analysis'53 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 108 8 108 14
+let%span sconflict_analysis'54 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 110 18 110 63
+let%span sconflict_analysis'55 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 111 18 111 105
+let%span sconflict_analysis'56 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 29 11 29 19
+let%span sconflict_analysis'57 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 30 11 30 25
+let%span sconflict_analysis'58 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 31 11 31 30
+let%span sconflict_analysis'59 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 32 11 32 28
+let%span sconflict_analysis'60 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 33 11 35 31
+let%span sconflict_analysis'61 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 37 11 37 52
+let%span sconflict_analysis'62 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 39 11 39 90
+let%span sconflict_analysis'63 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 40 11 40 46
+let%span sconflict_analysis'64 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 41 11 41 45
+let%span sconflict_analysis'65 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 44 11 44 38
+let%span sconflict_analysis'66 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 46 11 46 50
+let%span sconflict_analysis'67 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 48 0 48 49
+let%span sconflict_analysis'68 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 49 0 49 46
+let%span sconflict_analysis'69 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 50 0 50 46
+let%span sconflict_analysis'70 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 51 0 51 39
+let%span sconflict_analysis'71 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 42 10 42 35
+let%span sconflict_analysis'72 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 45 10 45 40
+let%span sconflict_analysis'73 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 47 10 47 52
+let%span sconflict_analysis'74 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 20 11 20 47
+let%span sconflict_analysis'75 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 21 11 21 29
+let%span sconflict_analysis'76 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 22 11 22 48
+let%span sconflict_analysis'77 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 23 10 23 90
+let%span slogic_util = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_util.rs" 49 16 49 66
+let%span slogic_util'0 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_util.rs" 22 4 22 31
+let%span slogic_util'1 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_util.rs" 17 16 17 80
+let%span strail = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/trail.rs" 33 14 33 46
+let%span slogic_conflict_analysis = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 20 11 20 31
+let%span slogic_conflict_analysis'0 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 21 11 21 40
+let%span slogic_conflict_analysis'1 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 22 11 22 33
+let%span slogic_conflict_analysis'2 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 23 11 23 39
+let%span slogic_conflict_analysis'3 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 24 10 24 40
+let%span slogic_conflict_analysis'4 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 28 4 28 101
+let%span slogic_conflict_analysis'5 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 9 11 9 47
+let%span slogic_conflict_analysis'6 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 10 11 10 31
+let%span slogic_conflict_analysis'7 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 11 10 11 49
+let%span slogic_conflict_analysis'8 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 12 10 12 93
+let%span slogic_conflict_analysis'9 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 13 10 13 47
+let%span slogic_conflict_analysis'10 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 16 71 16 73
 
 use creusot.int.UInt32
 use creusot.int.UInt64
@@ -192,34 +181,36 @@ type t_Clause = { deleted: bool; lbd: UInt32.t; search: UInt64.t; lits: t_Vec_Li
 
 type t_Vec_bool_Global
 
-constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+constant const_MAX: UInt64.t = [%#suint_macros] (18446744073709551615: UInt64.t)
 
 function view_Vec_bool_Global (self: t_Vec_bool_Global) : Seq.seq bool
 
-axiom view_Vec_bool_Global_spec: forall self: t_Vec_bool_Global. [%#svec'4] Seq.length (view_Vec_bool_Global self)
+axiom view_Vec_bool_Global_spec:
+  forall self: t_Vec_bool_Global [view_Vec_bool_Global self]. [%#svec'4] Seq.length (view_Vec_bool_Global self)
     <= UInt64.t'int const_MAX
 
 type t_Lit = { idx: UInt64.t; polarity: bool }
 
-function index [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 18 4 18 35] [@inline:trivial] (self: t_Lit) : int
+function index [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 18 4 18 35] [@inline:trivial] (self: t_Lit) : int
  = [%#slogic_lit'0] UInt64.t'int self.idx
 
 meta "rewrite_def" function index
 
-predicate idx_in [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 8 0 8 50] [@inline:trivial] (idx'0: int) (c: Seq.seq t_Lit) =
+predicate idx_in [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 8 0 8 50] [@inline:trivial] (idx'0: int) (c: Seq.seq t_Lit) =
   [%#slogic_lit'4] exists i: int. 0 <= i /\ i < Seq.length c /\ index (Seq.get c i) = idx'0
 
 meta "rewrite_def" predicate idx_in
 
 function view_Vec_Lit_Global (self: t_Vec_Lit_Global) : Seq.seq t_Lit
 
-axiom view_Vec_Lit_Global_spec: forall self: t_Vec_Lit_Global. [%#svec'4] Seq.length (view_Vec_Lit_Global self)
+axiom view_Vec_Lit_Global_spec:
+  forall self: t_Vec_Lit_Global [view_Vec_Lit_Global self]. [%#svec'4] Seq.length (view_Vec_Lit_Global self)
     <= UInt64.t'int const_MAX
 
-function view_Clause [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 13 4 13 33] (self: t_Clause) : Seq.seq t_Lit
+function view_Clause [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 13 4 13 33] (self: t_Clause) : Seq.seq t_Lit
  = [%#slogic_clause'0] view_Vec_Lit_Global self.lits
 
-predicate clause_is_seen [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 204 4 204 56] (self: t_Clause) (seen: t_Vec_bool_Global) =
+predicate clause_is_seen [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 204 4 204 56] (self: t_Clause) (seen: t_Vec_bool_Global) =
   [%#slogic_clause] forall idx'0: int. 0 <= idx'0 /\ idx'0 < Seq.length (view_Vec_bool_Global seen)
     -> Seq.get (view_Vec_bool_Global seen) idx'0 = idx_in idx'0 (view_Clause self)
 
@@ -227,28 +218,32 @@ type t_Vec_Clause_Global
 
 type t_Formula = { clauses: t_Vec_Clause_Global; num_vars: UInt64.t }
 
-predicate inv [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 66 4 66 36] (self: t_Lit) (n: int) =
+predicate inv [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 66 4 66 36] (self: t_Lit) (n: int) =
   [%#slogic_lit'6] index self < n
 
-predicate vars_in_range_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 19 0 19 55] (s: Seq.seq t_Lit) (n: int) =
+predicate vars_in_range_inner [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 19 0 19 55] (s: Seq.seq t_Lit) (n: int) =
   [%#slogic_clause'9] forall i: int. 0 <= i /\ i < Seq.length s -> inv (Seq.get s i) n
 
-predicate no_duplicate_indexes_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 39 0 39 54] (s: Seq.seq t_Lit) =
+predicate no_duplicate_indexes_inner [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 39 0 39 54] (s: Seq.seq t_Lit) =
   [%#slogic_clause'11] forall j: int, k: int. 0 <= j /\ j < Seq.length s /\ 0 <= k /\ k < Seq.length s /\ k <> j
     -> index (Seq.get s k) <> index (Seq.get s j)
 
-predicate inv_internal [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 27 0 27 48] (s: Seq.seq t_Lit) (n: int) =
+predicate inv_internal [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 27 0 27 48] (s: Seq.seq t_Lit) (n: int) =
   [%#slogic_clause'8] vars_in_range_inner s n /\ no_duplicate_indexes_inner s
 
-predicate inv'0 [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 199 4 199 36] (self: t_Clause) (n: int) =
+predicate inv'0 [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 199 4 199 36] (self: t_Clause) (n: int) =
   [%#slogic_clause'2] inv_internal (view_Clause self) n
 
-predicate lit_in [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 53 4 53 42] (self: t_Lit) (c: t_Clause) =
+predicate gt_log_Int [@inline:trivial] (self: int) (other: int) = [%#sord] other < self
+
+meta "rewrite_def" predicate gt_log_Int
+
+predicate lit_in [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 53 4 53 42] (self: t_Lit) (c: t_Clause) =
   [%#slogic_lit] exists i: int. 0 <= i /\ i < Seq.length (view_Clause c) /\ Seq.get (view_Clause c) i = self
 
-let rec remove_from_clause (self: MutBorrow.t t_Clause) (idx'0: UInt64.t) (_f: t_Formula) (return (x: ())) =
-  {[@stop_split] [@expl:remove_from_clause requires] ([@stop_split] [@expl:remove_from_clause requires #0] [%#sclause] inv'0 self.current (UInt64.t'int _f.num_vars))
-  /\ ([@stop_split] [@expl:remove_from_clause requires #1] [%#sclause'0] Seq.length (view_Clause self.current) > 0)
+let remove_from_clause (self: MutBorrow.t t_Clause) (idx'0: UInt64.t) (_f: t_Formula) (return (x: ())) =
+{[@stop_split] [@expl:remove_from_clause requires] ([@stop_split] [@expl:remove_from_clause requires #0] [%#sclause] inv'0 self.current (UInt64.t'int _f.num_vars))
+  /\ ([@stop_split] [@expl:remove_from_clause requires #1] [%#sclause'0] gt_log_Int (Seq.length (view_Clause self.current)) 0)
   /\ ([@stop_split] [@expl:remove_from_clause requires #2] [%#sclause'1] UInt64.t'int idx'0
   < Seq.length (view_Clause self.current))}
   any
@@ -282,8 +277,8 @@ predicate resolve_elswhere_usize [@inline:trivial] (self: UInt64.t) (old': Seq.s
 
 meta "rewrite_def" predicate resolve_elswhere_usize
 
-let rec index_mut_Vec_bool_Global (self_: MutBorrow.t t_Vec_bool_Global) (ix: UInt64.t) (return (x: MutBorrow.t bool)) =
-  {[@stop_split] [@expl:index_mut requires] [%#svec] in_bounds_usize ix (view_Vec_bool_Global self_.current)}
+let index_mut_Vec_bool_Global (self_: MutBorrow.t t_Vec_bool_Global) (ix: UInt64.t) (return (x: MutBorrow.t bool)) =
+{[@stop_split] [@expl:index_mut requires] [%#svec] in_bounds_usize ix (view_Vec_bool_Global self_.current)}
   any
   [ return (result: MutBorrow.t bool) ->
   {[@stop_split] [@expl:index_mut_Vec_bool_Global ensures] ([@stop_split] [@expl:index_mut ensures #0] [%#svec'0] has_value_usize ix (view_Vec_bool_Global self_.current) result.current)
@@ -297,50 +292,52 @@ predicate resolve_refmut_bool [@inline:trivial] (_1: MutBorrow.t bool) = _1.fina
 
 meta "rewrite_def" predicate resolve_refmut_bool
 
-let rec len (self: t_Clause) (return (x: UInt64.t)) = any
+let len (self: t_Clause) (return (x: UInt64.t)) = any
   [ return (result: UInt64.t) -> {[@stop_split] [@expl:len ensures] [%#sclause'6] UInt64.t'int result
     = Seq.length (view_Clause self)}
     (! return {result}) ]
 
-predicate elems_less_than [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 48 0 48 53] (v: Seq.seq UInt64.t) (n: int) =
+predicate elems_less_than [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_util.rs" 48 0 48 53] (v: Seq.seq UInt64.t) (n: int) =
   [%#slogic_util] forall i: int. 0 <= i /\ i < Seq.length v -> UInt64.t'int (Seq.get v i) < n
 
 type t_Vec_usize_Global
 
 function view_Vec_usize_Global (self: t_Vec_usize_Global) : Seq.seq UInt64.t
 
-axiom view_Vec_usize_Global_spec: forall self: t_Vec_usize_Global. [%#svec'4] Seq.length (view_Vec_usize_Global self)
+axiom view_Vec_usize_Global_spec:
+  forall self: t_Vec_usize_Global [view_Vec_usize_Global self]. [%#svec'4] Seq.length (view_Vec_usize_Global self)
     <= UInt64.t'int const_MAX
 
 type t_Vec_u8_Global
 
 type t_Assignments = { f0: t_Vec_u8_Global }
 
-predicate is_positive [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 23 4 23 42] [@inline:trivial] (self: t_Lit) =
+predicate is_positive [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 23 4 23 42] [@inline:trivial] (self: t_Lit) =
   [%#slogic_lit'5] self.polarity
 
 meta "rewrite_def" predicate is_positive
 
-predicate unsat_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 81 4 81 59] (self: t_Lit) (a: Seq.seq UInt8.t) =
+predicate unsat_inner [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 81 4 81 59] (self: t_Lit) (a: Seq.seq UInt8.t) =
   [%#slogic_lit'2] if is_positive self then
     UInt8.t'int (Seq.get a (index self)) = 0
   else
     UInt8.t'int (Seq.get a (index self)) = 1
 
 
-predicate unsat_inner'0 [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 151 4 151 59] (self: t_Clause) (a: Seq.seq UInt8.t) =
+predicate unsat_inner'0 [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 151 4 151 59] (self: t_Clause) (a: Seq.seq UInt8.t) =
   [%#slogic_clause'7] forall i: int. 0 <= i /\ i < Seq.length (view_Clause self)
     -> unsat_inner (Seq.get (view_Clause self) i) a
 
 function view_Vec_u8_Global (self: t_Vec_u8_Global) : Seq.seq UInt8.t
 
-axiom view_Vec_u8_Global_spec: forall self: t_Vec_u8_Global. [%#svec'4] Seq.length (view_Vec_u8_Global self)
+axiom view_Vec_u8_Global_spec:
+  forall self: t_Vec_u8_Global [view_Vec_u8_Global self]. [%#svec'4] Seq.length (view_Vec_u8_Global self)
     <= UInt64.t'int const_MAX
 
-function view_Assignments [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 17 4 17 33] (self: t_Assignments) : Seq.seq UInt8.t
+function view_Assignments [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 17 4 17 33] (self: t_Assignments) : Seq.seq UInt8.t
  = [%#slogic_assignments] view_Vec_u8_Global self.f0
 
-predicate unsat [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 159 4 159 46] (self: t_Clause) (a: t_Assignments) =
+predicate unsat [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 159 4 159 46] (self: t_Clause) (a: t_Assignments) =
   [%#slogic_clause'1] unsat_inner'0 self (view_Assignments a)
 
 type t_Vec_Step_Global
@@ -352,19 +349,19 @@ type t_Trail = {
   curr_i: UInt64.t;
   decisions: t_Vec_usize_Global }
 
-let rec index_Clause (self: t_Clause) (ix: UInt64.t) (return (x: t_Lit)) =
-  {[@stop_split] [@expl:index requires] [%#sclause'7] UInt64.t'int ix < Seq.length (view_Clause self)}
+let index_Clause (self: t_Clause) (ix: UInt64.t) (return (x: t_Lit)) =
+{[@stop_split] [@expl:index requires] [%#sclause'7] UInt64.t'int ix < Seq.length (view_Clause self)}
   any
   [ return (result: t_Lit) ->
   {[@stop_split] [@expl:index ensures] [%#sclause'8] Seq.get (view_Clause self) (UInt64.t'int ix) = result}
     (! return {result}) ]
 
-let rec index'0 (self: t_Lit) (return (x: UInt64.t)) = any
+let index'0 (self: t_Lit) (return (x: UInt64.t)) = any
   [ return (result: UInt64.t) -> {[@stop_split] [@expl:index ensures] [%#slit] UInt64.t'int result = index self}
     (! return {result}) ]
 
-let rec idx_in'0 (c: t_Vec_Lit_Global) (idx'0: UInt64.t) (seen: t_Vec_bool_Global) (return (x: bool)) =
-  {[@stop_split] [@expl:idx_in requires] ([@stop_split] [@expl:idx_in requires #0] [%#sconflict_analysis'74] vars_in_range_inner (view_Vec_Lit_Global c) (Seq.length (view_Vec_bool_Global seen)))
+let idx_in'0 (c: t_Vec_Lit_Global) (idx'0: UInt64.t) (seen: t_Vec_bool_Global) (return (x: bool)) =
+{[@stop_split] [@expl:idx_in requires] ([@stop_split] [@expl:idx_in requires #0] [%#sconflict_analysis'74] vars_in_range_inner (view_Vec_Lit_Global c) (Seq.length (view_Vec_bool_Global seen)))
   /\ ([@stop_split] [@expl:idx_in requires #1] [%#sconflict_analysis'75] UInt64.t'int idx'0
     < Seq.length (view_Vec_bool_Global seen))
   /\ ([@stop_split] [@expl:idx_in requires #2] [%#sconflict_analysis'76] Seq.get (view_Vec_bool_Global seen) (UInt64.t'int idx'0)
@@ -375,12 +372,12 @@ let rec idx_in'0 (c: t_Vec_Lit_Global) (idx'0: UInt64.t) (seen: t_Vec_bool_Globa
       /\ i < Seq.length (view_Vec_Lit_Global c) /\ index (Seq.get (view_Vec_Lit_Global c) i) = UInt64.t'int idx'0)}
     (! return {result}) ]
 
-let rec push_usize (self_: MutBorrow.t t_Vec_usize_Global) (v: UInt64.t) (return (x: ())) = any
+let push_usize (self_: MutBorrow.t t_Vec_usize_Global) (v: UInt64.t) (return (x: ())) = any
   [ return (result: ()) -> {[@stop_split] [@expl:push ensures] [%#svec'5] view_Vec_usize_Global self_.final
     = Seq.snoc (view_Vec_usize_Global self_.current) v}
     (! return {result}) ]
 
-let rec push_Lit (self_: MutBorrow.t t_Vec_Lit_Global) (v: t_Lit) (return (x: ())) = any
+let push_Lit (self_: MutBorrow.t t_Vec_Lit_Global) (v: t_Lit) (return (x: ())) = any
   [ return (result: ()) -> {[@stop_split] [@expl:push ensures] [%#svec'5] view_Vec_Lit_Global self_.final
     = Seq.snoc (view_Vec_Lit_Global self_.current) v}
     (! return {result}) ]
@@ -395,14 +392,14 @@ predicate has_value_usize'0 [@inline:trivial] (self: UInt64.t) (seq: Seq.seq UIn
 
 meta "rewrite_def" predicate has_value_usize'0
 
-let rec index_Vec_usize_Global (self_: t_Vec_usize_Global) (ix: UInt64.t) (return (x: UInt64.t)) =
-  {[@stop_split] [@expl:index requires] [%#svec'6] in_bounds_usize'0 ix (view_Vec_usize_Global self_)}
+let index_Vec_usize_Global (self_: t_Vec_usize_Global) (ix: UInt64.t) (return (x: UInt64.t)) =
+{[@stop_split] [@expl:index requires] [%#svec'6] in_bounds_usize'0 ix (view_Vec_usize_Global self_)}
   any
   [ return (result: UInt64.t) ->
   {[@stop_split] [@expl:index ensures] [%#svec'7] has_value_usize'0 ix (view_Vec_usize_Global self_) result}
     (! return {result}) ]
 
-let rec decision_level (self: t_Trail) (return (x: UInt64.t)) = any
+let decision_level (self: t_Trail) (return (x: UInt64.t)) = any
   [ return (result: UInt64.t) -> {[@stop_split] [@expl:decision_level ensures] [%#strail] UInt64.t'int result
     = Seq.length (view_Vec_usize_Global self.decisions)}
     (! return {result}) ]
@@ -423,10 +420,10 @@ predicate resolve_refmut_Clause [@inline:trivial] (_1: MutBorrow.t t_Clause) = _
 
 meta "rewrite_def" predicate resolve_refmut_Clause
 
-predicate is_opp [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 41 4 41 39] (self: t_Lit) (o: t_Lit) =
+predicate is_opp [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 41 4 41 39] (self: t_Lit) (o: t_Lit) =
   [%#slogic_lit'1] index self = index o /\ is_positive self <> is_positive o
 
-predicate resolvent_of [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 107 4 107 76] (self: t_Clause) (c: t_Clause) (c2: t_Clause) (k: int) (m: int) =
+predicate resolvent_of [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 107 4 107 76] (self: t_Clause) (c: t_Clause) (c2: t_Clause) (k: int) (m: int) =
   [%#slogic_clause'3] (forall i: int. 0 <= i /\ i < Seq.length (view_Clause c) /\ i <> m
       -> lit_in (Seq.get (view_Clause c) i) self)
   /\ (forall i: int. 0 <= i /\ i < Seq.length (view_Clause c2) /\ i <> k -> lit_in (Seq.get (view_Clause c2) i) self)
@@ -437,47 +434,51 @@ predicate resolvent_of [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/l
 
 type t_FormulaModel = { clauses'0: Seq.seq t_Clause; num_vars'0: int }
 
-predicate formula_invariant [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 22 0 22 49] (f: t_FormulaModel) =
+predicate formula_invariant [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 22 0 22 49] (f: t_FormulaModel) =
   [%#slogic_formula'2] forall i: int. 0 <= i /\ i < Seq.length f.clauses'0
-    -> inv'0 (Seq.get f.clauses'0 i) f.num_vars'0 /\ Seq.length (view_Clause (Seq.get f.clauses'0 i)) > 0
+    -> inv'0 (Seq.get f.clauses'0 i) f.num_vars'0 /\ gt_log_Int (Seq.length (view_Clause (Seq.get f.clauses'0 i))) 0
 
-predicate unset [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic.rs" 18 0 18 38] (v: UInt8.t) =
-  [%#slogic] if UInt8.t'int v >= 2 then true else false
+predicate ge_log_Int [@inline:trivial] (self: int) (other: int) = [%#sord'0] other <= self
 
-predicate complete_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 31 0 31 52] (a: Seq.seq UInt8.t) =
+meta "rewrite_def" predicate ge_log_Int
+
+predicate unset [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic.rs" 18 0 18 38] (v: UInt8.t) =
+  [%#slogic] if ge_log_Int (UInt8.t'int v) 2 then true else false
+
+predicate complete_inner [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 31 0 31 52] (a: Seq.seq UInt8.t) =
   [%#slogic_assignments'1] forall i: int. 0 <= i /\ i < Seq.length a -> not unset (Seq.get a i)
 
-predicate sat_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 71 4 71 57] (self: t_Lit) (a: Seq.seq UInt8.t) =
+predicate sat_inner [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 71 4 71 57] (self: t_Lit) (a: Seq.seq UInt8.t) =
   [%#slogic_lit'3] if is_positive self then
     UInt8.t'int (Seq.get a (index self)) = 1
   else
     UInt8.t'int (Seq.get a (index self)) = 0
 
 
-predicate sat_inner'0 [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 164 4 164 57] (self: t_Clause) (a: Seq.seq UInt8.t) =
+predicate sat_inner'0 [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 164 4 164 57] (self: t_Clause) (a: Seq.seq UInt8.t) =
   [%#slogic_clause'13] exists i: int. 0 <= i
     /\ i < Seq.length (view_Clause self) /\ sat_inner (Seq.get (view_Clause self) i) a
 
-predicate formula_sat_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 30 0 30 72] (f: t_FormulaModel) (a: Seq.seq UInt8.t) =
+predicate formula_sat_inner [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 30 0 30 72] (f: t_FormulaModel) (a: Seq.seq UInt8.t) =
   [%#slogic_formula'5] forall i: int. 0 <= i /\ i < Seq.length f.clauses'0 -> sat_inner'0 (Seq.get f.clauses'0 i) a
 
-predicate eventually_sat_complete [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 38 0 38 55] (f: t_FormulaModel) =
+predicate eventually_sat_complete [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 38 0 38 55] (f: t_FormulaModel) =
   [%#slogic_formula'4] exists a2: Seq.seq UInt8.t. Seq.length a2 = f.num_vars'0
     /\ complete_inner a2 /\ formula_sat_inner f a2
 
-predicate equisat_extension_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 32 0 32 66] (c: t_Clause) (f: t_FormulaModel) =
+predicate equisat_extension_inner [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 32 0 32 66] (c: t_Clause) (f: t_FormulaModel) =
   [%#slogic_clause'6] eventually_sat_complete f
   -> eventually_sat_complete { clauses'0 = Seq.snoc f.clauses'0 c; num_vars'0 = f.num_vars'0 }
 
-predicate in_formula_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 127 4 127 58] (self: t_Clause) (f: t_FormulaModel) =
+predicate in_formula_inner [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 127 4 127 58] (self: t_Clause) (f: t_FormulaModel) =
   [%#slogic_clause'10] exists i: int. 0 <= i /\ i < Seq.length f.clauses'0 /\ Seq.get f.clauses'0 i = self
 
-predicate equals [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 212 4 212 42] (self: t_Clause) (o: t_Clause) =
+predicate equals [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 212 4 212 42] (self: t_Clause) (o: t_Clause) =
   [%#slogic_clause'12] Seq.length (view_Clause self) = Seq.length (view_Clause o)
   /\ (forall j: int. 0 <= j /\ j < Seq.length (view_Clause self)
     -> Seq.get (view_Clause self) j = Seq.get (view_Clause o) j)
 
-function lemma_eq_formulas [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 16 0 16 70] (f: t_FormulaModel) (f2: t_FormulaModel) (c: t_Clause) : ()
+function lemma_eq_formulas [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 16 0 16 70] (f: t_FormulaModel) (f2: t_FormulaModel) (c: t_Clause) : ()
  = [%#slogic_conflict_analysis'10] ()
 
 axiom lemma_eq_formulas_spec:
@@ -499,7 +500,7 @@ axiom lemma_eq_formulas_spec'1:
     -> ([%#slogic_conflict_analysis'6] formula_invariant f)
     -> ([%#slogic_conflict_analysis'9] view_Clause (Seq.get f2.clauses'0 (Seq.length f2.clauses'0 - 1)) = view_Clause c)
 
-function lemma_resolvent_of_equisat_extension_is_equisat [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 25 0 27 1] (f: t_FormulaModel) (c: t_Clause) (c2: t_Clause) (c3: t_Clause) (k: int) (m: int) : ()
+function lemma_resolvent_of_equisat_extension_is_equisat [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_conflict_analysis.rs" 25 0 27 1] (f: t_FormulaModel) (c: t_Clause) (c2: t_Clause) (c3: t_Clause) (k: int) (m: int) : ()
  = [%#slogic_conflict_analysis'4] let _ = lemma_eq_formulas f { clauses'0 = Seq.snoc f.clauses'0 c3;
                                                                 num_vars'0 = f.num_vars'0 } c3 in ()
 
@@ -512,24 +513,25 @@ axiom lemma_resolvent_of_equisat_extension_is_equisat_spec:
 
 function view_Vec_Clause_Global (self: t_Vec_Clause_Global) : Seq.seq t_Clause
 
-axiom view_Vec_Clause_Global_spec: forall self: t_Vec_Clause_Global. [%#svec'4] Seq.length (view_Vec_Clause_Global self)
+axiom view_Vec_Clause_Global_spec:
+  forall self: t_Vec_Clause_Global [view_Vec_Clause_Global self]. [%#svec'4] Seq.length (view_Vec_Clause_Global self)
     <= UInt64.t'int const_MAX
 
-function view_Formula [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 16 4 16 33] (self: t_Formula) : t_FormulaModel
+function view_Formula [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 16 4 16 33] (self: t_Formula) : t_FormulaModel
  = [%#slogic_formula] { clauses'0 = view_Vec_Clause_Global self.clauses; num_vars'0 = UInt64.t'int self.num_vars }
 
-predicate inv_mirror [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 73 4 73 35] (self: t_Formula) =
+predicate inv_mirror [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 73 4 73 35] (self: t_Formula) =
   [%#slogic_formula'3] (forall i: int. 0 <= i /\ i < Seq.length (view_Vec_Clause_Global self.clauses)
       -> inv'0 (Seq.get (view_Vec_Clause_Global self.clauses) i) (UInt64.t'int self.num_vars))
   /\ (forall i: int. 0 <= i /\ i < Seq.length (view_Vec_Clause_Global self.clauses)
-    -> Seq.length (view_Clause (Seq.get (view_Vec_Clause_Global self.clauses) i)) >= 1)
+    -> ge_log_Int (Seq.length (view_Clause (Seq.get (view_Vec_Clause_Global self.clauses) i))) 1)
 
-predicate inv'1 [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 68 4 68 28] (self: t_Formula) =
+predicate inv'1 [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 68 4 68 28] (self: t_Formula) =
   [%#slogic_formula'1] formula_invariant (view_Formula self)
 
-axiom inv_spec: forall self: t_Formula. [%#slogic_formula'0] inv'1 self = inv_mirror self
+axiom inv_spec: forall self: t_Formula [inv'1 self]. [%#slogic_formula'0] inv'1 self = inv_mirror self
 
-predicate inv'2 [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 45 4 45 40] (self: t_Assignments) (f: t_Formula) =
+predicate inv'2 [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_assignments.rs" 45 4 45 40] (self: t_Assignments) (f: t_Formula) =
   [%#slogic_assignments'0] UInt64.t'int f.num_vars = Seq.length (view_Assignments self)
   /\ (forall i: int. 0 <= i /\ i < Seq.length (view_Assignments self)
     -> UInt8.t'int (Seq.get (view_Assignments self) i) <= 3)
@@ -538,31 +540,32 @@ type t_Reason = Decision | Unit UInt64.t | Long UInt64.t
 
 type t_Step = { lit'0: t_Lit; decision_level'0: UInt64.t; reason'0: t_Reason }
 
-predicate inv'3 [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 10 4 10 40] (self: t_Reason) (f: t_Formula) =
+predicate inv'3 [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 10 4 10 40] (self: t_Reason) (f: t_Formula) =
   [%#slogic_trail'6] match self with
     | Long cref -> 0 <= UInt64.t'int cref
     /\ UInt64.t'int cref < Seq.length (view_Vec_Clause_Global f.clauses)
-    /\ Seq.length (view_Clause (Seq.get (view_Vec_Clause_Global f.clauses) (UInt64.t'int cref))) > 1
+    /\ gt_log_Int (Seq.length (view_Clause (Seq.get (view_Vec_Clause_Global f.clauses) (UInt64.t'int cref)))) 1
     | Unit cref -> 0 <= UInt64.t'int cref
     /\ UInt64.t'int cref < Seq.length (view_Vec_Clause_Global f.clauses)
     /\ Seq.length (view_Clause (Seq.get (view_Vec_Clause_Global f.clauses) (UInt64.t'int cref))) = 1
     | _ -> true
     end
 
-predicate trail_invariant [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 93 0 93 60] (trail'0: Seq.seq t_Step) (f: t_Formula) =
+predicate trail_invariant [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 93 0 93 60] (trail'0: Seq.seq t_Step) (f: t_Formula) =
   [%#slogic_trail'0] forall i: int. 0 <= i /\ i < Seq.length trail'0
     -> inv (Seq.get trail'0 i).lit'0 (UInt64.t'int f.num_vars) /\ inv'3 (Seq.get trail'0 i).reason'0 f
 
 function view_Vec_Step_Global (self: t_Vec_Step_Global) : Seq.seq t_Step
 
-axiom view_Vec_Step_Global_spec: forall self: t_Vec_Step_Global. [%#svec'4] Seq.length (view_Vec_Step_Global self)
+axiom view_Vec_Step_Global_spec:
+  forall self: t_Vec_Step_Global [view_Vec_Step_Global self]. [%#svec'4] Seq.length (view_Vec_Step_Global self)
     <= UInt64.t'int const_MAX
 
-predicate lit_idx_in [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 58 4 58 46] (self: t_Lit) (c: t_Clause) =
+predicate lit_idx_in [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 58 4 58 46] (self: t_Lit) (c: t_Clause) =
   [%#slogic_lit'7] exists i: int. 0 <= i
     /\ i < Seq.length (view_Clause c) /\ index (Seq.get (view_Clause c) i) = index self
 
-predicate lit_not_in_less_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 81 0 81 62] (t: Seq.seq t_Step) (f: t_Formula) =
+predicate lit_not_in_less_inner [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 81 0 81 62] (t: Seq.seq t_Step) (f: t_Formula) =
   [%#slogic_trail'1] forall i: int. 0 <= i /\ i < Seq.length t
     -> (forall j: int. 0 <= j /\ j < i
       -> match (Seq.get t j).reason'0 with
@@ -570,82 +573,35 @@ predicate lit_not_in_less_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/sr
         | _ -> true
         end)
 
-predicate lit_is_unique_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 129 0 129 52] (trail'0: Seq.seq t_Step) =
+predicate lit_is_unique_inner [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 129 0 129 52] (trail'0: Seq.seq t_Step) =
   [%#slogic_trail'2] forall i: int. 0 <= i /\ i < Seq.length trail'0
     -> (forall j: int. 0 <= j /\ j < i -> index (Seq.get trail'0 j).lit'0 <> index (Seq.get trail'0 i).lit'0)
 
-predicate clause_post_with_regards_to_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 115 0 115 90] (c: t_Clause) (a: Seq.seq UInt8.t) (j: int) =
+predicate clause_post_with_regards_to_inner [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 115 0 115 90] (c: t_Clause) (a: Seq.seq UInt8.t) (j: int) =
   [%#slogic_trail'7] index (Seq.get (view_Clause c) 0) = j
   /\ sat_inner (Seq.get (view_Clause c) 0) a
   /\ (forall i: int. 1 <= i /\ i < Seq.length (view_Clause c) -> unsat_inner (Seq.get (view_Clause c) i) a)
 
-predicate long_are_post_unit_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 149 0 149 92] (trail'0: Seq.seq t_Step) (f: t_Formula) (a: Seq.seq UInt8.t) =
+predicate long_are_post_unit_inner [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 149 0 149 92] (trail'0: Seq.seq t_Step) (f: t_Formula) (a: Seq.seq UInt8.t) =
   [%#slogic_trail'3] forall j: int. 0 <= j /\ j < Seq.length trail'0
     -> match (Seq.get trail'0 j).reason'0 with
       | Long k -> clause_post_with_regards_to_inner (Seq.get (view_Vec_Clause_Global f.clauses) (UInt64.t'int k)) a (index (Seq.get trail'0 j).lit'0)
       | _ -> true
       end
 
-predicate trail_entries_are_assigned_inner [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 102 0 102 84] (t: Seq.seq t_Step) (a: Seq.seq UInt8.t) =
+predicate trail_entries_are_assigned_inner [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 102 0 102 84] (t: Seq.seq t_Step) (a: Seq.seq UInt8.t) =
   [%#slogic_trail'4] forall j: int. 0 <= j /\ j < Seq.length t -> sat_inner (Seq.get t j).lit'0 a
 
-type t_Ordering = Less | Equal | Greater
-
-function cmp_log_usize (self: UInt64.t) (o: UInt64.t) : t_Ordering = [%#sord'12] if UInt64.lt self o then
-    Less
-  else
-    if self = o then Equal else Greater
-
-
-function eq_cmp_usize (x: UInt64.t) (y: UInt64.t) : ()
-
-axiom eq_cmp_usize_spec: forall x: UInt64.t, y: UInt64.t. [%#sord'11] (x = y) = (cmp_log_usize x y = Equal)
-
-function antisym2_usize (x: UInt64.t) (y: UInt64.t) : ()
-
-axiom antisym2_usize_spec: forall x: UInt64.t, y: UInt64.t. ([%#sord'9] cmp_log_usize x y = Greater)
-    -> ([%#sord'10] cmp_log_usize y x = Less)
-
-function antisym1_usize (x: UInt64.t) (y: UInt64.t) : ()
-
-axiom antisym1_usize_spec: forall x: UInt64.t, y: UInt64.t. ([%#sord'7] cmp_log_usize x y = Less)
-    -> ([%#sord'8] cmp_log_usize y x = Greater)
-
-function trans_usize (x: UInt64.t) (y: UInt64.t) (z: UInt64.t) (o: t_Ordering) : ()
-
-axiom trans_usize_spec: forall x: UInt64.t, y: UInt64.t, z: UInt64.t, o: t_Ordering. ([%#sord'4] cmp_log_usize x y = o)
-    -> ([%#sord'5] cmp_log_usize y z = o) -> ([%#sord'6] cmp_log_usize x z = o)
-
-function refl_usize (x: UInt64.t) : ()
-
-axiom refl_usize_spec: forall x: UInt64.t. [%#sord'3] cmp_log_usize x x = Equal
-
-function cmp_gt_log_usize (x: UInt64.t) (y: UInt64.t) : ()
-
-axiom cmp_gt_log_usize_spec: forall x: UInt64.t, y: UInt64.t. [%#sord'2] UInt64.gt x y = (cmp_log_usize x y = Greater)
-
-function cmp_ge_log_usize (x: UInt64.t) (y: UInt64.t) : ()
-
-axiom cmp_ge_log_usize_spec: forall x: UInt64.t, y: UInt64.t. [%#sord'1] UInt64.ge x y = (cmp_log_usize x y <> Less)
-
-function cmp_lt_log_usize (x: UInt64.t) (y: UInt64.t) : ()
-
-axiom cmp_lt_log_usize_spec: forall x: UInt64.t, y: UInt64.t. [%#sord'0] UInt64.lt x y = (cmp_log_usize x y = Less)
-
-function cmp_le_log_usize (x: UInt64.t) (y: UInt64.t) : ()
-
-axiom cmp_le_log_usize_spec: forall x: UInt64.t, y: UInt64.t. [%#sord] UInt64.le x y = (cmp_log_usize x y <> Greater)
-
-predicate sorted_range [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 16 0 16 58] (s: Seq.seq UInt64.t) (l: int) (u: int) =
+predicate sorted_range [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_util.rs" 16 0 16 58] (s: Seq.seq UInt64.t) (l: int) (u: int) =
   [%#slogic_util'1] forall i: int, j: int. l <= i /\ i < j /\ j < u -> UInt64.le (Seq.get s i) (Seq.get s j)
 
-predicate sorted [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 21 0 21 36] (s: Seq.seq UInt64.t) =
+predicate sorted [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_util.rs" 21 0 21 36] (s: Seq.seq UInt64.t) =
   [%#slogic_util'0] sorted_range s 0 (Seq.length s)
 
-predicate sat [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 96 4 96 44] (self: t_Lit) (a: t_Assignments) =
+predicate sat [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_lit.rs" 96 4 96 44] (self: t_Lit) (a: t_Assignments) =
   [%#slogic_lit'8] sat_inner self (view_Assignments a)
 
-predicate unit_are_sat [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 160 0 160 73] (trail'0: Seq.seq t_Step) (f: t_Formula) (a: t_Assignments) =
+predicate unit_are_sat [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 160 0 160 73] (trail'0: Seq.seq t_Step) (f: t_Formula) (a: t_Assignments) =
   [%#slogic_trail'5] forall j: int. 0 <= j /\ j < Seq.length trail'0
     -> match (Seq.get trail'0 j).reason'0 with
       | Unit k -> (Seq.get trail'0 j).lit'0
@@ -654,7 +610,7 @@ predicate unit_are_sat [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/l
       | _ -> true
       end
 
-predicate inv'4 [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 49 4 49 40] [@inline:trivial] (self: t_Trail) (f: t_Formula) =
+predicate inv'4 [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_trail.rs" 49 4 49 40] [@inline:trivial] (self: t_Trail) (f: t_Formula) =
   [%#slogic_trail] inv'2 self.assignments f
   /\ trail_invariant (view_Vec_Step_Global self.trail) f
   /\ Seq.length (view_Vec_usize_Global self.lit_to_level) = UInt64.t'int f.num_vars
@@ -669,11 +625,11 @@ predicate inv'4 [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_tr
 
 meta "rewrite_def" predicate inv'4
 
-predicate in_formula [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 119 4 119 47] (self: t_Clause) (f: t_Formula) =
+predicate in_formula [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 119 4 119 47] (self: t_Clause) (f: t_Formula) =
   [%#slogic_clause'4] exists i: int. 0 <= i
     /\ i < Seq.length (view_Vec_Clause_Global f.clauses) /\ Seq.get (view_Vec_Clause_Global f.clauses) i = self
 
-predicate same_idx_same_polarity_except [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 97 4 97 85] (self: t_Clause) (other: t_Clause) (exception': int) =
+predicate same_idx_same_polarity_except [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_clause.rs" 97 4 97 85] (self: t_Clause) (other: t_Clause) (exception': int) =
   [%#slogic_clause'5] forall i: int, j: int. 0 <= i
       /\ i < Seq.length (view_Clause self) /\ 0 <= j /\ j < Seq.length (view_Clause other)
     -> index (Seq.get (view_Clause self) i) <> exception'
@@ -684,11 +640,11 @@ meta "compute_max_steps" 1000000
 
 meta "select_lsinst" "all"
 
-let rec resolve [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analysis.rs" 52 0 55 1] (_f: t_Formula)
-  (c: MutBorrow.t t_Clause) (o: t_Clause) (idx'0: UInt64.t) (c_idx: UInt64.t) (trail'0: t_Trail)
+let resolve [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/conflict_analysis.rs" 52 0 55 1]
+  (_f: t_Formula) (c: MutBorrow.t t_Clause) (o: t_Clause) (idx'0: UInt64.t) (c_idx: UInt64.t) (trail'0: t_Trail)
   (seen: MutBorrow.t t_Vec_bool_Global) (path_c: MutBorrow.t UInt64.t) (to_bump: MutBorrow.t t_Vec_usize_Global)
   (return (x: ())) =
-  {[@stop_split] [@expl:resolve requires] ([@stop_split] [@expl:resolve requires #0] [%#sconflict_analysis'56] inv'1 _f)
+{[@stop_split] [@expl:resolve requires] ([@stop_split] [@expl:resolve requires #0] [%#sconflict_analysis'56] inv'1 _f)
   /\ ([@stop_split] [@expl:resolve requires #1] [%#sconflict_analysis'57] inv'4 trail'0 _f)
   /\ ([@stop_split] [@expl:resolve requires #2] [%#sconflict_analysis'58] UInt64.t'int idx'0 < UInt64.t'int _f.num_vars)
   /\ ([@stop_split] [@expl:resolve requires #3] [%#sconflict_analysis'59] in_formula o _f)
@@ -701,7 +657,7 @@ let rec resolve [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/conflict_analy
         /\ j < Seq.length (view_Clause o)
       -> unsat_inner (Seq.get (view_Clause o) j) (view_Assignments trail'0.assignments))
   /\ ([@stop_split] [@expl:resolve requires #7] [%#sconflict_analysis'63] sat_inner (Seq.get (view_Clause o) 0) (view_Assignments trail'0.assignments))
-  /\ ([@stop_split] [@expl:resolve requires #8] [%#sconflict_analysis'64] UInt64.t'int path_c.current > 0
+  /\ ([@stop_split] [@expl:resolve requires #8] [%#sconflict_analysis'64] gt_log_Int (UInt64.t'int path_c.current) 0
     /\ UInt64.t'int path_c.current <= Seq.length (view_Clause c.current))
   /\ ([@stop_split] [@expl:resolve requires #9] [%#sconflict_analysis'65] Seq.length (view_Vec_bool_Global seen.current)
     = UInt64.t'int _f.num_vars)

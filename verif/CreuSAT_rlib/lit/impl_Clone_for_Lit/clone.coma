@@ -1,160 +1,40 @@
-(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 9 9 9 14 *)
+(* #"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/lit.rs" 9 9 9 14 *)
 
 (* <lit::Lit as std::clone::Clone> *)
 
-let%span slit = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 11 4 11 18
-let%span slit'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 12 4 12 22
-let%span slit'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 9 9 9 14
-let%span sclone = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/clone.rs" 21 18 21 33
-let%span snum = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/num.rs" 48 26 48 41
-let%span sops = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 160 14 160 114
-let%span sops'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 165 14 165 100
-let%span sops'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 170 14 170 61
-let%span sops'2 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 126 15 126 59
-let%span sops'3 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 127 14 127 38
-let%span sops'4 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 132 14 132 33
-let%span sops'5 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 137 15 137 31
-let%span sops'6 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 138 15 138 28
-let%span sops'7 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 139 14 139 30
-let%span sops'8 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/ops.rs" 144 14 145 104
+let%span slit = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/lit.rs" 11 4 11 18
+let%span slit'0 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/lit.rs" 12 4 12 22
+let%span slit'1 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/lit.rs" 9 9 9 14
+let%span sclone = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/clone.rs" 26 29 26 33
+let%span sclone'0 = "/rustc/11177f2235f0c842b00f82c558ad9480c0c3a895/library/core/src/clone.rs" 715 20 715 43
+let%span snum = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/num.rs" 50 26 50 32
 
 use creusot.int.UInt64
 use creusot.prelude.Any
 
 type t_Lit = { idx: UInt64.t; polarity: bool }
 
-let rec clone_usize (self_: UInt64.t) (return (x: UInt64.t)) = any
+let clone_usize (self_: UInt64.t) (return (x: UInt64.t)) = any
   [ return (result: UInt64.t) -> {[@stop_split] [@expl:clone ensures] [%#snum] result = self_} (! return {result}) ]
 
-let rec clone_bool (self_: bool) (return (x: bool)) = any
+let clone_bool (self_: bool) (return (x: bool)) = any
   [ return (result: bool) -> {[@stop_split] [@expl:clone ensures] [%#sclone] result = self_} (! return {result}) ]
 
-predicate postcondition_once_clone [@inline:trivial] (self: ()) (args: UInt64.t) (result: UInt64.t) =
-  let self_ = args in [%#snum] result = self_
-
-meta "rewrite_def" predicate postcondition_once_clone
-
-predicate resolve_clone [@inline:trivial] (_1: ()) = true
-
-meta "rewrite_def" predicate resolve_clone
-
-predicate postcondition_mut_clone [@inline:trivial] (self: ()) (args: UInt64.t) (result_state: ()) (result: UInt64.t) =
-  let self_ = args in [%#snum] result = self_
-
-meta "rewrite_def" predicate postcondition_mut_clone
-
-function fn_mut_once_clone (self: ()) (args: UInt64.t) (res: UInt64.t) : ()
-
-axiom fn_mut_once_clone_spec:
-  forall self: (), args: UInt64.t, res: UInt64.t. [%#sops'8] postcondition_once_clone self args res
-    = (exists res_state: (). postcondition_mut_clone self args res_state res /\ resolve_clone res_state)
-
-predicate hist_inv_clone [@inline:trivial] (self: ()) (result_state: ()) = true
-
-meta "rewrite_def" predicate hist_inv_clone
-
-function hist_inv_trans_clone (self: ()) (b: ()) (c: ()) : ()
-
-axiom hist_inv_trans_clone_spec: forall self: (), b: (), c: (). ([%#sops'5] hist_inv_clone self b)
-    -> ([%#sops'6] hist_inv_clone b c) -> ([%#sops'7] hist_inv_clone self c)
-
-function hist_inv_refl_clone (self: ()) : ()
-
-axiom hist_inv_refl_clone_spec: forall self: (). [%#sops'4] hist_inv_clone self self
-
-function postcondition_mut_hist_inv_clone (self: ()) (args: UInt64.t) (res_state: ()) (res: UInt64.t) : ()
-
-axiom postcondition_mut_hist_inv_clone_spec:
-  forall self: (), args: UInt64.t, res_state: (), res: UInt64.t. ([%#sops'2] postcondition_mut_clone self args res_state res)
-    -> ([%#sops'3] hist_inv_clone self res_state)
-
-function fn_hist_inv_clone (self: ()) (res_state: ()) : ()
-
-axiom fn_hist_inv_clone_spec: forall self: (), res_state: (). [%#sops'1] hist_inv_clone self res_state
-    = (self = res_state)
-
-predicate postcondition_clone [@inline:trivial] (self: ()) (args: UInt64.t) (result: UInt64.t) =
-  let self_ = args in [%#snum] result = self_
+predicate postcondition_clone (self: ()) (args: UInt64.t) (result: UInt64.t) =
+  [%#sclone'0] let self_ = args in [%#snum] result = self_
 
 meta "rewrite_def" predicate postcondition_clone
 
-function fn_once_clone (self: ()) (args: UInt64.t) (res: UInt64.t) : ()
-
-axiom fn_once_clone_spec:
-  forall self: (), args: UInt64.t, res: UInt64.t. [%#sops'0] postcondition_once_clone self args res
-    = (postcondition_clone self args res /\ resolve_clone self)
-
-function fn_mut_clone (self: ()) (args: UInt64.t) (res_state: ()) (res: UInt64.t) : ()
-
-axiom fn_mut_clone_spec:
-  forall self: (), args: UInt64.t, res_state: (), res: UInt64.t. [%#sops] postcondition_mut_clone self args res_state res
-    = (postcondition_clone self args res /\ self = res_state)
-
-predicate postcondition_once_clone'0 [@inline:trivial] (self: ()) (args: bool) (result: bool) =
-  let self_ = args in [%#sclone] result = self_
-
-meta "rewrite_def" predicate postcondition_once_clone'0
-
-predicate resolve_clone'0 [@inline:trivial] (_1: ()) = true
-
-meta "rewrite_def" predicate resolve_clone'0
-
-predicate postcondition_mut_clone'0 [@inline:trivial] (self: ()) (args: bool) (result_state: ()) (result: bool) =
-  let self_ = args in [%#sclone] result = self_
-
-meta "rewrite_def" predicate postcondition_mut_clone'0
-
-function fn_mut_once_clone'0 (self: ()) (args: bool) (res: bool) : ()
-
-axiom fn_mut_once_clone_spec'0:
-  forall self: (), args: bool, res: bool. [%#sops'8] postcondition_once_clone'0 self args res
-    = (exists res_state: (). postcondition_mut_clone'0 self args res_state res /\ resolve_clone'0 res_state)
-
-predicate hist_inv_clone'0 [@inline:trivial] (self: ()) (result_state: ()) = true
-
-meta "rewrite_def" predicate hist_inv_clone'0
-
-function hist_inv_trans_clone'0 (self: ()) (b: ()) (c: ()) : ()
-
-axiom hist_inv_trans_clone_spec'0: forall self: (), b: (), c: (). ([%#sops'5] hist_inv_clone'0 self b)
-    -> ([%#sops'6] hist_inv_clone'0 b c) -> ([%#sops'7] hist_inv_clone'0 self c)
-
-function hist_inv_refl_clone'0 (self: ()) : ()
-
-axiom hist_inv_refl_clone_spec'0: forall self: (). [%#sops'4] hist_inv_clone'0 self self
-
-function postcondition_mut_hist_inv_clone'0 (self: ()) (args: bool) (res_state: ()) (res: bool) : ()
-
-axiom postcondition_mut_hist_inv_clone_spec'0:
-  forall self: (), args: bool, res_state: (), res: bool. ([%#sops'2] postcondition_mut_clone'0 self args res_state res)
-    -> ([%#sops'3] hist_inv_clone'0 self res_state)
-
-function fn_hist_inv_clone'0 (self: ()) (res_state: ()) : ()
-
-axiom fn_hist_inv_clone_spec'0: forall self: (), res_state: (). [%#sops'1] hist_inv_clone'0 self res_state
-    = (self = res_state)
-
-predicate postcondition_clone'0 [@inline:trivial] (self: ()) (args: bool) (result: bool) =
-  let self_ = args in [%#sclone] result = self_
+predicate postcondition_clone'0 (self: ()) (args: bool) (result: bool) =
+  [%#sclone'0] let self_ = args in [%#sclone] result = self_
 
 meta "rewrite_def" predicate postcondition_clone'0
-
-function fn_once_clone'0 (self: ()) (args: bool) (res: bool) : ()
-
-axiom fn_once_clone_spec'0: forall self: (), args: bool, res: bool. [%#sops'0] postcondition_once_clone'0 self args res
-    = (postcondition_clone'0 self args res /\ resolve_clone'0 self)
-
-function fn_mut_clone'0 (self: ()) (args: bool) (res_state: ()) (res: bool) : ()
-
-axiom fn_mut_clone_spec'0:
-  forall self: (), args: bool, res_state: (), res: bool. [%#sops] postcondition_mut_clone'0 self args res_state res
-    = (postcondition_clone'0 self args res /\ self = res_state)
 
 meta "compute_max_steps" 1000000
 
 meta "select_lsinst" "all"
 
-let rec clone_Lit [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/lit.rs" 9 9 9 14] (self: t_Lit)
+let clone_Lit [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/lit.rs" 9 9 9 14] (self: t_Lit)
   (return (x: t_Lit)) = (! bb0
   [ bb0 = s0
     [ s0 = [ &_6 <- self.idx ] s1

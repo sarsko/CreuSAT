@@ -1,14 +1,19 @@
-(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 58 0 58 34 *)
+(* #"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_util.rs" 58 0 58 34 *)
 
-let%span slogic_util = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 54 11 54 22
-let%span slogic_util'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 55 10 55 49
-let%span slogic_util'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 56 10 56 37
-let%span slogic_util'2 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 57 10 57 73
+let%span sord = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/logic/ord.rs" 22 8 22 20
+let%span slogic_util = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_util.rs" 54 11 54 22
+let%span slogic_util'0 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_util.rs" 55 10 55 49
+let%span slogic_util'1 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_util.rs" 56 10 56 37
+let%span slogic_util'2 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_util.rs" 57 10 57 73
 
 use seq.Seq
 use int.Int
 
 type t_T
+
+predicate gt_log_Int [@inline:trivial] (self: int) (other: int) = [%#sord] other < self
+
+meta "rewrite_def" predicate gt_log_Int
 
 meta "compute_max_steps" 1000000
 
@@ -16,9 +21,9 @@ meta "select_lsinst" "all"
 
 constant s : Seq.seq t_T
 
-function pop_T [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_util.rs" 58 0 58 34] (s: Seq.seq t_T) : Seq.seq t_T
+function pop_T [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_util.rs" 58 0 58 34] (s: Seq.seq t_T) : Seq.seq t_T
 
-goal vc_pop_T: ([%#slogic_util] Seq.length s > 0)
+goal vc_pop_T: ([%#slogic_util] gt_log_Int (Seq.length s) 0)
   -> (let result = Seq.([..]) s 0 (Seq.length s
   - 1) in [@stop_split] [@expl:pop_T ensures] ([@stop_split] [@expl:pop ensures #0] [%#slogic_util'0] result
     = Seq.([..]) s 0 (Seq.length s - 1))

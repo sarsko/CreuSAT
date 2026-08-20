@@ -1,16 +1,17 @@
-(* #"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/formula.rs" 29 4 29 41 *)
+(* #"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/formula.rs" 29 4 29 41 *)
 
 (* <formula::Formula as std::ops::Index<usize>> *)
 
-let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 195 19 195 38
-let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 196 18 196 46
-let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/vec.rs" 18 14 18 41
-let%span sslice = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 148 20 148 37
-let%span sslice'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/1cd0c01/creusot-std/src/std/slice.rs" 153 20 153 37
-let%span slogic_formula = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 17 8 17 85
-let%span sformula = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/formula.rs" 35 21 35 25
-let%span sformula'0 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/formula.rs" 27 15 27 40
-let%span sformula'1 = "/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/formula.rs" 28 14 28 43
+let%span svec = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/vec.rs" 195 19 195 38
+let%span svec'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/vec.rs" 196 18 196 46
+let%span svec'1 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/vec.rs" 18 14 18 41
+let%span sslice = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/slice.rs" 151 20 151 37
+let%span sslice'0 = "/Users/sarekhs/.cargo/git/checkouts/creusot-1ab658fd39688aa3/ccc6c4a/creusot-std/src/std/slice.rs" 156 20 156 37
+let%span suint_macros = "/rustc/11177f2235f0c842b00f82c558ad9480c0c3a895/library/core/src/num/uint_macros.rs" 51 8 51 27
+let%span slogic_formula = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 17 8 17 85
+let%span sformula = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/formula.rs" 35 21 35 25
+let%span sformula'0 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/formula.rs" 27 15 27 40
+let%span sformula'1 = "/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/formula.rs" 28 14 28 43
 
 use creusot.int.UInt64
 use creusot.int.UInt32
@@ -31,11 +32,12 @@ predicate in_bounds_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq t_Cla
 
 meta "rewrite_def" predicate in_bounds_usize
 
-constant const_MAX: UInt64.t = (18446744073709551615: UInt64.t)
+constant const_MAX: UInt64.t = [%#suint_macros] (18446744073709551615: UInt64.t)
 
 function view_Vec_Clause_Global (self: t_Vec_Clause_Global) : Seq.seq t_Clause
 
-axiom view_Vec_Clause_Global_spec: forall self: t_Vec_Clause_Global. [%#svec'1] Seq.length (view_Vec_Clause_Global self)
+axiom view_Vec_Clause_Global_spec:
+  forall self: t_Vec_Clause_Global [view_Vec_Clause_Global self]. [%#svec'1] Seq.length (view_Vec_Clause_Global self)
     <= UInt64.t'int const_MAX
 
 predicate has_value_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq t_Clause) (out: t_Clause) =
@@ -43,8 +45,8 @@ predicate has_value_usize [@inline:trivial] (self: UInt64.t) (seq: Seq.seq t_Cla
 
 meta "rewrite_def" predicate has_value_usize
 
-let rec index_Vec_Clause_Global (self_: t_Vec_Clause_Global) (ix: UInt64.t) (return (x: t_Clause)) =
-  {[@stop_split] [@expl:index requires] [%#svec] in_bounds_usize ix (view_Vec_Clause_Global self_)}
+let index_Vec_Clause_Global (self_: t_Vec_Clause_Global) (ix: UInt64.t) (return (x: t_Clause)) =
+{[@stop_split] [@expl:index requires] [%#svec] in_bounds_usize ix (view_Vec_Clause_Global self_)}
   any
   [ return (result: t_Clause) ->
   {[@stop_split] [@expl:index ensures] [%#svec'0] has_value_usize ix (view_Vec_Clause_Global self_) result}
@@ -52,16 +54,16 @@ let rec index_Vec_Clause_Global (self_: t_Vec_Clause_Global) (ix: UInt64.t) (ret
 
 type t_FormulaModel = { clauses'0: Seq.seq t_Clause; num_vars'0: int }
 
-function view_Formula [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 16 4 16 33] (self: t_Formula) : t_FormulaModel
+function view_Formula [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/logic/logic_formula.rs" 16 4 16 33] (self: t_Formula) : t_FormulaModel
  = [%#slogic_formula] { clauses'0 = view_Vec_Clause_Global self.clauses; num_vars'0 = UInt64.t'int self.num_vars }
 
 meta "compute_max_steps" 1000000
 
 meta "select_lsinst" "all"
 
-let rec index_Formula [#"/Users/sarekhs/Programming/CreuSAT/CreuSAT/src/formula.rs" 29 4 29 41] (self: t_Formula)
-  (ix: UInt64.t) (return (x: t_Clause)) = {[@stop_split] [@expl:index requires] [%#sformula'0] UInt64.t'int ix
-  < Seq.length (view_Formula self).clauses'0}
+let index_Formula [#"/Users/sarekhs/Programming/XXXX-current/CreuSAT/CreuSAT/src/formula.rs" 29 4 29 41]
+  (self: t_Formula) (ix: UInt64.t) (return (x: t_Clause)) =
+{[@stop_split] [@expl:index requires] [%#sformula'0] UInt64.t'int ix < Seq.length (view_Formula self).clauses'0}
   (! bb0
   [ bb0 = s0
     [ s0 = index_Vec_Clause_Global [%#sformula] {self.clauses} {ix} (fun (_x: t_Clause) -> [ &_10 <- _x ] s1)
